@@ -61,19 +61,18 @@ SetupMessageData(const std::vector<int>& locations,
   for (std::size_t i = 0; i < num_locations; ++i)
   {
     // compute message count and size
-    std::size_t num_unknowns = get_unknown_count(i);
+    int num_unknowns = get_unknown_count(i);
     int message_count = 0, message_size = 0;
     if (num_unknowns != 0)
     {
-      std::size_t total_bytes = num_unknowns * sizeof(double);
+      int total_bytes = num_unknowns * static_cast<int>(sizeof(double));
       message_count = 1;
       if (total_bytes > max_mpi_message_size)
       {
-        message_count =
-          static_cast<int>((total_bytes + (max_mpi_message_size - 1)) / max_mpi_message_size);
+        message_count = (total_bytes + (max_mpi_message_size - 1)) / max_mpi_message_size;
       }
-      message_count = std::min(message_count, static_cast<int>(num_unknowns));
-      message_size = static_cast<int>((num_unknowns + (message_count - 1)) / message_count);
+      message_count = std::min(message_count, num_unknowns);
+      message_size = ((num_unknowns + (message_count - 1)) / message_count);
     }
     // skip if no message
     if (message_count == 0)
@@ -98,7 +97,7 @@ SetupMessageData(const std::vector<int>& locations,
       num_unknowns -= message_size;
       block_pos += message_size;
     }
-    msg_data[i].emplace_back(peer, static_cast<int>(num_unknowns), block_pos);
+    msg_data[i].emplace_back(peer, num_unknowns, block_pos);
     // resize receive status vector
     if (msg_received)
       (*msg_received)[i].resize(message_count, false);
