@@ -347,32 +347,33 @@ void
 WrapLebedevQuadrature(py::module& aquad)
 {
   // clang-format off
-  auto lebedev_quadrature = py::class_<LebedevQuadrature,
-                                       std::shared_ptr<LebedevQuadrature>,
-                                       AngularQuadrature>(
+  // Lebedev 3D XYZ quadrature
+  auto angular_quadrature_lebedev_3d_xyz = py::class_<LebedevQuadrature3DXYZ,
+                                                     std::shared_ptr<LebedevQuadrature3DXYZ>,
+                                                     AngularQuadrature>(
     aquad,
-    "LebedevQuadrature",
+    "LebedevQuadrature3DXYZ",
     R"(
-    Lebedev quadrature for spherical integration.
+    Lebedev quadrature for 3D, XYZ geometry.
     
     This quadrature provides high-order accuracy for spherical integration with
     symmetric distribution of points on the sphere.
 
-    Wrapper of :cpp:class:`opensn::LebedevQuadrature`.
+    Wrapper of :cpp:class:`opensn::LebedevQuadrature3DXYZ`.
     )"
   );
   
-  lebedev_quadrature.def(
+  angular_quadrature_lebedev_3d_xyz.def(
     py::init(
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"quadrature_order", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<LebedevQuadrature, int, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<LebedevQuadrature3DXYZ, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
-    Creates a Lebedev quadrature of the specified order.
+    Constructs a Lebedev quadrature for 3D, XYZ geometry.
 
     Parameters
     ----------
