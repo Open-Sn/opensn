@@ -97,6 +97,7 @@ endif()
 
 # dependencies
 find_package(MPI REQUIRED)
+find_package(mpicpp-lite 2.1 REQUIRED)
 
 find_package(HDF5 REQUIRED COMPONENTS C HL)
 find_package(Boost CONFIG)
@@ -277,6 +278,7 @@ target_link_libraries(libopensn
     ${VTK_LIBRARIES}
     caliper
     ${HDF5_LIBRARIES}
+    mpicpp-lite::mpicpp-lite
     MPI::MPI_CXX
 )
 if (OPENSN_WITH_CUDA)
