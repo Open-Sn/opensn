@@ -17,10 +17,10 @@
 namespace opensn
 {
 
-std::vector<std::pair<int, int>>
+std::vector<std::pair<Vertex, Vertex>>
 SPDS::FindApproxMinimumFAS(Graph& g, std::vector<Vertex>& scc_vertices)
 {
-  std::vector<std::pair<int, int>> edges_to_remove;
+  std::vector<std::pair<Vertex, Vertex>> edges_to_remove;
 
   // We work on the subgraph induced by the vertices in scc_vertices, using a local
   // "in_component" mask instead of mutating the graph's vertex properties. This avoids
@@ -186,12 +186,12 @@ SPDS::FindApproxMinimumFAS(Graph& g, std::vector<Vertex>& scc_vertices)
   return edges_to_remove;
 }
 
-std::vector<std::pair<size_t, size_t>>
+std::vector<std::pair<Vertex, Vertex>>
 SPDS::RemoveCyclicDependencies(Graph& g)
 {
   using OutEdgeIterator = boost::graph_traits<Graph>::out_edge_iterator;
 
-  std::vector<std::pair<size_t, size_t>> edges_to_remove;
+  std::vector<std::pair<Vertex, Vertex>> edges_to_remove;
 
   const auto num_v = boost::num_vertices(g);
   auto ComputeSCCs = [&]()
@@ -218,7 +218,7 @@ SPDS::RemoveCyclicDependencies(Graph& g)
 
   while (not sccs.empty())
   {
-    std::vector<std::pair<size_t, size_t>> tmp_edges_to_remove;
+    std::vector<std::pair<Vertex, Vertex>> tmp_edges_to_remove;
 
     for (auto scc : sccs)
     {
@@ -320,10 +320,11 @@ SPDS::MapLocJToDeplocI(int locJ) const
 }
 
 void
-SPDS::PopulateCellRelationships(const Vector3& omega,
-                                std::set<int>& location_dependencies,
-                                std::set<int>& location_successors,
-                                std::vector<std::set<std::pair<int, double>>>& cell_successors)
+SPDS::PopulateCellRelationships(
+  const Vector3& omega,
+  std::set<int>& location_dependencies,
+  std::set<int>& location_successors,
+  std::vector<std::set<std::pair<std::uint32_t, double>>>& cell_successors)
 {
   CALI_CXX_MARK_SCOPE("SPDS::PopulateCellRelationships");
 
@@ -414,7 +415,7 @@ SPDS::PopulateCellRelationships(const Vector3& omega,
   // Make directed connections
   for (auto& cell : grid_->local_cells)
   {
-    const uint64_t c = cell.local_id;
+    const auto c = cell.local_id;
     size_t f = 0;
     for (auto& face : cell.faces)
     {

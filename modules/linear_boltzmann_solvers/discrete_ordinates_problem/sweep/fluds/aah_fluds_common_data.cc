@@ -33,7 +33,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   CALI_CXX_MARK_SCOPE("AAH_FLUDSCommonData::InitializeAlphaElements");
 
   const auto grid = spds.GetGrid();
-  const std::vector<int>& spls = spds.GetLocalSubgrid();
+  const auto& spls = spds.GetLocalSubgrid();
 
   // Initialize face categorization
   num_face_categories_ = grid_face_histogram.GetNumberOfFaceHistogramBins();
@@ -136,7 +136,7 @@ AAH_FLUDSCommonData::SlotDynamics(
   auto mark_delayed = [](short& cat) { cat = static_cast<short>(-cat - 1); };
 
   // Does FAS contain (u -> v)?
-  auto is_fas_edge = [&](uint64_t u, uint64_t v)
+  auto is_fas_edge = [&](std::uint32_t u, std::uint32_t v)
   {
     for (const auto& e : fas)
     {
@@ -383,7 +383,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   CALI_CXX_MARK_SCOPE("AAH_FLUDSCommonData::InitializeBetaElements");
 
   const auto grid = spds.GetGrid();
-  const std::vector<int>& spls = spds.GetLocalSubgrid();
+  const auto& spls = spds.GetLocalSubgrid();
 
   // The first two major steps here are: Send delayed successor information
   // and Receive delayed predecessor information. The send portion is done

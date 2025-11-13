@@ -121,7 +121,7 @@ FiniteVolume::OrderNodes()
   const auto query_nb_gids = MapAllToAll(sorted_nb_gids, mpi_comm);
 
   // Map the ids
-  std::map<uint64_t, std::vector<uint64_t>> mapped_query_nb_gids;
+  std::map<uint64_t, std::vector<std::uint32_t>> mapped_query_nb_gids;
   for (const auto& pid_list_pair : query_nb_gids)
   {
     const uint64_t pid = pid_list_pair.first;

@@ -53,7 +53,7 @@ private:
   FieldFunctionInterpolationOperation op_type_;
   double op_value_;
   ScalarMaterialFunction oper_function_;
-  std::vector<uint64_t> cell_local_ids_inside_logvol_;
+  std::vector<std::uint32_t> cell_local_ids_inside_logvol_;
 
 public:
   static std::shared_ptr<FieldFunctionInterpolationVolume> Create();
