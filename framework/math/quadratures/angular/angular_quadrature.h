@@ -18,6 +18,13 @@ enum class AngularQuadratureType
   LebedevQuadrature = 3
 };
 
+enum class OperatorConstructionMethod
+{
+  STANDARD = 0,
+  GALERKIN_ONE = 1,
+  GALERKIN_THREE = 3
+};
+
 struct QuadraturePointPhiTheta
 {
   double phi = 0.0;
@@ -50,11 +57,18 @@ protected:
   AngularQuadratureType type_;
   unsigned int dimension_;
   unsigned int scattering_order_;
+  OperatorConstructionMethod construction_method_;
+  unsigned int quadrature_order_ = 0;
 
-  explicit AngularQuadrature(AngularQuadratureType type,
-                             unsigned int dimension,
-                             unsigned int scattering_order)
-    : type_(type), dimension_(dimension), scattering_order_(scattering_order)
+  explicit AngularQuadrature(
+    AngularQuadratureType type,
+    unsigned int dimension,
+    unsigned int scattering_order,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD)
+    : type_(type),
+      dimension_(dimension),
+      scattering_order_(scattering_order),
+      construction_method_(method)
   {
   }
 
@@ -68,11 +82,20 @@ public:
 
   virtual ~AngularQuadrature() = default;
 
-  /// Computes the discrete to moment operator.
+  /// Computes the discrete to moment operator based on construction method.
   void BuildDiscreteToMomentOperator();
 
-  /// Computes the moment to discrete operator.
+  /// Computes the moment to discrete operator based on construction method.
   void BuildMomentToDiscreteOperator();
+
+  /// Sets the operator construction method
+  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
+  {
+    construction_method_ = method;
+  }
+
+  /// Gets the current operator construction method
+  OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
 
   /**
    * Returns a reference to the precomputed d2m operator. The operator is accessed as [m][d], where
@@ -98,6 +121,17 @@ public:
   size_t GetNumMoments() const { return m_to_ell_em_map_.size(); }
 
   AngularQuadratureType GetType() const { return type_; }
+
+  /**
+   * Sets the quadrature_order_ parameter depending on the quadrature type:
+   * For Product Quadrature: N in Sn notation
+   * For Lebedev Quadrature: Lebedev Order {3, 5, 7, ...}
+   * For SLDFE-S Quadrature: Uniform Refinement Level
+   */
+  void SetQuadratureOrder(unsigned int order) { quadrature_order_ = order; }
+
+  // Gets the Quadrature Order for harmonic selection
+  unsigned int GetGalerkinN() const { return quadrature_order_; }
 };
 
 } // namespace opensn
