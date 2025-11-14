@@ -144,7 +144,7 @@ PETScLinearSolver::PETScIterativeMethodName()
   }
 }
 
-int
+PetscErrorCode
 PETScLinearSolver::LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
 {
   LinearSystemContext* context = nullptr;
