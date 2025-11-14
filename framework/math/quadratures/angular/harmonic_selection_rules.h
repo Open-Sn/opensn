@@ -33,10 +33,9 @@ public:
     // For SLDFESQ: Uniform Refinement level
     unsigned int quadrature_order = 0;
 
-    // Old Information
-    unsigned int N = 0;
-    unsigned int num_polar = 0;
-    unsigned int num_azimuthal = 0;
+    // Info needed to Product + Triangular
+    unsigned int num_polar = 0;    // Number of positive-mu polar points
+    unsigned int num_azimu_90 = 0; // Number of azimuthal points in (0, pi/2)
   };
 
   /**
