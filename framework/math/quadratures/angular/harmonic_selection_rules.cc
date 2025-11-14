@@ -95,7 +95,7 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
     // Loop over M with step of 2
     for (unsigned int M = min_M; M <= max_M; M += 2)
     {
-      if (harmonics.size() >= nb_dir)
+      if (harmonics.size() >= num_dir)
         break;
 
       // Cosine only if M < M_crit
