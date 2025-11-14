@@ -948,7 +948,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
   std::map<int, CellType> block_id_map;
   for (const auto& cell : grid->local_cells)
   {
-    const int blk_id = cell.block_id;
+    const auto blk_id = static_cast<int>(cell.block_id);
     if (block_id_map.count(blk_id) == 0)
       block_id_map[blk_id] = cell.GetSubType();
     else
@@ -997,7 +997,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
         throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell.GetSubType()) +
                                "\" encountered that is not supported by ExodusII.");
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
-      block_id_list->InsertNextValue(cell.block_id);
+      block_id_list->InsertNextValue(static_cast<int>(cell.block_id));
       max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.

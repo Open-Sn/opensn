@@ -37,7 +37,7 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     }
 
     // Make xs map
-    std::map<int, Multigroup_D_and_sigR> matid_2_mgxs_map;
+    std::map<unsigned int, Multigroup_D_and_sigR> matid_2_mgxs_map;
     for (const auto& matid_xs_pair : block_id_to_xs_map)
     {
       const auto& mat_id = matid_xs_pair.first;

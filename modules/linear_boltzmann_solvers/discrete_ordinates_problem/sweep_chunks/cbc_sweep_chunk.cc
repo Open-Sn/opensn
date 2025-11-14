@@ -21,7 +21,7 @@ CBCSweepChunk::CBCSweepChunk(std::vector<double>& destination_phi,
                              const std::vector<double>& densities,
                              const std::vector<double>& source_moments,
                              const LBSGroupset& groupset,
-                             const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                             const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& xs,
                              int num_moments,
                              int max_num_cell_dofs,
                              int min_num_cell_dofs)

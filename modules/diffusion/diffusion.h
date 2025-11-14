@@ -20,7 +20,7 @@ struct Multigroup_D_and_sigR;
 class DiffusionSolver
 {
 protected:
-  using MatID2XSMap = std::map<int, Multigroup_D_and_sigR>;
+  using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
 
   const std::string name_;
   const std::shared_ptr<MeshContinuum> grid_;

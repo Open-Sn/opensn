@@ -108,7 +108,7 @@ public:
   size_t& GetLastRestartTime();
 
   /// Returns a reference to the map of material ids to XSs.
-  const std::map<int, std::shared_ptr<MultiGroupXS>>& GetMatID2XSMap() const;
+  const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& GetMatID2XSMap() const;
 
   /// Obtains a reference to the grid.
   std::shared_ptr<MeshContinuum> GetGrid() const;
@@ -285,7 +285,7 @@ protected:
   std::vector<LBSGroup> groups_;
   std::vector<LBSGroupset> groupsets_;
 
-  std::map<int, std::shared_ptr<MultiGroupXS>> block_id_to_xs_map_;
+  std::map<unsigned int, std::shared_ptr<MultiGroupXS>> block_id_to_xs_map_;
 
   std::vector<std::shared_ptr<PointSource>> point_sources_;
   std::vector<std::shared_ptr<VolumetricSource>> volumetric_sources_;

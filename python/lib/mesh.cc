@@ -146,13 +146,13 @@ WrapMesh(py::module& mesh)
   );
   mesh_continuum.def(
     "SetBlockIDFromFunction",
-    [](MeshContinuum& self, const std::function<int(Vector3, int)>& func)
+    [](MeshContinuum& self, const std::function<unsigned int(Vector3, unsigned int)>& func)
     {
       int local_num_cells_modified = 0;
       // change local cells
       for (Cell& cell : self.local_cells)
       {
-        int new_block_id = func(cell.centroid, cell.block_id);
+        auto new_block_id = func(cell.centroid, cell.block_id);
         if (cell.block_id != new_block_id)
         {
           cell.block_id = new_block_id;
@@ -164,7 +164,7 @@ WrapMesh(py::module& mesh)
       for (std::uint64_t ghost_id : ghost_ids)
       {
         Cell& cell = self.cells[ghost_id];
-        int new_block_id = func(cell.centroid, cell.block_id);
+        auto new_block_id = func(cell.centroid, cell.block_id);
         if (cell.block_id != new_block_id)
         {
           cell.block_id = new_block_id;

@@ -57,7 +57,7 @@ VolumetricSource::Create(const ParameterBlock& params)
 
 VolumetricSource::VolumetricSource(const InputParameters& params)
   : id_(next_id_++),
-    block_ids_(params.GetParamVectorValue<int>("block_ids")),
+    block_ids_(params.GetParamVectorValue<unsigned int>("block_ids")),
     logvol_(params.GetSharedPtrParam<LogicalVolume>("logical_volume", false)),
     strength_(params.GetParamVectorValue<double>("group_strength")),
     function_(params.GetSharedPtrParam<VectorSpatialFunction>("func", false))
@@ -86,7 +86,7 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
   subscribers_.clear();
   if (logvol_ and block_ids_.empty())
   {
-    std::set<int> blk_ids;
+    std::set<unsigned int> blk_ids;
     for (const auto& cell : lbs_problem.GetGrid()->local_cells)
       if (logvol_->Inside(cell.centroid))
       {

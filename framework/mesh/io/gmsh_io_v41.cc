@@ -263,7 +263,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   if (not(iss >> num_entity_blocks >> num_elements >> min_element_tag >> max_element_tag))
     throw std::logic_error(fname + ": Failed to read number of element entity blocks.");
 
-  std::vector<std::tuple<size_t, int, int, std::vector<size_t>>> element_data;
+  std::vector<std::tuple<size_t, int, unsigned int, std::vector<size_t>>> element_data;
   for (size_t n = 0; n < num_entity_blocks; ++n)
   {
     std::getline(file, file_line);
@@ -450,7 +450,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   mesh->BuildMeshConnectivity();
 
   // remap boundary cells onto cell faces
-  std::map<std::set<uint64_t>, int> bnd_cell_to_bnd_id_map;
+  std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
   for (auto& bnd_cell : mesh->GetRawBoundaryCells())
   {
     std::set<uint64_t> key;

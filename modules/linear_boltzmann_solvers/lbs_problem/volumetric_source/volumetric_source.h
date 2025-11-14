@@ -46,12 +46,12 @@ public:
 
   const std::vector<uint64_t>& GetSubscribers() const { return subscribers_; }
   std::shared_ptr<LogicalVolume> GetLogicalVolume() const { return logvol_; }
-  const std::vector<int>& GetBlockIDs() const { return block_ids_; }
+  const std::vector<unsigned int>& GetBlockIDs() const { return block_ids_; }
 
 private:
   int id_;
 
-  std::vector<int> block_ids_;
+  std::vector<unsigned int> block_ids_;
   const std::shared_ptr<LogicalVolume> logvol_;
 
   std::vector<double> strength_;
