@@ -53,73 +53,74 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
 {
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
 
-  const unsigned int N = params.quadrature_order > 0 ? params.quadrature_order : params.N;
-  const unsigned int max_ell = 2 * (N - 1); // Rule 1: ℓ = 0, ..., 2(N-1)
+  const unsigned int num_polar = params.num_polar;
+  const unsigned int num_azimu_90 = params.num_azimu_90;
+  const size_t num_dir = params.num_angles;
 
-  Logger::GetInstance().Log0Verbose1() << "2D Cartesian Product Galerkin rules:";
-  Logger::GetInstance().Log0Verbose1() << "  N = " << N;
-  Logger::GetInstance().Log0Verbose1() << "  max_ell = " << max_ell;
+  const unsigned int L_crit = 2 * num_polar - 1;
+  const unsigned int M_crit = 2 * num_azimu_90;
 
-  for (unsigned int ell = 0; ell <= max_ell; ++ell)
+  Logger::GetInstance().Log0Verbose1() << "  npolar = " << num_polar;
+  Logger::GetInstance().Log0Verbose1() << "  nb_phi_90 = " << num_azimu_90;
+  Logger::GetInstance().Log0Verbose1() << "  L_crit = " << L_crit;
+  Logger::GetInstance().Log0Verbose1() << "  M_crit = " << M_crit;
+
+  unsigned int ind_L = 2; // parity toggle for L
+  const unsigned int max_L = 2 * (num_polar + num_azimu_90 - 1);
+
+  for (unsigned int L = 0; L <= max_L; ++L)
   {
-    // Rule 2: Loop over m = -ℓ, ..., ℓ
-    for (int m = -static_cast<int>(ell); m <= static_cast<int>(ell); ++m)
+    if (harmonics.size() >= num_dir)
+      break;
+
+    // M=0 cosine only when L <= L_crit and even L
+    if (L <= L_crit && ind_L == 2)
     {
-      if (CheckCartesian2DRules(ell, m, N))
-      {
-        harmonics.emplace_back(ell, m);
-        Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << ell << ", m=" << m;
-      }
-      else
-      {
-        Logger::GetInstance().Log0Verbose2() << "    Rejected: ℓ=" << ell << ", m=" << m;
-      }
+      harmonics.emplace_back(L, 0);
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << 0;
+      if (harmonics.size() == num_dir)
+        break;
     }
+
+    // Determine min_M
+    unsigned int min_M;
+    if (L <= L_crit)
+      min_M = ind_L;
+    else
+      min_M = L + 1 - L_crit;
+
+    // Determine max_M
+    const unsigned int max_M = std::min(L, M_crit);
+
+    // Loop over M with step of 2
+    for (unsigned int M = min_M; M <= max_M; M += 2)
+    {
+      if (harmonics.size() >= nb_dir)
+        break;
+
+      // Cosine only if M < M_crit
+      if (M < M_crit)
+      {
+        harmonics.emplace_back(L, static_cast<int>(M));
+        Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << M;
+        if (harmonics.size() == num_dir)
+          break;
+      }
+
+      // Sine always
+      harmonics.emplace_back(L, -static_cast<int>(M));
+      Logger::GetInstance().Log0Verbose2()
+        << "    Accepted: ℓ=" << L << ", m=" << -static_cast<int>(M);
+    }
+
+    // Toggle L parity
+    ind_L = 3 - ind_L;
   }
 
   Logger::GetInstance().Log0Verbose1()
-    << "2D Cartesian Product: Selected " << harmonics.size() << " harmonics out of "
-    << ((max_ell + 1) * (max_ell + 1)) << " possible";
+    << "2D Product (General): Selected " << harmonics.size() << " harmonics";
 
   return harmonics;
-}
-
-bool
-HarmonicSelectionRules::CheckCartesian2DRules(unsigned int ell, int m, unsigned int N)
-{
-  const unsigned int abs_m = std::abs(m);
-
-  // Rule 3: If ℓ + |m| odd OR (ℓ ≥ N and m > 2N - ℓ - 2), reject
-  if ((ell + abs_m) % 2 == 1)
-  {
-    return false; // ℓ + |m| is odd
-  }
-
-  if (ell >= N && m > static_cast<int>(2 * N - ell - 2))
-  {
-    return false; // ℓ ≥ N and m > 2N - ℓ - 2
-  }
-
-  // Rule 4: If ℓ ≥ N and ℓ even and (m = 0 or m < -2N + ℓ), reject
-  if (ell >= N && ell % 2 == 0)
-  {
-    if (m == 0 || m < static_cast<int>(-2 * N + ell))
-    {
-      return false;
-    }
-  }
-
-  // Rule 5: If ℓ ≥ N and ℓ odd and m < -2N + ℓ + 2, reject
-  if (ell >= N && ell % 2 == 1)
-  {
-    if (m < static_cast<int>(-2 * N + ell + 2))
-    {
-      return false;
-    }
-  }
-
-  // Rule 6: Otherwise, accept
-  return true;
 }
 
 // 3D Product Quadrature rules
@@ -128,60 +129,69 @@ HarmonicSelectionRules::Select3DCartesianProduct(const SelectionParameters& para
 {
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
 
-  const unsigned int N = params.quadrature_order > 0 ? params.quadrature_order : params.N;
-  const unsigned int max_ell = 2 * (N - 1); // Rule 1: ℓ = 0, ..., 2(N-1)
+  const unsigned int num_polar = params.num_polar;
+  const unsigned int num_azimu_90 = params.num_azimu_90;
+  const size_t num_dir = params.num_angles;
 
-  Logger::GetInstance().Log0Verbose1() << "3D Cartesian Product Galerkin rules:";
-  Logger::GetInstance().Log0Verbose1() << "  N = " << N;
-  Logger::GetInstance().Log0Verbose1() << "  max_ell = " << max_ell;
+  const unsigned int L_crit = 2 * num_polar - 1;
+  const unsigned int M_crit = 2 * num_azimu_90;
+  const unsigned int min_M_default = 1;
 
-  for (unsigned int ell = 0; ell <= max_ell; ++ell)
+  Logger::GetInstance().Log0Verbose1() << "3D Product Galerkin (General) rules:";
+  Logger::GetInstance().Log0Verbose1() << "  num_polar    = " << num_polar;
+  Logger::GetInstance().Log0Verbose1() << "  num_azimu_90 = " << num_azimu_90;
+  Logger::GetInstance().Log0Verbose1() << "  L_crit       = " << L_crit;
+  Logger::GetInstance().Log0Verbose1() << "  M_crit       = " << M_crit;
+
+  const unsigned int max_L = 2 * (num_polar + num_azimu_90) - 1;
+
+  for (unsigned int L = 0; L <= max_L; ++L)
   {
-    // Rule 2: Loop over m = -ℓ, ..., ℓ
-    for (int m = -static_cast<int>(ell); m <= static_cast<int>(ell); ++m)
+    if (harmonics.size() >= num_dir)
+      break;
+
+    unsigned int min_M;
+    if (L <= L_crit)
     {
-      if (CheckCartesian3DRules(ell, m, N))
+      // M=0 cosine
+      harmonics.emplace_back(L, 0);
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << 0;
+      if (harmonics.size() == num_dir)
+        break;
+      min_M = min_M_default;
+    }
+    else
+    {
+      min_M = L - L_crit;
+    }
+
+    const unsigned int max_M = std::min(L, M_crit);
+
+    for (unsigned int M = min_M; M <= max_M; ++M)
+    {
+      if (harmonics.size() >= num_dir)
+        break;
+
+      // Cosine only if M < M_crit
+      if (M < M_crit)
       {
-        harmonics.emplace_back(ell, m);
-        Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << ell << ", m=" << m;
+        harmonics.emplace_back(L, static_cast<int>(M));
+        Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << M;
+        if (harmonics.size() == num_dir)
+          break;
       }
-      else
-      {
-        Logger::GetInstance().Log0Verbose2() << "    Rejected: ℓ=" << ell << ", m=" << m;
-      }
+
+      // Sine always
+      harmonics.emplace_back(L, -static_cast<int>(M));
+      Logger::GetInstance().Log0Verbose2()
+        << "    Accepted: ℓ=" << L << ", m=" << -static_cast<int>(M);
     }
   }
 
   Logger::GetInstance().Log0Verbose1()
-    << "3D Cartesian Product: Selected " << harmonics.size() << " harmonics out of "
-    << ((max_ell + 1) * (max_ell + 1)) << " possible";
+    << "3D Product (General): Selected " << harmonics.size() << " harmonics";
 
   return harmonics;
-}
-
-bool
-HarmonicSelectionRules::CheckCartesian3DRules(unsigned int ell, int m, unsigned int N)
-{
-  // Rule 3: If ℓ ≥ N and m ≤ 0 and (m < -N or m ≥ N - ℓ), reject
-  if (ell >= N && m <= 0)
-  {
-    if (m < -static_cast<int>(N) || m >= static_cast<int>(N - ell))
-    {
-      return false;
-    }
-  }
-
-  // Rule 4: If ℓ ≥ N and m > 0 and (m ≥ N or m ≤ ℓ - N), reject
-  if (ell >= N && m > 0)
-  {
-    if (m >= static_cast<int>(N) || m <= static_cast<int>(ell - N))
-    {
-      return false;
-    }
-  }
-
-  // Rule 5: Otherwise, accept
-  return true;
 }
 
 // Lebedev Quadrature Rules
