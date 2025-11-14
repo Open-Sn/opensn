@@ -535,8 +535,6 @@ WrapLBS(py::module& slv)
         groupset.
     xs_map : List[Dict], default=[]
         A list of mappings from block ids to cross-section definitions.
-    scattering_order: int, default=0
-        The level of harmonic expansion for the scattering source.
     boundary_conditions: List[Dict], default=[]
         A list containing tables for each boundary specification.
     point_sources: List[pyopensn.source.PointSource], default=[]
@@ -679,8 +677,6 @@ WrapLBS(py::module& slv)
         groupset.
     xs_map : list of dict
         A list of mappings from block ids to cross-section definitions.
-    scattering_order: int, default=0
-        The level of harmonic expansion for the scattering source.
     boundary_conditions: List[Dict], default=[]
         A list containing tables for each boundary specification.
     point_sources: List[pyopensn.source.PointSource], default=[]

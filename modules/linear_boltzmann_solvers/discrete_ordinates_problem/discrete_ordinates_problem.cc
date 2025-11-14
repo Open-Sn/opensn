@@ -53,9 +53,6 @@ DiscreteOrdinatesProblem::GetInputParameters()
 
   params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesProblem");
 
-  params.AddRequiredParameter<unsigned int>(
-    "scattering_order", "The level of harmonic expansion for the scattering source.");
-
   params.AddOptionalParameterArray(
     "directions_sweep_order_to_print",
     std::vector<int>(),
@@ -80,9 +77,6 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     verbose_sweep_angles_(params.GetParamVectorValue<int>("directions_sweep_order_to_print")),
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
-  scattering_order_ = params.GetParamValue<int>("scattering_order");
-  ValidateAndComputeScatteringMoments();
-
   if (use_gpus_ && sweep_type_ == "CBC")
   {
     log.Log0Warning() << "Sweep computation on GPUs is not supported for the CBC sweep."
@@ -90,9 +84,10 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     use_gpus_ = false;
   }
 
+  // Check for consistency between quadrature sets
+  auto& groupset0 = groupsets_[0];
   for (auto& groupset : groupsets_)
   {
-    // Build groupset angular flux unknown manager
     if (not groupset.quadrature)
     {
       std::stringstream oss;
@@ -100,11 +95,42 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
           << " does not have an associated quadrature set";
       throw std::runtime_error(oss.str());
     }
+
+    if (groupset.quadrature->GetScatteringOrder() != groupset0.quadrature->GetScatteringOrder())
+    {
+      throw std::logic_error(GetName() +
+                             ": Number of scattering moments differs between groupsets");
+    }
+  }
+
+  // Set scattering order and number of flux moments
+  scattering_order_ = groupset0.quadrature->GetScatteringOrder();
+  num_moments_ = groupset0.quadrature->GetNumMoments();
+  for (const auto& [blk_id, mat] : block_id_to_xs_map_)
+  {
+    auto lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
+    if (scattering_order_ > lxs)
+    {
+      log.Log0Warning()
+        << "Computing the flux with more scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << std::endl;
+    }
+    else if (scattering_order_ < lxs)
+    {
+      log.Log0Warning()
+        << "Computing the flux with fewer scattering moments than are present in the "
+        << "cross-section data for block " << blk_id << ".\nA truncated cross-section "
+        << "expansion will be used." << std::endl;
+    }
+  }
+
+  // Build groupset angular flux unknown manager and initialize GPU state
+  for (auto& groupset : groupsets_)
+  {
     groupset.psi_uk_man_.unknowns.clear();
     size_t num_angles = groupset.quadrature->abscissae.size();
     size_t gs_num_groups = groupset.groups.size();
     auto& grpset_psi_uk_man = groupset.psi_uk_man_;
-
     const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
@@ -126,89 +152,6 @@ DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem()
     // Reset sweep orderings
     if (groupset.angle_agg != nullptr)
       groupset.angle_agg->angle_set_groups.clear();
-  }
-}
-
-void
-DiscreteOrdinatesProblem::ValidateAndComputeScatteringMoments()
-{
-  /*
-    lfs: Legendre order used in the flux solver
-    lxs: Legendre order used in the cross-section library
-    laq: Legendre order supported by the angular quadrature
-  */
-
-  size_t lfs = scattering_order_;
-
-  for (size_t gs = 1; gs < groupsets_.size(); ++gs)
-    if (groupsets_[gs].quadrature->GetScatteringOrder() !=
-        groupsets_[0].quadrature->GetScatteringOrder())
-      throw std::logic_error(GetName() +
-                             ": Number of scattering moments differs between groupsets");
-  auto laq = groupsets_[0].quadrature->GetScatteringOrder();
-
-  for (const auto& [blk_id, mat] : block_id_to_xs_map_)
-  {
-    auto lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
-
-    if (laq > lxs)
-    {
-      log.Log0Warning()
-        << "The quadrature set(s) supports more scattering moments than are present in the "
-        << "cross-section data for block " << blk_id << std::endl;
-    }
-
-    if (lfs < lxs)
-    {
-      log.Log0Warning()
-        << "Computing the flux with fewer scattering moments than are present in the "
-        << "cross-section data for block " << blk_id << std::endl;
-    }
-    else if (lfs > lxs)
-    {
-      log.Log0Warning()
-        << "Computing the flux with more scattering moments than are present in the "
-        << "cross-section data for block " << blk_id << std::endl;
-    }
-  }
-
-  if (lfs < laq)
-  {
-    log.Log0Warning() << "Using fewer rows/columns of angular matrices (M, D) than the quadrature "
-                      << "supports" << std::endl;
-  }
-  else if (lfs > laq)
-    throw std::logic_error(
-      GetName() + ": Solver requires more flux moments than the angular quadrature supports");
-
-  // Compute number of solver moments.
-  switch (geometry_type_)
-  {
-    case GeometryType::ONED_SLAB:
-    case GeometryType::ONED_CYLINDRICAL:
-    case GeometryType::ONED_SPHERICAL:
-    case GeometryType::TWOD_CYLINDRICAL:
-    {
-      num_moments_ = lfs + 1;
-      break;
-    }
-
-    case GeometryType::TWOD_CARTESIAN:
-    {
-      num_moments_ = (lfs + 1) * (lfs + 2) / 2;
-      break;
-    }
-
-    case GeometryType::THREED_CARTESIAN:
-    {
-      const size_t n = lfs + 1;
-      num_moments_ = n * n;
-      break;
-    }
-
-    default:
-      throw std::runtime_error(GetName() +
-                               ": Unable to compute number of moments from geometry type.");
   }
 }
 

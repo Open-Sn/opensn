@@ -101,7 +101,6 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_upscatter},
         ],
-        scattering_order=0,
         volumetric_sources=[mg_src],
         options={
             "verbose_ags_iterations": True,
