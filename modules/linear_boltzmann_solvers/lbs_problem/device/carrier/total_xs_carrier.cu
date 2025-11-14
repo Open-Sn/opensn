@@ -20,7 +20,8 @@ std::uint64_t
 TotalXSCarrier::ComputeSize(LBSProblem& lbs_problem)
 {
   std::uint64_t alloc_size = 0;
-  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs_map = lbs_problem.GetMatID2XSMap();
+  const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& xs_map =
+    lbs_problem.GetMatID2XSMap();
   // check if all cross sections have the same number of group
   for (const auto& [block_id, xs] : xs_map)
   {
@@ -43,7 +44,8 @@ void
 TotalXSCarrier::Assemble(LBSProblem& lbs_problem)
 {
   char* data = reinterpret_cast<char*>(host_memory_.data());
-  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs_map = lbs_problem.GetMatID2XSMap();
+  const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& xs_map =
+    lbs_problem.GetMatID2XSMap();
   // copy total cross section data
   for (std::uint64_t index = 0; const auto& [block_id, xs] : xs_map)
   {

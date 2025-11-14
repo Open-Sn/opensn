@@ -398,7 +398,7 @@ Cell::Serialize() const
   raw.Write<double>(centroid.x);
   raw.Write<double>(centroid.y);
   raw.Write<double>(centroid.z);
-  raw.Write<int>(block_id);
+  raw.Write<unsigned int>(block_id);
 
   raw.Write<CellType>(cell_type_);
   raw.Write<CellType>(cell_sub_type_);
@@ -423,7 +423,7 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
   auto cell_centroid_x = raw.Read<double>(address, &address);
   auto cell_centroid_y = raw.Read<double>(address, &address);
   auto cell_centroid_z = raw.Read<double>(address, &address);
-  auto cell_block_id = raw.Read<int>(address, &address);
+  auto cell_block_id = raw.Read<unsigned int>(address, &address);
 
   auto cell_type = raw.Read<CellType>(address, &address);
   auto cell_sub_type = raw.Read<CellType>(address, &address);

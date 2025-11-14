@@ -632,7 +632,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   }
 
   // generate the block_id map from cellZones
-  std::vector<int> block_map(ncells, 0);
+  std::vector<unsigned int> block_map(ncells, 0);
   const auto cz_path = base / "cellZones";
   const auto zones = ReadCellZones(cz_path, fname);
   if (not zones.empty())
@@ -643,7 +643,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
       {
         if (c_id >= 0 and std::cmp_less(c_id, ncells))
         {
-          block_map[c_id] = static_cast<int>(z_id);
+          block_map[c_id] = static_cast<unsigned int>(z_id);
         }
       }
     }

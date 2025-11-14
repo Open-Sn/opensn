@@ -60,7 +60,7 @@ private:
   using AngularFluxBuffer = std::vector<std::vector<double>>;
   using AdjointBuffer = std::pair<FluxMomentBuffer, AngularFluxBuffer>;
 
-  using MaterialSources = std::map<int, std::vector<double>>;
+  using MaterialSources = std::map<unsigned int, std::vector<double>>;
   using PointSources = std::vector<std::shared_ptr<PointSource>>;
   using VolumetricSources = std::vector<std::shared_ptr<VolumetricSource>>;
   using BoundarySources = std::map<uint64_t, BoundaryPreference>;
