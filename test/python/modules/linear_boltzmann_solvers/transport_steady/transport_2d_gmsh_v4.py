@@ -60,7 +60,6 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [1, 2], "xs": xs_diag},
         ],
-        scattering_order=0,
         volumetric_sources=[mg_src],
         boundary_conditions=[
             {"name": "xmin", "type": "reflecting"},

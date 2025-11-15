@@ -47,7 +47,6 @@ phys1 = DiscreteOrdinatesProblem(
     xs_map=[
         {"block_ids": [0], "xs": xs1g},
     ],
-    scattering_order=0,
     point_sources=[pt_src],
     options={
         "field_function_prefix": solver_name,

@@ -96,7 +96,6 @@ if __name__ == "__main__":
                 "xs": xs_3_170
             }
         ],
-        scattering_order=1,
         volumetric_sources=[mg_src1, mg_src2],
         boundary_conditions=[
             {"name": "xmin", "type": "isotropic", "group_strength": bsrc},

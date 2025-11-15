@@ -73,7 +73,6 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0], "xs": xs_u235},
         ],
-        scattering_order=1,
         boundary_conditions=[
             {"name": "xmin", "type": "reflecting"},
             {"name": "xmax", "type": "reflecting"},

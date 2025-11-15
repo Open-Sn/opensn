@@ -56,7 +56,6 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [100, 101], "xs": xs_diag},
         ],
-        scattering_order=1,
         boundary_conditions=[
             {"name": "left", "type": "isotropic", "group_strength": bsrc},
         ],

@@ -59,7 +59,6 @@ if __name__ == "__main__":
                 "xs": xs_3_170
             }
         ],
-        scattering_order=0,
         boundary_conditions=[],
         options={
             "max_mpi_message_size": True,

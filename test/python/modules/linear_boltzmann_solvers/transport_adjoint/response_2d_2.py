@@ -90,7 +90,6 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_1g1},
             {"block_ids": [1], "xs": xs_1g2},
         ],
-        scattering_order=0,
         point_sources=[pt_src],
     )
 
