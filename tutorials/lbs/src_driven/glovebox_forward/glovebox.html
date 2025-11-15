@@ -197,7 +197,7 @@
 <section id="Geometry">
 <h2><span class="section-number">5.3.3.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="84a72685970c4e3fb5ae798201743896" src="../../../../_images/glovebox_geom1.png" /></p>
+<p><img alt="adfc4ab4239142978067ffec593a6736" src="../../../../_images/glovebox_geom1.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -216,9 +216,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="3e2c2adc998e43089813c8a280763610" src="../../../../_images/glovebox_mesh1.png" /></p>
-<p><img alt="8b0705a83fc2464fb047af05203458da" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
-<p><img alt="44fbcbd7221a4ff1ad4d0f557e827634" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="b6d76b82f2e743799d8a8688ca8277fa" src="../../../../_images/glovebox_mesh1.png" /></p>
+<p><img alt="2692cd4129944701b70e773f6f24a69e" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="686a1ec3739d4dababb04f0253253479" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">5.3.3.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -338,7 +338,6 @@
 <li><p>mesh : The mesh</p></li>
 <li><p>num_groups : The number of energy groups</p></li>
 <li><p>groupsets : The groupsets block</p></li>
-<li><p>scattering_order : The scattering order</p></li>
 <li><p>xs_map : Cross section map</p></li>
 <li><p>volumetric_sources : The volumetric source</p></li>
 <li><p>boundary_conditions : The boundary conditions</p></li>
@@ -352,7 +351,6 @@
     <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
     <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
     <span class="n">groupsets</span><span class="o">=</span><span class="n">grpsets</span><span class="p">,</span>
-    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">xs_map</span><span class="o">=</span><span class="n">xsecs</span><span class="p">,</span>
     <span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">vol_src</span><span class="p">],</span>
     <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
@@ -520,9 +518,9 @@
 </div>
 </div>
 <p>Group 3: [1.353, 2.231] MeV</p>
-<p><img alt="7a528b26bffa432c883428eb73171fce" src="../../../../_images/glovebox_g3.png" /></p>
+<p><img alt="ef729806e2fb4282bd369a6b0c5a697c" src="../../../../_images/glovebox_g3.png" /></p>
 <p>Group 52: [2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="7ca13365e4c24d50860a724279ef9ead" src="../../../../_images/glovebox_g52.png" /></p>
+<p><img alt="2d80977974ba48d39c02b6c5e963a4be" src="../../../../_images/glovebox_g52.png" /></p>
 </section>
 <section id="Compute-Leakage">
 <h3><span class="section-number">5.3.3.5.2. </span>Compute Leakage<a class="headerlink" href="#Compute-Leakage" title="Link to this heading"></a></h3>
@@ -585,7 +583,7 @@
 <div class="line">Total Leakage YMax : 4.702092e-01</div>
 </div>
 <p>Total Leakage : 1.035658e+00</p>
-<p><img alt="d2dd7ca438044811802f04136a4762aa" src="../../../../_images/Lkg.png" /></p>
+<p><img alt="8a0767da59a54a67a55b131e24049d34" src="../../../../_images/Lkg.png" /></p>
 </section>
 <section id="Compute-Balance">
 <h3><span class="section-number">5.3.3.5.3. </span>Compute Balance<a class="headerlink" href="#Compute-Balance" title="Link to this heading"></a></h3>

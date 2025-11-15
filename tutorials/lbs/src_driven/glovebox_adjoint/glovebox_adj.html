@@ -197,7 +197,7 @@
 <section id="Geometry">
 <h2><span class="section-number">5.3.5.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="06a43a5c3e8b4d6fa875bc78d2466b31" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="c92035767ed6445c9c897f4889f180fe" src="../../../../_images/glovebox_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -216,9 +216,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="42165e639fea4a818339b4d056561d55" src="../../../../_images/glovebox_mesh.png" /></p>
-<p><img alt="291904ca02af4ceabe460987d3e05df8" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
-<p><img alt="c3e969b2caa94e0dad6543b682d398c3" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
+<p><img alt="edd93ecb14f3414bbca29d5f47ff1bb5" src="../../../../_images/glovebox_mesh.png" /></p>
+<p><img alt="b4463e5a02e9435fa04200c1a741d289" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
+<p><img alt="4660279a0db2458f82fce673315fe52d" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">5.3.5.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -345,7 +345,6 @@
 <li><p>mesh : The mesh</p></li>
 <li><p>num_groups : The number of energy groups</p></li>
 <li><p>groupsets : The groupsets block</p></li>
-<li><p>scattering_order : The scattering order</p></li>
 <li><p>xs_map : Cross section map</p></li>
 <li><p>volumetric_sources : The volumetric source</p></li>
 <li><p>boundary_conditions : The boundary conditions</p></li>
@@ -359,7 +358,6 @@
     <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
     <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
     <span class="n">groupsets</span><span class="o">=</span><span class="n">grpsets</span><span class="p">,</span>
-    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">xs_map</span><span class="o">=</span><span class="n">xsecs</span><span class="p">,</span>
     <span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">adj_src</span><span class="p">],</span>
     <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
@@ -491,14 +489,14 @@
 </div>
 <p>Detector 1:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="8e03f73a2f1b465fade5638d8d88aea6" src="../../../../_images/det1_g3.png" /></p>
+<p><img alt="6eae04ed9bb845f4b8a6c13b1006c968" src="../../../../_images/det1_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="d6b3ca267967489cbec27492181e216b" src="../../../../_images/det1_g52.png" /></p>
+<p><img alt="3c3111da76e84d809f20478ceb8cc739" src="../../../../_images/det1_g52.png" /></p>
 <p>Detector 2:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="05a31084dc4f453ba9841a8d4caaa110" src="../../../../_images/det2_g3.png" /></p>
+<p><img alt="c7e82a84d8c1484f8a3eaa39103ac10b" src="../../../../_images/det2_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="dc51cc51ce5e4c668564ca53fbd8b3c1" src="../../../../_images/det2_g52.png" /></p>
+<p><img alt="ce3c73d7fb6b49bb8ea6266390ba11bf" src="../../../../_images/det2_g52.png" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
