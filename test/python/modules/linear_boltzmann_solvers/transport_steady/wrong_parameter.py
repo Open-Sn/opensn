@@ -59,7 +59,6 @@ if __name__ == "__main__":
                 "xs": xs_3_170
             }
         ],
-        scattering_order=0,
         options={
             "wrong-parameter": True,
             "boundary_conditions": [

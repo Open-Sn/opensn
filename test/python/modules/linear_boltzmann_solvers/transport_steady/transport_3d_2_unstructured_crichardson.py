@@ -92,7 +92,6 @@ if __name__ == "__main__":
         xs_map=[
             {"block_ids": [0, 1, 2], "xs": xs_graphite},
         ],
-        scattering_order=1,
         volumetric_sources=[mg_src1, mg_src2],
         boundary_conditions=[
             {"name": "zmin", "type": "isotropic", "group_strength": bsrc},

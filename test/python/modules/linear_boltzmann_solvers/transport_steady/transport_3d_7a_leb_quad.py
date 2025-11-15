@@ -68,7 +68,6 @@ if __name__ == "__main__":
                 "gmres_restart_interval": 30
             }
         ],
-        scattering_order=0,
         volumetric_sources=[mg_src],
         xs_map=[
             {

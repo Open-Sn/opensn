@@ -64,7 +64,6 @@ if __name__ == "__main__":
             },
         ],
         xs_map=xs_map,
-        scattering_order=1,
         boundary_conditions=[
             {"name": "xmin", "type": "reflecting"},
             {"name": "ymin", "type": "reflecting"},

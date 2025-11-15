@@ -114,9 +114,6 @@ private:
                                               std::size_t num_angles,
                                               const FLUDSCommonData& common_data);
 
-  /// Computes the number of moments for the given mesher types
-  void ValidateAndComputeScatteringMoments();
-
   /**
    * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes
    * geometry into account.
