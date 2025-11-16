@@ -42,6 +42,7 @@ if __name__ == "__main__":
         mesh_file = "mesh/2D_c5g7_refined.msh"
     meshgen = FromFileMeshGenerator(filename=mesh_file)
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Create cross sections
     xss = []
