@@ -163,7 +163,7 @@ protected:
 
   std::vector<double> values_;
 
-  using Operation = std::pair<int64_t, double>;
+  using Operation = std::pair<uint64_t, double>;
   std::vector<Operation> set_cache_;
   std::vector<Operation> add_cache_;
 
