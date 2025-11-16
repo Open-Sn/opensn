@@ -42,6 +42,7 @@ if __name__ == "__main__":
         mesh_file = "mesh/2D_c5g7_refined.msh"
     meshgen = FromFileMeshGenerator(filename=mesh_file)
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
 
     # Create cross sections
     xss = []
@@ -89,7 +90,6 @@ if __name__ == "__main__":
             },
         ],
         xs_map=xs_map,
-        scattering_order=0,
         boundary_conditions=[
             {"name": "xmin", "type": "reflecting"},
             {"name": "ymin", "type": "reflecting"},
