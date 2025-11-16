@@ -20,7 +20,7 @@
   },
   {
     "file" : "sldfesq_test.py",
-    "comment": "SLDFESQ Test",
+    "comment": "SLDFEsq Test",
     "num_procs" : 1,
     "checks": [
       {
@@ -31,7 +31,7 @@
       },
       {
         "type": "IntCompareCheck",
-        "key": "SLDFESQ refined",
+        "key": "SLDFEsq refined",
         "wordnum": 3,
         "gold": 15
       },

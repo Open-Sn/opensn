@@ -187,7 +187,7 @@ void WrapQuadraturePointPhiTheta(py::module& aquad);
 void WrapQuadrature(py::module& aquad);
 void WrapProductQuadrature(py::module& aquad);
 void WrapCurvilinearProductQuadrature(py::module& aquad);
-void WrapSLDFESQuadrature(py::module& aquad);
+void WrapSLDFEsqQuadrature(py::module& aquad);
 void WrapLebedevQuadrature(py::module& aquad);
 
 /// Wrap the field function components of OpenSn.
