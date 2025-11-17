@@ -568,6 +568,26 @@ WrapLBS(py::module& slv)
     )"
   );
   do_problem.def(
+    "GetPsi",
+    [](DiscreteOrdinatesProblem& self)
+    {
+      const auto& psi = self.GetPsiNewLocal();
+      py::list psi_list;
+      for (const auto& vec : psi)
+      {
+        auto array = py::array_t<double>(static_cast<py::ssize_t>(vec.size()),
+                                         vec.data(),
+                                         py::cast(self));
+        psi_list.append(array);
+      }
+      return psi_list;
+    },
+    R"(
+    Return psi as a list of NumPy arrays (float64), using zero-copy views into the
+    underlying data.
+    )"
+  );
+  do_problem.def(
     "ComputeBalance",
     [](DiscreteOrdinatesProblem& self)
     {
@@ -585,13 +605,14 @@ WrapLBS(py::module& slv)
       // get the supported boundaries
       std::map<std::string, std::uint64_t> allowed_bd_names = grid->GetBoundaryNameMap();
       std::map<std::uint64_t, std::string> allowed_bd_ids = grid->GetBoundaryIDMap();
-      // get the boundaries to parse
+      // get the boundaries to parse, preserving user order
       std::vector<std::uint64_t> bndry_ids;
       if (bnd_names.size() > 1)
       {
         for (py::handle name : bnd_names)
         {
-          bndry_ids.push_back(allowed_bd_names.at(name.cast<std::string>()));
+          auto sname = name.cast<std::string>();
+          bndry_ids.push_back(allowed_bd_names.at(sname));
         }
       }
       else
@@ -602,14 +623,21 @@ WrapLBS(py::module& slv)
       std::map<std::uint64_t, std::vector<double>> leakage = ComputeLeakage(self, bndry_ids);
       // convert result to native Python
       py::dict result;
-      for (const auto& [bndry_id, gr_wise_leakage] : leakage)
+      for (const auto& bndry_id : bndry_ids)
       {
-        py::array_t<double> np_vector = py::array_t<double>(static_cast<long>(gr_wise_leakage.size()));
-        py::buffer_info buffer = np_vector.request();
+        const auto it = leakage.find(bndry_id);
+        if (it == leakage.end())
+          continue;
+        // construct numpy array and copy contents
+        const auto& grp_wise_leakage = it->second;
+        py::array_t<double> np_vector(py::ssize_t(grp_wise_leakage.size()));
+        auto buffer = np_vector.request();
         auto *np_vector_data = static_cast<double*>(buffer.ptr);
-        std::copy(gr_wise_leakage.begin(), gr_wise_leakage.end(), np_vector_data);
-        result[allowed_bd_ids.at(bndry_id).data()] = np_vector;
+        std::copy(grp_wise_leakage.begin(), grp_wise_leakage.end(), np_vector_data);
+        const std::string& name = allowed_bd_ids.at(bndry_id);
+        result[py::str(name)] = std::move(np_vector);
       }
+
       return result;
     },
     R"(
