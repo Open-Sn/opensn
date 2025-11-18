@@ -141,7 +141,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
       // check if the face is outgoing and its neighbor is the cell in the FAS edge
       if (orientation == FaceOrientation::OUTGOING && face.IsNeighborLocal(&grid))
       {
-        std::uint32_t neighbor_local_idx = face.GetNeighborLocalID(&grid);
+        auto neighbor_local_idx = static_cast<int>(face.GetNeighborLocalID(&grid));
         if (neighbor_local_idx == edge.second)
         {
           // record the address of all the nodes
