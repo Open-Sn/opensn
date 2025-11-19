@@ -5,6 +5,7 @@
 
 #include "framework/math/linear_solver/linear_system_solver.h"
 #include "framework/math/linear_solver/linear_solver_context.h"
+#include <petscsystypes.h>
 #include <string>
 #include <utility>
 #include <memory>
@@ -74,7 +75,7 @@ private:
   std::string PETScIterativeMethodName();
 
 protected:
-  static int LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action);
+  static PetscErrorCode LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action);
 };
 
 } // namespace opensn

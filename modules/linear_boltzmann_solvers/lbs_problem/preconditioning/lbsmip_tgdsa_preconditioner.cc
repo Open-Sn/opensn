@@ -11,7 +11,7 @@
 namespace opensn
 {
 
-int
+PetscErrorCode
 MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
   void* context = nullptr;
