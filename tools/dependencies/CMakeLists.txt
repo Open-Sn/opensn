@@ -121,10 +121,13 @@ if(ENABLE_HDF5)
     ExternalProject_Add(hdf5
       URL https://support.hdfgroup.org/releases/hdf5/v1_14/v1_14_6/downloads/hdf5-1.14.6.tar.gz
       SOURCE_DIR ${CMAKE_BINARY_DIR}/hdf5-src
-      CONFIGURE_COMMAND ${CMAKE_COMMAND} -E make_directory <SOURCE_DIR>/build && cd <SOURCE_DIR>/build &&
-                        ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} ..
-      BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR>/build make -j${JOBS}
-      INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR>/build make install
+      BINARY_DIR ${CMAKE_BINARY_DIR}/hdf5-build
+      CMAKE_ARGS
+        -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+      BUILD_COMMAND
+        ${CMAKE_COMMAND} --build <BINARY_DIR> -- -j${JOBS}
+      INSTALL_COMMAND
+        ${CMAKE_COMMAND} --build <BINARY_DIR> --target install
       LOG_DOWNLOAD  1
       LOG_UPDATE    1
       LOG_CONFIGURE 1
