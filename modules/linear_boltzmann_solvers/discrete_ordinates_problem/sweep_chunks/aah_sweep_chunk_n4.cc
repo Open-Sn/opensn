@@ -6,14 +6,14 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "caliper/cali.h"
 
-#if defined(__AVX512F__) || defined(__AVX2__)
+#if __AVX512F__ || __AVX2__
 #include <immintrin.h>
 #endif
 
 namespace opensn
 {
 
-#if defined(__AVX512F__)
+#if __AVX512F__
 // Solve 8 independent 4x4 systems: (Amat + sigma*M) * x = b
 static inline void
 AVX512_Solve(const double* __restrict Am,
@@ -113,7 +113,7 @@ AVX512_Solve(const double* __restrict Am,
 }
 #endif // __AVX512F__
 
-#if defined(__AVX2__)
+#if __AVX2__
 // Solve 4 independent 4x4 systems: (Amat + sigma*M) * x = b
 static inline void
 AVX2_Solve(const double* __restrict Am,
@@ -151,7 +151,7 @@ AVX2_Solve(const double* __restrict Am,
   // clang-format on
 
   // A = Am + sigma*M
-#if defined(__FMA__)
+#if __FMA__
   auto madd = [&sv](const __m256d& a, const __m256d& m) { return _mm256_fmadd_pd(sv, m, a); };
   auto fnmadd = [](const __m256d& x, const __m256d& y, const __m256d& z)
   { return _mm256_fnmadd_pd(x, y, z); };
@@ -372,7 +372,7 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
       const double M20 = M(2, 0), M21 = M(2, 1), M22 = M(2, 2), M23 = M(2, 3);
       const double M30 = M(3, 0), M31 = M(3, 1), M32 = M(3, 2), M33 = M(3, 3);
 
-#if defined(__AVX512F__) || defined(__AVX2__)
+#if __AVX512F__ || __AVX2__
       const double Mm[16] = {M00, M01, M02, M03,
 	                     M10, M11, M12, M13,
 			     M20, M21, M22, M23,
@@ -384,7 +384,7 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
       const double Am20 = Amat(2, 0), Am21 = Amat(2, 1), Am22 = Amat(2, 2), Am23 = Amat(2, 3);
       const double Am30 = Amat(3, 0), Am31 = Amat(3, 1), Am32 = Amat(3, 2), Am33 = Amat(3, 3);
 
-#if defined(__AVX512F__) || defined(__AVX2__)
+#if __AVX512F__ || __AVX2__
       const double Am[16] = {Am00, Am01, Am02, Am03,
                              Am10, Am11, Am12, Am13,
                              Am20, Am21, Am22, Am23,
@@ -432,13 +432,13 @@ AAHSweepChunk::CPUSweep_N4(AngleSet& angle_set)
         size_t block_len = g1 - g0;
         size_t k = 0;
 
-#if defined(__AVX512F__)
+#if __AVX512F__
         // Vectorized solves of batches of 8 groups
         for (; k + 8 <= block_len; k += 8)
           AVX512_Solve(Am, Mm, &sigma_block[k], &b[(g0 + k) * 4]);
 #endif
 
-#if defined(__AVX2__)
+#if __AVX2__
         for (; k + 4 <= block_len; k += 4)
           AVX2_Solve(Am, Mm, &sigma_block[k], &b[(g0 + k) * 4]);
 #endif

@@ -15,9 +15,9 @@ namespace opensn
 
 // experimental, to be moved to a higher level header file
 static constexpr size_t simd_width =
-#if defined(__AVX512F__)
+#if __AVX512F__
   8; // 8 lanes (512-bit, doubles)
-#elif defined(__AVX2__)
+#elif __AVX2__
   4; // 4 lanes (256-bit, doubles)
 #else
   1; // scalar

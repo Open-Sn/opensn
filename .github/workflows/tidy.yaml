@@ -19,11 +19,11 @@ jobs:
       - name: build
         shell: bash
         run: |
-          module load python3/3.12.3 opensn/clang/19
+          module load python3/3.12.3 opensn/clang/21
           mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
       - name: clang-tidy
         shell: bash
         run: |
-          module load python3/3.12.3 opensn/clang/19
-          tools/developer/run-clang-tidy.sh -extra-arg-before=--gcc-toolchain=/opt/local/opensn/gcc/13.3.0/gcc-13.3.0 \
-                                            -extra-arg=-I/opt/local/opensn/clang/19.1.5/mpich-4.3.0b1/include
+          module load python3/3.12.3 opensn/clang/21
+          tools/developer/run-clang-tidy.sh -extra-arg-before=--gcc-toolchain=/opt/local/opensn/gcc/14.2.0/gcc-14.2.0 \
+                                            -extra-arg=-I/opt/local/opensn/clang/21.1.0/mpich-4.3.2/include
