@@ -91,6 +91,7 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/linear_solver/linear_system_solver.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/linear_solver/linear_solver_context.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscsystypes.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
@@ -160,7 +161,7 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">PETScIterativeMethodName</span><span class="p">();</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">LinearSolverMatrixAction</span><span class="p">(</span><span class="n">Mat</span><span class="w"> </span><span class="n">matrix</span><span class="p">,</span><span class="w"> </span><span class="n">Vec</span><span class="w"> </span><span class="n">vector</span><span class="p">,</span><span class="w"> </span><span class="n">Vec</span><span class="w"> </span><span class="n">action</span><span class="p">);</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">PetscErrorCode</span><span class="w"> </span><span class="n">LinearSolverMatrixAction</span><span class="p">(</span><span class="n">Mat</span><span class="w"> </span><span class="n">matrix</span><span class="p">,</span><span class="w"> </span><span class="n">Vec</span><span class="w"> </span><span class="n">vector</span><span class="p">,</span><span class="w"> </span><span class="n">Vec</span><span class="w"> </span><span class="n">action</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

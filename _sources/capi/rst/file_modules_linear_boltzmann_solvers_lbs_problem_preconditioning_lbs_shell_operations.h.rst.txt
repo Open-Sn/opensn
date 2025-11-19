@@ -50,9 +50,9 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a1f82ae57c3fa533fa44a3cf862856ef1`
+- :ref:`exhale_function_namespaceopensn_1a226c429ee6072808bb5477115d9095e5`
 
-- :ref:`exhale_function_namespaceopensn_1a496bae21bc918b6ecff05d55e85b9ce4`
+- :ref:`exhale_function_namespaceopensn_1aeb8e1f0e619646e3e0935f309be9ae64`
 
-- :ref:`exhale_function_namespaceopensn_1a3e878b4075afbcf9ca067b992d0a59f3`
+- :ref:`exhale_function_namespaceopensn_1a6090b20e22ebb8aa4c54f5998cc2b0c1`
 

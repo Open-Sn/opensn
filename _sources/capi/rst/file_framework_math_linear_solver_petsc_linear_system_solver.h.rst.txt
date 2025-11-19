@@ -38,6 +38,8 @@ Includes
 
 - ``petscksp.h``
 
+- ``petscsystypes.h``
+
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 
 - ``utility``
