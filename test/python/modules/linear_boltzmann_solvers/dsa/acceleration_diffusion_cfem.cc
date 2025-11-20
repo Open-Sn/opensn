@@ -20,7 +20,7 @@ namespace unit_tests
 void
 acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
 {
-  using MatID2XSMap = std::map<int, Multigroup_D_and_sigR>;
+  using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
   opensn::log.Log() << "SimTest92_DSA";
 
   opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();

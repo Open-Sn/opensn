@@ -36,7 +36,7 @@ public:
              const std::vector<double>& densities,
              const std::vector<double>& source_moments,
              const LBSGroupset& groupset,
-             const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+             const BlockID2XSMap& xs,
              int num_moments,
              int max_num_cell_dofs,
              int min_num_cell_dofs)
@@ -94,7 +94,7 @@ protected:
   const std::vector<double>& densities_;
   const std::vector<double>& source_moments_;
   const LBSGroupset& groupset_;
-  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs_;
+  const BlockID2XSMap& xs_;
   const int num_moments_;
   const int max_num_cell_dofs_;
   const int min_num_cell_dofs_;

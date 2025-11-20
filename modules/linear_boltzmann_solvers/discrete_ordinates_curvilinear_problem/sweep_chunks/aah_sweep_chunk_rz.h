@@ -24,7 +24,7 @@ public:
                   std::vector<double>& destination_psi,
                   const std::vector<double>& source_moments,
                   LBSGroupset& groupset,
-                  const std::map<int, std::shared_ptr<MultiGroupXS>>& xs,
+                  const BlockID2XSMap& xs,
                   int num_moments,
                   int max_num_cell_dofs,
                   int min_num_cell_dofs);

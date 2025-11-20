@@ -28,7 +28,7 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
     auto bcs = TranslateBCs(sweep_boundaries, vaccum_bcs_are_dirichlet);
 
     // Make xs map
-    const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
+    const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
     auto matid_2_mgxs_map =
       PackGroupsetXS(block_id_to_xs_map, groupset.groups.front().id, groupset.groups.back().id);
 
@@ -72,7 +72,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
-  const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
+  const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
 
   const int gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
