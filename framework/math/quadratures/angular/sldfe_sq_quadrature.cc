@@ -8,15 +8,44 @@
 #include "framework/runtime.h"
 #include <algorithm>
 #include <cstddef>
-#include <map>
+#include <limits>
+#include <stdexcept>
 
 namespace opensn
 {
 
-void
-SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
+SLDFEsqQuadrature::SLDFEsqQuadrature(int level,
+                                     unsigned int dimension,
+                                     unsigned int scattering_order)
+  : AngularQuadrature(AngularQuadratureType::SLDFEsq, dimension, scattering_order), level_(level)
 {
-  initial_level_ = level;
+  if (level < 0)
+    throw std::invalid_argument("SLDFEsqQuadrature: level must be non-negative");
+}
+
+std::array<std::array<Vector3, 4>, 4>
+SLDFEsqQuadrature::BuildSubSquares(const std::array<Vector3, 4>& vertices_xy_tilde,
+                                   const Vector3& centroid)
+{
+  const auto mid01 = 0.5 * (vertices_xy_tilde[0] + vertices_xy_tilde[1]);
+  const auto mid12 = 0.5 * (vertices_xy_tilde[1] + vertices_xy_tilde[2]);
+  const auto mid23 = 0.5 * (vertices_xy_tilde[2] + vertices_xy_tilde[3]);
+  const auto mid03 = 0.5 * (vertices_xy_tilde[0] + vertices_xy_tilde[3]);
+
+  std::array<std::array<Vector3, 4>, 4> sub_squares{};
+  sub_squares[0] = {vertices_xy_tilde[0], mid01, centroid, mid03};
+  sub_squares[1] = {mid01, vertices_xy_tilde[1], mid12, centroid};
+  sub_squares[2] = {centroid, mid12, vertices_xy_tilde[2], mid23};
+  sub_squares[3] = {mid03, centroid, mid23, vertices_xy_tilde[3]};
+
+  return sub_squares;
+}
+
+void
+SLDFEsqQuadrature::GenerateRefinement()
+{
+  initial_octant_SQs_.clear();
+  deployed_SQs.clear();
 
   // Define constants
   const Vector3 ihat = Vector3(1.0, 0.0, 0.0);
@@ -37,71 +66,42 @@ SimplifiedLDFESQ::Quadrature::GenerateInitialRefinement(int level)
   Matrix3x3 Rzface;
   Rzface.SetDiagonalVec(1.0, 1.0, 1.0);
 
-  // Set translation vectors for cube faces
-  auto txface = a * ihat;
-  auto tyface = a * jhat;
-  auto tzface = a * khat;
+  const std::array<std::pair<Matrix3x3, Vector3>, 3> face_transforms = {
+    std::make_pair(Rxface, SLDFEsqQuadrature::a_ * ihat),
+    std::make_pair(Ryface, SLDFEsqQuadrature::a_ * jhat),
+    std::make_pair(Rzface, SLDFEsqQuadrature::a_ * khat)};
 
   // Generate general diagonal spacings in xy-tilde coordinates
-  GenerateDiagonalSpacings(level);
+  GenerateDiagonalSpacings();
 
   // Generate vertices for each face of inscribed cube
-  GenerateReferenceFaceVertices(Rxface, txface, level);
-  GenerateReferenceFaceVertices(Ryface, tyface, level);
-  GenerateReferenceFaceVertices(Rzface, tzface, level);
+  for (const auto& [rotation, translation] : face_transforms)
+    GenerateReferenceFaceVertices(rotation, translation);
 
-  // Compute areas
-  double total_area = 0.0;
-  double area_max = -100.0;
-  double area_min = 100.0;
-  bool negative_weights_found = false;
-  for (auto& sq : initial_octant_SQs_)
-  {
-    double area = 0.0;
-    for (int i = 0; i < 4; ++i)
-    {
-      area += sq.sub_sqr_weights[i];
-      if (area < 0.0)
-        negative_weights_found = true;
-    }
-    total_area += area;
-    area_max = std::fmax(area_max, area);
-    area_min = std::fmin(area_min, area);
-  }
-  double area_avg = total_area / static_cast<double>(initial_octant_SQs_.size());
-
-  if (negative_weights_found)
-    log.Log0Warning() << "SLDFESQ Quadrature detected negative weights.";
-
-  // Print Statistics
-  log.Log0Verbose1() << "Number of dirs/octant                    : " << initial_octant_SQs_.size();
-  log.Log0Verbose1() << "Total weight beofre normalization        : " << total_area;
-  log.Log0Verbose1() << "Total weight/(pi/2) before normalization : " << total_area / M_PI_2;
-  log.Log0Verbose1() << "Area Max/Min                             : " << area_max / area_min;
-  log.Log0Verbose1() << "Area Max/Avg                             : " << area_max / area_avg;
-
+  // Generate values for all octants
   CopyToAllOctants();
 
   // Populate quadriture points
   PopulateQuadratureAbscissae();
 
+  // Build m2d and d2m operators
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
 }
 
 void
-SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
+SLDFEsqQuadrature::GenerateDiagonalSpacings()
 {
   // Define constants
-  const int Ns = (level + 1); // Number of subdivisions
-  const int Np = Ns + 1;      // Number of diagonal points
+  const int Ns = (level_ + 1); // Number of subdivisions
+  const int Np = Ns + 1;       // Number of diagonal points
 
   const auto ihat = Vector3(1.0, 0.0, 0.0);
 
   // Define rotation matrix
   Matrix3x3 Rihat;
-  auto n = Vector3(0.0, -1.0 / sqrt(2), 1.0 / sqrt(2));
+  auto n = Vector3(0.0, -1.0 / std::sqrt(2), 1.0 / std::sqrt(2));
   const auto& t = ihat;
   auto b = n.Cross(t).Normalized();
 
@@ -111,14 +111,13 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
 
   // Generate p-points
   std::vector<Vector3> p_points(Np);
-  double dphi = acos(a) / Ns;
+  double dphi = acos(a_) / Ns;
   double alpha = 0.10005;
   double beta = 1.0185;
 
   for (int i = 0; i < Np; ++i)
   {
     double phi = i * dphi * (1.0 + alpha * (cos(beta * M_PI_2 * i / Ns) - cos(beta * M_PI_2)));
-
     p_points[i] = Rihat * Vector3(cos(phi), sin(phi), 0.0);
   }
 
@@ -126,10 +125,9 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
   std::vector<Vector3> tilde_points(Np);
   for (int i = 0; i < Np; ++i)
   {
-    double R = a / p_points[i].x;
+    double R = SLDFEsqQuadrature::a_ / p_points[i].x;
     double x_tilde = p_points[i].y * R;
     double y_tilde = p_points[i].z * R;
-
     tilde_points[i] = Vector3(x_tilde, y_tilde, 0.0);
   }
 
@@ -137,12 +135,11 @@ SimplifiedLDFESQ::Quadrature::GenerateDiagonalSpacings(int level)
 }
 
 void
-SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rotation_matrix,
-                                                            const Vector3& translation,
-                                                            int level)
+SLDFEsqQuadrature::GenerateReferenceFaceVertices(const Matrix3x3& rotation_matrix,
+                                                 const Vector3& translation)
 {
-  int Ns = (level + 1); // Number of subdivisions
-  int Np = Ns + 1;      // Number of diagonal points
+  int Ns = (level_ + 1); // Number of subdivisions
+  int Np = Ns + 1;       // Number of diagonal points
 
   GaussLegendreQuadrature legendre(QuadratureOrder::THIRTYSECOND);
 
@@ -206,21 +203,20 @@ SimplifiedLDFESQ::Quadrature::GenerateReferenceFaceVertices(const Matrix3x3& rot
       DevelopSQLDFEValues(sq, legendre);
 
       initial_octant_SQs_.push_back(sq);
-    } // for j
-  } // for i
+    }
+  }
 }
 
 void
-SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
-  SphericalQuadrilateral& sq,
-  GaussLegendreQuadrature& legendre,
-  Vector3& sq_xy_tilde_centroid,
-  std::array<Vector3, 4>& radii_vectors_xy_tilde,
-  std::array<double, 4>& sub_sub_sqr_areas)
+SLDFEsqQuadrature::EmpiricalQPOptimization(SphericalQuadrilateral& sq,
+                                           GaussLegendreQuadrature& legendre,
+                                           Vector3& sq_xy_tilde_centroid,
+                                           std::array<Vector3, 4>& radii_vectors_xy_tilde,
+                                           std::array<double, 4>& sub_sub_sqr_areas)
 {
-  FunctionWeightFromRho ComputeWeights(
-    *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
-  double d = 1.0 / sqrt(3.0);
+  auto ComputeWeights =
+    FunctionWeightFromRho(*this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
+  double d = 1.0 / std::sqrt(3.0);
   Vector<double> rho({d, d, d, d});
 
   auto weights = ComputeWeights(rho);
@@ -229,25 +225,22 @@ SimplifiedLDFESQ::Quadrature::EmpiricalQPOptimization(
   {
     auto xy_tilde = sq_xy_tilde_centroid + rho(i) * radii_vectors_xy_tilde[i];
     auto xyz_prime = sq.rotation_matrix * xy_tilde + sq.translation_vector;
-
     sq.sub_sqr_points[i] = xyz_prime.Normalized();
     sq.sub_sqr_weights[i] = weights[i];
   }
 }
 
 void
-SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
-                                                     GaussLegendreQuadrature& legendre,
-                                                     Vector3& sq_xy_tilde_centroid,
-                                                     std::array<Vector3, 4>& radii_vectors_xy_tilde,
-                                                     std::array<double, 4>& sub_sub_sqr_areas)
+SLDFEsqQuadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
+                                          GaussLegendreQuadrature& legendre,
+                                          Vector3& sq_xy_tilde_centroid,
+                                          std::array<Vector3, 4>& radii_vectors_xy_tilde,
+                                          std::array<double, 4>& sub_sub_sqr_areas)
 {
   auto& SA_i = sub_sub_sqr_areas;
-
-  // Declare algorithm utilities
-  FunctionWeightFromRho ComputeWeights(
-    *this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
-  double d = 1.0 / sqrt(3.0);
+  auto ComputeWeights =
+    FunctionWeightFromRho(*this, sq_xy_tilde_centroid, radii_vectors_xy_tilde, sq, legendre);
+  double d = 1.0 / std::sqrt(3.0);
   Vector<double> rho({d, d, d, d});
   double epsilon = 1.0e-1;
   Vector<double> delta({epsilon, epsilon, epsilon, epsilon});
@@ -256,14 +249,8 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
   // Compute initial weights
   auto weights = ComputeWeights(rho);
 
-  // Apply algorithm
-  log.Log() << "=================================================== ";
   for (int k = 0; k < 150; ++k) // iteration
   {
-    //    constexpr int N = 4;
-    //    double fac = 1.0/N;
-    //    std::array<std::array<double,4>,N> weights_offset;
-
     auto weights_offset_pos = ComputeWeights(Add(rho, delta));
     auto weights_offset_neg = ComputeWeights(Subtract(rho, delta));
 
@@ -276,13 +263,6 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
       drho_df(i) = delta(i) / slope;
 
       double delta_rho = 1.0 * drho_df(i) * (SA_i[i] - weights[i]);
-
-      //      delta = {0.0,0.0,0.0,0.0}; delta[i] = epsilon;
-      //      auto weights_offset_pos = ComputeWeights(rho + delta);
-      //      double slope = (weights_offset_pos[i]-weights[i])/epsilon;
-      //
-      //      double delta_rho = 10.0*slope*(SA_i[i]-weights[i]);
-
       rho(i) += delta_rho;
       rho(i) = std::fmax(0.0, rho(i));
       rho(i) = std::fmin(1.0, rho(i));
@@ -291,27 +271,10 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
 
     // Update weights
     weights = ComputeWeights(rho);
-    double change = 0.0;
-    for (int i = 0; i < 4; ++i)
-      change = std::fabs((weights[i] - SA_i[i]) / weights[i]);
-
-    log.Log() << "Weights: " << weights[0] << " " << weights[1] << " " << weights[2] << " "
-              << weights[3] << " ";
-    log.Log() << "Areas: " << SA_i[0] << " " << SA_i[1] << " " << SA_i[2] << " " << SA_i[3] << "\n";
-    log.Log() << "rhos: " << rho(0) << " " << rho(1) << " " << rho(2) << " " << rho(3) << "\n";
-    log.Log() << k << " " << std::fabs(change);
-    log.Log() << "  ";
 
     if (rho_change_total < 1.0e-2)
       break;
-    //    if (std::fabs(change) < 1.0e-2) break;
   }
-  //  log.Log() << "rhos: "
-  //                     << rho[0]/(1.0/sqrt(3.0)) << " "
-  //                     << rho[1]/(1.0/sqrt(3.0)) << " "
-  //                     << rho[2]/(1.0/sqrt(3.0)) << " "
-  //                     << rho[3]/(1.0/sqrt(3.0)) << "\n";
-
   weights = ComputeWeights(rho);
 
   for (int i = 0; i < 4; ++i)
@@ -324,8 +287,8 @@ SimplifiedLDFESQ::Quadrature::IsolatedQPOptimization(SphericalQuadrilateral& sq,
 }
 
 void
-SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
-                                                  GaussLegendreQuadrature& legendre)
+SLDFEsqQuadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
+                                       GaussLegendreQuadrature& legendre)
 {
   // Determine sq tilde center
   Vector3 sq_tilde_center;
@@ -334,29 +297,11 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
   sq_tilde_center /= 4;
 
   // Determine off-set vectors
-  auto& vc = sq_tilde_center;
   std::array<Vector3, 4> vctoi;
   for (int v = 0; v < 4; ++v)
-    vctoi[v] = sq.vertices_xy_tilde[v] - vc;
+    vctoi[v] = sq.vertices_xy_tilde[v] - sq_tilde_center;
 
-  // Determine sub-sub-squares
-  std::array<std::array<Vector3, 4>, 4> sub_sub_square_xy_tilde;
-  std::map<std::string, Vector3> vm;
-
-  for (int v = 0; v < 4; ++v)
-    vm[std::to_string(v)] = sq.vertices_xy_tilde[v];
-
-  vm["01"] = 0.5 * (sq.vertices_xy_tilde[0] + sq.vertices_xy_tilde[1]);
-  vm["12"] = 0.5 * (sq.vertices_xy_tilde[1] + sq.vertices_xy_tilde[2]);
-  vm["23"] = 0.5 * (sq.vertices_xy_tilde[2] + sq.vertices_xy_tilde[3]);
-  vm["03"] = 0.5 * (sq.vertices_xy_tilde[0] + sq.vertices_xy_tilde[3]);
-  vm["c"] = sq_tilde_center;
-
-  auto& sst = sub_sub_square_xy_tilde;
-  sst[0] = {vm["0"], vm["01"], vm["c"], vm["03"]};
-  sst[1] = {vm["01"], vm["1"], vm["12"], vm["c"]};
-  sst[2] = {vm["c"], vm["12"], vm["2"], vm["23"]};
-  sst[3] = {vm["03"], vm["c"], vm["23"], vm["3"]};
+  const auto sub_sub_square_xy_tilde = BuildSubSquares(sq.vertices_xy_tilde, sq_tilde_center);
 
   // Determine sub-sub-square xyz
   std::array<std::array<Vector3, 4>, 4> sub_sub_square_xyz;
@@ -372,24 +317,24 @@ SimplifiedLDFESQ::Quadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
 
   // Apply optimization
   if (qp_optimization_type == QuadraturePointOptimization::CENTROID)
+  {
     for (int i = 0; i < 4; ++i)
     {
       for (int j = 0; j < 4; ++j)
         sq.sub_sqr_points[i] += sub_sub_square_xyz[i][j];
       sq.sub_sqr_points[i] /= 4.0;
       sq.sub_sqr_points[i].Normalize();
-
       sq.sub_sqr_weights[i] = SA_i[i];
-    } // for i
+    }
+  }
   else if (qp_optimization_type == QuadraturePointOptimization::EMPIRICAL)
-    EmpiricalQPOptimization(sq, legendre, vc, vctoi, SA_i);
+    EmpiricalQPOptimization(sq, legendre, sq_tilde_center, vctoi, SA_i);
   else if (qp_optimization_type == QuadraturePointOptimization::ISOLATED)
-    IsolatedQPOptimization(sq, legendre, vc, vctoi, SA_i);
+    IsolatedQPOptimization(sq, legendre, sq_tilde_center, vctoi, SA_i);
 }
 
 double
-SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
-  std::array<Vector3, 4>& vertices_xyz)
+SLDFEsqQuadrature::ComputeSphericalQuadrilateralArea(std::array<Vector3, 4>& vertices_xyz)
 {
   const auto num_verts = 4;
 
@@ -414,16 +359,12 @@ SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
     auto GetSphericalExcess = [](const Vector3& vA, const Vector3& vB, const Vector3& vC)
     {
       const auto& n = vA;
-
       auto vAB = vB - vA;
       auto vAC = vC - vA;
-
       auto tAB = vAB.Cross(n).Normalized();
       auto tAC = vAC.Cross(n).Normalized();
-
       auto bAB = n.Cross(tAB).Normalized();
       auto bAC = n.Cross(tAC).Normalized();
-
       double mu = std::max(-1.0, std::fmin(1.0, bAB.Dot(bAC)));
 
       return std::fabs(acos(mu));
@@ -439,11 +380,10 @@ SimplifiedLDFESQ::Quadrature::ComputeSphericalQuadrilateralArea(
 }
 
 std::array<double, 4>
-SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
-  const SphericalQuadrilateral& sq,
-  std::array<Vector<double>, 4>& shape_coeffs,
-  const std::vector<Vector3>& legendre_qpoints,
-  const std::vector<double>& legendre_qweights)
+SLDFEsqQuadrature::IntegrateLDFEShapeFunctions(const SphericalQuadrilateral& sq,
+                                               std::array<Vector<double>, 4>& shape_coeffs,
+                                               const std::vector<Vector3>& legendre_qpoints,
+                                               const std::vector<double>& legendre_qweights)
 {
   // Lambda to evaluate LDFE shape func
   auto EvaluateShapeFunction = [](Vector<double>& shape_coeffs, Vector3& mu_eta_xi)
@@ -485,194 +425,119 @@ SimplifiedLDFESQ::Quadrature::IntegrateLDFEShapeFunctions(
       auto xyz = (sq.rotation_matrix * xy_tilde + sq.translation_vector).Normalized();
 
       // Determine Jacobian
-      double r = sqrt(x_tilde * x_tilde + y_tilde * y_tilde + a * a);
-      double detJ = (a / (r * r * r)) * dx_tilde * dy_tilde / 4.0;
+      double r = std::sqrt(x_tilde * x_tilde + y_tilde * y_tilde +
+                           SLDFEsqQuadrature::a_ * SLDFEsqQuadrature::a_);
+      double detJ = (SLDFEsqQuadrature::a_ / (r * r * r)) * dx_tilde * dy_tilde / 4.0;
 
       // Evaluate shape funcs and add to integral
       for (int k = 0; k < 4; ++k)
         integral[k] += EvaluateShapeFunction(shape_coeffs[k], xyz) * detJ * legendre_qweights[i] *
                        legendre_qweights[j];
-    } // for j
-  } // for i
+    }
+  }
 
   return integral;
 }
 
 void
-SimplifiedLDFESQ::Quadrature::CopyToAllOctants()
+SLDFEsqQuadrature::CopyToAllOctants()
 {
-  deployed_SQs.clear(); // just to be sure
+  deployed_SQs.clear();
   deployed_SQs.reserve(initial_octant_SQs_.size() * 8);
 
-  // Define modifying variables
-  Vector3 octant_mod(1.0, 1.0, 1.0);
+  // clang-format off
+  const std::array<Vector3, 8> octant_modifiers = {Vector3( 1.0,  1.0,  1.0),
+                                                   Vector3(-1.0,  1.0,  1.0),
+                                                   Vector3(-1.0, -1.0,  1.0),
+                                                   Vector3( 1.0, -1.0,  1.0),
+                                                   Vector3( 1.0,  1.0, -1.0),
+                                                   Vector3(-1.0,  1.0, -1.0),
+                                                   Vector3(-1.0, -1.0, -1.0),
+                                                   Vector3( 1.0, -1.0, -1.0)};
+  // clang-format on
 
-  // Top NE octant, no change
-  for (auto& sq : initial_octant_SQs_)
-    deployed_SQs.push_back(sq);
-
-  // Top NW octant
-  octant_mod = Vector3(-1.0, 1.0, 1.0);
-  for (auto& sq : initial_octant_SQs_)
+  auto ApplyModifier = [](SphericalQuadrilateral sq, const Vector3& modifier)
   {
-    SphericalQuadrilateral new_sq = sq;
+    for (auto& xyz : sq.vertices_xyz)
+      xyz = xyz * modifier;
+    sq.centroid_xyz = sq.centroid_xyz * modifier;
+    for (auto& xyz : sq.sub_sqr_points)
+      xyz = xyz * modifier;
+    sq.octant_modifier = modifier;
+    return sq;
+  };
 
-    for (auto& xyz : new_sq.vertices_xyz)
-      xyz = xyz * octant_mod;
-    auto& vcc = new_sq.centroid_xyz;
-    vcc = vcc * octant_mod;
-    for (auto& xyz : new_sq.sub_sqr_points)
-      xyz = xyz * octant_mod;
-    new_sq.octant_modifier = octant_mod;
-
-    deployed_SQs.push_back(new_sq);
-  }
-
-  // Top SW octant
-  octant_mod = Vector3(-1.0, -1.0, 1.0);
-  for (auto& sq : initial_octant_SQs_)
-  {
-    SphericalQuadrilateral new_sq = sq;
-
-    for (auto& xyz : new_sq.vertices_xyz)
-      xyz = xyz * octant_mod;
-    auto& vcc = new_sq.centroid_xyz;
-    vcc = vcc * octant_mod;
-    for (auto& xyz : new_sq.sub_sqr_points)
-      xyz = xyz * octant_mod;
-    new_sq.octant_modifier = octant_mod;
-
-    deployed_SQs.push_back(new_sq);
-  }
-
-  // Top SE octant
-  octant_mod = Vector3(1.0, -1.0, 1.0);
-  for (auto& sq : initial_octant_SQs_)
-  {
-    SphericalQuadrilateral new_sq = sq;
-
-    for (auto& xyz : new_sq.vertices_xyz)
-      xyz = xyz * octant_mod;
-    auto& vcc = new_sq.centroid_xyz;
-    vcc = vcc * octant_mod;
-    for (auto& xyz : new_sq.sub_sqr_points)
-      xyz = xyz * octant_mod;
-    new_sq.octant_modifier = octant_mod;
-
-    deployed_SQs.push_back(new_sq);
-  }
-
-  // Bot NE octant
-  octant_mod = Vector3(1.0, 1.0, -1.0);
-  for (auto& sq : initial_octant_SQs_)
-  {
-    SphericalQuadrilateral new_sq = sq;
-
-    for (auto& xyz : new_sq.vertices_xyz)
-      xyz = xyz * octant_mod;
-    auto& vcc = new_sq.centroid_xyz;
-    vcc = vcc * octant_mod;
-    for (auto& xyz : new_sq.sub_sqr_points)
-      xyz = xyz * octant_mod;
-    new_sq.octant_modifier = octant_mod;
-
-    deployed_SQs.push_back(new_sq);
-  }
-
-  // Bot NW octant
-  octant_mod = Vector3(-1.0, 1.0, -1.0);
-  for (auto& sq : initial_octant_SQs_)
-  {
-    SphericalQuadrilateral new_sq = sq;
-
-    for (auto& xyz : new_sq.vertices_xyz)
-      xyz = xyz * octant_mod;
-    auto& vcc = new_sq.centroid_xyz;
-    vcc = vcc * octant_mod;
-    for (auto& xyz : new_sq.sub_sqr_points)
-      xyz = xyz * octant_mod;
-    new_sq.octant_modifier = octant_mod;
-
-    deployed_SQs.push_back(new_sq);
-  }
-
-  // Bot SW octant
-  octant_mod = Vector3(-1.0, -1.0, -1.0);
-  for (auto& sq : initial_octant_SQs_)
-  {
-    SphericalQuadrilateral new_sq = sq;
-
-    for (auto& xyz : new_sq.vertices_xyz)
-      xyz = xyz * octant_mod;
-    auto& vcc = new_sq.centroid_xyz;
-    vcc = vcc * octant_mod;
-    for (auto& xyz : new_sq.sub_sqr_points)
-      xyz = xyz * octant_mod;
-    new_sq.octant_modifier = octant_mod;
-
-    deployed_SQs.push_back(new_sq);
-  }
-
-  // Bot SE octant
-  octant_mod = Vector3(1.0, -1.0, -1.0);
-  for (auto& sq : initial_octant_SQs_)
-  {
-    SphericalQuadrilateral new_sq = sq;
-
-    for (auto& xyz : new_sq.vertices_xyz)
-      xyz = xyz * octant_mod;
-    auto& vcc = new_sq.centroid_xyz;
-    vcc = vcc * octant_mod;
-    for (auto& xyz : new_sq.sub_sqr_points)
-      xyz = xyz * octant_mod;
-    new_sq.octant_modifier = octant_mod;
-
-    deployed_SQs.push_back(new_sq);
-  }
-
-  // Make history entry
-  deployed_SQs_history_.push_back(deployed_SQs);
+  for (const auto& modifier : octant_modifiers)
+    for (const auto& sq : initial_octant_SQs_)
+      deployed_SQs.push_back(ApplyModifier(sq, modifier));
 }
 
 void
-SimplifiedLDFESQ::Quadrature::PopulateQuadratureAbscissae()
+SLDFEsqQuadrature::PopulateQuadratureAbscissae()
 {
   abscissae.clear();
   weights.clear();
   omegas.clear();
-  double weight_sum = 0.0;
+  raw_weight_sum_ = 0.0;
+
   for (const auto& sq : deployed_SQs)
   {
     for (int i = 0; i < 4; ++i)
     {
       const auto& omega = sq.sub_sqr_points[i];
       const double weight = sq.sub_sqr_weights[i];
-      weight_sum += weight;
-      double theta = acos(omega.z);
-      double phi = acos(omega.x / sin(theta));
+      const double theta = std::acos(omega.z);
+      double phi = std::acos(omega.x / std::sin(theta));
 
-      if (omega.y / sin(theta) < 0.0)
+      if (omega.y / std::sin(theta) < 0.0)
         phi = 2.0 * M_PI - phi;
 
-      const auto abscissa = QuadraturePointPhiTheta(phi, theta);
+      if (not FilterQuadraturePoint(omega))
+        continue;
 
-      abscissae.push_back(abscissa);
+      raw_weight_sum_ += weight;
+      abscissae.emplace_back(phi, theta);
       weights.push_back(weight);
       omegas.push_back(omega);
     }
   }
 
-  // Renormalize weights to 1.0
+  // Normalize weights to 1.0
   for (auto& w : weights)
-    w /= weight_sum;
+    w /= raw_weight_sum_;
+}
+
+bool
+SLDFEsqQuadrature::FilterQuadraturePoint(const Vector3& omega) const
+{
+  return true;
+}
+
+SLDFEsqQuadrature3DXYZ::SLDFEsqQuadrature3DXYZ(int level, unsigned int scattering_order)
+  : SLDFEsqQuadrature(level, 3, scattering_order)
+{
+  GenerateRefinement();
+}
+
+SLDFEsqQuadrature2DXY::SLDFEsqQuadrature2DXY(int level, unsigned int scattering_order)
+  : SLDFEsqQuadrature(level, 2, scattering_order)
+{
+  GenerateRefinement();
+}
+
+bool
+SLDFEsqQuadrature2DXY::FilterQuadraturePoint(const Vector3& omega) const
+{
+  return omega.z > 0.0;
 }
 
 double
-SimplifiedLDFESQ::Quadrature::RiemannIntegral(BaseFunctor* F, int Ni)
+SLDFEsqQuadrature::RiemannIntegral(BaseFunctor* F, int Ni)
 {
   double dangle = M_PI_2 / Ni;
   double dtheta = dangle;
   double dphi = dangle;
+
   double I_riemann = 0.0;
   for (int i = 0; i < Ni; ++i)
   {
@@ -683,41 +548,38 @@ SimplifiedLDFESQ::Quadrature::RiemannIntegral(BaseFunctor* F, int Ni)
       double mu_r = cos(phi) * sin(theta);
       double eta_r = sin(phi) * sin(theta);
       double xi_r = cos(theta);
-
       double fval = (*F)(mu_r, eta_r, xi_r);
-
       I_riemann += fval * sin(theta) * dtheta * dphi;
-    } // for j
-  } // for i
+    }
+  }
 
   return I_riemann;
 }
 
 double
-SimplifiedLDFESQ::Quadrature::QuadratureSSIntegral(BaseFunctor* F)
+SLDFEsqQuadrature::QuadratureSSIntegral(BaseFunctor* F)
 {
   double I_quadrature = 0.0;
   for (const auto& sq : initial_octant_SQs_)
+  {
     for (int i = 0; i < 4; ++i)
     {
       double mu = sq.sub_sqr_points[i][2];
       double theta = acos(mu);
       double phi = acos(sq.sub_sqr_points[i][0] / sin(theta));
-
       double mu_r = cos(phi) * sin(theta);
       double eta_r = sin(phi) * sin(theta);
       double xi_r = cos(theta);
-
       double fval = (*F)(mu_r, eta_r, xi_r);
-
       I_quadrature += sq.sub_sqr_weights[i] * fval;
     }
+  }
 
   return I_quadrature;
 }
 
 void
-SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution, int RiemannN)
+SLDFEsqQuadrature::TestIntegration(int test_case, double ref_solution, int RiemannN)
 {
   struct Case1 : public BaseFunctor
   {
@@ -749,7 +611,6 @@ SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution
     {
       double theta = acos(xi);
       double phi = acos(mu / sin(theta));
-
       return Ylm(15, 3, phi, theta);
     }
   };
@@ -779,12 +640,10 @@ SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution
 
   const auto Nd = initial_octant_SQs_.size() * 4;
   const int NR = RiemannN;
-
-  double h = 1.0 / sqrt(8.0 * static_cast<double>(Nd));
+  double h = 1.0 / std::sqrt(8.0 * static_cast<double>(Nd));
   double I_riemann = ref_solution;
   if (NR > 0)
     I_riemann = std::fabs(RiemannIntegral(F, NR));
-
   double I_quadrature = std::fabs(QuadratureSSIntegral(F));
 
   char buff0[200], buff1[200], buff2[200];
@@ -795,26 +654,25 @@ SimplifiedLDFESQ::Quadrature::TestIntegration(int test_case, double ref_solution
            "Error_RQ%05ld_%06ld: %2d %f %e\n",
            Nd,
            Nd * 8,
-           initial_level_,
+           level_,
            h,
            std::fabs((I_riemann - I_quadrature) / ref_solution));
-
   log.Log() << buff0;
   log.Log() << buff1;
   log.Log() << buff2;
 }
 
 void
-SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile(const std::string& file_base)
+SLDFEsqQuadrature::PrintQuadratureToFile(const std::string& file_base)
 {
-  log.Log() << "Printing SLDFE-Quadrature to file.";
+  log.Log() << "Writing SLDFEsq quadrature to file";
 
   std::ofstream vert_file, cell_file, points_file;
 
   // Vertex file generation for plotting - is written to the path above
   vert_file.open(file_base + "_verts.csv");
   {
-    vert_file << "x,y,z\n"; // CSV Header
+    vert_file << "x,y,z\n";
     for (const auto& sq : deployed_SQs)
     {
       for (int v = 0; v < 4; ++v)
@@ -837,7 +695,7 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile(const std::string& file_base
   // Indexing file for polygons for plotting
   cell_file.open(file_base + "_cells.csv");
   {
-    cell_file << "Cell Index\n"; // CSV Header
+    cell_file << "Cell Index\n";
 
     int vi = 0;
     for (const auto& sq : deployed_SQs)
@@ -853,27 +711,22 @@ SimplifiedLDFESQ::Quadrature::PrintQuadratureToFile(const std::string& file_base
   // Formatted cell index file for each polygon
   points_file.open(file_base + "_points.csv");
   {
-    points_file << "x,y,z,weights\n"; // CSV Header
+    points_file << "x,y,z,weights\n";
 
-    for (auto& sq : deployed_SQs)
+    const bool has_weights = weights.size() == omegas.size();
+    for (size_t i = 0; i < omegas.size(); ++i)
     {
-      int ss = -1;
-
-      for (const auto& point : sq.sub_sqr_points)
-      {
-        ++ss;
-        points_file << point[0] << "," << point[1] << "," << point[2] << ","
-                    << sq.sub_sqr_weights[ss] << "\n";
-      }
+      const auto& point = omegas[i];
+      const double normalized_weight = has_weights ? weights[i] : 0.0;
+      const double raw_weight = normalized_weight * raw_weight_sum_;
+      points_file << point[0] << "," << point[1] << "," << point[2] << "," << raw_weight << "\n";
     }
   }
   points_file.close();
-
-  log.Log() << "Done printing SLDFE-Quadrature to file.";
 }
 
-std::array<SimplifiedLDFESQ::SphericalQuadrilateral, 4>
-SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, GaussLegendreQuadrature& legendre)
+std::array<SLDFEsqQuadrature::SphericalQuadrilateral, 4>
+SLDFEsqQuadrature::SplitSQ(SphericalQuadrilateral& sq, GaussLegendreQuadrature& legendre)
 {
   std::array<SphericalQuadrilateral, 4> new_sqs;
 
@@ -883,57 +736,35 @@ SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, GaussLegendreQ
     sq_tilde_center += v;
   sq_tilde_center /= 4;
 
-  // Determine sub-sub-squares Tilde coordinates
-  std::array<std::array<Vector3, 4>, 4> sub_sub_square_xy_tilde;
-  std::map<std::string, Vector3> vm;
-
-  for (int v = 0; v < 4; ++v)
-    vm[std::to_string(v)] = sq.vertices_xy_tilde[v];
-
-  vm["01"] = 0.5 * (sq.vertices_xy_tilde[0] + sq.vertices_xy_tilde[1]);
-  vm["12"] = 0.5 * (sq.vertices_xy_tilde[1] + sq.vertices_xy_tilde[2]);
-  vm["23"] = 0.5 * (sq.vertices_xy_tilde[2] + sq.vertices_xy_tilde[3]);
-  vm["03"] = 0.5 * (sq.vertices_xy_tilde[0] + sq.vertices_xy_tilde[3]);
-  vm["c"] = sq_tilde_center;
-
-  auto& sst = sub_sub_square_xy_tilde;
-  sst[0] = {vm["0"], vm["01"], vm["c"], vm["03"]};
-  sst[1] = {vm["01"], vm["1"], vm["12"], vm["c"]};
-  sst[2] = {vm["c"], vm["12"], vm["2"], vm["23"]};
-  sst[3] = {vm["03"], vm["c"], vm["23"], vm["3"]};
-
-  for (int i = 0; i < 4; ++i)
-    new_sqs[i].vertices_xy_tilde = sst[i];
-
-  // Determine xyz-prime
-  for (int i = 0; i < 4; ++i)
-    for (int v = 0; v < 4; ++v)
-      new_sqs[i].vertices_xyz_prime[v] = sq.rotation_matrix * sst[i][v] + sq.translation_vector;
-
-  // Compute xyz
-  for (int i = 0; i < 4; ++i)
-    for (int v = 0; v < 4; ++v)
-      new_sqs[i].vertices_xyz[v] = new_sqs[i].vertices_xyz_prime[v].Normalized();
+  const auto sub_sub_square_xy_tilde = BuildSubSquares(sq.vertices_xy_tilde, sq_tilde_center);
 
   // Compute SQ xyz-centroid, R,T,area, ldfe
   for (int i = 0; i < 4; ++i)
   {
+    auto& child = new_sqs[i];
+    child.vertices_xy_tilde = sub_sub_square_xy_tilde[i];
+    child.rotation_matrix = sq.rotation_matrix;
+    child.translation_vector = sq.translation_vector;
+    child.octant_modifier = sq.octant_modifier;
+
+    child.centroid_xyz = Vector3();
     for (int v = 0; v < 4; ++v)
-      new_sqs[i].centroid_xyz += new_sqs[i].vertices_xyz[v];
-    new_sqs[i].centroid_xyz /= 4;
-    new_sqs[i].centroid_xyz = new_sqs[i].centroid_xyz.Normalized() * sq.octant_modifier;
+    {
+      child.vertices_xyz_prime[v] =
+        child.rotation_matrix * child.vertices_xy_tilde[v] + child.translation_vector;
+      child.vertices_xyz[v] = child.vertices_xyz_prime[v].Normalized();
+      child.centroid_xyz += child.vertices_xyz[v];
+    }
 
-    new_sqs[i].rotation_matrix = sq.rotation_matrix;
-    new_sqs[i].translation_vector = sq.translation_vector;
-
-    new_sqs[i].area = ComputeSphericalQuadrilateralArea(new_sqs[i].vertices_xyz);
-    DevelopSQLDFEValues(new_sqs[i], legendre);
-    new_sqs[i].octant_modifier = sq.octant_modifier;
+    child.centroid_xyz /= 4;
+    child.centroid_xyz = child.centroid_xyz.Normalized() * sq.octant_modifier;
+    child.area = ComputeSphericalQuadrilateralArea(child.vertices_xyz);
+    DevelopSQLDFEValues(child, legendre);
 
     for (int v = 0; v < 4; ++v)
     {
-      new_sqs[i].vertices_xyz[v] = new_sqs[i].vertices_xyz[v] * sq.octant_modifier;
-      new_sqs[i].sub_sqr_points[v] = new_sqs[i].sub_sqr_points[v] * sq.octant_modifier;
+      child.vertices_xyz[v] = child.vertices_xyz[v] * sq.octant_modifier;
+      child.sub_sqr_points[v] = child.sub_sqr_points[v] * sq.octant_modifier;
     }
   }
 
@@ -941,9 +772,9 @@ SimplifiedLDFESQ::Quadrature::SplitSQ(SphericalQuadrilateral& sq, GaussLegendreQ
 }
 
 void
-SimplifiedLDFESQ::Quadrature::LocallyRefine(const Vector3& ref_dir,
-                                            const double cone_size,
-                                            const bool dir_as_plane_normal)
+SLDFEsqQuadrature::LocallyRefine(const Vector3& ref_dir,
+                                 const double cone_size,
+                                 const bool dir_as_plane_normal)
 {
   auto ref_dir_n = ref_dir.Normalized();
   double mu_cone = cos(cone_size);
@@ -975,15 +806,13 @@ SimplifiedLDFESQ::Quadrature::LocallyRefine(const Vector3& ref_dir,
 
   deployed_SQs.clear();
   deployed_SQs = new_deployment;
-  deployed_SQs_history_.push_back(new_deployment);
 
   PopulateQuadratureAbscissae();
-
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
 
-  log.Log() << "SLDFESQ refined " << num_refined << " SQs.";
+  log.Log() << "SLDFEsq refined " << num_refined << " SQs.";
 }
 
 } // namespace opensn

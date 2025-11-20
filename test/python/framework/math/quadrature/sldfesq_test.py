@@ -43,13 +43,13 @@ def get_weight_sum(quad_points_file):
 
 # --- Quadrature-1 ---
 # Create a quadrature with initial refinement level of 0.
-cquad1 = SLDFESQuadrature(level=0, scattering_order=0)
+cquad1 = SLDFEsqQuadrature3DXYZ(level=0, scattering_order=0)
 cquad1.PrintQuadratureToFile("TestQuad1")
 quad1_sum = get_weight_sum("TestQuad1_points.csv")
 print(f"Weight-Sum-1={(quad1_sum / (4 * math.pi)):.3e}\n\n")
 
 # --- Quadrature-2 ---
-cquad2 = SLDFESQuadrature(level=2, scattering_order=0)
+cquad2 = SLDFEsqQuadrature3DXYZ(level=2, scattering_order=0)
 # Locally refine the quadrature near a given point with a given angular spread.
 cquad2.LocallyRefine(Vector3(0.25, -0.85, 1.0), 30.0 * math.pi / 180, False)
 cquad2.PrintQuadratureToFile("TestQuad2")

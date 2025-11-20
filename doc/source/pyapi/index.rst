@@ -88,7 +88,8 @@ Simplified LDFES quadrature
    :nosignatures:
    :template: python.rst
 
-   aquad.SLDFESQuadrature
+   aquad.SLDFEsqQuadrature3DXYZ
+   aquad.SLDFEsqQuadrature2DXY
 
 
 Field functions
