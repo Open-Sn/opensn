@@ -18,7 +18,7 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
   {
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& uk_man = sdm.UNITARY_UNKNOWN_MANAGER;
-    const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
+    const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
     const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
 
     // Make boundary conditions
@@ -86,7 +86,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
-  const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
+  const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
 
   const size_t gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();

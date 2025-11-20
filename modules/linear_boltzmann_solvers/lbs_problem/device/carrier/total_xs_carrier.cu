@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/total_xs_carrier.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 
 namespace opensn
 {
@@ -20,8 +21,7 @@ std::uint64_t
 TotalXSCarrier::ComputeSize(LBSProblem& lbs_problem)
 {
   std::uint64_t alloc_size = 0;
-  const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& xs_map =
-    lbs_problem.GetMatID2XSMap();
+  const BlockID2XSMap& xs_map = lbs_problem.GetBlockID2XSMap();
   // check if all cross sections have the same number of group
   for (const auto& [block_id, xs] : xs_map)
   {
@@ -44,8 +44,7 @@ void
 TotalXSCarrier::Assemble(LBSProblem& lbs_problem)
 {
   char* data = reinterpret_cast<char*>(host_memory_.data());
-  const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& xs_map =
-    lbs_problem.GetMatID2XSMap();
+  const BlockID2XSMap& xs_map = lbs_problem.GetBlockID2XSMap();
   // copy total cross section data
   for (std::uint64_t index = 0; const auto& [block_id, xs] : xs_map)
   {
