@@ -101,9 +101,9 @@
 
 <span class="c1">// experimental, to be moved to a higher level header file</span>
 <span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">simd_width</span><span class="w"> </span><span class="o">=</span>
-<span class="cp">#if defined(__AVX512F__)</span>
+<span class="cp">#if __AVX512F__</span>
 <span class="w">  </span><span class="mi">8</span><span class="p">;</span><span class="w"> </span><span class="c1">// 8 lanes (512-bit, doubles)</span>
-<span class="cp">#elif defined(__AVX2__)</span>
+<span class="cp">#elif __AVX2__</span>
 <span class="w">  </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="c1">// 4 lanes (256-bit, doubles)</span>
 <span class="cp">#else</span>
 <span class="w">  </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// scalar</span>
