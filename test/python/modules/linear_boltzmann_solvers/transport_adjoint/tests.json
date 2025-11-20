@@ -109,5 +109,18 @@
         "abs_tol": 1e-09
       }
     ]
+  },
+  {
+    "file": "response_2d_4.py",
+    "comment": "2D transport response evaluation test with material source - adjoint part",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Inner Product=",
+        "goldvalue": 1.38402e-5,
+        "abs_tol": 1e-8
+      }
+    ]
   }
 ]
