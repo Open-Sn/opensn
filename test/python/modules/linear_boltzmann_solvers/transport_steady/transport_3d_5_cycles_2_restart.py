@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     # Setup mesh
     meshgen = FromFileMeshGenerator(
-        filename="../../../../assets/mesh/Sphere.case",
+        filename="../../../../assets/mesh/sphere.case",
         partitioner=KBAGraphPartitioner(
             nx=2,
             ny=2,

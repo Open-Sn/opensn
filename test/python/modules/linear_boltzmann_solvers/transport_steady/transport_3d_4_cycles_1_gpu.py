@@ -35,7 +35,7 @@ if __name__ == "__main__":
     meshgen = ExtruderMeshGenerator(
         inputs=[
             FromFileMeshGenerator(
-                filename="../../../../assets/mesh/Square2x2_partition_cyclic3.obj"
+                filename="../../../../assets/mesh/square2x2_partition_cyclic3.obj"
             )
         ],
         layers=[{"z": 0.4, "n": 2},

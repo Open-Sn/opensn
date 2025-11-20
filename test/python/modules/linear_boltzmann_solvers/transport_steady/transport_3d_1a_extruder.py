@@ -39,7 +39,7 @@ if __name__ == "__main__":
     meshgen = ExtruderMeshGenerator(
         inputs=[
             FromFileMeshGenerator(
-                filename="../../../../assets/mesh/SquareMesh2x2Quads.obj"
+                filename="../../../../assets/mesh/square_mesh2x2_quads.obj"
             )
         ],
         layers=[{"z": 0.4, "n": 2},

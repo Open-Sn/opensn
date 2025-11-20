@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     # Setup mesh using an unstructured triangle mesh file
     meshgen = FromFileMeshGenerator(
-        filename="../../../../assets/mesh/TriangleMesh2x2Cuts.obj",
+        filename="../../../../assets/mesh/triangle_mesh2x2_cuts.obj",
         partitioner=KBAGraphPartitioner(
             nx=2,
             ny=2,

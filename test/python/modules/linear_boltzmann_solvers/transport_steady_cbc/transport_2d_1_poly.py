@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     # Setup mesh
     meshgen = FromFileMeshGenerator(
-        filename="../../../../assets/mesh/SquareMesh2x2QuadsBlock.obj",
+        filename="../../../../assets/mesh/square_mesh2x2_quads_block.obj",
         partitioner=KBAGraphPartitioner(
             nx=2,
             ny=2,

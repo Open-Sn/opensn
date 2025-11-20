@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     # Setup mesh
     meshgen = FromFileMeshGenerator(
-        filename="c5g7/mesh/2D_c5g7_coarse.msh",
+        filename="c5g7/mesh/2d_c5g7_coarse.msh",
     )
     grid = meshgen.Execute()
     grid.SetOrthogonalBoundaries()
