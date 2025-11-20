@@ -231,8 +231,8 @@ LBSProblem::ClearBoundaries()
   boundary_preferences_.clear();
 }
 
-const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>&
-LBSProblem::GetMatID2XSMap() const
+const BlockID2XSMap&
+LBSProblem::GetBlockID2XSMap() const
 {
   return block_id_to_xs_map_;
 }

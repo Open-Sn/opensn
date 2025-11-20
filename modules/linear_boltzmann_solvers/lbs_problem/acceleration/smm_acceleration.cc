@@ -94,7 +94,7 @@ SMMAcceleration::Initialize()
 
   // Create the diffusion materials
   const auto xs_map = PackGroupsetXS(
-    do_problem_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
+    do_problem_.GetBlockID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create the appropriate solver
   log.Log() << "Creating diffusion solver";
@@ -521,7 +521,7 @@ SMMAcceleration::ComputeSourceCorrection() const
 {
   const auto& grid = do_problem_.GetGrid();
   const auto& pwld = do_problem_.GetSpatialDiscretization();
-  const auto& matid_to_xs_map = do_problem_.GetMatID2XSMap();
+  const auto& matid_to_xs_map = do_problem_.GetBlockID2XSMap();
   const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();
 
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();

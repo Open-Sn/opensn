@@ -32,15 +32,13 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
 }
 
 std::map<unsigned int, Multigroup_D_and_sigR>
-PackGroupsetXS(const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_map,
-               int first_grp_index,
-               int last_group_index)
+PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map, int first_grp_index, int last_group_index)
 {
   const int num_gs_groups = last_group_index - first_grp_index + 1;
   OpenSnInvalidArgumentIf(num_gs_groups < 0, "last_grp_index must be >= first_grp_index");
 
   std::map<unsigned int, Multigroup_D_and_sigR> matid_2_mgxs_map;
-  for (const auto& matid_xs_pair : matid_to_xs_map)
+  for (const auto& matid_xs_pair : blkid_to_xs_map)
   {
     const auto& mat_id = matid_xs_pair.first;
     const auto& xs = matid_xs_pair.second;
