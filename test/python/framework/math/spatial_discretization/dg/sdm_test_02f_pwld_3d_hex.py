@@ -1,5 +1,5 @@
 meshgen = FromFileMeshGenerator(
-    filename="../../../../../assets/mesh/GMSH_AllHexes.vtu",
+    filename="../../../../../assets/mesh/gmsh_all_hexes.vtu",
 )
 grid = meshgen.Execute()
 

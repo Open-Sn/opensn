@@ -34,7 +34,7 @@ if __name__ == "__main__":
     meshgen = ExtruderMeshGenerator(
         inputs=[
             FromFileMeshGenerator(
-                filename="../../../../assets/mesh/TriangleMesh2x2Cuts.obj"
+                filename="../../../../assets/mesh/triangle_mesh2x2_cuts.obj"
             )
         ],
         layers=[
