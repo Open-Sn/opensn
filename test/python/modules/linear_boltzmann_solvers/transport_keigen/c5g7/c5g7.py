@@ -37,9 +37,9 @@ if __name__ == "__main__":
         print(f"Running C5G7 with mesh_type = {mesh_type} and k_method = {k_method}\n")
 
     if mesh_type == "coarse":
-        mesh_file = "mesh/2D_c5g7_coarse.msh"
+        mesh_file = "mesh/2d_c5g7_coarse.msh"
     else:
-        mesh_file = "mesh/2D_c5g7_refined.msh"
+        mesh_file = "mesh/2d_c5g7_refined.msh"
     meshgen = FromFileMeshGenerator(filename=mesh_file)
     grid = meshgen.Execute()
     grid.SetOrthogonalBoundaries()

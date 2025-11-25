@@ -1,5 +1,5 @@
 meshgen = FromFileMeshGenerator(
-    filename="../../../../../assets/mesh/TriangleMesh2x2.obj",
+    filename="../../../../../assets/mesh/triangle_mesh2x2.obj",
 )
 grid = meshgen.Execute()
 

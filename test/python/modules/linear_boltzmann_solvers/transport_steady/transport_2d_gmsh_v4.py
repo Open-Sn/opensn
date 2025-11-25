@@ -22,7 +22,7 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
     meshgen = FromFileMeshGenerator(
-        filename="../../../../assets/mesh/Rectangular2D2MatGmshV4.msh",
+        filename="../../../../assets/mesh/rectangular_2d_2mat_gmsh_v4.msh",
     )
     grid = meshgen.Execute()
     grid.SetOrthogonalBoundaries()
