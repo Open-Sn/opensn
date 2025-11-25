@@ -58,7 +58,7 @@ SCDSAAcceleration::Initialize()
 
   // Make xs map
   const auto matid_2_mgxs_map = PackGroupsetXS(
-    do_problem_.GetMatID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
+    do_problem_.GetBlockID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
 
   // Create solver
   const auto& sdm = do_problem_.GetSpatialDiscretization();

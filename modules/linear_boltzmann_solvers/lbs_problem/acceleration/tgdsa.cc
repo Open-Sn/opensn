@@ -18,7 +18,7 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
   {
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& uk_man = sdm.UNITARY_UNKNOWN_MANAGER;
-    const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
+    const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
     const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
 
     // Make boundary conditions
@@ -37,7 +37,7 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     }
 
     // Make xs map
-    std::map<int, Multigroup_D_and_sigR> matid_2_mgxs_map;
+    std::map<unsigned int, Multigroup_D_and_sigR> matid_2_mgxs_map;
     for (const auto& matid_xs_pair : block_id_to_xs_map)
     {
       const auto& mat_id = matid_xs_pair.first;
@@ -86,7 +86,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
-  const auto& block_id_to_xs_map = do_problem.GetMatID2XSMap();
+  const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
 
   const size_t gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();

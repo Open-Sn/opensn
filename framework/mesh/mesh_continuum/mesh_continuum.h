@@ -128,10 +128,10 @@ public:
   std::pair<Vector3, Vector3> GetLocalBoundingBox() const;
 
   /// Sets block ids for all cells to the specified block id.
-  void SetUniformBlockID(int blk_id);
+  void SetUniformBlockID(unsigned int blk_id);
 
   /// Sets block IDs using a logical volume.
-  void SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, int blk_id, bool sense);
+  void SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, unsigned int blk_id, bool sense);
 
   /// Assign all boundary faces to a single name
   void SetUniformBoundaryID(const std::string& boundary_name);
@@ -162,7 +162,7 @@ public:
   GlobalCellHandler cells;
 
   /// Compute volume per block IDs
-  std::map<int, double> ComputeVolumePerBlockID() const;
+  std::map<unsigned int, double> ComputeVolumePerBlockID() const;
 
 private:
   /// Spatial dimension

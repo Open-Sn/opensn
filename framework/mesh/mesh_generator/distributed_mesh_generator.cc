@@ -241,7 +241,7 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     cell.centroid.x = serial_data.Read<double>();
     cell.centroid.y = serial_data.Read<double>();
     cell.centroid.z = serial_data.Read<double>();
-    cell.block_id = serial_data.Read<int>();
+    cell.block_id = serial_data.Read<unsigned int>();
 
     const auto num_vids = serial_data.Read<size_t>();
     for (size_t v = 0; v < num_vids; ++v)

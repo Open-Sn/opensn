@@ -219,7 +219,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     if (not(iss >> element_index >> element_type >> num_tags))
       throw std::logic_error(fname + ": Failed reading element index, type, and number of tags.");
 
-    int physical_region = 0;
+    unsigned int physical_region = 0;
     if (not(iss >> physical_region))
       throw std::logic_error(fname + ": Failed reading physical region.");
 
@@ -365,7 +365,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   mesh->BuildMeshConnectivity();
 
   // remap boundary cells onto cell faces
-  std::map<std::set<uint64_t>, int> bnd_cell_to_bnd_id_map;
+  std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
   for (auto& bnd_cell : mesh->GetRawBoundaryCells())
   {
     std::set<uint64_t> key;
