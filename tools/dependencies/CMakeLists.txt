@@ -22,6 +22,7 @@ set(ENV_SCRIPT "${OPENSN_ENV_DIR}/set_opensn_env.sh")
 
 find_package(MPI REQUIRED)
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+find_package(mpicpp-lite 2.1 QUIET)
 
 option(ENABLE_BOOST   "Install Boost"   ON)
 option(ENABLE_PETSC   "Install PETSc"   ON)
@@ -35,6 +36,38 @@ endif()
 
 set(INSTALLED_DEP_COUNT 0)
 set(ALL_DEP_TARGETS)
+
+# mpicpp-lite install
+if (TARGET mpicpp-lite::mpicpp-lite)
+  message(STATUS "Found mpicpp-lite: " ${MPICPP_LITE_VERSION})
+  if(NOT TARGET mpicpp-lite)
+    add_custom_target(mpicpp-lite)
+  endif()
+  list(APPEND ALL_DEP_TARGETS mpicpp-lite)
+else()
+  message(STATUS "No")
+  ExternalProject_Add(mpicpp-lite
+    URL https://github.com/andrsd/mpicpp-lite/archive/refs/tags/v2.1.0.tar.gz
+    CONFIGURE_COMMAND ${CMAKE_COMMAND}
+      -S <SOURCE_DIR>
+      -B <BINARY_DIR>
+      -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+      -DCMAKE_BUILD_TYPE=Release
+      <SOURCE_DIR>
+    BUILD_COMMAND ""
+    INSTALL_COMMAND
+      ${CMAKE_COMMAND} --build <BINARY_DIR> --target install --
+    LOG_DOWNLOAD  1
+    LOG_UPDATE    1
+    LOG_CONFIGURE 1
+    LOG_BUILD     1
+    LOG_INSTALL   1
+    LOG_TEST      1
+    LOG_OUTPUT_ON_FAILURE 1
+  )
+  list(APPEND ALL_DEP_TARGETS mpicpp-lite)
+  math(EXPR INSTALLED_DEP_COUNT "${INSTALLED_DEP_COUNT}+1")
+endif()
 
 # Boost install (header-only)
 if(ENABLE_BOOST)

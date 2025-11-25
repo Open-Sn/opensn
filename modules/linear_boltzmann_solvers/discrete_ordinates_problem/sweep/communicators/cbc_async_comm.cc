@@ -105,7 +105,7 @@ CBC_ASynchronousCommunicator::ReceiveData()
     mpi::Status status;
     if (comm.iprobe(source_rank, tag, status))
     {
-      int num_items = status.get_count<std::byte>();
+      int num_items = status.count<std::byte>();
       std::vector<std::byte> recv_buffer(num_items);
       comm.recv(source_rank, status.tag(), recv_buffer.data(), num_items);
       ByteArray data_array(recv_buffer);
