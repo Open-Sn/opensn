@@ -19,7 +19,7 @@ protected:
   /// Linear indices of ordered directions mapped to polar level.
   std::map<unsigned int, std::vector<unsigned int>> map_directions_;
 
-  ProductQuadrature(int dimension, int scattering_order)
+  ProductQuadrature(unsigned int dimension, unsigned int scattering_order)
     : AngularQuadrature(AngularQuadratureType::ProductQuadrature, dimension, scattering_order),
       weight_sum_(0.0)
   {

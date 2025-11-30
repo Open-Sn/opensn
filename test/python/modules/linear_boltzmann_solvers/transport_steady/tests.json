@@ -78,7 +78,7 @@
   },
   {
     "file": "transport_2d_2_unstructured.py",
-    "comment": "2D LinearBSolver Test Unstructured grid - PWLD",
+    "comment": "2D unstructured grid, PWLD",
     "num_procs": 4,
     "checks": [
       {
@@ -91,6 +91,25 @@
         "type": "KeyValuePair",
         "key": "Max-value2=",
         "goldvalue": 0.00142458,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_2_unstructured_sldfe.py",
+    "comment": "2D unstructured grid, PWLD, SLDFEsq quadrature",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.50985,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.00146633,
         "abs_tol": 0.0001
       }
     ]
