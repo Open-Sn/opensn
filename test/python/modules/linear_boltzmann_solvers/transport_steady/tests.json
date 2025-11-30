@@ -1099,16 +1099,28 @@
     "num_procs": 4,
     "checks": [
       {
-        "type": "KeyValuePair",
-        "key": "Leakage-Diff1=",
-        "goldvalue": 0.0,
-        "abs_tol": 0.0001
+        "type": "StrCompare",
+        "key": "psi values match for rank",
+        "wordnum": 5,
+        "gold": "0"
       },
       {
-        "type": "KeyValuePair",
-        "key": "Leakage-Diff2=",
-        "goldvalue": 0.0,
-        "abs_tol": 0.0001
+        "type": "StrCompare",
+        "key": "psi values match for rank",
+        "wordnum": 5,
+        "gold": "1"
+      },
+      {
+        "type": "StrCompare",
+        "key": "psi values match for rank",
+        "wordnum": 5,
+        "gold": "2"
+      },
+      {
+        "type": "StrCompare",
+        "key": "psi values match for rank",
+        "wordnum": 5,
+        "gold": "3"
       }
     ]
   },
@@ -1212,6 +1224,68 @@
         "key": "Sum=",
         "goldvalue": 4.10588,
         "abs_tol": 0.00001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_disk_leakage_vacuum_bcs.py",
+    "comment": "3D leakage calculation with non-orthogonal boundaries and vacuum bcs",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Top leakage=",
+        "goldvalue": 36.104510,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Bottom leakage=",
+        "goldvalue": 36.104355,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Side leakage=",
+        "goldvalue": 39.754077,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total leakage=",
+        "goldvalue": 111.962942,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_disk_leakage_reflecting_bcs.py",
+    "comment": "3D leakage calculation with non-orthogonal boundaries and reflecting/vacuum bcs",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Top leakage=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-13
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Bottom leakage=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-13
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Side leakage=",
+        "goldvalue": 97.14824832,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total leakage=",
+        "goldvalue": 97.14824832,
+        "abs_tol": 1e-6
       }
     ]
   }
