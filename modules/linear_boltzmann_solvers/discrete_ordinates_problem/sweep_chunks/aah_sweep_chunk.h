@@ -64,7 +64,8 @@ private:
   CpuSweepFunc cpu_sweep_impl_ = nullptr;
 
   void CPUSweep_Generic(AngleSet& angle_set);
-  void CPUSweep_N4(AngleSet& angle_set);
+  template <int NumNodes>
+  void CPUSweep_FixedN(AngleSet& angle_set);
 };
 
 } // namespace opensn
