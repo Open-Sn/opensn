@@ -17,8 +17,8 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespacestd_1a61be1731bebc888682d8ba4f2ab4c9d2`
-
 - :ref:`exhale_function_namespacestd_1a38a7ee27156f0e5bb69be8be630258c0`
+
+- :ref:`exhale_function_namespacestd_1a61be1731bebc888682d8ba4f2ab4c9d2`
 
 - :ref:`exhale_function_namespacestd_1a7ef16e0b23291ac3cdf07c9adfa0c250`
