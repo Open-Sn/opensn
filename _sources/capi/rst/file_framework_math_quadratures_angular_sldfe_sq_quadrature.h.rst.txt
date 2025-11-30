@@ -44,8 +44,6 @@ Includes
 
 - ``framework/math/quadratures/gausslegendre_quadrature.h`` (:ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`)
 
-- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
-
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 
@@ -59,18 +57,20 @@ Namespaces
 
 - :ref:`namespace_opensn`
 
-- :ref:`namespace_opensn__SimplifiedLDFESQ`
-
 
 Classes
 -------
 
 
-- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_base_functor`
+- :ref:`exhale_struct_structopensn_1_1_s_l_d_f_esq_quadrature_1_1_base_functor`
 
-- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_function_weight_from_rho`
+- :ref:`exhale_struct_structopensn_1_1_s_l_d_f_esq_quadrature_1_1_function_weight_from_rho`
 
-- :ref:`exhale_struct_structopensn_1_1_simplified_l_d_f_e_s_q_1_1_spherical_quadrilateral`
+- :ref:`exhale_struct_structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral`
 
-- :ref:`exhale_class_classopensn_1_1_simplified_l_d_f_e_s_q_1_1_quadrature`
+- :ref:`exhale_class_classopensn_1_1_s_l_d_f_esq_quadrature`
+
+- :ref:`exhale_class_classopensn_1_1_s_l_d_f_esq_quadrature2_d_x_y`
+
+- :ref:`exhale_class_classopensn_1_1_s_l_d_f_esq_quadrature3_d_x_y_z`
 

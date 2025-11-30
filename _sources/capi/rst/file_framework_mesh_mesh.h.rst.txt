@@ -46,8 +46,6 @@ Included By
 
 - :ref:`file_framework_math_geometry.h`
 
-- :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
-
 - :ref:`file_framework_math_quadratures_spatial_spatial_quadrature.h`
 
 - :ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_base_mapping.h`

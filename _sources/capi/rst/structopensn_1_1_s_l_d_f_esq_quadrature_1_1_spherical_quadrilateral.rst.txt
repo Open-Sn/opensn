@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral:
+
+Struct SLDFEsqQuadrature::SphericalQuadrilateral
+================================================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_s_l_d_f_esq_quadrature`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SLDFEsqQuadrature::SphericalQuadrilateral
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

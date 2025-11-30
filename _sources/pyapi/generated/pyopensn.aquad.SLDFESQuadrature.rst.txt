@@ -1,9 +1,0 @@
-﻿pyopensn.aquad.SLDFESQuadrature
-===============================
-
-.. currentmodule:: pyopensn.aquad
-
-.. autoclass:: SLDFESQuadrature
-   :special-members: __init__
-   :members:
-   :inherited-members:

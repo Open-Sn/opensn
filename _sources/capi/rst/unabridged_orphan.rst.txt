@@ -26,11 +26,6 @@ Namespaces
 .. toctree::
    :maxdepth: 1
 
-   namespace_opensn__SimplifiedLDFESQ.rst
-
-.. toctree::
-   :maxdepth: 1
-
    namespace_std.rst
 
 Classes and Structs
@@ -385,17 +380,17 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_simplified_l_d_f_e_s_q_1_1_base_functor.rst
+   structopensn_1_1_s_l_d_f_esq_quadrature_1_1_base_functor.rst
 
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_simplified_l_d_f_e_s_q_1_1_function_weight_from_rho.rst
+   structopensn_1_1_s_l_d_f_esq_quadrature_1_1_function_weight_from_rho.rst
 
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_simplified_l_d_f_e_s_q_1_1_spherical_quadrilateral.rst
+   structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral.rst
 
 .. toctree::
    :maxdepth: 1
@@ -1265,7 +1260,17 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_simplified_l_d_f_e_s_q_1_1_quadrature.rst
+   classopensn_1_1_s_l_d_f_esq_quadrature.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_s_l_d_f_esq_quadrature2_d_x_y.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_s_l_d_f_esq_quadrature3_d_x_y_z.rst
 
 .. toctree::
    :maxdepth: 1

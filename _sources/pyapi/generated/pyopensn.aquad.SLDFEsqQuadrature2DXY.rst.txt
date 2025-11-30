@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.SLDFEsqQuadrature2DXY
+====================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: SLDFEsqQuadrature2DXY
+   :special-members: __init__
+   :members:
+   :inherited-members:
