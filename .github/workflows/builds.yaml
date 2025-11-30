@@ -43,6 +43,28 @@ jobs:
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
           build/test/opensn-unit
 
+  native:
+    name: "${{ matrix.compiler }}"
+    runs-on: [self-hosted]
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - gcc/14
+          - clang/19
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        shell: bash
+        run: |
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
+          mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Native -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+      - name: test
+        shell: bash
+        run: |
+          module load python3/3.12.3 opensn/${{ matrix.compiler }}
+          test/run_tests -d test/python -j 32 -v 1
+
   cuda:
     name: "${{ matrix.compiler }}"
     runs-on: [self-hosted, cuda]
