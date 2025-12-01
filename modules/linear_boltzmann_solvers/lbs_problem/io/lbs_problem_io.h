@@ -3,9 +3,11 @@
 
 #pragma once
 
+#include <map>
 #include <string>
 #include <optional>
 #include <vector>
+#include <cstdint>
 #include <functional>
 
 namespace opensn
@@ -42,6 +44,53 @@ public:
     const std::string& file_base,
     std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest =
       std::nullopt);
+
+  struct SurfaceMap {
+    std::vector<double> cell_ids;
+    std::vector<double> num_nodes;
+    std::vector<double> nodes_x;
+    std::vector<double> nodes_y;
+    std::vector<double> nodes_z;
+  };
+  
+  struct SurfaceData {
+    std::vector<double> omega;
+    std::vector<double> mu;
+    std::vector<double> wt_d;
+    std::vector<double> M_ij;
+    std::vector<double> psi;
+  };
+
+  struct SurfaceAngularFlux {
+    SurfaceMap mapping;
+    SurfaceData data;
+  };
+
+  /**
+   * Write surface angular flux vector(s) to a file.
+   *
+   * \param lbs_solver LBS solver
+   * \param file_base File name stem
+   * \param bndrys Map of boundary names and ids
+   */
+  static void WriteSurfaceAngularFluxes(
+    DiscreteOrdinatesProblem& do_problem,
+    const std::string& file_stem,
+    std::vector<std::string>& bndrys,
+    std::optional<std::pair<std::string, double>> surfaces);
+
+  /**
+   * Read a surface angular flux vector from a file.
+   *
+   * \param lbs_problem LBS problem
+   * \param file_base File name stem
+   * \param per_material Optional angular flux destination vector
+   */
+  static std::vector<SurfaceAngularFlux> 
+  ReadSurfaceAngularFluxes(
+    DiscreteOrdinatesProblem& do_problem,
+    const std::string& file_stem,
+    std::vector<std::string>& bndrys);
 
   /**
    * Write a flux moments vector to a file.

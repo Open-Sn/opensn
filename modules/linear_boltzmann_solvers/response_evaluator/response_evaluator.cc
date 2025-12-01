@@ -118,6 +118,16 @@ ResponseEvaluator::GetBufferOptionsBlock()
     "file_prefixes",
     "A table containing file prefixes for flux moments and angular flux binary files. "
     "These are keyed by \"flux_moments\" and \"angular_fluxes\", respectively.");
+  params.AddOptionalParameter<std::string>(
+    "bndry",
+    {},
+    "Optional list of boundary ids."
+  );
+  params.AddOptionalParameter<std::string>(
+    "surf",
+    {},
+    "Optional list of surface ids."
+  );
 
   return params;
 }
@@ -144,7 +154,29 @@ ResponseEvaluator::SetBufferOptions(const InputParameters& input)
     LBSSolverIO::ReadAngularFluxes(
       *do_problem_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
 
-  adjoint_buffers_[name] = {phi, psi};
+  std::vector<opensn::LBSSolverIO::SurfaceAngularFlux> surf_psi;
+  if (prefixes.Has("surface_angular_fluxes"))
+  {
+    const auto bndry = params.GetParamValue<std::string>("bndry");
+    const auto surf = params.GetParamValue<std::string>("surf");
+    
+    std::vector<std::string> bndrys;
+    if (!bndry.empty())
+      bndrys.push_back(surf);
+    else if (!surf.empty())
+    {
+      const std::string surf_u = surf + "_u";
+      const std::string surf_d = surf + "_d";
+      bndrys.insert(bndrys.end(), {surf_u, surf_d});
+    }
+    
+    // bndrys.push_back(surf);
+     
+    surf_psi = LBSSolverIO::ReadSurfaceAngularFluxes(
+      *do_problem_, prefixes.GetParamValue<std::string>("surface_angular_fluxes"), bndrys);
+  }
+
+  adjoint_buffers_[name] = {phi, psi, surf_psi};
   log.Log0Verbose1() << "Adjoint buffer " << name << " added to the stack.";
 }
 
@@ -317,8 +349,11 @@ double
 ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 {
   const auto& buffer_data = adjoint_buffers_.at(buffer);
-  const auto& phi_dagger = buffer_data.first;
-  const auto& psi_dagger = buffer_data.second;
+  // const auto& phi_dagger = buffer_data.first;
+  // const auto& psi_dagger = buffer_data.second;
+
+  const auto& phi_dagger = buffer_data.flux_moments;
+  const auto& psi_dagger = buffer_data.angular_fluxes;
 
   OpenSnLogicalErrorIf(not material_sources_.empty() and phi_dagger.empty(),
                        "If material sources are present, adjoint flux moments "
@@ -463,6 +498,72 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   double global_response = 0.0;
   mpi_comm.all_reduce(local_response, global_response, mpi::op::sum<double>());
   return global_response;
+}
+
+double
+ResponseEvaluator::EvaluateSurfaceResponse(const std::string& fwd_buffer,
+                                           const std::string& adj_buffer) const
+{
+  const auto& fwd_data = adjoint_buffers_.at(fwd_buffer);
+  const auto& fwd_surfaces = fwd_data.surface_angular_fluxes;
+  OpenSnLogicalErrorIf(fwd_surfaces.empty(),
+                       "Surface flux data must be available "
+                       "for a surface response evaluation.");
+
+  const auto& adj_data = adjoint_buffers_.at(adj_buffer);
+  const auto& adj_surfaces = adj_data.surface_angular_fluxes;
+  OpenSnLogicalErrorIf(adj_surfaces.empty(),
+                       "Surface adjoint flux data must be available "
+                       "for a surface response evaluation.");
+
+  double response = 0.0;
+  const auto& num_surfs = fwd_surfaces.size() - 1;
+  for (size_t si=0; si < num_surfs; ++si)
+  {
+    const auto& adj = adj_surfaces[1];
+    const auto& fwd = fwd_surfaces[0];
+
+    size_t gi = 0; // start of global index
+    for (size_t ci=0; ci < fwd.mapping.cell_ids.size(); ++ci)
+    {
+      size_t mi = 0; // start of mass index
+      const auto& num_nodes = fwd.mapping.num_nodes[ci];
+      for (size_t ni=0; ni < num_nodes; ++ni)
+      {
+        const auto& node_strd = gi + ni;
+        for (const auto& groupset : do_problem_->GetGroupsets())
+        {
+          auto groupset_id = groupset.id;
+          auto num_gs_groups = groupset.groups.size();
+
+          const auto& quadrature = groupset.quadrature;
+          auto num_gs_dirs = quadrature->omegas.size();
+          for (unsigned int d = 0; d < num_gs_dirs; ++d)
+          {
+            const auto& dir_strd = node_strd * num_gs_dirs + d;
+            const auto& adir_strd = node_strd * num_gs_dirs + num_gs_dirs - d - 1;
+
+            const auto& mu_d = adj.data.mu[adir_strd];
+            const auto& wt_d = adj.data.wt_d[adir_strd];
+            for (uint64_t g = 0; g < num_gs_groups; ++g)
+            {
+              const auto& grp_strd = dir_strd * num_gs_groups + g;
+              const auto& agrp_strd = adir_strd * num_gs_groups + g;
+              for (size_t nj=0; nj < num_nodes; ++nj)
+              {
+                const auto& mass_strd = mi + nj;
+                response += mu_d * wt_d * adj.data.M_ij[mass_strd] 
+                              * adj.data.psi[agrp_strd] * fwd.data.psi[grp_strd];
+              }
+            }
+          }
+        }
+        mi += num_nodes;
+      } 
+      gi += num_nodes;
+    }
+  }
+  return response;
 }
 
 std::vector<double>
