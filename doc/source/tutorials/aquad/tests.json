@@ -6,6 +6,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "number of directions =",
+        "goldvalue": 24,
+        "abs_tol": 1e-8
       }
     ]
   },
