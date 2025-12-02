@@ -130,7 +130,7 @@ Program Listing for File cell.h
      uint64_t local_id = 0;
      int partition_id = 0;
      int num_parition = 0;
-     int block_id = -1;
+     unsigned int block_id = std::numeric_limits<unsigned int>::max();
    
      Vector3 centroid;
      double volume = 0.0;

@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559:
+
+Typedef opensn::BlockID2XSMap
+=============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::BlockID2XSMap
+   :project: opensn

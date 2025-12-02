@@ -65,7 +65,7 @@ Typedefs
 --------
 
 
-- :ref:`exhale_typedef_namespaceopensn_1a85756929ccbb76fdb6fc67d2d9b6ea6d`
+- :ref:`exhale_typedef_namespaceopensn_1a533f9e99061d7d6a43e7ccf5cd4fefb1`
 
 - :ref:`exhale_typedef_namespaceopensn_1ae841473082465baefc8ecd55f9a069bf`
 

@@ -42,6 +42,8 @@ Includes
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
 
 
 Included By
@@ -51,6 +53,8 @@ Included By
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
 
@@ -112,6 +116,8 @@ Functions
 Typedefs
 --------
 
+
+- :ref:`exhale_typedef_namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559`
 
 - :ref:`exhale_typedef_namespaceopensn_1af356c49adff41bc9042b78f2d521b3d8`
 

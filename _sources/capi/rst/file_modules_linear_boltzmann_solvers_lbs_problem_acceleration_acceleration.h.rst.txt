@@ -36,6 +36,8 @@ Includes
 
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
+
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 
@@ -84,7 +86,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a08a0e125f82faceba37bfbf70ba2953e`
 
-- :ref:`exhale_function_namespaceopensn_1a1c1246623d517531a8809a3d3b9353cf`
+- :ref:`exhale_function_namespaceopensn_1a22863db76f9fc3f1dda77adc84efb5cd`
 
 - :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
 

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Typedef opensn::gpu_kernel::MakeIndexSequenceFromRange &mdash; OpenSn 0.0.1 documentation</title>
+  <title>Typedef opensn::BlockID2XSMap &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Typedef opensn::gpu_kernel::SweepFunc" href="typedef_namespaceopensn_1_1gpu__kernel_1a5cda33bafd26845051870f96091282d6.html" />
-    <link rel="prev" title="Typedef opensn::DirIDToSOMap" href="typedef_namespaceopensn_1a1f623b22852e0d1dc29273ee5e357b48.html" /> 
+    <link rel="next" title="Typedef opensn::CellFaceNodalMapping" href="typedef_namespaceopensn_1a9c76e5b0d99acccc20a0bfbcd6b225f8.html" />
+    <link rel="prev" title="Define OpenSnRegisterObjectParametersOnlyInNamespace" href="define_object__factory_8h_1aa681b77856f7722c574cefd8dd593759.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -62,13 +62,13 @@
 <li class="toctree-l3"><a class="reference internal" href="index.html#variables">Variables</a></li>
 <li class="toctree-l3"><a class="reference internal" href="index.html#defines">Defines</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html#typedefs">Typedefs</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559.html">Typedef opensn::BlockID2XSMap</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Typedef opensn::BlockID2XSMap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1a9c76e5b0d99acccc20a0bfbcd6b225f8.html">Typedef opensn::CellFaceNodalMapping</a></li>
 <li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1af22b592ef6d05c38e1c97745f4137cdf.html">Typedef opensn::CompactCellView</a></li>
 <li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1a18578bd344a5b61164771fbdd7dc547b.html">Typedef opensn::CompactFaceView</a></li>
 <li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1af356c49adff41bc9042b78f2d521b3d8.html">Typedef opensn::DirIDs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1a1f623b22852e0d1dc29273ee5e357b48.html">Typedef opensn::DirIDToSOMap</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Typedef opensn::gpu_kernel::MakeIndexSequenceFromRange</a></li>
+<li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1_1gpu__kernel_1a69a596d3d36f43fdd11b6ba9634370f5.html">Typedef opensn::gpu_kernel::MakeIndexSequenceFromRange</a></li>
 <li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1_1gpu__kernel_1a5cda33bafd26845051870f96091282d6.html">Typedef opensn::gpu_kernel::SweepFunc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1a63eff85795c7a492580a1dd1fa09e00e.html">Typedef opensn::Graph</a></li>
 <li class="toctree-l4"><a class="reference internal" href="typedef_namespaceopensn_1aeb154be38822e4985fc82f625f079c27.html">Typedef opensn::MatVec3</a></li>
@@ -109,7 +109,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Typedef opensn::gpu_kernel::MakeIndexSequenceFromRange</li>
+      <li class="breadcrumb-item active">Typedef opensn::BlockID2XSMap</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -118,16 +118,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="typedef-opensn-gpu-kernel-makeindexsequencefromrange">
-<span id="exhale-typedef-namespaceopensn-1-1gpu-kernel-1a69a596d3d36f43fdd11b6ba9634370f5"></span><h1>Typedef opensn::gpu_kernel::MakeIndexSequenceFromRange<a class="headerlink" href="#typedef-opensn-gpu-kernel-makeindexsequencefromrange" title="Link to this heading"></a></h1>
+  <section id="typedef-opensn-blockid2xsmap">
+<span id="exhale-typedef-namespaceopensn-1ac6a4d4e987d2f043095ee58e65866559"></span><h1>Typedef opensn::BlockID2XSMap<a class="headerlink" href="#typedef-opensn-blockid2xsmap" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-main-h"><span class="std std-ref">File main.h</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-lbs-structs-h"><span class="std std-ref">File lbs_structs.h</span></a></p></li>
 </ul>
 <section id="typedef-documentation">
 <h2>Typedef Documentation<a class="headerlink" href="#typedef-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4I_NSt6size_tE_NSt6size_tEEN6opensn10gpu_kernel26MakeIndexSequenceFromRangeE">
-<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">From</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">To</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceopensn_1_1gpu__kernel_1a69a596d3d36f43fdd11b6ba9634370f5"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">gpu_kernel</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">MakeIndexSequenceFromRange</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a507a271105f24d0765e2cf57e57218b3.html#_CPPv4I_NSt6size_tE_NSt6size_tE_DpNSt6size_tEEN6opensn10gpu_kernel30MakeIndexSequenceFromRangeImplEDaNSt14index_sequenceIDp6IntSeqEE" title="opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl"><span class="n"><span class="pre">MakeIndexSequenceFromRangeImpl</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt6size_tE_NSt6size_tEEN6opensn10gpu_kernel26MakeIndexSequenceFromRangeE" title="opensn::gpu_kernel::MakeIndexSequenceFromRange::From"><span class="n"><span class="pre">From</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt6size_tE_NSt6size_tEEN6opensn10gpu_kernel26MakeIndexSequenceFromRangeE" title="opensn::gpu_kernel::MakeIndexSequenceFromRange::To"><span class="n"><span class="pre">To</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">make_index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt6size_tE_NSt6size_tEEN6opensn10gpu_kernel26MakeIndexSequenceFromRangeE" title="opensn::gpu_kernel::MakeIndexSequenceFromRange::To"><span class="n"><span class="pre">To</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_NSt6size_tE_NSt6size_tEEN6opensn10gpu_kernel26MakeIndexSequenceFromRangeE" title="opensn::gpu_kernel::MakeIndexSequenceFromRange::From"><span class="n"><span class="pre">From</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4I_NSt6size_tE_NSt6size_tEEN6opensn10gpu_kernel26MakeIndexSequenceFromRangeE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13BlockID2XSMapE">
+<span class="target" id="namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">BlockID2XSMap</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXSE" title="opensn::MultiGroupXS"><span class="n"><span class="pre">MultiGroupXS</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn13BlockID2XSMapE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </section>
@@ -137,8 +137,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="typedef_namespaceopensn_1a1f623b22852e0d1dc29273ee5e357b48.html" class="btn btn-neutral float-left" title="Typedef opensn::DirIDToSOMap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="typedef_namespaceopensn_1_1gpu__kernel_1a5cda33bafd26845051870f96091282d6.html" class="btn btn-neutral float-right" title="Typedef opensn::gpu_kernel::SweepFunc" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="define_object__factory_8h_1aa681b77856f7722c574cefd8dd593759.html" class="btn btn-neutral float-left" title="Define OpenSnRegisterObjectParametersOnlyInNamespace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="typedef_namespaceopensn_1a9c76e5b0d99acccc20a0bfbcd6b225f8.html" class="btn btn-neutral float-right" title="Typedef opensn::CellFaceNodalMapping" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

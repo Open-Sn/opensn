@@ -214,10 +214,10 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetLocalBoundingBox</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Sets block ids for all cells to the specified block id.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetUniformBlockID</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">blk_id</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetUniformBlockID</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">blk_id</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Sets block IDs using a logical volume.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LogicalVolume</span><span class="o">&amp;</span><span class="w"> </span><span class="n">log_vol</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">blk_id</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">sense</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LogicalVolume</span><span class="o">&amp;</span><span class="w"> </span><span class="n">log_vol</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">blk_id</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">sense</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Assign all boundary faces to a single name</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetUniformBoundaryID</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">boundary_name</span><span class="p">);</span>
@@ -248,7 +248,7 @@
 <span class="w">  </span><span class="n">GlobalCellHandler</span><span class="w"> </span><span class="n">cells</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Compute volume per block IDs</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeVolumePerBlockID</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeVolumePerBlockID</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Spatial dimension</span>

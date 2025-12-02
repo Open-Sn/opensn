@@ -923,7 +923,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195`
 
-- :ref:`exhale_function_namespaceopensn_1a1c1246623d517531a8809a3d3b9353cf`
+- :ref:`exhale_function_namespaceopensn_1a22863db76f9fc3f1dda77adc84efb5cd`
 
 - :ref:`exhale_function_namespaceopensn_1a6c9b162528be69b3b3ef1bdc01ee0136`
 
@@ -1034,6 +1034,8 @@ Typedefs
 --------
 
 
+- :ref:`exhale_typedef_namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559`
+
 - :ref:`exhale_typedef_namespaceopensn_1a9c76e5b0d99acccc20a0bfbcd6b225f8`
 
 - :ref:`exhale_typedef_namespaceopensn_1af22b592ef6d05c38e1c97745f4137cdf`
@@ -1048,7 +1050,7 @@ Typedefs
 
 - :ref:`exhale_typedef_namespaceopensn_1aeb154be38822e4985fc82f625f079c27`
 
-- :ref:`exhale_typedef_namespaceopensn_1a85756929ccbb76fdb6fc67d2d9b6ea6d`
+- :ref:`exhale_typedef_namespaceopensn_1a533f9e99061d7d6a43e7ccf5cd4fefb1`
 
 - :ref:`exhale_typedef_namespaceopensn_1a003837ff9e3681f8435682c359f65651`
 
