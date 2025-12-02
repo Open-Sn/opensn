@@ -568,7 +568,7 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
     }
 
-    block_array->InsertNextValue(cell.block_id);
+    block_array->InsertNextValue(static_cast<int>(cell.block_id));
     partition_id_array->InsertNextValue(cell.partition_id);
   } // for local cells
   ugrid->SetPoints(points);

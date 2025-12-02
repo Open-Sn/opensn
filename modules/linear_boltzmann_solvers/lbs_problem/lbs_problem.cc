@@ -231,8 +231,8 @@ LBSProblem::ClearBoundaries()
   boundary_preferences_.clear();
 }
 
-const std::map<int, std::shared_ptr<MultiGroupXS>>&
-LBSProblem::GetMatID2XSMap() const
+const BlockID2XSMap&
+LBSProblem::GetBlockID2XSMap() const
 {
   return block_id_to_xs_map_;
 }
@@ -812,7 +812,7 @@ LBSProblem::InitializeXSmapAndDensities(const InputParameters& params)
 
     const auto& block_ids_param = xs_entry_pars.GetParam("block_ids");
     block_ids_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-    const auto& block_ids = block_ids_param.GetVectorValue<int>();
+    const auto& block_ids = block_ids_param.GetVectorValue<unsigned int>();
     auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
@@ -831,11 +831,12 @@ LBSProblem::InitializeMaterials()
 
   // Create set of material ids locally relevant
   int invalid_mat_cell_count = 0;
-  std::set<int> unique_block_ids;
+  std::set<unsigned int> unique_block_ids;
   for (auto& cell : grid_->local_cells)
   {
     unique_block_ids.insert(cell.block_id);
-    if (cell.block_id < 0 or (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
+    if (cell.block_id == std::numeric_limits<unsigned int>::max() or
+        (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
       ++invalid_mat_cell_count;
   }
   const auto& ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
@@ -843,7 +844,8 @@ LBSProblem::InitializeMaterials()
   {
     const auto& cell = grid_->cells[cell_id];
     unique_block_ids.insert(cell.block_id);
-    if (cell.block_id < 0 or (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
+    if (cell.block_id == std::numeric_limits<unsigned int>::max() or
+        (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
       ++invalid_mat_cell_count;
   }
   OpenSnLogicalErrorIf(invalid_mat_cell_count > 0,

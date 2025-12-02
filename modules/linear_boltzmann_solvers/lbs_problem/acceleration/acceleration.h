@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include <vector>
 #include <map>
 #include <memory>
@@ -75,9 +76,7 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
              bool vacuum_bcs_are_dirichlet = true);
 
 /// Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.
-std::map<int, Multigroup_D_and_sigR>
-PackGroupsetXS(const std::map<int, std::shared_ptr<MultiGroupXS>>& matid_to_xs_map,
-               int first_grp_index,
-               int last_group_index);
+std::map<unsigned int, Multigroup_D_and_sigR>
+PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map, int first_grp_index, int last_group_index);
 
 } // namespace opensn

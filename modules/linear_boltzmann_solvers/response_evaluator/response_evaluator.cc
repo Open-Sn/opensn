@@ -235,7 +235,7 @@ ResponseEvaluator::GetMaterialSourceOptionsBlock()
   params.SetGeneralDescription(
     "Options for adding material-based forward sources to the response evaluator.");
 
-  params.AddRequiredParameter<int>("block_id", "The block id the source belongs to.");
+  params.AddRequiredParameter<unsigned int>("block_id", "The block id the source belongs to.");
   params.AddRequiredParameterArray("strength", "The group-wise material source strength.");
 
   return params;
@@ -244,7 +244,7 @@ ResponseEvaluator::GetMaterialSourceOptionsBlock()
 void
 ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
 {
-  const auto blkid = params.GetParamValue<int>("block_id");
+  const auto blkid = params.GetParamValue<unsigned int>("block_id");
   OpenSnInvalidArgumentIf(material_sources_.count(blkid) > 0,
                           "A material source for block id " + std::to_string(blkid) +
                             " already exists.");

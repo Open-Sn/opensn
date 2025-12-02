@@ -58,7 +58,7 @@ public:
 
   struct TwoGridAccelerationInfo
   {
-    std::map<int, TwoGridCollapsedInfo> map_mat_id_2_tginfo;
+    std::map<unsigned int, TwoGridCollapsedInfo> map_mat_id_2_tginfo;
     EnergyCollapseScheme scheme = EnergyCollapseScheme::JFULL;
   } tg_acceleration_info_;
 
