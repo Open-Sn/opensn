@@ -54,7 +54,7 @@ AngleAggregation::ZeroIncomingDelayedPsi()
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxOld())
@@ -100,7 +100,7 @@ AngleAggregation::InitializeReflectingBCs()
     {
       auto tot_num_angles = static_cast<int>(quadrature_->abscissae.size());
       size_t num_local_cells = grid_->local_cells.size();
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       const auto& normal = rbndry.GetNormal();
 
@@ -253,7 +253,7 @@ AngleAggregation::GetNumDelayedAngularDOFs()
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxNew())
@@ -295,7 +295,7 @@ AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_r
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxNew())
@@ -341,7 +341,7 @@ AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_r
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxOld())
@@ -387,7 +387,7 @@ AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxOld())
@@ -433,7 +433,7 @@ AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxNew())
@@ -484,7 +484,7 @@ AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxNew())
@@ -532,7 +532,7 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxNew())
@@ -574,7 +574,7 @@ AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxOld())
@@ -622,7 +622,7 @@ AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         for (auto& angle : rbndry.GetBoundaryFluxOld())
@@ -659,7 +659,7 @@ AngleAggregation::SetDelayedPsiOld2New()
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         rbndry.GetBoundaryFluxNew() = rbndry.GetBoundaryFluxOld();
@@ -688,7 +688,7 @@ AngleAggregation::SetDelayedPsiNew2Old()
   {
     if (bndry->IsReflecting())
     {
-      auto& rbndry = (ReflectingBoundary&)(*bndry);
+      auto& rbndry = dynamic_cast<ReflectingBoundary&>(*bndry);
 
       if (rbndry.IsOpposingReflected())
         rbndry.GetBoundaryFluxOld() = rbndry.GetBoundaryFluxNew();

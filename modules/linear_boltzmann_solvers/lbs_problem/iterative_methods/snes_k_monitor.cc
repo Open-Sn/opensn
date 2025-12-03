@@ -14,7 +14,7 @@ namespace opensn
 PetscErrorCode
 KEigenSNESMonitor(SNES /*unused*/, PetscInt iter, PetscReal rnorm, void* ctx)
 {
-  auto& residual_context = *(KResidualFunctionContext*)ctx;
+  auto& residual_context = *static_cast<KResidualFunctionContext*>(ctx);
 
   double k_eff = residual_context.k_eff;
   double reactivity = (k_eff - 1.0) / k_eff;
@@ -34,7 +34,7 @@ KEigenSNESMonitor(SNES /*unused*/, PetscInt iter, PetscReal rnorm, void* ctx)
 PetscErrorCode
 KEigenKSPMonitor(KSP ksp, PetscInt iter, PetscReal rnorm, void* ctx)
 {
-  auto& residual_context = *(KResidualFunctionContext*)ctx;
+  auto& residual_context = *static_cast<KResidualFunctionContext*>(ctx);
 
   std::stringstream iter_info;
   iter_info << "      " << program_timer.GetTimeString() << " " << residual_context.solver_name

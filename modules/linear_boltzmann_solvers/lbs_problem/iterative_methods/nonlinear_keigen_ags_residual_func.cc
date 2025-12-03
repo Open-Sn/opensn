@@ -16,7 +16,7 @@ PetscErrorCode
 NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
   const std::string fname = "SNESKResidualFunction";
-  auto& function_context = *((KResidualFunctionContext*)ctx);
+  auto& function_context = *static_cast<KResidualFunctionContext*>(ctx);
 
   NLKEigenAGSContext* nl_context_ptr = nullptr;
   SNESGetApplicationContext(snes, static_cast<void*>(&nl_context_ptr));

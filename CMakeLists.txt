@@ -148,13 +148,30 @@ else()
 endif()
 
 find_package(PETSc 3.17 REQUIRED)
+# Check PETSc uses 64bit indices
 check_symbol_exists(PETSC_USE_64BIT_INDICES "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_USE_64BIT_INDICES)
 if(NOT ${PETSC_USE_64BIT_INDICES} MATCHES 1)
   message(FATAL_ERROR "PETSc has not been configured with the flag --with-64-bit-indices\n")
 endif()
+
+# Check PETSc includes support for PTSCOTCH
 check_symbol_exists(PETSC_HAVE_PTSCOTCH "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_HAVE_PTSCOTCH)
 if(NOT ${PETSC_HAVE_PTSCOTCH} MATCHES 1)
   message(FATAL_ERROR "PETSc has not been configured with PTSCOTCH\n")
+endif()
+
+# Check PetscScalar is double
+check_symbol_exists(PETSC_USE_REAL_DOUBLE "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_USE_REAL_DOUBLE)
+if(NOT PETSC_USE_REAL_DOUBLE)
+  message(FATAL_ERROR
+    "PETSc has not been configured with double precision reals.\n"
+    "Reconfigure PETSc with --with-precision=double")
+endif()
+check_symbol_exists(PETSC_USE_COMPLEX "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_USE_COMPLEX)
+if(PETSC_USE_COMPLEX)
+  message(FATAL_ERROR
+    "PETSc has been configured with complex scalars.\n"
+    "Reconfigure PETSc with --with-scalar-type=real")
 endif()
 
 find_package(caliper REQUIRED)
