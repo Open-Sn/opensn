@@ -6,6 +6,7 @@
 #include "framework/logging/log.h"
 #include <fstream>
 #include <algorithm>
+#include <optional>
 
 namespace opensn
 {
@@ -42,7 +43,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   // Reading every line
   std::string file_line;
   std::string delimiter = " ";
-  int material_id = -1;
+  std::optional<unsigned int> material_id;
   while (std::getline(file, file_line))
   {
     // Get the first word
@@ -64,7 +65,11 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     if (first_word == "usemtl")
     {
       log.Log0Verbose1() << "New material at cell count: " << block_data.back().cells.size();
-      ++material_id;
+
+      if (not material_id.has_value())
+        material_id = 0;
+      else
+        ++material_id.value();
     }
 
     // Keyword "v" for Vertex
@@ -116,7 +121,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
         sub_type = CellType::QUADRILATERAL;
 
       auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON, sub_type);
-      cell->block_id = material_id;
+      cell->block_id = material_id.value_or(std::numeric_limits<unsigned int>::max());
 
       // Populate vertex-ids
       for (size_t k = 1; k <= number_of_verts; ++k)
@@ -210,7 +215,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     } // if (first_word == "l")
   }
   file.close();
-  log.Log0Verbose0() << "Max material id: " << material_id;
+  if (material_id.has_value())
+    log.Log0Verbose0() << "Max material id: " << material_id.value();
 
   // Error checks
   for (const auto& block : block_data)
