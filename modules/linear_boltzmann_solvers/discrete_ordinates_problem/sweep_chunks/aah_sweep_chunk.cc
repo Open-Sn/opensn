@@ -51,31 +51,57 @@ AAHSweepChunk::AAHSweepChunk(const std::shared_ptr<MeshContinuum>& grid,
   {
     cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_Generic;
 
-    if (min_num_cell_dofs == 4 and max_num_cell_dofs == 4)
+    if (min_num_cell_dofs == max_num_cell_dofs and min_num_cell_dofs >= 2 and
+        min_num_cell_dofs <= 8)
     {
-      cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_N4;
-
-      auto block_size = [&](size_t gs_size) -> size_t
+      switch (min_num_cell_dofs)
       {
-        if (gs_size <= simd_width)
-          return gs_size;
-
-        size_t target = 0;
-        if (gs_size >= 16 * simd_width)
-          target = 4 * simd_width;
-        else if (gs_size >= 4 * simd_width)
-          target = 2 * simd_width;
-        else
-          target = 1 * simd_width;
-
-        target = std::min(target, gs_size);
-        if (target >= simd_width)
-          target = (target / simd_width) * simd_width;
-        return target;
-      };
-
-      group_block_size_ = block_size(groupset_.groups.size());
+        case 2:
+          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<2>;
+          break;
+        case 3:
+          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<3>;
+          break;
+        case 4:
+          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<4>;
+          break;
+        case 5:
+          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<5>;
+          break;
+        case 6:
+          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<6>;
+          break;
+        case 7:
+          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<7>;
+          break;
+        case 8:
+          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<8>;
+          break;
+        default:
+          break;
+      }
     }
+
+    auto block_size = [&](size_t gs_size) -> size_t
+    {
+      if (gs_size <= simd_width)
+        return gs_size;
+
+      size_t target = 0;
+      if (gs_size >= 16 * simd_width)
+        target = 4 * simd_width;
+      else if (gs_size >= 4 * simd_width)
+        target = 2 * simd_width;
+      else
+        target = 1 * simd_width;
+
+      target = std::min(target, gs_size);
+      if (target >= simd_width)
+        target = (target / simd_width) * simd_width;
+      return target;
+    };
+
+    group_block_size_ = block_size(groupset_.groups.size());
   }
 }
 
