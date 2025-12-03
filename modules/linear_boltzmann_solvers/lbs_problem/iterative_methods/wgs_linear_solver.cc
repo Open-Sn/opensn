@@ -75,7 +75,8 @@ WGSLinearSolver::SetSystem()
                  &A_);
 
   // Set the action-operator
-  MatShellSetOperation(A_, MATOP_MULT, (void (*)())LinearSolverMatrixAction);
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,modernize-redundant-void-arg)
+  MatShellSetOperation(A_, MATOP_MULT, (void (*)(void))LinearSolverMatrixAction);
 
   // Set solver operators
   KSPSetOperators(ksp_, A_, A_);

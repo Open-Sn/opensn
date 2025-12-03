@@ -272,15 +272,12 @@ CommunicateGhostEntries(Vec x)
 GhostVecLocalRaw
 GetGhostVectorLocalViewRead(Vec x)
 {
-  Vec x_localized = nullptr;
-  VecGhostGetLocalForm(x, &x_localized);
-  const double* x_localized_raw = nullptr;
-
-  VecGetArrayRead(x_localized, &x_localized_raw);
-
   GhostVecLocalRaw local_data;
-  local_data.x_localized = x_localized;
-  local_data.x_localized_raw = (double*)x_localized_raw;
+
+  VecGhostGetLocalForm(x, &local_data.x_localized);
+
+  local_data.x_localized_raw = nullptr;
+  VecGetArrayRead(local_data.x_localized, &local_data.x_localized_raw);
 
   return local_data;
 }
@@ -288,7 +285,7 @@ GetGhostVectorLocalViewRead(Vec x)
 void
 RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data)
 {
-  VecRestoreArrayRead(local_data.x_localized, (const double**)&local_data.x_localized_raw);
+  VecRestoreArrayRead(local_data.x_localized, &local_data.x_localized_raw);
   VecGhostRestoreLocalForm(x, &local_data.x_localized);
 }
 
