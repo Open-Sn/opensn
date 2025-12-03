@@ -11,12 +11,6 @@
 namespace opensn
 {
 
-static inline bool
-HasNonZeroTotalSize(const std::vector<std::size_t>& sizes)
-{
-  return std::accumulate(sizes.begin(), sizes.end(), 0UL) > 0;
-}
-
 AAHD_Bank::AAHD_Bank(const AAHD_Bank& other)
   : host_storage(other.host_storage), device_storage(other.device_storage.size())
 {
@@ -55,62 +49,25 @@ AAHD_Bank::Clear()
   device_storage.reset();
 }
 
-AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& sizes,
-                                     std::size_t num_groups_and_angles)
+AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& location_sizes,
+                                     const std::vector<std::size_t>& location_offsets,
+                                     std::size_t stride_size)
+  : location_sizes_(&location_sizes),
+    location_offsets_(&location_offsets),
+    stride_size_(stride_size)
 {
-  // compute total size and offsets
-  host_offsets.resize(sizes.size());
-  std::size_t total_size = 0;
-  for (std::size_t i = 0; i < sizes.size(); ++i)
-  {
-    host_offsets[i] = total_size;
-    total_size += sizes[i] * num_groups_and_angles;
-  }
-  // copy offsets from host to device
-  device_offsets = crb::DeviceMemory<std::uint64_t>(host_offsets.size());
-  crb::copy(device_offsets, host_offsets, host_offsets.size());
-  // allocate storage
-  host_storage = crb::HostVector<double>(total_size, 0.0);
-  device_storage = crb::DeviceMemory<double>(total_size);
-}
-
-AAHD_NonLocalBank::AAHD_NonLocalBank(const AAHD_NonLocalBank& other)
-  : AAHD_Bank(other), host_offsets(other.host_offsets), device_offsets(other.device_offsets.size())
-{
-  crb::copy(device_offsets, other.device_offsets, device_offsets.size());
-}
-
-AAHD_NonLocalBank&
-AAHD_NonLocalBank::operator=(const AAHD_NonLocalBank& other)
-{
-  if (this != &other)
-  {
-    AAHD_Bank::operator=(other);
-    host_offsets = other.host_offsets;
-    if (device_offsets.size() != other.device_offsets.size())
-      device_offsets = crb::DeviceMemory<std::uint64_t>(other.device_offsets.size());
-    crb::copy(device_offsets, other.device_offsets, device_offsets.size());
-  }
-  return *this;
-}
-
-void
-AAHD_NonLocalBank::Clear()
-{
-  AAHD_Bank::Clear();
-  host_offsets.clear();
-  device_offsets.reset();
+  host_storage = crb::HostVector<double>(location_offsets.back() * stride_size, 0.0);
+  device_storage = crb::DeviceMemory<double>(location_offsets.back() * stride_size);
 }
 
 void
 AAHD_NonLocalBank::UpdateViews(std::vector<std::span<double>>& views)
 {
-  views.resize(host_offsets.size());
-  for (std::size_t i = 0; i < host_offsets.size(); ++i)
+  views.resize(location_sizes_->size());
+  for (std::size_t i = 0; i < location_sizes_->size(); ++i)
   {
-    views[i] = std::span<double>(
-      host_storage.data() + host_offsets[i],
-      (i + 1 < host_offsets.size() ? host_offsets[i + 1] : host_storage.size()) - host_offsets[i]);
+    views[i] = std::span<double>(host_storage.data() + (*location_offsets_)[i] * stride_size_,
+                                 (*location_sizes_)[i] * stride_size_);
   }
 }
 
@@ -146,8 +103,9 @@ AAHD_FLUDS::AllocateInternalLocalPsi()
 void
 AAHD_FLUDS::AllocateOutgoingPsi()
 {
-  nonlocal_outgoing_psi_bank_ =
-    AAHD_NonLocalBank(common_data_.GetNumNonLocalOutgoingNodes(), num_groups_and_angles_);
+  nonlocal_outgoing_psi_bank_ = AAHD_NonLocalBank(common_data_.GetNumNonLocalOutgoingNodes(),
+                                                  common_data_.GetNonLocalOutgoingNodeOffsets(),
+                                                  num_groups_and_angles_);
   nonlocal_outgoing_psi_bank_.UpdateViews(deplocI_outgoing_psi_view_);
 }
 
@@ -165,8 +123,9 @@ AAHD_FLUDS::AllocateDelayedLocalPsi()
 void
 AAHD_FLUDS::AllocatePrelocIOutgoingPsi()
 {
-  nonlocal_incoming_psi_bank_ =
-    AAHD_NonLocalBank(common_data_.GetNumNonLocalIncomingNodes(), num_groups_and_angles_);
+  nonlocal_incoming_psi_bank_ = AAHD_NonLocalBank(common_data_.GetNumNonLocalIncomingNodes(),
+                                                  common_data_.GetNonLocalIncomingNodeOffsets(),
+                                                  num_groups_and_angles_);
   nonlocal_incoming_psi_bank_.UpdateViews(prelocI_outgoing_psi_view_);
 }
 
@@ -174,10 +133,14 @@ void
 AAHD_FLUDS::AllocateDelayedPrelocIOutgoingPsi()
 {
   nonlocal_delayed_incoming_psi_bank_ =
-    AAHD_NonLocalBank(common_data_.GetNumNonLocalDelayedIncomingNodes(), num_groups_and_angles_);
+    AAHD_NonLocalBank(common_data_.GetNumNonLocalDelayedIncomingNodes(),
+                      common_data_.GetNonLocalDelayedIncomingNodeOffsets(),
+                      num_groups_and_angles_);
   nonlocal_delayed_incoming_psi_bank_.UpdateViews(delayed_prelocI_outgoing_psi_view_);
   nonlocal_delayed_incoming_psi_old_bank_ =
-    AAHD_NonLocalBank(common_data_.GetNumNonLocalDelayedIncomingNodes(), num_groups_and_angles_);
+    AAHD_NonLocalBank(common_data_.GetNumNonLocalDelayedIncomingNodes(),
+                      common_data_.GetNonLocalDelayedIncomingNodeOffsets(),
+                      num_groups_and_angles_);
   nonlocal_delayed_incoming_psi_old_bank_.UpdateViews(delayed_prelocI_outgoing_psi_old_view_);
 }
 
@@ -246,30 +209,23 @@ AAHD_FLUDS::GetDevicePointerSet()
     assert(pointer_set.delayed_local_psi_old != nullptr);
   }
   // non-local psi
-  pointer_set.nonlocal_incoming_offsets = nonlocal_incoming_psi_bank_.device_offsets.get();
   pointer_set.nonlocal_incoming_psi = nonlocal_incoming_psi_bank_.device_storage.get();
-  if (HasNonZeroTotalSize(common_data_.GetNumNonLocalIncomingNodes()))
+  if (common_data_.GetNonLocalIncomingNodeOffsets().back() > 0)
   {
-    assert(pointer_set.nonlocal_incoming_offsets != nullptr);
     assert(pointer_set.nonlocal_incoming_psi != nullptr);
   }
-  pointer_set.nonlocal_delayed_incoming_offsets =
-    nonlocal_delayed_incoming_psi_bank_.device_offsets.get();
   pointer_set.nonlocal_delayed_incoming_psi =
     nonlocal_delayed_incoming_psi_bank_.device_storage.get();
   pointer_set.nonlocal_delayed_incoming_psi_old =
     nonlocal_delayed_incoming_psi_old_bank_.device_storage.get();
-  if (HasNonZeroTotalSize(common_data_.GetNumNonLocalDelayedIncomingNodes()))
+  if (common_data_.GetNonLocalDelayedIncomingNodeOffsets().back() > 0)
   {
-    assert(pointer_set.nonlocal_delayed_incoming_offsets != nullptr);
     assert(pointer_set.nonlocal_delayed_incoming_psi != nullptr);
     assert(pointer_set.nonlocal_delayed_incoming_psi_old != nullptr);
   }
-  pointer_set.nonlocal_outgoing_offsets = nonlocal_outgoing_psi_bank_.device_offsets.get();
   pointer_set.nonlocal_outgoing_psi = nonlocal_outgoing_psi_bank_.device_storage.get();
-  if (HasNonZeroTotalSize(common_data_.GetNumNonLocalOutgoingNodes()))
+  if (common_data_.GetNonLocalOutgoingNodeOffsets().back() > 0)
   {
-    assert(pointer_set.nonlocal_outgoing_offsets != nullptr);
     assert(pointer_set.nonlocal_outgoing_psi != nullptr);
   }
   // boundary psi

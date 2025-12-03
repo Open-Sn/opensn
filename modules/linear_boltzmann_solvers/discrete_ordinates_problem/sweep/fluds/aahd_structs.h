@@ -74,8 +74,6 @@ struct AAHD_DirectedEdgeNode
   AAHD_FaceNode upwind_node;
   /// Downwind face node.
   AAHD_FaceNode downwind_node;
-  /// Flag indicating if the node is removable in the stack
-  bool is_removable = true;
 
   /// Check if the directed edge is initialized.
   constexpr bool IsInitialized() const
@@ -156,9 +154,6 @@ private:
 class AAHD_NodeIndex
 {
 public:
-  /// Integer representation of the current location (``1`` on the last 21 bits).
-  static constexpr std::uint32_t current_loc = (std::uint32_t(1) << 21) - 1;
-
   /// Default constructor
   AAHD_NodeIndex() = default;
 
@@ -167,28 +162,25 @@ public:
 
   /**
    * Contruct a non-boundary node index.
-   * \param index Index into the corresponding bank. Cannot exceed 2^40 - 1.
+   * \param index Index into the corresponding bank. Cannot exceed 2^60 - 1.
    * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.
+   * \param is_local Flag indicating if the index is in a local bank.
    * \param is_delayed Flag indicating if the index is in a delayed bank.
    * \param loc_index Index into delayed/non-delayed location dependencies/successors vector for
    * non-local nodes. Cannot exceed 2^21 - 1.
    */
-  AAHD_NodeIndex(std::uint64_t index,
-                 bool is_outgoing,
-                 bool is_delayed,
-                 std::uint32_t loc_index = AAHD_NodeIndex::current_loc)
+  AAHD_NodeIndex(std::uint64_t index, bool is_outgoing, bool is_local, bool is_delayed)
   {
-    if (loc_index > current_loc)
-      throw std::runtime_error("Cannot accomodate MPI with rank greater than 2^21.");
-    if (index >= (std::uint64_t(1) << 40) - 1)
-      throw std::runtime_error("Cannot hold an index greater than 2^40.");
+    if (index >= (std::uint64_t(1) << 60) - 1)
+      throw std::runtime_error("Cannot hold an index greater than 2^60.");
     SetInOut(is_outgoing);
+    SetLocal(is_local);
     SetDelayed(is_delayed);
     SetBoundary(false);
-    SetLocation(loc_index);
     SetIndex(index);
-    if (is_outgoing && loc_index != current_loc)
-      SetDelayed(false);
+    if (is_delayed && is_outgoing && !is_local)
+      throw std::runtime_error(
+        "Non-local outgoing nodes cannot be in delayed banks in AAHD FLUDS.");
   }
 
   /**
@@ -198,10 +190,11 @@ public:
    */
   AAHD_NodeIndex(std::uint64_t index, bool is_outgoing)
   {
-    if (index >= (std::uint64_t(1) << 40) - 1)
-      throw std::runtime_error("Cannot hold an index greater than 2^40.");
+    if (index >= (std::uint64_t(1) << 60) - 1)
+      throw std::runtime_error("Cannot hold an index greater than 2^60.");
     SetInOut(is_outgoing);
     SetDelayed(false);
+    SetLocal(true);
     SetBoundary(true);
     SetIndex(index);
   }
@@ -222,10 +215,7 @@ public:
   constexpr bool IsBoundary() const noexcept { return (value_ & boundary_bit_mask) != 0; }
 
   /// Check if the current index is corresponding to a local bank.
-  constexpr bool IsLocal() const noexcept { return GetRank() == current_loc; }
-
-  /// Get the rank encoded by the index (not working for current rank).
-  constexpr std::uint32_t GetRank() const noexcept { return (value_ & loc_bit_mask) >> 40; }
+  constexpr bool IsLocal() const noexcept { return (value_ & local_bit_mask) != 0; }
 
   /// Get the index into the bank.
   constexpr std::uint64_t GetIndex() const noexcept { return value_ & index_bit_mask; }
@@ -276,23 +266,24 @@ private:
   }
   /// \}
 
-  /// \name Location bits
+  /// \name Local bit
   /// \{
-  /// Location bit mask (``1`` from the 4th to 24th bit).
-  static constexpr std::uint64_t loc_bit_mask = std::uint64_t(current_loc) << (64 - 3 - 21);
-  /// Encode the location.
-  constexpr void SetLocation(const std::uint32_t& loc_index) noexcept
+  /// Third bit mask (``0001`` followed by 60 zeros).
+  static constexpr std::uint64_t local_bit_mask = std::uint64_t(1) << (64 - 4);
+  /// Encode the value as local.
+  constexpr void SetLocal(bool is_local) noexcept
   {
-    std::uint64_t v = std::uint64_t(loc_index & current_loc) << (64 - 3 - 21);
-    value_ &= ~loc_bit_mask;
-    value_ |= v;
+    if (is_local)
+      value_ |= local_bit_mask;
+    else
+      value_ &= ~local_bit_mask;
   }
   /// \}
 
   /// \name Index bits
   /// \{
-  /// Index bit mask (``1`` at the last 40 bits)
-  static constexpr std::uint64_t index_bit_mask = (std::uint64_t(1) << (64 - 3 - 21)) - 1;
+  /// Index bit mask (``1`` at the last 60 bits)
+  static constexpr std::uint64_t index_bit_mask = (std::uint64_t(1) << (64 - 4)) - 1;
   /// Encode the index.
   constexpr void SetIndex(const std::uint64_t& index) noexcept
   {
@@ -320,18 +311,12 @@ struct AAHD_FLUDSPointerSet
   double* delayed_local_psi = nullptr;
   /// Pointer to delayed old local angular fluxes.
   double* delayed_local_psi_old = nullptr;
-  /// Pointer to non-local incoming offset.
-  std::uint64_t* nonlocal_incoming_offsets = nullptr;
   /// Pointer to non-local incoming angular fluxes.
   double* nonlocal_incoming_psi = nullptr;
-  /// Pointer to non-local delayed incoming offset.
-  std::uint64_t* nonlocal_delayed_incoming_offsets = nullptr;
   /// Pointer to non-local delayed incoming angular fluxes.
   double* nonlocal_delayed_incoming_psi = nullptr;
   /// Pointer to non-local old delayed incoming angular fluxes.
   double* nonlocal_delayed_incoming_psi_old = nullptr;
-  /// Pointer to non-local outgoing offset.
-  std::uint64_t* nonlocal_outgoing_offsets = nullptr;
   /// Pointer to non-local outgoing angular fluxes.
   double* nonlocal_outgoing_psi = nullptr;
   /// Pointer to boundary angular fluxes.
@@ -374,14 +359,11 @@ struct AAHD_FLUDSPointerSet
     {
       if (node_index.IsDelayed())
       {
-        return nonlocal_delayed_incoming_psi_old +
-               nonlocal_delayed_incoming_offsets[node_index.GetRank()] +
-               node_index.GetIndex() * stride_size;
+        return nonlocal_delayed_incoming_psi_old + node_index.GetIndex() * stride_size;
       }
       else
       {
-        return nonlocal_incoming_psi + nonlocal_incoming_offsets[node_index.GetRank()] +
-               node_index.GetIndex() * stride_size;
+        return nonlocal_incoming_psi + node_index.GetIndex() * stride_size;
       }
     }
   }
@@ -419,65 +401,7 @@ struct AAHD_FLUDSPointerSet
     // non-local case
     else
     {
-      return nonlocal_outgoing_psi + nonlocal_outgoing_offsets[node_index.GetRank()] +
-             node_index.GetIndex() * stride_size;
-    }
-  }
-
-  /// Get pointer to the angular flux corresponding to the given node index.
-  constexpr double* GetPointer(const AAHD_NodeIndex& node_index) const noexcept
-  {
-    // undefined case (parallel face) : all tests are true
-    if (node_index.IsUndefined())
-    {
-      return nullptr;
-    }
-    // boundary case : non-delayed and local tests are true
-    if (node_index.IsBoundary())
-    {
-      return boundary_psi + node_index.GetIndex() * stride_size;
-    }
-    // local case
-    if (node_index.IsLocal())
-    {
-      if (node_index.IsDelayed())
-      {
-        if (node_index.IsOutGoing())
-        {
-          return delayed_local_psi + node_index.GetIndex() * stride_size;
-        }
-        else
-        {
-          return delayed_local_psi_old + node_index.GetIndex() * stride_size;
-        }
-      }
-      else
-      {
-        return local_psi + node_index.GetIndex() * stride_size;
-      }
-    }
-    // non-local case
-    else
-    {
-      if (node_index.IsOutGoing())
-      {
-        return nonlocal_outgoing_psi + nonlocal_outgoing_offsets[node_index.GetRank()] +
-               node_index.GetIndex() * stride_size;
-      }
-      else
-      {
-        if (node_index.IsDelayed())
-        {
-          return nonlocal_delayed_incoming_psi_old +
-                 nonlocal_delayed_incoming_offsets[node_index.GetRank()] +
-                 node_index.GetIndex() * stride_size;
-        }
-        else
-        {
-          return nonlocal_incoming_psi + nonlocal_incoming_offsets[node_index.GetRank()] +
-                 node_index.GetIndex() * stride_size;
-        }
-      }
+      return nonlocal_outgoing_psi + node_index.GetIndex() * stride_size;
     }
   }
 };

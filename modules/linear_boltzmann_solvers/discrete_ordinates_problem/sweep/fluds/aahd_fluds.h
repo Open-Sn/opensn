@@ -67,8 +67,7 @@ struct AAHD_DelayedLocalBank : public AAHD_Bank
   /// \brief Default constructor.
   AAHD_DelayedLocalBank() = default;
   /// \brief Member constructor.
-  AAHD_DelayedLocalBank(std::size_t size, std::size_t num_groups_and_angles)
-    : AAHD_Bank(size * num_groups_and_angles)
+  AAHD_DelayedLocalBank(std::size_t size, std::size_t stride_size) : AAHD_Bank(size * stride_size)
   {
   }
   /// \}
@@ -84,10 +83,7 @@ struct AAHD_BoundaryBank : public AAHD_Bank
   /// \brief Default constructor.
   AAHD_BoundaryBank() = default;
   /// \brief Member constructor.
-  AAHD_BoundaryBank(std::size_t size, std::size_t num_groups_and_angles)
-    : AAHD_Bank(size * num_groups_and_angles)
-  {
-  }
+  AAHD_BoundaryBank(std::size_t size, std::size_t stride_size) : AAHD_Bank(size * stride_size) {}
   /// \}
 };
 
@@ -101,15 +97,17 @@ struct AAHD_NonLocalBank : public AAHD_Bank
   /// \brief Default constructor.
   AAHD_NonLocalBank() = default;
   /// \brief Member constructor.
-  AAHD_NonLocalBank(const std::vector<std::size_t>& sizes, std::size_t num_groups_and_angles);
+  AAHD_NonLocalBank(const std::vector<std::size_t>& location_sizes,
+                    const std::vector<std::size_t>& location_offsets,
+                    std::size_t stride_size);
   /// \}
 
   /// \name Copy and move
   /// \{
   /// \brief Copy constructor.
-  AAHD_NonLocalBank(const AAHD_NonLocalBank& other);
+  AAHD_NonLocalBank(const AAHD_NonLocalBank& other) = default;
   /// \brief Copy assignment.
-  AAHD_NonLocalBank& operator=(const AAHD_NonLocalBank& other);
+  AAHD_NonLocalBank& operator=(const AAHD_NonLocalBank& other) = default;
   /// \brief Move constructor.
   AAHD_NonLocalBank(AAHD_NonLocalBank&& other) = default;
   /// \brief Move assignment.
@@ -118,18 +116,18 @@ struct AAHD_NonLocalBank : public AAHD_Bank
 
   /// \name Actions
   /// \{
-  /// \brief Clear storage and offset.
-  void Clear();
   /// \brief Update views.
   void UpdateViews(std::vector<std::span<double>>& views);
   /// \}
 
   /// \name Members
   /// \{
-  /// \brief Host offsets for each locations.
-  crb::HostVector<std::uint64_t> host_offsets;
-  /// \brief Device offsets for each locations.
-  crb::DeviceMemory<std::uint64_t> device_offsets;
+  /// Reference to the sizes of each location.
+  const std::vector<std::size_t>* location_sizes_;
+  /// Reference to the offsets of each location.
+  const std::vector<std::size_t>* location_offsets_;
+  /// Stride size.
+  std::size_t stride_size_;
   /// \}
 };
 
