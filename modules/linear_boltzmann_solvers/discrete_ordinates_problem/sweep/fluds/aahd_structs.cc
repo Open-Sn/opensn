@@ -59,7 +59,7 @@ std::operator<<(std::ostream& out, const opensn::AAHD_NodeIndex& e)
       if (e.IsLocal())
         out << "is_local=true";
       else
-        out << "loc=" << e.GetRank();
+        out << "is_local=false";
     }
   }
   out << ")";

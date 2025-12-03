@@ -6,6 +6,7 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include <algorithm>
+#include <queue>
 #include <set>
 #include <utility>
 #include <vector>
@@ -38,20 +39,24 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
                                           spds_.GetLocalSweepFAS().end());
   // for each level
   const MeshContinuum& grid = *(spds_.GetGrid());
-  std::vector<AAHD_DirectedEdgeNode> local_node_stack(1, AAHD_DirectedEdgeNode());
+  std::vector<AAHD_DirectedEdgeNode> local_node_stack;
+  std::queue<std::uint64_t> idle_slots;
   for (const std::vector<int>& level : topological_levels)
   {
+    std::queue<std::uint64_t> level_idle_slots;
     // for each cell in the level
     for (const int& cell_local_idx : level)
     {
-      // mark all incoming face nodes in the stack as removable
+      std::queue<std::uint64_t> cell_idle_slots;
+      // push incoming face nodes in the cell's queue of idle slots
       for (std::uint32_t i_node = 0; i_node < local_node_stack.size(); ++i_node)
       {
         AAHD_DirectedEdgeNode& node = local_node_stack[i_node];
         if (node.IsInitialized() &&
             node.downwind_node.GetCellIndex() == static_cast<std::uint32_t>(cell_local_idx))
         {
-          node.is_removable = true;
+          cell_idle_slots.push(i_node);
+          node = AAHD_DirectedEdgeNode();
         }
       }
       // build a list of outgoing nodes for the current cell
@@ -78,46 +83,53 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
           AAHD_FaceNode downwind(neighbor_local_idx,
                                  face_nodal_mapping.associated_face_,
                                  face_nodal_mapping.face_node_mapping_.at(fnode));
-          AAHD_DirectedEdgeNode new_node{upwind, downwind, false};
+          AAHD_DirectedEdgeNode new_node{upwind, downwind};
           new_outgoing_nodes.push_back(new_node);
         }
       }
       // insert new outgoing nodes into the stack
-      for (std::uint64_t stack_index = 0;
-           const AAHD_DirectedEdgeNode& new_node : new_outgoing_nodes)
+      for (const AAHD_DirectedEdgeNode& new_node : new_outgoing_nodes)
       {
-        // skip if the element is initialized, not removable or downwind cell is not current cell
-        while (stack_index != local_node_stack.size() &&
-               local_node_stack[stack_index].IsInitialized() &&
-               (!local_node_stack[stack_index].is_removable ||
-                local_node_stack[stack_index].downwind_node.GetCellIndex() !=
-                  static_cast<std::uint32_t>(cell_local_idx)))
+        std::uint64_t stack_index = std::numeric_limits<std::uint64_t>::max();
+        // check for cell idle slots first
+        if (!cell_idle_slots.empty())
         {
-          ++stack_index;
-        }
-        // overwrite available slot, otherwise, push back
-        if (stack_index != local_node_stack.size())
-        {
+          stack_index = cell_idle_slots.front();
+          cell_idle_slots.pop();
           local_node_stack[stack_index] = new_node;
         }
+        // then check for idle slots
+        else if (!idle_slots.empty())
+        {
+          stack_index = idle_slots.front();
+          idle_slots.pop();
+          local_node_stack[stack_index] = new_node;
+        }
+        // otherwise, expand the stack
         else
         {
+          stack_index = local_node_stack.size();
           local_node_stack.push_back(new_node);
         }
         // record the stack index
-        node_tracker_.emplace(new_node.upwind_node, AAHD_NodeIndex(stack_index, true, false));
-        node_tracker_.emplace(new_node.downwind_node, AAHD_NodeIndex(stack_index, false, false));
+        node_tracker_.emplace(new_node.upwind_node, AAHD_NodeIndex(stack_index, true, true, false));
+        node_tracker_.emplace(new_node.downwind_node,
+                              AAHD_NodeIndex(stack_index, false, true, false));
         ++stack_index;
       }
+      // merge cell idle slots to level idle slots
+      while (!cell_idle_slots.empty())
+      {
+        level_idle_slots.push(cell_idle_slots.front());
+        cell_idle_slots.pop();
+      }
     }
-    // uninitialize all removable nodes from the stack
-    std::for_each(local_node_stack.begin(),
-                  local_node_stack.end(),
-                  [](AAHD_DirectedEdgeNode& node)
-                  {
-                    if (node.is_removable)
-                      node = AAHD_DirectedEdgeNode();
-                  });
+    // merge level idle slots to idle slots
+    while (!level_idle_slots.empty())
+    {
+      idle_slots.push(level_idle_slots.front());
+      level_idle_slots.pop();
+    }
   }
   local_node_stack_size_ = local_node_stack.size();
 }
@@ -141,19 +153,19 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
       // check if the face is outgoing and its neighbor is the cell in the FAS edge
       if (orientation == FaceOrientation::OUTGOING && face.IsNeighborLocal(&grid))
       {
-        auto neighbor_local_idx = static_cast<int>(face.GetNeighborLocalID(&grid));
-        if (neighbor_local_idx == edge.second)
+        std::uint32_t neighbor_local_idx = face.GetNeighborLocalID(&grid);
+        if (std::cmp_equal(neighbor_local_idx, edge.second))
         {
           // record the address of all the nodes
           std::uint32_t num_face_nodes = sdm.GetCellMapping(upwind_cell).GetNumFaceNodes(f);
           for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
           {
             AAHD_FaceNode upwind(edge.first, f, fnode);
-            node_tracker_.emplace(upwind, AAHD_NodeIndex(fas_node_index, true, true));
+            node_tracker_.emplace(upwind, AAHD_NodeIndex(fas_node_index, true, true, true));
             AAHD_FaceNode downwind(edge.second,
                                    face_nodal_mapping.associated_face_,
                                    face_nodal_mapping.face_node_mapping_.at(fnode));
-            node_tracker_.emplace(downwind, AAHD_NodeIndex(fas_node_index, false, true));
+            node_tracker_.emplace(downwind, AAHD_NodeIndex(fas_node_index, false, true, true));
             fas_node_index++;
           }
         }
@@ -241,46 +253,58 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryAndNonLocalFaces(const SpatialD
     }
   }
   // for each bank, loop in lexicographic order and retrieve the index
+  std::uint64_t node_index = 0;
   for (std::uint32_t loc_idx = 0; loc_idx < incoming_bank.size(); ++loc_idx)
   {
-    std::uint64_t node_index = 0;
     for (const AAHD_NonLocalFaceNode& nl_en : incoming_bank[loc_idx])
     {
-      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, false, false, loc_idx));
+      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, false, false, false));
       node_index++;
     }
   }
+  node_index = 0;
   for (std::uint32_t loc_idx = 0; loc_idx < delayed_incoming_bank.size(); ++loc_idx)
   {
-    std::uint64_t node_index = 0;
     for (const AAHD_NonLocalFaceNode& nl_en : delayed_incoming_bank[loc_idx])
     {
-      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, false, true, loc_idx));
+      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, false, false, true));
       node_index++;
     }
   }
+  node_index = 0;
   for (std::uint32_t loc_idx = 0; loc_idx < outgoing_bank.size(); ++loc_idx)
   {
-    std::uint64_t node_index = 0;
     for (const AAHD_NonLocalFaceNode& nl_en : outgoing_bank[loc_idx])
     {
-      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, true, false, loc_idx));
+      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, true, false, false));
       node_index++;
     }
   }
   // store size
   boundary_node_size_ = incremental_boundary_index;
+  std::size_t cumulative_offset = 0;
+  nonlocal_incoming_node_offsets_ = {0};
   for (const std::set<AAHD_NonLocalFaceNode>& nl_en_set : incoming_bank)
   {
     nonlocal_incoming_node_sizes_.push_back(nl_en_set.size());
+    cumulative_offset += nl_en_set.size();
+    nonlocal_incoming_node_offsets_.push_back(cumulative_offset);
   }
+  cumulative_offset = 0;
+  nonlocal_delayed_incoming_node_offsets_ = {0};
   for (const std::set<AAHD_NonLocalFaceNode>& nl_en_set : delayed_incoming_bank)
   {
     nonlocal_delayed_incoming_node_sizes_.push_back(nl_en_set.size());
+    cumulative_offset += nl_en_set.size();
+    nonlocal_delayed_incoming_node_offsets_.push_back(cumulative_offset);
   }
+  cumulative_offset = 0;
+  nonlocal_outgoing_node_offsets_ = {0};
   for (const std::set<AAHD_NonLocalFaceNode>& nl_en_set : outgoing_bank)
   {
     nonlocal_outgoing_node_sizes_.push_back(nl_en_set.size());
+    cumulative_offset += nl_en_set.size();
+    nonlocal_outgoing_node_offsets_.push_back(cumulative_offset);
   }
 }
 

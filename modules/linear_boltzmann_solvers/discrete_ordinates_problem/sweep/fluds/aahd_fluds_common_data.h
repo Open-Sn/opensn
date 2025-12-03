@@ -64,15 +64,30 @@ public:
   {
     return nonlocal_incoming_node_sizes_;
   }
+  /// Get offsets of the incoming non-local face node banks for each location.
+  const std::vector<std::size_t>& GetNonLocalIncomingNodeOffsets() const
+  {
+    return nonlocal_incoming_node_offsets_;
+  }
   /// Get sizes of the delayed incoming non-local face node banks.
   const std::vector<std::size_t>& GetNumNonLocalDelayedIncomingNodes() const
   {
     return nonlocal_delayed_incoming_node_sizes_;
   }
+  /// Get offsets of the delayed incoming non-local face node banks for each location.
+  const std::vector<std::size_t>& GetNonLocalDelayedIncomingNodeOffsets() const
+  {
+    return nonlocal_delayed_incoming_node_offsets_;
+  }
   /// Get sizes of the outgoing non-local face node banks.
   const std::vector<std::size_t>& GetNumNonLocalOutgoingNodes() const
   {
     return nonlocal_outgoing_node_sizes_;
+  }
+  /// Get offsets of the outgoing non-local face node banks for each location.
+  const std::vector<std::size_t>& GetNonLocalOutgoingNodeOffsets() const
+  {
+    return nonlocal_outgoing_node_offsets_;
   }
   /// \}
 
@@ -96,10 +111,16 @@ protected:
   std::size_t boundary_node_size_ = 0;
   /// Size of the incoming non-local face nodes.
   std::vector<std::size_t> nonlocal_incoming_node_sizes_;
+  /// Offset of each location to its incoming non-local face nodes.
+  std::vector<std::size_t> nonlocal_incoming_node_offsets_;
   /// Size of the delayed incoming non-local face nodes.
   std::vector<std::size_t> nonlocal_delayed_incoming_node_sizes_;
+  /// Offset of each location to its delayed incoming non-local face nodes.
+  std::vector<std::size_t> nonlocal_delayed_incoming_node_offsets_;
   /// Size of the outgoing non-local face nodes.
   std::vector<std::size_t> nonlocal_outgoing_node_sizes_;
+  /// Offset of each location to its outgoing non-local face nodes.
+  std::vector<std::size_t> nonlocal_outgoing_node_offsets_;
   /// \}
 
   /// \name Device storage for node indexes
