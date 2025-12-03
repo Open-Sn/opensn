@@ -25,7 +25,7 @@ QuadratureCarrier::ComputeSize(const LBSGroupset& groupset)
   // get number of angles and number of moments
   const AngularQuadrature& quadrature = *(groupset.quadrature);
   std::size_t num_angles = quadrature.omegas.size();
-  std::size_t num_moments = quadrature.GetMomentToDiscreteOperator().size();
+  std::size_t num_moments = quadrature.GetNumMoments();
   // size of each directions
   alloc_size += num_angles * (4 * sizeof(double) + 2 * num_moments * sizeof(double));
   return alloc_size;
