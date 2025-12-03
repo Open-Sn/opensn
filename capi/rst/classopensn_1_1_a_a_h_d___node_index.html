@@ -103,24 +103,8 @@
 </p>
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-incoming/outgoing-bit">Incoming/outgoing bit</p>
-<p>First bit mask (<code class="docutils literal notranslate"><span class="pre">1</span></code> followed by 63 zeros). </p>
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-boundary-bit">Boundary bit</p>
-<p>Second bit mask (<code class="docutils literal notranslate"><span class="pre">01</span></code> followed by 62 zeros). </p>
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-delayed-bit">Delayed bit</p>
-<p>Third bit mask (<code class="docutils literal notranslate"><span class="pre">001</span></code> followed by 61 zeros). </p>
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-location-bits">Location bits</p>
-<p>Location bit mask (<code class="docutils literal notranslate"><span class="pre">1</span></code> from the 4th to 24th bit). </p>
-</div>
-<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-index-bits">Index bits</p>
-<p>Index bit mask (<code class="docutils literal notranslate"><span class="pre">1</span></code> at the last 40 bits) </p>
+<p>/ / / Index bit mask (<code class="docutils literal notranslate"><span class="pre">1</span></code> at the last 60 bits) </p>
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -137,14 +121,15 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbNSt8uint32_tE">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1af5ac8a00af68a030076fce87a8cfcbea"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_outgoing</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_delayed</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">loc_index</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbNSt8uint32_tE" title="opensn::AAHD_NodeIndex::AAHD_NodeIndex"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">current_loc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbNSt8uint32_tE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbb">
+<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a37954c058f50946178a2697d97059427"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_outgoing</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_local</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_delayed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbb" title="Link to this definition"></a><br /></dt>
 <dd><p>Contruct a non-boundary node index. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> – Index into the corresponding bank. Cannot exceed 2^40 - 1. </p></li>
+<li><p><strong>index</strong> – Index into the corresponding bank. Cannot exceed 2^60 - 1. </p></li>
 <li><p><strong>is_outgoing</strong> – Flag indicating if the node corresponds to an outgoing face. </p></li>
+<li><p><strong>is_local</strong> – Flag indicating if the index is in a local bank. </p></li>
 <li><p><strong>is_delayed</strong> – Flag indicating if the index is in a delayed bank. </p></li>
 <li><p><strong>loc_index</strong> – Index into delayed/non-delayed location dependencies/successors vector for non-local nodes. Cannot exceed 2^21 - 1. </p></li>
 </ul>
@@ -197,12 +182,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex7GetRankEv">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a7f0a17b14391e27d62b76d3127f01fd6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRank</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex7GetRankEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get the rank encoded by the index (not working for current rank). </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex8GetIndexEv">
 <span class="target" id="classopensn_1_1_a_a_h_d___node_index_1ab85ecb51709e3fe398281753787b44eb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIndex</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex8GetIndexEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Get the index into the bank. </p>
@@ -212,15 +191,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex12GetCoreValueEv">
 <span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a5c3868213d80bab3d0defa9f54eb2be0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCoreValue</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex12GetCoreValueEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Get the core value. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex11current_locE">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a0054b0b6019801704006dc6d710c142b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">current_loc</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">(</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">&lt;&lt;</span></span><span class="w"> </span><span class="m"><span class="pre">21</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex11current_locE" title="Link to this definition"></a><br /></dt>
-<dd><p>Integer representation of the current location (<code class="docutils literal notranslate"><span class="pre">1</span></code> on the last 21 bits). </p>
 </dd></dl>
 
 </div>

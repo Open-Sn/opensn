@@ -160,8 +160,6 @@
 <span class="w">  </span><span class="n">AAHD_FaceNode</span><span class="w"> </span><span class="n">upwind_node</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Downwind face node.</span>
 <span class="w">  </span><span class="n">AAHD_FaceNode</span><span class="w"> </span><span class="n">downwind_node</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Flag indicating if the node is removable in the stack</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_removable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Check if the directed edge is initialized.</span>
 <span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsInitialized</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
@@ -242,9 +240,6 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">AAHD_NodeIndex</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Integer representation of the current location (``1`` on the last 21 bits).</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">current_loc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">21</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-
 <span class="w">  </span><span class="c1">/// Default constructor</span>
 <span class="w">  </span><span class="n">AAHD_NodeIndex</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
@@ -253,28 +248,25 @@
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Contruct a non-boundary node index.</span>
-<span class="cm">   * \param index Index into the corresponding bank. Cannot exceed 2^40 - 1.</span>
+<span class="cm">   * \param index Index into the corresponding bank. Cannot exceed 2^60 - 1.</span>
 <span class="cm">   * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.</span>
+<span class="cm">   * \param is_local Flag indicating if the index is in a local bank.</span>
 <span class="cm">   * \param is_delayed Flag indicating if the index is in a delayed bank.</span>
 <span class="cm">   * \param loc_index Index into delayed/non-delayed location dependencies/successors vector for</span>
 <span class="cm">   * non-local nodes. Cannot exceed 2^21 - 1.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">AAHD_NodeIndex</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">index</span><span class="p">,</span>
-<span class="w">                 </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_outgoing</span><span class="p">,</span>
-<span class="w">                 </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_delayed</span><span class="p">,</span>
-<span class="w">                 </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">loc_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AAHD_NodeIndex</span><span class="o">::</span><span class="n">current_loc</span><span class="p">)</span>
+<span class="w">  </span><span class="n">AAHD_NodeIndex</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_outgoing</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_local</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_delayed</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">loc_index</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">current_loc</span><span class="p">)</span>
-<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Cannot accomodate MPI with rank greater than 2^21.&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">index</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">40</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Cannot hold an index greater than 2^40.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">index</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Cannot hold an index greater than 2^60.&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="n">SetInOut</span><span class="p">(</span><span class="n">is_outgoing</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SetLocal</span><span class="p">(</span><span class="n">is_local</span><span class="p">);</span>
 <span class="w">    </span><span class="n">SetDelayed</span><span class="p">(</span><span class="n">is_delayed</span><span class="p">);</span>
 <span class="w">    </span><span class="n">SetBoundary</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
-<span class="w">    </span><span class="n">SetLocation</span><span class="p">(</span><span class="n">loc_index</span><span class="p">);</span>
 <span class="w">    </span><span class="n">SetIndex</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_outgoing</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">loc_index</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">current_loc</span><span class="p">)</span>
-<span class="w">      </span><span class="n">SetDelayed</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_delayed</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">is_outgoing</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">is_local</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;Non-local outgoing nodes cannot be in delayed banks in AAHD FLUDS.&quot;</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
@@ -284,10 +276,11 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">AAHD_NodeIndex</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_outgoing</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">index</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">40</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Cannot hold an index greater than 2^40.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">index</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Cannot hold an index greater than 2^60.&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="n">SetInOut</span><span class="p">(</span><span class="n">is_outgoing</span><span class="p">);</span>
 <span class="w">    </span><span class="n">SetDelayed</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SetLocal</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
 <span class="w">    </span><span class="n">SetBoundary</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
 <span class="w">    </span><span class="n">SetIndex</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
@@ -308,10 +301,7 @@
 <span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsBoundary</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">value_</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">boundary_bit_mask</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Check if the current index is corresponding to a local bank.</span>
-<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">GetRank</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">current_loc</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">/// Get the rank encoded by the index (not working for current rank).</span>
-<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">GetRank</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">value_</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">loc_bit_mask</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">40</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">value_</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">local_bit_mask</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Get the index into the bank.</span>
 <span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value_</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">index_bit_mask</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -362,23 +352,24 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
-<span class="w">  </span><span class="c1">/// \name Location bits</span>
+<span class="w">  </span><span class="c1">/// \name Local bit</span>
 <span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// Location bit mask (``1`` from the 4th to 24th bit).</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">loc_bit_mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="n">current_loc</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">21</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// Encode the location.</span>
-<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetLocation</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">loc_index</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="c1">/// Third bit mask (``0001`` followed by 60 zeros).</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">local_bit_mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Encode the value as local.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetLocal</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">is_local</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="n">loc_index</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">current_loc</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">21</span><span class="p">);</span>
-<span class="w">    </span><span class="n">value_</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="n">loc_bit_mask</span><span class="p">;</span>
-<span class="w">    </span><span class="n">value_</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">v</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_local</span><span class="p">)</span>
+<span class="w">      </span><span class="n">value_</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">local_bit_mask</span><span class="p">;</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">      </span><span class="n">value_</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="n">local_bit_mask</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// \name Index bits</span>
 <span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// Index bit mask (``1`` at the last 40 bits)</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">index_bit_mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">21</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Index bit mask (``1`` at the last 60 bits)</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">index_bit_mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Encode the index.</span>
 <span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetIndex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
 <span class="w">  </span><span class="p">{</span>
@@ -406,18 +397,12 @@
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">delayed_local_psi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Pointer to delayed old local angular fluxes.</span>
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">delayed_local_psi_old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Pointer to non-local incoming offset.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">nonlocal_incoming_offsets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Pointer to non-local incoming angular fluxes.</span>
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">nonlocal_incoming_psi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Pointer to non-local delayed incoming offset.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_offsets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Pointer to non-local delayed incoming angular fluxes.</span>
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_psi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Pointer to non-local old delayed incoming angular fluxes.</span>
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_psi_old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Pointer to non-local outgoing offset.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">nonlocal_outgoing_offsets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Pointer to non-local outgoing angular fluxes.</span>
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">nonlocal_outgoing_psi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Pointer to boundary angular fluxes.</span>
@@ -460,14 +445,11 @@
 <span class="w">    </span><span class="p">{</span>
 <span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node_index</span><span class="p">.</span><span class="n">IsDelayed</span><span class="p">())</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_psi_old</span><span class="w"> </span><span class="o">+</span>
-<span class="w">               </span><span class="n">nonlocal_delayed_incoming_offsets</span><span class="p">[</span><span class="n">node_index</span><span class="p">.</span><span class="n">GetRank</span><span class="p">()]</span><span class="w"> </span><span class="o">+</span>
-<span class="w">               </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_psi_old</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">      </span><span class="k">else</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_incoming_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nonlocal_incoming_offsets</span><span class="p">[</span><span class="n">node_index</span><span class="p">.</span><span class="n">GetRank</span><span class="p">()]</span><span class="w"> </span><span class="o">+</span>
-<span class="w">               </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_incoming_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -505,65 +487,7 @@
 <span class="w">    </span><span class="c1">// non-local case</span>
 <span class="w">    </span><span class="k">else</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_outgoing_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nonlocal_outgoing_offsets</span><span class="p">[</span><span class="n">node_index</span><span class="p">.</span><span class="n">GetRank</span><span class="p">()]</span><span class="w"> </span><span class="o">+</span>
-<span class="w">             </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">/// Get pointer to the angular flux corresponding to the given node index.</span>
-<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">GetPointer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_NodeIndex</span><span class="o">&amp;</span><span class="w"> </span><span class="n">node_index</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// undefined case (parallel face) : all tests are true</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node_index</span><span class="p">.</span><span class="n">IsUndefined</span><span class="p">())</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// boundary case : non-delayed and local tests are true</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node_index</span><span class="p">.</span><span class="n">IsBoundary</span><span class="p">())</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">boundary_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// local case</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node_index</span><span class="p">.</span><span class="n">IsLocal</span><span class="p">())</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node_index</span><span class="p">.</span><span class="n">IsDelayed</span><span class="p">())</span>
-<span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node_index</span><span class="p">.</span><span class="n">IsOutGoing</span><span class="p">())</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">delayed_local_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="k">else</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">delayed_local_psi_old</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">      </span><span class="k">else</span>
-<span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">local_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// non-local case</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node_index</span><span class="p">.</span><span class="n">IsOutGoing</span><span class="p">())</span>
-<span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_outgoing_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nonlocal_outgoing_offsets</span><span class="p">[</span><span class="n">node_index</span><span class="p">.</span><span class="n">GetRank</span><span class="p">()]</span><span class="w"> </span><span class="o">+</span>
-<span class="w">               </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">      </span><span class="k">else</span>
-<span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node_index</span><span class="p">.</span><span class="n">IsDelayed</span><span class="p">())</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_psi_old</span><span class="w"> </span><span class="o">+</span>
-<span class="w">                 </span><span class="n">nonlocal_delayed_incoming_offsets</span><span class="p">[</span><span class="n">node_index</span><span class="p">.</span><span class="n">GetRank</span><span class="p">()]</span><span class="w"> </span><span class="o">+</span>
-<span class="w">                 </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="k">else</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_incoming_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nonlocal_incoming_offsets</span><span class="p">[</span><span class="n">node_index</span><span class="p">.</span><span class="n">GetRank</span><span class="p">()]</span><span class="w"> </span><span class="o">+</span>
-<span class="w">                 </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_outgoing_psi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">node_index</span><span class="p">.</span><span class="n">GetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">};</span>

@@ -103,17 +103,23 @@
 <dd><p>Non-local bank storage structure. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-members">Members</p>
-<p>Host offsets for each locations. </p>
+<p>Reference to the sizes of each location. </p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank12host_offsetsE">
-<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1a7f78084e7de17b05f1d9d1524ffda838"></span><span class="n"><span class="pre">crb</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">HostVector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">host_offsets</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank12host_offsetsE" title="Link to this definition"></a><br /></dt>
-<dd><p>Device offsets for each locations. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank15location_sizes_E">
+<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1a57decb6d682f9b9e6043bd600b73012c"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">location_sizes_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank15location_sizes_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Reference to the offsets of each location. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank14device_offsetsE">
-<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1afb3d0593d531c9551a6176283580eea6"></span><span class="n"><span class="pre">crb</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DeviceMemory</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">device_offsets</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank14device_offsetsE" title="Link to this definition"></a><br /></dt>
-<dd><p>Device offsets for each locations. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank17location_offsets_E">
+<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1a831d095f44e658308d1c99e8ab0ab759"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">location_offsets_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank17location_offsets_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Reference to the offsets of each location. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank12stride_size_E">
+<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1a3abae588d5bfdf757c6dff328e84b55f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride_size_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank12stride_size_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Stride size. </p>
 </dd></dl>
 
 </div>
@@ -127,8 +133,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERKNSt6vectorINSt6size_tEEENSt6size_tE">
-<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1aaff3b91d25c478f4390e9c71a5c8cc70"></span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sizes</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_groups_and_angles</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERKNSt6vectorINSt6size_tEEENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERKNSt6vectorINSt6size_tEEERKNSt6vectorINSt6size_tEEENSt6size_tE">
+<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1a65f2e6b4865c2cf5ebd6b8c208358eaf"></span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">location_sizes</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">location_offsets</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stride_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERKNSt6vectorINSt6size_tEEERKNSt6vectorINSt6size_tEEENSt6size_tE" title="Link to this definition"></a><br /></dt>
 <dd><p>Member constructor. </p>
 </dd></dl>
 
@@ -138,13 +144,13 @@
 <p>Copy constructor. </p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERK17AAHD_NonLocalBank">
-<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1abb8ed893a26ba0552c2486f2e981d643"></span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERK17AAHD_NonLocalBank" title="opensn::AAHD_NonLocalBank::AAHD_NonLocalBank"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERK17AAHD_NonLocalBank" title="Link to this definition"></a><br /></dt>
+<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1af721fdf6b6abf546144afe4b78ad2947"></span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERK17AAHD_NonLocalBank" title="opensn::AAHD_NonLocalBank::AAHD_NonLocalBank"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank17AAHD_NonLocalBankERK17AAHD_NonLocalBank" title="Link to this definition"></a><br /></dt>
 <dd><p>Copy assignment. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBankaSERK17AAHD_NonLocalBank">
-<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1a9a7bdc4de583fbe9614d40bc3ef618cb"></span><a class="reference internal" href="#_CPPv4N6opensn17AAHD_NonLocalBankE" title="opensn::AAHD_NonLocalBank"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17AAHD_NonLocalBankE" title="opensn::AAHD_NonLocalBank"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBankaSERK17AAHD_NonLocalBank" title="Link to this definition"></a><br /></dt>
+<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1ab63fc7644f94e83a07ccc8f4bbf502f1"></span><a class="reference internal" href="#_CPPv4N6opensn17AAHD_NonLocalBankE" title="opensn::AAHD_NonLocalBank"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17AAHD_NonLocalBankE" title="opensn::AAHD_NonLocalBank"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBankaSERK17AAHD_NonLocalBank" title="Link to this definition"></a><br /></dt>
 <dd><p>Copy assignment. </p>
 </dd></dl>
 
@@ -163,18 +169,11 @@
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-actions">Actions</p>
-<p>Clear storage and offset. </p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank5ClearEv">
-<span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1a8932f6f81591addda67b33c5d60c4a6f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Clear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank5ClearEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Update views. </p>
-</dd></dl>
-
+<p>Update views. </p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHD_NonLocalBank11UpdateViewsERNSt6vectorINSt4spanIdEEEE">
 <span class="target" id="structopensn_1_1_a_a_h_d___non_local_bank_1a916257b62176af821f695718b519db23"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateViews</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">views</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17AAHD_NonLocalBank11UpdateViewsERNSt6vectorINSt4spanIdEEEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Update views. </p>
-</dd></dl>
+<dd></dd></dl>
 
 </div>
 </dd></dl>

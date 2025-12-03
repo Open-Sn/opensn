@@ -153,8 +153,7 @@
 <span class="w">  </span><span class="c1">/// \brief Default constructor.</span>
 <span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \brief Member constructor.</span>
-<span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_and_angles</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num_groups_and_angles</span><span class="p">)</span>
+<span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// \}</span>
@@ -170,10 +169,7 @@
 <span class="w">  </span><span class="c1">/// \brief Default constructor.</span>
 <span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \brief Member constructor.</span>
-<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_and_angles</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num_groups_and_angles</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 <span class="p">};</span>
 
@@ -187,15 +183,17 @@
 <span class="w">  </span><span class="c1">/// \brief Default constructor.</span>
 <span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \brief Member constructor.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">sizes</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_and_angles</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_sizes</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_offsets</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// \name Copy and move</span>
 <span class="w">  </span><span class="c1">/// \{</span>
 <span class="w">  </span><span class="c1">/// \brief Copy constructor.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \brief Copy assignment.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \brief Move constructor.</span>
 <span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \brief Move assignment.</span>
@@ -204,18 +202,18 @@
 
 <span class="w">  </span><span class="c1">/// \name Actions</span>
 <span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Clear storage and offset.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Clear</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">/// \brief Update views.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateViews</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">views</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// \name Members</span>
 <span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Host offsets for each locations.</span>
-<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">HostVector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">host_offsets</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Device offsets for each locations.</span>
-<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">DeviceMemory</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">device_offsets</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Reference to the sizes of each location.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_sizes_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Reference to the offsets of each location.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_offsets_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Stride size.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 <span class="p">};</span>
 

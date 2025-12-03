@@ -150,15 +150,30 @@
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_incoming_node_sizes_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Get offsets of the incoming non-local face node banks for each location.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNonLocalIncomingNodeOffsets</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_incoming_node_offsets_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Get sizes of the delayed incoming non-local face node banks.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNumNonLocalDelayedIncomingNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_node_sizes_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Get offsets of the delayed incoming non-local face node banks for each location.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNonLocalDelayedIncomingNodeOffsets</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_node_offsets_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Get sizes of the outgoing non-local face node banks.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNumNonLocalOutgoingNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_outgoing_node_sizes_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Get offsets of the outgoing non-local face node banks for each location.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNonLocalOutgoingNodeOffsets</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">nonlocal_outgoing_node_offsets_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
@@ -182,10 +197,16 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">boundary_node_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Size of the incoming non-local face nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nonlocal_incoming_node_sizes_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Offset of each location to its incoming non-local face nodes.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nonlocal_incoming_node_offsets_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Size of the delayed incoming non-local face nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_node_sizes_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Offset of each location to its delayed incoming non-local face nodes.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_node_offsets_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Size of the outgoing non-local face nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nonlocal_outgoing_node_sizes_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Offset of each location to its outgoing non-local face nodes.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nonlocal_outgoing_node_offsets_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// \name Device storage for node indexes</span>
