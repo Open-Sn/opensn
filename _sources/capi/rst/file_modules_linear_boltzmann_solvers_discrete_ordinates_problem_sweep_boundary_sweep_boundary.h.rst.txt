@@ -30,6 +30,10 @@ Includes
 --------
 
 
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
 
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
@@ -39,6 +43,8 @@ Includes
 Included By
 -----------
 
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h`
 

@@ -49,17 +49,44 @@ Program Listing for File reflecting_boundary.h
    
      const Vector3& GetNormal() const { return normal_; }
    
-     bool IsOpposingReflected() const { return opposing_reflected_; }
+     const Vector3* GetNormalForReflection() const override { return &normal_; }
    
-     void SetOpposingReflected(bool value) { opposing_reflected_ = value; }
+     bool HasDelayedAngularFlux() const override { return true; }
    
-     AngularFluxData& GetBoundaryFluxNew() { return boundary_flux_; }
+     void InitializeDelayedAngularFlux(const std::shared_ptr<MeshContinuum>& grid,
+                                       const AngularQuadrature& quadrature) override;
    
-     AngularFluxData& GetBoundaryFluxOld() { return boundary_flux_old_; }
+     void FinalizeDelayedAngularFluxSetup(
+       uint64_t boundary_id,
+       const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries) override;
    
-     std::vector<int>& GetReflectedAngleIndexMap() { return reflected_anglenum_; }
+     void ZeroOpposingDelayedAngularFluxOld() override;
    
-     std::vector<bool>& GetAngleReadyFlags() { return angle_readyflags_; }
+     size_t CountDelayedAngularDOFsNew() const override;
+   
+     size_t CountDelayedAngularDOFsOld() const override;
+   
+     void AppendNewDelayedAngularDOFsToVector(std::vector<double>& output) const override;
+   
+     void AppendOldDelayedAngularDOFsToVector(std::vector<double>& output) const override;
+   
+     void AppendNewDelayedAngularDOFsToArray(int64_t& index, double* buffer) const override;
+   
+     void AppendOldDelayedAngularDOFsToArray(int64_t& index, double* buffer) const override;
+   
+     void SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* buffer) override;
+   
+     void SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* buffer) override;
+   
+     void SetNewDelayedAngularDOFsFromVector(const std::vector<double>& values,
+                                             size_t& index) override;
+   
+     void SetOldDelayedAngularDOFsFromVector(const std::vector<double>& values,
+                                             size_t& index) override;
+   
+     void CopyDelayedAngularFluxOldToNew() override;
+   
+     void CopyDelayedAngularFluxNewToOld() override;
    
      double* PsiIncoming(uint64_t cell_local_id,
                          unsigned int face_num,
@@ -76,8 +103,17 @@ Program Listing for File reflecting_boundary.h
    
      bool CheckAnglesReadyStatus(const std::vector<std::uint32_t>& angles) override;
    
-     /// Resets angle ready flags to false.
-     void ResetAnglesReadyStatus();
+     void ResetAnglesReadyStatus() override;
+   
+   private:
+     static constexpr double epsilon_ = 1.0e-8;
+   
+   private:
+     template <typename Fn>
+     void ForEachDelayedAngularFlux(bool use_old_store, Fn&& fn);
+   
+     template <typename Fn>
+     void ForEachDelayedAngularFluxConst(bool use_old_store, Fn&& fn) const;
    };
    
    } // namespace opensn

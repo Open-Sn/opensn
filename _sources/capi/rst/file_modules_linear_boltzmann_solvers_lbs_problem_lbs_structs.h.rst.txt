@@ -108,9 +108,9 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a482b5ac75802192e834d71531adea8c3`
-
 - :ref:`exhale_function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195`
+
+- :ref:`exhale_function_namespaceopensn_1a482b5ac75802192e834d71531adea8c3`
 
 
 Typedefs
