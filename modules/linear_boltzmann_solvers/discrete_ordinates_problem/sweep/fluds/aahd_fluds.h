@@ -139,7 +139,7 @@ class AAHD_FLUDS : public FLUDS
 public:
   /// \name Constructors
   /// \{
-  /// Contruct and allocate memory for the FLUDS on both the host and device.
+  /// Construct and allocate memory for the FLUDS on both the host and device.
   AAHD_FLUDS(std::size_t num_groups,
              std::size_t num_angles,
              const AAHD_FLUDSCommonData& common_data);

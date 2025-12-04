@@ -21,10 +21,10 @@ class MPICommunicatorSet;
 class ByteArray;
 class CBC_FLUDS;
 
-class CBC_ASynchronousCommunicator : public AsynchronousCommunicator
+class CBC_AsynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
-  explicit CBC_ASynchronousCommunicator(size_t angle_set_id,
+  explicit CBC_AsynchronousCommunicator(size_t angle_set_id,
                                         FLUDS& fluds,
                                         const MPICommunicatorSet& comm_set)
     : AsynchronousCommunicator(fluds, comm_set),

@@ -21,7 +21,7 @@ namespace gpu_kernel
 
 /// Kernel performing the sweep
 __global__ void
-UnsaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
+UnsaturatedKernel(AAH_Arguments args, const std::uint32_t* level, double* saved_psi)
 {
   // reference to indexes
   const unsigned int& cell_idx = blockIdx.x;
@@ -53,7 +53,7 @@ UnsaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
 
 /// Kernel performing the sweep
 __global__ void
-SaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
+SaturatedKernel(AAH_Arguments args, const std::uint32_t* level, double* saved_psi)
 {
   // reference to indexes
   const unsigned int& cell_idx = blockIdx.x;
@@ -97,7 +97,7 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
 {
   // prepare arguments
   AAHD_FLUDS& fluds = dynamic_cast<AAHD_FLUDS&>(angle_set.GetFLUDS());
-  gpu_kernel::Arguments args(problem_, groupset_, angle_set, fluds, surface_source_active_);
+  gpu_kernel::AAH_Arguments args(problem_, groupset_, angle_set, fluds, surface_source_active_);
   // allocate memory for saved angular flux
   crb::DeviceMemory<double> saved_psi;
   if (save_angular_flux_)
