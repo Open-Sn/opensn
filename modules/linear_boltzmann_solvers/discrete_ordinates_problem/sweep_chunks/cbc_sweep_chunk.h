@@ -8,12 +8,13 @@
 
 namespace opensn
 {
+
 class CellMapping;
 class DiscreteOrdinatesProblem;
 
 /**
  * Implements the core sweep operation for a single cell within the
- *        cell-by-cell (CBC) sweep algorithm
+ * cell-by-cell (CBC) sweep algorithm.
  *
  * This class is responsible for performing the discrete ordinates transport
  * calculation on a given cell for all angles and groups managed by its
@@ -27,13 +28,15 @@ class CBCSweepChunk : public SweepChunk
 public:
   CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
+  /// Set the current AngleSet
   void SetAngleSet(AngleSet& angle_set) override;
 
+  /// Set the current cell to be swept
   void SetCell(Cell const* cell_ptr, AngleSet& angle_set) override;
 
   /**
    * Performs the discrete ordinates sweep calculation for the currently
-   *        set cell, for all angles and groups within the provided AngleSet
+   * set cell, for all angles and groups within the provided AngleSet.
    *
    * It:
    * - Assembles the local transport equation system for each angle and group
@@ -48,7 +51,7 @@ public:
    */
   void Sweep(AngleSet& angle_set) override;
 
-private:
+protected:
   CBC_FLUDS* fluds_;
   size_t gs_size_;
   unsigned int gs_gi_;

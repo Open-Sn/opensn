@@ -121,13 +121,6 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     boundary_conditions_block_ = bcs;
   }
 
-  if (use_gpus_ && sweep_type_ == "CBC")
-  {
-    log.Log0Warning() << "Sweep computation on GPUs is not supported for the CBC sweep."
-                      << "Falling back to CPU sweep.\n";
-    use_gpus_ = false;
-  }
-
   // Check for consistency between quadrature sets
   auto& groupset0 = groupsets_[0];
   for (auto& groupset : groupsets_)
@@ -1209,6 +1202,10 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
       }
     }
   }
+  else if (sweep_type_ == "CBC" and use_gpus_)
+  {
+    CreateCBCD_FLUDSCommonData();
+  }
   else if (sweep_type_ == "CBC")
   {
     for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
@@ -1274,6 +1271,50 @@ DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
 void
 DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
 {
+}
+
+void
+DiscreteOrdinatesProblem::CreateCBCD_FLUDSCommonData()
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateCBCD_FLUDSCommonData : OPENSN_WITH_CUDA not enabled.");
+}
+
+std::shared_ptr<FLUDS>
+DiscreteOrdinatesProblem::CreateCBCD_FLUDS(std::size_t num_groups,
+                                           std::size_t num_angles,
+                                           std::size_t num_local_cells,
+                                           const FLUDSCommonData& common_data,
+                                           const UnknownManager& psi_uk_man,
+                                           const SpatialDiscretization& sdm,
+                                           bool save_angular_flux)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateCBCD_FLUDS : OPENSN_WITH_CUDA not enabled.");
+  return {};
+}
+
+std::shared_ptr<AngleSet>
+DiscreteOrdinatesProblem::CreateCBCD_AngleSet(
+  size_t id,
+  size_t num_groups,
+  const SPDS& spds,
+  std::shared_ptr<FLUDS>& fluds,
+  std::vector<size_t>& angle_indices,
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+  const MPICommunicatorSet& in_comm_set)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateCBCD_AngleSet : OPENSN_WITH_CUDA not enabled.");
+  return {};
+}
+
+std::shared_ptr<SweepChunk>
+DiscreteOrdinatesProblem::CreateCBCDSweepChunk(LBSGroupset& groupset)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateCBCDSweepChunk : OPENSN_WITH_CUDA not enabled.");
+  return {};
 }
 #endif
 
@@ -1540,20 +1581,49 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
       }
       else if (sweep_type_ == "CBC")
       {
-        std::shared_ptr<FLUDS> fluds =
-          std::make_shared<CBC_FLUDS>(gs_num_grps,
-                                      angle_indices.size(),
-                                      dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                      groupset.psi_uk_man_,
-                                      *discretization_);
+        std::shared_ptr<FLUDS> fluds;
+        if (use_gpus_)
+        {
+          fluds = CreateCBCD_FLUDS(gs_num_grps,
+                                   angle_indices.size(),
+                                   grid_->local_cells.size(),
+                                   fluds_common_data,
+                                   groupset.psi_uk_man_,
+                                   *discretization_,
+                                   (not GetPsiNewLocal()[groupset.id].empty()));
+        }
+        else
+        {
+          fluds =
+            std::make_shared<CBC_FLUDS>(gs_num_grps,
+                                        angle_indices.size(),
+                                        dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
+                                        groupset.psi_uk_man_,
+                                        *discretization_,
+                                        use_gpus_);
+        }
 
-        auto angle_set = std::make_shared<CBC_AngleSet>(angle_set_id++,
-                                                        gs_num_grps,
-                                                        *sweep_ordering,
-                                                        fluds,
-                                                        angle_indices,
-                                                        sweep_boundaries_,
-                                                        *grid_local_comm_set_);
+        std::shared_ptr<AngleSet> angle_set;
+        if (use_gpus_)
+        {
+          angle_set = CreateCBCD_AngleSet(angle_set_id++,
+                                          gs_num_grps,
+                                          *sweep_ordering,
+                                          fluds,
+                                          angle_indices,
+                                          sweep_boundaries_,
+                                          *grid_local_comm_set_);
+        }
+        else
+        {
+          angle_set = std::make_shared<CBC_AngleSet>(angle_set_id++,
+                                                     gs_num_grps,
+                                                     *sweep_ordering,
+                                                     fluds,
+                                                     angle_indices,
+                                                     sweep_boundaries_,
+                                                     *grid_local_comm_set_);
+        }
 
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }
@@ -1591,7 +1661,16 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
   }
   else if (sweep_type_ == "CBC")
   {
-    return std::make_shared<CBCSweepChunk>(*this, groupset);
+    if (use_gpus_)
+    {
+      auto sweep_chunk = CreateCBCDSweepChunk(groupset);
+
+      return sweep_chunk;
+    }
+
+    auto sweep_chunk = std::make_shared<CBCSweepChunk>(*this, groupset);
+
+    return sweep_chunk;
   }
   else
     OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");

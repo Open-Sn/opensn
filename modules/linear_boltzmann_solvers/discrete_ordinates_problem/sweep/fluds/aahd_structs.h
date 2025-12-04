@@ -3,21 +3,18 @@
 
 #pragma once
 
-#include <cstdint>
-#include <limits>
-#include <ostream>
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_structs.h"
 #include <set>
-#include <stdexcept>
 #include <tuple>
 
 namespace opensn
 {
 
 /**
- * \brief Node on a face, which is also an edge in the sweep graph.
- * \details This class representing a node on a face. It stores the cell local index, the face index
+ * Node on a face, which is also an edge in the sweep graph.
+ * This class represents a node on a face. It stores the cell local index, the face index
  * within the cell and the index of the node relative to the face as compact 64-bit integer. This
- * class abstract the node for usage with std::map and std::set.
+ * class abstracts the node for usage with std::map and std::set.
  */
 class AAHD_FaceNode
 {
@@ -65,6 +62,116 @@ public:
 private:
   /// Core value.
   std::uint64_t value_ = std::numeric_limits<std::uint64_t>::max();
+};
+
+/**
+ * 64-bit integer encoding the index and the bank information of a face node.
+ * \note The index must follow strict mutual-exclusion rules:
+ *   - Always check boundary status BEFORE local status. Boundary instances are assigned
+ *     as local, but their locations are actually set to an undefined value.
+ *   - Boundary and delayed status are mutually exclusive. Both cannot be true at the same time.
+ *   - Boundary and non-local status are mutually exclusive. Both cannot be true at the same time.
+ *   - Non-local outgoing and delayed status are mutually exclusive. The sweep scheduler does not
+ *     distinguish between delayed and non-delayed non-local outgoing faces. For non-local outgoing
+ *     faces, delayed status is always set to false.
+ */
+class AAHD_NodeIndex : public NodeIndex
+{
+public:
+  /// Default constructor.
+  constexpr AAHD_NodeIndex() = default;
+
+  /// Direct assign core value.
+  constexpr AAHD_NodeIndex(const std::uint64_t& value) : NodeIndex(value) {}
+
+  /**
+   * Construct a non-boundary node index.
+   * \param index Index into the corresponding bank. Cannot exceed 2^60 - 1.
+   * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.
+   * \param is_local Flag indicating if the index is in a local bank.
+   * \param is_delayed Flag indicating if the index is in a delayed bank.
+   * \param loc_index Index into delayed/non-delayed location dependencies/successors vector for
+   * non-local nodes. Cannot exceed 2^21 - 1.
+   */
+  AAHD_NodeIndex(std::uint64_t index, bool is_outgoing, bool is_local, bool is_delayed)
+  {
+    if (index >= (std::uint64_t(1) << 60) - 1)
+      throw std::runtime_error("Cannot hold an index greater than 2^60.");
+    SetInOut(is_outgoing);
+    SetLocal(is_local);
+    SetDelayed(is_delayed);
+    SetBoundary(false);
+    SetIndex(index);
+    if (is_delayed && is_outgoing && !is_local)
+      throw std::runtime_error(
+        "Non-local outgoing nodes cannot be in delayed banks for AAHD FLUDS.");
+  }
+
+  /**
+   * Construct a boundary node index.
+   * \param index Index into the corresponding bank. Cannot exceed 2^40 - 1.
+   * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.
+   */
+  AAHD_NodeIndex(std::uint64_t index, bool is_outgoing)
+  {
+    if (index >= (std::uint64_t(1) << 60) - 1)
+      throw std::runtime_error("Cannot hold an index greater than 2^60.");
+    SetInOut(is_outgoing);
+    SetDelayed(false);
+    SetLocal(true);
+    SetBoundary(true);
+    SetIndex(index);
+  }
+
+  /// Check if the current index corresponds to a delayed bank.
+  constexpr bool IsDelayed() const noexcept { return (value_ & delayed_bit_mask) != 0; }
+
+  /// Check if the current index corresponds to a local bank.
+  constexpr bool IsLocal() const noexcept { return (value_ & local_bit_mask) != 0; }
+
+  /// Get the index into the bank.
+  constexpr std::uint64_t GetIndex() const noexcept { return value_ & index_bit_mask; }
+
+private:
+  /// \name Delayed bit
+  /// \{
+  /// Third bit mask (``001`` followed by 61 zeros) - Bit 61
+  static constexpr std::uint64_t delayed_bit_mask = std::uint64_t(1) << (64 - 3);
+  /// Encode the value as delayed.
+  constexpr void SetDelayed(bool is_delayed) noexcept
+  {
+    if (is_delayed)
+      value_ |= delayed_bit_mask;
+    else
+      value_ &= ~delayed_bit_mask;
+  }
+  /// \}
+
+  /// \name Local bit
+  /// \{
+  /// Fourth bit mask (``0001`` followed by 60 zeros) - Bit 60
+  static constexpr std::uint64_t local_bit_mask = std::uint64_t(1) << (64 - 4);
+  /// Encode the value as local.
+  constexpr void SetLocal(bool is_local) noexcept
+  {
+    if (is_local)
+      value_ |= local_bit_mask;
+    else
+      value_ &= ~local_bit_mask;
+  }
+  /// \}
+
+  /// \name Index bits
+  /// \{
+  /// Index bit mask (``1`` at the last 60 bits).
+  static constexpr std::uint64_t index_bit_mask = (std::uint64_t(1) << (64 - 4)) - 1;
+  /// Encode the index.
+  constexpr void SetIndex(const std::uint64_t& index) noexcept
+  {
+    value_ &= ~index_bit_mask;
+    value_ |= (index & index_bit_mask);
+  }
+  /// \}
 };
 
 /// Node on a face (directed edge) connecting an upwind and downwind cell.
@@ -141,172 +248,10 @@ private:
 };
 
 /**
- * \brief 64-bit integer encoding the index and the bank information of a face node.
- * \note The index must follow strict mutual-exclusion rules:
- *   - Always check boundary status BEFORE local status. Boundary instances are assigned
- *     as local, but their locations are actually set to an undefined value.
- *   - Boundary and delayed status are mutually exclusive. Both cannot be true at the same time.
- *   - Boundary and non-local status are mutually exclusive. Both cannot be true at the same time.
- *   - Non-local outgoing and delayed status are mutually exclusive. The sweep scheduler does not
- *     distinguish between delayed and non-delayed non-local outgoing faces. For non-local outgoing
- *     faces, delayed status is always set to false.
+ * Set of pointers for AAHD FLUDS.
  */
-class AAHD_NodeIndex
+struct AAHD_FLUDSPointerSet : public FLUDSPointerSet
 {
-public:
-  /// Default constructor
-  AAHD_NodeIndex() = default;
-
-  /// Direct assign core value
-  constexpr AAHD_NodeIndex(const std::uint64_t& value) : value_(value) {}
-
-  /**
-   * Contruct a non-boundary node index.
-   * \param index Index into the corresponding bank. Cannot exceed 2^60 - 1.
-   * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.
-   * \param is_local Flag indicating if the index is in a local bank.
-   * \param is_delayed Flag indicating if the index is in a delayed bank.
-   * \param loc_index Index into delayed/non-delayed location dependencies/successors vector for
-   * non-local nodes. Cannot exceed 2^21 - 1.
-   */
-  AAHD_NodeIndex(std::uint64_t index, bool is_outgoing, bool is_local, bool is_delayed)
-  {
-    if (index >= (std::uint64_t(1) << 60) - 1)
-      throw std::runtime_error("Cannot hold an index greater than 2^60.");
-    SetInOut(is_outgoing);
-    SetLocal(is_local);
-    SetDelayed(is_delayed);
-    SetBoundary(false);
-    SetIndex(index);
-    if (is_delayed && is_outgoing && !is_local)
-      throw std::runtime_error(
-        "Non-local outgoing nodes cannot be in delayed banks in AAHD FLUDS.");
-  }
-
-  /**
-   * Contruct a boundary node index.
-   * \param index Index into the corresponding bank. Cannot exceed 2^40 - 1.
-   * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.
-   */
-  AAHD_NodeIndex(std::uint64_t index, bool is_outgoing)
-  {
-    if (index >= (std::uint64_t(1) << 60) - 1)
-      throw std::runtime_error("Cannot hold an index greater than 2^60.");
-    SetInOut(is_outgoing);
-    SetDelayed(false);
-    SetLocal(true);
-    SetBoundary(true);
-    SetIndex(index);
-  }
-
-  /// Check if the current index is in undefined form.
-  constexpr bool IsUndefined() const noexcept
-  {
-    return value_ == std::numeric_limits<std::uint64_t>::max();
-  }
-
-  /// Check if the current index is incoming or outgoing.
-  constexpr bool IsOutGoing() const noexcept { return (value_ & inout_bit_mask) != 0; }
-
-  /// Check if the current index is corresponding to a delayed bank.
-  constexpr bool IsDelayed() const noexcept { return (value_ & delayed_bit_mask) != 0; }
-
-  /// Check if the current index is corresponding to boundary.
-  constexpr bool IsBoundary() const noexcept { return (value_ & boundary_bit_mask) != 0; }
-
-  /// Check if the current index is corresponding to a local bank.
-  constexpr bool IsLocal() const noexcept { return (value_ & local_bit_mask) != 0; }
-
-  /// Get the index into the bank.
-  constexpr std::uint64_t GetIndex() const noexcept { return value_ & index_bit_mask; }
-
-  /// Get the core value.
-  constexpr std::uint64_t GetCoreValue() const noexcept { return value_; }
-
-private:
-  /// \name Incoming/outgoing bit
-  /// \{
-  /// First bit mask (``1`` followed by 63 zeros).
-  static constexpr std::uint64_t inout_bit_mask = std::uint64_t(1) << (64 - 1);
-  /// Encode the value as incoming or outgoing.
-  constexpr void SetInOut(bool is_outgoing) noexcept
-  {
-    if (is_outgoing)
-      value_ |= inout_bit_mask;
-    else
-      value_ &= ~inout_bit_mask;
-  }
-  /// \}
-
-  /// \name Boundary bit
-  /// \{
-  /// Second bit mask (``01`` followed by 62 zeros).
-  static constexpr std::uint64_t boundary_bit_mask = std::uint64_t(1) << (64 - 2);
-  /// Encode the value as boundary.
-  constexpr void SetBoundary(bool is_boundary) noexcept
-  {
-    if (is_boundary)
-      value_ |= boundary_bit_mask;
-    else
-      value_ &= ~boundary_bit_mask;
-  }
-  /// \}
-
-  /// \name Delayed bit
-  /// \{
-  /// Third bit mask (``001`` followed by 61 zeros).
-  static constexpr std::uint64_t delayed_bit_mask = std::uint64_t(1) << (64 - 3);
-  /// Encode the value as delayed.
-  constexpr void SetDelayed(bool is_delayed) noexcept
-  {
-    if (is_delayed)
-      value_ |= delayed_bit_mask;
-    else
-      value_ &= ~delayed_bit_mask;
-  }
-  /// \}
-
-  /// \name Local bit
-  /// \{
-  /// Third bit mask (``0001`` followed by 60 zeros).
-  static constexpr std::uint64_t local_bit_mask = std::uint64_t(1) << (64 - 4);
-  /// Encode the value as local.
-  constexpr void SetLocal(bool is_local) noexcept
-  {
-    if (is_local)
-      value_ |= local_bit_mask;
-    else
-      value_ &= ~local_bit_mask;
-  }
-  /// \}
-
-  /// \name Index bits
-  /// \{
-  /// Index bit mask (``1`` at the last 60 bits)
-  static constexpr std::uint64_t index_bit_mask = (std::uint64_t(1) << (64 - 4)) - 1;
-  /// Encode the index.
-  constexpr void SetIndex(const std::uint64_t& index) noexcept
-  {
-    value_ &= ~index_bit_mask;
-    value_ |= (index & index_bit_mask);
-  }
-  /// \}
-
-  /**
-   * \brief Core value.
-   * \details 1 bit for incoming/outgoing; 1 bit for delayed or non delayed; 1 bit for boundary or
-   * not; 21 bit (~2.1M) for MPI rank (all ones if local); 40 bits (~4T) for index.
-   */
-  std::uint64_t value_ = std::numeric_limits<std::uint64_t>::max();
-};
-
-/**
- * \brief Set of pointers for AAHD FLUDS.
- */
-struct AAHD_FLUDSPointerSet
-{
-  /// Pointer to local angular fluxes.
-  double* __restrict__ local_psi = nullptr;
   /// Pointer to delayed local angular fluxes.
   double* __restrict__ delayed_local_psi = nullptr;
   /// Pointer to delayed old local angular fluxes.
@@ -315,26 +260,20 @@ struct AAHD_FLUDSPointerSet
   double* __restrict__ nonlocal_incoming_psi = nullptr;
   /// Pointer to non-local old delayed incoming angular fluxes.
   double* __restrict__ nonlocal_delayed_incoming_psi_old = nullptr;
-  /// Pointer to non-local outgoing angular fluxes.
-  double* __restrict__ nonlocal_outgoing_psi = nullptr;
   /// Pointer to boundary angular fluxes.
   double* __restrict__ boundary_psi = nullptr;
-  /// Stride size (number of groups times number of angles).
-  std::uint64_t stride_size = 0;
 
   /// Get pointer to the incoming angular flux (if the face is not incoming, a nullptr is returned).
   constexpr double* GetIncomingFluxPointer(const AAHD_NodeIndex& node_index) const noexcept
   {
     // undefined case (parallel face) : all tests are true
     if (node_index.IsUndefined())
-    {
       return nullptr;
-    }
+
     // outgoing case : nullptr
-    if (node_index.IsOutGoing())
-    {
+    if (node_index.IsOutgoing())
       return nullptr;
-    }
+
     // boundary case : non-delayed and local tests are true
     if (node_index.IsBoundary())
     {
@@ -361,24 +300,23 @@ struct AAHD_FLUDSPointerSet
       }
       else
       {
+        // Renamed to match base class
         return nonlocal_incoming_psi + node_index.GetIndex() * stride_size;
       }
     }
   }
 
-  /// Get pointer to the outgoing angular flux (if the face is not incoming, a nullptr is returned).
+  /// Get pointer to the outgoing angular flux (if the face is not outgoing, a nullptr is returned).
   constexpr double* GetOutgoingFluxPointer(const AAHD_NodeIndex& node_index) const noexcept
   {
     // undefined case (parallel face) : all tests are true
     if (node_index.IsUndefined())
-    {
       return nullptr;
-    }
+
     // incoming case : nullptr
-    if (!node_index.IsOutGoing())
-    {
+    if (!node_index.IsOutgoing())
       return nullptr;
-    }
+
     // boundary case : non-delayed and local tests are true
     if (node_index.IsBoundary())
     {
