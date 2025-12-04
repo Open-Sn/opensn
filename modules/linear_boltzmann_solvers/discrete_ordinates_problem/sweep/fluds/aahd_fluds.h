@@ -89,7 +89,7 @@ struct AAHD_NonLocalBank : public AAHD_Bank
                     std::size_t stride,
                     crb::Stream& stream);
 
-  /// \brief Update views.
+  /// Update views.
   void UpdateViews(std::vector<std::span<double>>& views);
 
   /// Reference to the sizes of each location.
@@ -127,7 +127,7 @@ class AAHD_FLUDS : public FLUDS
 public:
   /// \name Constructor
   /// \{
-  /// Contruct and allocate memory for the FLUDS on both the host and device.
+  /// Construct and allocate memory for the FLUDS on both the host and device.
   AAHD_FLUDS(unsigned int num_groups,
              std::size_t num_angles,
              const AAHD_FLUDSCommonData& common_data);
