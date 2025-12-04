@@ -14,8 +14,8 @@ namespace crb = caribou;
 namespace opensn::gpu_kernel
 {
 
-/// Compute the sweep matrix from gradient, mass and the source term
-template <std::size_t ndofs>
+/// Compute the sweep matrix from gradient, mass, and the source term
+template <std::size_t ndofs, typename ArgType>
 __device__ void
 ComputeGMS(double* sweep_matrix,
            double* psi,
@@ -24,7 +24,7 @@ ComputeGMS(double* sweep_matrix,
            DirectionView& direction,
            const unsigned int& group_idx,
            const std::uint32_t& num_moments,
-           const Arguments& args)
+           const ArgType& args)
 {
   // get sigmaT
   double sigma_t = cell.total_xs[args.groupset_start + group_idx];
@@ -60,7 +60,7 @@ ComputeGMS(double* sweep_matrix,
 }
 
 /// Compute the sweep matrix from surface integral
-template <std::size_t ndofs>
+template <std::size_t ndofs, typename NodeIndexType, typename ArgType>
 __device__ void
 ComputeSurfaceIntegral(double* sweep_matrix,
                        double* psi,
@@ -68,7 +68,7 @@ ComputeSurfaceIntegral(double* sweep_matrix,
                        DirectionView& direction,
                        const std::uint64_t* cell_edge_data,
                        const unsigned int& angle_group_idx,
-                       const Arguments& args)
+                       const ArgType& args)
 {
   // loop over each face
   std::uint32_t face_node_counter = 0;
@@ -78,8 +78,8 @@ ComputeSurfaceIntegral(double* sweep_matrix,
     FaceView face;
     cell.GetFaceView(face, f);
     // determine if this face is incoming
-    AAHD_NodeIndex idx(cell_edge_data[face_node_counter]);
-    if (idx.IsUndefined() || idx.IsOutGoing())
+    NodeIndexType idx(cell_edge_data[face_node_counter]);
+    if (idx.IsUndefined() || idx.IsOutgoing())
     {
       face_node_counter += face.num_face_nodes;
       continue;
@@ -151,6 +151,7 @@ GaussianElimination(double* sweep_matrix, double* psi)
 }
 
 /// Record angular flux to downwind and compute outflow for boundary faces.
+template <typename NodeIndexType, typename ArgType>
 __device__ inline void
 WritePsiToFludsAndOutflow(double* psi,
                           CellView& cell,
@@ -158,7 +159,7 @@ WritePsiToFludsAndOutflow(double* psi,
                           const std::uint64_t* cell_edge_data,
                           const unsigned int& angle_group_idx,
                           const unsigned int& group_idx,
-                          const Arguments& args)
+                          const ArgType& args)
 {
   // loop over each face
   std::uint32_t face_node_counter = 0;
@@ -168,8 +169,8 @@ WritePsiToFludsAndOutflow(double* psi,
     FaceView face;
     cell.GetFaceView(face, f);
     // determine if this face is outgoing
-    AAHD_NodeIndex idx(cell_edge_data[face_node_counter]);
-    if (idx.IsUndefined() || !idx.IsOutGoing())
+    NodeIndexType idx(cell_edge_data[face_node_counter]);
+    if (idx.IsUndefined() || !idx.IsOutgoing())
     {
       face_node_counter += face.num_face_nodes;
       continue;
@@ -180,7 +181,7 @@ WritePsiToFludsAndOutflow(double* psi,
     for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
     {
       std::uint32_t i = face.cell_mapping_data[fi];
-      // put copy psi to FLUD
+      // put copy psi to FLUDS
       double* downwind_psi =
         args.flud_data.GetOutgoingFluxPointer(cell_edge_data[face_node_counter + fi]);
       downwind_psi[angle_group_idx] = psi[i];
@@ -196,14 +197,14 @@ WritePsiToFludsAndOutflow(double* psi,
 }
 
 /// Compute the scalar flux.
-template <std::size_t ndofs>
+template <std::size_t ndofs, typename ArgType>
 __device__ void
 ComputePhi(double* psi,
            CellView& cell,
            DirectionView& direction,
            const unsigned int& group_idx,
            const std::uint32_t& num_moments,
-           const Arguments& args)
+           const ArgType& args)
 {
   double* phi = args.phi + cell.phi_address + args.groupset_start + group_idx;
   _Pragma("unroll") for (std::uint32_t i = 0; i < ndofs; ++i)
@@ -234,9 +235,9 @@ SaveAngularFlux(const double* psi,
 }
 
 /// Template device function performing the sweep
-template <std::size_t ndofs>
+template <std::size_t ndofs, typename NodeIndexType, typename ArgType>
 __device__ void
-Sweep(const Arguments& args,
+Sweep(const ArgType& args,
       CellView& cell,
       DirectionView& direction,
       const std::uint64_t* cell_edge_data,
@@ -248,16 +249,16 @@ Sweep(const Arguments& args,
   // initialize buffer
   Buffer<ndofs> buffer;
   // prepare linear system to solve
-  ComputeGMS<ndofs>(
+  ComputeGMS<ndofs, ArgType>(
     buffer.A(), buffer.b(), buffer.s(), cell, direction, group_idx, num_moments, args);
-  ComputeSurfaceIntegral<ndofs>(
+  ComputeSurfaceIntegral<ndofs, NodeIndexType, ArgType>(
     buffer.A(), buffer.b(), cell, direction, cell_edge_data, angle_group_idx, args);
   // solve for the angular flux
   GaussianElimination<ndofs>(buffer.A(), buffer.b());
   // save the result
-  WritePsiToFludsAndOutflow(
+  WritePsiToFludsAndOutflow<NodeIndexType, ArgType>(
     buffer.b(), cell, direction, cell_edge_data, angle_group_idx, group_idx, args);
-  ComputePhi<ndofs>(buffer.b(), cell, direction, group_idx, num_moments, args);
+  ComputePhi<ndofs, ArgType>(buffer.b(), cell, direction, group_idx, num_moments, args);
   if (saved_psi != nullptr)
   {
     SaveAngularFlux<ndofs>(

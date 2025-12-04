@@ -18,7 +18,8 @@ enum class SchedulingAlgorithm
 {
   FIRST_IN_FIRST_OUT = 1, ///< FIFO
   DEPTH_OF_GRAPH = 2,     ///< DOG
-  ALL_AT_ONCE = 3         ///< AAO
+  ALL_AT_ONCE = 3,        ///< AAO
+  ASYNC_FIFO = 4          ///< ASYNC_FIFO
 };
 
 class SweepScheduler
@@ -35,6 +36,9 @@ public:
 private:
   /// Applies a first-in-first-out sweep scheduling.
   void ScheduleAlgoFIFO(SweepChunk& sweep_chunk);
+
+  /// Applies a first-in-first-out sweep scheduling on device.
+  void ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk);
 
   /// Initializes the depth-of-graph algorithm.
   void InitializeAlgoDOG();

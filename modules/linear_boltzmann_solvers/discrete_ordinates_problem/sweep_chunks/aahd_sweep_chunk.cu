@@ -22,7 +22,7 @@ namespace gpu_kernel
 
 /// Kernel performing the sweep
 __global__ void
-UnsaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
+UnsaturatedKernel(AAH_Arguments args, const std::uint32_t* level, double* saved_psi)
 {
   // reference to indexes
   const unsigned int& cell_idx = blockIdx.x;
@@ -54,7 +54,7 @@ UnsaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
 
 /// Kernel performing the sweep
 __global__ void
-SaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
+SaturatedKernel(AAH_Arguments args, const std::uint32_t* level, double* saved_psi)
 {
   // reference to indexes
   const unsigned int& cell_idx = blockIdx.x;
@@ -118,7 +118,8 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
   auto& aahd_angle_set = static_cast<AAHD_AngleSet&>(angle_set);
   auto& fluds = static_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
   auto& stream = aahd_angle_set.GetStream();
-  gpu_kernel::Arguments args(problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
+  gpu_kernel::AAH_Arguments args(
+    problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
   double* saved_psi = fluds.GetSavedAngularFluxDevicePointer();
   // retrieve SPDS levels
   const auto& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
