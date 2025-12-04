@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
+#include <any>
 
 namespace opensn
 {
@@ -14,15 +15,24 @@ class CBC_SPDS;
 
 class CBC_AngleSet : public AngleSet
 {
+protected:
+  const CBC_SPDS& cbc_spds_;
+  std::vector<Task> current_task_list_;
+  CBC_ASynchronousCommunicator async_comm_;
+  bool use_gpus_;
+  std::any stream_;
+
 public:
   CBC_AngleSet(size_t id,
                size_t num_groups,
                const SPDS& spds,
                std::shared_ptr<FLUDS>& fluds,
                const std::vector<size_t>& angle_indices,
-               std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+               std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                const MPICommunicatorSet& comm_set,
-               bool use_gpu);
+               bool use_gpus);
+
+  ~CBC_AngleSet() override = default;
 
   AsynchronousCommunicator* GetCommunicator() override;
 
@@ -58,10 +68,12 @@ public:
                        unsigned int face_num,
                        unsigned int fi) override;
 
-protected:
-  const CBC_SPDS& cbc_spds_;
-  std::vector<Task> current_task_list_;
-  CBC_ASynchronousCommunicator async_comm_;
+  /// Creates caribou stream and associates angle set with corresponding CBCD_FLUDS
+  void AssociateAngleSetWithDeviceStructures();
+
+  const std::any& GetStream() const { return stream_; }
+
+  std::vector<Task>& GetCurrentTaskList() { return current_task_list_; }
 };
 
 } // namespace opensn

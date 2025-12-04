@@ -19,13 +19,16 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
                            const SPDS& spds,
                            std::shared_ptr<FLUDS>& fluds,
                            const std::vector<size_t>& angle_indices,
-                           std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+                           std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                            const MPICommunicatorSet& comm_set,
-                           bool use_gpu)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, use_gpu),
+                           bool use_gpus)
+  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, use_gpus),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
-    async_comm_(id, *fluds, comm_set)
+    async_comm_(id, *fluds, comm_set),
+    use_gpus_(use_gpus)
 {
+  if (use_gpus)
+    AssociateAngleSetWithDeviceStructures();
 }
 
 AsynchronousCommunicator*
@@ -49,7 +52,7 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
 
   auto tasks_who_received_data = async_comm_.ReceiveData();
 
-  for (const uint64_t task_number : tasks_who_received_data)
+  for (const std::uint64_t task_number : tasks_who_received_data)
     --current_task_list_[task_number].num_dependencies;
 
   async_comm_.SendData();
@@ -73,7 +76,7 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
         sweep_chunk.SetCell(cell_task.cell_ptr, *this);
         sweep_chunk.Sweep(*this);
 
-        for (uint64_t local_task_num : cell_task.successors)
+        for (std::uint64_t local_task_num : cell_task.successors)
           --current_task_list_[local_task_num].num_dependencies;
 
         cell_task.completed = true;
@@ -134,5 +137,12 @@ CBC_AngleSet::PsiReflected(uint64_t boundary_id,
 {
   return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num);
 }
+
+#ifndef __OPENSN_USE_CUDA__
+void
+CBC_AngleSet::AssociateAngleSetWithDeviceStructures()
+{
+}
+#endif
 
 } // namespace opensn

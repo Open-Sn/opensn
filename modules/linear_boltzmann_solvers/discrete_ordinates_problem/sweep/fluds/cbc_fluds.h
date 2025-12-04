@@ -5,6 +5,8 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h"
+#include "framework/math/unknown_manager/unknown_manager.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
 #include <cstddef>
 #include <map>
 #include <functional>

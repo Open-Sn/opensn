@@ -13,6 +13,32 @@
 namespace opensn
 {
 
+CBC_ASynchronousCommunicator::CBC_ASynchronousCommunicator(size_t angle_set_id,
+                                                           FLUDS& fluds,
+                                                           const MPICommunicatorSet& comm_set)
+  : AsynchronousCommunicator(fluds, comm_set),
+    angle_set_id_(angle_set_id),
+    cbc_fluds_(nullptr),
+    cbcd_fluds_(nullptr)
+{
+  bool cpu_success = BuildFLUDSForCPU();
+  if (cpu_success)
+    return;
+#ifdef __OPENSN_USE_CUDA__
+  bool gpu_success = BuildFLUDSForGPU();
+  if (gpu_success)
+    return;
+#endif
+  throw std::runtime_error("CBC_ASynchronousCommunicator got neither CBC_FLUDS nor CBCD_FLUDS.\n");
+}
+
+bool
+CBC_ASynchronousCommunicator::BuildFLUDSForCPU()
+{
+  cbc_fluds_ = dynamic_cast<CBC_FLUDS*>(&fluds_);
+  return (cbc_fluds_ != nullptr);
+}
+
 std::vector<double>&
 CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
                                                          uint64_t cell_global_id,
@@ -128,9 +154,26 @@ CBC_ASynchronousCommunicator::ReceiveData()
     } // Process each message embedded in buffer
   }
 
-  cbc_fluds_.GetDeplocsOutgoingMessages().merge(received_messages);
+  MergeReceivedMessages(received_messages);
 
   return cells_who_received_data;
 }
+
+#ifndef __OPENSN_USE_CUDA__
+bool
+CBC_ASynchronousCommunicator::BuildFLUDSForGPU()
+{
+  return false;
+}
+
+void
+CBC_ASynchronousCommunicator::MergeReceivedMessages(
+  std::map<std::pair<uint64_t, unsigned int>, std::vector<double>>& received_messages)
+{
+  // CPU-only build: only CBC_FLUDS is available
+  if (cbc_fluds_)
+    cbc_fluds_->GetDeplocsOutgoingMessages().merge(received_messages);
+}
+#endif
 
 } // namespace opensn

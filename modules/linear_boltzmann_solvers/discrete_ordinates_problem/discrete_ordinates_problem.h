@@ -126,6 +126,14 @@ private:
                                               std::size_t num_angles,
                                               const FLUDSCommonData& common_data);
 
+  void CreateCBC_FLUDSCommonDataForDevice();
+  std::shared_ptr<FLUDS> CreateCBC_FLUDSForDevice(std::size_t num_groups,
+                                                  std::size_t num_angles,
+                                                  std::size_t num_local_cells,
+                                                  const FLUDSCommonData& common_data,
+                                                  const UnknownManager& psi_uk_man,
+                                                  const SpatialDiscretization& sdm);
+
   /**
    * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes
    * geometry into account.

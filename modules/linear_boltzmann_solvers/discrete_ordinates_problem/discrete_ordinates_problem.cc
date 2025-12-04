@@ -81,13 +81,6 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     verbose_sweep_angles_(params.GetParamVectorValue<int>("directions_sweep_order_to_print")),
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
-  if (use_gpus_ && sweep_type_ == "CBC")
-  {
-    log.Log0Warning() << "Sweep computation on GPUs is not supported for the CBC sweep."
-                      << "Falling back to CPU sweep.\n";
-    use_gpus_ = false;
-  }
-
   // Check for consistency between quadrature sets
   auto& groupset0 = groupsets_[0];
   for (auto& groupset : groupsets_)
@@ -816,6 +809,10 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
       }
     }
   }
+  else if (sweep_type_ == "CBC" and use_gpus_)
+  {
+    CreateCBC_FLUDSCommonDataForDevice();
+  }
   else if (sweep_type_ == "CBC")
   {
     for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
@@ -846,6 +843,26 @@ DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
 {
   throw std::runtime_error(
     "DiscreteOrdinatesProblem::CreateFLUDSForDevice : OPENSN_WITH_CUDA not enabled.");
+  return {};
+}
+
+void
+DiscreteOrdinatesProblem::CreateCBC_FLUDSCommonDataForDevice()
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateCBC_FLUDSCommonDataForDevice : OPENSN_WITH_CUDA not enabled.");
+}
+
+std::shared_ptr<FLUDS>
+DiscreteOrdinatesProblem::CreateCBC_FLUDSForDevice(std::size_t num_groups,
+                                                   std::size_t num_angles,
+                                                   std::size_t num_local_cells,
+                                                   const FLUDSCommonData& common_data,
+                                                   const UnknownManager& psi_uk_man,
+                                                   const SpatialDiscretization& sdm)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateCBC_FLUDSForDevice : OPENSN_WITH_CUDA not enabled.");
   return {};
 }
 #endif
@@ -1085,12 +1102,25 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
       }
       else if (sweep_type_ == "CBC")
       {
-        std::shared_ptr<FLUDS> fluds =
-          std::make_shared<CBC_FLUDS>(gs_num_grps,
-                                      angle_indices.size(),
-                                      dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                      groupset.psi_uk_man_,
-                                      *discretization_);
+        std::shared_ptr<FLUDS> fluds;
+        if (use_gpus_)
+        {
+          fluds = CreateCBC_FLUDSForDevice(gs_num_grps,
+                                           angle_indices.size(),
+                                           grid_->local_cells.size(),
+                                           fluds_common_data,
+                                           groupset.psi_uk_man_,
+                                           *discretization_);
+        }
+        else
+        {
+          fluds =
+            std::make_shared<CBC_FLUDS>(gs_num_grps,
+                                        angle_indices.size(),
+                                        dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
+                                        groupset.psi_uk_man_,
+                                        *discretization_);
+        }
 
         auto angle_set = std::make_shared<CBC_AngleSet>(angle_set_id++,
                                                         gs_num_grps,
