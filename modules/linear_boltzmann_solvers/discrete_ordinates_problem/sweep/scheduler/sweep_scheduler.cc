@@ -3,7 +3,6 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
@@ -166,13 +165,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
       angle_set->ResetSweepBuffers();
 
   for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
-  {
-    if (bndry->GetType() == LBSBoundaryType::REFLECTING)
-    {
-      auto rbndry = std::static_pointer_cast<ReflectingBoundary>(bndry);
-      rbndry->ResetAnglesReadyStatus();
-    }
-  }
+    bndry->ResetAnglesReadyStatus();
 }
 
 void
@@ -219,13 +212,7 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
       angle_set->ResetSweepBuffers();
 
   for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
-  {
-    if (bndry->GetType() == LBSBoundaryType::REFLECTING)
-    {
-      auto rbndry = std::static_pointer_cast<ReflectingBoundary>(bndry);
-      rbndry->ResetAnglesReadyStatus();
-    }
-  }
+    bndry->ResetAnglesReadyStatus();
 }
 
 void

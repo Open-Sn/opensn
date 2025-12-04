@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set_group.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
@@ -29,7 +30,6 @@ namespace opensn
 class AngleAggregation
 {
 private:
-  size_t num_groups_;
   bool num_ang_unknowns_avail_;
   std::pair<size_t, size_t> number_angular_unknowns_;
   std::shared_ptr<MeshContinuum> grid_;
@@ -38,7 +38,6 @@ private:
 
 public:
   AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-                   size_t num_groups,
                    std::shared_ptr<AngularQuadrature>& quadrature,
                    std::shared_ptr<MeshContinuum>& grid);
 
