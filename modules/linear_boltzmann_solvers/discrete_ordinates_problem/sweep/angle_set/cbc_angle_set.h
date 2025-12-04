@@ -5,6 +5,13 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
+
+namespace caribou
+{
+class Stream;
+}
 
 namespace opensn
 {
@@ -14,6 +21,13 @@ class CBC_SPDS;
 
 class CBC_AngleSet : public AngleSet
 {
+protected:
+  const CBC_SPDS& cbc_spds_;
+  std::vector<Task> current_task_list_;
+  CBC_ASynchronousCommunicator async_comm_;
+  bool use_gpus_;
+  void* stream_ = nullptr;
+
 public:
   CBC_AngleSet(size_t id,
                size_t num_groups,
@@ -22,7 +36,9 @@ public:
                const std::vector<size_t>& angle_indices,
                std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                const MPICommunicatorSet& comm_set,
-               bool use_gpu);
+               bool use_gpus);
+
+  ~CBC_AngleSet() override;
 
   AsynchronousCommunicator* GetCommunicator() override;
 
@@ -58,10 +74,18 @@ public:
                        unsigned int face_num,
                        unsigned int fi) override;
 
-protected:
-  const CBC_SPDS& cbc_spds_;
-  std::vector<Task> current_task_list_;
-  CBC_ASynchronousCommunicator async_comm_;
+  void AssociateAngleSetWithFLUDS();
+
+  /// Create caribou stream for asynchronous kernel launches and data transfers
+  void CreateStream();
+
+  /// Destroy caribou stream
+  void DestroyStream();
+
+  /// Get the void pointer to the caribou stream, which can be casted to caribou::Stream
+  void* GetStream() const { return stream_; }
+
+  std::vector<Task>& GetCurrentTaskList() { return current_task_list_; }
 };
 
 } // namespace opensn
