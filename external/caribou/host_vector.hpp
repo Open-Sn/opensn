@@ -33,7 +33,7 @@ class impl::PinnedHostAllocator {
     /** @brief Value type */
     using value_type = T;
 
-    /// @name Contructors
+    /// @name Constructors
     /// @{
     /** @brief Default constructor.*/
     PinnedHostAllocator() noexcept = default;

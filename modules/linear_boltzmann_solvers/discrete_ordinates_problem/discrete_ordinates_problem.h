@@ -139,6 +139,26 @@ private:
                                               std::size_t num_angles,
                                               const FLUDSCommonData& common_data);
 
+  void CreateCBCD_FLUDSCommonData();
+  std::shared_ptr<FLUDS> CreateCBCD_FLUDS(std::size_t num_groups,
+                                          std::size_t num_angles,
+                                          std::size_t num_local_cells,
+                                          const FLUDSCommonData& common_data,
+                                          const UnknownManager& psi_uk_man,
+                                          const SpatialDiscretization& sdm);
+
+  std::shared_ptr<AngleSet>
+  CreateCBCD_AngleSet(size_t id,
+                      size_t num_groups,
+                      const SPDS& spds,
+                      std::shared_ptr<FLUDS>& fluds,
+                      std::vector<size_t>& angle_indices,
+                      std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+                      const MPICommunicatorSet& in_comm_set,
+                      bool use_gpus);
+  std::shared_ptr<SweepChunk> CreateCBCD_SweepChunk(DiscreteOrdinatesProblem& problem,
+                                                    LBSGroupset& groupset);
+
   /**
    * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes
    * geometry into account.
