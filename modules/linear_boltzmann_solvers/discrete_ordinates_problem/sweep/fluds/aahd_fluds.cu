@@ -231,7 +231,7 @@ AAHD_FLUDS::CopyBoundaryToDevice(MeshContinuum& grid,
   const std::size_t required_size = common_data_.GetNumBoundaryNodes() * num_groups_and_angles_;
   for (const auto& [face_node, node_index] : common_data_.GetNodeTracker())
   {
-    if (node_index.IsUndefined() or not node_index.IsBoundary() or node_index.IsOutGoing())
+    if (node_index.IsUndefined() or not node_index.IsBoundary() or node_index.IsOutgoing())
       continue;
     const CellFace& face =
       grid.local_cells[face_node.GetCellIndex()].faces[face_node.GetFaceIndex()];
@@ -318,7 +318,7 @@ AAHD_FLUDS::CopyBoundaryPsiToAngleSet(MeshContinuum& grid, AngleSet& angle_set)
   const auto& boundaries = angle_set.GetBoundaries();
   for (const auto& [face_node, node_index] : common_data_.GetNodeTracker())
   {
-    if (node_index.IsUndefined() or not node_index.IsBoundary() or not node_index.IsOutGoing())
+    if (node_index.IsUndefined() or not node_index.IsBoundary() or not node_index.IsOutgoing())
       continue;
     const CellFace& face =
       grid.local_cells[face_node.GetCellIndex()].faces[face_node.GetFaceIndex()];

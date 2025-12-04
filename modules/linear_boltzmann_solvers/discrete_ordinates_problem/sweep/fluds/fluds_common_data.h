@@ -11,6 +11,20 @@ namespace opensn
 
 class SPDS;
 
+/**
+ * Get pointer to index data of a cell and the number of indices for that cell.
+ * \param node_indices Pointer to the flattened node index structure.
+ * \param cell_local_idx Cell local index.
+ * \return Pointer to the indices of the cell and the number of indices (total number of face nodes)
+ * for the cell.
+ */
+constexpr std::pair<const std::uint64_t*, std::uint64_t>
+GetCellDataIndex(const std::uint64_t* node_indices, const std::uint32_t& cell_local_idx)
+{
+  const std::uint64_t* cell_data = node_indices + static_cast<std::uint64_t>(2 * cell_local_idx);
+  return {node_indices + cell_data[0], cell_data[1]};
+}
+
 struct FaceNodalMapping
 {
   /// Face index on the neighbor cell.
