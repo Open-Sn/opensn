@@ -5,6 +5,8 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h"
+#include "framework/math/unknown_manager/unknown_manager.h"
+#include "framework/math/spatial_discretization/spatial_discretization.h"
 #include <cstddef>
 #include <map>
 #include <functional>
@@ -33,9 +35,13 @@ public:
             size_t num_angles,
             const CBC_FLUDSCommonData& common_data,
             const UnknownManager& psi_uk_man,
-            const SpatialDiscretization& sdm);
+            const SpatialDiscretization& sdm,
+            bool use_gpus);
 
-  const FLUDSCommonData& GetCommonData() const;
+  virtual const FLUDSCommonData& GetCommonData() const;
+
+  /// Get local psi data size.
+  size_t GetLocalPsiDataSize() const { return local_psi_data_size_; }
 
   /**
    * Given a local upwind neighbor cell, a node index on this cell, and an
@@ -88,7 +94,7 @@ public:
     return deplocs_outgoing_messages_;
   }
 
-private:
+protected:
   const CBC_FLUDSCommonData& common_data_;
   const UnknownManager& psi_uk_man_;
   const SpatialDiscretization& sdm_;
@@ -96,6 +102,7 @@ private:
   size_t num_quadrature_local_dofs_;
   size_t num_local_spatial_dofs_;
   size_t local_psi_data_size_;
+
   /**
    * Layout for storage for local angular fluxes:
    * spatial DOF major -> angle in angleset major -> group in groupset major

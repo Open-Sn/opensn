@@ -18,29 +18,14 @@ namespace opensn
 class SpatialDiscretization;
 
 /**
- * \brief Get pointer to index data of a cell and the number of indexes for that cell.
- * \param device_node_indexes Pointer to the flatten node index structure on device.
- * \param cell_local_idx Cell local index.
- * \return Pointer to the indexes of the cell and the number of indexes (total number of face nodes)
- * for the cell.
- */
-constexpr std::pair<const std::uint64_t*, std::uint64_t>
-GetCellDataIndex(const std::uint64_t* device_node_indexes, const std::uint32_t& cell_local_idx)
-{
-  const std::uint64_t* cell_data =
-    device_node_indexes + static_cast<std::uint64_t>(2 * cell_local_idx);
-  return {device_node_indexes + cell_data[0], cell_data[1]};
-}
-
-/**
- * \brief Random-access stack based FLUDS.
+ * Random-access stack based FLUDS.
  */
 class AAHD_FLUDSCommonData : public FLUDSCommonData
 {
 public:
   /**
-   * \brief Constructor from SPDS and grid nodal mappings.
-   * \details Initialize the index tracker for all face nodes of the grid. Once created, the indexes
+   * Constructor from SPDS and grid nodal mappings.
+   * Initialize the index tracker for all face nodes of the grid. Once created, the indexes
    * are utilized by the AAHD_FLUDS to access the correct location in the flux storage arrays.
    */
   AAHD_FLUDSCommonData(const SPDS& spds,
