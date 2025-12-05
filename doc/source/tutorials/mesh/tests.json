@@ -6,6 +6,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Number of cells =",
+        "goldvalue": 7710,
+        "abs_tol": 1e-6
       }
     ]
   },
@@ -16,6 +22,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Number of cells =",
+        "goldvalue": 100,
+        "abs_tol": 1e-6
       }
     ]
   },
@@ -26,6 +38,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Number of cells =",
+        "goldvalue": 1000,
+        "abs_tol": 1e-6
       }
     ]
   },
@@ -36,6 +54,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Number of cells =",
+        "goldvalue": 11512,
+        "abs_tol": 1e-6
       }
     ]
   },
@@ -46,6 +70,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Number of cells =",
+        "goldvalue": 83264,
+        "abs_tol": 1e-6
       }
     ]
   },
@@ -56,6 +86,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Number of cells =",
+        "goldvalue": 6112,
+        "abs_tol": 1e-6
       }
     ]
   },
@@ -66,6 +102,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Number of cells =",
+        "goldvalue": 11512,
+        "abs_tol": 1e-6
       }
     ]
   },
@@ -76,6 +118,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Number of cells =",
+        "goldvalue": 125000,
+        "abs_tol": 1e-6
       }
     ]
   }
