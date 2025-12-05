@@ -8,9 +8,23 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include <memory>
+#include <map>
+#include <vector>
 
 namespace opensn
 {
+
+using DirIDs = std::vector<size_t>; ///< Direction-IDs
+using UniqueSOGroupings = std::vector<DirIDs>;
+using DirIDToSOMap = std::map<size_t, size_t>;
+
+enum class AngleAggregationType
+{
+  UNDEFINED = 0,
+  SINGLE = 1,
+  POLAR = 2,
+  AZIMUTHAL = 3,
+};
 
 /**
  * Angle aggregation has to cater for running the 8 corners of a 3D partitioning, the 4 corners of a
