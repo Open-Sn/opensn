@@ -52,6 +52,11 @@ WrapMesh(py::module& mesh)
     "Number of dimensions of the mesh."
   );
   mesh_continuum.def(
+    "GetGlobalNumberOfCells",
+    &MeshContinuum::GetGlobalNumberOfCells,
+    "Get global number of cells."
+  );
+  mesh_continuum.def(
     "SetUniformBlockID",
     &MeshContinuum::SetUniformBlockID,
     "Set block ID's for all cells to the specified block ID.",
