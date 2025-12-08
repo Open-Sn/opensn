@@ -46,11 +46,10 @@ VolumetricSource::GetInputParameters()
     std::shared_ptr<VectorSpatialFunction>{},
     "SpatialMaterialFunction object to be used to define the source.");
   params.AddOptionalParameter("start_time",
-                             -std::numeric_limits<double>::infinity(),
-                             "Time at which the source becomes active.");
-  params.AddOptionalParameter("end_time",
-                             std::numeric_limits<double>::infinity(),
-                             "Time at which the source is inactive.");
+                              -std::numeric_limits<double>::infinity(),
+                              "Time at which the source becomes active.");
+  params.AddOptionalParameter(
+    "end_time", std::numeric_limits<double>::infinity(), "Time at which the source is inactive.");
 
   return params;
 }

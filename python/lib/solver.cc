@@ -93,11 +93,6 @@ WrapSolver(py::module& slv)
     "Execute the solver."
   );
   solver.def(
-    "Step",
-    &Solver::Step,
-    "Step the solver."
-  );
-  solver.def(
     "Advance",
     &Solver::Advance,
     "Advance time values function."
@@ -794,6 +789,38 @@ WrapTimeDependent(py::module& slv)
         Simulation end time.
     )"
   );
+  time_dependent_solver.def(
+    "Advance",
+    &TimeDependentSourceSolver::Advance,
+    R"(
+    Advance the solver by a single timestep.
+
+    This method uses the configured `dt` and `theta` values and will return
+    immediately if the stop time has already been reached. Calling it
+    repeatedly allows users to write custom python time loops.
+    )");
+  time_dependent_solver.def(
+    "SetTimeStep",
+    &TimeDependentSourceSolver::SetTimeStep,
+    R"(
+    Set the timestep size used by :meth:`Advance`.
+
+    Parameters
+    ----------
+    dt : float
+        New timestep size.
+    )");
+  time_dependent_solver.def(
+    "SetTheta",
+    &TimeDependentSourceSolver::SetTheta,
+    R"(
+    Set the theta parameter used by :meth:`Advance`.
+
+    Parameters
+    ----------
+    theta : float
+        Theta value between 0 and 1.
+    )");
   // clang-format on
 }
 

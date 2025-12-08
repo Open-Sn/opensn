@@ -11,10 +11,6 @@ namespace opensn
 {
 class FieldFunctionGridBased;
 
-/**
- * \defgroup SolverBase Base class for all solvers
- * \ingroup doc_PhysicsSolver
- */
 class Solver
 {
 public:
@@ -29,9 +25,6 @@ public:
 
   /// Execution function.
   virtual void Execute();
-
-  /// Step function.
-  virtual void Step();
 
   /// Advance time values function.
   virtual void Advance();

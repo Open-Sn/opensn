@@ -53,10 +53,10 @@ public:
   void SetOptions(const InputParameters& input);
 
   /// Returns simulation time in seconds for time dependent problems
-  double GetSimulationTime() const;
+  double GetTime() const;
 
   /// Sets simulation time in seconds for time dependent problems
-  void SetSimulationTime(double time);
+  void SetTime(double time);
 
   /// Sets dt
   void SetTimeStep(double dt);
@@ -82,9 +82,9 @@ public:
   /// Returns the number of moments for the solver. This will only be non-zero after initialization.
   size_t GetNumMoments() const;
 
-  size_t GetMaxCellDOFCount() const;
+  unsigned int GetMaxCellDOFCount() const;
 
-  size_t GetMinCellDOFCount() const;
+  unsigned int GetMinCellDOFCount() const;
 
   bool UseGPUs() const;
 
@@ -264,7 +264,6 @@ public:
    */
   virtual void ReorientAdjointSolution() {};
 
-  /// Copy psi_new to psi_old
   virtual void UpdatePsiOld() {};
 
 protected:
@@ -295,7 +294,7 @@ protected:
   virtual void ZeroSolutions() = 0;
 
   LBSOptions options_;
-  double simulation_time_ = 0.0;
+  double time_ = 0.0;
   bool time_dependent_ = false;
   double theta_ = 1.0;
   double dt_ = 1.0;
@@ -328,8 +327,8 @@ protected:
 
   UnknownManager flux_moments_uk_man_;
 
-  size_t max_cell_dof_count_ = 0;
-  size_t min_cell_dof_count_ = 0;
+  unsigned int max_cell_dof_count_ = 0;
+  unsigned int min_cell_dof_count_ = 0;
   uint64_t local_node_count_ = 0;
   uint64_t global_node_count_ = 0;
 

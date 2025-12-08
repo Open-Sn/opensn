@@ -185,7 +185,7 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 
   const auto gs_i = groupset.groups.front().id;
   const auto gs_f = groupset.groups.back().id;
-  const double source_time = lbs_problem_.GetSimulationTime();
+  const double source_time = lbs_problem_.GetTime();
 
   // Apply point sources
   if (not lbs_problem_.GetOptions().use_src_moments and apply_fixed_src)
@@ -229,7 +229,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 
   const auto gs_i = groupset.groups.front().id;
   const auto gs_f = groupset.groups.back().id;
-  const double source_time = lbs_problem_.GetSimulationTime();
+  const double source_time = lbs_problem_.GetTime();
 
   // Go through each volumetric source, and its subscribing cells
   if (not lbs_problem_.GetOptions().use_src_moments and apply_fixed_src)

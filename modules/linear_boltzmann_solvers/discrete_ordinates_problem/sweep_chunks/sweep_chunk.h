@@ -30,9 +30,9 @@ public:
              const std::vector<double>& source_moments,
              const LBSGroupset& groupset,
              const BlockID2XSMap& xs,
-             int num_moments,
-             int max_num_cell_dofs,
-             int min_num_cell_dofs)
+             size_t num_moments,
+             unsigned int max_num_cell_dofs,
+             unsigned int min_num_cell_dofs)
     : grid_(grid),
       discretization_(discretization),
       unit_cell_matrices_(unit_cell_matrices),
@@ -99,9 +99,9 @@ protected:
   const std::vector<double>& source_moments_;
   const LBSGroupset& groupset_;
   const BlockID2XSMap& xs_;
-  const int num_moments_;
-  const int max_num_cell_dofs_;
-  const int min_num_cell_dofs_;
+  const size_t num_moments_;
+  const unsigned int max_num_cell_dofs_;
+  const unsigned int min_num_cell_dofs_;
   const bool save_angular_flux_;
   const size_t groupset_angle_group_stride_;
   const size_t groupset_group_stride_;

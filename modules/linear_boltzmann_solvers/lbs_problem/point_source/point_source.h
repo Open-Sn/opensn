@@ -57,6 +57,7 @@ public:
 
   const Vector3& GetLocation() const { return location_; }
   const std::vector<double>& GetStrength() const { return strength_; }
+  bool IsActive(double time) const;
 
 private:
   const Vector3 location_;
@@ -74,8 +75,6 @@ private:
 public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<PointSource> Create(const ParameterBlock& params);
-
-  bool IsActive(double time) const;
 };
 
 } // namespace opensn

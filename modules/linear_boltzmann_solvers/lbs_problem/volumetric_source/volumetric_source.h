@@ -48,6 +48,7 @@ public:
   const std::vector<uint64_t>& GetSubscribers() const { return subscribers_; }
   std::shared_ptr<LogicalVolume> GetLogicalVolume() const { return logvol_; }
   const std::vector<unsigned int>& GetBlockIDs() const { return block_ids_; }
+  bool IsActive(double time) const;
 
 private:
   int id_;
@@ -72,9 +73,6 @@ public:
 
 private:
   static int next_id_;
-
-public:
-  bool IsActive(double time) const;
 };
 
 } // namespace opensn

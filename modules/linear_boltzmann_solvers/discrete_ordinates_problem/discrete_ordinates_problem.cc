@@ -1086,7 +1086,8 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::SetSweepChunk");
 
   if (time_dependent_ && sweep_type_ != "AAH")
-    throw std::invalid_argument (GetName() + ": Time dependent are only supported with sweep_type='AAH'.");
+    throw std::invalid_argument(GetName() +
+                                ": Time dependent is only supported with sweep_type='AAH'.");
 
   if (sweep_type_ == "AAH")
   {

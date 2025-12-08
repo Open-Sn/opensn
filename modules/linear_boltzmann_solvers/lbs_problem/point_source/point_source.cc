@@ -26,11 +26,11 @@ PointSource::GetInputParameters()
   params.AddRequiredParameterArray("location", "The (x, y, z) coordinate of the point source.");
   params.AddRequiredParameterArray("strength", "The group-wise point source strength");
   params.AddOptionalParameter("start_time",
-                             -std::numeric_limits<double>::infinity(),
-                             "Time at which the source becomes active.");
+                              -std::numeric_limits<double>::infinity(),
+                              "Time at which the source becomes active.");
   params.AddOptionalParameter("end_time",
-                             std::numeric_limits<double>::infinity(),
-                             "Time at which the source becomes inactive.");
+                              std::numeric_limits<double>::infinity(),
+                              "Time at which the source becomes inactive.");
 
   return params;
 }

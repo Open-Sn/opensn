@@ -23,9 +23,9 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetQMomentsLocal(),
                groupset,
                problem.GetBlockID2XSMap(),
-               static_cast<int>(problem.GetNumMoments()),
-               static_cast<int>(problem.GetMaxCellDOFCount()),
-               static_cast<int>(problem.GetMinCellDOFCount())),
+               problem.GetNumMoments(),
+               problem.GetMaxCellDOFCount(),
+               problem.GetMinCellDOFCount()),
     problem_(problem),
     max_level_size_(problem.GetMaxLevelSize()),
     use_gpus_(problem.UseGPUs())
@@ -226,7 +226,7 @@ AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           double temp_src = 0.0;
-          for (int m = 0; m < num_moments_; ++m)
+          for (std::size_t m = 0; m < num_moments_; ++m)
           {
             const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
             temp_src += m2d_op[direction_num][m] * source_moments_[ir];
@@ -254,7 +254,7 @@ AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
       } // for gsg
 
       // Update phi
-      for (int m = 0; m < num_moments_; ++m)
+      for (std::size_t m = 0; m < num_moments_; ++m)
       {
         const double wn_d2m = d2m_op[direction_num][m];
         for (size_t i = 0; i < cell_num_nodes; ++i)

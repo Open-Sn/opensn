@@ -55,8 +55,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 {
   if (IsTimeDependent())
   {
-    throw std::runtime_error(
-      "Time-dependent RZ problems are not yet supported.");
+    throw std::runtime_error("Time-dependent RZ problems are not yet supported.");
   }
 
   if (geometry_type_ != GeometryType::TWOD_CYLINDRICAL)

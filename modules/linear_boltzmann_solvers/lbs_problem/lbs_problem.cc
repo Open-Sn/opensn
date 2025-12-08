@@ -68,9 +68,8 @@ LBSProblem::GetInputParameters()
 
   params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
 
-  params.AddOptionalParameter("time_dependent",
-                             false,
-                             "Flag indicating whether the problem is time dependent.");
+  params.AddOptionalParameter(
+    "time_dependent", false, "Flag indicating whether the problem is time dependent.");
   return params;
 }
 
@@ -85,7 +84,8 @@ LBSProblem::LBSProblem(const InputParameters& params)
   if (use_gpus_)
   {
     if (time_dependent_)
-      throw std::invalid_argument(GetName() + ": Time dependent problems are not supported on GPUs.");
+      throw std::invalid_argument(GetName() +
+                                  ": Time dependent problems are not supported on GPUs.");
 #ifdef __OPENSN_USE_CUDA__
     CheckCapableDevices();
 #else
@@ -139,15 +139,15 @@ LBSProblem::GetOptions() const
 }
 
 double
-LBSProblem::GetSimulationTime() const
+LBSProblem::GetTime() const
 {
-  return simulation_time_;
+  return time_;
 }
 
 void
-LBSProblem::SetSimulationTime(double time)
+LBSProblem::SetTime(double time)
 {
-  simulation_time_ = time;
+  time_ = time;
 }
 
 void
@@ -192,13 +192,13 @@ LBSProblem::GetNumMoments() const
   return num_moments_;
 }
 
-size_t
+unsigned int
 LBSProblem::GetMaxCellDOFCount() const
 {
   return max_cell_dof_count_;
 }
 
-size_t
+unsigned int
 LBSProblem::GetMinCellDOFCount() const
 {
   return min_cell_dof_count_;
@@ -1077,7 +1077,7 @@ LBSProblem::InitializeParrays()
   const Vector3 jhat(0.0, 1.0, 0.0);
   const Vector3 khat(0.0, 0.0, 1.0);
 
-  min_cell_dof_count_ = static_cast<size_t>(-1);
+  min_cell_dof_count_ = std::numeric_limits<unsigned int>::max();
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
   cell_transport_views_.reserve(grid_->local_cells.size());
@@ -1118,8 +1118,8 @@ LBSProblem::InitializeParrays()
       ++f;
     } // for f
 
-    max_cell_dof_count_ = std::max(max_cell_dof_count_, num_nodes);
-    min_cell_dof_count_ = std::min(min_cell_dof_count_, num_nodes);
+    max_cell_dof_count_ = std::max(max_cell_dof_count_, static_cast<unsigned int>(num_nodes));
+    min_cell_dof_count_ = std::min(min_cell_dof_count_, static_cast<unsigned int>(num_nodes));
     cell_transport_views_.emplace_back(cell_phi_address,
                                        num_nodes,
                                        num_grps,

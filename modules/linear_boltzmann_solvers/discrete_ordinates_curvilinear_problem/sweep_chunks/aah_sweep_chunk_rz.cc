@@ -24,12 +24,11 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset&
                problem.GetQMomentsLocal(),
                groupset,
                problem.GetBlockID2XSMap(),
-               static_cast<int>(problem.GetNumMoments()),
-               static_cast<int>(problem.GetMaxCellDOFCount()),
-               static_cast<int>(problem.GetMinCellDOFCount())),
-    secondary_unit_cell_matrices_(
-      static_cast<const DiscreteOrdinatesCurvilinearProblem&>(problem)
-        .GetSecondaryUnitCellMatrices()),
+               problem.GetNumMoments(),
+               problem.GetMaxCellDOFCount(),
+               problem.GetMinCellDOFCount()),
+    secondary_unit_cell_matrices_(dynamic_cast<const DiscreteOrdinatesCurvilinearProblem&>(problem)
+                                    .GetSecondaryUnitCellMatrices()),
     unknown_manager_(),
     psi_sweep_(),
     normal_vector_boundary_()
@@ -47,7 +46,7 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset&
     unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.groups.size());
 
   //  allocate storage for sweeping dependency
-  const unsigned int n_dof = discretization_.GetNumLocalDOFs(unknown_manager_);
+  const auto n_dof = discretization_.GetNumLocalDOFs(unknown_manager_);
   psi_sweep_.resize(n_dof);
 
   //  initialise mappings from direction linear index
@@ -234,7 +233,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           double temp_src = 0.0;
-          for (int m = 0; m < num_moments_; ++m)
+          for (std::size_t m = 0; m < num_moments_; ++m)
           {
             const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
             temp_src += m2d_op[direction_num][m] * source_moments_[ir];
@@ -262,7 +261,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       } // for gsg
 
       // Update phi
-      for (int m = 0; m < num_moments_; ++m)
+      for (std::size_t m = 0; m < num_moments_; ++m)
       {
         const double wn_d2m = d2m_op[direction_num][m];
         for (size_t i = 0; i < cell_num_nodes; ++i)

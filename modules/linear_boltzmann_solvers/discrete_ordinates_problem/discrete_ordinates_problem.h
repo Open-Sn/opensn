@@ -47,6 +47,7 @@ public:
 
   size_t GetMaxAngleSetSize() const;
 
+  /// Copy psi_new to psi_old
   void UpdatePsiOld() override;
 
   void PrintSimHeader() override;

@@ -6,7 +6,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log.h"
-#include <stdexcept>
 #include "framework/utils/timer.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/object_factory.h"
@@ -14,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include <iomanip>
+#include <stdexcept>
 #include "sys/stat.h"
 
 namespace opensn
