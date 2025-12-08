@@ -8,6 +8,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <numeric>
+#include <limits>
 
 namespace opensn
 {
@@ -24,6 +25,12 @@ PointSource::GetInputParameters()
 
   params.AddRequiredParameterArray("location", "The (x, y, z) coordinate of the point source.");
   params.AddRequiredParameterArray("strength", "The group-wise point source strength");
+  params.AddOptionalParameter("start_time",
+                             -std::numeric_limits<double>::infinity(),
+                             "Time at which the source becomes active.");
+  params.AddOptionalParameter("end_time",
+                             std::numeric_limits<double>::infinity(),
+                             "Time at which the source becomes inactive.");
 
   return params;
 }
@@ -37,7 +44,9 @@ PointSource::Create(const ParameterBlock& params)
 
 PointSource::PointSource(const InputParameters& params)
   : location_(params.GetParamVectorValue<double>("location")),
-    strength_(params.GetParamVectorValue<double>("strength"))
+    strength_(params.GetParamVectorValue<double>("strength")),
+    start_time_(params.GetParamValue<double>("start_time")),
+    end_time_(params.GetParamValue<double>("end_time"))
 {
   if (std::all_of(strength_.begin(), strength_.end(), [](double x) { return x == 0.0; }))
     log.Log0Warning() << "Point source at " << location_.PrintStr() << " "
@@ -119,6 +128,12 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   log.LogAll() << "Point source has " << num_local_subs << " subscribing cells on processor "
                << mpi_comm.rank();
   log.Log() << "Point source has " << num_global_subscribers_ << " global subscribing cells.";
+}
+
+bool
+PointSource::IsActive(double time) const
+{
+  return time >= start_time_ && time <= end_time_;
 }
 
 } // namespace opensn

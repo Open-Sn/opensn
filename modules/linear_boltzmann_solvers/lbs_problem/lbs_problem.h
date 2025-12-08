@@ -25,7 +25,6 @@ namespace opensn
 
 class MPICommunicatorSet;
 class GridFaceHistogram;
-class TimeIntegration;
 class AGSLinearSolver;
 class WGSLinearSolver;
 struct WGSContext;
@@ -53,6 +52,27 @@ public:
 
   void SetOptions(const InputParameters& input);
 
+  /// Returns simulation time in seconds for time dependent problems
+  double GetSimulationTime() const;
+
+  /// Sets simulation time in seconds for time dependent problems
+  void SetSimulationTime(double time);
+
+  /// Sets dt
+  void SetTimeStep(double dt);
+
+  /// Returns dt
+  double GetTimeStep() const;
+
+  /// Sets theta for time discretization
+  void SetTheta(double theta);
+
+  /// Sets theta for time discretization
+  double GetTheta() const;
+
+  /// Is the problem time dependent
+  bool IsTimeDependent() const;
+
   void SetBoundaryOptions(const InputParameters& params);
 
   void SetAdjoint(bool adjoint);
@@ -61,6 +81,12 @@ public:
 
   /// Returns the number of moments for the solver. This will only be non-zero after initialization.
   size_t GetNumMoments() const;
+
+  size_t GetMaxCellDOFCount() const;
+
+  size_t GetMinCellDOFCount() const;
+
+  bool UseGPUs() const;
 
   /// Returns the number of groups for the solver. This will only be non-zero after initialization.
   size_t GetNumGroups() const;
@@ -131,6 +157,9 @@ public:
   const std::map<uint64_t, UnitCellMatrices>& GetUnitGhostCellMatrices() const;
 
   /// Returns a reference to the list of local cell transport views.
+  std::vector<CellLBSView>& GetCellTransportViews();
+
+  /// Returns a const reference to the list of local cell transport views.
   const std::vector<CellLBSView>& GetCellTransportViews() const;
 
   /// Read/Write access to the boundary preferences.
@@ -235,6 +264,9 @@ public:
    */
   virtual void ReorientAdjointSolution() {};
 
+  /// Copy psi_new to psi_old
+  virtual void UpdatePsiOld() {};
+
 protected:
   virtual void PrintSimHeader();
 
@@ -263,6 +295,10 @@ protected:
   virtual void ZeroSolutions() = 0;
 
   LBSOptions options_;
+  double simulation_time_ = 0.0;
+  bool time_dependent_ = false;
+  double theta_ = 1.0;
+  double dt_ = 1.0;
   GeometryType geometry_type_ = GeometryType::INVALID;
   size_t num_moments_ = 0;
   size_t num_groups_ = 0;
@@ -309,9 +345,6 @@ protected:
 
   std::map<std::pair<size_t, size_t>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;
-
-  /// Time integration parameter meant to be set by an executor
-  std::shared_ptr<const TimeIntegration> time_integration_ = nullptr;
 
   /**
    * \brief Data carriers for necessary data to run the sweep on GPU.

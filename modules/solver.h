@@ -10,7 +10,6 @@
 namespace opensn
 {
 class FieldFunctionGridBased;
-class TimeStepper;
 
 /**
  * \defgroup SolverBase Base class for all solvers
@@ -25,16 +24,13 @@ public:
 
   std::string GetName() const;
 
-  TimeStepper& GetTimeStepper();
-  const TimeStepper& GetTimeStepper() const;
-
   /// Initialize function.
   virtual void Initialize();
 
   /// Execution function.
   virtual void Execute();
 
-  /// Step function*/
+  /// Step function.
   virtual void Step();
 
   /// Advance time values function.

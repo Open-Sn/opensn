@@ -12,6 +12,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aah_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
@@ -31,7 +32,9 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <algorithm>
 #include <iomanip>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -196,6 +199,36 @@ DiscreteOrdinatesProblem::GetPsiNewLocal() const
   return psi_new_local_;
 }
 
+std::vector<std::vector<double>>&
+DiscreteOrdinatesProblem::GetPsiOldLocal()
+{
+  return psi_old_local_;
+}
+
+const std::vector<std::vector<double>>&
+DiscreteOrdinatesProblem::GetPsiOldLocal() const
+{
+  return psi_old_local_;
+}
+
+size_t
+DiscreteOrdinatesProblem::GetMaxLevelSize() const
+{
+  return max_level_size_;
+}
+
+size_t
+DiscreteOrdinatesProblem::GetMaxGroupsetSize() const
+{
+  return max_groupset_size_;
+}
+
+size_t
+DiscreteOrdinatesProblem::GetMaxAngleSetSize() const
+{
+  return max_angleset_size_;
+}
+
 void
 DiscreteOrdinatesProblem::PrintSimHeader()
 {
@@ -240,15 +273,18 @@ DiscreteOrdinatesProblem::Initialize()
   // Make face histogram
   grid_face_histogram_ = grid_->MakeGridFaceHistogram();
 
-  // Setup groupset psi vectors
   psi_new_local_.clear();
+  psi_old_local_.clear();
   for (auto& groupset : groupsets_)
   {
     psi_new_local_.emplace_back();
-    if (options_.save_angular_flux)
+    psi_old_local_.emplace_back();
+    if (options_.save_angular_flux || time_dependent_)
     {
       size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
       psi_new_local_.back().assign(num_ang_unknowns, 0.0);
+      if (time_dependent_)
+        psi_old_local_.back().assign(num_ang_unknowns, 0.0);
     }
   }
 
@@ -1049,44 +1085,25 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::SetSweepChunk");
 
+  if (time_dependent_ && sweep_type_ != "AAH")
+    throw std::invalid_argument (GetName() + ": Time dependent are only supported with sweep_type='AAH'.");
+
   if (sweep_type_ == "AAH")
   {
-    auto sweep_chunk = std::make_shared<AAHSweepChunk>(grid_,
-                                                       *discretization_,
-                                                       unit_cell_matrices_,
-                                                       cell_transport_views_,
-                                                       densities_local_,
-                                                       phi_new_local_,
-                                                       psi_new_local_[groupset.id],
-                                                       q_moments_local_,
-                                                       groupset,
-                                                       block_id_to_xs_map_,
-                                                       num_moments_,
-                                                       max_cell_dof_count_,
-                                                       min_cell_dof_count_,
-                                                       *this,
-                                                       max_level_size_,
-                                                       max_groupset_size_,
-                                                       max_angleset_size_,
-                                                       use_gpus_);
+    if (time_dependent_)
+    {
+      auto sweep_chunk = std::make_shared<AAHSweepChunkTD>(*this, groupset);
+
+      return sweep_chunk;
+    }
+
+    auto sweep_chunk = std::make_shared<AAHSweepChunk>(*this, groupset);
 
     return sweep_chunk;
   }
   else if (sweep_type_ == "CBC")
   {
-    auto sweep_chunk = std::make_shared<CBCSweepChunk>(phi_new_local_,
-                                                       psi_new_local_[groupset.id],
-                                                       grid_,
-                                                       *discretization_,
-                                                       unit_cell_matrices_,
-                                                       cell_transport_views_,
-                                                       densities_local_,
-                                                       q_moments_local_,
-                                                       groupset,
-                                                       block_id_to_xs_map_,
-                                                       num_moments_,
-                                                       max_cell_dof_count_,
-                                                       min_cell_dof_count_);
+    auto sweep_chunk = std::make_shared<CBCSweepChunk>(*this, groupset);
 
     return sweep_chunk;
   }
@@ -1099,6 +1116,16 @@ DiscreteOrdinatesProblem::ZeroSolutions()
 {
   for (auto& psi : psi_new_local_)
     psi.assign(psi.size(), 0.0);
+
+  for (auto& psi : psi_old_local_)
+    psi.assign(psi.size(), 0.0);
+}
+
+void
+DiscreteOrdinatesProblem::UpdatePsiOld()
+{
+  for (size_t gs = 0; gs < psi_new_local_.size(); ++gs)
+    psi_old_local_[gs] = psi_new_local_[gs];
 }
 
 } // namespace opensn

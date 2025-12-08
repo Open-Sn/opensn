@@ -6,6 +6,7 @@
 #include "framework/parameters/input_parameters.h"
 #include <vector>
 #include <iostream>
+#include <limits>
 
 namespace opensn
 {
@@ -57,6 +58,9 @@ private:
   std::vector<double> strength_;
   const std::shared_ptr<VectorSpatialFunction> function_;
 
+  double start_time_ = -std::numeric_limits<double>::infinity();
+  double end_time_ = std::numeric_limits<double>::infinity();
+
   size_t num_local_subsribers_ = 0;
   size_t num_global_subscribers_ = 0;
 
@@ -68,6 +72,9 @@ public:
 
 private:
   static int next_id_;
+
+public:
+  bool IsActive(double time) const;
 };
 
 } // namespace opensn

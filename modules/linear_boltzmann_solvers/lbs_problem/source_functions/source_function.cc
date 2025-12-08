@@ -185,12 +185,16 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 
   const auto gs_i = groupset.groups.front().id;
   const auto gs_f = groupset.groups.back().id;
+  const double source_time = lbs_problem_.GetSimulationTime();
 
   // Apply point sources
   if (not lbs_problem_.GetOptions().use_src_moments and apply_fixed_src)
   {
     for (const auto& point_source : lbs_problem_.GetPointSources())
     {
+      if (not point_source->IsActive(source_time))
+        continue;
+
       for (const auto& subscriber : point_source->GetSubscribers())
       {
         const auto& transport_view = transport_views[subscriber.cell_local_id];
@@ -225,12 +229,16 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 
   const auto gs_i = groupset.groups.front().id;
   const auto gs_f = groupset.groups.back().id;
+  const double source_time = lbs_problem_.GetSimulationTime();
 
   // Go through each volumetric source, and its subscribing cells
   if (not lbs_problem_.GetOptions().use_src_moments and apply_fixed_src)
   {
     for (const auto& volumetric_source : lbs_problem_.GetVolumetricSources())
     {
+      if (not volumetric_source->IsActive(source_time))
+        continue;
+
       for (const auto local_id : volumetric_source->GetSubscribers())
       {
         const auto& cell = grid->local_cells[local_id];

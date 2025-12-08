@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "caliper/cali.h"
@@ -42,6 +43,15 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   auto& q_moments_local = do_problem.GetQMomentsLocal();
   q_moments_local.assign(q_moments_local.size(), 0.0);
   set_source_function(groupset, q_moments_local, do_problem.GetPhiOldLocal(), lhs_src_scope);
+
+  // Disable RHS time term in Krylov operator
+  if (do_problem.IsTimeDependent())
+  {
+    auto* sweep_ctx = dynamic_cast<SweepWGSContext*>(gs_context_ptr);
+    if (!sweep_ctx)
+      throw std::runtime_error("MatrixAction expected SweepWGSContext but got something else.");
+    sweep_ctx->sweep_chunk->IncludeRHSTimeTerm(false);
+  }
 
   // Apply transport operator
   gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope);

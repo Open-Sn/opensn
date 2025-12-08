@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
@@ -12,32 +13,20 @@
 namespace opensn
 {
 
-CBCSweepChunk::CBCSweepChunk(std::vector<double>& destination_phi,
-                             std::vector<double>& destination_psi,
-                             const std::shared_ptr<MeshContinuum>& grid,
-                             const SpatialDiscretization& discretization,
-                             const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                             std::vector<CellLBSView>& cell_transport_views,
-                             const std::vector<double>& densities,
-                             const std::vector<double>& source_moments,
-                             const LBSGroupset& groupset,
-                             const BlockID2XSMap& xs,
-                             int num_moments,
-                             int max_num_cell_dofs,
-                             int min_num_cell_dofs)
-  : SweepChunk(destination_phi,
-               destination_psi,
-               grid,
-               discretization,
-               unit_cell_matrices,
-               cell_transport_views,
-               densities,
-               source_moments,
+CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
+  : SweepChunk(problem.GetPhiNewLocal(),
+               problem.GetPsiNewLocal()[groupset.id],
+               problem.GetGrid(),
+               problem.GetSpatialDiscretization(),
+               problem.GetUnitCellMatrices(),
+               problem.GetCellTransportViews(),
+               problem.GetDensitiesLocal(),
+               problem.GetQMomentsLocal(),
                groupset,
-               xs,
-               num_moments,
-               max_num_cell_dofs,
-               min_num_cell_dofs),
+               problem.GetBlockID2XSMap(),
+               static_cast<int>(problem.GetNumMoments()),
+               static_cast<int>(problem.GetMaxCellDOFCount()),
+               static_cast<int>(problem.GetMinCellDOFCount())),
     fluds_(nullptr),
     gs_size_(0),
     gs_gi_(0),

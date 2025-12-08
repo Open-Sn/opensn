@@ -9,6 +9,7 @@
 namespace opensn
 {
 class CellMapping;
+class DiscreteOrdinatesProblem;
 
 /**
  * Implements the core sweep operation for a single cell within the
@@ -24,19 +25,7 @@ class CellMapping;
 class CBCSweepChunk : public SweepChunk
 {
 public:
-  CBCSweepChunk(std::vector<double>& destination_phi,
-                std::vector<double>& destination_psi,
-                const std::shared_ptr<MeshContinuum>& grid,
-                const SpatialDiscretization& discretization,
-                const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                std::vector<CellLBSView>& cell_transport_views,
-                const std::vector<double>& densities,
-                const std::vector<double>& source_moments,
-                const LBSGroupset& groupset,
-                const BlockID2XSMap& xs,
-                int num_moments,
-                int max_num_cell_dofs,
-                int min_num_cell_dofs);
+  CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
   void SetAngleSet(AngleSet& angle_set) override;
 

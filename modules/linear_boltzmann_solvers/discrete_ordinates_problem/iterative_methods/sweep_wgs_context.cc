@@ -125,6 +125,11 @@ SweepWGSContext::PostSolveCallback()
     const auto scope = lhs_src_scope | rhs_src_scope;
     set_source_function(
       groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+
+    // Add RHS time term (tau*psi^n)
+    if (do_problem.IsTimeDependent())
+      sweep_chunk->IncludeRHSTimeTerm(true);
+
     ApplyInverseTransportOperator(scope);
     LBSVecOps::GSScopedCopyPrimarySTLvectors(
       do_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);

@@ -7,6 +7,7 @@
 #include "framework/math/math.h"
 #include "framework/parameters/input_parameters.h"
 #include <utility>
+#include <limits>
 
 namespace opensn
 {
@@ -64,12 +65,17 @@ private:
   //       potentially many zero entries.
   const std::vector<double> strength_;
 
+  double start_time_ = -std::numeric_limits<double>::infinity();
+  double end_time_ = std::numeric_limits<double>::infinity();
+
   std::vector<Subscriber> subscribers_;
   size_t num_global_subscribers_ = 0;
 
 public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<PointSource> Create(const ParameterBlock& params);
+
+  bool IsActive(double time) const;
 };
 
 } // namespace opensn
