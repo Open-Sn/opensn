@@ -32,6 +32,8 @@ Includes
 
 - ``framework/math/quadratures/angular/angular_quadrature.h`` (:ref:`file_framework_math_quadratures_angular_angular_quadrature.h`)
 
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set_group.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h`)
@@ -41,6 +43,8 @@ Includes
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 
 
@@ -69,4 +73,22 @@ Classes
 
 
 - :ref:`exhale_class_classopensn_1_1_angle_aggregation`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a497e0584a70f5f46177be586f7525e3d`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_namespaceopensn_1af356c49adff41bc9042b78f2d521b3d8`
+
+- :ref:`exhale_typedef_namespaceopensn_1a1f623b22852e0d1dc29273ee5e357b48`
+
+- :ref:`exhale_typedef_namespaceopensn_1a51a4083ebb58dc8e42fde29d55fe5778`
 

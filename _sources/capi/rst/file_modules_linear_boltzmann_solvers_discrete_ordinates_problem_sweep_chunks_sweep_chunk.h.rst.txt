@@ -40,6 +40,8 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
 
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h`)
+
 
 
 Included By

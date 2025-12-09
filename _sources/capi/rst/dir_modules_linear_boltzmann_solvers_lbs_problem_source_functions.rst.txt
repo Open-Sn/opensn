@@ -16,6 +16,7 @@ Directory source_functions
 Files
 -----
 
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_flags.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_transient_source_function.h`
 

@@ -58,13 +58,9 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`
-
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h`
-
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h`
 
 
 
@@ -84,33 +80,14 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_l_b_s_options`
 
-- :ref:`exhale_struct_structopensn_1_1_source_flags`
-
-- :ref:`exhale_class_classopensn_1_1_cell_l_b_s_view`
-
 
 Enums
 -----
 
 
-- :ref:`exhale_enum_namespaceopensn_1a497e0584a70f5f46177be586f7525e3d`
-
 - :ref:`exhale_enum_namespaceopensn_1adbca6961a12788281ba4908a5ede2aa2`
 
 - :ref:`exhale_enum_namespaceopensn_1a888a70b0fcfee2519583f22c144fdb85`
-
-- :ref:`exhale_enum_namespaceopensn_1a7ee4c56283daef9de39a2aedb425cbf3`
-
-- :ref:`exhale_enum_namespaceopensn_1a3185218715dee0a3880722417aea275c`
-
-
-Functions
----------
-
-
-- :ref:`exhale_function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195`
-
-- :ref:`exhale_function_namespaceopensn_1a482b5ac75802192e834d71531adea8c3`
 
 
 Typedefs
@@ -118,12 +95,4 @@ Typedefs
 
 
 - :ref:`exhale_typedef_namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559`
-
-- :ref:`exhale_typedef_namespaceopensn_1af356c49adff41bc9042b78f2d521b3d8`
-
-- :ref:`exhale_typedef_namespaceopensn_1a1f623b22852e0d1dc29273ee5e357b48`
-
-- :ref:`exhale_typedef_namespaceopensn_1aafd494a5bc37e5f11c981a72b1d55a57`
-
-- :ref:`exhale_typedef_namespaceopensn_1a51a4083ebb58dc8e42fde29d55fe5778`
 

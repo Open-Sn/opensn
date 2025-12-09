@@ -3,7 +3,7 @@
 Enum AngleAggregationType
 =========================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`
 
 
 Enum Documentation

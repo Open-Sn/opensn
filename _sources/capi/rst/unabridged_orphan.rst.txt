@@ -1614,11 +1614,6 @@ Enums
 .. toctree::
    :maxdepth: 1
 
-   enum_namespaceopensn_1a7ee4c56283daef9de39a2aedb425cbf3.rst
-
-.. toctree::
-   :maxdepth: 1
-
    enum_namespaceopensn_1a3185218715dee0a3880722417aea275c.rst
 
 .. toctree::
@@ -2447,6 +2442,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_framework_math_quadratures_angular_lebedev_orders.h.rst
 
 .. toctree::
@@ -2888,6 +2888,11 @@ Files
    :maxdepth: 1
 
    file_modules_solver.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_flags.h.rst
 
 .. toctree::
    :maxdepth: 1

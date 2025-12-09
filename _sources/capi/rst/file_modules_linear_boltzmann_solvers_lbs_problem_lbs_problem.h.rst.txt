@@ -50,7 +50,11 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
 
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h`)
+
 - ``modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_flags.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source_volumetric_source.h`)
 

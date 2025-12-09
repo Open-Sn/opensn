@@ -3,7 +3,7 @@
 Struct SourceFlags
 ==================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_flags.h`
 
 
 Struct Documentation
