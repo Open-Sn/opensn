@@ -15,24 +15,26 @@ trap cleanup EXIT
 set -Eeuo pipefail
 
 usage() {
-  cat <<EOF
-Usage: run-clang-tidy.sh [-h] [FILENAME]
+  cat <<'EOF'
+Usage: run-clang-tidy.sh [-h] [-use-color] [-extra-arg-before=ARG] [-extra-arg=ARG] [FILENAME]
 
 OpenSn-specific clang-tidy script.
 
-Runs clang-tidy on the entire OpenSn repository or on a single source file.
+Runs `run-clang-tidy` on the framework, modules, and python sources; you can specify a single
+source file instead of running on the entire repository.
 
-This command should be run from the root of the OpenSn repository.
+Examples (run from repository root):
+  Analyze everything:
+    tools/developer/run-clang-tidy.sh
 
-For example, to analyze the entire repository, run:
-tools/developer/run-clang-tidy.sh
-
-To analyze a single source (.cc) file, run:
-tools/developer/run-clang-tidy.sh framework/utils/timer.cc:
+  Analyze one file:
+    tools/developer/run-clang-tidy.sh framework/utils/timer.cc
 
 Options:
-  -h, --help    Show this help and exit.
-
+  -h, --help               Show this help text and exit.
+  -use-color, --use-color  Enable colored output when supported.
+  -extra-arg-before=ARG    Forward ARG before the file list (passed verbatim to llvm's run-clang-tidy).
+  -extra-arg=ARG           Forward ARG after the file list.
 EOF
 }
 
