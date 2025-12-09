@@ -79,10 +79,10 @@ Static constants should use upper case.
 Classes and Structs
 ~~~~~~~~~~~~~~~~~~~
 
-Class names should use `Pascal` style.  
-Member variables should use `snake` style.  
-Private and protected member variables should have trailing underscores (`_`).  
-Member functions should use `Pascal` style.  
+Class names should use `Pascal` style.
+Member variables should use `snake` style.
+Private and protected member variables should have trailing underscores (`_`).
+Member functions should use `Pascal` style.
 Member function parameters should use `snake` style.
 
 .. code-block:: c++
@@ -109,6 +109,37 @@ Member function parameters should use `snake` style.
       double another_member_variable_;
    };
 
+
+The order of variables and functions inside a `class`/`struct`  should be as shown below:
+
+.. code-block:: c++
+
+   class ClassName {
+   public:
+      # member functions
+      # member variables
+   protected:
+      # member functions
+      # member variables
+   private:
+      # member functions
+      # member variables
+
+   public:
+      # static function
+      # static variables
+   protected:
+      # static function
+      # static variables
+   private:
+      # static function
+      # static variables
+   };
+
+Note: The is the *preffered* order. It is not always possible to achieve this in cases where
+structs and enums must be declared before used. Those cases are allowed exceptions for
+deviating from this ordering.
+
 Getters and Setters
 ~~~~~~~~~~~~~~~~~~~
 
@@ -129,7 +160,7 @@ Getters should use the `Get` prefix and setters should use the `Set` prefix.
 Numbers
 ~~~~~~~
 
-- Decimal numbers are written with both whole and fraction part.  
+- Decimal numbers are written with both whole and fraction part.
   Examples: ``1234.12``, ``1.0``, ``0.0``, ``1.0e-15``.
 
 Boolean operators
@@ -140,13 +171,13 @@ Boolean operators ``or``, ``and`` and ``not`` should be used instead of ``||``, 
 Pointers
 ~~~~~~~~
 
-Shared pointers (``std::shared``) are preferred over raw pointers.  
+Shared pointers (``std::shared``) are preferred over raw pointers.
 Exception to this rule is when the code interacts with a 3rd party library like PETSc where shared pointers simply don't exist.
 
 Conditionals
 ~~~~~~~~~~~~
 
-A space should be used after the keyword in a conditional statement.  
+A space should be used after the keyword in a conditional statement.
 There is no space inside parentheses. The statement block should not be enclosed in braces if the condition fits on a single line.
 
 .. code-block:: c++
@@ -175,7 +206,7 @@ In-code comments should use ``//``.
    // in-code comment
    call();
 
-For `doxygen <https://www.doxygen.nl/>`_-style comments, use ``///`` for single-line comments  
+For `doxygen <https://www.doxygen.nl/>`_-style comments, use ``///`` for single-line comments
 and ``/** */`` for multi-line comments with the following formatting:
 
 .. code-block:: c++
