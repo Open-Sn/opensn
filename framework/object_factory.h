@@ -79,14 +79,50 @@ public:
   ObjectFactory(const ObjectFactory&&) = delete;
   ObjectFactory& operator=(const ObjectFactory&) = delete;
 
-  /// Access to the singleton
-  static ObjectFactory& GetInstance() noexcept;
-
   /// Returns a constant reference to the object registry.
   const std::map<std::string, ObjectRegistryEntry>& GetRegistry() const;
 
   /// Checks if the object registry has a specific text key.
   bool RegistryHasKey(const std::string& key) const;
+
+  template <class TYPE>
+  std::shared_ptr<TYPE> Create(const std::string& type, const ParameterBlock& params) const
+  {
+    if (object_registry_.count(type) == 0)
+      throw std::logic_error("No registered type \"" + type + "\" found.");
+
+    auto object_entry = object_registry_.at(type);
+    if (not object_entry.get_in_params_func)
+      throw std::runtime_error(
+        "Object is not constructable since it has no registered constructor");
+
+    auto input_params = object_entry.get_in_params_func();
+    input_params.SetObjectType(type);
+    input_params.SetErrorOriginScope(type);
+    input_params.AssignParameters(params);
+    auto obj = std::make_shared<TYPE>(input_params);
+    return obj;
+  }
+
+  /// Returns the input parameters of a registered object.
+  InputParameters GetRegisteredObjectParameters(const std::string& type) const;
+
+  /// Dumps the object registry to stdout.
+  void DumpRegister() const;
+
+private:
+  /// Private constructor because this is a singleton.
+  ObjectFactory() = default;
+
+  /// Checks that the registry key is available and throws a `std::logical_error` if it is not.
+  void AssertRegistryKeyAvailable(const std::string& key,
+                                  const std::string& calling_function) const;
+
+  std::map<std::string, ObjectRegistryEntry> object_registry_;
+
+public:
+  /// Access to the singleton
+  static ObjectFactory& GetInstance() noexcept;
 
   template <typename T>
   static char AddObjectToRegistry(const std::string& namespace_name, const std::string& object_name)
@@ -150,37 +186,7 @@ public:
     return 0;
   }
 
-  template <class TYPE>
-  std::shared_ptr<TYPE> Create(const std::string& type, const ParameterBlock& params) const
-  {
-    if (object_registry_.count(type) == 0)
-      throw std::logic_error("No registered type \"" + type + "\" found.");
-
-    auto object_entry = object_registry_.at(type);
-    if (not object_entry.get_in_params_func)
-      throw std::runtime_error(
-        "Object is not constructable since it has no registered constructor");
-
-    auto input_params = object_entry.get_in_params_func();
-    input_params.SetObjectType(type);
-    input_params.SetErrorOriginScope(type);
-    input_params.AssignParameters(params);
-    auto obj = std::make_shared<TYPE>(input_params);
-    return obj;
-  }
-
-  /// Returns the input parameters of a registered object.
-  InputParameters GetRegisteredObjectParameters(const std::string& type) const;
-
-  /// Dumps the object registry to stdout.
-  void DumpRegister() const;
-
 private:
-  std::map<std::string, ObjectRegistryEntry> object_registry_;
-
-  /// Private constructor because this is a singleton.
-  ObjectFactory() = default;
-
   /// Utility redirection to call an object's static `GetInputParameters` function.
   template <typename T>
   static InputParameters CallGetInputParamsFunction()
@@ -195,10 +201,6 @@ private:
     static_assert(std::is_base_of_v<base_T, T>, "Is not a base");
     return std::make_shared<T>(params);
   }
-
-  /// Checks that the registry key is available and throws a `std::logical_error` if it is not.
-  void AssertRegistryKeyAvailable(const std::string& key,
-                                  const std::string& calling_function) const;
 };
 
 } // namespace opensn

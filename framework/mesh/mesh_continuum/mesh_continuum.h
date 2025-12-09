@@ -157,12 +157,12 @@ public:
    */
   std::shared_ptr<MPICommunicatorSet> MakeMPILocalCommunicatorSet() const;
 
+  /// Compute volume per block IDs
+  std::map<unsigned int, double> ComputeVolumePerBlockID() const;
+
   VertexHandler vertices;
   LocalCellHandler local_cells;
   GlobalCellHandler cells;
-
-  /// Compute volume per block IDs
-  std::map<unsigned int, double> ComputeVolumePerBlockID() const;
 
 private:
   /// Spatial dimension

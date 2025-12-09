@@ -16,10 +16,6 @@ namespace opensn
 /// Base class for an allowable range.
 class AllowableRange
 {
-protected:
-  virtual bool ChildIsAllowable(Varying value) const = 0;
-  virtual std::string AllowableRangeStr() const = 0;
-
 public:
   /// Returns `true` is the value is within the allowable range.
   template <typename T>
@@ -47,14 +43,15 @@ public:
   std::string PrintRange() { return AllowableRangeStr(); }
 
   virtual ~AllowableRange() = default;
+
+protected:
+  virtual bool ChildIsAllowable(Varying value) const = 0;
+  virtual std::string AllowableRangeStr() const = 0;
 };
 
 /// Range comprising a list of values
 class AllowableRangeList : public AllowableRange
 {
-protected:
-  std::vector<Varying> list_;
-
 public:
   template <typename T>
   AllowableRangeList(const std::initializer_list<T>& raw_list)
@@ -87,6 +84,7 @@ protected:
   {
     return std::find(list_.begin(), list_.end(), value) != list_.end();
   }
+
   std::string AllowableRangeStr() const override
   {
     std::stringstream outstr;
@@ -98,6 +96,8 @@ protected:
     }
     return outstr.str();
   }
+
+  std::vector<Varying> list_;
 };
 
 class AllowableRangeLowHighLimit;
@@ -105,10 +105,6 @@ class AllowableRangeLowHighLimit;
 /// Lower limit range.
 class AllowableRangeLowLimit : public AllowableRange
 {
-protected:
-  const Varying low_limit_;
-  bool low_closed_ = true;
-
 public:
   template <typename T>
   explicit AllowableRangeLowLimit(const T& low_value, bool low_closed = true)
@@ -141,15 +137,14 @@ protected:
     else
       return std::string("> ") + low_limit_.PrintStr();
   }
+
+  const Varying low_limit_;
+  bool low_closed_ = true;
 };
 
 /// Upper limit range
 class AllowableRangeHighLimit : public AllowableRange
 {
-protected:
-  const Varying hi_limit_;
-  bool hi_closed_ = true;
-
 public:
   template <typename T>
   explicit AllowableRangeHighLimit(const T& hi_value, bool hi_closed = true)
@@ -175,6 +170,7 @@ protected:
     else
       return value < hi_limit_;
   }
+
   std::string AllowableRangeStr() const override
   {
     if (hi_closed_)
@@ -182,15 +178,14 @@ protected:
     else
       return std::string("< ") + hi_limit_.PrintStr();
   }
+
+  const Varying hi_limit_;
+  bool hi_closed_ = true;
 };
 
 /// Upper and lower limit range
 class AllowableRangeLowHighLimit : public AllowableRange
 {
-protected:
-  AllowableRangeLowLimit low_range_;
-  AllowableRangeHighLimit hi_range;
-
 public:
   template <typename T>
   explicit AllowableRangeLowHighLimit(const T& low_value,
@@ -218,6 +213,9 @@ protected:
 
     return low_range_.AllowableRangeStr() + ", " + hi_range.AllowableRangeStr();
   }
+
+  AllowableRangeLowLimit low_range_;
+  AllowableRangeHighLimit hi_range;
 };
 
 } // namespace opensn

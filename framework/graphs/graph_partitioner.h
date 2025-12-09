@@ -22,8 +22,10 @@ public:
                                      int number_of_parts) = 0;
 
 protected:
-  static InputParameters GetInputParameters();
   explicit GraphPartitioner(const InputParameters& params);
+
+protected:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

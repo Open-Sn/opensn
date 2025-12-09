@@ -12,9 +12,6 @@ namespace opensn
 /// Timer object.
 class Timer
 {
-private:
-  std::chrono::steady_clock::time_point start_time_;
-
 public:
   /// Default constructor.
   Timer() noexcept;
@@ -28,6 +25,10 @@ public:
   /// Obtains a string in the format of hh:mm::ss.
   std::string GetTimeString() const;
 
+private:
+  std::chrono::steady_clock::time_point start_time_;
+
+public:
   /// Obtains a string in the format YYYY-MM-DD hh:mm:ss
   static std::string GetLocalDateTimeString();
 };

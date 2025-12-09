@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/mesh/cell/cell.h"
+#include <cassert>
 
 namespace opensn
 {
@@ -12,18 +13,6 @@ namespace opensn
 class LocalCellHandler
 {
 public:
-  std::vector<std::shared_ptr<Cell>>& local_cells;
-
-private:
-  /// Constructor.
-  explicit LocalCellHandler(std::vector<std::shared_ptr<Cell>>& cells) : local_cells(cells) {}
-
-public:
-  static LocalCellHandler Create(std::vector<std::shared_ptr<Cell>>& native_cells)
-  {
-    return LocalCellHandler(native_cells);
-  }
-
   /// Returns a reference to a local cell, given a local cell index.
   Cell& operator[](uint64_t cell_local_index)
   {
@@ -49,10 +38,6 @@ public:
   /// Internal iterator class.
   class Iterator
   {
-  private:
-    LocalCellHandler& handler_;
-    size_t index_;
-
   public:
     Iterator(LocalCellHandler& handler, size_t index) : handler_(handler), index_(index) {}
 
@@ -65,15 +50,15 @@ public:
     Cell& operator*() { return *(handler_.local_cells[index_]); }
     bool operator==(const Iterator& other) const { return index_ == other.index_; }
     bool operator!=(const Iterator& other) const { return index_ != other.index_; }
+
+  private:
+    LocalCellHandler& handler_;
+    size_t index_;
   };
 
   /// Internal const iterator class.
   class ConstIterator
   {
-  private:
-    const LocalCellHandler& handler_;
-    size_t index_;
-
   public:
     ConstIterator(const LocalCellHandler& handler, size_t index) : handler_(handler), index_(index)
     {
@@ -88,6 +73,10 @@ public:
     const Cell& operator*() { return *(handler_.local_cells[index_]); }
     bool operator==(const ConstIterator& other) const { return index_ == other.index_; }
     bool operator!=(const ConstIterator& other) const { return index_ != other.index_; }
+
+  private:
+    const LocalCellHandler& handler_;
+    size_t index_;
   };
 
   Iterator begin() { return {*this, 0}; }
@@ -99,6 +88,18 @@ public:
   ConstIterator end() const { return {*this, local_cells.size()}; }
 
   size_t size() const { return local_cells.size(); }
+
+  std::vector<std::shared_ptr<Cell>>& local_cells;
+
+private:
+  /// Constructor.
+  explicit LocalCellHandler(std::vector<std::shared_ptr<Cell>>& cells) : local_cells(cells) {}
+
+public:
+  static LocalCellHandler Create(std::vector<std::shared_ptr<Cell>>& native_cells)
+  {
+    return LocalCellHandler(native_cells);
+  }
 };
 
 } // namespace opensn

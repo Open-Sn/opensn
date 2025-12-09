@@ -51,11 +51,6 @@ enum class FieldFunctionInterpolationProperty : int
 /// Base class for field-function interpolation objects.
 class FieldFunctionInterpolation
 {
-protected:
-  FieldFunctionInterpolationType type_;
-  unsigned int ref_component_;
-  std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
-
 public:
   explicit FieldFunctionInterpolation(FieldFunctionInterpolationType type)
     : type_(type), ref_component_(0)
@@ -87,6 +82,11 @@ public:
   virtual void ExportToCSV(std::string base_name) const {};
 
   virtual void ExportToPython(std::string base_name) {};
+
+protected:
+  FieldFunctionInterpolationType type_;
+  unsigned int ref_component_;
+  std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
 };
 
 } // namespace opensn

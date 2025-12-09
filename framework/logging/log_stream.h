@@ -13,12 +13,6 @@ namespace opensn
 /// Log stream for adding header information to a string stream.
 class LogStream : public std::stringstream
 {
-private:
-  std::ostream* log_stream_;
-  std::string log_header_;
-  const bool dummy_;
-  bool use_color_;
-
 public:
   LogStream(std::ostream* output_stream,
             std::string header,
@@ -65,6 +59,12 @@ public:
       // No exceptions escape the destructor...
     }
   }
+
+private:
+  std::ostream* log_stream_;
+  std::string log_header_;
+  const bool dummy_;
+  bool use_color_;
 };
 
 struct DummyStream : public std::ostream

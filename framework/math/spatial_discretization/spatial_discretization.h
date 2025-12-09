@@ -202,15 +202,6 @@ public:
                                              std::vector<double>& local_vector,
                                              const UnknownManager& unknown_manager) const;
 
-  /// Cartesian coordinate system spatial weighting function.
-  static double CartesianSpatialWeightFunction(const Vector3& point);
-
-  /// Cylindrical coordinate system (RZ) spatial weighting function.
-  static double CylindricalRZSpatialWeightFunction(const Vector3& point);
-
-  /// Spherical coordinate system (1D Spherical) spatial weighting function.
-  static double Spherical1DSpatialWeightFunction(const Vector3& point);
-
   using SpatialWeightFunction = std::function<double(const Vector3&)>;
 
   /// Returns the spatial weighting function appropriate to the discretization's coordinate system.
@@ -234,6 +225,16 @@ protected:
 
 private:
   const SpatialDiscretizationType type_;
+
+public:
+  /// Cartesian coordinate system spatial weighting function.
+  static double CartesianSpatialWeightFunction(const Vector3& point);
+
+  /// Cylindrical coordinate system (RZ) spatial weighting function.
+  static double CylindricalRZSpatialWeightFunction(const Vector3& point);
+
+  /// Spherical coordinate system (1D Spherical) spatial weighting function.
+  static double Spherical1DSpatialWeightFunction(const Vector3& point);
 };
 
 } // namespace opensn

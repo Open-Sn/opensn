@@ -17,7 +17,6 @@ namespace opensn
 /// Vector with allocation space for ghosts.
 class VectorGhostCommunicator
 {
-
 public:
   VectorGhostCommunicator(uint64_t local_size,
                           uint64_t global_size,

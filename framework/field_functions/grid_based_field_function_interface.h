@@ -19,11 +19,12 @@ class FieldFunctionGridBased;
 class GridBasedFieldFunctionInterface : public FieldFunctionInterface
 {
 public:
-  static InputParameters GetInputParameters();
-
   explicit GridBasedFieldFunctionInterface(const InputParameters& params);
 
   std::shared_ptr<FieldFunctionGridBased> GetGridBasedFieldFunction() const;
+
+public:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

@@ -41,13 +41,6 @@ public:
   void GradShapeValues(const Vector3& xyz, std::vector<Vector3>& gradshape_values) const override;
 
 private:
-  /// Define standard tetrahedron linear shape functions
-  static double TetShape(int index, const Vector3& qpoint, bool on_surface = false);
-
-  static double TetGradShape_x(int index);
-  static double TetGradShape_y(int index);
-  static double TetGradShape_z(int index);
-
   /// Precomputes the shape function values of a face-side pair at a quadrature point
   double FaceSideShape(uint32_t face_index,
                        uint32_t side_index,
@@ -118,6 +111,14 @@ private:
 
   const TetrahedraQuadrature& volume_quadrature_;
   const TriangleQuadrature& surface_quadrature_;
+
+private:
+  /// Define standard tetrahedron linear shape functions
+  static double TetShape(int index, const Vector3& qpoint, bool on_surface = false);
+
+  static double TetGradShape_x(int index);
+  static double TetGradShape_y(int index);
+  static double TetGradShape_z(int index);
 };
 
 } // namespace opensn

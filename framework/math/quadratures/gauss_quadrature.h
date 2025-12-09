@@ -13,11 +13,17 @@ namespace opensn
 
 class GaussQuadrature
 {
-protected:
-  std::pair<double, double> range_;
-  bool verbose_;
-  QuadratureOrder order_;
+public:
+  QuadratureOrder GetOrder() { return order_; }
 
+  const std::pair<double, double>& GetRange() const { return range_; }
+
+  void SetRange(const std::pair<double, double>& range);
+
+  std::vector<Vector3> qpoints;
+  std::vector<double> weights;
+
+protected:
   explicit GaussQuadrature(const InputParameters& params)
     : range_({0, 0}),
       verbose_(params.GetParamValue<bool>("verbose")),
@@ -29,15 +35,9 @@ protected:
   {
   }
 
-public:
-  std::vector<Vector3> qpoints;
-  std::vector<double> weights;
-
-  QuadratureOrder GetOrder() { return order_; }
-
-  const std::pair<double, double>& GetRange() const { return range_; }
-
-  void SetRange(const std::pair<double, double>& range);
+  std::pair<double, double> range_;
+  bool verbose_;
+  QuadratureOrder order_;
 
 public:
   static InputParameters GetInputParameters();

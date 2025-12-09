@@ -27,14 +27,6 @@ struct RayTracerOutputInformation
 /// Raytracer object.
 class RayTracer
 {
-private:
-  const std::shared_ptr<MeshContinuum> reference_grid_;
-  std::vector<double> cell_sizes_;
-  double epsilon_nudge_ = 1.0e-8;
-  double backward_tolerance_ = 1.0e-10;
-  double extension_distance_ = 1.0e5;
-  bool perform_concavity_checks_ = true;
-
 public:
   explicit RayTracer(const std::shared_ptr<MeshContinuum> grid,
                      std::vector<double> cell_sizes,
@@ -44,18 +36,6 @@ public:
       perform_concavity_checks_(perform_concavity_checks)
   {
   }
-
-private:
-  std::shared_ptr<MeshContinuum> Grid() const;
-
-  void SetTolerancesFromCellSize(double cell_size)
-  {
-    epsilon_nudge_ = cell_size * 1.0e-2;
-    backward_tolerance_ = cell_size * 1.0e-10;
-    extension_distance_ = 3.0 * cell_size;
-  }
-
-public:
   /**
    * Traces a ray with an initial position either within the cell or on the cell surface, and with a
    * direction vector pointing inward toward the cell. If the ray-trace fails the particle will be
@@ -69,6 +49,15 @@ public:
   TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector3& omega_i);
 
 private:
+  std::shared_ptr<MeshContinuum> Grid() const;
+
+  void SetTolerancesFromCellSize(double cell_size)
+  {
+    epsilon_nudge_ = cell_size * 1.0e-2;
+    backward_tolerance_ = cell_size * 1.0e-10;
+    extension_distance_ = 3.0 * cell_size;
+  }
+
   /// Performs raytracing within a 1D-slab.
   void TraceSlab(const Cell& cell,
                  Vector3& pos_i,
@@ -92,6 +81,13 @@ private:
                        bool& intersection_found,
                        bool& backward_tolerance_hit,
                        RayTracerOutputInformation& oi);
+
+  const std::shared_ptr<MeshContinuum> reference_grid_;
+  std::vector<double> cell_sizes_;
+  double epsilon_nudge_ = 1.0e-8;
+  double backward_tolerance_ = 1.0e-10;
+  double extension_distance_ = 1.0e5;
+  bool perform_concavity_checks_ = true;
 };
 
 /**

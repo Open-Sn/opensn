@@ -14,10 +14,6 @@ namespace opensn
 
 class ByteArray
 {
-protected:
-  std::vector<std::byte> raw_data_;
-  size_t offset_ = 0;
-
 public:
   ByteArray() = default;
   explicit ByteArray(const size_t raw_data_size) : raw_data_(raw_data_size) {}
@@ -140,6 +136,10 @@ public:
 
   /// Returns a const reference of the internal byte array.
   const std::vector<std::byte>& Data() const { return raw_data_; }
+
+protected:
+  std::vector<std::byte> raw_data_;
+  size_t offset_ = 0;
 };
 
 } // namespace opensn

@@ -46,9 +46,6 @@ public:
   void GradShapeValues(const Vector3& xyz, std::vector<Vector3>& gradshape_values) const override;
 
 private:
-  /// Define standard triangle linear shape functions
-  static double TriShape(uint32_t index, const Vector3& qpoint, bool on_surface = false);
-
   /// Precomputation of the shape function at a quadrature point.
   double SideShape(uint32_t side, uint32_t i, const Vector3& qpoint, bool on_surface = false) const;
 
@@ -73,6 +70,10 @@ private:
   double beta_;
   Vector3 vc_;
   std::vector<std::vector<int>> node_to_side_map_;
+
+private:
+  /// Define standard triangle linear shape functions
+  static double TriShape(uint32_t index, const Vector3& qpoint, bool on_surface = false);
 };
 
 } // namespace opensn

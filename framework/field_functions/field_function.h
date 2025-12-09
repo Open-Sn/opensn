@@ -14,7 +14,6 @@ class Cell;
 class FieldFunction
 {
 public:
-  static InputParameters GetInputParameters();
   explicit FieldFunction(const InputParameters& params);
 
   FieldFunction(std::string name, Unknown unknown);
@@ -40,6 +39,9 @@ protected:
   std::string name_;
   Unknown unknown_;
   UnknownManager unknown_manager_;
+
+public:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

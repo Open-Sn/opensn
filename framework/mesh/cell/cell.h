@@ -63,11 +63,10 @@ public:
   /// Serializes a face into a vector of bytes.
   ByteArray Serialize() const;
 
-  /// Deserializes a face from a set of raw data
-  static CellFace DeSerialize(const ByteArray& raw, size_t& address);
-
   /// Provides string information of the face.
   std::string ToString() const;
+
+  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell, unsigned int f);
 
   /// Flag indicating whether face has a neighbor
   bool has_neighbor = false;
@@ -83,7 +82,10 @@ public:
 
   /// A list of the vertices
   std::vector<uint64_t> vertex_ids;
-  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell, unsigned int f);
+
+public:
+  /// Deserializes a face from a set of raw data
+  static CellFace DeSerialize(const ByteArray& raw, size_t& address);
 };
 
 /// Generic mesh cell object
@@ -108,9 +110,6 @@ public:
   /// Serializes a cell into a vector of bytes.
   ByteArray Serialize() const;
 
-  /// Deserializes a cell from a vector of bytes.
-  static Cell DeSerialize(const ByteArray& raw, size_t& address);
-
   /// Provides string information of the cell.
   std::string ToString() const;
 
@@ -131,6 +130,10 @@ private:
   const CellType cell_type_;
   /// Subtype i.e. SLAB, QUADRILATERAL, HEXAHEDRON
   const CellType cell_sub_type_;
+
+public:
+  /// Deserializes a cell from a vector of bytes.
+  static Cell DeSerialize(const ByteArray& raw, size_t& address);
 };
 
 } // namespace opensn

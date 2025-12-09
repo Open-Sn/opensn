@@ -33,6 +33,8 @@ public:
   /// Copy constructor.
   SparseMatrix(const SparseMatrix& matrix);
 
+  virtual ~SparseMatrix() = default;
+
   size_t GetNumRows() const { return row_size_; }
   size_t GetNumCols() const { return col_size_; }
 
@@ -60,9 +62,6 @@ public:
 private:
   /// Constructor with number of rows constructor.
   void CheckInitialized() const;
-
-public:
-  virtual ~SparseMatrix() = default;
 
 public:
   struct EntryReference

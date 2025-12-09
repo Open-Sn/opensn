@@ -31,14 +31,6 @@ enum class UnknownStorageType
 class Unknown
 {
 public:
-  const UnknownType type;
-  const unsigned int num_components;
-  const unsigned int map_begin;
-  std::string name;
-  std::vector<std::string> component_names;
-  std::vector<int> num_off_block_connections;
-
-public:
   explicit Unknown(UnknownType type, unsigned int num_components = 1, unsigned int map_begin = 0)
     : type(type),
       num_components((type == UnknownType::SCALAR)     ? 1
@@ -110,16 +102,19 @@ public:
   unsigned int GetMapEnd() const { return map_begin + num_components - 1; }
 
   unsigned int GetNumComponents() const { return num_components; }
+
+  const UnknownType type;
+  const unsigned int num_components;
+  const unsigned int map_begin;
+  std::string name;
+  std::vector<std::string> component_names;
+  std::vector<int> num_off_block_connections;
 };
 
 /// General object for the management of unknowns in mesh-based mathematical model.
 class UnknownManager
 {
-private:
 public:
-  std::vector<Unknown> unknowns;
-  UnknownStorageType dof_storage_type;
-
   // Constructors
   explicit UnknownManager(UnknownStorageType storage_type = UnknownStorageType::NODAL) noexcept
     : dof_storage_type(storage_type)
@@ -165,12 +160,6 @@ public:
   UnknownManager(const UnknownManager& other) = default;
   UnknownManager& operator=(const UnknownManager& other) = default;
 
-  // Utilities
-  static UnknownManager GetUnitaryUnknownManager()
-  {
-    return UnknownManager({std::make_pair(UnknownType::SCALAR, 0)});
-  }
-
   std::size_t GetNumberOfUnknowns() const { return unknowns.size(); }
   const Unknown& GetUnknown(std::size_t id) const { return unknowns[id]; }
 
@@ -212,6 +201,16 @@ public:
                                const std::string& component_name);
 
   ~UnknownManager() = default;
+
+  std::vector<Unknown> unknowns;
+  UnknownStorageType dof_storage_type;
+
+public:
+  // Utilities
+  static UnknownManager GetUnitaryUnknownManager()
+  {
+    return UnknownManager({std::make_pair(UnknownType::SCALAR, 0)});
+  }
 };
 
 } // namespace opensn

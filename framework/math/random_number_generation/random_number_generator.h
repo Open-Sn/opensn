@@ -11,10 +11,6 @@ namespace opensn
 /// Random number generator based on threefry
 class RandomNumberGenerator
 {
-private:
-  std::mt19937_64 mt1993764_generator_;
-  std::uniform_real_distribution<double> distribution_;
-
 public:
   /// Default constructor. Seeds the generator with a zero.
   RandomNumberGenerator();
@@ -24,6 +20,10 @@ public:
 
   /// Generates a random number with the default distribution.
   double Rand();
+
+private:
+  std::mt19937_64 mt1993764_generator_;
+  std::uniform_real_distribution<double> distribution_;
 };
 
 } // namespace opensn
