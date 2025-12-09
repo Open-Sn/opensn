@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include <memory>
 #include <utility>
