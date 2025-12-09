@@ -16,21 +16,11 @@ class MeshContinuum;
 /// Base class for sweep related boundaries.
 class SweepBoundary
 {
-private:
-  const LBSBoundaryType type_;
-  const CoordinateSystemType coord_type_;
-  /// Time value passed to boundary functions
-  double evaluation_time_ = 0.0;
-
-protected:
-  std::vector<double> zero_boundary_flux_;
-  size_t num_groups_;
-
 public:
   explicit SweepBoundary(LBSBoundaryType bndry_type,
                          size_t num_groups,
                          CoordinateSystemType coord_type)
-    : type_(bndry_type), coord_type_(coord_type), num_groups_(num_groups)
+    : num_groups_(num_groups), type_(bndry_type), coord_type_(coord_type)
   {
     zero_boundary_flux_.resize(num_groups_, 0.0);
   }
@@ -116,6 +106,16 @@ public:
   }
 
   double* ZeroFlux(int group_num) { return &zero_boundary_flux_[group_num]; }
+
+protected:
+  std::vector<double> zero_boundary_flux_;
+  size_t num_groups_;
+
+private:
+  const LBSBoundaryType type_;
+  const CoordinateSystemType coord_type_;
+  /// Time value passed to boundary functions
+  double evaluation_time_ = 0.0;
 };
 
 /**

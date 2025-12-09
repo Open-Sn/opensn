@@ -16,13 +16,6 @@ namespace opensn
  */
 class DiscreteOrdinatesCurvilinearProblem : public DiscreteOrdinatesProblem
 {
-private:
-  /** Discretisation pointer to matrices of the secondary cell view  (matrices of the primary cell
-   * view forwarded to the base class).
-   */
-  std::shared_ptr<opensn::SpatialDiscretization> discretization_secondary_;
-  std::vector<UnitCellMatrices> secondary_unit_cell_matrices_;
-
 public:
   explicit DiscreteOrdinatesCurvilinearProblem(const InputParameters& params);
 
@@ -37,6 +30,13 @@ protected:
 
 private:
   std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset) override;
+
+  /**
+   * Discretization pointer to matrices of the secondary cell view (matrices of the primary cell
+   * view forwarded to the base class).
+   */
+  std::shared_ptr<opensn::SpatialDiscretization> discretization_secondary_;
+  std::vector<UnitCellMatrices> secondary_unit_cell_matrices_;
 
 public:
   static InputParameters GetInputParameters();

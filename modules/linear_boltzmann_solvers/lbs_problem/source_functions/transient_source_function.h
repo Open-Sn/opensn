@@ -15,10 +15,6 @@ namespace opensn
  */
 class TransientSourceFunction : public SourceFunction
 {
-private:
-  double& dt_;
-  SteppingMethod& method_;
-
 public:
   /**
    * Constructor for the transient source function. The only difference as compared to a steady
@@ -30,6 +26,10 @@ public:
                         const double& rho,
                         const std::vector<double>& nu_delayed_sigma_f,
                         const double* phi) const override;
+
+private:
+  double& dt_;
+  SteppingMethod& method_;
 };
 
 } // namespace opensn

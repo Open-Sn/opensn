@@ -15,18 +15,6 @@ class Cell;
 /// Transport view of a cell.
 class CellLBSView
 {
-private:
-  size_t phi_address_;
-  int num_nodes_;
-  int num_groups_;
-  int num_grps_moms_;
-  const MultiGroupXS* xs_;
-  double volume_;
-  const std::vector<bool> face_local_flags_;
-  const std::vector<int> face_locality_;
-  const std::vector<const Cell*> neighbor_cell_ptrs_;
-  std::vector<std::vector<double>> outflow_;
-
 public:
   CellLBSView(size_t phi_address,
               int num_nodes,
@@ -95,6 +83,18 @@ public:
   }
 
   void ReassignXS(const MultiGroupXS& xs) { xs_ = &xs; }
+
+private:
+  size_t phi_address_;
+  int num_nodes_;
+  int num_groups_;
+  int num_grps_moms_;
+  const MultiGroupXS* xs_;
+  double volume_;
+  const std::vector<bool> face_local_flags_;
+  const std::vector<int> face_locality_;
+  const std::vector<const Cell*> neighbor_cell_ptrs_;
+  std::vector<std::vector<double>> outflow_;
 };
 
 } // namespace opensn

@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
+#include "framework/data_types/ndarray.h"
+#include "framework/math/unknown_manager/unknown_manager.h"
 
 namespace opensn
 {
@@ -11,10 +13,6 @@ class GhostedParallelSTLVector;
 class SMMAcceleration : public DiscreteOrdinatesKEigenAcceleration
 {
 public:
-  static InputParameters GetInputParameters();
-
-  static std::shared_ptr<SMMAcceleration> Create(const ParameterBlock& params);
-
   explicit SMMAcceleration(const InputParameters& params);
 
   void Initialize() final;
@@ -35,21 +33,6 @@ private:
   void SetNodalDiffusionScatterSource(const std::vector<double>& phi0,
                                       std::vector<double>& out) const;
   std::vector<double> AssembleDiffusionRHS(const std::vector<double>& q0) const;
-
-  /**
-   * Obtain the index of the associated node on the opposing side of a face.
-   * Given a node, go through the nodes of a neighbor cell to find a matching
-   * node. This routine returns the local cell node index of the specified node
-   * for the neighboring cell.
-   *
-   * \param node The node to find an associated node for.
-   * \param nbr_nodes The cell nodes on a neighbor cell.
-   * \param epsilon A matching tolerance.
-   * \return The local cell node index on the neighboring cell.
-   */
-  static int MapAssociatedFaceNode(const Vector3& node,
-                                   const std::vector<Vector3>& nbr_nodes,
-                                   double epsilon = 1.0e-12);
 
   /// Spatial discretization method, from parameters
   const std::string sdm_;
@@ -81,5 +64,27 @@ private:
   std::vector<double> Sf_;
   std::vector<double> Ss_;
   ///@}
+
+public:
+  static InputParameters GetInputParameters();
+
+  static std::shared_ptr<SMMAcceleration> Create(const ParameterBlock& params);
+
+private:
+  /**
+   * Obtain the index of the associated node on the opposing side of a face.
+   * Given a node, go through the nodes of a neighbor cell to find a matching
+   * node. This routine returns the local cell node index of the specified node
+   * for the neighboring cell.
+   *
+   * \param node The node to find an associated node for.
+   * \param nbr_nodes The cell nodes on a neighbor cell.
+   * \param epsilon A matching tolerance.
+   * \return The local cell node index on the neighboring cell.
+   */
+  static int MapAssociatedFaceNode(const Vector3& node,
+                                   const std::vector<Vector3>& nbr_nodes,
+                                   double epsilon = 1.0e-12);
 };
+
 } // namespace opensn

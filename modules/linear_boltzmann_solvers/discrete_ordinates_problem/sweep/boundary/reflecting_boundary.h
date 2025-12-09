@@ -13,20 +13,6 @@ namespace opensn
 /// Reflective boundary condition.
 class ReflectingBoundary : public SweepBoundary
 {
-protected:
-  const Vector3 normal_;
-  bool opposing_reflected_ = false;
-
-  // Populated by angle aggregation
-  // AngularFluxData indices are: angle, cell per angle, faces per cell, DOFs per face, groups per
-  // DOF
-  using AngularFluxData = std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>;
-  AngularFluxData boundary_flux_;
-  AngularFluxData boundary_flux_old_;
-
-  std::vector<int> reflected_anglenum_;
-  std::vector<bool> angle_readyflags_;
-
 public:
   ReflectingBoundary(size_t num_groups,
                      const Vector3& normal,
@@ -93,8 +79,19 @@ public:
 
   void ResetAnglesReadyStatus() override;
 
-private:
-  static constexpr double epsilon_ = 1.0e-8;
+protected:
+  const Vector3 normal_;
+  bool opposing_reflected_ = false;
+
+  // Populated by angle aggregation
+  // AngularFluxData indices are: angle, cell per angle, faces per cell, DOFs per face, groups per
+  // DOF
+  using AngularFluxData = std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>;
+  AngularFluxData boundary_flux_;
+  AngularFluxData boundary_flux_old_;
+
+  std::vector<int> reflected_anglenum_;
+  std::vector<bool> angle_readyflags_;
 
 private:
   template <typename Fn>
@@ -102,6 +99,9 @@ private:
 
   template <typename Fn>
   void ForEachDelayedAngularFluxConst(bool use_old_store, Fn&& fn) const;
+
+private:
+  static constexpr double epsilon_ = 1.0e-8;
 };
 
 } // namespace opensn

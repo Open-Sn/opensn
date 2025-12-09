@@ -19,6 +19,25 @@ enum class SchedulingAlgorithm
 
 class SweepScheduler
 {
+public:
+  SweepScheduler(SchedulingAlgorithm scheduler_type,
+                 AngleAggregation& angle_agg,
+                 SweepChunk& sweep_chunk);
+
+  void Sweep();
+
+  void PrepareForSweep(bool use_boundary_source, bool zero_incoming_delayed_psi);
+
+private:
+  /// Applies a first-in-first-out sweep scheduling.
+  void ScheduleAlgoFIFO(SweepChunk& sweep_chunk);
+
+  /// Initializes the depth-of-graph algorithm.
+  void InitializeAlgoDOG();
+
+  /// Executes the depth-of-graph algorithm.
+  void ScheduleAlgoDOG(SweepChunk& sweep_chunk);
+
 private:
   SchedulingAlgorithm scheduler_type_;
   AngleAggregation& angle_agg_;
@@ -44,25 +63,6 @@ private:
     }
   };
   std::vector<RuleValues> rule_values_;
-
-public:
-  SweepScheduler(SchedulingAlgorithm scheduler_type,
-                 AngleAggregation& angle_agg,
-                 SweepChunk& sweep_chunk);
-
-  void Sweep();
-
-  void PrepareForSweep(bool use_boundary_source, bool zero_incoming_delayed_psi);
-
-private:
-  /// Applies a first-in-first-out sweep scheduling.
-  void ScheduleAlgoFIFO(SweepChunk& sweep_chunk);
-
-  /// Initializes the depth-of-graph algorithm.
-  void InitializeAlgoDOG();
-
-  /// Executes the depth-of-graph algorithm.
-  void ScheduleAlgoDOG(SweepChunk& sweep_chunk);
 };
 
 } // namespace opensn
