@@ -113,7 +113,7 @@ CBC_AngleSet::PsiBoundary(uint64_t boundary_id,
                           uint64_t cell_local_id,
                           unsigned int face_num,
                           unsigned int fi,
-                          int g,
+                          unsigned int g,
                           bool surface_source_active)
 {
   if (boundaries_[boundary_id]->IsReflecting())

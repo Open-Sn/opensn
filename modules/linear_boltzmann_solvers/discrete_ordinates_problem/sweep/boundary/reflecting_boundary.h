@@ -66,7 +66,7 @@ public:
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,
-                      int group_num) override;
+                      unsigned int group_num) override;
 
   double* PsiOutgoing(uint64_t cell_local_id,
                       unsigned int face_num,

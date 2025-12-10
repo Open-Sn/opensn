@@ -26,7 +26,7 @@ public:
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,
-                      int group_num) override
+                      unsigned int group_num) override
   {
     return &boundary_flux_[group_num];
   }

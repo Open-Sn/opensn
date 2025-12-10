@@ -32,7 +32,7 @@ public:
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,
-                      int group_num) override
+                      unsigned int group_num) override
   {
     AllocateSpace(angle_num);
     return &boundary_flux_(angle_num, group_num);

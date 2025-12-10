@@ -28,7 +28,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   auto active_set_source_function = lbs_problem->GetActiveSetSourceFunction();
 
-  std::vector<int> groupset_ids;
+  std::vector<unsigned int> groupset_ids;
   for (const auto& groupset : lbs_problem->GetGroupsets())
     groupset_ids.push_back(groupset.id);
 

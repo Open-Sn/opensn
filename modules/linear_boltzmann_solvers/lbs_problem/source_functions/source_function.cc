@@ -206,7 +206,7 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
         for (int i = 0; i < transport_view.GetNumNodes(); ++i)
         {
           const auto uk_map = transport_view.MapDOF(i, 0, 0);
-          for (int g = gs_i; g <= gs_f; ++g)
+          for (auto g = gs_i; g <= gs_f; ++g)
             q[uk_map + g] += strength[g] * node_weights(i) * volume_weight;
         } // for node i
       } // for subscriber
@@ -254,7 +254,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 
           // Contribute to the source moments
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
-          for (int g = gs_i; g <= gs_f; ++g)
+          for (auto g = gs_i; g <= gs_f; ++g)
             q[dof_map + g] += src[g];
         } // for node i
       } // for subscriber
