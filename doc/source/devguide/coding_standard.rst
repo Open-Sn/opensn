@@ -171,7 +171,7 @@ Boolean operators ``or``, ``and`` and ``not`` should be used instead of ``||``, 
 Pointers
 ~~~~~~~~
 
-Shared pointers (``std::shared``) are preferred over raw pointers.
+Shared pointers (``std::shared_ptr``) are preferred over raw pointers.
 Exception to this rule is when the code interacts with a 3rd party library like PETSc where shared pointers simply don't exist.
 
 Conditionals
