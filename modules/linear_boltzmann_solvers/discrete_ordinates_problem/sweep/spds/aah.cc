@@ -102,11 +102,23 @@ AAH_SPDS::BuildGlobalSweepFAS()
   CALI_CXX_MARK_SCOPE("AAH_SPDS::BuildGlobalSweepFAS");
 
   // Create global sweep graph
-  Graph global_tdg(opensn::mpi_comm.size());
+  const int comm_size = opensn::mpi_comm.size();
+  Graph global_tdg(comm_size);
 
-  for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc)
+  for (int loc = 0; loc < comm_size; ++loc)
+  {
     for (int dep : global_dependencies_[loc])
-      boost::add_edge(dep, loc, 1.0, global_tdg);
+    {
+      double weight = 1.0;
+      if (not global_edge_weights_.empty())
+      {
+        const int idx = dep * comm_size + loc;
+        if (idx < global_edge_weights_.size() and global_edge_weights_[idx] > 0.0)
+          weight = global_edge_weights_[idx];
+      }
+      boost::add_edge(dep, loc, weight, global_tdg);
+    }
+  }
 
   // Remove cycles and generate the feedback arc set (FAS). The FAS is the list of edges that must
   // be removed from the graph to make it acyclic.
@@ -119,6 +131,40 @@ AAH_SPDS::BuildGlobalSweepFAS()
       global_sweep_fas_.emplace_back(e1);
     }
   }
+}
+
+std::vector<double>
+AAH_SPDS::ComputeLocalLocationEdgeWeights() const
+{
+  CALI_CXX_MARK_SCOPE("AAH_SPDS::ComputeLocalLocationEdgeWeights");
+
+  const int comm_size = opensn::mpi_comm.size();
+  std::vector<double> row(comm_size, 0.0);
+
+  constexpr double tolerance = 1.0e-16;
+
+  for (const auto& cell : grid_->local_cells)
+  {
+    const auto& face_orientations = cell_face_orientations_[cell.local_id];
+    std::size_t f = 0;
+    for (const auto& face : cell.faces)
+    {
+      if (face.has_neighbor and not face.IsNeighborLocal(grid_.get()) and
+          face_orientations[f] == FaceOrientation::OUTGOING)
+      {
+        const double mu = omega_.Dot(face.normal);
+        if (mu > tolerance)
+        {
+          const auto& adj_cell = grid_->cells[face.neighbor_id];
+          const int to_loc = adj_cell.partition_id;
+          row[to_loc] += mu * mu * face.area;
+        }
+      }
+      ++f;
+    }
+  }
+
+  return row;
 }
 
 void

@@ -26,13 +26,13 @@
       {
         "type": "KeyValuePair",
         "key": "QoI Value=",
-        "goldvalue": 2.90386e-05,
+        "goldvalue": 2.90419e-05,
         "abs_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "Inner Product=",
-        "goldvalue": 2.90543e-05,
+        "goldvalue": 2.90439e-05,
         "abs_tol": 1e-08
       }
     ]

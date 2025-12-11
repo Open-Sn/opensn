@@ -20,7 +20,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi(2s) = ",
-        "goldvalue": 0.889727,
+        "goldvalue": 0.889725,
         "abs_tol": 1e-06
       }
     ]
@@ -33,7 +33,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi(1s) = ",
-        "goldvalue": 2.330955,
+        "goldvalue": 2.330956,
         "abs_tol": 1e-06
       }
     ]
@@ -46,7 +46,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi(1s) = ",
-        "goldvalue":  3.184795,
+        "goldvalue":  3.184793,
         "abs_tol": 1e-06
       }
     ]
@@ -59,7 +59,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi0(2s) = ",
-        "goldvalue": 3.658194,
+        "goldvalue": 3.658193,
         "abs_tol": 1e-06
       },
       {
@@ -78,13 +78,13 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi0 = ",
-        "goldvalue": 3.661372,
+        "goldvalue": 3.668943,
         "abs_tol": 1e-06 
       },
       {
         "type": "KeyValuePair",
         "key": "Max phi1 = ",
-        "goldvalue": 1.022844,
+        "goldvalue": 1.022845,
         "abs_tol": 1e-06
       }
     ]
@@ -97,7 +97,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi0 = ",
-        "goldvalue": 3.663369,
+        "goldvalue": 3.663371,
         "abs_tol": 1e-06
       },
       {

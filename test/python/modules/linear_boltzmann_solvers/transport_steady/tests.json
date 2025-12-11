@@ -326,7 +326,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
-        "goldvalue": 1083.08571,
+        "goldvalue": 1083.08555,
         "abs_tol": 0.0001
       }
     ]
@@ -339,7 +339,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
-        "goldvalue": 1083.08571,
+        "goldvalue": 1083.08555,
         "abs_tol": 0.0001
       }
     ]
@@ -429,14 +429,26 @@
         "type": "FloatCompare",
         "key": "WGS groups [0-62] Iteration    53",
         "wordnum": 8,
-        "gold": 7.39959e-07,
+        "gold": 7.78662e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
         "key": "WGS groups [63-167] Iteration    60",
         "wordnum": 8,
-        "gold": 4.74878e-07,
+        "gold": 4.83429e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.14473,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.14473,
         "abs_tol": 1e-09
       }
     ]
@@ -462,14 +474,26 @@
         "type": "FloatCompare",
         "key": "WGS groups [0-62] Iteration    54",
         "wordnum": 8,
-        "gold": 5.70363e-07,
+        "gold": 6.24484e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
         "key": "WGS groups [63-167] Iteration    58",
         "wordnum": 8,
-        "gold": 5.98697e-07,
+        "gold": 6.25993e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.16196,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.16196,
         "abs_tol": 1e-09
       }
     ]
@@ -698,7 +722,7 @@
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    64",
+        "key": "WGS groups [63-167] Iteration    57",
         "wordnum": 9,
         "gold": "CONVERGED"
       },
@@ -706,14 +730,26 @@
         "type": "FloatCompare",
         "key": "WGS groups [0-62] Iteration    54",
         "wordnum": 8,
-        "gold": 9.78553e-07,
+        "gold": 5.47188e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    64",
+        "key": "WGS groups [63-167] Iteration    57",
         "wordnum": 8,
-        "gold": 9.40056e-07,
+        "gold": 6.98369e-07,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.09495,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.09495,
         "abs_tol": 1e-09
       }
     ]
@@ -1082,13 +1118,13 @@
       {
         "type": "KeyValuePair",
         "key": " Absorption rate             =",
-        "goldvalue": 0.324502,
+        "goldvalue": 0.3245019,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": " Out-flow rate               =",
-        "goldvalue": 13.43580,
+        "goldvalue": 13.43587,
         "abs_tol": 1e-06
       }
     ]
