@@ -16,7 +16,7 @@ namespace opensn
 {
 
 LebedevQuadrature3DXYZ::LebedevQuadrature3DXYZ(int quadrature_order,
-                                               int scattering_order,
+                                               unsigned int scattering_order,
                                                bool verbose)
   : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 3, scattering_order)
 {

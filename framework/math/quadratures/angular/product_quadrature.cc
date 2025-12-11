@@ -98,7 +98,9 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
     weight_sum_ += w;
 }
 
-GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, int scattering_order, bool verbose)
+GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar,
+                                                     unsigned int scattering_order,
+                                                     bool verbose)
   : ProductQuadrature(1, scattering_order)
 {
   if (Npolar % 2 != 0)
@@ -131,7 +133,7 @@ GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, int scattering_
 
 GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar,
                                                    int Nazimuthal,
-                                                   int scattering_order,
+                                                   unsigned int scattering_order,
                                                    bool verbose)
   : ProductQuadrature(2, scattering_order)
 {
@@ -174,7 +176,7 @@ GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar,
 
 GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar,
                                                      int Nazimuthal,
-                                                     int scattering_order,
+                                                     unsigned int scattering_order,
                                                      bool verbose)
   : ProductQuadrature(3, scattering_order)
 {
