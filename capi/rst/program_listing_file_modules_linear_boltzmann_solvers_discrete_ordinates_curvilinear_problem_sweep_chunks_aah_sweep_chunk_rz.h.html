@@ -90,30 +90,19 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSGroupset</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
 
 <span class="c1">/// A sweep-chunk in point-symmetric and axial-symmetric curvilinear coordinates.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AAHSweepChunkRZ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">SweepChunk</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">AAHSweepChunkRZ</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
-<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">discretization_primary</span><span class="p">,</span>
-<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">unit_cell_matrices</span><span class="p">,</span>
-<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">secondary_unit_cell_matrices</span><span class="p">,</span>
-<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">cell_transport_views</span><span class="p">,</span>
-<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">densities</span><span class="p">,</span>
-<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">destination_phi</span><span class="p">,</span>
-<span class="w">                  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">destination_psi</span><span class="p">,</span>
-<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">source_moments</span><span class="p">,</span>
-<span class="w">                  </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
-<span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
-<span class="w">                  </span><span class="kt">int</span><span class="w"> </span><span class="n">num_moments</span><span class="p">,</span>
-<span class="w">                  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_num_cell_dofs</span><span class="p">,</span>
-<span class="w">                  </span><span class="kt">int</span><span class="w"> </span><span class="n">min_num_cell_dofs</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AAHSweepChunkRZ</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem</span><span class="p">,</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Sweep</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 

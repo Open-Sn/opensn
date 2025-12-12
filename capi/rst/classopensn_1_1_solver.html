@@ -94,6 +94,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::NonLinearKEigenSolver</span></code> (<a class="reference internal" href="classopensn_1_1_non_linear_k_eigen_solver.html#exhale-class-classopensn-1-1-non-linear-k-eigen-solver"><span class="std std-ref">Class NonLinearKEigenSolver</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::PowerIterationKEigenSolver</span></code> (<a class="reference internal" href="classopensn_1_1_power_iteration_k_eigen_solver.html#exhale-class-classopensn-1-1-power-iteration-k-eigen-solver"><span class="std std-ref">Class PowerIterationKEigenSolver</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::SteadyStateSourceSolver</span></code> (<a class="reference internal" href="classopensn_1_1_steady_state_source_solver.html#exhale-class-classopensn-1-1-steady-state-source-solver"><span class="std std-ref">Class SteadyStateSourceSolver</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::TimeDependentSourceSolver</span></code> (<a class="reference internal" href="classopensn_1_1_time_dependent_source_solver.html#exhale-class-classopensn-1-1-time-dependent-source-solver"><span class="std std-ref">Class TimeDependentSourceSolver</span></a>)</p></li>
 </ul>
 </section>
 </section>
@@ -102,7 +103,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6SolverE">
 <span class="target" id="classopensn_1_1_solver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Solver</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6SolverE" title="Link to this definition"></a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="classopensn_1_1_non_linear_k_eigen_solver.html#classopensn_1_1_non_linear_k_eigen_solver"><span class="std std-ref">opensn::NonLinearKEigenSolver</span></a>, <a class="reference internal" href="classopensn_1_1_power_iteration_k_eigen_solver.html#classopensn_1_1_power_iteration_k_eigen_solver"><span class="std std-ref">opensn::PowerIterationKEigenSolver</span></a>, <a class="reference internal" href="classopensn_1_1_steady_state_source_solver.html#classopensn_1_1_steady_state_source_solver"><span class="std std-ref">opensn::SteadyStateSourceSolver</span></a></p>
+<dd><p>Subclassed by <a class="reference internal" href="classopensn_1_1_non_linear_k_eigen_solver.html#classopensn_1_1_non_linear_k_eigen_solver"><span class="std std-ref">opensn::NonLinearKEigenSolver</span></a>, <a class="reference internal" href="classopensn_1_1_power_iteration_k_eigen_solver.html#classopensn_1_1_power_iteration_k_eigen_solver"><span class="std std-ref">opensn::PowerIterationKEigenSolver</span></a>, <a class="reference internal" href="classopensn_1_1_steady_state_source_solver.html#classopensn_1_1_steady_state_source_solver"><span class="std std-ref">opensn::SteadyStateSourceSolver</span></a>, <a class="reference internal" href="classopensn_1_1_time_dependent_source_solver.html#classopensn_1_1_time_dependent_source_solver"><span class="std std-ref">opensn::TimeDependentSourceSolver</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -126,16 +127,6 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver14GetTimeStepperEv">
-<span class="target" id="classopensn_1_1_solver_1af92ad68b7a03bcab37db1a995ff9750d"></span><span class="n"><span class="pre">TimeStepper</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetTimeStepper</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver14GetTimeStepperEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn6Solver14GetTimeStepperEv">
-<span class="target" id="classopensn_1_1_solver_1af88b8a0c5def20c1a7fa365e8757ab58"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">TimeStepper</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetTimeStepper</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn6Solver14GetTimeStepperEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver10InitializeEv">
 <span class="target" id="classopensn_1_1_solver_1a41441738ddd38e8ac6b5e317d55b9ea2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver10InitializeEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Initialize function. </p>
@@ -145,12 +136,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver7ExecuteEv">
 <span class="target" id="classopensn_1_1_solver_1a3590576e0cc8bbf0ce4de64e14529451"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver7ExecuteEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Execution function. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver4StepEv">
-<span class="target" id="classopensn_1_1_solver_1a65e6f5764965babe64b865c53a4fd94f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Step</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver4StepEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Step function*/. </p>
 </dd></dl>
 
 <dl class="cpp function">

@@ -34,6 +34,8 @@ Includes
 
 - ``iostream``
 
+- ``limits``
+
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 

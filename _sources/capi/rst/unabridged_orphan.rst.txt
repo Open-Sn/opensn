@@ -610,6 +610,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_a_a_h_sweep_chunk_t_d.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_a_g_s_linear_solver.rst
 
 .. toctree::
@@ -1390,6 +1395,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_time_dependent_source_solver.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_timer.rst
 
 .. toctree::
@@ -2073,6 +2083,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_sweep_chunks_aah_sweep_chunk_rz.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk_td.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2993,6 +3008,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_tgdsa.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_solvers_time_dependent_solver.h.rst
 
 .. toctree::
    :maxdepth: 1

@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_time_dependent_source_solver:
+
+Class TimeDependentSourceSolver
+===============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_solvers_time_dependent_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::Solver`` (:ref:`exhale_class_classopensn_1_1_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::TimeDependentSourceSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

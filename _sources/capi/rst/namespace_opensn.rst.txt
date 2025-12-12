@@ -267,6 +267,8 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk_r_z`
 
+- :ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk_t_d`
+
 - :ref:`exhale_class_classopensn_1_1_a_g_s_linear_solver`
 
 - :ref:`exhale_class_classopensn_1_1_allowable_range`
@@ -576,6 +578,8 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_tetrahedra_quadrature`
 
 - :ref:`exhale_class_classopensn_1_1_t_g_d_s_a`
+
+- :ref:`exhale_class_classopensn_1_1_time_dependent_source_solver`
 
 - :ref:`exhale_class_classopensn_1_1_timer`
 
@@ -991,11 +995,11 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a1c4ba3e9e83c916abb606d0d44847813`
 
-- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
-
 - :ref:`exhale_function_namespaceopensn_1af5d0740a6b08cd24f6f67db3c5eeb06c`
 
 - :ref:`exhale_function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610`
+
+- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
 
 - :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
 
