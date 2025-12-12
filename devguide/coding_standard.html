@@ -205,6 +205,33 @@ Member function parameters should use <cite>snake</cite> style.</p>
 <span class="p">};</span>
 </pre></div>
 </div>
+<p>The order of variables and functions inside a <cite>class</cite>/<cite>struct</cite>  should be as shown below:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ClassName</span><span class="w"> </span><span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">   </span><span class="cp"># member functions</span>
+<span class="w">   </span><span class="cp"># member variables</span>
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">   </span><span class="cp"># member functions</span>
+<span class="w">   </span><span class="cp"># member variables</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">   </span><span class="cp"># member functions</span>
+<span class="w">   </span><span class="cp"># member variables</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">   </span><span class="cp"># static function</span>
+<span class="w">   </span><span class="cp"># static variables</span>
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">   </span><span class="cp"># static function</span>
+<span class="w">   </span><span class="cp"># static variables</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">   </span><span class="cp"># static function</span>
+<span class="w">   </span><span class="cp"># static variables</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Note: The is the <em>preffered</em> order. It is not always possible to achieve this in cases where
+structs and enums must be declared before used. Those cases are allowed exceptions for
+deviating from this ordering.</p>
 </section>
 <section id="getters-and-setters">
 <h3>Getters and Setters<a class="headerlink" href="#getters-and-setters" title="Link to this heading"></a></h3>
@@ -234,7 +261,7 @@ Examples: <code class="docutils literal notranslate"><span class="pre">1234.12</
 </section>
 <section id="pointers">
 <h3>Pointers<a class="headerlink" href="#pointers" title="Link to this heading"></a></h3>
-<p>Shared pointers (<code class="docutils literal notranslate"><span class="pre">std::shared</span></code>) are preferred over raw pointers.
+<p>Shared pointers (<code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>) are preferred over raw pointers.
 Exception to this rule is when the code interacts with a 3rd party library like PETSc where shared pointers simply don’t exist.</p>
 </section>
 <section id="conditionals">

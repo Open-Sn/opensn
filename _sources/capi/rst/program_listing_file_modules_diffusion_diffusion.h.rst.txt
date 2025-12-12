@@ -34,27 +34,6 @@ Program Listing for File diffusion.h
    protected:
      using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
    
-     const std::string name_;
-     const std::shared_ptr<MeshContinuum> grid_;
-     const class SpatialDiscretization& sdm_;
-     const UnknownManager uk_man_;
-   
-     const std::map<uint64_t, BoundaryCondition> bcs_;
-   
-     const MatID2XSMap mat_id_2_xs_map_;
-   
-     const std::vector<UnitCellMatrices>& unit_cell_matrices_;
-   
-     const int64_t num_local_dofs_;
-     const int64_t num_global_dofs_;
-   
-     Mat A_ = nullptr;
-     Vec rhs_ = nullptr;
-     KSP ksp_ = nullptr;
-   
-     const bool requires_ghosts_;
-     const bool suppress_bcs_;
-   
    public:
      struct Options
      {
@@ -137,6 +116,28 @@ Program Listing for File diffusion.h
       *                 use the values of the output solution as initial guess.
       */
      void Solve(Vec petsc_solution, bool use_initial_guess = false);
+   
+   protected:
+     const std::string name_;
+     const std::shared_ptr<MeshContinuum> grid_;
+     const class SpatialDiscretization& sdm_;
+     const UnknownManager uk_man_;
+   
+     const std::map<uint64_t, BoundaryCondition> bcs_;
+   
+     const MatID2XSMap mat_id_2_xs_map_;
+   
+     const std::vector<UnitCellMatrices>& unit_cell_matrices_;
+   
+     const int64_t num_local_dofs_;
+     const int64_t num_global_dofs_;
+   
+     Mat A_ = nullptr;
+     Vec rhs_ = nullptr;
+     KSP ksp_ = nullptr;
+   
+     const bool requires_ghosts_;
+     const bool suppress_bcs_;
    };
    
    } // namespace opensn

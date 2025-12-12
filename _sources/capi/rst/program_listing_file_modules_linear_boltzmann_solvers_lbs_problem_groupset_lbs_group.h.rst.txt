@@ -22,11 +22,10 @@ Program Listing for File lbs_group.h
    class LBSGroup
    {
    public:
-     int id;
-   
-   public:
      LBSGroup() : id(-1) {}
      explicit LBSGroup(int id) : id(id) {}
+   
+     int id;
    };
    
    } // namespace opensn

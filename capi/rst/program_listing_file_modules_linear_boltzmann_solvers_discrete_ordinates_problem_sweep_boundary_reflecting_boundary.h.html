@@ -99,20 +99,6 @@
 <span class="c1">/// Reflective boundary condition.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ReflectingBoundary</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">SweepBoundary</span>
 <span class="p">{</span>
-<span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">normal_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">opposing_reflected_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">// Populated by angle aggregation</span>
-<span class="w">  </span><span class="c1">// AngularFluxData indices are: angle, cell per angle, faces per cell, DOFs per face, groups per</span>
-<span class="w">  </span><span class="c1">// DOF</span>
-<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AngularFluxData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;&gt;&gt;</span><span class="p">;</span>
-<span class="w">  </span><span class="n">AngularFluxData</span><span class="w"> </span><span class="n">boundary_flux_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">AngularFluxData</span><span class="w"> </span><span class="n">boundary_flux_old_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reflected_anglenum_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">angle_readyflags_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">ReflectingBoundary</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
 <span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">normal</span><span class="p">,</span>
@@ -179,8 +165,19 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetAnglesReadyStatus</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">epsilon_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-8</span><span class="p">;</span>
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">normal_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">opposing_reflected_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Populated by angle aggregation</span>
+<span class="w">  </span><span class="c1">// AngularFluxData indices are: angle, cell per angle, faces per cell, DOFs per face, groups per</span>
+<span class="w">  </span><span class="c1">// DOF</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AngularFluxData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;&gt;&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">AngularFluxData</span><span class="w"> </span><span class="n">boundary_flux_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">AngularFluxData</span><span class="w"> </span><span class="n">boundary_flux_old_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reflected_anglenum_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">angle_readyflags_</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Fn</span><span class="o">&gt;</span>
@@ -188,6 +185,9 @@
 
 <span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Fn</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ForEachDelayedAngularFluxConst</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">use_old_store</span><span class="p">,</span><span class="w"> </span><span class="n">Fn</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">epsilon_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-8</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

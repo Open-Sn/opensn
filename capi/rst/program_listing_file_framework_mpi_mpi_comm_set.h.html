@@ -106,20 +106,6 @@
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MPICommunicatorSet</span>
 <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * A list of communicators, size P, contains a communicator for only communicating with the</span>
-<span class="cm">   * neighbors of locI.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">&gt;</span><span class="w"> </span><span class="n">communicators_</span><span class="p">;</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * A list of groupings, size P, allows mapping of the rank of locJ relative to the local</span>
-<span class="cm">   * communicator.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Group</span><span class="o">&gt;</span><span class="w"> </span><span class="n">location_groups_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Used to translate ranks.</span>
-<span class="w">  </span><span class="n">mpi</span><span class="o">::</span><span class="n">Group</span><span class="w"> </span><span class="n">world_group_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">MPICommunicatorSet</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">communicators</span><span class="p">,</span>
 <span class="w">                     </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Group</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_groups</span><span class="p">,</span>
@@ -134,6 +120,20 @@
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">world_group_</span><span class="p">.</span><span class="n">translate_rank</span><span class="p">(</span><span class="n">locI</span><span class="p">,</span><span class="w"> </span><span class="n">location_groups_</span><span class="p">[</span><span class="n">locJ</span><span class="p">]);</span>
 <span class="w">  </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * A list of communicators, size P, contains a communicator for only communicating with the</span>
+<span class="cm">   * neighbors of locI.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">&gt;</span><span class="w"> </span><span class="n">communicators_</span><span class="p">;</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * A list of groupings, size P, allows mapping of the rank of locJ relative to the local</span>
+<span class="cm">   * communicator.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Group</span><span class="o">&gt;</span><span class="w"> </span><span class="n">location_groups_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Used to translate ranks.</span>
+<span class="w">  </span><span class="n">mpi</span><span class="o">::</span><span class="n">Group</span><span class="w"> </span><span class="n">world_group_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

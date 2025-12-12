@@ -100,7 +100,6 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">FieldFunction</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">FieldFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="w">  </span><span class="n">FieldFunction</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">Unknown</span><span class="w"> </span><span class="n">unknown</span><span class="p">);</span>
@@ -126,6 +125,9 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">Unknown</span><span class="w"> </span><span class="n">unknown_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">UnknownManager</span><span class="w"> </span><span class="n">unknown_manager_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

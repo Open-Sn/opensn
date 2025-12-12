@@ -128,13 +128,6 @@
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ParameterBlock</span>
 <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="n">ParameterBlockType</span><span class="w"> </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">BLOCK</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Varying</span><span class="o">&gt;</span><span class="w"> </span><span class="n">value_ptr_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParameterBlock</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameters_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Unknown Scope&quot;</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Sets the name of the block.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetBlockName</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
@@ -485,6 +478,13 @@
 
 <span class="w">  </span><span class="c1">/// Print the block tree structure into a designated string.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RecursiveDumpToJSON</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">outstr</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="n">ParameterBlockType</span><span class="w"> </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ParameterBlockType</span><span class="o">::</span><span class="n">BLOCK</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Varying</span><span class="o">&gt;</span><span class="w"> </span><span class="n">value_ptr_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParameterBlock</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameters_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">error_origin_scope_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Unknown Scope&quot;</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

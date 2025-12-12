@@ -108,7 +108,6 @@
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">BoundingBox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">FFList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetInputParameters</span><span class="p">();</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">FieldFunctionGridBased</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Creates a field function, filling it with zeros.</span>
@@ -165,9 +164,11 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">BoundingBox</span><span class="w"> </span><span class="n">local_grid_bounding_box_</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
+
 <span class="w">  </span><span class="c1">/// Export multiple field functions to PVTU.</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span>
-<span class="w">  </span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base_name</span><span class="p">,</span>
+<span class="w">  </span><span class="nf">ExportMultipleToPVTU</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base_name</span><span class="p">,</span>
 <span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">ff_list</span><span class="p">);</span>
 
 <span class="k">private</span><span class="o">:</span>

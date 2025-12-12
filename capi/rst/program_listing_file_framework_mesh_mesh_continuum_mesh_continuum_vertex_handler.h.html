@@ -100,9 +100,6 @@
 <span class="p">{</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">GlobalIDMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="p">;</span>
 
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_global_id_vertex_map_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">// Iterators</span>
 <span class="w">  </span><span class="n">GlobalIDMap</span><span class="o">::</span><span class="n">iterator</span><span class="w"> </span><span class="n">begin</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m_global_id_vertex_map_</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
@@ -128,6 +125,9 @@
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">GetNumLocallyStored</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">m_global_id_vertex_map_</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Clear</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">m_global_id_vertex_map_</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_global_id_vertex_map_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

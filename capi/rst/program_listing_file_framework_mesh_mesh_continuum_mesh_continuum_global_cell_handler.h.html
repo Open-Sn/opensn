@@ -100,27 +100,6 @@
 <span class="p">{</span>
 <span class="w">  </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span><span class="p">;</span>
 
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">local_cells_ref_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">ghost_cells_ref_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">/// Global to local ID map</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">global_to_local_map_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Global to ghost ID map</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">global_to_ghost_map_</span><span class="p">;</span>
-
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">GlobalCellHandler</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">native_cells</span><span class="p">,</span>
-<span class="w">                             </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">foreign_cells</span><span class="p">,</span>
-<span class="w">                             </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">global_to_local_map</span><span class="p">,</span>
-<span class="w">                             </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">global_to_ghost_map</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">local_cells_ref_</span><span class="p">(</span><span class="n">native_cells</span><span class="p">),</span>
-<span class="w">      </span><span class="n">ghost_cells_ref_</span><span class="p">(</span><span class="n">foreign_cells</span><span class="p">),</span>
-<span class="w">      </span><span class="n">global_to_local_map_</span><span class="p">(</span><span class="n">global_to_local_map</span><span class="p">),</span>
-<span class="w">      </span><span class="n">global_to_ghost_map_</span><span class="p">(</span><span class="n">global_to_ghost_map</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Adds a new cell to the appropriate category (local or ghost).</span>
@@ -149,6 +128,26 @@
 <span class="cm">   * prevent it.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetGhostLocalID</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_global_index</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">GlobalCellHandler</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">native_cells</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">foreign_cells</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">global_to_local_map</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">global_to_ghost_map</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">local_cells_ref_</span><span class="p">(</span><span class="n">native_cells</span><span class="p">),</span>
+<span class="w">      </span><span class="n">ghost_cells_ref_</span><span class="p">(</span><span class="n">foreign_cells</span><span class="p">),</span>
+<span class="w">      </span><span class="n">global_to_local_map_</span><span class="p">(</span><span class="n">global_to_local_map</span><span class="p">),</span>
+<span class="w">      </span><span class="n">global_to_ghost_map_</span><span class="p">(</span><span class="n">global_to_ghost_map</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">local_cells_ref_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">ghost_cells_ref_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Global to local ID map</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">global_to_local_map_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Global to ghost ID map</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">global_to_ghost_map_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

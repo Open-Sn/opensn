@@ -104,12 +104,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">PieceWiseLinearDiscontinuous</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">PieceWiseLinearBase</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Construct a shared object using the protected constructor.</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PieceWiseLinearDiscontinuous</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="n">New</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
-<span class="w">      </span><span class="n">QuadratureOrder</span><span class="w"> </span><span class="n">q_order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuadratureOrder</span><span class="o">::</span><span class="n">SECOND</span><span class="p">);</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildSparsityPattern</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">nodal_nnz_in_diag</span><span class="p">,</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">BuildSparsityPattern</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">nodal_nnz_in_diag</span><span class="p">,</span>
 <span class="w">                            </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">nodal_nnz_off_diag</span><span class="p">,</span>
 <span class="w">                            </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
@@ -149,6 +144,12 @@
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">PieceWiseLinearDiscontinuous</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
 <span class="w">                                        </span><span class="n">QuadratureOrder</span><span class="w"> </span><span class="n">q_order</span><span class="p">);</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Construct a shared object using the protected constructor.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PieceWiseLinearDiscontinuous</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">New</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
+<span class="w">      </span><span class="n">QuadratureOrder</span><span class="w"> </span><span class="n">q_order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuadratureOrder</span><span class="o">::</span><span class="n">SECOND</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

@@ -126,41 +126,6 @@ Program Listing for File aah_async_comm.h
     */
    class AAH_ASynchronousCommunicator : public AsynchronousCommunicator
    {
-   private:
-     std::size_t num_groups_;
-     std::size_t num_angles_;
-     int max_num_messages_;
-     int max_mpi_message_size_;
-     bool done_sending_;
-     bool data_initialized_;
-     bool upstream_data_initialized_;
-   
-     std::vector<std::vector<bool>> preloc_msg_received_;
-     std::vector<std::vector<AAH_MessageDetails>> preloc_msg_data_;
-   
-     std::vector<std::vector<bool>> delayed_preloc_msg_received_;
-     std::vector<std::vector<AAH_MessageDetails>> delayed_preloc_msg_data_;
-   
-     std::vector<mpi::Request> deploc_msg_request_;
-     std::vector<std::vector<AAH_MessageDetails>> deploc_msg_data_;
-   
-   protected:
-     /**
-      * Builds message structure.
-      *
-      * Outgoing and incoming data needs to be sub-divided into messages
-      * each of which is smaller than the maximum message size. There are
-      * three parts to this: predecessors, delayed-predecessors and successors.
-      *
-      * This method gets called by an angleset that subscribes to this
-      * sweepbuffer.
-      */
-     bool BuildMessageStructureForCPUSweep();
-     /**
-      * Builds message structure for device FLUDS.
-      */
-     bool BuildMessageStructureForGPUSweep();
-   
    public:
      AAH_ASynchronousCommunicator(FLUDS& fluds,
                                   std::size_t num_groups,
@@ -210,6 +175,41 @@ Program Listing for File aah_async_comm.h
    
      /// Clear flags in preperation for another sweep.
      void Reset();
+   
+   protected:
+     /**
+      * Builds message structure.
+      *
+      * Outgoing and incoming data needs to be sub-divided into messages
+      * each of which is smaller than the maximum message size. There are
+      * three parts to this: predecessors, delayed-predecessors and successors.
+      *
+      * This method gets called by an angleset that subscribes to this
+      * sweepbuffer.
+      */
+     bool BuildMessageStructureForCPUSweep();
+     /**
+      * Builds message structure for device FLUDS.
+      */
+     bool BuildMessageStructureForGPUSweep();
+   
+   private:
+     std::size_t num_groups_;
+     std::size_t num_angles_;
+     int max_num_messages_;
+     int max_mpi_message_size_;
+     bool done_sending_;
+     bool data_initialized_;
+     bool upstream_data_initialized_;
+   
+     std::vector<std::vector<bool>> preloc_msg_received_;
+     std::vector<std::vector<AAH_MessageDetails>> preloc_msg_data_;
+   
+     std::vector<std::vector<bool>> delayed_preloc_msg_received_;
+     std::vector<std::vector<AAH_MessageDetails>> delayed_preloc_msg_data_;
+   
+     std::vector<mpi::Request> deploc_msg_request_;
+     std::vector<std::vector<AAH_MessageDetails>> deploc_msg_data_;
    };
    
    } // namespace opensn

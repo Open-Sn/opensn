@@ -98,9 +98,6 @@
 <span class="c1">/// Timer object.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Timer</span>
 <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">steady_clock</span><span class="o">::</span><span class="n">time_point</span><span class="w"> </span><span class="n">start_time_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Default constructor.</span>
 <span class="w">  </span><span class="n">Timer</span><span class="p">()</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
@@ -114,8 +111,12 @@
 <span class="w">  </span><span class="c1">/// Obtains a string in the format of hh:mm::ss.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetTimeString</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">steady_clock</span><span class="o">::</span><span class="n">time_point</span><span class="w"> </span><span class="n">start_time_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Obtains a string in the format YYYY-MM-DD hh:mm:ss</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetLocalDateTimeString</span><span class="p">();</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">GetLocalDateTimeString</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="cm">/**</span>

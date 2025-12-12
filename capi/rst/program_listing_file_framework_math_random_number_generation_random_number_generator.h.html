@@ -97,10 +97,6 @@
 <span class="c1">/// Random number generator based on threefry</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RandomNumberGenerator</span>
 <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">mt19937_64</span><span class="w"> </span><span class="n">mt1993764_generator_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">uniform_real_distribution</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">distribution_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Default constructor. Seeds the generator with a zero.</span>
 <span class="w">  </span><span class="n">RandomNumberGenerator</span><span class="p">();</span>
@@ -110,6 +106,10 @@
 
 <span class="w">  </span><span class="c1">/// Generates a random number with the default distribution.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">Rand</span><span class="p">();</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">mt19937_64</span><span class="w"> </span><span class="n">mt1993764_generator_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">uniform_real_distribution</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">distribution_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

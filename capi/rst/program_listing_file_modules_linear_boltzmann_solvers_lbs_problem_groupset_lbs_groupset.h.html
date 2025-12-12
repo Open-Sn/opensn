@@ -109,6 +109,23 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSGroupset</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Input parameters based constructor.</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">LBSGroupset</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSweepInfoFile</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ev_tag</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_name</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Initialize carrier for copying quadrature data to GPU.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeGPUCarriers</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Delete carrier and deallocate memory on GPU.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetGPUCarriers</span><span class="p">();</span>
+
+<span class="w">  </span><span class="o">~</span><span class="n">LBSGroupset</span><span class="p">();</span>
+
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroup</span><span class="o">&gt;</span><span class="w"> </span><span class="n">groups</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngularQuadrature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">;</span>
@@ -150,28 +167,11 @@
 
 <span class="w">  </span><span class="n">UnknownManager</span><span class="w"> </span><span class="n">psi_uk_man_</span><span class="p">;</span>
 
-<span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
-
-<span class="w">  </span><span class="c1">/// Input parameters based constructor.</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">);</span>
-
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
-
-<span class="w">  </span><span class="n">LBSGroupset</span><span class="p">();</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSweepInfoFile</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ev_tag</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_name</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Initialize carrier for copying quadrature data to GPU.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeGPUCarriers</span><span class="p">();</span>
-
-<span class="w">  </span><span class="c1">/// Delete carrier and deallocate memory on GPU.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetGPUCarriers</span><span class="p">();</span>
-
-<span class="w">  </span><span class="o">~</span><span class="n">LBSGroupset</span><span class="p">();</span>
-
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Init</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

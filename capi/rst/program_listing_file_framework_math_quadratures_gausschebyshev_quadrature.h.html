@@ -97,19 +97,19 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GaussChebyshevQuadrature</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">GaussQuadrature</span>
 <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Populates the abscissae and weights for a Gauss-Chebyshev quadrature given the number of</span>
-<span class="cm">   * desired quadrature points.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Initialize</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Populates the abscissae and weights for a Gauss-Chebyshev quadrature given the number of</span>
 <span class="cm">   * desired quadrature points. The order of the quadrature will be 2N-1.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">GaussChebyshevQuadrature</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Populates the abscissae and weights for a Gauss-Chebyshev quadrature given the number of</span>
+<span class="cm">   * desired quadrature points.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Initialize</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

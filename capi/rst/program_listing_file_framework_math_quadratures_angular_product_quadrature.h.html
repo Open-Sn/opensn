@@ -99,28 +99,7 @@
 <span class="c1">/// Class for product quadratures</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProductQuadrature</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AngularQuadrature</span>
 <span class="p">{</span>
-<span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">weight_sum_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">/// Linear indices of ordered directions mapped to polar level.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">map_directions_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">ProductQuadrature</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="p">(</span><span class="n">AngularQuadratureType</span><span class="o">::</span><span class="n">ProductQuadrature</span><span class="p">,</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">),</span>
-<span class="w">      </span><span class="n">weight_sum_</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">/// Initializes the quadrature with custom angles and weights.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AssembleCosines</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">azimuthal</span><span class="p">,</span>
-<span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">polar</span><span class="p">,</span>
-<span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">wts</span><span class="p">,</span>
-<span class="w">                       </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="p">);</span>
-
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">polar_ang</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">azimu_ang</span><span class="p">;</span>
-
 <span class="w">  </span><span class="o">~</span><span class="n">ProductQuadrature</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
@@ -138,6 +117,27 @@
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">map_directions_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">polar_ang</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">azimu_ang</span><span class="p">;</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="n">ProductQuadrature</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="p">(</span><span class="n">AngularQuadratureType</span><span class="o">::</span><span class="n">ProductQuadrature</span><span class="p">,</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">),</span>
+<span class="w">      </span><span class="n">weight_sum_</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Initializes the quadrature with custom angles and weights.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AssembleCosines</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">azimuthal</span><span class="p">,</span>
+<span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">polar</span><span class="p">,</span>
+<span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">wts</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">weight_sum_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Linear indices of ordered directions mapped to polar level.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">map_directions_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GLProductQuadrature1DSlab</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ProductQuadrature</span>

@@ -288,15 +288,6 @@
 <span class="w">                                             </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">local_vector</span><span class="p">,</span>
 <span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">unknown_manager</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Cartesian coordinate system spatial weighting function.</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">CartesianSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Cylindrical coordinate system (RZ) spatial weighting function.</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">CylindricalRZSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Spherical coordinate system (1D Spherical) spatial weighting function.</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">Spherical1DSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
-
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">SpatialWeightFunction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns the spatial weighting function appropriate to the discretization&#39;s coordinate system.</span>
@@ -320,6 +311,16 @@
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretizationType</span><span class="w"> </span><span class="n">type_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Cartesian coordinate system spatial weighting function.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">CartesianSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Cylindrical coordinate system (RZ) spatial weighting function.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">CylindricalRZSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Spherical coordinate system (1D Spherical) spatial weighting function.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">Spherical1DSpatialWeightFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

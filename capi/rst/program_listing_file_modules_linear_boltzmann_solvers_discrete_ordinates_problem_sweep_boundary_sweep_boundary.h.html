@@ -102,21 +102,11 @@
 <span class="c1">/// Base class for sweep related boundaries.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SweepBoundary</span>
 <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">LBSBoundaryType</span><span class="w"> </span><span class="n">type_</span><span class="p">;</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_type_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Time value passed to boundary functions</span>
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">evaluation_time_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
-
-<span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero_boundary_flux_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">SweepBoundary</span><span class="p">(</span><span class="n">LBSBoundaryType</span><span class="w"> </span><span class="n">bndry_type</span><span class="p">,</span>
 <span class="w">                         </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
 <span class="w">                         </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_type</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">type_</span><span class="p">(</span><span class="n">bndry_type</span><span class="p">),</span><span class="w"> </span><span class="n">coord_type_</span><span class="p">(</span><span class="n">coord_type</span><span class="p">),</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">(</span><span class="n">num_groups</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">(</span><span class="n">num_groups</span><span class="p">),</span><span class="w"> </span><span class="n">type_</span><span class="p">(</span><span class="n">bndry_type</span><span class="p">),</span><span class="w"> </span><span class="n">coord_type_</span><span class="p">(</span><span class="n">coord_type</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="n">zero_boundary_flux_</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">num_groups_</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
@@ -202,6 +192,16 @@
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">ZeroFlux</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">group_num</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">zero_boundary_flux_</span><span class="p">[</span><span class="n">group_num</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">zero_boundary_flux_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">LBSBoundaryType</span><span class="w"> </span><span class="n">type_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_type_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Time value passed to boundary functions</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">evaluation_time_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="cm">/**</span>

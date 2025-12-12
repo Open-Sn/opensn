@@ -102,13 +102,6 @@
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesCurvilinearProblem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span>
 <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/** Discretisation pointer to matrices of the secondary cell view  (matrices of the primary cell</span>
-<span class="cm">   * view forwarded to the base class).</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">opensn</span><span class="o">::</span><span class="n">SpatialDiscretization</span><span class="o">&gt;</span><span class="w"> </span><span class="n">discretization_secondary_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">secondary_unit_cell_matrices_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
@@ -123,6 +116,13 @@
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepChunk</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SetSweepChunk</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Discretization pointer to matrices of the secondary cell view (matrices of the primary cell</span>
+<span class="cm">   * view forwarded to the base class).</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">opensn</span><span class="o">::</span><span class="n">SpatialDiscretization</span><span class="o">&gt;</span><span class="w"> </span><span class="n">discretization_secondary_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">secondary_unit_cell_matrices_</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>

@@ -32,42 +32,10 @@ Program Listing for File input_parameters.h
    /// Class for handling input parameters.
    class InputParameters : public ParameterBlock
    {
-   private:
-     /// String to represent class name. If not provided a default will be generated.
-     std::string class_name_;
-     /// Space separated list of group names.
-     std::string doc_group_;
-     std::map<std::string, InputParameterTag> parameter_class_tags_;
-     std::map<std::string, std::string> parameter_doc_string_;
-     std::map<std::string, bool> parameter_valid_;
-     std::map<std::string, std::string> deprecation_warning_tags_;
-     std::map<std::string, std::string> deprecation_error_tags_;
-     std::map<std::string, std::string> renamed_error_tags_;
-     std::map<std::string, bool> type_mismatch_allowed_tags_;
-     std::map<std::string, std::string> parameter_link_;
-   
-     std::map<std::string, std::shared_ptr<AllowableRange>> constraint_tags_;
-   
-     std::string general_description_;
-   
-     /// Parameter names to ignore when trying to assign. For now this "obj_type"
-     static const std::vector<std::string> system_ignored_param_names_;
-   
-     ParameterBlock param_block_at_assignment_;
-   
    public:
      InputParameters() = default;
      InputParameters& operator+=(InputParameters other);
-     template <typename T>
-     static InputParameters MakeForObject(const ParameterBlock& params)
-     {
-       auto input_param = T::GetInputParameters();
    
-       input_param.AssignParameters(params);
-       return input_param;
-     }
-   
-   public:
      /// Sets the object type string for more descriptive error messages.
      void SetObjectType(const std::string& obj_type);
    
@@ -95,13 +63,6 @@ Program Listing for File input_parameters.h
      /// Returns the parameter's doc string.
      std::string GetParameterDocString(const std::string& param_name);
    
-   private:
-     using ParameterBlock::AddParameter;
-   
-     /// Determines if a parameter is ignored.
-     static bool IsParameterIgnored(const std::string& param_name);
-   
-   public:
      template <typename T>
      void AddOptionalParameter(const std::string& name, T value, const std::string& doc_string)
      {
@@ -166,7 +127,6 @@ Program Listing for File input_parameters.h
          parameter_doc_string_[name] = doc_string;
      }
    
-   public:
      /// Assigns parameters with thorough type checks, deprecation checks, unused parameter checks.
      void AssignParameters(const ParameterBlock& params);
    
@@ -198,6 +158,44 @@ Program Listing for File input_parameters.h
    
      /// Dumps the input parameters to stdout.
      void DumpParameters() const;
+   
+   private:
+     /// String to represent class name. If not provided a default will be generated.
+     std::string class_name_;
+     /// Space separated list of group names.
+     std::string doc_group_;
+     std::map<std::string, InputParameterTag> parameter_class_tags_;
+     std::map<std::string, std::string> parameter_doc_string_;
+     std::map<std::string, bool> parameter_valid_;
+     std::map<std::string, std::string> deprecation_warning_tags_;
+     std::map<std::string, std::string> deprecation_error_tags_;
+     std::map<std::string, std::string> renamed_error_tags_;
+     std::map<std::string, bool> type_mismatch_allowed_tags_;
+     std::map<std::string, std::string> parameter_link_;
+   
+     std::map<std::string, std::shared_ptr<AllowableRange>> constraint_tags_;
+   
+     std::string general_description_;
+   
+     ParameterBlock param_block_at_assignment_;
+   
+   public:
+     template <typename T>
+     static InputParameters MakeForObject(const ParameterBlock& params)
+     {
+       auto input_param = T::GetInputParameters();
+   
+       input_param.AssignParameters(params);
+       return input_param;
+     }
+   
+   private:
+     using ParameterBlock::AddParameter;
+   
+     /// Determines if a parameter is ignored.
+     static bool IsParameterIgnored(const std::string& param_name);
+     /// Parameter names to ignore when trying to assign. For now this "obj_type"
+     static const std::vector<std::string> system_ignored_param_names_;
    };
    
    } // namespace opensn

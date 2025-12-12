@@ -321,20 +321,6 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
 
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Initialize groupsets</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeGroupsets</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Initializes materials</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeXSmapAndDensities</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeMaterials</span><span class="p">();</span>
-
-<span class="w">  </span><span class="c1">/// Initialize sources</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSources</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Initialize boundary conditions</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaryConditions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">PrintSimHeader</span><span class="p">();</span>
 
@@ -428,8 +414,19 @@
 <span class="w">  </span><span class="c1">/// Flag indicating if GPU acceleration is enabled.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpus_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Checks if the current CPU is associated with any GPU.</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckCapableDevices</span><span class="p">();</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Initialize groupsets</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeGroupsets</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Initializes materials</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeXSmapAndDensities</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeMaterials</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Initialize sources</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSources</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Initialize boundary conditions</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaryConditions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Max number of DOFs per cell that the sweep kernel on GPU can handle.</span>
@@ -443,6 +440,10 @@
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBoundaryOptionsBlock</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetXSMapEntryBlock</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Checks if the current CPU is associated with any GPU.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">CheckCapableDevices</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

@@ -369,18 +369,6 @@
 <span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="n">value_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">};</span>
 
-<span class="w">  </span><span class="c1">/// Type specification</span>
-<span class="w">  </span><span class="n">VaryingDataType</span><span class="w"> </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VaryingDataType</span><span class="o">::</span><span class="n">VOID</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Checks if two VaryingDataType values match.</span>
-<span class="cm">   * Type A is matched against type B.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CheckTypeMatch</span><span class="p">(</span><span class="n">VaryingDataType</span><span class="w"> </span><span class="n">type_A</span><span class="p">,</span><span class="w"> </span><span class="n">VaryingDataType</span><span class="w"> </span><span class="n">type_B_required</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="k">private</span><span class="o">:</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">// Constructors</span>
 <span class="w">  </span><span class="cm">/**</span>
@@ -412,32 +400,6 @@
 <span class="w">    </span><span class="n">data_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="n">CastValue</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-
 <span class="w">  </span><span class="c1">/// Constructor for an arbitrary sequence of bytes value.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">Varying</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
 
@@ -447,13 +409,14 @@
 <span class="w">  </span><span class="c1">/// Constructor for a string literal value.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">Varying</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Varying</span><span class="p">((</span><span class="k">not</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="n">value</span><span class="p">))</span><span class="w"> </span><span class="p">{}</span>
 
+<span class="w">  </span><span class="o">~</span><span class="n">Varying</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// Copy constructor.</span>
 <span class="w">  </span><span class="n">Varying</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Varying</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Move constructor.</span>
 <span class="w">  </span><span class="n">Varying</span><span class="p">(</span><span class="n">Varying</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
 
-<span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">// Copy assignment operator</span>
 <span class="w">  </span><span class="c1">/// Assignment operator. i.e., type_A = type_B</span>
 <span class="w">  </span><span class="n">Varying</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Varying</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
@@ -513,14 +476,6 @@
 <span class="w">  </span><span class="c1">/// Relation operators</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">&lt;=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Varying</span><span class="o">&amp;</span><span class="w"> </span><span class="n">that</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">that</span><span class="p">)</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">that</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Returns a default value for the type required.</span>
-<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">DefaultValue</span><span class="p">()</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">// More Helpers</span>
 <span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">IsSignedInteger</span>
@@ -632,18 +587,59 @@
 <span class="w">  </span><span class="c1">/// Returns the raw byte size associated with the type.</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">GetByteSize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Returns the current-type of the variable.</span>
-<span class="w">  </span><span class="n">VaryingDataType</span><span class="w"> </span><span class="n">GetType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">type_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="n">VaryingDataType</span><span class="w"> </span><span class="nf">GetType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">type_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Returns the string type name of the type.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">GetTypeName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">VaryingDataTypeStringName</span><span class="p">(</span><span class="n">type_</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetTypeName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">VaryingDataTypeStringName</span><span class="p">(</span><span class="n">type_</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Returns a string value for the value.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">PrintStr</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">with_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">PrintStr</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">with_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Checks if two VaryingDataType values match.</span>
+<span class="cm">   * Type A is matched against type B.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CheckTypeMatch</span><span class="p">(</span><span class="n">VaryingDataType</span><span class="w"> </span><span class="n">type_A</span><span class="p">,</span><span class="w"> </span><span class="n">VaryingDataType</span><span class="w"> </span><span class="n">type_B_required</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Type specification</span>
+<span class="w">  </span><span class="n">VaryingDataType</span><span class="w"> </span><span class="n">type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VaryingDataType</span><span class="o">::</span><span class="n">VOID</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="o">~</span><span class="n">Varying</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">VaryingType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Helper</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">VaryingArbitraryType</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns a default value for the type required.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">DefaultValue</span><span class="p">()</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="p">};</span>
 
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>

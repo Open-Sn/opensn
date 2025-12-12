@@ -103,46 +103,6 @@
 <span class="w">  </span><span class="c1">/// Storage for matrix elements</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vals</span><span class="p">{</span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">};</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Produces a rotation matrix with a reference vector rotated from the</span>
-<span class="cm">   * cartesian basis vectors \f$\hat{i}\f$, \f$\hat{j}\f$ and \f$\hat{k}\f$.</span>
-<span class="cm">   *</span>
-<span class="cm">   * By default a rotation matrix that creates no rotation is</span>
-<span class="cm">   * the identity matrix. Such a matrix can be defined from basis vectors</span>
-<span class="cm">   * following the notion that the &quot;up-vector&quot; is \f$\hat{k}\f$,</span>
-<span class="cm">   * this is also called the normal vector \f$\hat{n}\f$.</span>
-<span class="cm">   * The tangent vector is \f$\hat{i}\f$, denoted with \f$\hat{t}\f$.</span>
-<span class="cm">   * And the bi-norm vector is \f$\hat{j}\f$, denoted with \f$\hat{b}\f$.</span>
-<span class="cm">   *</span>
-<span class="cm">   * By specifying only the normal vector we can compute a simple pitch based</span>
-<span class="cm">   * rotation matrix. The supplied vector is therefore the new normal-vector,</span>
-<span class="cm">   * the tangent vector is computed as \f$ \hat{t} = \hat{n} \times \hat{k} \f$,</span>
-<span class="cm">   * and the bi-norm vector is computed as</span>
-<span class="cm">   * \f$ \hat{b} = \hat{n} \times \hat{t} \f$</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="nf">MakeRotationMatrixFromVector</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vec</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">R</span><span class="p">;</span>
-
-<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">;</span>
-<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">khat</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
-
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">khat</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.9999999</span><span class="p">)</span>
-<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetDiagonalVec</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
-<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">khat</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">-0.9999999</span><span class="p">)</span>
-<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetDiagonalVec</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">);</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">tangent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">Cross</span><span class="p">(</span><span class="n">khat</span><span class="p">).</span><span class="n">Normalized</span><span class="p">();</span>
-<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">binorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">Cross</span><span class="p">(</span><span class="n">tangent</span><span class="p">).</span><span class="n">Normalized</span><span class="p">();</span>
-
-<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">);</span>
-<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">binorm</span><span class="p">);</span>
-<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">R</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-
 <span class="w">  </span><span class="c1">/// Matrix addition operator</span>
 <span class="w">  </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="k">operator</span><span class="o">+</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Matrix3x3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
@@ -321,6 +281,47 @@
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Produces a rotation matrix with a reference vector rotated from the</span>
+<span class="cm">   * cartesian basis vectors \f$\hat{i}\f$, \f$\hat{j}\f$ and \f$\hat{k}\f$.</span>
+<span class="cm">   *</span>
+<span class="cm">   * By default a rotation matrix that creates no rotation is</span>
+<span class="cm">   * the identity matrix. Such a matrix can be defined from basis vectors</span>
+<span class="cm">   * following the notion that the &quot;up-vector&quot; is \f$\hat{k}\f$,</span>
+<span class="cm">   * this is also called the normal vector \f$\hat{n}\f$.</span>
+<span class="cm">   * The tangent vector is \f$\hat{i}\f$, denoted with \f$\hat{t}\f$.</span>
+<span class="cm">   * And the bi-norm vector is \f$\hat{j}\f$, denoted with \f$\hat{b}\f$.</span>
+<span class="cm">   *</span>
+<span class="cm">   * By specifying only the normal vector we can compute a simple pitch based</span>
+<span class="cm">   * rotation matrix. The supplied vector is therefore the new normal-vector,</span>
+<span class="cm">   * the tangent vector is computed as \f$ \hat{t} = \hat{n} \times \hat{k} \f$,</span>
+<span class="cm">   * and the bi-norm vector is computed as</span>
+<span class="cm">   * \f$ \hat{b} = \hat{n} \times \hat{t} \f$</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">MakeRotationMatrixFromVector</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vec</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Matrix3x3</span><span class="w"> </span><span class="n">R</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="nf">khat</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">khat</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.9999999</span><span class="p">)</span>
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetDiagonalVec</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">Dot</span><span class="p">(</span><span class="n">khat</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">-0.9999999</span><span class="p">)</span>
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetDiagonalVec</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">);</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">tangent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">Cross</span><span class="p">(</span><span class="n">khat</span><span class="p">).</span><span class="n">Normalized</span><span class="p">();</span>
+<span class="w">      </span><span class="k">auto</span><span class="w"> </span><span class="n">binorm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">Cross</span><span class="p">(</span><span class="n">tangent</span><span class="p">).</span><span class="n">Normalized</span><span class="p">();</span>
+
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">);</span>
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">binorm</span><span class="p">);</span>
+<span class="w">      </span><span class="n">R</span><span class="p">.</span><span class="n">SetColJVec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">R</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">};</span>
 

@@ -99,10 +99,13 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SpatialQuadrature</span>
 <span class="p">{</span>
-<span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">QuadratureOrder</span><span class="w"> </span><span class="n">order_</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">QuadratureOrder</span><span class="w"> </span><span class="n">GetOrder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">order_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">qpoints</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">weights</span><span class="p">;</span>
+
+<span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">SpatialQuadrature</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span>
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">verbose_</span><span class="p">(</span><span class="n">params</span><span class="p">.</span><span class="n">GetParamValue</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;verbose&quot;</span><span class="p">)),</span>
 <span class="w">      </span><span class="n">order_</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">QuadratureOrder</span><span class="o">&gt;</span><span class="p">(</span><span class="n">params</span><span class="p">.</span><span class="n">GetParamValue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;order&quot;</span><span class="p">)))</span>
@@ -111,13 +114,11 @@
 
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">SpatialQuadrature</span><span class="p">(</span><span class="n">QuadratureOrder</span><span class="w"> </span><span class="n">order</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">verbose_</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span><span class="w"> </span><span class="n">order_</span><span class="p">(</span><span class="n">order</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">QuadratureOrder</span><span class="w"> </span><span class="n">order_</span><span class="p">;</span>
+
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">qpoints</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">weights</span><span class="p">;</span>
-
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetInputParameters</span><span class="p">();</span>
-
-<span class="w">  </span><span class="n">QuadratureOrder</span><span class="w"> </span><span class="nf">GetOrder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">order_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

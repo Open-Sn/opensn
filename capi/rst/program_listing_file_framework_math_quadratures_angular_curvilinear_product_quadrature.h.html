@@ -101,7 +101,19 @@
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CurvilinearProductQuadrature</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ProductQuadrature</span>
 <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetDiamondDifferenceFactor</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">fac_diamond_difference_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetStreamingOperatorFactor</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">fac_streaming_operator_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="o">~</span><span class="n">CurvilinearProductQuadrature</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
 <span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="n">CurvilinearProductQuadrature</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">ProductQuadrature</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
 <span class="w">  </span><span class="c1">/// Factor to account for angular diamond differencing.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fac_diamond_difference_</span><span class="p">;</span>
 
@@ -110,22 +122,17 @@
 <span class="cm">   * the angular derivative.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fac_streaming_operator_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">CurvilinearProductQuadrature</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">ProductQuadrature</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetDiamondDifferenceFactor</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">fac_diamond_difference_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetStreamingOperatorFactor</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">fac_streaming_operator_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="o">~</span><span class="n">CurvilinearProductQuadrature</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GLCProductQuadrature2DRZ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">CurvilinearProductQuadrature</span>
 <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Nazimuthal</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+
+<span class="w">  </span><span class="o">~</span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
+
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Initialize with one-dimensional quadratures: a polar quadrature and a possibly unique azimuthal</span>
@@ -140,17 +147,17 @@
 <span class="cm">   * initialized underlying product quadrature.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeParameters</span><span class="p">();</span>
-
-<span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Nazimuthal</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
-
-<span class="w">  </span><span class="o">~</span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GLProductQuadrature1DSpherical</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">CurvilinearProductQuadrature</span>
 <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+
+<span class="w">  </span><span class="o">~</span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
+
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Initialize with one-dimensional quadrature.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Initialize</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
@@ -160,13 +167,6 @@
 <span class="cm">   * initialized underlying product quadrature.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeParameters</span><span class="p">();</span>
-
-<span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
-
-<span class="w">  </span><span class="o">~</span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

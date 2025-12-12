@@ -31,8 +31,6 @@ Program Listing for File solver.h
    class Solver
    {
    public:
-     /// Returns the input parameters.
-     static InputParameters GetInputParameters();
      explicit Solver(std::string name);
      explicit Solver(const InputParameters& params);
      virtual ~Solver() = default;
@@ -62,6 +60,10 @@ Program Listing for File solver.h
    
    private:
      const std::string name_;
+   
+   public:
+     /// Returns the input parameters.
+     static InputParameters GetInputParameters();
    };
    
    } // namespace opensn

@@ -165,14 +165,50 @@
 <span class="w">  </span><span class="n">ObjectFactory</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ObjectFactory</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
 <span class="w">  </span><span class="n">ObjectFactory</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ObjectFactory</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Access to the singleton</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">ObjectFactory</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetInstance</span><span class="p">()</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
-
 <span class="w">  </span><span class="c1">/// Returns a constant reference to the object registry.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">ObjectRegistryEntry</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetRegistry</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Checks if the object registry has a specific text key.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">RegistryHasKey</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">TYPE</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">object_registry_</span><span class="p">.</span><span class="n">count</span><span class="p">(</span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="s">&quot;No registered type </span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s"> found.&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">object_entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object_registry_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">object_entry</span><span class="p">.</span><span class="n">get_in_params_func</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;Object is not constructable since it has no registered constructor&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">input_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object_entry</span><span class="p">.</span><span class="n">get_in_params_func</span><span class="p">();</span>
+<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">SetObjectType</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">SetErrorOriginScope</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">AssignParameters</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input_params</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns the input parameters of a registered object.</span>
+<span class="w">  </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetRegisteredObjectParameters</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Dumps the object registry to stdout.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">DumpRegister</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Private constructor because this is a singleton.</span>
+<span class="w">  </span><span class="n">ObjectFactory</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Checks that the registry key is available and throws a `std::logical_error` if it is not.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AssertRegistryKeyAvailable</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">,</span>
+<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">calling_function</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">ObjectRegistryEntry</span><span class="o">&gt;</span><span class="w"> </span><span class="n">object_registry_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Access to the singleton</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">ObjectFactory</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetInstance</span><span class="p">()</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">AddObjectToRegistry</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">namespace_name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">object_name</span><span class="p">)</span>
@@ -236,37 +272,7 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">TYPE</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">object_registry_</span><span class="p">.</span><span class="n">count</span><span class="p">(</span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
-<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="s">&quot;No registered type </span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s"> found.&quot;</span><span class="p">);</span>
-
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">object_entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object_registry_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">object_entry</span><span class="p">.</span><span class="n">get_in_params_func</span><span class="p">)</span>
-<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
-<span class="w">        </span><span class="s">&quot;Object is not constructable since it has no registered constructor&quot;</span><span class="p">);</span>
-
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">input_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">object_entry</span><span class="p">.</span><span class="n">get_in_params_func</span><span class="p">();</span>
-<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">SetObjectType</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
-<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">SetErrorOriginScope</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
-<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">AssignParameters</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">TYPE</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input_params</span><span class="p">);</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">obj</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">/// Returns the input parameters of a registered object.</span>
-<span class="w">  </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetRegisteredObjectParameters</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">/// Dumps the object registry to stdout.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">DumpRegister</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">ObjectRegistryEntry</span><span class="o">&gt;</span><span class="w"> </span><span class="n">object_registry_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">/// Private constructor because this is a singleton.</span>
-<span class="w">  </span><span class="n">ObjectFactory</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-
 <span class="w">  </span><span class="c1">/// Utility redirection to call an object&#39;s static `GetInputParameters` function.</span>
 <span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">CallGetInputParamsFunction</span><span class="p">()</span>
@@ -281,10 +287,6 @@
 <span class="w">    </span><span class="k">static_assert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_base_of_v</span><span class="o">&lt;</span><span class="n">base_T</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Is not a base&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">/// Checks that the registry key is available and throws a `std::logical_error` if it is not.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AssertRegistryKeyAvailable</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">,</span>
-<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">calling_function</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

@@ -98,9 +98,6 @@
 <span class="c1">/// Manages the workstages of a single angle set.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AAH_AngleSet</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AngleSet</span>
 <span class="p">{</span>
-<span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">AAH_ASynchronousCommunicator</span><span class="w"> </span><span class="n">async_comm_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">AAH_AngleSet</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
 <span class="w">               </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
@@ -139,6 +136,9 @@
 <span class="w">                       </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_local_id</span><span class="p">,</span>
 <span class="w">                       </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">face_num</span><span class="p">,</span>
 <span class="w">                       </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">fi</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="n">AAH_ASynchronousCommunicator</span><span class="w"> </span><span class="n">async_comm_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

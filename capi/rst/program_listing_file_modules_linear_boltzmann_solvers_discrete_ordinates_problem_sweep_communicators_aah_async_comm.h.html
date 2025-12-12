@@ -200,41 +200,6 @@
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AAH_ASynchronousCommunicator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span>
 <span class="p">{</span>
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_num_messages_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">done_sending_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">data_initialized_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">upstream_data_initialized_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">preloc_msg_received_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">preloc_msg_data_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_preloc_msg_received_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_preloc_msg_data_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deploc_msg_request_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">deploc_msg_data_</span><span class="p">;</span>
-
-<span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Builds message structure.</span>
-<span class="cm">   *</span>
-<span class="cm">   * Outgoing and incoming data needs to be sub-divided into messages</span>
-<span class="cm">   * each of which is smaller than the maximum message size. There are</span>
-<span class="cm">   * three parts to this: predecessors, delayed-predecessors and successors.</span>
-<span class="cm">   *</span>
-<span class="cm">   * This method gets called by an angleset that subscribes to this</span>
-<span class="cm">   * sweepbuffer.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">BuildMessageStructureForCPUSweep</span><span class="p">();</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Builds message structure for device FLUDS.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">BuildMessageStructureForGPUSweep</span><span class="p">();</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">AAH_ASynchronousCommunicator</span><span class="p">(</span><span class="n">FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
 <span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
@@ -284,6 +249,41 @@
 
 <span class="w">  </span><span class="c1">/// Clear flags in preperation for another sweep.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Reset</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Builds message structure.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Outgoing and incoming data needs to be sub-divided into messages</span>
+<span class="cm">   * each of which is smaller than the maximum message size. There are</span>
+<span class="cm">   * three parts to this: predecessors, delayed-predecessors and successors.</span>
+<span class="cm">   *</span>
+<span class="cm">   * This method gets called by an angleset that subscribes to this</span>
+<span class="cm">   * sweepbuffer.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">BuildMessageStructureForCPUSweep</span><span class="p">();</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Builds message structure for device FLUDS.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">BuildMessageStructureForGPUSweep</span><span class="p">();</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_num_messages_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">done_sending_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">data_initialized_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">upstream_data_initialized_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">preloc_msg_received_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">preloc_msg_data_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_preloc_msg_received_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_preloc_msg_data_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deploc_msg_request_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">deploc_msg_data_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

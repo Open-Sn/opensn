@@ -29,25 +29,11 @@ Program Listing for File finite_volume.h
     */
    class FiniteVolume : public SpatialDiscretization
    {
-   private:
-     std::map<uint64_t, uint64_t> neighbor_cell_local_ids_;
-   
-   private:
-     explicit FiniteVolume(std::shared_ptr<MeshContinuum> grid);
-   
    public:
      ~FiniteVolume() override = default;
    
-     /// Publicly accessible construction handler.
-     static std::shared_ptr<FiniteVolume> New(std::shared_ptr<MeshContinuum> grid);
-   
      void CreateCellMappings();
    
-   protected:
-     /// Develops node ordering per location.
-     void OrderNodes();
-   
-   public:
      void BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_in_diag,
                                std::vector<int64_t>& nodal_nnz_off_diag,
                                const UnknownManager& unknown_manager) const override;
@@ -76,6 +62,19 @@ Program Listing for File finite_volume.h
    
      size_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const override;
      std::vector<uint64_t> GetGhostDOFIndices(const UnknownManager& unknown_manager) const override;
+   
+   protected:
+     /// Develops node ordering per location.
+     void OrderNodes();
+   
+   private:
+     explicit FiniteVolume(std::shared_ptr<MeshContinuum> grid);
+   
+     std::map<uint64_t, uint64_t> neighbor_cell_local_ids_;
+   
+   public:
+     /// Publicly accessible construction handler.
+     static std::shared_ptr<FiniteVolume> New(std::shared_ptr<MeshContinuum> grid);
    };
    
    } // namespace opensn

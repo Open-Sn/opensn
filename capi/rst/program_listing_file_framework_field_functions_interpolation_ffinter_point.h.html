@@ -98,12 +98,6 @@
 <span class="c1">/// A line based interpolation function.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionInterpolationPoint</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FieldFunctionInterpolation</span>
 <span class="p">{</span>
-<span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">point_of_interest_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">locally_owned_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">owning_cell_gid_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">point_value_</span><span class="p">;</span>
-
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">FieldFunctionInterpolationPoint</span><span class="p">()</span>
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">FieldFunctionInterpolation</span><span class="p">(</span><span class="n">FieldFunctionInterpolationType</span><span class="o">::</span><span class="n">POINT</span><span class="p">),</span>
@@ -123,6 +117,12 @@
 
 <span class="w">  </span><span class="c1">/// Gets the value of the field function evaluation at the point.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetPointValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">point_of_interest_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">locally_owned_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">owning_cell_gid_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">point_value_</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FieldFunctionInterpolationPoint</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Create</span><span class="p">();</span>

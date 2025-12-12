@@ -29,7 +29,6 @@ Program Listing for File piecewise_linear_base_mapping.h
     */
    class PieceWiseLinearBaseMapping : public CellMapping
    {
-   protected:
    public:
      /// Constructor.
      PieceWiseLinearBaseMapping(std::shared_ptr<MeshContinuum> grid,

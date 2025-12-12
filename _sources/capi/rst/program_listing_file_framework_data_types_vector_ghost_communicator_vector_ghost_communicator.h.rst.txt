@@ -29,7 +29,6 @@ Program Listing for File vector_ghost_communicator.h
    /// Vector with allocation space for ghosts.
    class VectorGhostCommunicator
    {
-   
    public:
      VectorGhostCommunicator(uint64_t local_size,
                              uint64_t global_size,

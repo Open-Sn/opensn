@@ -149,11 +149,10 @@
 <span class="w">  </span><span class="c1">/// Serializes a face into a vector of bytes.</span>
 <span class="w">  </span><span class="n">ByteArray</span><span class="w"> </span><span class="nf">Serialize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Deserializes a face from a set of raw data</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">CellFace</span><span class="w"> </span><span class="nf">DeSerialize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ByteArray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">raw</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">address</span><span class="p">);</span>
-
 <span class="w">  </span><span class="c1">/// Provides string information of the face.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">ToString</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeGeometricInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Flag indicating whether face has a neighbor</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
@@ -169,7 +168,10 @@
 
 <span class="w">  </span><span class="c1">/// A list of the vertices</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertex_ids</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeGeometricInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">*</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Deserializes a face from a set of raw data</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">CellFace</span><span class="w"> </span><span class="n">DeSerialize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ByteArray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">raw</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">address</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="c1">/// Generic mesh cell object</span>
@@ -194,9 +196,6 @@
 <span class="w">  </span><span class="c1">/// Serializes a cell into a vector of bytes.</span>
 <span class="w">  </span><span class="n">ByteArray</span><span class="w"> </span><span class="nf">Serialize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Deserializes a cell from a vector of bytes.</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">Cell</span><span class="w"> </span><span class="nf">DeSerialize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ByteArray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">raw</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">address</span><span class="p">);</span>
-
 <span class="w">  </span><span class="c1">/// Provides string information of the cell.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">ToString</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
@@ -217,6 +216,10 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CellType</span><span class="w"> </span><span class="n">cell_type_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Subtype i.e. SLAB, QUADRILATERAL, HEXAHEDRON</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CellType</span><span class="w"> </span><span class="n">cell_sub_type_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Deserializes a cell from a vector of bytes.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">Cell</span><span class="w"> </span><span class="n">DeSerialize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ByteArray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">raw</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">address</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

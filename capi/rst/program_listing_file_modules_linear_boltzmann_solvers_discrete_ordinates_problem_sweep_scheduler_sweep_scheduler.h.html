@@ -105,6 +105,25 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SweepScheduler</span>
 <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="n">SweepScheduler</span><span class="p">(</span><span class="n">SchedulingAlgorithm</span><span class="w"> </span><span class="n">scheduler_type</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">AngleAggregation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_agg</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Sweep</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrepareForSweep</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">use_boundary_source</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">zero_incoming_delayed_psi</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Applies a first-in-first-out sweep scheduling.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ScheduleAlgoFIFO</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Initializes the depth-of-graph algorithm.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeAlgoDOG</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Executes the depth-of-graph algorithm.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScheduleAlgoDOG</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
+
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="n">SchedulingAlgorithm</span><span class="w"> </span><span class="n">scheduler_type_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">AngleAggregation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_agg_</span><span class="p">;</span>
@@ -130,25 +149,6 @@
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">};</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">RuleValues</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rule_values_</span><span class="p">;</span>
-
-<span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">SweepScheduler</span><span class="p">(</span><span class="n">SchedulingAlgorithm</span><span class="w"> </span><span class="n">scheduler_type</span><span class="p">,</span>
-<span class="w">                 </span><span class="n">AngleAggregation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_agg</span><span class="p">,</span>
-<span class="w">                 </span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Sweep</span><span class="p">();</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrepareForSweep</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">use_boundary_source</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">zero_incoming_delayed_psi</span><span class="p">);</span>
-
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Applies a first-in-first-out sweep scheduling.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ScheduleAlgoFIFO</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Initializes the depth-of-graph algorithm.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeAlgoDOG</span><span class="p">();</span>
-
-<span class="w">  </span><span class="c1">/// Executes the depth-of-graph algorithm.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScheduleAlgoDOG</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

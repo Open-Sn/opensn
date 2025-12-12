@@ -254,9 +254,11 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Operation</span><span class="o">&gt;</span><span class="w"> </span><span class="n">add_cache_</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">FindOwnerPID</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="n">DefineExtents</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">comm_size</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">communicator</span><span class="p">);</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">FindOwnerPID</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

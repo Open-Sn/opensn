@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``cassert``
+
 - ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
 
 

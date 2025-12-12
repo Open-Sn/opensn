@@ -31,27 +31,6 @@ Program Listing for File aah_fluds.h
       */
      AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data);
    
-   private:
-     const AAH_FLUDSCommonData& common_data_;
-   
-     // local_psi_n_block_stride[fc]. Given face category fc, the value is
-     // total number of faces that store information in this category's buffer
-     // per angle
-     std::vector<size_t> local_psi_Gn_block_strideG_; // Custom G
-   
-     size_t delayed_local_psi_Gn_block_strideG_; // Custom G
-   
-     std::vector<std::vector<double>> local_psi_;
-     std::vector<double> delayed_local_psi_;
-     std::vector<double> delayed_local_psi_old_;
-     std::vector<std::vector<double>> deplocI_outgoing_psi_;
-     std::vector<std::vector<double>> prelocI_outgoing_psi_;
-     std::vector<std::vector<double>> boundryI_incoming_psi_;
-   
-     std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_;
-     std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_old_;
-   
-   public:
      /**
       * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
       * computes the location of this position's upwind psi in the local upwind psi vector and returns
@@ -101,6 +80,26 @@ Program Listing for File aah_fluds.h
    
      void SetDelayedLocalPsiOldToNew() override;
      void SetDelayedLocalPsiNewToOld() override;
+   
+   private:
+     const AAH_FLUDSCommonData& common_data_;
+   
+     // local_psi_n_block_stride[fc]. Given face category fc, the value is
+     // total number of faces that store information in this category's buffer
+     // per angle
+     std::vector<size_t> local_psi_Gn_block_strideG_; // Custom G
+   
+     size_t delayed_local_psi_Gn_block_strideG_; // Custom G
+   
+     std::vector<std::vector<double>> local_psi_;
+     std::vector<double> delayed_local_psi_;
+     std::vector<double> delayed_local_psi_old_;
+     std::vector<std::vector<double>> deplocI_outgoing_psi_;
+     std::vector<std::vector<double>> prelocI_outgoing_psi_;
+     std::vector<std::vector<double>> boundryI_incoming_psi_;
+   
+     std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_;
+     std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_old_;
    };
    
    } // namespace opensn

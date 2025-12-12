@@ -106,14 +106,6 @@
 <span class="w">  </span><span class="c1">/// Convenient typdef for the moment call back function. See moment_callbacks.</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">MomentCallbackFunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">*</span><span class="w"> </span><span class="n">sweeper</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">*</span><span class="w"> </span><span class="n">angle_set</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Functions of type MomentCallbackFunc can be added to the moment_callbacks</span>
-<span class="cm">   * vector and these can be called from within functions taking a</span>
-<span class="cm">   * LBSGroupset instance. The intention is that this function can</span>
-<span class="cm">   * be used as a general interface to retrieve angular flux values</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">MomentCallbackFunc</span><span class="o">&gt;</span><span class="w"> </span><span class="n">moment_callbacks</span><span class="p">;</span>
-
 <span class="w">  </span><span class="n">SweepChunk</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">destination_phi</span><span class="p">,</span>
 <span class="w">             </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">destination_psi</span><span class="p">,</span>
 <span class="w">             </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
@@ -172,6 +164,14 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsSurfaceSourceActive</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">surface_source_active_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">SweepChunk</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Functions of type MomentCallbackFunc can be added to the moment_callbacks</span>
+<span class="cm">   * vector and these can be called from within functions taking a</span>
+<span class="cm">   * LBSGroupset instance. The intention is that this function can</span>
+<span class="cm">   * be used as a general interface to retrieve angular flux values</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">MomentCallbackFunc</span><span class="o">&gt;</span><span class="w"> </span><span class="n">moment_callbacks</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span>

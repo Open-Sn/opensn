@@ -105,33 +105,12 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">AAH_FLUDS</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">AAH_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data</span><span class="p">);</span>
 
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAH_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">// local_psi_n_block_stride[fc]. Given face category fc, the value is</span>
-<span class="w">  </span><span class="c1">// total number of faces that store information in this category&#39;s buffer</span>
-<span class="w">  </span><span class="c1">// per angle</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">local_psi_Gn_block_strideG_</span><span class="p">;</span><span class="w"> </span><span class="c1">// Custom G</span>
-
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">delayed_local_psi_Gn_block_strideG_</span><span class="p">;</span><span class="w"> </span><span class="c1">// Custom G</span>
-
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">local_psi_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">delayed_local_psi_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">delayed_local_psi_old_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">deplocI_outgoing_psi_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">prelocI_outgoing_psi_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">boundryI_incoming_psi_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_prelocI_outgoing_psi_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_prelocI_outgoing_psi_old_</span><span class="p">;</span>
-
-<span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function</span>
 <span class="cm">   * computes the location of this position&#39;s upwind psi in the local upwind psi vector and returns</span>
 <span class="cm">   * a reference to it.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">OutgoingPsi</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">cell_so_index</span><span class="p">,</span>
+<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">OutgoingPsi</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">cell_so_index</span><span class="p">,</span>
 <span class="w">                      </span><span class="kt">int</span><span class="w"> </span><span class="n">outb_face_counter</span><span class="p">,</span>
 <span class="w">                      </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">face_dof</span><span class="p">,</span>
 <span class="w">                      </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
@@ -175,6 +154,26 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDelayedLocalPsiOldToNew</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDelayedLocalPsiNewToOld</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAH_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// local_psi_n_block_stride[fc]. Given face category fc, the value is</span>
+<span class="w">  </span><span class="c1">// total number of faces that store information in this category&#39;s buffer</span>
+<span class="w">  </span><span class="c1">// per angle</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">local_psi_Gn_block_strideG_</span><span class="p">;</span><span class="w"> </span><span class="c1">// Custom G</span>
+
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">delayed_local_psi_Gn_block_strideG_</span><span class="p">;</span><span class="w"> </span><span class="c1">// Custom G</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">local_psi_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">delayed_local_psi_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">delayed_local_psi_old_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">deplocI_outgoing_psi_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">prelocI_outgoing_psi_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">boundryI_incoming_psi_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_prelocI_outgoing_psi_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_prelocI_outgoing_psi_old_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
