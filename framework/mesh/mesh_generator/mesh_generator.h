@@ -89,7 +89,6 @@ protected:
   BroadcastPIDs(std::vector<int>& cell_pids, int root, const mpi::Communicator& communicator);
 
 private:
-private:
   /**
    * Rebalance partitions so that all partitions contain cells. If we find a partition
    * that has zero cells, move cells from heavier partitions to the partition with zero

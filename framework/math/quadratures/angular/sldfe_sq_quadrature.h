@@ -17,7 +17,24 @@ namespace opensn
 
 class SLDFEsqQuadrature : public AngularQuadrature
 {
+public:
+  SLDFEsqQuadrature(int level, unsigned int dimension, unsigned int scattering_order);
+
+  ~SLDFEsqQuadrature() override = default;
+
+  void TestIntegration(int test_case, double ref_solution, int RiemannN = 0);
+
+  void PrintQuadratureToFile(const std::string& file_base);
+
+  void LocallyRefine(const Vector3& ref_dir, double cone_size, bool dir_as_plane_normal = false);
+
 protected:
+  void GenerateRefinement();
+
+  void PopulateQuadratureAbscissae();
+
+  virtual bool FilterQuadraturePoint(const Vector3& omega) const;
+
   enum class QuadraturePointOptimization
   {
     CENTROID,
@@ -41,24 +58,6 @@ protected:
     double area = 0.0;
     Vector3 octant_modifier;
   };
-
-public:
-  SLDFEsqQuadrature(int level, unsigned int dimension, unsigned int scattering_order);
-
-  ~SLDFEsqQuadrature() override = default;
-
-  void TestIntegration(int test_case, double ref_solution, int RiemannN = 0);
-
-  void PrintQuadratureToFile(const std::string& file_base);
-
-  void LocallyRefine(const Vector3& ref_dir, double cone_size, bool dir_as_plane_normal = false);
-
-protected:
-  void GenerateRefinement();
-
-  void PopulateQuadratureAbscissae();
-
-  virtual bool FilterQuadraturePoint(const Vector3& omega) const;
 
   QuadraturePointOptimization qp_optimization_type = QuadraturePointOptimization::EMPIRICAL;
   std::vector<SphericalQuadrilateral> deployed_SQs;
@@ -128,12 +127,6 @@ private:
     }
   };
 
-  static constexpr double a_ = 0.57735026919;
-  double raw_weight_sum_ = 0.0;
-  int level_ = 0;
-  std::vector<Vector3> diagonal_vertices_;
-  std::vector<SphericalQuadrilateral> initial_octant_SQs_;
-
   void GenerateDiagonalSpacings();
 
   void GenerateReferenceFaceVertices(const Matrix3x3& rotation_matrix, const Vector3& translation);
@@ -152,6 +145,22 @@ private:
                               std::array<Vector3, 4>& radii_vectors_xy_tilde,
                               std::array<double, 4>& sub_sub_sqr_areas);
 
+  void CopyToAllOctants();
+
+  double RiemannIntegral(struct BaseFunctor* F, int Ni = 20000);
+
+  double QuadratureSSIntegral(struct BaseFunctor* F);
+
+  std::array<SphericalQuadrilateral, 4> SplitSQ(SphericalQuadrilateral& sq,
+                                                GaussLegendreQuadrature& legendre);
+
+  static constexpr double a_ = 0.57735026919;
+  double raw_weight_sum_ = 0.0;
+  int level_ = 0;
+  std::vector<Vector3> diagonal_vertices_;
+  std::vector<SphericalQuadrilateral> initial_octant_SQs_;
+
+private:
   static double ComputeSphericalQuadrilateralArea(std::array<Vector3, 4>& vertices_xyz);
 
   static std::array<double, 4>
@@ -160,17 +169,8 @@ private:
                               const std::vector<Vector3>& legendre_qpoints,
                               const std::vector<double>& legendre_qweights);
 
-  void CopyToAllOctants();
-
   static std::array<std::array<Vector3, 4>, 4>
   BuildSubSquares(const std::array<Vector3, 4>& vertices_xy_tilde, const Vector3& centroid);
-
-  double RiemannIntegral(struct BaseFunctor* F, int Ni = 20000);
-
-  double QuadratureSSIntegral(struct BaseFunctor* F);
-
-  std::array<SphericalQuadrilateral, 4> SplitSQ(SphericalQuadrilateral& sq,
-                                                GaussLegendreQuadrature& legendre);
 };
 
 class SLDFEsqQuadrature3DXYZ : public SLDFEsqQuadrature

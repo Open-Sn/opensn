@@ -18,14 +18,15 @@ class LogicalVolume;
 class LogicalVolumeInterface
 {
 protected:
-  static InputParameters GetInputParameters();
-
   explicit LogicalVolumeInterface(const InputParameters& params);
 
   std::shared_ptr<LogicalVolume> GetLogicalVolume() const;
 
 private:
   const std::shared_ptr<LogicalVolume> logical_volume_;
+
+protected:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

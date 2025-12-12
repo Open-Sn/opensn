@@ -68,16 +68,12 @@ private:
 public:
   explicit ResponseEvaluator(const InputParameters& params);
 
-  static InputParameters GetOptionsBlock();
   void SetOptions(const InputParameters& params);
 
-  static InputParameters GetBufferOptionsBlock();
   void SetBufferOptions(const InputParameters& input);
 
-  static InputParameters GetSourceOptionsBlock();
   void SetSourceOptions(const InputParameters& input);
 
-  static InputParameters GetMaterialSourceOptionsBlock();
   void SetMaterialSourceOptions(const InputParameters& params);
 
   void SetBoundarySourceOptions(const InputParameters& params);
@@ -109,7 +105,6 @@ private:
                                                 const LBSGroupset& groupset,
                                                 double time = 0.0) const;
 
-private:
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
 
   std::map<std::string, AdjointBuffer> adjoint_buffers_;
@@ -123,6 +118,11 @@ public:
   /// Returns the input parameters for this object.
   static InputParameters GetInputParameters();
   static std::shared_ptr<ResponseEvaluator> Create(const ParameterBlock& params);
+
+  static InputParameters GetOptionsBlock();
+  static InputParameters GetBufferOptionsBlock();
+  static InputParameters GetSourceOptionsBlock();
+  static InputParameters GetMaterialSourceOptionsBlock();
 };
 
 } // namespace opensn

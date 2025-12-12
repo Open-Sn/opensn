@@ -43,13 +43,6 @@ enum class AngleAggregationType
  */
 class AngleAggregation
 {
-private:
-  bool num_ang_unknowns_avail_;
-  std::pair<size_t, size_t> number_angular_unknowns_;
-  std::shared_ptr<MeshContinuum> grid_;
-  std::shared_ptr<AngularQuadrature> quadrature_;
-  std::map<uint64_t, std::shared_ptr<SweepBoundary>> boundaries_;
-
 public:
   AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                    std::shared_ptr<AngularQuadrature>& quadrature,
@@ -106,6 +99,13 @@ public:
 
   /// Copies the new delayed angular fluxes to the old.
   void SetDelayedPsiNew2Old();
+
+private:
+  bool num_ang_unknowns_avail_;
+  std::pair<size_t, size_t> number_angular_unknowns_;
+  std::shared_ptr<MeshContinuum> grid_;
+  std::shared_ptr<AngularQuadrature> quadrature_;
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>> boundaries_;
 };
 
 } // namespace opensn

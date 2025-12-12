@@ -42,13 +42,6 @@ class ParameterBlock;
  */
 class ParameterBlock
 {
-private:
-  ParameterBlockType type_ = ParameterBlockType::BLOCK;
-  std::string name_;
-  std::shared_ptr<Varying> value_ptr_ = nullptr;
-  std::vector<ParameterBlock> parameters_;
-  std::string error_origin_scope_ = "Unknown Scope";
-
 public:
   /// Sets the name of the block.
   void SetBlockName(const std::string& name);
@@ -399,6 +392,13 @@ public:
 
   /// Print the block tree structure into a designated string.
   void RecursiveDumpToJSON(std::string& outstr) const;
+
+private:
+  ParameterBlockType type_ = ParameterBlockType::BLOCK;
+  std::string name_;
+  std::shared_ptr<Varying> value_ptr_ = nullptr;
+  std::vector<ParameterBlock> parameters_;
+  std::string error_origin_scope_ = "Unknown Scope";
 };
 
 } // namespace opensn

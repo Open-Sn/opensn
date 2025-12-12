@@ -12,10 +12,6 @@ namespace opensn
 /// Quadrature for use on reference lines.
 class LineQuadrature : public SpatialQuadrature
 {
-private:
-  /// Interval on which the quadrature is defined (relevant for one-dimensional quadratures only).
-  std::pair<double, double> range_;
-
 public:
   explicit LineQuadrature(QuadratureOrder order);
 
@@ -27,6 +23,10 @@ public:
    * translation of the abscissae and scaling of the weights.
    */
   void SetRange(const std::pair<double, double>& range);
+
+private:
+  /// Interval on which the quadrature is defined (relevant for one-dimensional quadratures only).
+  std::pair<double, double> range_;
 };
 
 } // namespace opensn

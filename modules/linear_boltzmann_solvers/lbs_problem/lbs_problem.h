@@ -235,20 +235,6 @@ public:
    */
   virtual void ReorientAdjointSolution() {};
 
-private:
-  /// Initialize groupsets
-  void InitializeGroupsets(const InputParameters& params);
-
-  /// Initializes materials
-  void InitializeXSmapAndDensities(const InputParameters& params);
-  void InitializeMaterials();
-
-  /// Initialize sources
-  void InitializeSources(const InputParameters& params);
-
-  /// Initialize boundary conditions
-  void InitializeBoundaryConditions(const InputParameters& params);
-
 protected:
   virtual void PrintSimHeader();
 
@@ -342,8 +328,19 @@ protected:
   /// Flag indicating if GPU acceleration is enabled.
   bool use_gpus_;
 
-  /// Checks if the current CPU is associated with any GPU.
-  static void CheckCapableDevices();
+private:
+  /// Initialize groupsets
+  void InitializeGroupsets(const InputParameters& params);
+
+  /// Initializes materials
+  void InitializeXSmapAndDensities(const InputParameters& params);
+  void InitializeMaterials();
+
+  /// Initialize sources
+  void InitializeSources(const InputParameters& params);
+
+  /// Initialize boundary conditions
+  void InitializeBoundaryConditions(const InputParameters& params);
 
 public:
   /// Max number of DOFs per cell that the sweep kernel on GPU can handle.
@@ -357,6 +354,10 @@ public:
   static InputParameters GetBoundaryOptionsBlock();
 
   static InputParameters GetXSMapEntryBlock();
+
+protected:
+  /// Checks if the current CPU is associated with any GPU.
+  static void CheckCapableDevices();
 };
 
 } // namespace opensn

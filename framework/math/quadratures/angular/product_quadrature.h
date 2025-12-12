@@ -13,28 +13,7 @@ namespace opensn
 /// Class for product quadratures
 class ProductQuadrature : public AngularQuadrature
 {
-protected:
-  double weight_sum_;
-
-  /// Linear indices of ordered directions mapped to polar level.
-  std::map<unsigned int, std::vector<unsigned int>> map_directions_;
-
-  ProductQuadrature(unsigned int dimension, unsigned int scattering_order)
-    : AngularQuadrature(AngularQuadratureType::ProductQuadrature, dimension, scattering_order),
-      weight_sum_(0.0)
-  {
-  }
-
-  /// Initializes the quadrature with custom angles and weights.
-  void AssembleCosines(const std::vector<double>& azimuthal,
-                       const std::vector<double>& polar,
-                       const std::vector<double>& wts,
-                       bool verbose);
-
 public:
-  std::vector<double> polar_ang;
-  std::vector<double> azimu_ang;
-
   ~ProductQuadrature() override = default;
 
   /**
@@ -52,6 +31,27 @@ public:
   {
     return map_directions_;
   }
+
+  std::vector<double> polar_ang;
+  std::vector<double> azimu_ang;
+
+protected:
+  ProductQuadrature(unsigned int dimension, unsigned int scattering_order)
+    : AngularQuadrature(AngularQuadratureType::ProductQuadrature, dimension, scattering_order),
+      weight_sum_(0.0)
+  {
+  }
+
+  /// Initializes the quadrature with custom angles and weights.
+  void AssembleCosines(const std::vector<double>& azimuthal,
+                       const std::vector<double>& polar,
+                       const std::vector<double>& wts,
+                       bool verbose);
+
+  double weight_sum_;
+
+  /// Linear indices of ordered directions mapped to polar level.
+  std::map<unsigned int, std::vector<unsigned int>> map_directions_;
 };
 
 class GLProductQuadrature1DSlab : public ProductQuadrature

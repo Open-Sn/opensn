@@ -17,46 +17,6 @@ struct Matrix3x3
   /// Storage for matrix elements
   std::array<double, 9> vals{0., 0., 0., 0., 0., 0., 0., 0., 0.};
 
-  /**
-   * Produces a rotation matrix with a reference vector rotated from the
-   * cartesian basis vectors \f$\hat{i}\f$, \f$\hat{j}\f$ and \f$\hat{k}\f$.
-   *
-   * By default a rotation matrix that creates no rotation is
-   * the identity matrix. Such a matrix can be defined from basis vectors
-   * following the notion that the "up-vector" is \f$\hat{k}\f$,
-   * this is also called the normal vector \f$\hat{n}\f$.
-   * The tangent vector is \f$\hat{i}\f$, denoted with \f$\hat{t}\f$.
-   * And the bi-norm vector is \f$\hat{j}\f$, denoted with \f$\hat{b}\f$.
-   *
-   * By specifying only the normal vector we can compute a simple pitch based
-   * rotation matrix. The supplied vector is therefore the new normal-vector,
-   * the tangent vector is computed as \f$ \hat{t} = \hat{n} \times \hat{k} \f$,
-   * and the bi-norm vector is computed as
-   * \f$ \hat{b} = \hat{n} \times \hat{t} \f$
-   */
-  static Matrix3x3 MakeRotationMatrixFromVector(const Vector3& vec)
-  {
-    Matrix3x3 R;
-
-    Vector3 n = vec;
-    Vector3 khat(0.0, 0.0, 1.0);
-
-    if (n.Dot(khat) > 0.9999999)
-      R.SetDiagonalVec(1.0, 1.0, 1.0);
-    else if (n.Dot(khat) < -0.9999999)
-      R.SetDiagonalVec(1.0, 1.0, -1.0);
-    else
-    {
-      auto tangent = n.Cross(khat).Normalized();
-      auto binorm = n.Cross(tangent).Normalized();
-
-      R.SetColJVec(0, tangent);
-      R.SetColJVec(1, binorm);
-      R.SetColJVec(2, n);
-    }
-    return R;
-  }
-
   /// Matrix addition operator
   Matrix3x3 operator+(const Matrix3x3& other) const
   {
@@ -235,6 +195,47 @@ struct Matrix3x3
     }
 
     return out.str();
+  }
+
+public:
+  /**
+   * Produces a rotation matrix with a reference vector rotated from the
+   * cartesian basis vectors \f$\hat{i}\f$, \f$\hat{j}\f$ and \f$\hat{k}\f$.
+   *
+   * By default a rotation matrix that creates no rotation is
+   * the identity matrix. Such a matrix can be defined from basis vectors
+   * following the notion that the "up-vector" is \f$\hat{k}\f$,
+   * this is also called the normal vector \f$\hat{n}\f$.
+   * The tangent vector is \f$\hat{i}\f$, denoted with \f$\hat{t}\f$.
+   * And the bi-norm vector is \f$\hat{j}\f$, denoted with \f$\hat{b}\f$.
+   *
+   * By specifying only the normal vector we can compute a simple pitch based
+   * rotation matrix. The supplied vector is therefore the new normal-vector,
+   * the tangent vector is computed as \f$ \hat{t} = \hat{n} \times \hat{k} \f$,
+   * and the bi-norm vector is computed as
+   * \f$ \hat{b} = \hat{n} \times \hat{t} \f$
+   */
+  static Matrix3x3 MakeRotationMatrixFromVector(const Vector3& vec)
+  {
+    Matrix3x3 R;
+
+    Vector3 n = vec;
+    Vector3 khat(0.0, 0.0, 1.0);
+
+    if (n.Dot(khat) > 0.9999999)
+      R.SetDiagonalVec(1.0, 1.0, 1.0);
+    else if (n.Dot(khat) < -0.9999999)
+      R.SetDiagonalVec(1.0, 1.0, -1.0);
+    else
+    {
+      auto tangent = n.Cross(khat).Normalized();
+      auto binorm = n.Cross(tangent).Normalized();
+
+      R.SetColJVec(0, tangent);
+      R.SetColJVec(1, binorm);
+      R.SetColJVec(2, n);
+    }
+    return R;
   }
 };
 

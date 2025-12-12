@@ -16,6 +16,22 @@ class LinearSolver;
 
 class PowerIterationKEigenSolver : public Solver
 {
+public:
+  explicit PowerIterationKEigenSolver(const InputParameters& params);
+
+  void Initialize() override;
+  void Execute() override;
+  /// Return the current k-eigenvalue
+  double GetEigenvalue() const { return k_eff_; }
+
+  /// Combines function calls to set fission source.
+  void SetLBSFissionSource(const std::vector<double>& input, bool additive);
+
+  /// Combines function calls to set scattering source source.
+  void SetLBSScatterSource(const std::vector<double>& input,
+                           bool additive,
+                           bool suppress_wg_scat = false);
+
 protected:
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   const std::shared_ptr<DiscreteOrdinatesKEigenAcceleration> acceleration_;
@@ -37,22 +53,6 @@ protected:
   LBSGroupset& front_gs_;
   std::shared_ptr<LinearSolver> front_wgs_solver_;
   std::shared_ptr<WGSContext> front_wgs_context_;
-
-public:
-  explicit PowerIterationKEigenSolver(const InputParameters& params);
-
-  void Initialize() override;
-  void Execute() override;
-  /// Return the current k-eigenvalue
-  double GetEigenvalue() const { return k_eff_; }
-
-  /// Combines function calls to set fission source.
-  void SetLBSFissionSource(const std::vector<double>& input, bool additive);
-
-  /// Combines function calls to set scattering source source.
-  void SetLBSScatterSource(const std::vector<double>& input,
-                           bool additive,
-                           bool suppress_wg_scat = false);
 
 private:
   bool WriteRestartData();

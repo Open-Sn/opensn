@@ -14,27 +14,6 @@ class GlobalCellHandler
 {
   friend class MeshContinuum;
 
-private:
-  std::vector<std::shared_ptr<Cell>>& local_cells_ref_;
-  std::vector<std::shared_ptr<Cell>>& ghost_cells_ref_;
-
-  /// Global to local ID map
-  std::map<uint64_t, uint64_t>& global_to_local_map_;
-  /// Global to ghost ID map
-  std::map<uint64_t, uint64_t>& global_to_ghost_map_;
-
-private:
-  explicit GlobalCellHandler(std::vector<std::shared_ptr<Cell>>& native_cells,
-                             std::vector<std::shared_ptr<Cell>>& foreign_cells,
-                             std::map<uint64_t, uint64_t>& global_to_local_map,
-                             std::map<uint64_t, uint64_t>& global_to_ghost_map)
-    : local_cells_ref_(native_cells),
-      ghost_cells_ref_(foreign_cells),
-      global_to_local_map_(global_to_local_map),
-      global_to_ghost_map_(global_to_ghost_map)
-  {
-  }
-
 public:
   /**
    * Adds a new cell to the appropriate category (local or ghost).
@@ -63,6 +42,26 @@ public:
    * prevent it.
    */
   uint64_t GetGhostLocalID(uint64_t cell_global_index) const;
+
+private:
+  explicit GlobalCellHandler(std::vector<std::shared_ptr<Cell>>& native_cells,
+                             std::vector<std::shared_ptr<Cell>>& foreign_cells,
+                             std::map<uint64_t, uint64_t>& global_to_local_map,
+                             std::map<uint64_t, uint64_t>& global_to_ghost_map)
+    : local_cells_ref_(native_cells),
+      ghost_cells_ref_(foreign_cells),
+      global_to_local_map_(global_to_local_map),
+      global_to_ghost_map_(global_to_ghost_map)
+  {
+  }
+
+  std::vector<std::shared_ptr<Cell>>& local_cells_ref_;
+  std::vector<std::shared_ptr<Cell>>& ghost_cells_ref_;
+
+  /// Global to local ID map
+  std::map<uint64_t, uint64_t>& global_to_local_map_;
+  /// Global to ghost ID map
+  std::map<uint64_t, uint64_t>& global_to_ghost_map_;
 };
 
 } // namespace opensn

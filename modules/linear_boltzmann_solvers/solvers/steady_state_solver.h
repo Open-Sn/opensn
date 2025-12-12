@@ -12,9 +12,6 @@ class LBSProblem;
 
 class SteadyStateSourceSolver : public Solver
 {
-protected:
-  std::shared_ptr<LBSProblem> lbs_problem_;
-
 public:
   explicit SteadyStateSourceSolver(const InputParameters& params);
 
@@ -22,15 +19,18 @@ public:
 
   void Execute() override;
 
-public:
-  static InputParameters GetInputParameters();
-
-  static std::shared_ptr<SteadyStateSourceSolver> Create(const ParameterBlock& params);
+protected:
+  std::shared_ptr<LBSProblem> lbs_problem_;
 
 private:
   bool ReadRestartData();
 
   bool WriteRestartData();
+
+public:
+  static InputParameters GetInputParameters();
+
+  static std::shared_ptr<SteadyStateSourceSolver> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

@@ -22,7 +22,6 @@ public:
   using BoundingBox = std::pair<Vector3, Vector3>;
   using FFList = std::vector<std::shared_ptr<const FieldFunctionGridBased>>;
 
-  static InputParameters GetInputParameters();
   explicit FieldFunctionGridBased(const InputParameters& params);
 
   /// Creates a field function, filling it with zeros.
@@ -79,6 +78,8 @@ private:
   const BoundingBox local_grid_bounding_box_;
 
 public:
+  static InputParameters GetInputParameters();
+
   /// Export multiple field functions to PVTU.
   static void
   ExportMultipleToPVTU(const std::string& file_base_name,

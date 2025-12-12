@@ -17,7 +17,6 @@ namespace opensn
  */
 class PieceWiseLinearBaseMapping : public CellMapping
 {
-protected:
 public:
   /// Constructor.
   PieceWiseLinearBaseMapping(std::shared_ptr<MeshContinuum> grid,

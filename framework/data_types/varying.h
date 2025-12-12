@@ -283,18 +283,6 @@ private:
     T value_;
   };
 
-  /// Type specification
-  VaryingDataType type_ = VaryingDataType::VOID;
-  std::unique_ptr<VaryingType> data_ = nullptr;
-
-private:
-  /**
-   * Checks if two VaryingDataType values match.
-   * Type A is matched against type B.
-   */
-  void CheckTypeMatch(VaryingDataType type_A, VaryingDataType type_B_required) const;
-
-private:
 public:
   // Constructors
   /**
@@ -326,32 +314,6 @@ public:
     data_ = Helper(CastValue(value));
   }
 
-  static std::unique_ptr<VaryingType> Helper(const bool& value)
-  {
-    return std::make_unique<VaryingArbitraryType<bool>>(value);
-  }
-
-  static std::unique_ptr<VaryingType> Helper(const int64_t& value)
-  {
-    return std::make_unique<VaryingArbitraryType<int64_t>>(value);
-  }
-
-  static std::unique_ptr<VaryingType> Helper(const double& value)
-  {
-    return std::make_unique<VaryingArbitraryType<double>>(value);
-  }
-
-  static std::unique_ptr<VaryingType> Helper(const Vector3& value)
-  {
-    return std::make_unique<VaryingArbitraryType<Vector3>>(value);
-  }
-
-  template <typename T>
-  static std::unique_ptr<VaryingType> Helper(const std::shared_ptr<T>& value)
-  {
-    return std::make_unique<VaryingArbitraryType<std::shared_ptr<T>>>(value);
-  }
-
   /// Constructor for an arbitrary sequence of bytes value.
   explicit Varying(const std::vector<std::byte>& value);
 
@@ -361,13 +323,14 @@ public:
   /// Constructor for a string literal value.
   explicit Varying(const char* value) : Varying((not value) ? std::string() : std::string(value)) {}
 
+  ~Varying() = default;
+
   /// Copy constructor.
   Varying(const Varying& other);
 
   /// Move constructor.
   Varying(Varying&& other) noexcept;
 
-public:
   // Copy assignment operator
   /// Assignment operator. i.e., type_A = type_B
   Varying& operator=(const Varying& other);
@@ -427,14 +390,6 @@ public:
   /// Relation operators
   bool operator<=(const Varying& that) const { return (*this < that) or (*this == that); }
 
-  /// Returns a default value for the type required.
-  template <typename T>
-  static T DefaultValue()
-  {
-    return {};
-  }
-
-public:
   // More Helpers
   template <typename T>
   struct IsSignedInteger
@@ -546,7 +501,6 @@ public:
   /// Returns the raw byte size associated with the type.
   size_t GetByteSize() const;
 
-public:
   /// Returns the current-type of the variable.
   VaryingDataType GetType() const { return type_; }
 
@@ -556,8 +510,50 @@ public:
   /// Returns a string value for the value.
   std::string PrintStr(bool with_type = true) const;
 
+private:
+  /**
+   * Checks if two VaryingDataType values match.
+   * Type A is matched against type B.
+   */
+  void CheckTypeMatch(VaryingDataType type_A, VaryingDataType type_B_required) const;
+
+  /// Type specification
+  VaryingDataType type_ = VaryingDataType::VOID;
+  std::unique_ptr<VaryingType> data_ = nullptr;
+
 public:
-  ~Varying() = default;
+  static std::unique_ptr<VaryingType> Helper(const bool& value)
+  {
+    return std::make_unique<VaryingArbitraryType<bool>>(value);
+  }
+
+  static std::unique_ptr<VaryingType> Helper(const int64_t& value)
+  {
+    return std::make_unique<VaryingArbitraryType<int64_t>>(value);
+  }
+
+  static std::unique_ptr<VaryingType> Helper(const double& value)
+  {
+    return std::make_unique<VaryingArbitraryType<double>>(value);
+  }
+
+  static std::unique_ptr<VaryingType> Helper(const Vector3& value)
+  {
+    return std::make_unique<VaryingArbitraryType<Vector3>>(value);
+  }
+
+  template <typename T>
+  static std::unique_ptr<VaryingType> Helper(const std::shared_ptr<T>& value)
+  {
+    return std::make_unique<VaryingArbitraryType<std::shared_ptr<T>>>(value);
+  }
+
+  /// Returns a default value for the type required.
+  template <typename T>
+  static T DefaultValue()
+  {
+    return {};
+  }
 };
 
 template <>

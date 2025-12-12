@@ -14,9 +14,6 @@ class VertexHandler
 {
   using GlobalIDMap = std::map<uint64_t, Vector3>;
 
-private:
-  std::map<uint64_t, Vector3> m_global_id_vertex_map_;
-
 public:
   // Iterators
   GlobalIDMap::iterator begin() { return m_global_id_vertex_map_.begin(); }
@@ -42,6 +39,9 @@ public:
   size_t GetNumLocallyStored() const { return m_global_id_vertex_map_.size(); }
 
   void Clear() { m_global_id_vertex_map_.clear(); }
+
+private:
+  std::map<uint64_t, Vector3> m_global_id_vertex_map_;
 };
 
 } // namespace opensn

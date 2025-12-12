@@ -168,9 +168,11 @@ protected:
   std::vector<Operation> add_cache_;
 
 private:
+  int FindOwnerPID(uint64_t global_id) const;
+
+private:
   static std::vector<uint64_t>
   DefineExtents(uint64_t local_size, int comm_size, const mpi::Communicator& communicator);
-  int FindOwnerPID(uint64_t global_id) const;
 };
 
 } // namespace opensn

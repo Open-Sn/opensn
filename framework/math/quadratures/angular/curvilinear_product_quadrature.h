@@ -15,7 +15,19 @@ namespace opensn
  */
 class CurvilinearProductQuadrature : public ProductQuadrature
 {
+public:
+  const std::vector<double>& GetDiamondDifferenceFactor() const { return fac_diamond_difference_; }
+
+  const std::vector<double>& GetStreamingOperatorFactor() const { return fac_streaming_operator_; }
+
+  ~CurvilinearProductQuadrature() override = default;
+
 protected:
+  CurvilinearProductQuadrature(int dimension, int scattering_order)
+    : ProductQuadrature(dimension, scattering_order)
+  {
+  }
+
   /// Factor to account for angular diamond differencing.
   std::vector<double> fac_diamond_difference_;
 
@@ -24,22 +36,17 @@ protected:
    * the angular derivative.
    */
   std::vector<double> fac_streaming_operator_;
-
-  CurvilinearProductQuadrature(int dimension, int scattering_order)
-    : ProductQuadrature(dimension, scattering_order)
-  {
-  }
-
-public:
-  const std::vector<double>& GetDiamondDifferenceFactor() const { return fac_diamond_difference_; }
-
-  const std::vector<double>& GetStreamingOperatorFactor() const { return fac_streaming_operator_; }
-
-  ~CurvilinearProductQuadrature() override = default;
 };
 
 class GLCProductQuadrature2DRZ : public CurvilinearProductQuadrature
 {
+public:
+  GLCProductQuadrature2DRZ(int Npolar, int Nazimuthal, int scattering_order, bool verbose = false);
+
+  ~GLCProductQuadrature2DRZ() override = default;
+
+  void MakeHarmonicIndices();
+
 private:
   /**
    * Initialize with one-dimensional quadratures: a polar quadrature and a possibly unique azimuthal
@@ -54,17 +61,17 @@ private:
    * initialized underlying product quadrature.
    */
   void InitializeParameters();
-
-public:
-  GLCProductQuadrature2DRZ(int Npolar, int Nazimuthal, int scattering_order, bool verbose = false);
-
-  ~GLCProductQuadrature2DRZ() override = default;
-
-  void MakeHarmonicIndices();
 };
 
 class GLProductQuadrature1DSpherical : public CurvilinearProductQuadrature
 {
+public:
+  GLProductQuadrature1DSpherical(int Npolar, int scattering_order, bool verbose = false);
+
+  ~GLProductQuadrature1DSpherical() override = default;
+
+  void MakeHarmonicIndices();
+
 private:
   /// Initialize with one-dimensional quadrature.
   void Initialize(int Npolar, bool verbose = false);
@@ -74,13 +81,6 @@ private:
    * initialized underlying product quadrature.
    */
   void InitializeParameters();
-
-public:
-  GLProductQuadrature1DSpherical(int Npolar, int scattering_order, bool verbose = false);
-
-  ~GLProductQuadrature1DSpherical() override = default;
-
-  void MakeHarmonicIndices();
 };
 
 } // namespace opensn

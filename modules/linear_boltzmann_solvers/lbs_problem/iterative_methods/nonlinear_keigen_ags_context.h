@@ -16,17 +16,17 @@ class LBSProblem;
 
 struct NLKEigenAGSContext : public NonLinearSolverContext
 {
-  std::shared_ptr<LBSProblem> lbs_problem;
-  KResidualFunctionContext kresid_func_context;
-
-  std::vector<int> groupset_ids;
-
   explicit NLKEigenAGSContext(const std::shared_ptr<LBSProblem>& lbs_problem)
     : lbs_problem(lbs_problem), kresid_func_context({lbs_problem->GetName(), 1.0})
   {
   }
 
   ~NLKEigenAGSContext() override = default;
+
+  std::shared_ptr<LBSProblem> lbs_problem;
+  KResidualFunctionContext kresid_func_context;
+
+  std::vector<int> groupset_ids;
 };
 
 } // namespace opensn

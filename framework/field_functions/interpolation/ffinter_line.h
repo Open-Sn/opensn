@@ -12,16 +12,6 @@ namespace opensn
 /// A line based interpolation function.
 class FieldFunctionInterpolationLine : public FieldFunctionInterpolation
 {
-private:
-  int number_of_points_;
-  double op_value_;
-  Vector3 pi_, pf_;
-  std::vector<uint64_t> local_cells_;
-  std::vector<Vector3> local_interpolation_points_;
-  std::vector<double> local_interpolation_values_;
-  std::shared_ptr<FieldFunctionGridBased> ref_ff_;
-  FieldFunctionInterpolationOperation op_type_;
-
 public:
   FieldFunctionInterpolationLine()
     : FieldFunctionInterpolation(FieldFunctionInterpolationType::LINE),
@@ -56,6 +46,16 @@ public:
   double GetOpValue() const { return op_value_; }
 
   void ExportToCSV(std::string base_name) const override;
+
+private:
+  int number_of_points_;
+  double op_value_;
+  Vector3 pi_, pf_;
+  std::vector<uint64_t> local_cells_;
+  std::vector<Vector3> local_interpolation_points_;
+  std::vector<double> local_interpolation_values_;
+  std::shared_ptr<FieldFunctionGridBased> ref_ff_;
+  FieldFunctionInterpolationOperation op_type_;
 
 public:
   static std::shared_ptr<FieldFunctionInterpolationLine> Create();

@@ -17,14 +17,15 @@ class LogicalVolume
 public:
   virtual ~LogicalVolume() = default;
 
-  static InputParameters GetInputParameters();
-
   /// Logical operation for surface mesh.
   virtual bool Inside(const Vector3& point) const { return false; }
 
 protected:
   explicit LogicalVolume() = default;
   explicit LogicalVolume(const InputParameters& parameters);
+
+public:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

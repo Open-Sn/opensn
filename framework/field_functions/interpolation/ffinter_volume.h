@@ -19,13 +19,6 @@ namespace opensn
  */
 class FieldFunctionInterpolationVolume : public FieldFunctionInterpolation
 {
-private:
-  std::shared_ptr<LogicalVolume> logical_volume_;
-  FieldFunctionInterpolationOperation op_type_;
-  double op_value_;
-  ScalarMaterialFunction oper_function_;
-  std::vector<uint64_t> cell_local_ids_inside_logvol_;
-
 public:
   FieldFunctionInterpolationVolume()
     : FieldFunctionInterpolation(FieldFunctionInterpolationType::VOLUME),
@@ -54,6 +47,13 @@ public:
   void Initialize() override;
 
   void Execute() override;
+
+private:
+  std::shared_ptr<LogicalVolume> logical_volume_;
+  FieldFunctionInterpolationOperation op_type_;
+  double op_value_;
+  ScalarMaterialFunction oper_function_;
+  std::vector<uint64_t> cell_local_ids_inside_logvol_;
 
 public:
   static std::shared_ptr<FieldFunctionInterpolationVolume> Create();

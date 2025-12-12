@@ -14,10 +14,6 @@ struct WGSContext;
 class SCDSAAcceleration : public DiscreteOrdinatesKEigenAcceleration
 {
 public:
-  static InputParameters GetInputParameters();
-
-  static std::shared_ptr<SCDSAAcceleration> Create(const ParameterBlock& params);
-
   explicit SCDSAAcceleration(const InputParameters& params);
 
   void Initialize() final;
@@ -52,5 +48,11 @@ private:
   std::vector<double> Sf0_aux_;
   std::vector<double> Ss0_;
   ///@}
+
+public:
+  static InputParameters GetInputParameters();
+
+  static std::shared_ptr<SCDSAAcceleration> Create(const ParameterBlock& params);
 };
+
 } // namespace opensn

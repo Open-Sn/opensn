@@ -44,13 +44,6 @@ public:
   };
 
 protected:
-  std::vector<std::vector<double>> d2m_op_;
-  std::vector<std::vector<double>> m2d_op_;
-  std::vector<HarmonicIndices> m_to_ell_em_map_;
-  AngularQuadratureType type_;
-  unsigned int dimension_;
-  unsigned int scattering_order_;
-
   explicit AngularQuadrature(AngularQuadratureType type,
                              unsigned int dimension,
                              unsigned int scattering_order)
@@ -58,14 +51,17 @@ protected:
   {
   }
 
+  std::vector<std::vector<double>> d2m_op_;
+  std::vector<std::vector<double>> m2d_op_;
+  std::vector<HarmonicIndices> m_to_ell_em_map_;
+  AngularQuadratureType type_;
+  unsigned int dimension_;
+  unsigned int scattering_order_;
+
   /// Populates a map of moment m to the Spherical Harmonic indices required.
   void MakeHarmonicIndices();
 
 public:
-  std::vector<QuadraturePointPhiTheta> abscissae;
-  std::vector<double> weights;
-  std::vector<Vector3> omegas;
-
   virtual ~AngularQuadrature() = default;
 
   /// Computes the discrete to moment operator.
@@ -98,6 +94,10 @@ public:
   size_t GetNumMoments() const { return m_to_ell_em_map_.size(); }
 
   AngularQuadratureType GetType() const { return type_; }
+
+  std::vector<QuadraturePointPhiTheta> abscissae;
+  std::vector<double> weights;
+  std::vector<Vector3> omegas;
 };
 
 } // namespace opensn

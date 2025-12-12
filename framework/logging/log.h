@@ -91,19 +91,6 @@ public:
   Logger(const Logger&) = delete;
   Logger& operator=(const Logger&) = delete;
 
-private:
-  DummyStream dummy_stream_;
-  unsigned int verbosity_{0};
-
-  Logger() = default;
-
-public:
-  static Logger& GetInstance() noexcept
-  {
-    static Logger instance;
-    return instance;
-  }
-
   void SetVerbosity(unsigned int level) { verbosity_ = std::min(level, 2U); }
   unsigned int GetVerbosity() const { return verbosity_; }
   LogStream Log(LOG_LVL level = LOG_0);
@@ -119,6 +106,19 @@ public:
   LogStream LogAllVerbose0() { return Log(LOG_ALLVERBOSE_0); }
   LogStream LogAllVerbose1() { return Log(LOG_ALLVERBOSE_1); }
   LogStream LogAllVerbose2() { return Log(LOG_ALLVERBOSE_2); }
+
+private:
+  Logger() = default;
+
+  DummyStream dummy_stream_;
+  unsigned int verbosity_{0};
+
+public:
+  static Logger& GetInstance() noexcept
+  {
+    static Logger instance;
+    return instance;
+  }
 };
 
 } // namespace opensn

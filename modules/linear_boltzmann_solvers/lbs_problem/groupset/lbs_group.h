@@ -10,11 +10,10 @@ namespace opensn
 class LBSGroup
 {
 public:
-  int id;
-
-public:
   LBSGroup() : id(-1) {}
   explicit LBSGroup(int id) : id(id) {}
+
+  int id;
 };
 
 } // namespace opensn

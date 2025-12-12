@@ -14,12 +14,7 @@ using ScalarXYZTFunction = std::function<double(double, double, double, double)>
 
 class FunctionDimAToDimB
 {
-private:
-  const size_t input_dimension_;
-  const size_t output_dimension_;
-
 public:
-  static InputParameters GetInputParameters();
   explicit FunctionDimAToDimB(const InputParameters& params);
   virtual ~FunctionDimAToDimB() = default;
 
@@ -48,6 +43,13 @@ public:
 
   virtual std::vector<double> Evaluate(const std::vector<double>& vals) const = 0;
   virtual std::vector<double> EvaluateSlope(const std::vector<double>& vals) const { return {0.0}; }
+
+private:
+  const size_t input_dimension_;
+  const size_t output_dimension_;
+
+public:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

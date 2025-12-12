@@ -14,9 +14,6 @@ namespace opensn
 
 class VacuumBoundary : public SweepBoundary
 {
-private:
-  std::vector<double> boundary_flux_;
-
 public:
   explicit VacuumBoundary(size_t num_groups,
                           CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
@@ -33,6 +30,9 @@ public:
   {
     return &boundary_flux_[group_num];
   }
+
+private:
+  std::vector<double> boundary_flux_;
 };
 
 } // namespace opensn

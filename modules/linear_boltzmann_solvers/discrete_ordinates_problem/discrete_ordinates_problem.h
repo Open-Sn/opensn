@@ -104,10 +104,6 @@ protected:
 
   std::vector<std::vector<double>> psi_new_local_;
 
-public:
-  static InputParameters GetInputParameters();
-  static std::shared_ptr<DiscreteOrdinatesProblem> Create(const ParameterBlock& params);
-
 private:
   void CreateFLUDSCommonDataForDevice();
   std::shared_ptr<FLUDS> CreateFLUDSForDevice(std::size_t num_groups,
@@ -123,6 +119,10 @@ private:
                             const AngularQuadrature& quadrature,
                             AngleAggregationType agg_type,
                             GeometryType lbs_geo_type);
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<DiscreteOrdinatesProblem> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

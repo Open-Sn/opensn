@@ -20,20 +20,6 @@ namespace opensn
  */
 class MPICommunicatorSet
 {
-private:
-  /**
-   * A list of communicators, size P, contains a communicator for only communicating with the
-   * neighbors of locI.
-   */
-  std::vector<mpi::Communicator> communicators_;
-  /**
-   * A list of groupings, size P, allows mapping of the rank of locJ relative to the local
-   * communicator.
-   */
-  std::vector<mpi::Group> location_groups_;
-  /// Used to translate ranks.
-  mpi::Group world_group_;
-
 public:
   MPICommunicatorSet(std::vector<mpi::Communicator>& communicators,
                      std::vector<mpi::Group>& location_groups,
@@ -48,6 +34,20 @@ public:
   {
     return world_group_.translate_rank(locI, location_groups_[locJ]);
   }
+
+private:
+  /**
+   * A list of communicators, size P, contains a communicator for only communicating with the
+   * neighbors of locI.
+   */
+  std::vector<mpi::Communicator> communicators_;
+  /**
+   * A list of groupings, size P, allows mapping of the rank of locJ relative to the local
+   * communicator.
+   */
+  std::vector<mpi::Group> location_groups_;
+  /// Used to translate ranks.
+  mpi::Group world_group_;
 };
 
 } // namespace opensn

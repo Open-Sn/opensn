@@ -13,14 +13,6 @@ namespace opensn
 
 class NonLinearKEigenSolver : public Solver
 {
-private:
-  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
-  std::shared_ptr<NLKEigenAGSContext> nl_context_;
-  NLKEigenvalueAGSSolver nl_solver_;
-
-  bool reset_phi0_;
-  int num_initial_power_its_;
-
 public:
   explicit NonLinearKEigenSolver(const InputParameters& params);
 
@@ -28,6 +20,14 @@ public:
   void Execute() override;
   /// Return the current k-eigenvalue
   double GetEigenvalue() const;
+
+private:
+  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
+  std::shared_ptr<NLKEigenAGSContext> nl_context_;
+  NLKEigenvalueAGSSolver nl_solver_;
+
+  bool reset_phi0_;
+  int num_initial_power_its_;
 
 public:
   static InputParameters GetInputParameters();

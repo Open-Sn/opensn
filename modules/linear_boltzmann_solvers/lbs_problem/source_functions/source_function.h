@@ -21,26 +21,6 @@ class LBSGroupset;
  */
 class SourceFunction
 {
-protected:
-  const LBSProblem& lbs_problem_;
-
-  bool apply_fixed_src_ = false;
-  bool apply_wgs_scatter_src_ = false;
-  bool apply_ags_scatter_src_ = false;
-  bool apply_wgs_fission_src_ = false;
-  bool apply_ags_fission_src_ = false;
-  bool suppress_wg_scatter_src_ = false;
-
-  size_t gs_i_ = 0;
-  size_t gs_f_ = 0;
-  size_t first_grp_ = 0;
-  size_t last_grp_ = 0;
-
-  double cell_volume_ = 0.0;
-  size_t g_ = 0;
-  const double* fixed_src_moments_ = nullptr;
-  std::vector<double> default_zero_src_;
-
 public:
   /// Constructor.
   explicit SourceFunction(const LBSProblem& lbs_problem);
@@ -91,6 +71,26 @@ public:
                             std::vector<double>& q,
                             const std::vector<double>& phi,
                             SourceFlags source_flags);
+
+protected:
+  const LBSProblem& lbs_problem_;
+
+  bool apply_fixed_src_ = false;
+  bool apply_wgs_scatter_src_ = false;
+  bool apply_ags_scatter_src_ = false;
+  bool apply_wgs_fission_src_ = false;
+  bool apply_ags_fission_src_ = false;
+  bool suppress_wg_scatter_src_ = false;
+
+  size_t gs_i_ = 0;
+  size_t gs_f_ = 0;
+  size_t first_grp_ = 0;
+  size_t last_grp_ = 0;
+
+  double cell_volume_ = 0.0;
+  size_t g_ = 0;
+  const double* fixed_src_moments_ = nullptr;
+  std::vector<double> default_zero_src_;
 };
 
 } // namespace opensn

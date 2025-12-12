@@ -20,14 +20,6 @@ public:
   /// Convenient typdef for the moment call back function. See moment_callbacks.
   using MomentCallbackFunc = std::function<void(SweepChunk* sweeper, AngleSet* angle_set)>;
 
-  /**
-   * Functions of type MomentCallbackFunc can be added to the moment_callbacks
-   * vector and these can be called from within functions taking a
-   * LBSGroupset instance. The intention is that this function can
-   * be used as a general interface to retrieve angular flux values
-   */
-  std::vector<MomentCallbackFunc> moment_callbacks;
-
   SweepChunk(std::vector<double>& destination_phi,
              std::vector<double>& destination_psi,
              const std::shared_ptr<MeshContinuum>& grid,
@@ -86,6 +78,14 @@ public:
   bool IsSurfaceSourceActive() const { return surface_source_active_; }
 
   virtual ~SweepChunk() = default;
+
+  /**
+   * Functions of type MomentCallbackFunc can be added to the moment_callbacks
+   * vector and these can be called from within functions taking a
+   * LBSGroupset instance. The intention is that this function can
+   * be used as a general interface to retrieve angular flux values
+   */
+  std::vector<MomentCallbackFunc> moment_callbacks;
 
 protected:
   const std::shared_ptr<MeshContinuum> grid_;

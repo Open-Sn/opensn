@@ -23,6 +23,23 @@ class LBSProblem;
 class LBSGroupset
 {
 public:
+  /// Input parameters based constructor.
+  explicit LBSGroupset(const InputParameters& params, int id, const LBSProblem& lbs_problem);
+
+  explicit LBSGroupset(int id);
+
+  LBSGroupset();
+
+  void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
+
+  /// Initialize carrier for copying quadrature data to GPU.
+  void InitializeGPUCarriers();
+
+  /// Delete carrier and deallocate memory on GPU.
+  void ResetGPUCarriers();
+
+  ~LBSGroupset();
+
   int id;
   std::vector<LBSGroup> groups;
   std::shared_ptr<AngularQuadrature> quadrature;
@@ -64,28 +81,11 @@ public:
 
   UnknownManager psi_uk_man_;
 
-public:
-  static InputParameters GetInputParameters();
-
-  /// Input parameters based constructor.
-  explicit LBSGroupset(const InputParameters& params, int id, const LBSProblem& lbs_problem);
-
-  explicit LBSGroupset(int id);
-
-  LBSGroupset();
-
-  void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
-
-  /// Initialize carrier for copying quadrature data to GPU.
-  void InitializeGPUCarriers();
-
-  /// Delete carrier and deallocate memory on GPU.
-  void ResetGPUCarriers();
-
-  ~LBSGroupset();
-
 private:
   void Init(int id);
+
+public:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

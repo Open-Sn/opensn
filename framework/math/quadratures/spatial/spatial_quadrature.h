@@ -13,10 +13,13 @@ namespace opensn
 
 class SpatialQuadrature
 {
-protected:
-  bool verbose_;
-  QuadratureOrder order_;
+public:
+  QuadratureOrder GetOrder() { return order_; }
 
+  std::vector<Vector3> qpoints;
+  std::vector<double> weights;
+
+protected:
   explicit SpatialQuadrature(const InputParameters& params)
     : verbose_(params.GetParamValue<bool>("verbose")),
       order_(static_cast<QuadratureOrder>(params.GetParamValue<int>("order")))
@@ -25,13 +28,11 @@ protected:
 
   explicit SpatialQuadrature(QuadratureOrder order) : verbose_(false), order_(order) {}
 
+  bool verbose_;
+  QuadratureOrder order_;
+
 public:
-  std::vector<Vector3> qpoints;
-  std::vector<double> weights;
-
   static InputParameters GetInputParameters();
-
-  QuadratureOrder GetOrder() { return order_; }
 };
 
 } // namespace opensn

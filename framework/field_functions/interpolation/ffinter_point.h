@@ -12,12 +12,6 @@ namespace opensn
 /// A line based interpolation function.
 class FieldFunctionInterpolationPoint : public FieldFunctionInterpolation
 {
-protected:
-  Vector3 point_of_interest_;
-  bool locally_owned_;
-  uint64_t owning_cell_gid_;
-  double point_value_;
-
 public:
   FieldFunctionInterpolationPoint()
     : FieldFunctionInterpolation(FieldFunctionInterpolationType::POINT),
@@ -37,6 +31,12 @@ public:
 
   /// Gets the value of the field function evaluation at the point.
   double GetPointValue() const;
+
+protected:
+  Vector3 point_of_interest_;
+  bool locally_owned_;
+  uint64_t owning_cell_gid_;
+  double point_value_;
 
 public:
   static std::shared_ptr<FieldFunctionInterpolationPoint> Create();

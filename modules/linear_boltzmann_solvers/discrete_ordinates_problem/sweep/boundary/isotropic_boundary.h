@@ -15,9 +15,6 @@ namespace opensn
 /// Specified isotropic incident fluxes on a boundary.
 class IsotropicBoundary : public SweepBoundary
 {
-private:
-  std::vector<double> boundary_flux_;
-
 public:
   explicit IsotropicBoundary(size_t num_groups,
                              std::vector<double> boundary_flux,
@@ -35,6 +32,9 @@ public:
   {
     return &boundary_flux_[group_num];
   }
+
+private:
+  std::vector<double> boundary_flux_;
 };
 
 } // namespace opensn

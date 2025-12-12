@@ -19,8 +19,6 @@ class TimeStepper;
 class Solver
 {
 public:
-  /// Returns the input parameters.
-  static InputParameters GetInputParameters();
   explicit Solver(std::string name);
   explicit Solver(const InputParameters& params);
   virtual ~Solver() = default;
@@ -50,6 +48,10 @@ public:
 
 private:
   const std::string name_;
+
+public:
+  /// Returns the input parameters.
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

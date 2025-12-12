@@ -19,14 +19,15 @@ class FieldFunction;
 class FieldFunctionInterface
 {
 protected:
-  static InputParameters GetInputParameters();
-
   explicit FieldFunctionInterface(const InputParameters& params);
 
   std::shared_ptr<FieldFunction> GetFieldFunction() const;
 
 private:
   std::shared_ptr<FieldFunction> field_function_;
+
+protected:
+  static InputParameters GetInputParameters();
 };
 
 } // namespace opensn

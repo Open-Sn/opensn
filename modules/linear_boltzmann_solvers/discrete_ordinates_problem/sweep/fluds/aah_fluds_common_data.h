@@ -112,6 +112,31 @@ protected:
    * struct.upwind_dof_mapping is a mapping of each of this face's dofs to the upwinded face's dofs
    */
 private:
+  void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
+
+  void SlotDynamics(const Cell& cell,
+                    const SPDS& spds,
+                    const GridFaceHistogram& grid_face_histogram,
+                    std::vector<std::vector<std::pair<std::optional<uint64_t>, short>>>& lock_boxes,
+                    std::vector<std::pair<std::optional<uint64_t>, short>>& delayed_lock_box);
+
+  /**
+   * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
+   * computes the location of this position's upwind psi in the local upwind psi vector.
+   */
+  void AddFaceViewToDepLocI(int deplocI,
+                            uint64_t cell_g_index,
+                            uint64_t face_slot,
+                            const CellFace& face);
+
+  void LocalIncidentMapping(const Cell& cell,
+                            const SPDS& spds,
+                            std::vector<uint64_t>& local_so_cell_mapping);
+
+  void InitializeBetaElements(const SPDS& spds, int tag_index = 0);
+
+  void NonLocalIncidentMapping(const Cell& cell, const SPDS& spds);
+
   std::vector<std::vector<INCOMING_FACE_INFO>> so_cell_inco_face_dof_indices_;
 
   /**
@@ -120,7 +145,6 @@ private:
    */
   std::vector<std::pair<int, int>> nonlocal_outb_face_deplocI_slot_;
 
-private:
   /**
    * This is a vector [predecessor_location][unordered_cell_index]
    * that holds an AlphaPair. AlphaPair-first is the cell's global_id
@@ -152,29 +176,7 @@ private:
   std::vector<std::pair<int, std::pair<int64_t, std::vector<int64_t>>>>
     delayed_nonlocal_inc_face_prelocI_slot_dof_;
 
-  void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
-
-  void SlotDynamics(const Cell& cell,
-                    const SPDS& spds,
-                    const GridFaceHistogram& grid_face_histogram,
-                    std::vector<std::vector<std::pair<std::optional<uint64_t>, short>>>& lock_boxes,
-                    std::vector<std::pair<std::optional<uint64_t>, short>>& delayed_lock_box);
-
-  /**
-   * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
-   * computes the location of this position's upwind psi in the local upwind psi vector.
-   */
-  void AddFaceViewToDepLocI(int deplocI,
-                            uint64_t cell_g_index,
-                            uint64_t face_slot,
-                            const CellFace& face);
-
-  void LocalIncidentMapping(const Cell& cell,
-                            const SPDS& spds,
-                            std::vector<uint64_t>& local_so_cell_mapping);
-
-  void InitializeBetaElements(const SPDS& spds, int tag_index = 0);
-
+public:
   /**
    * This cell takes a hierarchy of a cell compact view and serializes it for MPI transmission.
    * This is easy since all the values are integers.
@@ -187,8 +189,6 @@ private:
   static void DeSerializeCellInfo(std::vector<CompactCellView>& cell_views,
                                   std::vector<int64_t>* face_indices,
                                   int64_t& num_face_dofs);
-
-  void NonLocalIncidentMapping(const Cell& cell, const SPDS& spds);
 };
 
 } // namespace opensn
