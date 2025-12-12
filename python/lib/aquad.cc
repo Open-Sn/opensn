@@ -8,11 +8,18 @@
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/math/quadratures/angular/lebedev_quadrature.h"
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 #include <memory>
 #include <stdexcept>
 
 namespace opensn
 {
+
+// Dictionary for Sn Scattering Source Representation
+static std::map<std::string, OperatorConstructionMethod> op_cons_type_map{
+  {"standard", OperatorConstructionMethod::STANDARD},
+  {"galerkin_one", OperatorConstructionMethod::GALERKIN_ONE},
+  {"galerkin_three", OperatorConstructionMethod::GALERKIN_THREE}};
 
 // Wrap quadrature point
 void
@@ -49,6 +56,15 @@ WrapQuadraturePointPhiTheta(py::module& aquad)
   // clang-format on
 }
 
+// Wrap harmonic indices
+void
+WrapHarmonicIndices(py::module& aquad)
+{
+  py::class_<AngularQuadrature::HarmonicIndices> harmonic_indices(aquad, "HarmonicIndices");
+  harmonic_indices.def_readonly("ell", &AngularQuadrature::HarmonicIndices::ell);
+  harmonic_indices.def_readonly("m", &AngularQuadrature::HarmonicIndices::m);
+}
+
 // Wrap angular quadrature
 void
 WrapQuadrature(py::module& aquad)
@@ -78,6 +94,107 @@ WrapQuadrature(py::module& aquad)
     "omegas",
     &AngularQuadrature::omegas,
     "Vector of direction vectors."
+  );
+  angular_quadrature.def(
+    "SetOperatorConstructionMethod",
+    [](AngularQuadrature& self, const std::string& method)
+    {
+      self.SetOperatorConstructionMethod(op_cons_type_map.at(method));
+    },
+    R"(
+    Set the method used to construct the D2M and M2D operators.
+    
+    Parameters
+    ----------
+    method : {'standard', 'galerkin_one', 'galerkin_three'}
+        Construction method.
+    )",
+    py::arg("method")
+  );
+  angular_quadrature.def(
+    "GetDiscreteToMomentOperator",
+    [](const AngularQuadrature& self) {
+      const auto& op = self.GetDiscreteToMomentOperator();
+      if (op.empty()) {
+        return py::array_t<double>();
+      }
+      
+      size_t num_rows = op.size();
+      size_t num_cols = op[0].size();
+      
+      // Create numpy array with shape [num_rows, num_cols]
+      py::array_t<double> result = py::array_t<double>(
+        {num_rows, num_cols},  // shape
+        {sizeof(double) * num_cols, sizeof(double)}  // strides (row-major)
+      );
+      
+      py::buffer_info buf = result.request();
+      double* ptr = static_cast<double*>(buf.ptr);
+      
+      // Copy data row by row
+      for (size_t i = 0; i < num_rows; ++i) {
+        std::copy(op[i].begin(), op[i].end(), ptr + i * num_cols);
+      }
+      
+      return result;
+    },
+    "Get the discrete-to-moment operator as a numpy array."
+  );
+  angular_quadrature.def(
+    "GetMomentToDiscreteOperator",
+    [](const AngularQuadrature& self) {
+      const auto& op = self.GetMomentToDiscreteOperator();
+      if (op.empty()) {
+        return py::array_t<double>();
+      }
+      
+      size_t num_rows = op.size();
+      size_t num_cols = op[0].size();
+      
+      // Create numpy array with shape [num_rows, num_cols]
+      py::array_t<double> result = py::array_t<double>(
+        {num_rows, num_cols},  // shape
+        {sizeof(double) * num_cols, sizeof(double)}  // strides (row-major)
+      );
+      
+      py::buffer_info buf = result.request();
+      double* ptr = static_cast<double*>(buf.ptr);
+      
+      // Copy data row by row
+      for (size_t i = 0; i < num_rows; ++i) {
+        std::copy(op[i].begin(), op[i].end(), ptr + i * num_cols);
+      }
+      
+      return result;
+    },
+    "Get the moment-to-discrete operator as a numpy array."
+  );
+  angular_quadrature.def(
+    "GetMomentToHarmonicsIndexMap",
+    &AngularQuadrature::GetMomentToHarmonicsIndexMap,
+    py::return_value_policy::reference_internal
+  );
+  angular_quadrature.def(
+    "SetOperatorConstructionMethod",
+    &AngularQuadrature::SetOperatorConstructionMethod,
+    R"(
+    Set the method used to construct the D2M and M2D operators.
+    
+    Parameters
+    ----------
+    method : str
+        Construction method: "standard", "galerkin_one", "galerkin_three"
+    )",
+    py::arg("method")
+  );
+
+  angular_quadrature.def(
+    "BuildDiscreteToMomentOperator",
+    &AngularQuadrature::BuildDiscreteToMomentOperator
+  );
+  angular_quadrature.def(
+    "BuildMomentToDiscreteOperator",
+    &AngularQuadrature::BuildMomentToDiscreteOperator
   );
   // clang-format on
 }
@@ -461,6 +578,7 @@ py_aquad(py::module& pyopensn)
 {
   py::module aquad = pyopensn.def_submodule("aquad", "Angular quadrature module.");
   WrapQuadraturePointPhiTheta(aquad);
+  WrapHarmonicIndices(aquad);
   WrapQuadrature(aquad);
   WrapProductQuadrature(aquad);
   WrapCurvilinearProductQuadrature(aquad);

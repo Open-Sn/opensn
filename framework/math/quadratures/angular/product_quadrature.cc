@@ -104,6 +104,9 @@ GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(int Npolar, int scattering_
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLProductQuadrature1DSlab: Npolar must be even.");
 
+  // Store N for Galerkin methods
+  SetQuadratureOrder(Npolar / 2);
+
   GaussLegendreQuadrature gl_polar(Npolar);
 
   // Create azimuthal angles
@@ -140,6 +143,9 @@ GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(int Npolar,
 
   if (Nazimuthal % 4 != 0)
     throw std::invalid_argument("GLCProductQuadraturee2DXY: Nazimuthal must be a multiple of 4.");
+
+  // Store N for Galerkin methods
+  SetQuadratureOrder(Npolar / 2);
 
   GaussLegendreQuadrature gl_polar(Npolar);
   GaussChebyshevQuadrature gc_azimu(Nazimuthal);
@@ -183,6 +189,9 @@ GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(int Npolar,
 
   if (Nazimuthal % 4 != 0)
     throw std::invalid_argument("GLCProductQuadraturee3DXYZ: Nazimuthal must be a multiple of 4.");
+
+  // Store N for Galerkin methods
+  SetQuadratureOrder(Npolar / 2);
 
   GaussLegendreQuadrature gl_polar(Npolar);
   GaussChebyshevQuadrature gc_azimu(Nazimuthal);

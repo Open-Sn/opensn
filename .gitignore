@@ -77,3 +77,7 @@ doc/source/tutorials/**/*.vtu
 doc/source/tutorials/**/*.py
 
 doc/source/tutorials/**/.ipynb_checkpoints/
+
+pyOpenSn_env/
+pyopensn.egg-info/
+devFolder/
