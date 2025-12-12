@@ -6,6 +6,7 @@
 #include "framework/parameters/input_parameters.h"
 #include <vector>
 #include <iostream>
+#include <limits>
 
 namespace opensn
 {
@@ -47,6 +48,7 @@ public:
   const std::vector<uint64_t>& GetSubscribers() const { return subscribers_; }
   std::shared_ptr<LogicalVolume> GetLogicalVolume() const { return logvol_; }
   const std::vector<unsigned int>& GetBlockIDs() const { return block_ids_; }
+  bool IsActive(double time) const;
 
 private:
   int id_;
@@ -56,6 +58,9 @@ private:
 
   std::vector<double> strength_;
   const std::shared_ptr<VectorSpatialFunction> function_;
+
+  double start_time_ = -std::numeric_limits<double>::infinity();
+  double end_time_ = std::numeric_limits<double>::infinity();
 
   size_t num_local_subsribers_ = 0;
   size_t num_global_subscribers_ = 0;

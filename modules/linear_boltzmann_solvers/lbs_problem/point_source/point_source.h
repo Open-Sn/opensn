@@ -7,6 +7,7 @@
 #include "framework/math/math.h"
 #include "framework/parameters/input_parameters.h"
 #include <utility>
+#include <limits>
 
 namespace opensn
 {
@@ -56,6 +57,7 @@ public:
 
   const Vector3& GetLocation() const { return location_; }
   const std::vector<double>& GetStrength() const { return strength_; }
+  bool IsActive(double time) const;
 
 private:
   const Vector3 location_;
@@ -63,6 +65,9 @@ private:
   // TODO: This could be a map with group indices to avoid
   //       potentially many zero entries.
   const std::vector<double> strength_;
+
+  double start_time_ = -std::numeric_limits<double>::infinity();
+  double end_time_ = std::numeric_limits<double>::infinity();
 
   std::vector<Subscriber> subscribers_;
   size_t num_global_subscribers_ = 0;

@@ -9,6 +9,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/solvers/time_dependent_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
@@ -90,11 +91,6 @@ WrapSolver(py::module& slv)
     "Execute",
     &Solver::Execute,
     "Execute the solver."
-  );
-  solver.def(
-    "Step",
-    &Solver::Step,
-    "Step the solver."
   );
   solver.def(
     "Advance",
@@ -548,6 +544,8 @@ WrapLBS(py::module& slv)
     use_gpus : bool, default=False
         A flag specifying whether GPU acceleration is used for the sweep. Currently, only ``AAH`` is
         supported.
+    time_dependent : bool, default=False
+        Enable time-dependent sweeps. Currently only supported with ``sweep_type="AAH"``.
     )"
   );
   do_problem.def(
@@ -715,6 +713,8 @@ WrapLBS(py::module& slv)
         A block of optional configuration parameters. See `SetOptions` for available settings.
     sweep_type : str, optional
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
+    time_dependent : bool, default=False
+        Enable time-dependent sweeps. Currently only supported with ``sweep_type="AAH"``.
     )"
   );
 }
@@ -751,6 +751,76 @@ WrapSteadyState(py::module& slv)
         Existing LBSProblem instance.
     )"
   );
+  // clang-format on
+}
+
+// Wrap time-dependent solver
+void
+WrapTimeDependent(py::module& slv)
+{
+  // clang-format off
+  auto time_dependent_solver =
+    py::class_<TimeDependentSourceSolver, std::shared_ptr<TimeDependentSourceSolver>, Solver>(
+      slv,
+      "TimeDependentSourceSolver",
+      R"(
+      Time dependent solver.
+
+      Wrapper of :cpp:class:`opensn::TimeDependentSourceSolver`.
+      )"
+    );
+  time_dependent_solver.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return TimeDependentSourceSolver::Create(kwargs_to_param_block(params));
+      }
+    ),
+    R"(
+    Construct a time dependent solver.
+
+    Parameters
+    ----------
+    pyopensn.solver.LBSProblem : LBSProblem
+        Existing LBSProblem instance.
+    dt : float, optional, default=1.0
+        Time step size used during the simulation.
+    stop_time : float, optional, default=1.0
+        Simulation end time.
+    )"
+  );
+  time_dependent_solver.def(
+    "Advance",
+    &TimeDependentSourceSolver::Advance,
+    R"(
+    Advance the solver by a single timestep.
+
+    This method uses the configured `dt` and `theta` values and will return
+    immediately if the stop time has already been reached. Calling it
+    repeatedly allows users to write custom python time loops.
+    )");
+  time_dependent_solver.def(
+    "SetTimeStep",
+    &TimeDependentSourceSolver::SetTimeStep,
+    R"(
+    Set the timestep size used by :meth:`Advance`.
+
+    Parameters
+    ----------
+    dt : float
+        New timestep size.
+    )");
+  time_dependent_solver.def(
+    "SetTheta",
+    &TimeDependentSourceSolver::SetTheta,
+    R"(
+    Set the theta parameter used by :meth:`Advance`.
+
+    Parameters
+    ----------
+    theta : float
+        Theta value between 0 and 1.
+    )");
   // clang-format on
 }
 
@@ -993,6 +1063,7 @@ py_solver(py::module& pyopensn)
   WrapSolver(slv);
   WrapLBS(slv);
   WrapSteadyState(slv);
+  WrapTimeDependent(slv);
   WrapNLKEigen(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);
   WrapPIteration(slv);

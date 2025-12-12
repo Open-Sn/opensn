@@ -10,6 +10,7 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include <iomanip>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -52,6 +53,11 @@ DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
 void
 DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 {
+  if (IsTimeDependent())
+  {
+    throw std::runtime_error("Time-dependent RZ problems are not yet supported.");
+  }
+
   if (geometry_type_ != GeometryType::TWOD_CYLINDRICAL)
   {
     std::stringstream oss;
@@ -298,23 +304,16 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   log.Log() << "Secondary Cell matrices computed.";
 }
 
+const std::vector<UnitCellMatrices>&
+DiscreteOrdinatesCurvilinearProblem::GetSecondaryUnitCellMatrices() const
+{
+  return secondary_unit_cell_matrices_;
+}
+
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
-  auto sweep_chunk = std::make_shared<AAHSweepChunkRZ>(grid_,
-                                                       *discretization_,
-                                                       unit_cell_matrices_,
-                                                       secondary_unit_cell_matrices_,
-                                                       cell_transport_views_,
-                                                       densities_local_,
-                                                       phi_new_local_,
-                                                       psi_new_local_[groupset.id],
-                                                       q_moments_local_,
-                                                       groupset,
-                                                       block_id_to_xs_map_,
-                                                       num_moments_,
-                                                       max_cell_dof_count_,
-                                                       min_cell_dof_count_);
+  auto sweep_chunk = std::make_shared<AAHSweepChunkRZ>(*this, groupset);
 
   return sweep_chunk;
 }

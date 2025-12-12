@@ -41,6 +41,8 @@ private:
 public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<DiscreteOrdinatesCurvilinearProblem> Create(const ParameterBlock& params);
+
+  const std::vector<UnitCellMatrices>& GetSecondaryUnitCellMatrices() const;
 };
 
 } // namespace opensn

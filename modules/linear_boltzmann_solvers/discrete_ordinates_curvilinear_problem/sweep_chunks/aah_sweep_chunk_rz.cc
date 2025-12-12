@@ -1,44 +1,34 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include <stdexcept>
 
 namespace opensn
 {
 
-AAHSweepChunkRZ::AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum>& grid,
-                                 const SpatialDiscretization& discretization_primary,
-                                 const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                                 const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices,
-                                 std::vector<CellLBSView>& cell_transport_views,
-                                 const std::vector<double>& densities,
-                                 std::vector<double>& destination_phi,
-                                 std::vector<double>& destination_psi,
-                                 const std::vector<double>& source_moments,
-                                 LBSGroupset& groupset,
-                                 const BlockID2XSMap& xs,
-                                 int num_moments,
-                                 int max_num_cell_dofs,
-                                 int min_num_cell_dofs)
-  : SweepChunk(destination_phi,
-               destination_psi,
-               grid,
-               discretization_primary,
-               unit_cell_matrices,
-               cell_transport_views,
-               densities,
-               source_moments,
+AAHSweepChunkRZ::AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
+  : SweepChunk(problem.GetPhiNewLocal(),
+               problem.GetPsiNewLocal()[groupset.id],
+               problem.GetGrid(),
+               problem.GetSpatialDiscretization(),
+               problem.GetUnitCellMatrices(),
+               problem.GetCellTransportViews(),
+               problem.GetDensitiesLocal(),
+               problem.GetQMomentsLocal(),
                groupset,
-               xs,
-               num_moments,
-               max_num_cell_dofs,
-               min_num_cell_dofs),
-    secondary_unit_cell_matrices_(secondary_unit_cell_matrices),
+               problem.GetBlockID2XSMap(),
+               problem.GetNumMoments(),
+               problem.GetMaxCellDOFCount(),
+               problem.GetMinCellDOFCount()),
+    secondary_unit_cell_matrices_(dynamic_cast<const DiscreteOrdinatesCurvilinearProblem&>(problem)
+                                    .GetSecondaryUnitCellMatrices()),
     unknown_manager_(),
     psi_sweep_(),
     normal_vector_boundary_()
@@ -56,7 +46,7 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum>& grid,
     unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.groups.size());
 
   //  allocate storage for sweeping dependency
-  const unsigned int n_dof = discretization_primary.GetNumLocalDOFs(unknown_manager_);
+  const auto n_dof = discretization_.GetNumLocalDOFs(unknown_manager_);
   psi_sweep_.resize(n_dof);
 
   //  initialise mappings from direction linear index
@@ -243,7 +233,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           double temp_src = 0.0;
-          for (int m = 0; m < num_moments_; ++m)
+          for (std::size_t m = 0; m < num_moments_; ++m)
           {
             const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
             temp_src += m2d_op[direction_num][m] * source_moments_[ir];
@@ -271,7 +261,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       } // for gsg
 
       // Update phi
-      for (int m = 0; m < num_moments_; ++m)
+      for (std::size_t m = 0; m < num_moments_; ++m)
       {
         const double wn_d2m = d2m_op[direction_num][m];
         for (size_t i = 0; i < cell_num_nodes; ++i)

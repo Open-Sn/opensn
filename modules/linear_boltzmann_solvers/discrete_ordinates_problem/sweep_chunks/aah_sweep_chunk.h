@@ -28,24 +28,7 @@ class DiscreteOrdinatesProblem;
 class AAHSweepChunk : public SweepChunk
 {
 public:
-  AAHSweepChunk(const std::shared_ptr<MeshContinuum>& grid,
-                const SpatialDiscretization& discretization,
-                const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                std::vector<CellLBSView>& cell_transport_views,
-                const std::vector<double>& densities,
-                std::vector<double>& destination_phi,
-                std::vector<double>& destination_psi,
-                const std::vector<double>& source_moments,
-                const LBSGroupset& groupset,
-                const BlockID2XSMap& xs,
-                int num_moments,
-                int max_num_cell_dofs,
-                int min_num_cell_dofs,
-                DiscreteOrdinatesProblem& problem,
-                size_t max_level_size,
-                size_t max_groupset_size,
-                size_t max_angleset_size,
-                bool use_gpus);
+  AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
   void Sweep(AngleSet& angle_set) override;
 

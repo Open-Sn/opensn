@@ -9,6 +9,7 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include <stdexcept>
 #include <memory>
 
 namespace opensn
@@ -39,6 +40,11 @@ SteadyStateSourceSolver::Create(const ParameterBlock& params)
 SteadyStateSourceSolver::SteadyStateSourceSolver(const InputParameters& params)
   : Solver(params), lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem"))
 {
+  if (lbs_problem_->IsTimeDependent())
+  {
+    throw std::runtime_error(
+      "SteadyStateSourceSolver cannot be used with a time-dependent DiscreteOrdinatesProblem.");
+  }
 }
 
 void

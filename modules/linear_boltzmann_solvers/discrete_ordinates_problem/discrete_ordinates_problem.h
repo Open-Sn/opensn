@@ -35,6 +35,21 @@ public:
   /// Read access to newest updated angular flux vector.
   const std::vector<std::vector<double>>& GetPsiNewLocal() const;
 
+  /// Read/write access to newest updated angular flux vector.
+  std::vector<std::vector<double>>& GetPsiOldLocal();
+
+  /// Read access to previous angular flux vector.
+  const std::vector<std::vector<double>>& GetPsiOldLocal() const;
+
+  size_t GetMaxLevelSize() const;
+
+  size_t GetMaxGroupsetSize() const;
+
+  size_t GetMaxAngleSetSize() const;
+
+  /// Copy psi_new to psi_old
+  void UpdatePsiOld() override;
+
   void PrintSimHeader() override;
 
   void Initialize() override;
@@ -103,6 +118,7 @@ protected:
   std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
 
   std::vector<std::vector<double>> psi_new_local_;
+  std::vector<std::vector<double>> psi_old_local_;
 
 private:
   void CreateFLUDSCommonDataForDevice();

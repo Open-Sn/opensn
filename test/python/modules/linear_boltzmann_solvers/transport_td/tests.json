@@ -1,0 +1,111 @@
+[
+  {
+    "file": "transport_3d_1g_pulse_inf_med_td.py",
+    "comment": "3D unstructured mesh, 1 group, vel = 1.0, infinte medium, time dependent with pulse",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi(3s) = ",
+        "goldvalue": 4.979358,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1g_v0.5_inf_med_td.py",
+    "comment": "3D unstructured mesh, 1 group, vel = 0.5, infinte medium, time dependent",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi(2s) = ",
+        "goldvalue": 0.889727,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1g_v1_inf_med_td.py",
+    "comment": "3D unstructured mesh, 1 group, vel = 1.0, infinte medium, time depenent",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi(1s) = ",
+        "goldvalue": 2.330955,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_1g_v2_inf_med_td.py",
+    "comment": "3D unstructured mesh, 1 group, vel = 2.0, infinte medium, time depenent",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi(1s) = ",
+        "goldvalue":  3.184795,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_2g_inf_med_downscatter_td.py",
+    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time depenent",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi0(2s) = ",
+        "goldvalue": 3.658194,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi1(2s) = ",
+        "goldvalue": 1.027354,
+        "abs_tol": 1e-06 
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_2g_inf_med_pydrvr.py",
+    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time depenent, Python time step loop",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi0 = ",
+        "goldvalue": 3.661372,
+        "abs_tol": 1e-06 
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi1 = ",
+        "goldvalue": 1.022844,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_2g_inf_med_pydrvr_ramp_dt.py",
+    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time depenent, Python time step loop, ramp dt",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi0 = ",
+        "goldvalue": 3.663369,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi1 = ",
+        "goldvalue": 0.996756,
+        "abs_tol": 1e-06
+      }
+    ]
+  }
+]

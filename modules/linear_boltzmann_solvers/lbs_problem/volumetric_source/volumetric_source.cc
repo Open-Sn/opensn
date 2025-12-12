@@ -10,6 +10,7 @@
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
 #include <memory>
+#include <limits>
 
 namespace opensn
 {
@@ -44,6 +45,11 @@ VolumetricSource::GetInputParameters()
     "func",
     std::shared_ptr<VectorSpatialFunction>{},
     "SpatialMaterialFunction object to be used to define the source.");
+  params.AddOptionalParameter("start_time",
+                              -std::numeric_limits<double>::infinity(),
+                              "Time at which the source becomes active.");
+  params.AddOptionalParameter(
+    "end_time", std::numeric_limits<double>::infinity(), "Time at which the source is inactive.");
 
   return params;
 }
@@ -60,7 +66,9 @@ VolumetricSource::VolumetricSource(const InputParameters& params)
     block_ids_(params.GetParamVectorValue<unsigned int>("block_ids")),
     logvol_(params.GetSharedPtrParam<LogicalVolume>("logical_volume", false)),
     strength_(params.GetParamVectorValue<double>("group_strength")),
-    function_(params.GetSharedPtrParam<VectorSpatialFunction>("func", false))
+    function_(params.GetSharedPtrParam<VectorSpatialFunction>("func", false)),
+    start_time_(params.GetParamValue<double>("start_time")),
+    end_time_(params.GetParamValue<double>("end_time"))
 {
   if (not logvol_ and block_ids_.empty())
     throw std::invalid_argument("A volumetric source must be defined with a logical volume, "
@@ -128,6 +136,12 @@ VolumetricSource::operator()(const Cell& cell,
     return strength_;
   else
     return (*function_)(xyz, num_groups);
+}
+
+bool
+VolumetricSource::IsActive(double time) const
+{
+  return time >= start_time_ && time <= end_time_;
 }
 
 } // namespace opensn

@@ -49,12 +49,6 @@ Solver::Execute()
 }
 
 void
-Solver::Step()
-{
-  log.Log() << "\"Step()\" method not defined for " << GetName();
-}
-
-void
 Solver::Advance()
 {
   log.Log() << "\"Advance()\" method not defined for " << GetName();

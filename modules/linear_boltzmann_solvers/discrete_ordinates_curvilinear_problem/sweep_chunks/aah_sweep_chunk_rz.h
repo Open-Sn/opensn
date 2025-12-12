@@ -4,30 +4,19 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include <vector>
 
 namespace opensn
 {
 
 class LBSGroupset;
+class DiscreteOrdinatesProblem;
 
 /// A sweep-chunk in point-symmetric and axial-symmetric curvilinear coordinates.
 class AAHSweepChunkRZ : public SweepChunk
 {
 public:
-  AAHSweepChunkRZ(const std::shared_ptr<MeshContinuum>& grid,
-                  const SpatialDiscretization& discretization_primary,
-                  const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                  const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices,
-                  std::vector<CellLBSView>& cell_transport_views,
-                  const std::vector<double>& densities,
-                  std::vector<double>& destination_phi,
-                  std::vector<double>& destination_psi,
-                  const std::vector<double>& source_moments,
-                  LBSGroupset& groupset,
-                  const BlockID2XSMap& xs,
-                  int num_moments,
-                  int max_num_cell_dofs,
-                  int min_num_cell_dofs);
+  AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
   void Sweep(AngleSet& angle_set) override;
 

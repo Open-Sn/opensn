@@ -5,7 +5,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
-#include "framework/logging/log_exceptions.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/hdf_utils.h"
@@ -14,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include <iomanip>
+#include <stdexcept>
 #include "sys/stat.h"
 
 namespace opensn
@@ -63,6 +63,11 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
     groupsets_(do_problem_->GetGroupsets()),
     front_gs_(groupsets_.front())
 {
+  if (do_problem_->IsTimeDependent())
+  {
+    throw std::runtime_error(
+      "PowerIterationKEigenSolver cannot be used with a time-dependent DiscreteOrdinatesProblem.");
+  }
 }
 
 void

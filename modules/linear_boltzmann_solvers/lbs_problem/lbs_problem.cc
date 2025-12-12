@@ -14,6 +14,7 @@
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/data_types/allowable_range.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <iomanip>
@@ -67,11 +68,14 @@ LBSProblem::GetInputParameters()
 
   params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
 
+  params.AddOptionalParameter(
+    "time_dependent", false, "Flag indicating whether the problem is time dependent.");
   return params;
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
+    time_dependent_(params.GetParamValue<bool>("time_dependent")),
     num_groups_(params.GetParamValue<size_t>("num_groups")),
     grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
@@ -79,6 +83,9 @@ LBSProblem::LBSProblem(const InputParameters& params)
   // Check system for GPU acceleration
   if (use_gpus_)
   {
+    if (time_dependent_)
+      throw std::invalid_argument(GetName() +
+                                  ": Time dependent problems are not supported on GPUs.");
 #ifdef __OPENSN_USE_CUDA__
     CheckCapableDevices();
 #else
@@ -131,6 +138,48 @@ LBSProblem::GetOptions() const
   return options_;
 }
 
+double
+LBSProblem::GetTime() const
+{
+  return time_;
+}
+
+void
+LBSProblem::SetTime(double time)
+{
+  time_ = time;
+}
+
+void
+LBSProblem::SetTimeStep(double dt)
+{
+  dt_ = dt;
+}
+
+double
+LBSProblem::GetTimeStep() const
+{
+  return dt_;
+}
+
+bool
+LBSProblem::IsTimeDependent() const
+{
+  return time_dependent_;
+}
+
+void
+LBSProblem::SetTheta(double theta)
+{
+  theta_ = theta;
+}
+
+double
+LBSProblem::GetTheta() const
+{
+  return theta_;
+}
+
 GeometryType
 LBSProblem::GetGeometryType() const
 {
@@ -141,6 +190,24 @@ size_t
 LBSProblem::GetNumMoments() const
 {
   return num_moments_;
+}
+
+unsigned int
+LBSProblem::GetMaxCellDOFCount() const
+{
+  return max_cell_dof_count_;
+}
+
+unsigned int
+LBSProblem::GetMinCellDOFCount() const
+{
+  return min_cell_dof_count_;
+}
+
+bool
+LBSProblem::UseGPUs() const
+{
+  return use_gpus_;
 }
 
 size_t
@@ -259,6 +326,12 @@ const std::map<uint64_t, UnitCellMatrices>&
 LBSProblem::GetUnitGhostCellMatrices() const
 {
   return unit_ghost_cell_matrices_;
+}
+
+std::vector<CellLBSView>&
+LBSProblem::GetCellTransportViews()
+{
+  return cell_transport_views_;
 }
 
 const std::vector<CellLBSView>&
@@ -1004,7 +1077,7 @@ LBSProblem::InitializeParrays()
   const Vector3 jhat(0.0, 1.0, 0.0);
   const Vector3 khat(0.0, 0.0, 1.0);
 
-  min_cell_dof_count_ = static_cast<size_t>(-1);
+  min_cell_dof_count_ = std::numeric_limits<unsigned int>::max();
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
   cell_transport_views_.reserve(grid_->local_cells.size());
@@ -1045,8 +1118,8 @@ LBSProblem::InitializeParrays()
       ++f;
     } // for f
 
-    max_cell_dof_count_ = std::max(max_cell_dof_count_, num_nodes);
-    min_cell_dof_count_ = std::min(min_cell_dof_count_, num_nodes);
+    max_cell_dof_count_ = std::max(max_cell_dof_count_, static_cast<unsigned int>(num_nodes));
+    min_cell_dof_count_ = std::min(min_cell_dof_count_, static_cast<unsigned int>(num_nodes));
     cell_transport_views_.emplace_back(cell_phi_address,
                                        num_nodes,
                                        num_grps,
@@ -1379,6 +1452,9 @@ LBSProblem::~LBSProblem()
 void
 LBSProblem::SetAdjoint(bool adjoint)
 {
+  if (adjoint and time_dependent_)
+    throw std::invalid_argument(GetName() + ": Time-dependent adjoint problems are not supported.");
+
   if (adjoint != options_.adjoint)
   {
     options_.adjoint = adjoint;
