@@ -42,8 +42,8 @@ WrapMultiGroupXS(py::module& xs)
   );
   multigroup_xs.def(
     "CreateSimpleOneGroup",
-    [](MultiGroupXS& self, double sigma_t, double c) {
-      self = MultiGroupXS::CreateSimpleOneGroup(sigma_t, c);
+    [](MultiGroupXS& self, double sigma_t, double c, double velocity) {
+      self = MultiGroupXS::CreateSimpleOneGroup(sigma_t, c, velocity);
     },
     R"(
     Create a one-group cross section.
@@ -54,9 +54,13 @@ WrapMultiGroupXS(py::module& xs)
         Total cross section.
     c: float
         Scattering ratio.
+    velocity: float, optional
+        Group velocity. If provided and positive, inverse velocity
+        is populated with 1.0/velocity.
     )",
     py::arg("sigma_t"),
-    py::arg("c")
+    py::arg("c"),
+    py::arg("velocity") = 0.0
   );
   multigroup_xs.def(
     "LoadFromOpenSn",

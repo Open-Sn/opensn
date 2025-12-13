@@ -9,7 +9,7 @@ namespace opensn
 {
 
 MultiGroupXS
-MultiGroupXS::CreateSimpleOneGroup(double sigma_t, double c)
+MultiGroupXS::CreateSimpleOneGroup(double sigma_t, double c, double velocity)
 {
   MultiGroupXS mgxs;
 
@@ -19,6 +19,10 @@ MultiGroupXS::CreateSimpleOneGroup(double sigma_t, double c)
   mgxs.transfer_matrices_.emplace_back(mgxs.num_groups_, mgxs.num_groups_);
   auto& S = mgxs.transfer_matrices_.back();
   S.SetDiagonal(std::vector<double>(mgxs.num_groups_, sigma_t * c));
+
+  if (velocity > 0.0)
+    mgxs.inv_velocity_.assign(mgxs.num_groups_, 1.0 / velocity);
+
   mgxs.ComputeDiffusionParameters();
 
   return mgxs;
