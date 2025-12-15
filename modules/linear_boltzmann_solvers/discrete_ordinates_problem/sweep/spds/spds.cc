@@ -8,9 +8,11 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/strong_components.hpp>
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <limits>
 
 namespace opensn
 {
@@ -20,77 +22,124 @@ SPDS::FindApproxMinimumFAS(Graph& g, std::vector<Vertex>& scc_vertices)
 {
   std::vector<std::pair<int, int>> edges_to_remove;
 
-  // Compute delta for a vertex
-  auto GetVertexDelta = [&](auto v, const Graph& g)
+  // We work on the subgraph induced by the vertices in scc_vertices, using a local
+  // "in_component" mask instead of mutating the graph's vertex properties. This avoids
+  // interactions between successive calls and ensures termination even with weighted edges.
+
+  using boost::make_iterator_range;
+
+  const auto num_vertices_g = boost::num_vertices(g);
+  std::vector<bool> in_component(num_vertices_g, false);
+  for (auto v : scc_vertices)
+    in_component[v] = true;
+
+  auto weightmap = boost::get(boost::edge_weight, g);
+
+  auto HasOutgoingInComponent = [&](Vertex v)
+  {
+    for (auto e : make_iterator_range(boost::out_edges(v, g)))
+    {
+      auto w = boost::target(e, g);
+      if (in_component[w])
+        return true;
+    }
+    return false;
+  };
+
+  auto HasIncomingInComponent = [&](Vertex v)
+  {
+    for (auto e : make_iterator_range(boost::in_edges(v, g)))
+    {
+      auto w = boost::source(e, g);
+      if (in_component[w])
+        return true;
+    }
+    return false;
+  };
+
+  // Compute delta(v) for the current component
+  auto GetVertexDelta = [&](Vertex v)
   {
     double delta = 0.0;
 
-    // Get the edge weight property map
-    auto weightmap = boost::get(boost::edge_weight, g);
+    for (auto e : make_iterator_range(boost::out_edges(v, g)))
+    {
+      auto w = boost::target(e, g);
+      if (in_component[w])
+        delta += weightmap[e];
+    }
 
-    // Add outgoing edge weights
-    for (auto out = boost::out_edges(v, g); out.first != out.second; ++out.first)
-      delta += weightmap[*out.first];
-
-    // Subtract incoming edge weights
-    for (auto in = boost::in_edges(v, g); in.first != in.second; ++in.first)
-      delta -= weightmap[*in.first];
+    for (auto e : make_iterator_range(boost::in_edges(v, g)))
+    {
+      auto w = boost::source(e, g);
+      if (in_component[w])
+        delta -= weightmap[e];
+    }
 
     return delta;
   };
 
-  std::vector<size_t> s1, s2, s;
-  bool done = false;
-  while (!done)
+  std::vector<Vertex> s1;
+  std::vector<Vertex> s2;
+
+  auto AnyInComponent = [&]()
   {
-    done = true;
+    for (auto v : scc_vertices)
+      if (in_component[v])
+        return true;
+    return false;
+  };
 
-    // Remove sinks (vertices with out-degree 0)
-    bool found_all_sinks = false;
-    while (not found_all_sinks)
+  while (AnyInComponent())
+  {
+    // Repeatedly remove sinks (no outgoing edges inside the component)
+    bool removed_sink = true;
+    while (removed_sink)
     {
-      found_all_sinks = true;
+      removed_sink = false;
       for (auto v : scc_vertices)
       {
-        if (not g[v].active)
+        if (not in_component[v])
           continue;
 
-        if (boost::out_degree(v, g) == 0)
+        if (not HasOutgoingInComponent(v))
         {
-          g[v].active = false;
+          in_component[v] = false;
           s2.push_back(v);
-          found_all_sinks = false;
+          removed_sink = true;
         }
       }
     }
 
-    // Remove sources (vertices with in-degree 0)
-    bool found_all_sources = false;
-    while (not found_all_sources)
+    // Repeatedly remove sources (no incoming edges inside the component)
+    bool removed_source = true;
+    while (removed_source)
     {
-      found_all_sources = true;
+      removed_source = false;
       for (auto v : scc_vertices)
       {
-        if (not g[v].active)
+        if (not in_component[v])
           continue;
 
-        if (boost::in_degree(v, g) == 0)
+        if (not HasIncomingInComponent(v))
         {
-          g[v].active = false;
+          in_component[v] = false;
           s1.push_back(v);
+          removed_source = true;
         }
       }
     }
 
-    double max_delta = -100.0;
-    Graph::vertex_descriptor max_delta_vertex = boost::graph_traits<Graph>::null_vertex();
+    // If vertices remain, remove the vertex with maximum delta
+    double max_delta = -std::numeric_limits<double>::infinity();
+    Vertex max_delta_vertex = boost::graph_traits<Graph>::null_vertex();
 
     for (auto v : scc_vertices)
     {
-      if (not g[v].active)
+      if (not in_component[v])
         continue;
 
-      double delta = GetVertexDelta(v, g);
+      const double delta = GetVertexDelta(v);
       if (delta > max_delta)
       {
         max_delta = delta;
@@ -100,114 +149,41 @@ SPDS::FindApproxMinimumFAS(Graph& g, std::vector<Vertex>& scc_vertices)
 
     if (max_delta_vertex != boost::graph_traits<Graph>::null_vertex())
     {
-      g[max_delta_vertex].active = false;
+      in_component[max_delta_vertex] = false;
       s1.push_back(max_delta_vertex);
-    }
-
-    for (auto v : scc_vertices)
-    {
-      if (g[v].active)
-      {
-        done = false;
-        break;
-      }
     }
   }
 
+  // Build the final vertex sequence s = s1 followed by s2
+  std::vector<Vertex> s;
   s.reserve(s1.size() + s2.size());
-  for (size_t u : s1)
+  for (auto u : s1)
     s.push_back(u);
-  for (size_t u : s2)
+  for (auto u : s2)
     s.push_back(u);
 
-  for (size_t u : scc_vertices)
+  // Map each vertex in s to its position for quick lookup
+  const std::size_t invalid_pos = std::numeric_limits<std::size_t>::max();
+  std::vector<std::size_t> pos(num_vertices_g, static_cast<std::size_t>(-1));
+  for (std::size_t i = 0; i < s.size(); ++i)
+    pos[s[i]] = i;
+
+  // Any edge that points "backwards" in the ordering is added to the FAS
+  for (auto u : scc_vertices)
   {
-    // Loop through outgoing edges
-    for (auto ei = boost::out_edges(u, g).first; ei != boost::out_edges(u, g).second; ++ei)
+    for (auto e : make_iterator_range(boost::out_edges(u, g)))
     {
-      size_t v = boost::target(*ei, g);
+      auto v = boost::target(e, g);
 
-      // Check if v appears earlier in the sequence (i.e., is before u in s)
-      auto pos_u = std::find(s.begin(), s.end(), u);
-      auto pos_v = std::find(s.begin(), s.end(), v);
-      if (pos_v < pos_u)
+      if (pos[u] == invalid_pos or pos[v] == invalid_pos)
+        continue;
+
+      if (pos[v] < pos[u])
         edges_to_remove.emplace_back(u, v);
     }
   }
 
   return edges_to_remove;
-}
-
-void
-SPDS::SCCAlgorithm(Vertex u,
-                   Graph& g,
-                   int& time,
-                   std::vector<int>& disc,
-                   std::vector<int>& low,
-                   std::vector<bool>& on_stack,
-                   std::stack<Vertex>& stack,
-                   std::vector<std::vector<Vertex>>& SCCs)
-{
-  // Initialize discovery time and low value
-  disc[u] = low[u] = ++time;
-  stack.push(u);
-  on_stack[u] = true;
-
-  // Iterate over all adjacent vertices (successors) of 'u'
-  for (auto edge : boost::make_iterator_range(boost::out_edges(u, g)))
-  {
-    Vertex v = boost::target(edge, g);
-
-    if (disc[v] == -1)
-    {
-      SCCAlgorithm(v, g, time, disc, low, on_stack, stack, SCCs);
-      low[u] = std::min(low[u], low[v]);
-    }
-    else if (on_stack[v])
-      low[u] = std::min(low[u], disc[v]);
-  }
-
-  // If 'u' is a root node, pop the stack and generate an SCC
-  Vertex w = 0;
-  if (low[u] == disc[u])
-  {
-    std::vector<Vertex> sub_scc;
-    while (stack.top() != u)
-    {
-      w = stack.top();
-      sub_scc.emplace_back(w);
-      on_stack[w] = false;
-      stack.pop();
-    }
-
-    w = stack.top();
-    sub_scc.push_back(w);
-    if (sub_scc.size() > 1)
-      SCCs.push_back(sub_scc);
-    on_stack[w] = false;
-    stack.pop();
-  }
-}
-
-std::vector<std::vector<Vertex>>
-SPDS::FindSCCs(Graph& g)
-{
-  using VerticesSizeType = boost::graph_traits<Graph>::vertices_size_type;
-  std::stack<Vertex> stack;
-  int time = 0; // Global timer for discovery times
-  VerticesSizeType num_vertices = boost::num_vertices(g);
-  std::vector<int> disc(num_vertices, -1);         // Discovery time of each vertex
-  std::vector<int> low(num_vertices, -1);          // Lowest discovery time from each vertex
-  std::vector<bool> on_stack(num_vertices, false); // Whether a vertex is currently in the stack
-  std::vector<std::vector<Vertex>> SCCs;           // Stores strongly-connected components
-
-  for (Vertex u = 0; u < num_vertices; ++u)
-  {
-    if (disc[u] == -1)
-      SCCAlgorithm(u, g, time, disc, low, on_stack, stack, SCCs);
-  }
-
-  return SCCs;
 }
 
 std::vector<std::pair<size_t, size_t>>
@@ -217,7 +193,28 @@ SPDS::RemoveCyclicDependencies(Graph& g)
 
   std::vector<std::pair<size_t, size_t>> edges_to_remove;
 
-  auto sccs = FindSCCs(g);
+  const auto num_v = boost::num_vertices(g);
+  auto ComputeSCCs = [&]()
+  {
+    std::vector<int> component(num_v, -1);
+    int num = boost::strong_components(
+      g, boost::make_iterator_property_map(component.begin(), boost::get(boost::vertex_index, g)));
+    std::vector<std::vector<Vertex>> scc_list(num);
+    for (Vertex v = 0; v < num_v; ++v)
+    {
+      if (component[v] >= 0)
+        scc_list[component[v]].push_back(v);
+    }
+    std::vector<std::vector<Vertex>> filtered;
+    for (auto& c : scc_list)
+    {
+      if (c.size() > 1)
+        filtered.push_back(c);
+    }
+    return filtered;
+  };
+
+  auto sccs = ComputeSCCs();
 
   while (not sccs.empty())
   {
@@ -274,7 +271,7 @@ SPDS::RemoveCyclicDependencies(Graph& g)
       boost::remove_edge(edge.first, edge.second, g);
     }
 
-    sccs = FindSCCs(g);
+    sccs = ComputeSCCs();
   }
 
   return edges_to_remove;

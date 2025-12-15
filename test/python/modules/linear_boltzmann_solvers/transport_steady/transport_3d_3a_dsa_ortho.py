@@ -111,3 +111,27 @@ if __name__ == "__main__":
     ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
+
+    vol2 = RPPLogicalVolume(infx=True, infy=True, infz=True)
+    fflist = phys.GetScalarFieldFunctionList()
+
+    ffi1 = FieldFunctionInterpolationVolume()
+    curffi = ffi1
+    curffi.SetOperationType("max")
+    curffi.SetLogicalVolume(vol2)
+    curffi.AddFieldFunction(fflist[39])
+    curffi.Initialize()
+    curffi.Execute()
+    maxval = curffi.GetValue()
+    if rank == 0:
+        print(f"Max-value1={maxval:.5f}")
+
+    curffi = ffi1
+    curffi.SetOperationType("max")
+    curffi.SetLogicalVolume(vol2)
+    curffi.AddFieldFunction(fflist[120])
+    curffi.Initialize()
+    curffi.Execute()
+    maxval = curffi.GetValue()
+    if rank == 0:
+        print(f"Max-value1={maxval:.5f}")

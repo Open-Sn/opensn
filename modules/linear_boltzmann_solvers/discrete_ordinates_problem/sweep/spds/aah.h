@@ -59,6 +59,15 @@ public:
    */
   void SetGlobalSweepFAS(std::vector<int>& edges) { global_sweep_fas_ = edges; }
 
+  /// Returns the locally accumulated location-to-location edge weights for this SPDS.
+  std::vector<double> ComputeLocalLocationEdgeWeights() const;
+
+  /// Sets the global location-to-location edge weights for this SPDS.
+  void SetGlobalEdgeWeights(std::vector<double>& weights)
+  {
+    global_edge_weights_ = std::move(weights);
+  }
+
   /// Destructor.
   ~AAH_SPDS() override;
 
@@ -73,6 +82,8 @@ private:
   std::vector<STDG> global_sweep_planes_;
   /// Vector of edges representing the FAS used to break cycles in the global sweep graph.
   std::vector<int> global_sweep_fas_;
+  /// Flattened comm_size x comm_size matrix of global edge weights.
+  std::vector<double> global_edge_weights_;
   /// Levelized SPLS structure on GPU (only visible to GPU implementation).
   std::uint32_t* device_levelized_spls_ = nullptr;
   /// Per-level offset into the contiguous level data.
