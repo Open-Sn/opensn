@@ -184,7 +184,7 @@ Program Listing for File multi_group_xs.h
    
    public:
      /// Makes a simple material with a 1-group cross-section set.
-     static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c);
+     static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c, double velocity = 0.0);
      static MultiGroupXS LoadFromOpenSn(const std::string& filename);
      /// This method populates transport cross sections from an OpenMC cross-section file.
      static MultiGroupXS
