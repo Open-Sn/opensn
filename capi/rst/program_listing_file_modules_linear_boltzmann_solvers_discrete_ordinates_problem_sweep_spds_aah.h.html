@@ -145,6 +145,15 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetGlobalSweepFAS</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">edges</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">global_sweep_fas_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edges</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
+<span class="w">  </span><span class="c1">/// Returns the locally accumulated location-to-location edge weights for this SPDS.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeLocalLocationEdgeWeights</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Sets the global location-to-location edge weights for this SPDS.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetGlobalEdgeWeights</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">weights</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">global_edge_weights_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">weights</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
 <span class="w">  </span><span class="c1">/// Destructor.</span>
 <span class="w">  </span><span class="o">~</span><span class="n">AAH_SPDS</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
@@ -159,6 +168,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">STDG</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_sweep_planes_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Vector of edges representing the FAS used to break cycles in the global sweep graph.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_sweep_fas_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Flattened comm_size x comm_size matrix of global edge weights.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_edge_weights_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Levelized SPLS structure on GPU (only visible to GPU implementation).</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">device_levelized_spls_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Per-level offset into the contiguous level data.</span>
