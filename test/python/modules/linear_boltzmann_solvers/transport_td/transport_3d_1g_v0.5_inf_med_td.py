@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     num_groups = 1
     xs_diag = MultiGroupXS()
-    xs_diag.LoadFromOpenSn("simple_1g_v0.5_td.cxs")
+    xs_diag.CreateSimpleOneGroup(1.0, 0.0, 0.5)
 
     strength = [0.0 for _ in range(num_groups)]
     strength[0] = 122.58 / (3.2 * 3.2 * 3.2)
