@@ -205,7 +205,7 @@ public:
   void resize(const std::array<U, D>& dims)
   {
     SetDimensions(dims);
-    if (size_ != std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()))
+    if (size_ != std::accumulate(dims.begin(), dims.end(), size_t{1}, std::multiplies<>()))
       Initialize();
   }
 
@@ -223,7 +223,7 @@ public:
   void resize(const std::array<U, N>& dims)
   {
     SetDimensions(dims);
-    if (size_ != std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()))
+    if (size_ != std::accumulate(dims.begin(), dims.end(), size_t{1}, std::multiplies<>()))
       Initialize();
   }
 
@@ -241,7 +241,7 @@ public:
   void resize(const std::initializer_list<U>& dims)
   {
     SetDimensions(dims);
-    if (size_ != std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<size_t>()))
+    if (size_ != std::accumulate(dims.begin(), dims.end(), size_t{1}, std::multiplies<>()))
       Initialize();
   }
 
