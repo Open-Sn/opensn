@@ -43,7 +43,7 @@ Initialize()
   CALI_MARK_BEGIN(opensn::program.c_str());
 
   // Disable internal HDF error reporting
-  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
+  H5Eset_auto2(H5E_DEFAULT, nullptr, nullptr);
 
   return 0;
 }
