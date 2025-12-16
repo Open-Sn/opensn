@@ -40,8 +40,8 @@ ParameterBlock::SetBlockName(const std::string& name)
   name_ = name;
 }
 
-ParameterBlock::ParameterBlock(const std::string& name)
-  : type_(ParameterBlockType::BLOCK), name_(name), value_ptr_(nullptr)
+ParameterBlock::ParameterBlock(std::string name)
+  : type_(ParameterBlockType::BLOCK), name_(std::move(name)), value_ptr_(nullptr)
 {
 }
 

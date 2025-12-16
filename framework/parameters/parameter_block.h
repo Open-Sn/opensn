@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <utility>
 
 namespace opensn
 {
@@ -77,12 +78,12 @@ public:
 
   // Constructors
   /// Constructs an empty parameter block with the given name and type BLOCK.
-  explicit ParameterBlock(const std::string& name = "");
+  explicit ParameterBlock(std::string name = "");
 
   /// Derived type constructor
   template <typename T>
-  ParameterBlock(const std::string& name, const std::vector<T>& array)
-    : type_(ParameterBlockType::ARRAY), name_(name)
+  ParameterBlock(std::string name, const std::vector<T>& array)
+    : type_(ParameterBlockType::ARRAY), name_(std::move(name))
   {
     size_t k = 0;
     for (const T& value : array)
@@ -91,7 +92,7 @@ public:
 
   /// Constructs one of the fundamental types.
   template <typename T>
-  explicit ParameterBlock(const std::string& name, T value) : name_(name)
+  explicit ParameterBlock(std::string name, T value) : name_(std::move(name))
   {
     constexpr bool is_supported = IsBool<T>::value or IsFloat<T>::value or IsString<T>::value or
                                   IsInteger<T>::value or IsUserData<T>::value;

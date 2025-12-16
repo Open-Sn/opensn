@@ -28,8 +28,8 @@
 namespace opensn
 {
 
-LBSProblem::LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid)
-  : Problem(name), grid_(grid), use_gpus_(false)
+LBSProblem::LBSProblem(std::string name, std::shared_ptr<MeshContinuum> grid)
+  : Problem(std::move(name)), grid_(std::move(grid)), use_gpus_(false)
 {
 }
 
