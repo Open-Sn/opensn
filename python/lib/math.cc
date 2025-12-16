@@ -277,6 +277,73 @@ WrapFunctors(py::module& math)
     py::arg("xyz"),
     py::arg("num_groups")
   );
+
+  // angular flux function
+  auto angular_flux_function = py::class_<AngularFluxFunction, std::shared_ptr<AngularFluxFunction>>(
+    math,
+    "AngularFluxFunction",
+    R"(
+    Angular flux function.
+
+    Functions that accept a group index and a direction index and return the incoming angular
+    flux value for that (group, direction) pair.
+
+    Wrapper of :cpp:class:`opensn::AngularFluxFunction`.
+
+    Examples
+    --------
+    >>> # Create from a Python function
+    >>> def incident_flux(group, direction):
+    ...     return 1.0 if group == 0 else 0.0
+    >>> f = AngularFluxFunction(incident_flux)
+    >>>
+    >>> # Create from lambda
+    >>> g = AngularFluxFunction(lambda g, n: 0.5 * (g + n))
+    >>>
+    >>> # Evaluate
+    >>> f(0, 3)
+    1.0
+    >>> g(1, 2)
+    1.5
+    )"
+  );
+  angular_flux_function.def(
+    py::init(
+      [](const std::function<double(int, int)>& func)
+      {
+        return std::make_shared<AngularFluxFunction>(func);
+      }
+    ),
+    R"(
+    Construct an angular flux function from a Python function or lambda.
+
+    Parameters
+    ----------
+    func: Callable[[int, int], float]
+        Referenced angular flux function. The first argument is the energy group index.
+        The second argument is the direction index in the angular quadrature for the groupset.
+    )",
+    py::arg("func")
+  );
+  angular_flux_function.def(
+    "__call__",
+    [](AngularFluxFunction& self, int group, int direction)
+    {
+      return self(group, direction);
+    },
+    R"(
+    Evaluate the associated angular flux function.
+
+    Parameters
+    ----------
+    group: int
+        Energy group index.
+    direction: int
+        Direction index in the angular quadrature.
+    )",
+    py::arg("group"),
+    py::arg("direction")
+  );
   // clang-format on
 }
 
