@@ -88,7 +88,7 @@ if __name__ == "__main__":
         time_dependent=True,
     )
 
-    solver = TimeDependentSourceSolver(problem=phys, dt=0.1, theta=0.5, stop_time=3.0)
+    solver = TimeDependentSourceSolver(problem=phys, dt=0.1, theta=CrankNicolson, stop_time=3.0)
     solver.Initialize()
     solver.Execute()
 

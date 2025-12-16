@@ -77,7 +77,7 @@ if __name__ == "__main__":
         time_dependent=True,
     )
 
-    solver = TimeDependentSourceSolver(problem=phys, dt=0.05, theta=1.0, stop_time=2.0)
+    solver = TimeDependentSourceSolver(problem=phys, dt=0.05, theta=BackwardEuler, stop_time=2.0)
     solver.Initialize()
     solver.Execute()
 
