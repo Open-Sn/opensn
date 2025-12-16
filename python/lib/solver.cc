@@ -821,6 +821,8 @@ WrapTimeDependent(py::module& slv)
     theta : float
         Theta value between 0 and 1.
     )");
+  slv.attr("BackwardEuler") = 1.0;
+  slv.attr("CrankNicolson") = 0.5;
   // clang-format on
 }
 
