@@ -150,7 +150,7 @@ Program Listing for File hdf_utils.h
      bool success = false;
    
      hsize_t dim[1] = {static_cast<hsize_t>(data.size())};
-     auto dataspace = H5Screate_simple(1, dim, NULL);
+     auto dataspace = H5Screate_simple(1, dim, nullptr);
      if (dataspace != H5I_INVALID_HID)
      {
        auto dataset = H5Dcreate2(
