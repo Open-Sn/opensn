@@ -34,7 +34,7 @@ std::map<K, std::vector<T>>
 MapAllToAll(const std::map<K, std::vector<T>>& pid_data_pairs,
             const mpi::Communicator& comm = opensn::mpi_comm)
 {
-  static_assert(std::is_integral<K>::value, "Integral datatype required.");
+  static_assert(std::is_integral_v<K>, "Integral datatype required.");
 
   // Make sendcounts and senddispls
   std::vector<int> sendcounts(opensn::mpi_comm.size(), 0);
