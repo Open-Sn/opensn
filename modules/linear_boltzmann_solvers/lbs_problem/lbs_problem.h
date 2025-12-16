@@ -33,7 +33,7 @@ struct WGSContext;
 class LBSProblem : public Problem
 {
 public:
-  explicit LBSProblem(const std::string& name, std::shared_ptr<MeshContinuum> grid);
+  explicit LBSProblem(std::string name, std::shared_ptr<MeshContinuum> grid);
 
   /// Input parameters based construction.
   explicit LBSProblem(const InputParameters& params);
