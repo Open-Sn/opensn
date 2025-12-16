@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/vacuum_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/arbitrary_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbc_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
@@ -413,6 +414,17 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
 
         sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
           G, global_normal, MapGeometryTypeToCoordSys(geometry_type_));
+      }
+      else if (bndry_pref.type == LBSBoundaryType::ARBITRARY)
+      {
+        if (not bndry_pref.angular_flux_function)
+          throw std::runtime_error(
+            GetName() + ": Arbitrary boundary specified without an associated "
+                        "AngularFluxFunction.\nThis boundary type is only supported when "
+                        "a Python-defined angular flux function is provided through the "
+                        "\"function\" parameter.");
+        sweep_boundaries_[bid] = std::make_shared<ArbitraryBoundary>(
+          G, bndry_pref.angular_flux_function, MapGeometryTypeToCoordSys(geometry_type_));
       }
     } // non-defaulted
   } // for bndry id
