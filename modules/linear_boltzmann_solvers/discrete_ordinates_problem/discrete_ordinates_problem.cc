@@ -834,7 +834,7 @@ DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
 {
   throw std::runtime_error(
     "DiscreteOrdinatesProblem::CreateFLUDSForDevice : OPENSN_WITH_CUDA not enabled.");
-  return std::shared_ptr<FLUDS>();
+  return {};
 }
 #endif
 

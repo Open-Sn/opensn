@@ -189,7 +189,7 @@ std::vector<double>
 VectorGhostCommunicator::MakeGhostedVector() const
 {
   const auto ghosted_size = local_size_ + ghost_ids_.size();
-  return std::vector<double>(ghosted_size, 0.0);
+  return std::vector<double>(ghosted_size, 0.0); // NOLINT
 }
 
 std::vector<double>

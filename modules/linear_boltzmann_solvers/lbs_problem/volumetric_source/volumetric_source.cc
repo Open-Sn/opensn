@@ -131,7 +131,7 @@ VolumetricSource::operator()(const Cell& cell,
                              const std::size_t num_groups) const
 {
   if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id) == 0)
-    return std::vector<double>(num_groups, 0.0);
+    return std::vector<double>(num_groups, 0.0); // NOLINT
   else if (not function_)
     return strength_;
   else

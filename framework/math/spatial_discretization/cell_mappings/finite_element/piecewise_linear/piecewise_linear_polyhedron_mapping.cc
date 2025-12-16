@@ -641,13 +641,13 @@ PieceWiseLinearPolyhedronMapping::MakeVolumetricFiniteElementData() const
 
   V_num_nodes = num_nodes_;
 
-  return VolumetricFiniteElementData(V_quadrature_point_indices,
-                                     V_qpoints_xyz,
-                                     V_shape_value,
-                                     V_shape_grad,
-                                     V_JxW,
-                                     face_node_mappings_,
-                                     V_num_nodes);
+  return {V_quadrature_point_indices,
+          V_qpoints_xyz,
+          V_shape_value,
+          V_shape_grad,
+          V_JxW,
+          face_node_mappings_,
+          V_num_nodes};
 }
 
 SurfaceFiniteElementData
@@ -716,14 +716,14 @@ PieceWiseLinearPolyhedronMapping::MakeSurfaceFiniteElementData(size_t face_index
 
   F_num_nodes = face_data_[f].sides.size();
 
-  return SurfaceFiniteElementData(F_quadrature_point_indices,
-                                  F_qpoints_xyz,
-                                  F_shape_value,
-                                  F_shape_grad,
-                                  F_JxW,
-                                  F_normals,
-                                  face_node_mappings_,
-                                  F_num_nodes);
+  return {F_quadrature_point_indices,
+          F_qpoints_xyz,
+          F_shape_value,
+          F_shape_grad,
+          F_JxW,
+          F_normals,
+          face_node_mappings_,
+          F_num_nodes};
 }
 
 } // namespace opensn
