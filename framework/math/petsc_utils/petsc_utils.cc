@@ -42,7 +42,7 @@ CreateVectorWithGhosts(int64_t local_size,
                  local_size,
                  global_size,
                  nghosts,
-                 (ghost_indices.empty()) ? NULL : ghost_indices.data(),
+                 (ghost_indices.empty()) ? nullptr : ghost_indices.data(),
                  &x);
 
   VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);

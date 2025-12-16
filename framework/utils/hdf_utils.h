@@ -138,7 +138,7 @@ H5WriteDataset1D(hid_t id, const std::string& name, const std::vector<T>& data)
   bool success = false;
 
   hsize_t dim[1] = {static_cast<hsize_t>(data.size())};
-  auto dataspace = H5Screate_simple(1, dim, NULL);
+  auto dataspace = H5Screate_simple(1, dim, nullptr);
   if (dataspace != H5I_INVALID_HID)
   {
     auto dataset = H5Dcreate2(
