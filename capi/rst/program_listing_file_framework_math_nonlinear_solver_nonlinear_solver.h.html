@@ -102,7 +102,7 @@
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">NonLinearSolver</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">solver_name</span><span class="p">,</span>
 <span class="w">                           </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">NonLinearSolverContext</span><span class="o">&gt;</span><span class="w"> </span><span class="n">context_ptr</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">solver_name_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">solver_name</span><span class="p">)),</span><span class="w"> </span><span class="n">context_ptr_</span><span class="p">(</span><span class="n">context_ptr</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">solver_name_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">solver_name</span><span class="p">)),</span><span class="w"> </span><span class="n">context_ptr_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">context_ptr</span><span class="p">))</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
