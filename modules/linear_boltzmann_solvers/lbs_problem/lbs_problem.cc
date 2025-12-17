@@ -944,8 +944,7 @@ LBSProblem::InitializeMaterials()
   {
     const auto& xs = mat_id_xs.second;
     num_precursors_ += xs->GetNumPrecursors();
-    if (xs->GetNumPrecursors() > max_precursors_per_material_)
-      max_precursors_per_material_ = xs->GetNumPrecursors();
+    max_precursors_per_material_ = std::max(xs->GetNumPrecursors(), max_precursors_per_material_);
   }
 
   // if no precursors, turn off precursors
