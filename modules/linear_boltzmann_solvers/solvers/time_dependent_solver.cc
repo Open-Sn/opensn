@@ -70,14 +70,38 @@ TimeDependentSourceSolver::Initialize()
 void
 TimeDependentSourceSolver::Execute()
 {
-  CALI_CXX_MARK_SCOPE("TimeDependentSourceSolver::Execute");
+  const double t0 = current_time_;
+  const double tf = stop_time_;
+  const double dt_nom = dt_;
 
-  while (current_time_ < stop_time_)
+  if (dt_nom <= 0.0)
+    throw std::runtime_error(GetName() + ": dt must be positive");
+
+  if (tf < t0)
+    throw std::runtime_error(GetName() + ": stop_time must be >= current_time");
+
+  // Tolerance to account for floating-point drift from repeated additions/subtractions.
+  // Use a small multiple of machine epsilon scaled to the time magnitude.
+  const double tol =
+    64.0 * std::numeric_limits<double>::epsilon() * std::max({1.0, std::abs(tf), std::abs(t0)});
+
+  while (true)
   {
-    const double target_time = std::min(current_time_ + dt_, stop_time_);
-    const double step_dt = target_time - current_time_;
+    const double remaining = tf - current_time_;
+
+    if (remaining <= tol)
+    {
+      current_time_ = tf;
+      break;
+    }
+
+    double step_dt = (remaining < dt_nom) ? remaining : dt_nom;
+
     SetTimeStep(step_dt);
     Advance();
+
+    if (std::abs(tf - current_time_) <= tol)
+      current_time_ = tf;
   }
 }
 

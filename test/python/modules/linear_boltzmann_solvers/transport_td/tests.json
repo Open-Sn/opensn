@@ -27,7 +27,7 @@
   },
   {
     "file": "transport_3d_1g_v1_inf_med_td.py",
-    "comment": "3D unstructured mesh, 1 group, vel = 1.0, infinte medium, time depenent",
+    "comment": "3D unstructured mesh, 1 group, vel = 1.0, infinte medium, time dependent",
     "num_procs": 4,
     "checks": [
       {
@@ -40,7 +40,7 @@
   },
   {
     "file": "transport_3d_1g_v2_inf_med_td.py",
-    "comment": "3D unstructured mesh, 1 group, vel = 2.0, infinte medium, time depenent",
+    "comment": "3D unstructured mesh, 1 group, vel = 2.0, infinte medium, time dependent",
     "num_procs": 4,
     "checks": [
       {
@@ -53,7 +53,7 @@
   },
   {
     "file": "transport_3d_2g_inf_med_downscatter_td.py",
-    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time depenent",
+    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time dependent",
     "num_procs": 4,
     "checks": [
       {
@@ -72,7 +72,7 @@
   },
   {
     "file": "transport_3d_2g_inf_med_pydrvr.py",
-    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time depenent, Python time step loop",
+    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time dependent, Python time step loop",
     "num_procs": 4,
     "checks": [
       {
@@ -91,7 +91,7 @@
   },
   {
     "file": "transport_3d_2g_inf_med_pydrvr_ramp_dt.py",
-    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time depenent, Python time step loop, ramp dt",
+    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time dependent, Python time step loop, ramp dt",
     "num_procs": 4,
     "checks": [
       {
@@ -105,6 +105,19 @@
         "key": "Max phi1 = ",
         "goldvalue": 0.996756,
         "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_openmc_xs.py",
+    "comment": "3D orthogonal mesh, 30 group, time dependent, OpenMC cross sections",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi(0.1s) = ",
+        "goldvalue": 51.057746,
+        "abs_tol": 1e-04
       }
     ]
   }
