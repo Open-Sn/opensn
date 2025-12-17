@@ -32,7 +32,7 @@ Program Listing for File range.h
    std::vector<T>
    Range(T start, T end, D delta = 1)
    {
-     static_assert(std::is_signed<D>::value, "Range delta parameter must be signed");
+     static_assert(std::is_signed_v<D>, "Range delta parameter must be signed");
      const bool forward = (delta > 0);
    
      std::vector<T> sequence = {};
