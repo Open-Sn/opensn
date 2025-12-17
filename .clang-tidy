@@ -67,7 +67,6 @@ Checks: "*,
         -readability-container-contains,
         -readability-redundant-access-specifiers,
         -readability-avoid-nested-conditional-operator,
-        -readability-use-std-min-max,
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: ''

@@ -244,8 +244,7 @@ AAH_FLUDSCommonData::SlotDynamics(
     auto& lock_box = *target_lock_box;
 
     // Track largest face
-    if (num_face_dofs > largest_face_)
-      largest_face_ = num_face_dofs;
+    largest_face_ = std::max(num_face_dofs, largest_face_);
 
     // Find/open a slot
     bool slot_found = false;

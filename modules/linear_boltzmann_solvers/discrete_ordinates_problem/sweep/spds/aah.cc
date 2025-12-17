@@ -244,12 +244,10 @@ AAH_SPDS::BuildGlobalSweepTDG()
           continue;
 
         int dep_mapped_index = global_order_mapping[dep_loc];
-        if (global_sweep_order_rank[dep_mapped_index] > max_rank)
-          max_rank = global_sweep_order_rank[dep_mapped_index];
+        max_rank = std::max(global_sweep_order_rank[dep_mapped_index], max_rank);
       }
       global_sweep_order_rank[k] = max_rank + 1;
-      if ((max_rank + 1) > abs_max_rank)
-        abs_max_rank = max_rank + 1;
+      abs_max_rank = std::max(max_rank + 1, abs_max_rank);
     }
   }
 
