@@ -53,7 +53,7 @@ public:
   AngleAggregationType angleagg_method;
   double residual_tolerance;
   unsigned int max_iterations;
-  int gmres_restart_intvl;
+  unsigned int gmres_restart_intvl;
 
   bool allow_cycles;
 
