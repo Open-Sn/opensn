@@ -85,6 +85,8 @@ protected:
   /// Maximum scattering order for moment calculations.
   unsigned int scattering_order_;
   OperatorConstructionMethod construction_method_;
+  unsigned int n_polar_ = 0;
+  unsigned int n_azimuthal_ = 0;
 
   /// Populate the map of moment index to spherical harmonic indices.
   void MakeHarmonicIndices();
