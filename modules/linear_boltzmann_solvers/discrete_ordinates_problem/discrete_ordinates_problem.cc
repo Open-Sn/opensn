@@ -711,7 +711,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
                                std::to_string(gs) + " not found.");
 
       } // for angle m
-    } // if saving angular flux
+    }   // if saving angular flux
 
     const auto num_gs_groups = groupset.groups.size();
     const auto gsg_i = groupset.groups.front().id;
@@ -740,7 +740,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
             phi_new_local_[dof_map + g] *= std::pow(-1.0, ell);
             phi_old_local_[dof_map + g] *= std::pow(-1.0, ell);
           } // for group g
-        } // for moment m
+        }   // for moment m
 
         // Reorient angular flux
         if (options_.save_angular_flux)
@@ -756,7 +756,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
           }
         }
       } // for node i
-    } // for cell
+    }   // for cell
 
   } // for groupset
 }
@@ -1220,7 +1220,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
 
       ++so_grouping_id;
     } // for so_grouping
-  } // map scope
+  }   // map scope
 
   return {unq_so_grps, dir_id_to_so_map};
 }
@@ -1328,7 +1328,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
       else
         OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     } // for an_ss
-  } // for so_grouping
+  }   // for so_grouping
 
   if (options_.verbose_inner_iterations)
     log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";

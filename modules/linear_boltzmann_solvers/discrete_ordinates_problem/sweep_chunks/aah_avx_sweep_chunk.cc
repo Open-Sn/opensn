@@ -84,11 +84,20 @@ struct AVX2Ops
     return _mm256_fnmadd_pd(a, b, c);
   }
 #else
-  static inline Vec Fmadd(const Vec& a, const Vec& b, const Vec& c) { return Add(a, Mul(b, c)); }
-  static inline Vec Fnmadd(const Vec& a, const Vec& b, const Vec& c) { return Sub(c, Mul(a, b)); }
+  static inline Vec Fmadd(const Vec& a, const Vec& b, const Vec& c)
+  {
+    return Add(a, Mul(b, c));
+  }
+  static inline Vec Fnmadd(const Vec& a, const Vec& b, const Vec& c)
+  {
+    return Sub(c, Mul(a, b));
+  }
 #endif
 
-  static inline avx_vec Reciprocal(const avx_vec& v) { return Div(Set1(1.0), v); }
+  static inline avx_vec Reciprocal(const avx_vec& v)
+  {
+    return Div(Set1(1.0), v);
+  }
   static inline avx_vec Gather(const avx_index& idx, const double* base)
   {
     return _mm256_i32gather_pd(base, idx, sizeof(double));
@@ -371,7 +380,12 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
       }
 
       const double* __restrict m2d_row = m2d_op[direction_num].data();
-      const double* __restrict d2m_row = d2m_op[direction_num].data();
+
+      // D2M is [moment][direction]
+      std::vector<double> d2m_col(num_moments_);
+      for (int m = 0; m < num_moments_; ++m)
+        d2m_col[m] = d2m_op[m][direction_num];
+      const double* __restrict d2m_row = d2m_col.data();
 
       const double* psi_old =
         (time_dependent and data.psi_old)

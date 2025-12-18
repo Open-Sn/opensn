@@ -33,7 +33,7 @@ HarmonicSelectionRules::SelectHarmonics(const SelectionParameters& params)
     case AngularQuadratureType::LebedevQuadrature:
       return SelectLebedev(params);
 
-    case AngularQuadratureType::SLDFESQ:
+    case AngularQuadratureType::SLDFEsq:
       return SelectSLDFESQ(params);
 
     default:
@@ -53,20 +53,21 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
 {
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
 
-  const unsigned int num_polar = params.num_polar;
-  const unsigned int num_azimu_90 = params.num_azimu_90;
+  const unsigned int n_polar = params.n_polar;
+  const unsigned int n_azimuthal = params.n_azimuthal;
   const size_t num_dir = params.num_angles;
 
-  const unsigned int L_crit = 2 * num_polar - 1;
+  const unsigned int num_azimu_90 = n_azimuthal / 4;
+  const unsigned int L_crit = 2 * n_polar - 1;
   const unsigned int M_crit = 2 * num_azimu_90;
 
-  Logger::GetInstance().Log0Verbose1() << "  npolar = " << num_polar;
+  Logger::GetInstance().Log0Verbose1() << "  npolar = " << n_polar;
   Logger::GetInstance().Log0Verbose1() << "  nb_phi_90 = " << num_azimu_90;
   Logger::GetInstance().Log0Verbose1() << "  L_crit = " << L_crit;
   Logger::GetInstance().Log0Verbose1() << "  M_crit = " << M_crit;
 
   unsigned int ind_L = 2; // parity toggle for L
-  const unsigned int max_L = 2 * (num_polar + num_azimu_90 - 1);
+  const unsigned int max_L = std::min(2 * (n_polar + num_azimu_90 - 1), params.scattering_order);
 
   for (unsigned int L = 0; L <= max_L; ++L)
   {
@@ -124,67 +125,75 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
 }
 
 // 3D Product Quadrature rules
+// Note that (K, L) transcribes to (L, M) in this section
 std::vector<AngularQuadrature::HarmonicIndices>
 HarmonicSelectionRules::Select3DCartesianProduct(const SelectionParameters& params)
 {
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
+  harmonics.reserve(params.num_angles);
 
-  const unsigned int num_polar = params.num_polar;
-  const unsigned int num_azimu_90 = params.num_azimu_90;
-  const size_t num_dir = params.num_angles;
+  const unsigned int n_polar = params.n_polar;
+  const unsigned int n_azimuthal = params.n_azimuthal;
+  const size_t nb_dir = params.num_angles;
 
-  const unsigned int L_crit = 2 * num_polar - 1;
-  const unsigned int M_crit = 2 * num_azimu_90;
-  const unsigned int min_M_default = 1;
+  const unsigned int nb_phi_90 = n_azimuthal / 4;
+  const unsigned int npolar = n_polar / 2;
+
+  const unsigned int K_crit = 2 * npolar - 1;
+  const unsigned int L_crit = 2 * nb_phi_90;
+  const unsigned int min_L_default = 1;
 
   Logger::GetInstance().Log0Verbose1() << "3D Product Galerkin (General) rules:";
-  Logger::GetInstance().Log0Verbose1() << "  num_polar    = " << num_polar;
-  Logger::GetInstance().Log0Verbose1() << "  num_azimu_90 = " << num_azimu_90;
+  Logger::GetInstance().Log0Verbose1() << "  npolar       = " << npolar;
+  Logger::GetInstance().Log0Verbose1() << "  nb_phi_90    = " << nb_phi_90;
+  Logger::GetInstance().Log0Verbose1() << "  K_crit       = " << K_crit;
   Logger::GetInstance().Log0Verbose1() << "  L_crit       = " << L_crit;
-  Logger::GetInstance().Log0Verbose1() << "  M_crit       = " << M_crit;
 
-  const unsigned int max_L = 2 * (num_polar + num_azimu_90) - 1;
+  const unsigned int max_K = std::min(2 * (npolar + nb_phi_90) - 1, params.scattering_order);
 
-  for (unsigned int L = 0; L <= max_L; ++L)
+  for (unsigned int K = 0; K <= max_K; ++K)
   {
-    if (harmonics.size() >= num_dir)
+    if (harmonics.size() >= nb_dir)
       break;
 
-    unsigned int min_M;
-    if (L <= L_crit)
+    unsigned int min_L;
+    if (K <= K_crit)
     {
-      // M=0 cosine
-      harmonics.emplace_back(L, 0);
-      Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << 0;
-      if (harmonics.size() == num_dir)
+      // L = 0 cosine (append (K,0) once for K <= K_crit)
+      harmonics.emplace_back(K, 0);
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: K=" << K << ", L=" << 0;
+      if (harmonics.size() == nb_dir)
         break;
-      min_M = min_M_default;
+      min_L = min_L_default; // start inner L loop at 1
     }
     else
     {
-      min_M = L - L_crit;
+      // For K > K_crit the min L is K - K_crit
+      min_L = K - K_crit;
     }
 
-    const unsigned int max_M = std::min(L, M_crit);
+    // max_L = min(K, L_crit)
+    const unsigned int max_L = std::min(K, L_crit);
 
-    for (unsigned int M = min_M; M <= max_M; ++M)
+    // inner loop: L = min_L .. max_L (inclusive)
+    for (unsigned int L = min_L; L <= max_L; ++L)
     {
-      if (harmonics.size() >= num_dir)
+      if (harmonics.size() >= nb_dir)
         break;
 
-      // Cosine only if M < M_crit
-      if (M < M_crit)
+      // cosine only if L < L_crit
+      if (L < L_crit)
       {
-        harmonics.emplace_back(L, static_cast<int>(M));
-        Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << M;
-        if (harmonics.size() == num_dir)
+        harmonics.emplace_back(K, static_cast<int>(L));
+        Logger::GetInstance().Log0Verbose2() << "    Accepted: K=" << K << ", L=" << L;
+        if (harmonics.size() == nb_dir)
           break;
       }
 
-      // Sine always
-      harmonics.emplace_back(L, -static_cast<int>(M));
+      // sine always: append (K, -L)
+      harmonics.emplace_back(K, -static_cast<int>(L));
       Logger::GetInstance().Log0Verbose2()
-        << "    Accepted: ℓ=" << L << ", m=" << -static_cast<int>(M);
+        << "    Accepted: K=" << K << ", L=" << -static_cast<int>(L);
     }
   }
 
@@ -228,8 +237,17 @@ HarmonicSelectionRules::SelectLebedev(const SelectionParameters& params)
 
     for (const auto& [ell, m] : order_num->second.harmonics)
     {
-      harmonics.emplace_back(ell, m);
-      Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << ell << ", m=" << m;
+      // Only include harmonics with ℓ <= scattering_order
+      if (ell <= params.scattering_order)
+      {
+        harmonics.emplace_back(ell, m);
+        Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << ell << ", m=" << m;
+      }
+      else
+      {
+        Logger::GetInstance().Log0Verbose2()
+          << "    Rejected (ℓ > scattering_order): ℓ=" << ell << ", m=" << m;
+      }
     }
 
     Logger::GetInstance().Log0Verbose1() << "Lebedev Galerkin: Selected " << harmonics.size()
@@ -310,8 +328,17 @@ HarmonicSelectionRules::SelectSLDFESQ(const SelectionParameters& params)
 
     for (const auto& [ell, m] : sldfe_harmonics->second.harmonics)
     {
-      harmonics.emplace_back(ell, m);
-      Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << ell << ", m=" << m;
+      // Only include harmonics with ℓ <= scattering_order
+      if (ell <= params.scattering_order)
+      {
+        harmonics.emplace_back(ell, m);
+        Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << ell << ", m=" << m;
+      }
+      else
+      {
+        Logger::GetInstance().Log0Verbose2()
+          << "    Rejected (ℓ > scattering_order): ℓ=" << ell << ", m=" << m;
+      }
     }
 
     Logger::GetInstance().Log0Verbose1() << "SLDFESQ Galerkin: Selected " << harmonics.size()
