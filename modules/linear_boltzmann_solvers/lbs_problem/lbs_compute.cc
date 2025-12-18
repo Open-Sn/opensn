@@ -318,7 +318,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
   opensn::mpi_comm.barrier();
 }
 
-double
+static double
 GetInflow(const Cell& cell,
           const CellMapping& cell_mapping,
           const std::vector<UnitCellMatrices>& unit_cell_matrices,

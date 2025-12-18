@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-PetscErrorCode KEigenSNESMonitor(SNES snes, PetscInt iter, PetscReal rnorm, void*);
-PetscErrorCode KEigenKSPMonitor(KSP ksp, PetscInt n, PetscReal rnorm, void*);
+PetscErrorCode KEigenSNESMonitor(SNES snes, PetscInt iter, PetscReal rnorm, void* /*ctx*/);
+PetscErrorCode KEigenKSPMonitor(KSP ksp, PetscInt iter, PetscReal rnorm, void* /*ctx*/);
 
 } // namespace opensn
