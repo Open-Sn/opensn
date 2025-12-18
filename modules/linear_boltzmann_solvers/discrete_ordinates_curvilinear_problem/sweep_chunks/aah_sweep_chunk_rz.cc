@@ -273,7 +273,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       // Update phi
       for (int m = 0; m < num_moments_; ++m)
       {
-        const double wn_d2m = d2m_op[direction_num][m];
+        const double wn_d2m = d2m_op[m][direction_num];
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const auto ir = cell_transport_view.MapDOF(i, m, gs_gi);

@@ -28,14 +28,13 @@ public:
     size_t num_angles;
 
     // Quadrature-specific order parameter
-    // For Product: N in Sn notation
     // For Lebedev: Lebedev order (3, 5, 7, 9, etc.)
     // For SLDFESQ: Uniform Refinement level
     unsigned int quadrature_order = 0;
 
     // Info needed to Product + Triangular
-    unsigned int num_polar = 0;    // Number of positive-mu polar points
-    unsigned int num_azimu_90 = 0; // Number of azimuthal points in (0, pi/2)
+    unsigned int n_polar = 0;     // Number of positive-mu polar points
+    unsigned int n_azimuthal = 0; // Number of azimuthal points in (0, pi/2)
   };
 
   /**

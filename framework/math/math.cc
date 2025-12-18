@@ -6,6 +6,8 @@
 #include <cassert>
 #include <petscmat.h>
 #include <petscksp.h>
+#include <iostream>
+#include <iomanip>
 
 namespace opensn
 {
@@ -190,7 +192,8 @@ InvertMatrix(const std::vector<std::vector<double>>& matrix)
 }
 
 std::vector<std::vector<double>>
-OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix)
+OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix,
+                         const std::vector<double>& weights)
 {
   // Check an empty matrix
   if (matrix.empty())
@@ -210,102 +213,49 @@ OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix)
     }
   }
 
-  // Create working copy of the matrix
-  std::vector<std::vector<double>> A = matrix;
+  // Orthogonalize columns using Modified Gram-Schmidt with weighted inner product
+  // This keeps each column as close to its original form as possible while ensuring orthogonality
 
-  // Create identity matrix to accumulate Q
-  std::vector<std::vector<double>> Q(m, std::vector<double>(m, 0.0));
-  for (size_t i = 0; i < m; ++i)
+  // Create working copy of the matrix - we will orthogonalize its columns in place
+  std::vector<std::vector<double>> Q = matrix;
+
+  // Orthogonalize columns using Modified Gram-Schmidt
+  for (size_t j = 0; j < n; ++j)
   {
-    Q[i][i] = 1.0;
-  }
-
-  // Number of Householder reflections to compute
-  const size_t num_reflections = std::min(m - 1, n);
-
-  // Apply Householder reflections column by column
-  for (size_t k = 0; k < num_reflections; ++k)
-  {
-    // Extract the k-th column from row k to end
-    std::vector<double> column_k(m - k);
-    for (size_t i = k; i < m; ++i)
+    // Orthogonalize column j against all previous columns
+    for (size_t i = 0; i < j; ++i)
     {
-      column_k[i - k] = A[i][k];
-    }
-
-    // Compute norm of the column
-    double norm_x = 0.0;
-    for (const auto& xi : column_k)
-      norm_x += xi * xi;
-    norm_x = std::sqrt(norm_x);
-
-    // Skip if column is near zero
-    if (norm_x < 1e-14)
-      continue;
-
-    // Create Householder vector v such that H*x = ||x||*e1
-    std::vector<double> v = column_k;
-    double sign = (column_k[0] >= 0) ? 1.0 : -1.0;
-    v[0] += sign * norm_x;
-
-    // Normalize the Householder vector
-    double norm_v = 0.0;
-    for (const auto& vi : v)
-      norm_v += vi * vi;
-    norm_v = std::sqrt(norm_v);
-
-    if (norm_v > 1e-14)
-    {
-      for (auto& vi : v)
-        vi /= norm_v;
-    }
-
-    // Apply Householder reflection H = I - 2*v*v^T to matrix A
-    for (size_t j = k; j < n; ++j)
-    {
-      // Compute v^T * column_j
+      // Compute weighted inner product <Q[:,i], Q[:,j]>
       double dot_product = 0.0;
-      for (size_t i = 0; i < v.size() && (k + i) < m; ++i)
+      for (size_t row = 0; row < m; ++row)
       {
-        dot_product += v[i] * A[k + i][j];
+        dot_product += weights[row] * Q[row][i] * Q[row][j];
       }
 
-      // Update column_j = column_j - 2 * dot_product * v
-      for (size_t i = 0; i < v.size() && (k + i) < m; ++i)
+      // Subtract projection: Q[:,j] -= dot_product * Q[:,i]
+      for (size_t row = 0; row < m; ++row)
       {
-        A[k + i][j] -= 2.0 * dot_product * v[i];
+        Q[row][j] -= dot_product * Q[row][i];
       }
     }
 
-    // Apply Householder reflection to Q (accumulate transformations)
-    for (size_t i = 0; i < m; ++i)
+    // Normalize column j under weighted inner product
+    double norm_squared = 0.0;
+    for (size_t row = 0; row < m; ++row)
     {
-      // Compute row_i * v
-      double dot_product = 0.0;
-      for (size_t j = 0; j < v.size() && (k + j) < m; ++j)
-      {
-        dot_product += Q[i][k + j] * v[j];
-      }
+      norm_squared += weights[row] * Q[row][j] * Q[row][j];
+    }
+    double norm = std::sqrt(norm_squared);
 
-      // Update row_i = row_i - 2 * dot_product * v^T
-      for (size_t j = 0; j < v.size() && (k + j) < m; ++j)
+    if (norm > 1e-14)
+    {
+      for (size_t row = 0; row < m; ++row)
       {
-        Q[i][k + j] -= 2.0 * dot_product * v[j];
+        Q[row][j] /= norm;
       }
     }
   }
-
-  // Extract the first n columns of Q (the orthogonalized vectors)
-  std::vector<std::vector<double>> result(m, std::vector<double>(n));
-  for (size_t i = 0; i < m; ++i)
-  {
-    for (size_t j = 0; j < n; ++j)
-    {
-      result[i][j] = Q[i][j];
-    }
-  }
-
-  return result;
+  return Q;
 }
 
 void

@@ -59,6 +59,8 @@ protected:
   unsigned int scattering_order_;
   OperatorConstructionMethod construction_method_;
   unsigned int quadrature_order_ = 0;
+  unsigned int n_polar_ = 0;
+  unsigned int n_azimuthal_ = 0;
 
   explicit AngularQuadrature(
     AngularQuadratureType type,
@@ -124,14 +126,20 @@ public:
 
   /**
    * Sets the quadrature_order_ parameter depending on the quadrature type:
-   * For Product Quadrature: N in Sn notation
    * For Lebedev Quadrature: Lebedev Order {3, 5, 7, ...}
    * For SLDFE-S Quadrature: Uniform Refinement Level
    */
   void SetQuadratureOrder(unsigned int order) { quadrature_order_ = order; }
 
-  // Gets the Quadrature Order for harmonic selection
-  unsigned int GetGalerkinN() const { return quadrature_order_; }
+  /**
+   * Sets the n_polar_ parameter for product quadrature types
+   */
+  void SetNumberOfPolar(unsigned int num_polar) { n_polar_ = num_polar; }
+
+  /**
+   * Sets the n_polar_ parameter for product quadrature types
+   */
+  void SetNumberOfAzimuthal(unsigned int num_azimu) { n_azimuthal_ = num_azimu; }
 };
 
 } // namespace opensn

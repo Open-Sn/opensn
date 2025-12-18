@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/vacuum_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/quarter_range_isotropic_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbc_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
@@ -327,6 +328,70 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
         sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(G);
       else if (bndry_pref.type == LBSBoundaryType::ISOTROPIC)
         sweep_boundaries_[bid] = std::make_shared<IsotropicBoundary>(G, mg_q);
+      else if (bndry_pref.type == LBSBoundaryType::QUARTER_RANGE_ISOTROPIC)
+      {
+        // Get boundary normal - same logic as reflecting boundary
+        const double EPSILON = 1.0e-12;
+        std::unique_ptr<Vector3> n_ptr = nullptr;
+
+        // Find local face normal
+        for (const auto& cell : grid_->local_cells)
+          for (const auto& face : cell.faces)
+            if (not face.has_neighbor and face.neighbor_id == bid)
+            {
+              if (not n_ptr)
+                n_ptr = std::make_unique<Vector3>(face.normal);
+              if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
+                throw std::logic_error(GetName() +
+                                       ": Not all face normals are the same for quarter-range BC");
+            }
+
+        // Check globally
+        const int local_has_bid = n_ptr != nullptr ? 1 : 0;
+        const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
+
+        std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
+        std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3L, 0.0);
+
+        mpi_comm.all_gather(local_has_bid, locJ_has_bid);
+        std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
+        mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
+
+        Vector3 global_normal;
+        for (int j = 0; j < opensn::mpi_comm.size(); ++j)
+        {
+          if (locJ_has_bid[j])
+          {
+            int offset = 3 * j;
+            const double* n = &locJ_n_val[offset];
+            const Vector3 locJ_normal(n[0], n[1], n[2]);
+
+            if (local_has_bid)
+              if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
+                throw std::logic_error(
+                  GetName() + ": Not all face normals are globally the same for quarter-range BC");
+
+            global_normal = locJ_normal;
+          }
+        }
+
+        // Get quadrature directions from first groupset
+        if (groupsets_.empty())
+          throw std::logic_error(GetName() + ": No groupsets defined for quarter-range BC");
+
+        const auto& quadrature = groupsets_[0].quadrature;
+        if (not quadrature)
+          throw std::logic_error(GetName() + ": No quadrature defined for quarter-range BC");
+
+        std::vector<Vector3> omega_dirs;
+        omega_dirs.reserve(quadrature->omegas.size());
+        for (const auto& omega : quadrature->omegas)
+          omega_dirs.push_back(omega);
+
+        // Create quarter-range boundary
+        sweep_boundaries_[bid] = std::make_shared<QuarterRangeIsotropicBoundary>(
+          G, mg_q, global_normal, omega_dirs, MapGeometryTypeToCoordSys(geometry_type_));
+      }
       else if (bndry_pref.type == LBSBoundaryType::REFLECTING)
       {
         // Locally check all faces, that subscribe to this boundary,
@@ -379,7 +444,7 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
           G, global_normal, MapGeometryTypeToCoordSys(geometry_type_));
       }
     } // non-defaulted
-  } // for bndry id
+  }   // for bndry id
 }
 
 void
@@ -488,7 +553,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
                                std::to_string(gs) + " not found.");
 
       } // for angle m
-    } // if saving angular flux
+    }   // if saving angular flux
 
     const auto num_gs_groups = groupset.groups.size();
     const auto gsg_i = groupset.groups.front().id;
@@ -517,7 +582,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
             phi_new_local_[dof_map + g] *= std::pow(-1.0, ell);
             phi_old_local_[dof_map + g] *= std::pow(-1.0, ell);
           } // for group g
-        } // for moment m
+        }   // for moment m
 
         // Reorient angular flux
         if (options_.save_angular_flux)
@@ -533,7 +598,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
           }
         }
       } // for node i
-    } // for cell
+    }   // for cell
 
   } // for groupset
 }
@@ -937,7 +1002,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
 
       ++so_grouping_id;
     } // for so_grouping
-  } // map scope
+  }   // map scope
 
   return {unq_so_grps, dir_id_to_so_map};
 }
@@ -1034,7 +1099,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
       else
         OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     } // for an_ss
-  } // for so_grouping
+  }   // for so_grouping
 
   groupset.angle_agg->angle_set_groups.push_back(std::move(angle_set_group));
 

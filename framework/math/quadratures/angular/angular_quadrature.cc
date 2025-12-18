@@ -32,6 +32,8 @@ AngularQuadrature::MakeHarmonicIndices()
     params.scattering_order = scattering_order_;
     params.num_angles = abscissae.size();
     params.quadrature_order = quadrature_order_;
+    params.n_polar = n_polar_;
+    params.n_azimuthal = n_azimuthal_;
 
     // Get rule-selected harmonics
     m_to_ell_em_map_ = HarmonicSelectionRules::SelectHarmonics(params);
@@ -65,30 +67,28 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
     case OperatorConstructionMethod::STANDARD:
     {
       d2m_op_.clear();
+      d2m_op_.assign(num_moms, std::vector<double>(num_angles, 0.0));
 
-      for (const auto& ell_em : m_to_ell_em_map_)
+      for (size_t n = 0; n < num_angles; ++n)
       {
-        std::vector<double> cur_mom;
-        cur_mom.reserve(num_angles);
+        const auto& cur_angle = abscissae[n];
+        double w = weights[n];
 
-        for (auto n = 0; n < num_angles; ++n)
+        for (size_t m = 0; m < num_moms; ++m)
         {
-          const auto& cur_angle = abscissae[n];
+          const auto& ell_em = m_to_ell_em_map_[m];
           double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-          double w = weights[n];
-          cur_mom.push_back(value * w);
+          d2m_op_[m][n] = value * w;
         }
-
-        d2m_op_.push_back(cur_mom);
       }
 
       // Verbose printout
       std::stringstream outs;
       outs << "\nQuadrature d2m operator (Standard Method):\n";
-      for (auto n = 0; n < num_angles; ++n)
+      for (size_t m = 0; m < num_moms; ++m)
       {
-        outs << std::setw(5) << n;
-        for (auto m = 0; m < num_moms; ++m)
+        outs << std::setw(5) << m;
+        for (size_t n = 0; n < num_angles; ++n)
         {
           outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[m][n]
                << " ";
@@ -149,9 +149,10 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
       }
 
       // Orthogonalize using Householder method
-      std::vector<std::vector<double>> approx_harmonics = OrthogonalizeHouseholder(exact_harmonics);
+      std::vector<std::vector<double>> approx_harmonics =
+        OrthogonalizeHouseholder(exact_harmonics, weights);
 
-      // Renormalize to match standard spherical harmonic normalization
+      // Renormalize columns to match standard spherical harmonic normalization
       for (size_t m = 0; m < num_moms; ++m)
       {
         // Compute the norm under quadrature integration
@@ -161,9 +162,9 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
           norm_squared += approx_harmonics[n][m] * approx_harmonics[n][m] * weights[n];
         }
 
-        // The desired normalization for spherical harmonics is 4π/(2ℓ+1)
+        // The desired normalization for spherical harmonics is 1/(2ℓ+1)
         const auto& ell_em = m_to_ell_em_map_[m];
-        double desired_norm_squared = 4.0 * M_PI / (2.0 * ell_em.ell + 1.0);
+        double desired_norm_squared = 1 / (2.0 * ell_em.ell + 1.0);
 
         // Scale factor to achieve desired normalization
         double scale = std::sqrt(desired_norm_squared / norm_squared);
@@ -220,23 +221,20 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
     {
       // Both STANDARD and GALERKIN_ONE use the same M2D construction
       m2d_op_.clear();
+      m2d_op_.assign(num_angles, std::vector<double>(num_moms, 0.0));
 
       const auto normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
 
       for (size_t n = 0; n < num_angles; ++n)
       {
-        std::vector<double> cur_row;
-        cur_row.reserve(num_moms);
-
-        for (const auto& ell_em : m_to_ell_em_map_)
+        for (size_t m = 0; m < num_moms; ++m)
         {
+          const auto& ell_em = m_to_ell_em_map_[m];
           const auto& cur_angle = abscissae[n];
           double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
                          Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-          cur_row.push_back(value);
+          m2d_op_[n][m] = value;
         }
-
-        m2d_op_.push_back(cur_row);
       }
 
       // Verbose printout
@@ -275,9 +273,10 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
       }
 
       // Orthogonalize using Householder method
-      std::vector<std::vector<double>> approx_harmonics = OrthogonalizeHouseholder(exact_harmonics);
+      std::vector<std::vector<double>> approx_harmonics =
+        OrthogonalizeHouseholder(exact_harmonics, weights);
 
-      // Renormalize to match standard spherical harmonic normalization
+      // Renormalize columns to match standard spherical harmonic normalization
       for (size_t m = 0; m < num_moms; ++m)
       {
         // Compute the norm under quadrature integration
@@ -287,8 +286,9 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
           norm_squared += approx_harmonics[n][m] * approx_harmonics[n][m] * weights[n];
         }
 
+        // The desired normalization for spherical harmonics is 1/(2ℓ+1)
         const auto& ell_em = m_to_ell_em_map_[m];
-        double desired_norm_squared = 4.0 * M_PI / (2.0 * ell_em.ell + 1.0);
+        double desired_norm_squared = 1.0 / (2.0 * ell_em.ell + 1.0);
         double scale = std::sqrt(desired_norm_squared / norm_squared);
 
         for (size_t n = 0; n < num_angles; ++n)
