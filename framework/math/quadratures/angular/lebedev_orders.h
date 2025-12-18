@@ -37,7 +37,7 @@ public:
    * @return const std::vector<QuadraturePoint>& Reference to the points for that order
    * @throws std::invalid_argument if the requested order is not available
    */
-  static const std::vector<QuadraturePoint>& GetOrderPoints(int order)
+  static const std::vector<QuadraturePoint>& GetOrderPoints(unsigned int order)
   {
     static const auto all_points = InitializePoints();
     auto it = all_points.find(order);
@@ -53,10 +53,10 @@ public:
    *
    * @return std::vector<int> List of available quadrature orders
    */
-  static std::vector<int> GetAvailableOrders()
+  static std::vector<unsigned int> GetAvailableOrders()
   {
     static const auto all_points = InitializePoints();
-    std::vector<int> orders;
+    std::vector<unsigned int> orders;
     for (const auto& pair : all_points)
     {
       orders.push_back(pair.first);
@@ -66,7 +66,7 @@ public:
 
 private:
   // Map of order -> vector of quadrature points
-  using OrderMap = std::map<int, std::vector<QuadraturePoint>>;
+  using OrderMap = std::map<unsigned int, std::vector<QuadraturePoint>>;
 
   /**
    * @brief Initializes and returns the map of all predefined points.
