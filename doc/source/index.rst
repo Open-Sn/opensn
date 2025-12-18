@@ -52,6 +52,7 @@ most prominent features of OpenSn include:
    :maxdepth: 2
 
    install/index
+   user_guide/index
    theory/index
    tutorials/index
    capi/rst/index
