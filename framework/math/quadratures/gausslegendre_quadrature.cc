@@ -115,7 +115,7 @@ GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, doubl
   //  - c = everything but xold
   for (int k = 0; k < N; ++k) // NOLINT(modernize-use-integer-sign-comparison)
   {
-    for (size_t iteration = 0; iteration < max_iters; ++iteration)
+    for (unsigned int iteration = 0; iteration < max_iters; ++iteration)
     {
       double xold = xk[k];
       double f = Legendre(N, xold);        // Function evaluation
