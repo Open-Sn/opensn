@@ -27,7 +27,7 @@ public:
 
   std::string file_name_;
   std::ifstream file_;
-  size_t num_groups_;
+  std::size_t num_groups_;
   unsigned int scattering_order_;
   size_t num_precursors_;
   std::vector<MultiGroupXS::Precursor> precursors_;

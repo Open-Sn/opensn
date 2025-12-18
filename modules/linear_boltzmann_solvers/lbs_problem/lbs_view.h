@@ -18,7 +18,7 @@ class CellLBSView
 public:
   CellLBSView(size_t phi_address,
               int num_nodes,
-              int num_groups,
+              std::size_t num_groups,
               int num_moments,
               int num_faces,
               const MultiGroupXS& xs_mapping,
@@ -87,8 +87,8 @@ public:
 private:
   size_t phi_address_;
   int num_nodes_;
-  int num_groups_;
-  int num_grps_moms_;
+  std::size_t num_groups_;
+  std::size_t num_grps_moms_;
   const MultiGroupXS* xs_;
   double volume_;
   const std::vector<bool> face_local_flags_;

@@ -21,7 +21,7 @@ class SweepBoundary
 {
 public:
   explicit SweepBoundary(LBSBoundaryType bndry_type,
-                         size_t num_groups,
+                         std::size_t num_groups,
                          CoordinateSystemType coord_type)
     : num_groups_(num_groups), type_(bndry_type), coord_type_(coord_type)
   {
@@ -122,7 +122,7 @@ public:
 
 protected:
   std::vector<double> zero_boundary_flux_;
-  size_t num_groups_;
+  std::size_t num_groups_;
 
 private:
   const LBSBoundaryType type_;

@@ -20,7 +20,7 @@ class AngleSet
 {
 public:
   AngleSet(size_t id,
-           size_t num_groups,
+           std::size_t num_groups,
            const SPDS& spds,
            std::shared_ptr<FLUDS>& fluds,
            const std::vector<size_t>& angle_indices,
@@ -49,7 +49,7 @@ public:
   /// Returns the angle indices associated with this angleset.
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetBoundaries() { return boundaries_; }
 
-  size_t GetNumGroups() const { return num_groups_; }
+  std::size_t GetNumGroups() const { return num_groups_; }
 
   size_t GetNumAngles() const { return angles_.size(); }
 
@@ -109,7 +109,7 @@ public:
 
 protected:
   const size_t id_;
-  const size_t num_groups_;
+  const std::size_t num_groups_;
   const SPDS& spds_;
   std::shared_ptr<FLUDS> fluds_;
   std::vector<std::uint32_t> angles_;

@@ -93,7 +93,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
                              "must be specified when precursors are specified.");
 
         // Add delayed fission neutron yield to total
-        for (size_t g = 0; g < xsf.num_groups_; ++g)
+        for (std::size_t g = 0; g < xsf.num_groups_; ++g)
           xsf.nu_[g] += xsf.nu_delayed_[g];
 
         // Add data to precursor structs
@@ -111,7 +111,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
       if (xsf.sigma_f_.empty() and not xsf.nu_sigma_f_.empty())
       {
         xsf.sigma_f_ = xsf.nu_sigma_f_;
-        for (size_t g = 0; g < xsf.num_groups_; ++g)
+        for (std::size_t g = 0; g < xsf.num_groups_; ++g)
           if (xsf.nu_sigma_f_[g] > 0.0)
             xsf.sigma_f_[g] /= xsf.nu_[g];
       }
@@ -119,7 +119,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
 
       // Compute total production cross section
       xsf.nu_sigma_f_ = xsf.sigma_f_;
-      for (size_t g = 0; g < xsf.num_groups_; ++g)
+      for (std::size_t g = 0; g < xsf.num_groups_; ++g)
         xsf.nu_sigma_f_[g] *= xsf.nu_[g];
       mgxs.nu_sigma_f_ = xsf.nu_sigma_f_;
 
@@ -127,7 +127,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
       if (not xsf.nu_prompt_.empty())
       {
         mgxs.nu_prompt_sigma_f_ = xsf.sigma_f_;
-        for (size_t g = 0; g < xsf.num_groups_; ++g)
+        for (std::size_t g = 0; g < xsf.num_groups_; ++g)
           mgxs.nu_prompt_sigma_f_[g] *= xsf.nu_prompt_[g];
       }
 
@@ -135,7 +135,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
       if (not xsf.nu_delayed_.empty())
       {
         mgxs.nu_delayed_sigma_f_ = xsf.sigma_f_;
-        for (size_t g = 0; g < xsf.num_groups_; ++g)
+        for (std::size_t g = 0; g < xsf.num_groups_; ++g)
           mgxs.nu_delayed_sigma_f_[g] *= xsf.nu_delayed_[g];
       }
 
@@ -145,8 +145,8 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
         not xsf.nu_prompt_.empty() ? mgxs.nu_prompt_sigma_f_ : xsf.nu_sigma_f_;
 
       mgxs.production_matrix_.resize(xsf.num_groups_);
-      for (size_t g = 0; g < xsf.num_groups_; ++g)
-        for (size_t gp = 0.0; gp < xsf.num_groups_; ++gp)
+      for (std::size_t g = 0; g < xsf.num_groups_; ++g)
+        for (std::size_t gp = 0.0; gp < xsf.num_groups_; ++gp)
           mgxs.production_matrix_[g].push_back(fis_spec[g] * nu_sigma_f[gp]);
     } // if production_matrix empty
 
@@ -167,13 +167,13 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
 
       // Compute production cross section
       mgxs.nu_sigma_f_.assign(xsf.num_groups_, 0.0);
-      for (size_t g = 0; g < xsf.num_groups_; ++g)
-        for (size_t gp = 0; gp < xsf.num_groups_; ++gp)
+      for (std::size_t g = 0; g < xsf.num_groups_; ++g)
+        for (std::size_t gp = 0; gp < xsf.num_groups_; ++gp)
           mgxs.nu_sigma_f_[gp] += xsf.production_matrix_[g][gp];
 
       // Check for reasonable fission neutron yield
       auto nu = xsf.nu_sigma_f_;
-      for (size_t g = 0; g < xsf.num_groups_; ++g)
+      for (std::size_t g = 0; g < xsf.num_groups_; ++g)
         if (xsf.sigma_f_[g] > 0.0)
           nu[g] /= xsf.sigma_f_[g];
 

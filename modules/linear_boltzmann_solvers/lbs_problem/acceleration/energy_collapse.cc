@@ -14,7 +14,7 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 {
   const std::string fname = "acceleration::MakeTwoGridCollapsedInfo";
 
-  const size_t num_groups = xs.GetNumGroups();
+  const auto num_groups = xs.GetNumGroups();
   const auto& sigma_t = xs.GetSigmaTotal();
   const auto& diffusion_coeff = xs.GetDiffusionCoefficient();
 
