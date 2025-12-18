@@ -38,7 +38,7 @@ MultiGroupXS::Combine(
   std::vector<std::shared_ptr<MultiGroupXS>> xsecs;
   xsecs.reserve(combinations.size());
 
-  size_t n_grps = 0;
+  std::size_t n_grps = 0;
   unsigned int n_precs = 0;
   double Nf_total = 0.0; // Total density of fissile materials
 
@@ -313,7 +313,7 @@ MultiGroupXS::ComputeDiffusionParameters()
     double sigma_1 = 0.0;
     if (S.size() > 1)
     {
-      for (size_t gp = 0; gp < num_groups_; ++gp)
+      for (std::size_t gp = 0; gp < num_groups_; ++gp)
       {
         const auto& cols = S[1].rowI_indices[gp];
         const auto& vals = S[1].rowI_values[gp];
@@ -373,7 +373,7 @@ MultiGroupXS::SetScalingFactor(const double factor)
   scaling_factor_ = factor;
 
   // Apply to STL vector-based data
-  for (size_t g = 0; g < num_groups_; ++g)
+  for (std::size_t g = 0; g < num_groups_; ++g)
   {
     sigma_t_[g] *= m;
     sigma_a_[g] *= m;
@@ -395,7 +395,7 @@ MultiGroupXS::SetScalingFactor(const double factor)
 
   // Apply to transfer matrices
   for (auto& S_ell : transfer_matrices_)
-    for (size_t g = 0; g < num_groups_; ++g)
+    for (std::size_t g = 0; g < num_groups_; ++g)
       for (const auto& [_, gp, sig_ell] : S_ell.Row(g))
         sig_ell *= m;
 
@@ -412,7 +412,7 @@ MultiGroupXS::TransposeTransferAndProduction()
   {
     const auto& S_ell = transfer_matrices_[ell];
     SparseMatrix S_ell_transpose(num_groups_, num_groups_);
-    for (size_t g = 0; g < num_groups_; ++g)
+    for (std::size_t g = 0; g < num_groups_; ++g)
     {
       const size_t row_len = S_ell.rowI_indices[g].size();
       const size_t* col_ptr = S_ell.rowI_indices[g].data();
@@ -430,8 +430,8 @@ MultiGroupXS::TransposeTransferAndProduction()
     transposed_production_matrix_.clear();
     transposed_production_matrix_.resize(num_groups_);
     const auto& F = production_matrix_;
-    for (size_t g = 0; g < num_groups_; ++g)
-      for (size_t gp = 0; gp < num_groups_; ++gp)
+    for (std::size_t g = 0; g < num_groups_; ++g)
+      for (std::size_t gp = 0; gp < num_groups_; ++gp)
         transposed_production_matrix_[g].push_back(F[gp][g]);
   }
 }

@@ -87,7 +87,7 @@ XSFile::Read()
                              "Only positive velocity values are permitted.");
 
         // Compute inverse velocity
-        for (size_t g = 0; g < num_groups_; ++g)
+        for (std::size_t g = 0; g < num_groups_; ++g)
           inv_velocity_[g] = 1.0 / inv_velocity_[g];
       }
 
@@ -374,7 +374,7 @@ XSFile::Read()
 void
 XSFile::ReadGroupStructure(const std::string& keyword,
                            std::vector<double>& destination,
-                           const size_t n_grps,
+                           const std::size_t n_grps,
                            std::ifstream& file,
                            std::istringstream& line_stream,
                            size_t& line_number)
@@ -409,7 +409,7 @@ XSFile::ReadGroupStructure(const std::string& keyword,
 void
 XSFile::Read1DData(const std::string& keyword,
                    std::vector<double>& destination,
-                   const size_t n_entries,
+                   const std::size_t n_entries,
                    std::ifstream& file,
                    std::istringstream& line_stream,
                    size_t& line_number)

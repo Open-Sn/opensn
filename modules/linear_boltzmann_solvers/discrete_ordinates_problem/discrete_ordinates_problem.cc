@@ -344,7 +344,7 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
   }
 
   // Initialize default incident boundary
-  const size_t G = num_groups_;
+  const std::size_t G = num_groups_;
 
   sweep_boundaries_.clear();
   for (uint64_t bid : global_unique_bids_set)
