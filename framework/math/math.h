@@ -101,7 +101,8 @@ std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<doub
  * @throws std::runtime_error if matrix is empty or has inconsistent dimensions
  */
 std::vector<std::vector<double>>
-OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix);
+OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix,
+                         const std::vector<double>& weights);
 
 /// Computes the factorial of an integer.
 double Factorial(int x);

@@ -70,6 +70,8 @@ protected:
   unsigned int dimension_;
   unsigned int scattering_order_;
   OperatorConstructionMethod construction_method_;
+  unsigned int n_polar_ = 0;
+  unsigned int n_azimuthal_ = 0;
 
   /// Populates a map of moment m to the Spherical Harmonic indices required.
   void MakeHarmonicIndices();
