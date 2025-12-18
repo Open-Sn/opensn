@@ -60,7 +60,7 @@ public:
   bool apply_wgdsa;
   bool apply_tgdsa;
   unsigned int wgdsa_max_iters;
-  int tgdsa_max_iters;
+  unsigned int tgdsa_max_iters;
   double wgdsa_tol;
   double tgdsa_tol;
   bool wgdsa_verbose;

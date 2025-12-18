@@ -194,7 +194,7 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   tgdsa_tol = params.GetParamValue<double>("tgdsa_l_abs_tol");
 
   wgdsa_max_iters = params.GetParamValue<unsigned int>("wgdsa_l_max_its");
-  tgdsa_max_iters = params.GetParamValue<int>("tgdsa_l_max_its");
+  tgdsa_max_iters = params.GetParamValue<unsigned int>("tgdsa_l_max_its");
 
   wgdsa_verbose = params.GetParamValue<bool>("wgdsa_verbose");
   tgdsa_verbose = params.GetParamValue<bool>("tgdsa_verbose");
