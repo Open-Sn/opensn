@@ -36,7 +36,7 @@ protected:
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   const std::shared_ptr<DiscreteOrdinatesKEigenAcceleration> acceleration_;
 
-  size_t max_iters_;
+  unsigned int max_iters_;
   double k_eff_;
   double k_tolerance_;
   double F_prev_;
