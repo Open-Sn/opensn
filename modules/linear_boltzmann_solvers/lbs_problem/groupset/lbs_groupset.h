@@ -52,7 +52,7 @@ public:
   LinearSystemSolver::IterativeMethod iterative_method;
   AngleAggregationType angleagg_method;
   double residual_tolerance;
-  int max_iterations;
+  unsigned int max_iterations;
   int gmres_restart_intvl;
 
   bool allow_cycles;

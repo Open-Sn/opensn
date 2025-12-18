@@ -41,7 +41,7 @@ ClassicRichardson::Solve()
 
   double pw_phi_change_prev = 1.0;
   bool converged = false;
-  for (int k = 0; k < groupset.max_iterations; ++k)
+  for (unsigned int k = 0; k < groupset.max_iterations; ++k)
   {
     do_problem.GetQMomentsLocal() = saved_q_moments_local_;
     gs_context_ptr->set_source_function(groupset, do_problem.GetQMomentsLocal(), phi_old, scope);

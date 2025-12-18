@@ -184,7 +184,7 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   gmres_restart_intvl = params.GetParamValue<int>("gmres_restart_interval");
   allow_cycles = params.GetParamValue<bool>("allow_cycles");
   residual_tolerance = params.GetParamValue<double>("l_abs_tol");
-  max_iterations = params.GetParamValue<int>("l_max_its");
+  max_iterations = params.GetParamValue<unsigned int>("l_max_its");
 
   // DSA
   apply_wgdsa = params.GetParamValue<bool>("apply_wgdsa");
