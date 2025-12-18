@@ -19,10 +19,11 @@ using BlockID2XSMap = std::map<unsigned int, std::shared_ptr<MultiGroupXS>>;
 
 enum class LBSBoundaryType
 {
-  VACUUM = 1,     ///< Zero for all angles, space
-  ISOTROPIC = 2,  ///< One value for all angles, homogenous in space
-  REFLECTING = 3, ///< Reflecting boundary condition about a normal
-  ARBITRARY = 4   ///< Complex different for each angle and face node
+  VACUUM = 1,                ///< Zero for all angles, space
+  ISOTROPIC = 2,             ///< One value for all angles, homogenous in space
+  REFLECTING = 3,            ///< Reflecting boundary condition about a normal
+  ARBITRARY = 4,             ///< Complex different for each angle and face node
+  QUARTER_RANGE_ISOTROPIC = 5 ///< Quarter-range isotropic (constant for μ>0, η>0)
 };
 
 struct BoundaryPreference
