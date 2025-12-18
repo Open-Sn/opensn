@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-InputParameters BooleanLogicalVolumeArgumentPair();
+static InputParameters BooleanLogicalVolumeArgumentPair();
 
 OpenSnRegisterObjectInNamespace(logvol, BooleanLogicalVolume);
 
