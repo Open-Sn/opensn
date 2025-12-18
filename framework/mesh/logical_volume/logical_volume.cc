@@ -9,7 +9,7 @@ namespace opensn
 InputParameters
 LogicalVolume::GetInputParameters()
 {
-  return InputParameters();
+  return {};
 }
 
 LogicalVolume::LogicalVolume(const InputParameters& parameters)

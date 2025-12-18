@@ -73,7 +73,7 @@ ParallelSTLVector::GetLocalSTLData()
 std::vector<double>
 ParallelSTLVector::MakeLocalVector()
 {
-  return std::vector<double>(values_.begin(), values_.begin() + static_cast<int>(local_size_));
+  return {values_.begin(), values_.begin() + static_cast<int>(local_size_)};
 }
 
 double

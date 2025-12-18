@@ -29,8 +29,7 @@ GetCellDataIndex(const std::uint64_t* device_node_indexes, const std::uint32_t& 
 {
   const std::uint64_t* cell_data =
     device_node_indexes + static_cast<std::uint64_t>(2 * cell_local_idx);
-  return std::pair<const std::uint64_t*, std::uint64_t>(device_node_indexes + cell_data[0],
-                                                        cell_data[1]);
+  return {device_node_indexes + cell_data[0], cell_data[1]};
 }
 
 /**
