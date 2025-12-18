@@ -120,7 +120,7 @@ MultiGroupXS::Combine(
   }
 
   // Combine the data
-  size_t precursor_count = 0;
+  unsigned int precursor_count = 0;
   for (size_t x = 0; x < xsecs.size(); ++x)
   {
     // Fraction of fissile density
@@ -171,9 +171,9 @@ MultiGroupXS::Combine(
     if (xsecs[x]->GetNumPrecursors() > 0)
     {
       const auto& precursors = xsecs[x]->GetPrecursors();
-      for (size_t j = 0; j < xsecs[x]->GetNumPrecursors(); ++j)
+      for (unsigned int j = 0; j < xsecs[x]->GetNumPrecursors(); ++j)
       {
-        size_t count = precursor_count + j;
+        auto count = precursor_count + j;
         const auto& precursor = precursors[j];
         mgxs.precursors_[count].decay_constant = precursor.decay_constant;
         mgxs.precursors_[count].fractional_yield = precursor.fractional_yield * ff_i;
