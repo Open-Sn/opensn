@@ -23,7 +23,7 @@ public:
   ~CurvilinearProductQuadrature() override = default;
 
 protected:
-  CurvilinearProductQuadrature(int dimension, unsigned int scattering_order)
+  CurvilinearProductQuadrature(unsigned int dimension, unsigned int scattering_order)
     : ProductQuadrature(dimension, scattering_order)
   {
   }
