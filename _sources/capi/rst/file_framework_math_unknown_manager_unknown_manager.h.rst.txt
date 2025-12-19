@@ -30,6 +30,10 @@ Includes
 --------
 
 
+- ``iomanip``
+
+- ``sstream``
+
 - ``stdexcept``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
