@@ -535,7 +535,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
   return address;
 }
 
-size_t
+std::uint64_t
 PieceWiseLinearContinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();

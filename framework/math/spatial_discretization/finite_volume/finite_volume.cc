@@ -274,7 +274,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   else
   {
     const auto num_local_dofs = GetNumLocalDOFs(unknown_manager);
-    const size_t num_ghost_nodes = GetNumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
+    const auto num_ghost_nodes = GetNumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
     const uint64_t ghost_local_id = grid_->cells.GetGhostLocalID(cell.global_id);
 
     if (storage == UnknownStorageType::BLOCK)
@@ -286,10 +286,10 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   return -1;
 }
 
-size_t
+std::uint64_t
 FiniteVolume::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 {
-  unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
+  std::uint64_t N = unknown_manager.GetTotalUnknownStructureSize();
 
   return grid_->cells.GhostCellCount() * N;
 }
