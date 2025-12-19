@@ -17,7 +17,7 @@ namespace opensn
 void
 PowerIterationKEigenSolver(LBSProblem& lbs_problem,
                            double tolerance,
-                           int max_iterations,
+                           unsigned int max_iterations,
                            double& k_eff)
 {
   const std::string fname = "PowerIterationKEigenSolver";
@@ -52,7 +52,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
 
   // Start power iterations
   ags_solver->SetVerbosity(lbs_problem.GetOptions().verbose_ags_iterations);
-  int nit = 0;
+  unsigned int nit = 0;
   bool converged = false;
   while (nit < max_iterations)
   {

@@ -42,7 +42,7 @@ DiscreteOrdinatesKEigenAcceleration::DiscreteOrdinatesKEigenAcceleration(
   const InputParameters& params)
   : do_problem_(*params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
     l_abs_tol_(params.GetParamValue<double>("l_abs_tol")),
-    max_iters_(params.GetParamValue<int>("max_iters")),
+    max_iters_(params.GetParamValue<unsigned int>("max_iters")),
     verbose_(params.GetParamValue<bool>("verbose")),
     petsc_options_(params.GetParamValue<std::string>("petsc_options")),
     pi_max_its_(params.GetParamValue<int>("pi_max_its")),

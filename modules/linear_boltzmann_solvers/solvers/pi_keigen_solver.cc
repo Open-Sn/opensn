@@ -52,7 +52,7 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
     do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
     acceleration_(
       params.GetSharedPtrParam<DiscreteOrdinatesKEigenAcceleration>("acceleration", false)),
-    max_iters_(params.GetParamValue<size_t>("max_iters")),
+    max_iters_(params.GetParamValue<unsigned int>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
     F_prev_(1.0),
@@ -121,7 +121,7 @@ PowerIterationKEigenSolver::Execute()
   double k_eff_change = 1.0;
 
   // Start power iterations
-  size_t nit = 0;
+  unsigned int nit = 0;
   bool converged = false;
   while (nit < max_iters_)
   {

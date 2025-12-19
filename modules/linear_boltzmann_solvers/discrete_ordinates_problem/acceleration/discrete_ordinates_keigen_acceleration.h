@@ -93,7 +93,7 @@ protected:
   /// Absolute residual tolerance from parameters
   const double l_abs_tol_;
   /// Maximum allowable iterations from parameters
-  const int max_iters_;
+  const unsigned int max_iters_;
   /// Verbosity flag from parameters
   const bool verbose_;
   /// PETSc options from parameters

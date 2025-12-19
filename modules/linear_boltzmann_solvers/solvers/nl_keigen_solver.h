@@ -27,7 +27,7 @@ private:
   NLKEigenvalueAGSSolver nl_solver_;
 
   bool reset_phi0_;
-  int num_initial_power_its_;
+  unsigned int num_initial_power_its_;
 
 public:
   static InputParameters GetInputParameters();

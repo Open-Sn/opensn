@@ -26,7 +26,7 @@ AGSLinearSolver::Solve()
 
   double pw_change_prev = 1.0;
   bool converged = false;
-  for (int iter = 0; iter < max_iterations_; ++iter)
+  for (unsigned int iter = 0; iter < max_iterations_; ++iter)
   {
     for (auto& solver : wgs_solvers_)
     {

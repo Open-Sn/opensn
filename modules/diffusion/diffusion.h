@@ -28,7 +28,7 @@ public:
     /// Residual tol. relative to rhs
     double residual_tolerance = 1.0e-4;
     /// Maximum iterations
-    int max_iters = 100;
+    unsigned int max_iters = 100;
     /// Verbosity flag
     bool verbose = false;
     /// For debugging only (very expensive)

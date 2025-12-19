@@ -184,7 +184,7 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   gmres_restart_intvl = params.GetParamValue<int>("gmres_restart_interval");
   allow_cycles = params.GetParamValue<bool>("allow_cycles");
   residual_tolerance = params.GetParamValue<double>("l_abs_tol");
-  max_iterations = params.GetParamValue<int>("l_max_its");
+  max_iterations = params.GetParamValue<unsigned int>("l_max_its");
 
   // DSA
   apply_wgdsa = params.GetParamValue<bool>("apply_wgdsa");
@@ -193,8 +193,8 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   wgdsa_tol = params.GetParamValue<double>("wgdsa_l_abs_tol");
   tgdsa_tol = params.GetParamValue<double>("tgdsa_l_abs_tol");
 
-  wgdsa_max_iters = params.GetParamValue<int>("wgdsa_l_max_its");
-  tgdsa_max_iters = params.GetParamValue<int>("tgdsa_l_max_its");
+  wgdsa_max_iters = params.GetParamValue<unsigned int>("wgdsa_l_max_its");
+  tgdsa_max_iters = params.GetParamValue<unsigned int>("tgdsa_l_max_its");
 
   wgdsa_verbose = params.GetParamValue<bool>("wgdsa_verbose");
   tgdsa_verbose = params.GetParamValue<bool>("tgdsa_verbose");
