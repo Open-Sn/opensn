@@ -66,7 +66,7 @@ private:
   const TriangleQuadrature& volume_quadrature_;
   const LineQuadrature& surface_quadrature_;
 
-  int num_of_subtris_;
+  std::size_t num_of_subtris_;
   double beta_;
   Vector3 vc_;
   std::vector<std::vector<int>> node_to_side_map_;
