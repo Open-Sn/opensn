@@ -339,7 +339,13 @@ WrapMeshGenerator(py::module& mesh)
     replicated_mesh: bool, default=False
         Flag, when set, makes the mesh appear in full fidelity on each process.
     layers: List[Dict]
-        List of layers. Parameters of each layers are represented as Python dictionary.
+        List of layers. Each layer is a dictionary with entries:
+          - n: int, default=1
+              Number of sub-layers in this layer.
+          - h: float, default=1.0
+              Layer height. Cannot be specified if ``z`` is specified.
+          - z: float, default=0.0
+              Z-coordinate at the top of the layer. Cannot be specified if ``h`` is specified.
     top_boundary_name: str, default='ZMAX'
         The name to associate with the top boundary.
     bottom_boundary_name: str, default='ZMIN'

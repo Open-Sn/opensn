@@ -44,7 +44,41 @@ WrapResEval(py::module& response)
     lbs_problem: pyopensn.solver.Solver
         A handle to an existing LBS problem.
     options: Dict
-        The specification of adjoint buffers and forward to use.
+        The specification of adjoint buffers and forward sources to use. Supported keys:
+          - buffers: List[Dict], default=[]
+              Each dictionary supports:
+                - name: str (required)
+                    Buffer name used for response queries.
+                - file_prefixes: Dict (required)
+                    Prefix map with optional keys:
+                      - flux_moments: str
+                          Prefix for flux moments files.
+                      - angular_fluxes: str
+                          Prefix for angular flux files.
+          - clear_sources: bool, default=False
+              If true, clears any existing forward sources.
+          - sources: Dict, default={}
+              Dictionary describing forward sources. Supported keys:
+                - material: List[Dict], default=[]
+                    Each dictionary supports:
+                      - block_id: int (required)
+                          Block id for the material source.
+                      - strength: List[float] (required)
+                          Group-wise source strength (length must match number of groups).
+                - point: List[pyopensn.source.PointSource], default=[]
+                    Point source handles.
+                - volumetric: List[pyopensn.source.VolumetricSource], default=[]
+                    Volumetric source handles.
+                - boundary: List[Dict], default=[]
+                    Boundary source dictionaries. Each dictionary supports:
+                      - name: str (required)
+                          Boundary name that identifies the specific boundary.
+                      - type: {'vacuum', 'isotropic', 'reflecting'} (required)
+                          Boundary type specification. Only ``isotropic`` is used for responses.
+                      - group_strength: List[float], optional
+                          Required when ``type='isotropic'``. Isotropic strength per group.
+                      - function_name: str, optional, default=''
+                          Name of a registered function to evaluate on the boundary.
     )"
   );
   res_eval.def(
@@ -75,11 +109,39 @@ WrapResEval(py::module& response)
     Parameters
     ----------
     buffers: List[Dict], default=[]
-        A list of dictionaries containing adjoint buffer specifications.
+        A list of dictionaries containing adjoint buffer specifications. Each dictionary supports:
+          - name: str (required)
+              Buffer name used for response queries.
+          - file_prefixes: Dict (required)
+              Prefix map with optional keys:
+                - flux_moments: str
+                    Prefix for flux moments files.
+                - angular_fluxes: str
+                    Prefix for angular flux files.
     clear_sources: bool, default=False
         A flag to clear existing sources.
-    sources: List[Dict], default=[]
-        A list of dictionaries containing source specification information.
+    sources: Dict, default={}
+        Dictionary describing forward sources. Supported keys:
+          - material: List[Dict], default=[]
+              Each dictionary supports:
+                - block_id: int (required)
+                    Block id for the material source.
+                - strength: List[float] (required)
+                    Group-wise source strength (length must match number of groups).
+          - point: List[pyopensn.source.PointSource], default=[]
+              Point source handles.
+          - volumetric: List[pyopensn.source.VolumetricSource], default=[]
+              Volumetric source handles.
+          - boundary: List[Dict], default=[]
+              Boundary source dictionaries. Each dictionary supports:
+                - name: str (required)
+                    Boundary name that identifies the specific boundary.
+                - type: {'vacuum', 'isotropic', 'reflecting'} (required)
+                    Boundary type specification. Only ``isotropic`` is used for responses.
+                - group_strength: List[float], optional
+                    Required when ``type='isotropic'``. Isotropic strength per group.
+                - function_name: str, optional, default=''
+                    Name of a registered function to evaluate on the boundary.
     )"
     );
   res_eval.def(
@@ -97,6 +159,17 @@ WrapResEval(py::module& response)
     },
     R"(
     Add adjoint buffers from the options block to the response evaluator.
+
+    Parameters
+    ----------
+    name: str (required)
+        Buffer name used for response queries.
+    file_prefixes: Dict (required)
+        Prefix map with optional keys:
+          - flux_moments: str
+              Prefix for flux moments files.
+          - angular_fluxes: str
+              Prefix for angular flux files.
     )"
   );
   res_eval.def(
@@ -109,6 +182,29 @@ WrapResEval(py::module& response)
     },
     R"(
     Add forward sources from the options block to the response evaluator.
+
+    Parameters
+    ----------
+    material: List[Dict], default=[]
+        Each dictionary supports:
+          - block_id: int (required)
+              Block id for the material source.
+          - strength: List[float] (required)
+              Group-wise source strength (length must match number of groups).
+    point: List[pyopensn.source.PointSource], default=[]
+        Point source handles.
+    volumetric: List[pyopensn.source.VolumetricSource], default=[]
+        Volumetric source handles.
+    boundary: List[Dict], default=[]
+        Boundary source dictionaries. Each dictionary supports:
+          - name: str (required)
+              Boundary name that identifies the specific boundary.
+          - type: {'vacuum', 'isotropic', 'reflecting'} (required)
+              Boundary type specification. Only ``isotropic`` is used for responses.
+          - group_strength: List[float], optional
+              Required when ``type='isotropic'``. Isotropic strength per group.
+          - function_name: str, optional, default=''
+              Name of a registered function to evaluate on the boundary.
     )"
   );
   // clang-format on
