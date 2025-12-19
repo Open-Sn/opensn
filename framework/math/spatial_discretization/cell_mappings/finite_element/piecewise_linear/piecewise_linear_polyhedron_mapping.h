@@ -42,9 +42,9 @@ public:
 
 private:
   /// Precomputes the shape function values of a face-side pair at a quadrature point
-  double FaceSideShape(uint32_t face_index,
-                       uint32_t side_index,
-                       uint32_t i,
+  double FaceSideShape(size_t face_index,
+                       size_t side_index,
+                       size_t i,
                        const Vector3& qpoint,
                        bool on_surface = false) const;
 

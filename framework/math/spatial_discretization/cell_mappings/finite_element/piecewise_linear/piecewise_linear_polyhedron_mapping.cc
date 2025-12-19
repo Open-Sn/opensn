@@ -267,11 +267,8 @@ PieceWiseLinearPolyhedronMapping::TetGradShape_z(const int index)
 }
 
 double
-PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
-                                                uint32_t side_index,
-                                                uint32_t i,
-                                                const Vector3& qpoint,
-                                                bool on_surface) const
+PieceWiseLinearPolyhedronMapping::FaceSideShape(
+  size_t face_index, size_t side_index, size_t i, const Vector3& qpoint, bool on_surface) const
 {
   double value = 0.0;
   auto index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
