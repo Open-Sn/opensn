@@ -42,32 +42,30 @@ ThrowPETScError(int ierr, const char* expr, const char* file, int line)
 }
 
 Vec
-CreateVector(int64_t local_size, int64_t global_size)
+CreateVector(PetscInt local_size, PetscInt global_size)
 {
   Vec x = nullptr;
   OpenSnPETScCall(VecCreate(opensn::mpi_comm, &x));
   OpenSnPETScCall(VecSetType(x, VECMPI));
-  OpenSnPETScCall(
-    VecSetSizes(x, ToPetscInt(local_size, "local_size"), ToPetscInt(global_size, "global_size")));
+  OpenSnPETScCall(VecSetSizes(x, local_size, global_size));
   OpenSnPETScCall(VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 
   return x;
 }
 
 void
-CreateVector(Vec& x, int64_t local_size, int64_t global_size)
+CreateVector(Vec& x, PetscInt local_size, PetscInt global_size)
 {
   OpenSnPETScCall(VecCreate(opensn::mpi_comm, &x));
   OpenSnPETScCall(VecSetType(x, VECMPI));
-  OpenSnPETScCall(
-    VecSetSizes(x, ToPetscInt(local_size, "local_size"), ToPetscInt(global_size, "global_size")));
+  OpenSnPETScCall(VecSetSizes(x, local_size, global_size));
   OpenSnPETScCall(VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 }
 
 Vec
-CreateVectorWithGhosts(int64_t local_size,
-                       int64_t global_size,
-                       int64_t nghosts,
+CreateVectorWithGhosts(PetscInt local_size,
+                       PetscInt global_size,
+                       PetscInt nghosts,
                        const std::vector<int64_t>& ghost_indices)
 {
   std::vector<PetscInt> ghost_indices_petsc;
@@ -78,9 +76,9 @@ CreateVectorWithGhosts(int64_t local_size,
   Vec x = nullptr;
   OpenSnPETScCall(
     VecCreateGhost(opensn::mpi_comm,
-                   ToPetscInt(local_size, "local_size"),
-                   ToPetscInt(global_size, "global_size"),
-                   ToPetscInt(nghosts, "nghosts"),
+                   local_size,
+                   global_size,
+                   nghosts,
                    (ghost_indices_petsc.empty()) ? nullptr : ghost_indices_petsc.data(),
                    &x));
 
@@ -90,14 +88,12 @@ CreateVectorWithGhosts(int64_t local_size,
 }
 
 Mat
-CreateSquareMatrix(int64_t local_size, int64_t global_size)
+CreateSquareMatrix(PetscInt local_size, PetscInt global_size)
 {
   Mat A = nullptr;
   OpenSnPETScCall(MatCreate(opensn::mpi_comm, &A));
   OpenSnPETScCall(MatSetType(A, MATMPIAIJ));
-  const auto local = ToPetscInt(local_size, "local_size");
-  const auto global = ToPetscInt(global_size, "global_size");
-  OpenSnPETScCall(MatSetSizes(A, local, local, global, global));
+  OpenSnPETScCall(MatSetSizes(A, local_size, local_size, global_size, global_size));
 
   OpenSnPETScCall(MatMPIAIJSetPreallocation(A, 1, nullptr, 0, nullptr));
   OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
@@ -107,13 +103,11 @@ CreateSquareMatrix(int64_t local_size, int64_t global_size)
 }
 
 void
-CreateSquareMatrix(Mat& A, int64_t local_size, int64_t global_size)
+CreateSquareMatrix(Mat& A, PetscInt local_size, PetscInt global_size)
 {
   OpenSnPETScCall(MatCreate(opensn::mpi_comm, &A));
   OpenSnPETScCall(MatSetType(A, MATMPIAIJ));
-  const auto local = ToPetscInt(local_size, "local_size");
-  const auto global = ToPetscInt(global_size, "global_size");
-  OpenSnPETScCall(MatSetSizes(A, local, local, global, global));
+  OpenSnPETScCall(MatSetSizes(A, local_size, local_size, global_size, global_size));
 
   OpenSnPETScCall(MatMPIAIJSetPreallocation(A, 1, nullptr, 0, nullptr));
   OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
