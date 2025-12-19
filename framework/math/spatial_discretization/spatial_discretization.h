@@ -84,7 +84,7 @@ public:
   std::uint64_t GetNumLocalNodes() const;
 
   /// Returns the number of global nodes used in this discretization.
-  size_t GetNumGlobalNodes() const;
+  std::uint64_t GetNumGlobalNodes() const;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of local
