@@ -6,6 +6,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint Total Response :",
+        "goldvalue": 1.237160e-01,
+        "abs_tol": 1e-8
       }
     ]
   }

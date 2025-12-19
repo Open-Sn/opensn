@@ -1,0 +1,86 @@
+[
+  {
+    "file": "logvol_examples.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "1-Block 1: volume =",
+        "goldvalue": 6.4864,
+        "abs_tol": 1e-4
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "1-Block 2: volume =",
+        "goldvalue": 0.7541,
+        "abs_tol": 1e-4
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "1-Block 3: volume =",
+        "goldvalue": 0.7595,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "2-Block 1: volume =",
+        "goldvalue": 3.9999,
+        "abs_tol": 1e-4
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "2-Block 2: volume =",
+        "goldvalue": 4.0001,
+        "abs_tol": 1e-4
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "3-Block 1: volume =",
+        "goldvalue": 7.4768,
+        "abs_tol": 1e-4
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "3-Block 2: volume =",
+        "goldvalue": 0.5232,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "4-Block 1: volume =",
+        "goldvalue": 6.4288,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "4-Block 2: volume =",
+        "goldvalue": 1.048,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "4-Block 3: volume =",
+        "goldvalue": 0.5232,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "5-Block 1: volume =",
+        "goldvalue": 122.6,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "5-Block 2: volume =",
+        "goldvalue": 1.4,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "5-Block 3: volume =",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-6
+      }
+    ]
+  }
+]

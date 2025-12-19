@@ -6,6 +6,18 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Forward Total Flux :",
+        "goldvalue": 2.896951,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Forward Total Response :",
+        "goldvalue": 1.237160e-1,
+        "abs_tol": 1e-6
       }
     ]
   }
