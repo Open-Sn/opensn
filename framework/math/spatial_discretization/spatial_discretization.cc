@@ -40,7 +40,7 @@ SpatialDiscretization::GetNumLocalDOFs(const UnknownManager& unknown_manager) co
   return local_base_block_size_ * N;
 }
 
-size_t
+std::uint64_t
 SpatialDiscretization::GetNumGlobalNodes() const
 {
   return global_base_block_size_;
