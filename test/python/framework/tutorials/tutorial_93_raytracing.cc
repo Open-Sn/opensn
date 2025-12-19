@@ -59,7 +59,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
     phi_uk_man.AddUnknown(UnknownType::VECTOR_N, num_groups);
 
   const size_t num_fem_local_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
-  const size_t num_fem_global_dofs = sdm.GetNumGlobalDOFs(phi_uk_man);
+  const auto num_fem_global_dofs = sdm.GetNumGlobalDOFs(phi_uk_man);
 
   opensn::log.Log() << "Num local FEM DOFs: " << num_fem_local_dofs;
   opensn::log.Log() << "Num globl FEM DOFs: " << num_fem_global_dofs;

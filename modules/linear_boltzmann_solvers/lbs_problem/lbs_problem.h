@@ -168,7 +168,7 @@ public:
   size_t GetLocalNodeCount() const;
 
   /// Returns the global node count for the flux-moments data structures.
-  size_t GetGlobalNodeCount() const;
+  std::uint64_t GetGlobalNodeCount() const;
 
   /// Read/write access to source moments vector.
   std::vector<double>& GetQMomentsLocal();

@@ -46,7 +46,7 @@ SpatialDiscretization::GetNumGlobalNodes() const
   return global_base_block_size_;
 }
 
-size_t
+std::uint64_t
 SpatialDiscretization::GetNumGlobalDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();

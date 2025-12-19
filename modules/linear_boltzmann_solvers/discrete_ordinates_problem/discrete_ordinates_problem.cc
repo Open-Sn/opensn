@@ -205,7 +205,7 @@ DiscreteOrdinatesProblem::GetNumPhiIterativeUnknowns()
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::GetNumPhiIterativeUnknowns");
   const auto& sdm = *discretization_;
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
-  const size_t num_global_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
+  const auto num_global_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
 
   size_t num_local_psi_dofs = 0;
   size_t num_global_psi_dofs = 0;

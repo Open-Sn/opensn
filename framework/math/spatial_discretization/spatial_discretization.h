@@ -96,7 +96,7 @@ public:
    * For the unknown structure in the unknown manager, returns the number of global
    * degrees-of-freedom.
    */
-  size_t GetNumGlobalDOFs(const UnknownManager& unknown_manager) const;
+  std::uint64_t GetNumGlobalDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of ghost
