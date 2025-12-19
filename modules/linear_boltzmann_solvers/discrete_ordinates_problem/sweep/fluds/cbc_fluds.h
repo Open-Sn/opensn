@@ -93,7 +93,7 @@ private:
   const UnknownManager& psi_uk_man_;
   const SpatialDiscretization& sdm_;
   size_t num_angles_in_gs_quadrature_;
-  size_t num_quadrature_local_dofs_;
+  std::uint64_t num_quadrature_local_dofs_;
   size_t num_local_spatial_dofs_;
   size_t local_psi_data_size_;
   /**
