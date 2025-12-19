@@ -67,14 +67,9 @@ LebedevQuadrature3DXYZ::LoadFromOrder(int quadrature_order, bool verbose)
 
     if (verbose)
     {
-      char buf[200];
-      snprintf(buf,
-               200,
-               "Varphi=%.2f Theta=%.2f Weight=%.3e\n",
-               qpoint.phi * 180.0 / M_PI,
-               qpoint.theta * 180.0 / M_PI,
-               w);
-      ostr << buf;
+      ostr << "Varphi=" << std::fixed << std::setprecision(2) << qpoint.phi * 180.0 / M_PI
+           << " Theta=" << std::fixed << std::setprecision(2) << qpoint.theta * 180.0 / M_PI
+           << " Weight=" << std::scientific << std::setprecision(3) << w << '\n';
     }
   }
 

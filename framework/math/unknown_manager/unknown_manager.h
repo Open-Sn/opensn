@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <sstream>
+#include <iomanip>
 
 namespace opensn
 {
@@ -42,10 +44,9 @@ public:
     component_names.resize(num_components, std::string());
     for (unsigned int c = 0; c < num_components; ++c)
     {
-
-      char buffer[100];
-      snprintf(buffer, 100, " %03d", c);
-      component_names[c] = buffer;
+      std::ostringstream oss;
+      oss << ' ' << std::setw(3) << std::setfill('0') << c;
+      component_names[c] = oss.str();
     }
     num_off_block_connections.resize(num_components, 0);
   }

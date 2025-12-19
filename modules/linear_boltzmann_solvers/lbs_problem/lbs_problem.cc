@@ -1196,10 +1196,10 @@ LBSProblem::InitializeFieldFunctions()
       if (options_.field_function_prefix_option == "solver_name")
         prefix = GetName() + "_";
 
-      char buff[100];
-      snprintf(
-        buff, 99, "%sphi_g%03d_m%02d", prefix.c_str(), static_cast<int>(g), static_cast<int>(m));
-      const std::string name = std::string(buff);
+      std::ostringstream oss;
+      oss << prefix << "phi_g" << std::setw(3) << std::setfill('0') << static_cast<int>(g) << "_m"
+          << std::setw(2) << std::setfill('0') << static_cast<int>(m);
+      const std::string name = oss.str();
 
       auto group_ff = std::make_shared<FieldFunctionGridBased>(
         name, discretization_, Unknown(UnknownType::SCALAR));

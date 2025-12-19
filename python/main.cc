@@ -3,9 +3,9 @@
 
 #include "python/lib/py_app.h"
 #include "mpicpp-lite/mpicpp-lite.h"
-#include <cstdio>
-#include <cstdlib>
 #include "petsc.h"
+#include <cstdlib>
+#include <iostream>
 
 namespace mpi = mpicpp_lite;
 
@@ -25,7 +25,7 @@ main(int argc, char** argv)
   }
   catch (...)
   {
-    std::fprintf(stderr, "Unknown fatal error\n");
+    std::cerr << "Unknown fatal error\n";
     retval = EXIT_FAILURE;
   }
 
