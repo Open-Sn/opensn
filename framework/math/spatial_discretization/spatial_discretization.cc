@@ -32,7 +32,7 @@ SpatialDiscretization::GetNumLocalNodes() const
   return local_base_block_size_;
 }
 
-size_t
+std::uint64_t
 SpatialDiscretization::GetNumLocalDOFs(const UnknownManager& unknown_manager) const
 {
   unsigned int N = unknown_manager.GetTotalUnknownStructureSize();
@@ -207,7 +207,7 @@ SpatialDiscretization::LocalizePETScVector(Vec petsc_vector,
                                            std::vector<double>& local_vector,
                                            const UnknownManager& unknown_manager) const
 {
-  size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
+  auto num_local_dofs = GetNumLocalDOFs(unknown_manager);
 
   CopyVecToSTLvector(petsc_vector, local_vector, num_local_dofs);
 }

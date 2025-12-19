@@ -509,7 +509,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
   } // if is_local
   else
   {
-    const size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
+    const auto num_local_dofs = GetNumLocalDOFs(unknown_manager);
     int64_t ghost_local_node_id = -1;
     int64_t counter = 0;
     for (const auto& vid_gnid : ghost_node_mapping_)

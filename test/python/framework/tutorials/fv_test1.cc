@@ -32,7 +32,7 @@ SimTest01_FV(std::shared_ptr<MeshContinuum> grid)
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
-  const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
+  const auto num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const auto num_global_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local DOFs: " << num_local_dofs;

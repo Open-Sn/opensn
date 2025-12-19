@@ -90,7 +90,7 @@ public:
    * For the unknown structure in the unknown manager, returns the number of local
    * degrees-of-freedom.
    */
-  size_t GetNumLocalDOFs(const UnknownManager& unknown_manager) const;
+  std::uint64_t GetNumLocalDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of global

@@ -273,7 +273,7 @@ FiniteVolume::MapDOFLocal(const Cell& cell,
   }
   else
   {
-    const size_t num_local_dofs = GetNumLocalDOFs(unknown_manager);
+    const auto num_local_dofs = GetNumLocalDOFs(unknown_manager);
     const size_t num_ghost_nodes = GetNumGhostDOFs(UNITARY_UNKNOWN_MANAGER);
     const uint64_t ghost_local_id = grid_->cells.GetGhostLocalID(cell.global_id);
 
