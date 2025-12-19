@@ -26,7 +26,7 @@ SpatialDiscretization::GetGrid() const
   return grid_;
 }
 
-size_t
+std::uint64_t
 SpatialDiscretization::GetNumLocalNodes() const
 {
   return local_base_block_size_;
