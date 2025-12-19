@@ -136,7 +136,7 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
 
   const size_t num_unknowns = uk_man.unknowns.size();
 
-  const size_t num_cfem_local_dofs = pwlc_sdm.GetNumLocalAndGhostDOFs(uk_man);
+  const auto num_cfem_local_dofs = pwlc_sdm.GetNumLocalAndGhostDOFs(uk_man);
 
   std::vector<double> cont_input(num_cfem_local_dofs, 0.0);
   std::vector<double> cont_input_ctr(num_cfem_local_dofs, 0.0);

@@ -40,7 +40,7 @@ DiffusionPWLCSolver::DiffusionPWLCSolver(std::string name,
 void
 DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 {
-  const size_t num_local_dofs = sdm_.GetNumLocalAndGhostDOFs(uk_man_);
+  const auto num_local_dofs = sdm_.GetNumLocalAndGhostDOFs(uk_man_);
   OpenSnInvalidArgumentIf(q_vector.size() != num_local_dofs,
                           std::string("q_vector size mismatch. ") +
                             std::to_string(q_vector.size()) + " vs " +
@@ -246,7 +246,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 void
 DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 {
-  const size_t num_local_dofs = sdm_.GetNumLocalAndGhostDOFs(uk_man_);
+  const auto num_local_dofs = sdm_.GetNumLocalAndGhostDOFs(uk_man_);
   OpenSnInvalidArgumentIf(q_vector.size() != num_local_dofs,
                           std::string("q_vector size mismatch. ") +
                             std::to_string(q_vector.size()) + " vs " +

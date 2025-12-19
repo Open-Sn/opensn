@@ -54,7 +54,7 @@ SpatialDiscretization::GetNumGlobalDOFs(const UnknownManager& unknown_manager) c
   return global_base_block_size_ * N;
 }
 
-size_t
+std::uint64_t
 SpatialDiscretization::GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const
 {
   return GetNumLocalDOFs(unknown_manager) + GetNumGhostDOFs(unknown_manager);
@@ -217,7 +217,7 @@ SpatialDiscretization::LocalizePETScVectorWithGhosts(Vec petsc_vector,
                                                      std::vector<double>& local_vector,
                                                      const UnknownManager& unknown_manager) const
 {
-  size_t num_local_dofs = GetNumLocalAndGhostDOFs(unknown_manager);
+  auto num_local_dofs = GetNumLocalAndGhostDOFs(unknown_manager);
 
   CopyVecToSTLvectorWithGhosts(petsc_vector, local_vector, num_local_dofs);
 }
