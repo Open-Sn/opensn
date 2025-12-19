@@ -47,7 +47,7 @@ public:
 
 private:
   /// Precomputation of the shape function at a quadrature point.
-  double SideShape(uint32_t side, uint32_t i, const Vector3& qpoint, bool on_surface = false) const;
+  double SideShape(size_t side, size_t i, const Vector3& qpoint, bool on_surface = false) const;
 
   /// This structure goes into sides
   struct FEside_data2d

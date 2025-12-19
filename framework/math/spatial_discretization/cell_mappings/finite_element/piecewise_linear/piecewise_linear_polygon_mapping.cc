@@ -125,8 +125,8 @@ PieceWiseLinearPolygonMapping::TriShape(uint32_t index, const Vector3& qpoint, b
 }
 
 double
-PieceWiseLinearPolygonMapping::SideShape(uint32_t side,
-                                         uint32_t i,
+PieceWiseLinearPolygonMapping::SideShape(size_t side,
+                                         size_t i,
                                          const Vector3& qpoint,
                                          bool on_surface) const
 {
@@ -385,7 +385,7 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
   // Init surface quadrature
   size_t num_srf_qpoints = surface_quadrature_.qpoints.size();
 
-  unsigned int s = face_index;
+  size_t s = face_index;
   // Declare necessary vars
   std::vector<unsigned int> F_quadrature_point_indices;
   std::vector<Vector3> F_qpoints_xyz;
