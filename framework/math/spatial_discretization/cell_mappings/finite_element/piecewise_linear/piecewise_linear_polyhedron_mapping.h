@@ -49,13 +49,13 @@ private:
                        bool on_surface = false) const;
 
   /// Precomputes the gradx-shape function values of a face-side pair at a quadrature point
-  double FaceSideGradShape_x(uint32_t face_index, uint32_t side_index, uint32_t i) const;
+  double FaceSideGradShape_x(size_t face_index, size_t side_index, size_t i) const;
 
   /// Precomputes the grady-shape function values of a face-side pair at a quadrature point
-  double FaceSideGradShape_y(uint32_t face_index, uint32_t side_index, uint32_t i) const;
+  double FaceSideGradShape_y(size_t face_index, size_t side_index, size_t i) const;
 
   /// Precomputes the gradz-shape function values of a face-side pair at a quadrature point
-  double FaceSideGradShape_z(uint32_t face_index, uint32_t side_index, uint32_t i) const;
+  double FaceSideGradShape_z(size_t face_index, size_t side_index, size_t i) const;
 
   /// Stores the data for each side's tetrahedron.
   struct FEside_data3d

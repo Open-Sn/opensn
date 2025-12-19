@@ -285,9 +285,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideShape(
 }
 
 double
-PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index,
-                                                      uint32_t side_index,
-                                                      uint32_t i) const
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(size_t face_index,
+                                                      size_t side_index,
+                                                      size_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;
@@ -325,9 +325,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index,
 }
 
 double
-PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(uint32_t face_index,
-                                                      uint32_t side_index,
-                                                      uint32_t i) const
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(size_t face_index,
+                                                      size_t side_index,
+                                                      size_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;
@@ -365,9 +365,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(uint32_t face_index,
 }
 
 double
-PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(uint32_t face_index,
-                                                      uint32_t side_index,
-                                                      uint32_t i) const
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(size_t face_index,
+                                                      size_t side_index,
+                                                      size_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;
