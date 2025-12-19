@@ -61,14 +61,9 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 
       if (verbose)
       {
-        char buf[200];
-        snprintf(buf,
-                 200,
-                 "Varphi=%.2f Theta=%.2f Weight=%.3e\n",
-                 abscissa.phi * 180.0 / M_PI,
-                 abscissa.theta * 180.0 / M_PI,
-                 weight);
-        ostr << buf;
+        ostr << "Varphi=" << std::fixed << std::setprecision(2) << abscissa.phi * 180.0 / M_PI
+             << " Theta=" << std::fixed << std::setprecision(2) << abscissa.theta * 180.0 / M_PI
+             << " Weight=" << std::scientific << std::setprecision(3) << weight << '\n';
       }
     }
   }

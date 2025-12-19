@@ -646,20 +646,12 @@ SLDFEsqQuadrature::TestIntegration(int test_case, double ref_solution, int Riema
     I_riemann = std::fabs(RiemannIntegral(F, NR));
   double I_quadrature = std::fabs(QuadratureSSIntegral(F));
 
-  char buff0[200], buff1[200], buff2[200];
-  snprintf(buff0, 200, "Riemann integral: %.20e\n", I_riemann);
-  snprintf(buff1, 200, "Quadrature integral: %.10e\n", I_quadrature);
-  snprintf(buff2,
-           200,
-           "Error_RQ%05ld_%06ld: %2d %f %e\n",
-           Nd,
-           Nd * 8,
-           level_,
-           h,
-           std::fabs((I_riemann - I_quadrature) / ref_solution));
-  log.Log() << buff0;
-  log.Log() << buff1;
-  log.Log() << buff2;
+  log.Log() << "Riemann integral: " << std::setprecision(20) << std::scientific << I_riemann;
+  log.Log() << "Quadrature integral: " << std::setprecision(10) << std::scientific << I_quadrature;
+  log.Log() << "Error_RQ" << std::setw(5) << std::setfill('0') << Nd << '_' << std::setw(6)
+            << std::setfill('0') << Nd * 8 << ": " << std::setw(2) << std::setfill(' ') << level_
+            << ' ' << h << ' ' << std::scientific
+            << std::fabs((I_riemann - I_quadrature) / ref_solution);
 }
 
 void

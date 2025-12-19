@@ -4,6 +4,8 @@
 #include "framework/utils/timer.h"
 #include <cmath>
 #include <ctime>
+#include <iomanip>
+#include <sstream>
 #include <thread>
 
 namespace opensn
@@ -40,10 +42,12 @@ Timer::GetTimeString() const
   // Keep seconds as a double since we want fractional seconds
   double seconds = time_sec - 3600.0 * hours - 60.0 * minutes;
 
-  char buff[100];
-  snprintf(buff, 100, "%02d:%02d:%04.1f", hours, minutes, seconds);
+  std::ostringstream oss;
+  oss << std::setw(2) << std::setfill('0') << hours << ':' << std::setw(2) << std::setfill('0')
+      << minutes << ':' << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(1)
+      << seconds;
 
-  return {buff};
+  return oss.str();
 }
 
 std::string
