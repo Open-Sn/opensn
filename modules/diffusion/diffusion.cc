@@ -84,7 +84,7 @@ DiffusionSolver::AddToRHS(const std::vector<double>& values)
 
   PetscScalar* rhs_ptr = nullptr;
   OpenSnPETScCall(VecGetArray(rhs_, &rhs_ptr));
-  for (size_t i = 0; i < num_local_dofs; ++i)
+  for (std::uint64_t i = 0; i < num_local_dofs; ++i)
     rhs_ptr[i] += values[i];
   OpenSnPETScCall(VecRestoreArray(rhs_, &rhs_ptr));
 }
