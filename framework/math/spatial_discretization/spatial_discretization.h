@@ -114,7 +114,7 @@ public:
    * For the unknown structure in the unknown manager, returns the number of local- and ghost
    * degrees-of-freedom.
    */
-  size_t GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const;
+  std::uint64_t GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the given cell, returns the number of relevant nodes. The same can be achieved by
