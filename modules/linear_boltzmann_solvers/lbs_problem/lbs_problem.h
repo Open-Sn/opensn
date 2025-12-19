@@ -243,7 +243,7 @@ public:
    * Gets the local and global number of iterative unknowns. This normally is only the flux moments,
    * however, the sweep based solvers might include delayed angular fluxes in this number.
    */
-  virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
+  virtual std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns();
 
   /**
    * Returns a flux-moment field function for a given group and moment.
