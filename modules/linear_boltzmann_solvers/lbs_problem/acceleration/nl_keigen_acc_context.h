@@ -19,7 +19,7 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
   int verbosity_level;
   KResidualFunctionContext kresid_func_context;
 
-  size_t diff_num_local_dofs;
+  std::uint64_t diff_num_local_dofs;
 
   std::vector<double> phi_l;
   std::vector<double> phi_lph_i;

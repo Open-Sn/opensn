@@ -54,7 +54,7 @@ public:
 
   const std::string& GetSweepType() const { return sweep_type_; }
 
-  std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
+  std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
   /// Read/write access to newest updated angular flux vector.
   std::vector<std::vector<double>>& GetPsiNewLocal();

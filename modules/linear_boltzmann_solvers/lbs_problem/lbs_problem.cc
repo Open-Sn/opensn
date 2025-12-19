@@ -439,7 +439,7 @@ LBSProblem::GetWGSContext(int groupset_id)
   return *wgs_context_ptr;
 }
 
-std::pair<size_t, size_t>
+std::pair<std::uint64_t, std::uint64_t>
 LBSProblem::GetNumPhiIterativeUnknowns()
 {
   const auto& sdm = *discretization_;

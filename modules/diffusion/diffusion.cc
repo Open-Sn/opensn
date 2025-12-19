@@ -69,7 +69,7 @@ DiffusionSolver::GetSpatialDiscretization() const
   return sdm_;
 }
 
-std::pair<size_t, size_t>
+std::pair<std::uint64_t, std::uint64_t>
 DiffusionSolver::GetNumPhiIterativeUnknowns()
 {
   return {sdm_.GetNumLocalDOFs(uk_man_), sdm_.GetNumGlobalDOFs(uk_man_)};
