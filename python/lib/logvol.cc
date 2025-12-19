@@ -57,13 +57,17 @@ WrapLogicalVolume(py::module& logvol)
     Construct a boolean logical volume from a list of combinatorial logics. Each combinatorial logic
     are represented by a Python dictionary with two keys:
 
-     - ``op`` maps to a boolean. True means included and False means excluded.
-     - ``lv`` maps to a :py:class:`pyopensn.logvol.LogicalVolume`.
+     - ``op``: bool (required). True means included and False means excluded.
+     - ``lv``: pyopensn.logvol.LogicalVolume (required).
 
     Parameters
     ----------
     parts: List[Dict]
-        List of dictionary of combinatorial logics.
+        List of combinatorial logic dictionaries. Each dictionary supports:
+          - op: bool (required)
+              True means included and False means excluded.
+          - lv: pyopensn.logvol.LogicalVolume (required)
+              Logical volume to combine.
 
     Examples
     --------

@@ -485,7 +485,25 @@ WrapLBS(py::module& slv)
         else
           throw std::runtime_error("Invalid argument provided to SetBoundaryOptions.\n");
       }
-    }
+    },
+    R"(
+    Set or clear boundary conditions.
+
+    Parameters
+    ----------
+    clear_boundary_conditions: bool, default=False
+        If true, all current boundary conditions are deleted.
+    boundary_conditions: List[Dict]
+        A list of boundary condition dictionaries. Each dictionary supports:
+          - name: str (required)
+              Boundary name that identifies the specific boundary.
+          - type: {'vacuum', 'isotropic', 'reflecting'} (required)
+              Boundary type specification.
+          - group_strength: List[float], optional
+              Required when ``type='isotropic'``. Isotropic strength per group.
+          - function_name: str, optional, default=''
+              Name of a registered function to evaluate on the boundary.
+    )"
   );
   lbs_problem.def(
     "SetAdjoint",
@@ -528,17 +546,89 @@ WrapLBS(py::module& slv)
         The total number of energy groups.
     groupsets : List[Dict], default=[]
         A list of input parameter blocks, each block provides the iterative properties for a
-        groupset.
+        groupset. Each dictionary supports:
+          - groups_from_to: List[int] (required)
+              Two-entry list with the first and last group id for the groupset, e.g. ``[0, 3]``.
+          - angular_quadrature: pyopensn.aquad.AngularQuadrature, optional
+              Handle to an angular quadrature.
+          - angle_aggregation_type: {'polar', 'single', 'azimuthal'}, default='polar'
+              Angle aggregation method to use during sweeping.
+          - angle_aggregation_num_subsets: int, default=1
+              Number of angle subsets used for aggregation.
+          - inner_linear_method: {'classic_richardson', 'petsc_richardson',
+            'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
+              Iterative method used for inner linear solves.
+          - l_abs_tol: float, default=1.0e-6
+              Inner linear solver absolute residual tolerance.
+          - l_max_its: int, default=200
+              Inner linear solver maximum iterations.
+          - gmres_restart_interval: int, default=30
+              GMRES restart interval, if GMRES is used.
+          - allow_cycles: bool, default=True
+              Whether cyclic dependencies are allowed in sweeps.
+          - apply_wgdsa: bool, default=False
+              Enable within-group DSA for this groupset.
+          - wgdsa_l_abs_tol: float, default=1.0e-4
+              WGDSA linear absolute tolerance.
+          - wgdsa_l_max_its: int, default=30
+              WGDSA maximum iterations.
+          - wgdsa_verbose: bool, default=False
+              Verbose WGDSA output.
+          - wgdsa_petsc_options: str, default=''
+              PETSc options string for the WGDSA solver.
+          - apply_tgdsa: bool, default=False
+              Enable two-grid DSA for this groupset.
+          - tgdsa_l_abs_tol: float, default=1.0e-4
+              TGDSA linear absolute tolerance.
+          - tgdsa_l_max_its: int, default=30
+              TGDSA maximum iterations.
+          - tgdsa_verbose: bool, default=False
+              Verbose TGDSA output.
+          - tgdsa_petsc_options: str, default=''
+              PETSc options string for the TGDSA solver.
     xs_map : List[Dict], default=[]
-        A list of mappings from block ids to cross-section definitions.
+        A list of mappings from block ids to cross-section definitions. Each dictionary supports:
+          - block_ids: List[int] (required)
+              Mesh block IDs to associate with the cross section.
+          - xs: pyopensn.xs.MultiGroupXS (required)
+              Cross-section object to assign to the specified blocks.
     boundary_conditions: List[Dict], default=[]
-        A list containing tables for each boundary specification.
+        A list containing tables for each boundary specification. Each dictionary supports:
+          - name: str (required)
+              Boundary name that identifies the specific boundary.
+          - type: {'vacuum', 'isotropic', 'reflecting'} (required)
+              Boundary type specification.
+          - group_strength: List[float], optional
+              Required when ``type='isotropic'``. Isotropic strength per group.
+          - function_name: str, optional, default=''
+              Name of a registered function to evaluate on the boundary.
     point_sources: List[pyopensn.source.PointSource], default=[]
         A list of point sources.
     volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
         A list of volumetric sources.
     options : Dict, default={}
-        A block of optional configuration parameters. See `SetOptions` for available settings.
+        A block of optional configuration parameters. Each dictionary supports the same keys as
+        :meth:`LBSProblem.SetOptions`, including:
+          - max_mpi_message_size: int, default=32768
+          - restart_writes_enabled: bool, default=False
+          - write_delayed_psi_to_restart: bool, default=True
+          - read_restart_path: str, default=''
+          - write_restart_path: str, default=''
+          - write_restart_time_interval: int, default=0
+          - use_precursors: bool, default=False
+          - use_source_moments: bool, default=False
+          - save_angular_flux: bool, default=False
+          - verbose_inner_iterations: bool, default=True
+          - verbose_outer_iterations: bool, default=True
+          - max_ags_iterations: int, default=100
+          - ags_tolerance: float, default=1.0e-6
+          - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
+          - verbose_ags_iterations: bool, default=True
+          - power_field_function_on: bool, default=False
+          - power_default_kappa: float, default=3.20435e-11
+          - power_normalization: float, default=-1.0
+          - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
+          - field_function_prefix: str, default=''
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
     use_gpus : bool, default=False
@@ -700,17 +790,88 @@ WrapLBS(py::module& slv)
         The total number of energy groups.
     groupsets : list of dict
         A list of input parameter blocks, each block provides the iterative properties for a
-        groupset.
+        groupset. Each dictionary supports:
+          - groups_from_to: List[int] (required)
+              Two-entry list with the first and last group id for the groupset, e.g. ``[0, 3]``.
+          - angular_quadrature: pyopensn.aquad.AngularQuadrature, optional
+              Handle to an angular quadrature.
+          - angle_aggregation_type: {'polar', 'single', 'azimuthal'}, default='polar'
+              Angle aggregation method to use during sweeping.
+          - angle_aggregation_num_subsets: int, default=1
+              Number of angle subsets used for aggregation.
+          - inner_linear_method: {'classic_richardson', 'petsc_richardson',
+            'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
+              Iterative method used for inner linear solves.
+          - l_abs_tol: float, default=1.0e-6
+              Inner linear solver absolute residual tolerance.
+          - l_max_its: int, default=200
+              Inner linear solver maximum iterations.
+          - gmres_restart_interval: int, default=30
+              GMRES restart interval, if GMRES is used.
+          - allow_cycles: bool, default=True
+              Whether cyclic dependencies are allowed in sweeps.
+          - apply_wgdsa: bool, default=False
+              Enable within-group DSA for this groupset.
+          - wgdsa_l_abs_tol: float, default=1.0e-4
+              WGDSA linear absolute tolerance.
+          - wgdsa_l_max_its: int, default=30
+              WGDSA maximum iterations.
+          - wgdsa_verbose: bool, default=False
+              Verbose WGDSA output.
+          - wgdsa_petsc_options: str, default=''
+              PETSc options string for the WGDSA solver.
+          - apply_tgdsa: bool, default=False
+              Enable two-grid DSA for this groupset.
+          - tgdsa_l_abs_tol: float, default=1.0e-4
+              TGDSA linear absolute tolerance.
+          - tgdsa_l_max_its: int, default=30
+              TGDSA maximum iterations.
+          - tgdsa_verbose: bool, default=False
+              Verbose TGDSA output.
+          - tgdsa_petsc_options: str, default=''
     xs_map : list of dict
-        A list of mappings from block ids to cross-section definitions.
+        A list of mappings from block ids to cross-section definitions. Each dictionary supports:
+          - block_ids: List[int] (required)
+              Mesh block IDs to associate with the cross section.
+          - xs: pyopensn.xs.MultiGroupXS (required)
+              Cross-section object to assign to the specified blocks.
     boundary_conditions: List[Dict], default=[]
-        A list containing tables for each boundary specification.
+        A list containing tables for each boundary specification. Each dictionary supports:
+          - name: str (required)
+              Boundary name that identifies the specific boundary.
+          - type: {'vacuum', 'isotropic', 'reflecting'} (required)
+              Boundary type specification.
+          - group_strength: List[float], optional
+              Required when ``type='isotropic'``. Isotropic strength per group.
+          - function_name: str, optional, default=''
+              Name of a registered function to evaluate on the boundary.
     point_sources: List[pyopensn.source.PointSource], default=[]
         A list of point sources.
     volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
         A list of volumetric sources.
     options : dict, optional
-        A block of optional configuration parameters. See `SetOptions` for available settings.
+        A block of optional configuration parameters. Each dictionary supports the same keys as
+        :meth:`LBSProblem.SetOptions`, including:
+          - max_mpi_message_size: int, default=32768
+          - restart_writes_enabled: bool, default=False
+          - write_delayed_psi_to_restart: bool, default=True
+          - read_restart_path: str, default=''
+          - write_restart_path: str, default=''
+          - write_restart_time_interval: int, default=0
+          - use_precursors: bool, default=False
+          - use_source_moments: bool, default=False
+          - save_angular_flux: bool, default=False
+          - verbose_inner_iterations: bool, default=True
+          - verbose_outer_iterations: bool, default=True
+          - max_ags_iterations: int, default=100
+          - ags_tolerance: float, default=1.0e-6
+          - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
+          - verbose_ags_iterations: bool, default=True
+          - power_field_function_on: bool, default=False
+          - power_default_kappa: float, default=3.20435e-11
+          - power_normalization: float, default=-1.0
+          - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
+          - field_function_prefix: str, default=''
     sweep_type : str, optional
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
     time_dependent : bool, default=False
