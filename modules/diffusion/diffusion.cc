@@ -137,7 +137,7 @@ DiffusionSolver::Initialize()
     std::vector<int64_t> ghids(ghost_ids.begin(), ghost_ids.end());
     rhs_ = CreateVectorWithGhosts(num_local_dofs_,
                                   num_global_dofs_,
-                                  static_cast<int64_t>(sdm_.GetNumGhostDOFs(uk_man_)),
+                                  static_cast<PetscInt>(sdm_.GetNumGhostDOFs(uk_man_)),
                                   ghids);
   }
 
