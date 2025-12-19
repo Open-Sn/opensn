@@ -81,7 +81,7 @@ public:
   virtual uint64_t MapDOFLocal(const Cell& cell, unsigned int node) const = 0;
 
   /// Returns the number of local nodes used in this discretization.
-  size_t GetNumLocalNodes() const;
+  std::uint64_t GetNumLocalNodes() const;
 
   /// Returns the number of global nodes used in this discretization.
   size_t GetNumGlobalNodes() const;
