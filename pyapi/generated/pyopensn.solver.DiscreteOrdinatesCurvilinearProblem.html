@@ -295,7 +295,41 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetBoundaryOptions">
 <span class="sig-name descname"><span class="pre">SetBoundaryOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetBoundaryOptions" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set or clear boundary conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clear_boundary_conditions</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, all current boundary conditions are deleted.</p></li>
+<li><p><strong>boundary_conditions</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – <dl class="simple">
+<dt>A list of boundary condition dictionaries. Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>name: str (required)</dt><dd><p>Boundary name that identifies the specific boundary.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>type: {‘vacuum’, ‘isotropic’, ‘reflecting’} (required)</dt><dd><p>Boundary type specification.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>group_strength: List[float], optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='isotropic'</span></code>. Isotropic strength per group.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>function_name: str, optional, default=’’</dt><dd><p>Name of a registered function to evaluate on the boundary.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetOptions">
@@ -372,13 +406,176 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 <li><p><strong>mesh</strong> (<a class="reference internal" href="pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><em>MeshContinuum</em></a>) – The spatial mesh.</p></li>
 <li><p><strong>coord_system</strong> (<em>int</em>) – Coordinate system to use. Must be set to 2 (cylindrical coordinates).</p></li>
 <li><p><strong>num_groups</strong> (<em>int</em>) – The total number of energy groups.</p></li>
-<li><p><strong>groupsets</strong> (<em>list</em><em> of </em><em>dict</em>) – A list of input parameter blocks, each block provides the iterative properties for a
-groupset.</p></li>
-<li><p><strong>xs_map</strong> (<em>list</em><em> of </em><em>dict</em>) – A list of mappings from block ids to cross-section definitions.</p></li>
-<li><p><strong>boundary_conditions</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list containing tables for each boundary specification.</p></li>
+<li><p><strong>groupsets</strong> (<em>list</em><em> of </em><em>dict</em>) – <p>A list of input parameter blocks, each block provides the iterative properties for a
+groupset. Each dictionary supports:</p>
+<blockquote>
+<div><ul>
+<li><dl class="simple">
+<dt>groups_from_to: List[int] (required)</dt><dd><p>Two-entry list with the first and last group id for the groupset, e.g. <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">3]</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angular_quadrature: pyopensn.aquad.AngularQuadrature, optional</dt><dd><p>Handle to an angular quadrature.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angle_aggregation_type: {‘polar’, ‘single’, ‘azimuthal’}, default=’polar’</dt><dd><p>Angle aggregation method to use during sweeping.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angle_aggregation_num_subsets: int, default=1</dt><dd><p>Number of angle subsets used for aggregation.</p>
+</dd>
+</dl>
+</li>
+<li><p>inner_linear_method: {‘classic_richardson’, ‘petsc_richardson’,
+‘petsc_gmres’, ‘petsc_bicgstab’}, default=’petsc_richardson’</p>
+<blockquote>
+<div><p>Iterative method used for inner linear solves.</p>
+</div></blockquote>
+</li>
+<li><dl class="simple">
+<dt>l_abs_tol: float, default=1.0e-6</dt><dd><p>Inner linear solver absolute residual tolerance.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>l_max_its: int, default=200</dt><dd><p>Inner linear solver maximum iterations.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>gmres_restart_interval: int, default=30</dt><dd><p>GMRES restart interval, if GMRES is used.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>allow_cycles: bool, default=True</dt><dd><p>Whether cyclic dependencies are allowed in sweeps.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>apply_wgdsa: bool, default=False</dt><dd><p>Enable within-group DSA for this groupset.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>wgdsa_l_abs_tol: float, default=1.0e-4</dt><dd><p>WGDSA linear absolute tolerance.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>wgdsa_l_max_its: int, default=30</dt><dd><p>WGDSA maximum iterations.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>wgdsa_verbose: bool, default=False</dt><dd><p>Verbose WGDSA output.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>wgdsa_petsc_options: str, default=’’</dt><dd><p>PETSc options string for the WGDSA solver.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>apply_tgdsa: bool, default=False</dt><dd><p>Enable two-grid DSA for this groupset.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tgdsa_l_abs_tol: float, default=1.0e-4</dt><dd><p>TGDSA linear absolute tolerance.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tgdsa_l_max_its: int, default=30</dt><dd><p>TGDSA maximum iterations.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tgdsa_verbose: bool, default=False</dt><dd><p>Verbose TGDSA output.</p>
+</dd>
+</dl>
+</li>
+<li><p>tgdsa_petsc_options: str, default=’’</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>xs_map</strong> (<em>list</em><em> of </em><em>dict</em>) – <dl class="simple">
+<dt>A list of mappings from block ids to cross-section definitions. Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>block_ids: List[int] (required)</dt><dd><p>Mesh block IDs to associate with the cross section.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>xs: pyopensn.xs.MultiGroupXS (required)</dt><dd><p>Cross-section object to assign to the specified blocks.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>boundary_conditions</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – <dl class="simple">
+<dt>A list containing tables for each boundary specification. Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>name: str (required)</dt><dd><p>Boundary name that identifies the specific boundary.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>type: {‘vacuum’, ‘isotropic’, ‘reflecting’} (required)</dt><dd><p>Boundary type specification.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>group_strength: List[float], optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='isotropic'</span></code>. Isotropic strength per group.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>function_name: str, optional, default=’’</dt><dd><p>Name of a registered function to evaluate on the boundary.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 <li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of point sources.</p></li>
 <li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of volumetric sources.</p></li>
-<li><p><strong>options</strong> (<em>dict</em><em>, </em><em>optional</em>) – A block of optional configuration parameters. See <cite>SetOptions</cite> for available settings.</p></li>
+<li><p><strong>options</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>A block of optional configuration parameters. Each dictionary supports the same keys as
+<a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetOptions" title="pyopensn.solver.LBSProblem.SetOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetOptions()</span></code></a>, including:</p>
+<blockquote>
+<div><ul>
+<li><p>max_mpi_message_size: int, default=32768</p></li>
+<li><p>restart_writes_enabled: bool, default=False</p></li>
+<li><p>write_delayed_psi_to_restart: bool, default=True</p></li>
+<li><p>read_restart_path: str, default=’’</p></li>
+<li><p>write_restart_path: str, default=’’</p></li>
+<li><p>write_restart_time_interval: int, default=0</p></li>
+<li><p>use_precursors: bool, default=False</p></li>
+<li><p>use_source_moments: bool, default=False</p></li>
+<li><p>save_angular_flux: bool, default=False</p></li>
+<li><p>verbose_inner_iterations: bool, default=True</p></li>
+<li><p>verbose_outer_iterations: bool, default=True</p></li>
+<li><p>max_ags_iterations: int, default=100</p></li>
+<li><p>ags_tolerance: float, default=1.0e-6</p></li>
+<li><p>ags_convergence_check: {‘l2’, ‘pointwise’}, default=’l2’</p></li>
+<li><p>verbose_ags_iterations: bool, default=True</p></li>
+<li><p>power_field_function_on: bool, default=False</p></li>
+<li><p>power_default_kappa: float, default=3.20435e-11</p></li>
+<li><p>power_normalization: float, default=-1.0</p></li>
+<li><p>field_function_prefix_option: {‘prefix’, ‘solver_name’}, default=’prefix’</p></li>
+<li><p>field_function_prefix: str, default=’’</p></li>
+</ul>
+</div></blockquote>
+</p></li>
 <li><p><strong>sweep_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The sweep type to use. Must be one of <cite>AAH</cite> or <cite>CBC</cite>. Defaults to <cite>AAH</cite>.</p></li>
 <li><p><strong>time_dependent</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Enable time-dependent sweeps. Currently only supported with <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code>.</p></li>
 </ul>

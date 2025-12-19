@@ -130,13 +130,28 @@
 are represented by a Python dictionary with two keys:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">op</span></code> maps to a boolean. True means included and False means excluded.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lv</span></code> maps to a <a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.logvol.LogicalVolume</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">op</span></code>: bool (required). True means included and False means excluded.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lv</span></code>: pyopensn.logvol.LogicalVolume (required).</p></li>
 </ul>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parts</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – List of dictionary of combinatorial logics.</p>
+<dd class="field-odd"><p><strong>parts</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – <dl class="simple">
+<dt>List of combinatorial logic dictionaries. Each dictionary supports:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>op: bool (required)</dt><dd><p>True means included and False means excluded.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>lv: pyopensn.logvol.LogicalVolume (required)</dt><dd><p>Logical volume to combine.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

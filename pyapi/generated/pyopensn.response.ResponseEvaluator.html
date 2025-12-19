@@ -139,6 +139,29 @@ the solver.</p>
 <dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.SetBufferOptions">
 <span class="sig-name descname"><span class="pre">SetBufferOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.SetBufferOptions" title="Link to this definition"></a></dt>
 <dd><p>Add adjoint buffers from the options block to the response evaluator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em> (</em><em>required</em><em>)</em>) – Buffer name used for response queries.</p></li>
+<li><p><strong>file_prefixes</strong> (<em>Dict</em><em> (</em><em>required</em><em>)</em>) – <dl class="simple">
+<dt>Prefix map with optional keys:</dt><dd><ul>
+<li><dl class="simple">
+<dt>flux_moments: str</dt><dd><p>Prefix for flux moments files.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angular_fluxes: str</dt><dd><p>Prefix for angular flux files.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -148,9 +171,101 @@ the solver.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>buffers</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of dictionaries containing adjoint buffer specifications.</p></li>
+<li><p><strong>buffers</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – <dl class="simple">
+<dt>A list of dictionaries containing adjoint buffer specifications. Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>name: str (required)</dt><dd><p>Buffer name used for response queries.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>file_prefixes: Dict (required)</dt><dd><dl class="simple">
+<dt>Prefix map with optional keys:</dt><dd><ul>
+<li><dl class="simple">
+<dt>flux_moments: str</dt><dd><p>Prefix for flux moments files.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angular_fluxes: str</dt><dd><p>Prefix for angular flux files.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 <li><p><strong>clear_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – A flag to clear existing sources.</p></li>
-<li><p><strong>sources</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of dictionaries containing source specification information.</p></li>
+<li><p><strong>sources</strong> (<em>Dict</em><em>, </em><em>default={}</em>) – <dl class="simple">
+<dt>Dictionary describing forward sources. Supported keys:</dt><dd><ul>
+<li><dl class="simple">
+<dt>material: List[Dict], default=[]</dt><dd><dl class="simple">
+<dt>Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>block_id: int (required)</dt><dd><p>Block id for the material source.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>strength: List[float] (required)</dt><dd><p>Group-wise source strength (length must match number of groups).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>point: List[pyopensn.source.PointSource], default=[]</dt><dd><p>Point source handles.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>volumetric: List[pyopensn.source.VolumetricSource], default=[]</dt><dd><p>Volumetric source handles.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>boundary: List[Dict], default=[]</dt><dd><dl class="simple">
+<dt>Boundary source dictionaries. Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>name: str (required)</dt><dd><p>Boundary name that identifies the specific boundary.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>type: {‘vacuum’, ‘isotropic’, ‘reflecting’} (required)</dt><dd><p>Boundary type specification. Only <code class="docutils literal notranslate"><span class="pre">isotropic</span></code> is used for responses.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>group_strength: List[float], optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='isotropic'</span></code>. Isotropic strength per group.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>function_name: str, optional, default=’’</dt><dd><p>Name of a registered function to evaluate on the boundary.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 </dl>
@@ -160,6 +275,56 @@ the solver.</p>
 <dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.SetSourceOptions">
 <span class="sig-name descname"><span class="pre">SetSourceOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.SetSourceOptions" title="Link to this definition"></a></dt>
 <dd><p>Add forward sources from the options block to the response evaluator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>material</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – <dl class="simple">
+<dt>Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>block_id: int (required)</dt><dd><p>Block id for the material source.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>strength: List[float] (required)</dt><dd><p>Group-wise source strength (length must match number of groups).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>point</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Point source handles.</p></li>
+<li><p><strong>volumetric</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Volumetric source handles.</p></li>
+<li><p><strong>boundary</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – <dl class="simple">
+<dt>Boundary source dictionaries. Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>name: str (required)</dt><dd><p>Boundary name that identifies the specific boundary.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>type: {‘vacuum’, ‘isotropic’, ‘reflecting’} (required)</dt><dd><p>Boundary type specification. Only <code class="docutils literal notranslate"><span class="pre">isotropic</span></code> is used for responses.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>group_strength: List[float], optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='isotropic'</span></code>. Isotropic strength per group.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>function_name: str, optional, default=’’</dt><dd><p>Name of a registered function to evaluate on the boundary.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -170,7 +335,117 @@ the solver.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lbs_problem</strong> (<a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><em>pyopensn.solver.Solver</em></a>) – A handle to an existing LBS problem.</p></li>
-<li><p><strong>options</strong> (<em>Dict</em>) – The specification of adjoint buffers and forward to use.</p></li>
+<li><p><strong>options</strong> (<em>Dict</em>) – <dl class="simple">
+<dt>The specification of adjoint buffers and forward sources to use. Supported keys:</dt><dd><ul>
+<li><dl class="simple">
+<dt>buffers: List[Dict], default=[]</dt><dd><dl class="simple">
+<dt>Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>name: str (required)</dt><dd><p>Buffer name used for response queries.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>file_prefixes: Dict (required)</dt><dd><dl class="simple">
+<dt>Prefix map with optional keys:</dt><dd><ul>
+<li><dl class="simple">
+<dt>flux_moments: str</dt><dd><p>Prefix for flux moments files.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>angular_fluxes: str</dt><dd><p>Prefix for angular flux files.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>clear_sources: bool, default=False</dt><dd><p>If true, clears any existing forward sources.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>sources: Dict, default={}</dt><dd><dl class="simple">
+<dt>Dictionary describing forward sources. Supported keys:</dt><dd><ul>
+<li><dl class="simple">
+<dt>material: List[Dict], default=[]</dt><dd><dl class="simple">
+<dt>Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>block_id: int (required)</dt><dd><p>Block id for the material source.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>strength: List[float] (required)</dt><dd><p>Group-wise source strength (length must match number of groups).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>point: List[pyopensn.source.PointSource], default=[]</dt><dd><p>Point source handles.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>volumetric: List[pyopensn.source.VolumetricSource], default=[]</dt><dd><p>Volumetric source handles.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>boundary: List[Dict], default=[]</dt><dd><dl class="simple">
+<dt>Boundary source dictionaries. Each dictionary supports:</dt><dd><ul>
+<li><dl class="simple">
+<dt>name: str (required)</dt><dd><p>Boundary name that identifies the specific boundary.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>type: {‘vacuum’, ‘isotropic’, ‘reflecting’} (required)</dt><dd><p>Boundary type specification. Only <code class="docutils literal notranslate"><span class="pre">isotropic</span></code> is used for responses.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>group_strength: List[float], optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='isotropic'</span></code>. Isotropic strength per group.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>function_name: str, optional, default=’’</dt><dd><p>Name of a registered function to evaluate on the boundary.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 </dl>

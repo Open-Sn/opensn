@@ -146,7 +146,27 @@
 <li><p><strong>partitioner</strong> (<a class="reference internal" href="pyopensn.mesh.GraphPartitioner.html#pyopensn.mesh.GraphPartitioner" title="pyopensn.mesh.GraphPartitioner"><em>pyopensn.mesh.GraphPartitioner</em></a><em>, </em><em>default=None</em>) – Handle to a GraphPartitioner object to use for parallel partitioning. This will default to
 PETScGraphPartitioner with a “parmetis” setting.</p></li>
 <li><p><strong>replicated_mesh</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag, when set, makes the mesh appear in full fidelity on each process.</p></li>
-<li><p><strong>layers</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – List of layers. Parameters of each layers are represented as Python dictionary.</p></li>
+<li><p><strong>layers</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – <dl class="simple">
+<dt>List of layers. Each layer is a dictionary with entries:</dt><dd><ul>
+<li><dl class="simple">
+<dt>n: int, default=1</dt><dd><p>Number of sub-layers in this layer.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>h: float, default=1.0</dt><dd><p>Layer height. Cannot be specified if <code class="docutils literal notranslate"><span class="pre">z</span></code> is specified.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>z: float, default=0.0</dt><dd><p>Z-coordinate at the top of the layer. Cannot be specified if <code class="docutils literal notranslate"><span class="pre">h</span></code> is specified.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p></li>
 <li><p><strong>top_boundary_name</strong> (<em>str</em><em>, </em><em>default='ZMAX'</em>) – The name to associate with the top boundary.</p></li>
 <li><p><strong>bottom_boundary_name</strong> (<em>str</em><em>, </em><em>default='ZMIN'</em>) – The name to associate with the bottom boundary.</p></li>
 </ul>
