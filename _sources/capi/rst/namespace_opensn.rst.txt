@@ -933,7 +933,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ae36300f028cd3cfe090d42aa14566545`
 
-- :ref:`exhale_function_namespaceopensn_1a9081407bed9fbd81353cc99185270b2c`
+- :ref:`exhale_function_namespaceopensn_1ab417388b7303220280cdc5b909321247`
 
 - :ref:`exhale_function_namespaceopensn_1a9688d61ff656e2e7974e1b8553913cd4`
 

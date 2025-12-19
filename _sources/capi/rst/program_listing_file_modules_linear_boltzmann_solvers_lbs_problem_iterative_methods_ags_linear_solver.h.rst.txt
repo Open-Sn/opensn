@@ -50,15 +50,15 @@ Program Listing for File ags_linear_solver.h
    
      void SetTolerance(double tolerance) { tolerance_ = tolerance; }
    
-     int GetMaxIterations() const { return max_iterations_; }
+     unsigned int GetMaxIterations() const { return max_iterations_; }
    
-     void SetMaxIterations(int max_iterations) { max_iterations_ = max_iterations; }
+     void SetMaxIterations(unsigned int max_iterations) { max_iterations_ = max_iterations; }
    
    private:
      LBSProblem& lbs_problem_; // NOLINT(clang-diagnostic-unused-private-field)
      std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
      std::vector<double> phi_old_;
-     int max_iterations_;
+     unsigned int max_iterations_;
      double tolerance_;
      bool verbose_;
    };
