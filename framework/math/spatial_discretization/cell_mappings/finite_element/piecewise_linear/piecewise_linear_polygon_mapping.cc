@@ -141,7 +141,7 @@ PieceWiseLinearPolygonMapping::SideShape(size_t side,
 }
 
 double
-PieceWiseLinearPolygonMapping::SideGradShape_x(uint32_t side, uint32_t i) const
+PieceWiseLinearPolygonMapping::SideGradShape_x(size_t side, size_t i) const
 {
   int index = node_to_side_map_[i][side];
   double value = 0;
@@ -162,7 +162,7 @@ PieceWiseLinearPolygonMapping::SideGradShape_x(uint32_t side, uint32_t i) const
 }
 
 double
-PieceWiseLinearPolygonMapping::SideGradShape_y(uint32_t side, uint32_t i) const
+PieceWiseLinearPolygonMapping::SideGradShape_y(size_t side, size_t i) const
 {
   int index = node_to_side_map_[i][side];
   double value = 0;

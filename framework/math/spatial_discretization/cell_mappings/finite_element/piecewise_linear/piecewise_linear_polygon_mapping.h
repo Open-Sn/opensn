@@ -32,10 +32,10 @@ public:
   SurfaceFiniteElementData MakeSurfaceFiniteElementData(size_t face_index) const override;
 
   /// Pre-computation of the partial derivative along x of the shape function at a quadrature point.
-  double SideGradShape_x(uint32_t side, uint32_t i) const;
+  double SideGradShape_x(size_t side, size_t i) const;
 
   /// Pre-computation of the partial derivative along y of the shape function at a quadrature point.
-  double SideGradShape_y(uint32_t side, uint32_t i) const;
+  double SideGradShape_y(size_t side, size_t i) const;
 
   double ShapeValue(size_t i, const Vector3& xyz) const override;
 
