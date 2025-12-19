@@ -45,8 +45,8 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
   const auto num_global_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
   // Initializes Mats and Vecs
-  const auto n = static_cast<int64_t>(num_local_dofs);
-  const auto N = static_cast<int64_t>(num_global_dofs);
+  const auto n = static_cast<PetscInt>(num_local_dofs);
+  const auto N = static_cast<PetscInt>(num_global_dofs);
   Mat A;
   Vec x, b;
 
