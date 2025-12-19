@@ -14,7 +14,7 @@ namespace opensn
 /// Arbitrary incident angular flux specified by a user-supplied function.
 ///
 /// The AngularFluxFunction is expected to return the incoming angular flux for a given
-/// energy group index and quadrature direction index. The returned values are uniform
+/// energy group index and quadrature direction index. The returned values are uniform for
 /// all faces with this boundary id.
 class ArbitraryBoundary : public SweepBoundary
 {
