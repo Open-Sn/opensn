@@ -1324,5 +1324,18 @@
         "abs_tol": 1e-6
       }
     ]
+  },
+  {
+    "file": "transport_2d_ortho_arbitrary_bc.py",
+    "comment": "2D orthogonal arbitrary boundary condition",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi = ",
+        "goldvalue": 2.024511,
+        "abs_tol": 1e-5
+      }
+    ]
   }
 ]

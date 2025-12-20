@@ -589,8 +589,13 @@ LBSProblem::GetBoundaryOptionsBlock()
                                            "of isotropic strength per group");
   params.AddOptionalParameter(
     "function_name", "", "Text name of the function to be called for this boundary condition.");
-  params.ConstrainParameterRange("type",
-                                 AllowableRangeList::New({"vacuum", "isotropic", "reflecting"}));
+  params.AddOptionalParameter<std::shared_ptr<AngularFluxFunction>>(
+    "function",
+    std::shared_ptr<AngularFluxFunction>{},
+    "Angular flux function to be used for arbitrary boundary conditions. The function takes an "
+    "energy group index and a direction index and returns the incoming angular flux value.");
+  params.ConstrainParameterRange(
+    "type", AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary"}));
 
   return params;
 }
@@ -734,7 +739,8 @@ LBSProblem::SetBoundaryOptions(const InputParameters& params)
   const std::map<std::string, LBSBoundaryType> type_list = {
     {"vacuum", LBSBoundaryType::VACUUM},
     {"isotropic", LBSBoundaryType::ISOTROPIC},
-    {"reflecting", LBSBoundaryType::REFLECTING}};
+    {"reflecting", LBSBoundaryType::REFLECTING},
+    {"arbitrary", LBSBoundaryType::ARBITRARY}};
 
   const auto type = type_list.at(bndry_type);
   switch (type)
@@ -742,24 +748,30 @@ LBSProblem::SetBoundaryOptions(const InputParameters& params)
     case LBSBoundaryType::VACUUM:
     case LBSBoundaryType::REFLECTING:
     {
-      boundary_preferences_[bid] = {type};
+      boundary_preferences_[bid] = {type, {}, "", nullptr};
       break;
     }
     case LBSBoundaryType::ISOTROPIC:
     {
-      OpenSnInvalidArgumentIf(not params.Has("group_strength"),
-                              "Boundary conditions with type=\"isotropic\" require parameter "
-                              "\"group_strength\"");
-
+      if (not params.Has("group_strength"))
+        throw std::runtime_error("Boundary conditions with type=\"isotropic\" require parameter "
+                                 "\"group_strength\"");
       params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
       const auto group_strength = params.GetParamVectorValue<double>("group_strength");
-      boundary_preferences_[bid] = {type, group_strength};
+      boundary_preferences_[bid] = {type, group_strength, "", nullptr};
       break;
     }
     case LBSBoundaryType::ARBITRARY:
     {
-      throw std::runtime_error(GetName() +
-                               ": Arbitrary boundary conditions are not currently supported");
+      if (not params.Has("group_strength"))
+        throw std::runtime_error("Boundary conditions with type=\"arbitrary\" require parameter "
+                                 "\"function\"");
+      auto angular_flux_function = params.GetSharedPtrParam<AngularFluxFunction>("function", false);
+      if (not angular_flux_function)
+        throw std::runtime_error(
+          "Boundary conditions with type=\"arbitrary\" require a non-null "
+          "AngularFluxFunction object passed via the \"function\" parameter.");
+      boundary_preferences_[bid] = {type, {}, "", angular_flux_function};
       break;
     }
   }
