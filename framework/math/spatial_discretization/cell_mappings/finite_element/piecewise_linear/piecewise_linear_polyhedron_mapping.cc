@@ -267,11 +267,8 @@ PieceWiseLinearPolyhedronMapping::TetGradShape_z(const int index)
 }
 
 double
-PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
-                                                uint32_t side_index,
-                                                uint32_t i,
-                                                const Vector3& qpoint,
-                                                bool on_surface) const
+PieceWiseLinearPolyhedronMapping::FaceSideShape(
+  size_t face_index, size_t side_index, size_t i, const Vector3& qpoint, bool on_surface) const
 {
   double value = 0.0;
   auto index = node_side_maps_[i].face_map[face_index].side_map[side_index].index;
@@ -288,9 +285,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideShape(uint32_t face_index,
 }
 
 double
-PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index,
-                                                      uint32_t side_index,
-                                                      uint32_t i) const
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(size_t face_index,
+                                                      size_t side_index,
+                                                      size_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;
@@ -328,9 +325,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_x(uint32_t face_index,
 }
 
 double
-PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(uint32_t face_index,
-                                                      uint32_t side_index,
-                                                      uint32_t i) const
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(size_t face_index,
+                                                      size_t side_index,
+                                                      size_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;
@@ -368,9 +365,9 @@ PieceWiseLinearPolyhedronMapping::FaceSideGradShape_y(uint32_t face_index,
 }
 
 double
-PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(uint32_t face_index,
-                                                      uint32_t side_index,
-                                                      uint32_t i) const
+PieceWiseLinearPolyhedronMapping::FaceSideGradShape_z(size_t face_index,
+                                                      size_t side_index,
+                                                      size_t i) const
 {
   double value = 0.0;
   double tetdfdx = 0.0;

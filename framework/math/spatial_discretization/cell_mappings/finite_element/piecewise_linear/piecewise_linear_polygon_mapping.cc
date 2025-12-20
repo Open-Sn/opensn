@@ -19,13 +19,13 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
       ref_grid, poly_cell, poly_cell.vertex_ids.size(), MakeFaceNodeMapping(poly_cell)),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature),
-    num_of_subtris_(static_cast<int>(poly_cell.faces.size())),
-    beta_(1.0 / num_of_subtris_),
+    num_of_subtris_(poly_cell.faces.size()),
+    beta_(1.0 / static_cast<double>(num_of_subtris_)),
     // Get raw vertices
     vc_(poly_cell.centroid)
 {
   // Calculate legs and determinants
-  for (int side = 0; side < num_of_subtris_; ++side)
+  for (std::size_t side = 0; side < num_of_subtris_; ++side)
   {
     const CellFace& face = poly_cell.faces[side];
 
@@ -79,7 +79,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   {
     const uint64_t vindex = poly_cell.vertex_ids[v];
     std::vector<int> side_mapping(num_of_subtris_);
-    for (int side = 0; side < num_of_subtris_; ++side)
+    for (std::size_t side = 0; side < num_of_subtris_; ++side)
     {
       side_mapping[side] = -1;
 
@@ -125,8 +125,8 @@ PieceWiseLinearPolygonMapping::TriShape(uint32_t index, const Vector3& qpoint, b
 }
 
 double
-PieceWiseLinearPolygonMapping::SideShape(uint32_t side,
-                                         uint32_t i,
+PieceWiseLinearPolygonMapping::SideShape(size_t side,
+                                         size_t i,
                                          const Vector3& qpoint,
                                          bool on_surface) const
 {
@@ -141,7 +141,7 @@ PieceWiseLinearPolygonMapping::SideShape(uint32_t side,
 }
 
 double
-PieceWiseLinearPolygonMapping::SideGradShape_x(uint32_t side, uint32_t i) const
+PieceWiseLinearPolygonMapping::SideGradShape_x(size_t side, size_t i) const
 {
   int index = node_to_side_map_[i][side];
   double value = 0;
@@ -162,7 +162,7 @@ PieceWiseLinearPolygonMapping::SideGradShape_x(uint32_t side, uint32_t i) const
 }
 
 double
-PieceWiseLinearPolygonMapping::SideGradShape_y(uint32_t side, uint32_t i) const
+PieceWiseLinearPolygonMapping::SideGradShape_y(size_t side, size_t i) const
 {
   int index = node_to_side_map_[i][side];
   double value = 0;
@@ -185,7 +185,7 @@ PieceWiseLinearPolygonMapping::SideGradShape_y(uint32_t side, uint32_t i) const
 double
 PieceWiseLinearPolygonMapping::ShapeValue(size_t i, const Vector3& xyz) const
 {
-  for (int s = 0; s < num_of_subtris_; ++s)
+  for (std::size_t s = 0; s < num_of_subtris_; ++s)
   {
     const auto& p0 = grid_->vertices[sides_[s].v_index[0]];
     Vector3 xyz_ref = xyz - p0;
@@ -223,7 +223,7 @@ void
 PieceWiseLinearPolygonMapping::ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const
 {
   shape_values.Resize(num_nodes_, 0.0);
-  for (int s = 0; s < num_of_subtris_; ++s)
+  for (std::size_t s = 0; s < num_of_subtris_; ++s)
   {
     const auto& p0 = grid_->vertices[sides_[s].v_index[0]];
     Vector3 xi_eta_zeta = sides_[s].Jinv * (xyz - p0);
@@ -263,7 +263,7 @@ PieceWiseLinearPolygonMapping::GradShapeValue(size_t i, const Vector3& xyz) cons
   Vector3 grad_r;
   Vector3 grad;
 
-  for (int e = 0; e < num_of_subtris_; ++e)
+  for (std::size_t e = 0; e < num_of_subtris_; ++e)
   {
     const auto& p0 = grid_->vertices[sides_[e].v_index[0]];
     Vector3 xyz_ref = xyz - p0;
@@ -385,7 +385,7 @@ PieceWiseLinearPolygonMapping::MakeSurfaceFiniteElementData(size_t face_index) c
   // Init surface quadrature
   size_t num_srf_qpoints = surface_quadrature_.qpoints.size();
 
-  unsigned int s = face_index;
+  size_t s = face_index;
   // Declare necessary vars
   std::vector<unsigned int> F_quadrature_point_indices;
   std::vector<Vector3> F_qpoints_xyz;

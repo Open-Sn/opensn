@@ -32,10 +32,10 @@ public:
   SurfaceFiniteElementData MakeSurfaceFiniteElementData(size_t face_index) const override;
 
   /// Pre-computation of the partial derivative along x of the shape function at a quadrature point.
-  double SideGradShape_x(uint32_t side, uint32_t i) const;
+  double SideGradShape_x(size_t side, size_t i) const;
 
   /// Pre-computation of the partial derivative along y of the shape function at a quadrature point.
-  double SideGradShape_y(uint32_t side, uint32_t i) const;
+  double SideGradShape_y(size_t side, size_t i) const;
 
   double ShapeValue(size_t i, const Vector3& xyz) const override;
 
@@ -47,7 +47,7 @@ public:
 
 private:
   /// Precomputation of the shape function at a quadrature point.
-  double SideShape(uint32_t side, uint32_t i, const Vector3& qpoint, bool on_surface = false) const;
+  double SideShape(size_t side, size_t i, const Vector3& qpoint, bool on_surface = false) const;
 
   /// This structure goes into sides
   struct FEside_data2d
@@ -66,7 +66,7 @@ private:
   const TriangleQuadrature& volume_quadrature_;
   const LineQuadrature& surface_quadrature_;
 
-  int num_of_subtris_;
+  std::size_t num_of_subtris_;
   double beta_;
   Vector3 vc_;
   std::vector<std::vector<int>> node_to_side_map_;
