@@ -13,7 +13,7 @@ namespace opensn
 {
 
 GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(int Npolar,
-                                                               int scattering_order,
+                                                               unsigned int scattering_order,
                                                                bool verbose)
   : CurvilinearProductQuadrature(1, scattering_order)
 {
@@ -185,7 +185,7 @@ GLProductQuadrature1DSpherical::MakeHarmonicIndices()
 
 GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(int Npolar,
                                                    int Nazimuthal,
-                                                   int scattering_order,
+                                                   unsigned int scattering_order,
                                                    bool verbose)
   : CurvilinearProductQuadrature(2, scattering_order)
 {

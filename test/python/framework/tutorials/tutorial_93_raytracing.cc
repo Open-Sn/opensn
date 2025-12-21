@@ -28,7 +28,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
   // Set parameters
   const size_t num_groups = 1;
-  const size_t scattering_order = 1;
+  const unsigned int scattering_order = 1;
   const auto& L = scattering_order;
   const size_t num_moments = (dimension == 1)   ? L + 1
                              : (dimension == 2) ? (L + 1) * (L + 2) / 2

@@ -27,7 +27,7 @@ public:
    * @param order The order of the Lebedev quadrature set to load
    * @param verbose Flag to enable verbose output
    */
-  LebedevQuadrature3DXYZ(int quadrature_order, int scattering_order, bool verbose = false);
+  LebedevQuadrature3DXYZ(int quadrature_order, unsigned int scattering_order, bool verbose = false);
 
 private:
   /**
