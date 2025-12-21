@@ -32,6 +32,9 @@ private:
   /// Applies a first-in-first-out sweep scheduling.
   void ScheduleAlgoFIFO(SweepChunk& sweep_chunk);
 
+  /// Applies a first-in-first-out sweep scheduling on device.
+  void DeviceScheduleAlgoFIFO(SweepChunk& sweep_chunk);
+
   /// Initializes the depth-of-graph algorithm.
   void InitializeAlgoDOG();
 

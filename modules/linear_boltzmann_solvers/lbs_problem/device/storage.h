@@ -42,6 +42,9 @@ public:
   /// Get pointer to device memory.
   inline T* GetDevicePtr() { return device_.get(); }
 
+  /// Get device memory
+  inline crb::DeviceMemory<T>& GetDeviceMemory() { return device_; }
+
 protected:
   crb::HostVector<T> host_;
   crb::DeviceMemory<T> device_;

@@ -55,6 +55,11 @@ class Stream : public cuda::StreamImpl {
     inline Stream(::cudaStream_t stream_ptr) : cuda::StreamImpl(stream_ptr, ::cudaStreamDestroy) {}
 
     /**
+     * @brief Get the underlying CUDA stream.
+     */
+    inline ::cudaStream_t get() const { return this->operator->(); }
+
+    /**
      * @brief Record an event in the stream.
      * @param event The event to be recorded.
      * @details Record the given event in this stream. The event will be marked as completed when all previous

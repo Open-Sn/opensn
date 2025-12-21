@@ -21,11 +21,23 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
                            const std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                            const MPICommunicatorSet& comm_set,
-                           bool use_gpu)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, use_gpu),
+                           bool use_gpus)
+  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, use_gpus),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
-    async_comm_(id, *fluds, comm_set)
+    async_comm_(id, *fluds, comm_set),
+    use_gpus_(use_gpus)
 {
+  if (use_gpus)
+  {
+    CreateStream();
+    AssociateAngleSetWithFLUDS();
+  }
+}
+
+CBC_AngleSet::~CBC_AngleSet()
+{
+  if (use_gpus_)
+    DestroyStream();
 }
 
 AsynchronousCommunicator*
@@ -134,5 +146,22 @@ CBC_AngleSet::PsiReflected(uint64_t boundary_id,
 {
   return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num);
 }
+
+#ifndef __OPENSN_USE_CUDA__
+void
+CBC_AngleSet::CreateStream()
+{
+}
+
+void
+CBC_AngleSet::DestroyStream()
+{
+}
+
+void
+CBC_AngleSet::AssociateAngleSetWithFLUDS()
+{
+}
+#endif
 
 } // namespace opensn
