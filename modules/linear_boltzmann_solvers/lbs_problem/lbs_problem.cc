@@ -153,6 +153,8 @@ LBSProblem::SetTime(double time)
 void
 LBSProblem::SetTimeStep(double dt)
 {
+  if (dt <= 0.0)
+    throw std::runtime_error(GetName() + " dt must be greater than zero.");
   dt_ = dt;
 }
 
@@ -171,6 +173,8 @@ LBSProblem::IsTimeDependent() const
 void
 LBSProblem::SetTheta(double theta)
 {
+  if (theta < 0.0 or theta > 1.0)
+    throw std::runtime_error(GetName() + " theta must be between 0.0 and 1.0.");
   theta_ = theta;
 }
 

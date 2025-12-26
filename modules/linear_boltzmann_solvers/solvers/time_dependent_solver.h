@@ -4,6 +4,8 @@
 #pragma once
 
 #include "modules/solver.h"
+#include <cstddef>
+#include <functional>
 #include <memory>
 
 namespace opensn
@@ -25,6 +27,14 @@ public:
 
   void Advance() override;
 
+  void SetPreAdvanceCallback(std::function<void()> callback);
+
+  void SetPreAdvanceCallback(std::nullptr_t);
+
+  void SetPostAdvanceCallback(std::function<void()> callback);
+
+  void SetPostAdvanceCallback(std::nullptr_t);
+
   void SetTimeStep(double dt);
 
   void SetTheta(double theta);
@@ -36,12 +46,12 @@ public:
 private:
   std::shared_ptr<LBSProblem> lbs_problem_;
   std::shared_ptr<AGSLinearSolver> ags_solver_;
-  double dt_ = 1.0;
-  double theta_ = 1.0;
   double stop_time_ = 1.0;
   double current_time_ = 0.0;
   unsigned int step_ = 0;
   bool verbose_ = true;
+  std::function<void()> pre_advance_callback_;
+  std::function<void()> post_advance_callback_;
 
 public:
   static InputParameters GetInputParameters();
