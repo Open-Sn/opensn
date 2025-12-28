@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.QuadraturePointPhiTheta
+======================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: QuadraturePointPhiTheta
+   :special-members: __init__
+   :members:
+   :inherited-members:

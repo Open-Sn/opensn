@@ -1,0 +1,9 @@
+﻿pyopensn.fieldfunc.FieldFunctionInterpolation
+=============================================
+
+.. currentmodule:: pyopensn.fieldfunc
+
+.. autoclass:: FieldFunctionInterpolation
+   :special-members: __init__
+   :members:
+   :inherited-members:

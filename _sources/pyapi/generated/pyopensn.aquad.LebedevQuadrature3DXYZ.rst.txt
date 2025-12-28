@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.LebedevQuadrature3DXYZ
+=====================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: LebedevQuadrature3DXYZ
+   :special-members: __init__
+   :members:
+   :inherited-members:

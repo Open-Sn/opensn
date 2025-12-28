@@ -1,0 +1,9 @@
+﻿pyopensn.solver.TimeDependentSourceSolver
+=========================================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: TimeDependentSourceSolver
+   :special-members: __init__
+   :members:
+   :inherited-members:

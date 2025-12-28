@@ -74,6 +74,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#angular-quadrature">Angular quadrature</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quadrature-points">Quadrature points</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.QuadraturePointPhiTheta.html">pyopensn.aquad.QuadraturePointPhiTheta</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#base-class">Base class</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.AngularQuadrature.html">pyopensn.aquad.AngularQuadrature</a></li>
 </ul>
@@ -85,6 +89,10 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature2DXY.html">pyopensn.aquad.GLCProductQuadrature2DXY</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature3DXYZ.html">pyopensn.aquad.GLCProductQuadrature3DXYZ</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature2DRZ.html">pyopensn.aquad.GLCProductQuadrature2DRZ</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#lebedev-quadrature">Lebedev quadrature</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.LebedevQuadrature3DXYZ.html">pyopensn.aquad.LebedevQuadrature3DXYZ</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#simplified-ldfes-quadrature">Simplified LDFES quadrature</a><ul>
@@ -104,6 +112,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#interpolation">Interpolation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolation.html">pyopensn.fieldfunc.FieldFunctionInterpolation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationPoint.html">pyopensn.fieldfunc.FieldFunctionInterpolationPoint</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationLine.html">pyopensn.fieldfunc.FieldFunctionInterpolationLine</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</a></li>
@@ -168,6 +177,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#problem">Problem</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id4">Base class</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.Problem.html">pyopensn.solver.Problem</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.LBSProblem.html">pyopensn.solver.LBSProblem</a></li>
 </ul>
 </li>
@@ -188,6 +198,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#steady-state-source-solver">Steady state source solver</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.SteadyStateSourceSolver.html">pyopensn.solver.SteadyStateSourceSolver</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#time-dependent-source-solver">Time dependent source solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.solver.TimeDependentSourceSolver.html">pyopensn.solver.TimeDependentSourceSolver</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#non-linear-k-eigen">Non-linear k-eigen</a><ul>
@@ -298,6 +312,16 @@
 </section>
 <section id="angular-quadrature">
 <h2>Angular quadrature<a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h2>
+<section id="quadrature-points">
+<h3>Quadrature points<a class="headerlink" href="#quadrature-points" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.QuadraturePointPhiTheta.html#pyopensn.aquad.QuadraturePointPhiTheta" title="pyopensn.aquad.QuadraturePointPhiTheta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.QuadraturePointPhiTheta</span></code></a></p></td>
+<td><p>Angular quadrature point.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="base-class">
 <h3>Base class<a class="headerlink" href="#base-class" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
@@ -337,6 +361,16 @@
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.GLCProductQuadrature2DRZ.html#pyopensn.aquad.GLCProductQuadrature2DRZ" title="pyopensn.aquad.GLCProductQuadrature2DRZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.GLCProductQuadrature2DRZ</span></code></a></p></td>
 <td><p>Gauss-Legendre-Chebyshev product quadrature for 2D, RZ geometry.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="lebedev-quadrature">
+<h3>Lebedev quadrature<a class="headerlink" href="#lebedev-quadrature" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.LebedevQuadrature3DXYZ.html#pyopensn.aquad.LebedevQuadrature3DXYZ" title="pyopensn.aquad.LebedevQuadrature3DXYZ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.LebedevQuadrature3DXYZ</span></code></a></p></td>
+<td><p>Lebedev quadrature for 3D, XYZ geometry.</p></td>
 </tr>
 </tbody>
 </table>
@@ -381,13 +415,16 @@
 <h3>Interpolation<a class="headerlink" href="#interpolation" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationPoint.html#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationPoint</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation" title="pyopensn.fieldfunc.FieldFunctionInterpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolation</span></code></a></p></td>
+<td><p>Base class for field-function interpolation objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationPoint.html#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationPoint</span></code></a></p></td>
 <td><p>Interpolate the field function at a point.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationLine.html#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationLine</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationLine.html#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationLine</span></code></a></p></td>
 <td><p>Line based interpolation function.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationVolume</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationVolume</span></code></a></p></td>
 <td><p>A line based interpolation function.</p></td>
 </tr>
 </tbody>
@@ -543,7 +580,10 @@
 <h3>Base class<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.LBSProblem</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.Problem.html#pyopensn.solver.Problem" title="pyopensn.solver.Problem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.Problem</span></code></a></p></td>
+<td><p>Base class for all problems.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.LBSProblem</span></code></a></p></td>
 <td><p>Base class for all linear Boltzmann problems.</p></td>
 </tr>
 </tbody>
@@ -588,6 +628,16 @@
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver" title="pyopensn.solver.SteadyStateSourceSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.SteadyStateSourceSolver</span></code></a></p></td>
 <td><p>Steady state solver.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="time-dependent-source-solver">
+<h3>Time dependent source solver<a class="headerlink" href="#time-dependent-source-solver" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver" title="pyopensn.solver.TimeDependentSourceSolver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver.TimeDependentSourceSolver</span></code></a></p></td>
+<td><p>Time dependent solver.</p></td>
 </tr>
 </tbody>
 </table>

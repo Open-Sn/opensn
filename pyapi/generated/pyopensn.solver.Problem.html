@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyopensn.aquad.ProductQuadrature &mdash; OpenSn 0.0.1 documentation</title>
+  <title>pyopensn.solver.Problem &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="pyopensn.aquad.CurvilinearProductQuadrature" href="pyopensn.aquad.CurvilinearProductQuadrature.html" />
-    <link rel="prev" title="pyopensn.aquad.AngularQuadrature" href="pyopensn.aquad.AngularQuadrature.html" /> 
+    <link rel="next" title="pyopensn.solver.LBSProblem" href="pyopensn.solver.LBSProblem.html" />
+    <link rel="prev" title="pyopensn.xs.MultiGroupXS" href="pyopensn.xs.MultiGroupXS.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,29 +57,23 @@
 <li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#math">Math</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#angular-quadrature">Angular quadrature</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../index.html#quadrature-points">Quadrature points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#base-class">Base class</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html#product-quadratures">Product quadratures</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.aquad.ProductQuadrature</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.aquad.CurvilinearProductQuadrature.html">pyopensn.aquad.CurvilinearProductQuadrature</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.aquad.GLProductQuadrature1DSlab.html">pyopensn.aquad.GLProductQuadrature1DSlab</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.aquad.GLCProductQuadrature2DXY.html">pyopensn.aquad.GLCProductQuadrature2DXY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.aquad.GLCProductQuadrature3DXYZ.html">pyopensn.aquad.GLCProductQuadrature3DXYZ</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.aquad.GLCProductQuadrature2DRZ.html">pyopensn.aquad.GLCProductQuadrature2DRZ</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#lebedev-quadrature">Lebedev quadrature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#simplified-ldfes-quadrature">Simplified LDFES quadrature</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#angular-quadrature">Angular quadrature</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#field-functions">Field functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#mesh">Mesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#logical-volume">Logical volume</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#response-evaluator">Response evaluator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#source">Source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#cross-section">Cross section</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#problem">Problem</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#problem">Problem</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#id4">Base class</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.LBSProblem.html">pyopensn.solver.LBSProblem</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#discrete-ordinates-problem">Discrete ordinates problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#discrete-ordinates-curvilinear-problem">Discrete ordinates curvilinear problem</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#solvers">Solvers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#acceleration-methods">Acceleration methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#settings">Settings</a></li>
@@ -105,7 +99,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Python API</a></li>
-      <li class="breadcrumb-item active">pyopensn.aquad.ProductQuadrature</li>
+      <li class="breadcrumb-item active">pyopensn.solver.Problem</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -114,29 +108,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pyopensn-aquad-productquadrature">
-<h1>pyopensn.aquad.ProductQuadrature<a class="headerlink" href="#pyopensn-aquad-productquadrature" title="Link to this heading"></a></h1>
+  <section id="pyopensn-solver-problem">
+<h1>pyopensn.solver.Problem<a class="headerlink" href="#pyopensn-solver-problem" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="pyopensn.aquad.ProductQuadrature">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.aquad.</span></span><span class="sig-name descname"><span class="pre">ProductQuadrature</span></span><a class="headerlink" href="#pyopensn.aquad.ProductQuadrature" title="Link to this definition"></a></dt>
-<dd><p>Product quadrature.</p>
-<p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_product_quadrature.html#_CPPv4N6opensn17ProductQuadratureE" title="opensn::ProductQuadrature"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::ProductQuadrature</span></code></a>.</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="pyopensn.aquad.ProductQuadrature.abscissae">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">abscissae</span></span><a class="headerlink" href="#pyopensn.aquad.ProductQuadrature.abscissae" title="Link to this definition"></a></dt>
-<dd><p>Vector of polar and azimuthal angles.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="pyopensn.aquad.ProductQuadrature.omegas">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">omegas</span></span><a class="headerlink" href="#pyopensn.aquad.ProductQuadrature.omegas" title="Link to this definition"></a></dt>
-<dd><p>Vector of direction vectors.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="pyopensn.aquad.ProductQuadrature.weights">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weights</span></span><a class="headerlink" href="#pyopensn.aquad.ProductQuadrature.weights" title="Link to this definition"></a></dt>
-<dd><p>Quadrature weights.</p>
+<dt class="sig sig-object py" id="pyopensn.solver.Problem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">Problem</span></span><a class="headerlink" href="#pyopensn.solver.Problem" title="Link to this definition"></a></dt>
+<dd><p>Base class for all problems.</p>
+<p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_problem.html#_CPPv4N6opensn7ProblemE" title="opensn::Problem"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::Problem</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.Problem.GetFieldFunctions">
+<span class="sig-name descname"><span class="pre">GetFieldFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.Problem" title="pyopensn.solver.Problem"><span class="pre">pyopensn.solver.Problem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.Problem.GetFieldFunctions" title="Link to this definition"></a></dt>
+<dd><p>Get the list of field functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of grid-based field functions representing solution data such as scalar fluxes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -147,8 +137,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pyopensn.aquad.AngularQuadrature.html" class="btn btn-neutral float-left" title="pyopensn.aquad.AngularQuadrature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pyopensn.aquad.CurvilinearProductQuadrature.html" class="btn btn-neutral float-right" title="pyopensn.aquad.CurvilinearProductQuadrature" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pyopensn.xs.MultiGroupXS.html" class="btn btn-neutral float-left" title="pyopensn.xs.MultiGroupXS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyopensn.solver.LBSProblem.html" class="btn btn-neutral float-right" title="pyopensn.solver.LBSProblem" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
