@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
-#include "caribou/caribou.h"
+#include "caribou/main.hpp"
 
 namespace crb = caribou;
 

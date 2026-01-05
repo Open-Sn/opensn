@@ -8,17 +8,18 @@
 #include <cstddef>  // std::size_t
 #include <vector>   // std::vector
 
-#include "exception.hpp"  // cuda::check_cuda_error
+#include "api_mapping.hpp"  // GPU_API
+#include "exception.hpp"    // caribou::check_error
 
 namespace caribou {
 
 // Pinned memory allocator
 // -----------------------
 
-namespace cuda {
+namespace impl {
 template <typename T>
 class PinnedHostAllocator;
-}  // namespace cuda
+}  // namespace impl
 
 /**
  * @brief Allocator for host pinned memory.
@@ -27,7 +28,7 @@ class PinnedHostAllocator;
  * transfer.
  */
 template <typename T>
-class cuda::PinnedHostAllocator {
+class impl::PinnedHostAllocator {
   public:
     /** @brief Value type */
     using value_type = T;
@@ -38,7 +39,7 @@ class cuda::PinnedHostAllocator {
     PinnedHostAllocator() noexcept = default;
     /** @brief Constructor from another allocator.*/
     template <class U>
-    PinnedHostAllocator(const cuda::PinnedHostAllocator<U> & src) noexcept {}
+    PinnedHostAllocator(const impl::PinnedHostAllocator<U> & src) noexcept {}
     /// @}
 
     /// @name Actions
@@ -52,13 +53,13 @@ class cuda::PinnedHostAllocator {
             return nullptr;
         }
         T * result = nullptr;
-        cuda::check_cuda_error(::cudaMallocHost(&result, n * sizeof(T)));
+        check_error(::GPU_API(MallocHost)(&result, n * sizeof(T)));
         return result;
     }
     /** @brief Deallocate memory.*/
     void deallocate(T * ptr, std::size_t n) noexcept {
         if (ptr) {
-            ::cudaFreeHost(ptr);
+            ::GPU_API(FreeHost)(ptr);
         }
     }
     /** @brief Construct an object at a given address in the allocated memory (remove after C++17).*/
@@ -77,12 +78,12 @@ class cuda::PinnedHostAllocator {
     /// @{
     /** @brief Equality operator.*/
     template <class U>
-    constexpr bool operator==(const cuda::PinnedHostAllocator<U> & other) const noexcept {
+    constexpr bool operator==(const impl::PinnedHostAllocator<U> & other) const noexcept {
         return true;
     }
     /** @brief Inequality operator.*/
     template <class U>
-    constexpr bool operator!=(const cuda::PinnedHostAllocator<U> & other) const noexcept {
+    constexpr bool operator!=(const impl::PinnedHostAllocator<U> & other) const noexcept {
         return false;
     }
     /// @}
@@ -96,7 +97,7 @@ class cuda::PinnedHostAllocator {
  * @details Vector with memory allocated on pinned pages.
  */
 template <typename T>
-using HostVector = std::vector<T, cuda::PinnedHostAllocator<T>>;
+using HostVector = std::vector<T, impl::PinnedHostAllocator<T>>;
 
 // Memory pinning resource manager
 // -------------------------------
@@ -111,16 +112,14 @@ class MemoryPinningManager {
     MemoryPinningManager(void) = default;
     /** @brief Pin allocated memory of an ``std::vector``.*/
     MemoryPinningManager(std::vector<T> & vec) {
-        ::cudaError_t error = ::cudaHostRegister(vec.data(), vec.capacity() * sizeof(T), cudaHostRegisterDefault);
-        cuda::check_cuda_error(error);
+        check_error(::GPU_API(HostRegister)(vec.data(), vec.capacity() * sizeof(T), GPU_API(HostRegisterDefault)));
         this->ptr_ = vec.data();
         this->size_ = vec.capacity();
     }
     /** @brief Pin allocated memory of an ``std::vector``.*/
     MemoryPinningManager(const std::vector<T> & vec) {
-        ::cudaError_t error = ::cudaHostRegister(const_cast<T *>(vec.data()), vec.capacity() * sizeof(T),
-                                                 cudaHostRegisterDefault);
-        cuda::check_cuda_error(error);
+        check_error(::GPU_API(HostRegister)(const_cast<T *>(vec.data()), vec.capacity() * sizeof(T),
+                                            GPU_API(HostRegisterDefault)));
         this->ptr_ = const_cast<T *>(vec.data());
         this->size_ = vec.capacity();
     }
@@ -141,7 +140,7 @@ class MemoryPinningManager {
     /** @brief Default destructor.*/
     ~MemoryPinningManager(void) {
         if (this->ptr_) {
-            ::cudaHostUnregister(this->ptr_);
+            ::GPU_API(HostUnregister)(this->ptr_);
         }
     }
     /// @}

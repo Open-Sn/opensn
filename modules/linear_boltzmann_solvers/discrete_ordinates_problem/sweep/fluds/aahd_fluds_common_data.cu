@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "caribou/caribou.h"
+#include "caribou/main.hpp"
 #include <cinttypes>
 
 namespace crb = caribou;

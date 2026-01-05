@@ -8,21 +8,22 @@
 #include <cstddef>  // std::size_t
 #include <memory>   // std::unique_ptr
 
-#include "exception.hpp"  // cuda::check_cuda_error
+#include "api_mapping.hpp"  // GPU_API
+#include "exception.hpp"    // caribou::check_error
 
 namespace caribou {
 
 // Synchronous GPU memory deleter
 // ------------------------------
 
-namespace cuda {
+namespace impl {
 template <typename T>
 class SynchronousDeviceDeleter;
-}  // namespace cuda
+}  // namespace impl
 
-/** @brief Deleter for cudaFree.*/
+/** @brief Deleter for ``cudaFree`` or ``hipFree``.*/
 template <typename T>
-class cuda::SynchronousDeviceDeleter {
+class impl::SynchronousDeviceDeleter {
   public:
     /** @brief Default constructor.*/
     constexpr SynchronousDeviceDeleter(void) = default;
@@ -32,32 +33,32 @@ class cuda::SynchronousDeviceDeleter {
     SynchronousDeviceDeleter(const SynchronousDeviceDeleter<U> & other) noexcept {}
 
     /** @brief Call operator.*/
-    inline void operator()(T * ptr) const { cuda::check_cuda_error(::cudaFree(reinterpret_cast<void *>(ptr))); }
+    inline void operator()(T * ptr) const { check_error(::GPU_API(Free)(reinterpret_cast<void *>(ptr))); }
 };
 
 // Device memory
 // -------------
 
-namespace cuda {
+namespace impl {
 template <typename T>
-using MemoryImpl = std::unique_ptr<T, cuda::SynchronousDeviceDeleter<T>>;
-}  // namespace cuda
+using MemoryImpl = std::unique_ptr<T, impl::SynchronousDeviceDeleter<T>>;
+}  // namespace impl
 
 /**
  * @brief Device memory.
  * @details RAII memory on the current GPU.
  */
 template <typename T>
-class DeviceMemory : public cuda::MemoryImpl<T> {
+class DeviceMemory : public impl::MemoryImpl<T> {
   public:
     /// @name Contructors
     /// @{
     /** @brief Default constructor.*/
     DeviceMemory(void) = default;
     /** @brief Allocate memory for holding n elements.*/
-    DeviceMemory(std::size_t n) : cuda::MemoryImpl<T>(DeviceMemory<T>::malloc_(n)), size_(n) {}
+    DeviceMemory(std::size_t n) : impl::MemoryImpl<T>(DeviceMemory<T>::malloc_(n)), size_(n) {}
     /** @brief Owning a pre-allocated memory.*/
-    DeviceMemory(T * ptr, std::size_t n = 0) : cuda::MemoryImpl<T>(ptr), size_(n) {}
+    DeviceMemory(T * ptr, std::size_t n = 0) : impl::MemoryImpl<T>(ptr), size_(n) {}
     /// @}
 
     /// @name Copy and move
@@ -82,16 +83,16 @@ class DeviceMemory : public cuda::MemoryImpl<T> {
     /// @{
     /** @brief Replace the managed memory.*/
     void reset(T * ptr = nullptr, std::size_t size = 0) noexcept {
-        cuda::MemoryImpl<T>::reset(ptr);
+        impl::MemoryImpl<T>::reset(ptr);
         size_ = size;
     }
     /** @brief Releases the ownership of the managed object.*/
     T * release() noexcept {
         size_ = 0;
-        return cuda::MemoryImpl<T>::release();
+        return impl::MemoryImpl<T>::release();
     }
     /** @brief Zero-fill device memory with zeros.*/
-    void zero_fill(void) { cuda::check_cuda_error(::cudaMemset(this->get(), 0, this->size_ * sizeof(T))); }
+    void zero_fill(void) { check_error(::GPU_API(Memset)(this->get(), 0, this->size_ * sizeof(T))); }
     /// @}
 
   protected:
@@ -101,8 +102,8 @@ class DeviceMemory : public cuda::MemoryImpl<T> {
     /** @brief Allocate device memory.*/
     static T * malloc_(std::size_t size) {
         T * result;
-        cuda::check_cuda_error(::cudaMalloc(&result, sizeof(T) * size));
-        cuda::check_cuda_error(::cudaMemset(result, 0, sizeof(T) * size));
+        check_error(::GPU_API(Malloc)(&result, sizeof(T) * size));
+        check_error(::GPU_API(Memset)(result, 0, sizeof(T) * size));
         return result;
     }
 };
