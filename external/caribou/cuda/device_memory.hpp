@@ -8,7 +8,7 @@
 #include <cstddef>  // std::size_t
 #include <memory>   // std::unique_ptr
 
-#include "exception.hpp"  // cuda::check_cuda_error
+#include "exception.hpp"  // caribou::check_error
 
 namespace caribou {
 
@@ -32,7 +32,7 @@ class cuda::SynchronousDeviceDeleter {
     SynchronousDeviceDeleter(const SynchronousDeviceDeleter<U> & other) noexcept {}
 
     /** @brief Call operator.*/
-    inline void operator()(T * ptr) const { cuda::check_cuda_error(::cudaFree(reinterpret_cast<void *>(ptr))); }
+    inline void operator()(T * ptr) const { check_error(::cudaFree(reinterpret_cast<void *>(ptr))); }
 };
 
 // Device memory
@@ -91,7 +91,7 @@ class DeviceMemory : public cuda::MemoryImpl<T> {
         return cuda::MemoryImpl<T>::release();
     }
     /** @brief Zero-fill device memory with zeros.*/
-    void zero_fill(void) { cuda::check_cuda_error(::cudaMemset(this->get(), 0, this->size_ * sizeof(T))); }
+    void zero_fill(void) { check_error(::cudaMemset(this->get(), 0, this->size_ * sizeof(T))); }
     /// @}
 
   protected:
@@ -101,8 +101,8 @@ class DeviceMemory : public cuda::MemoryImpl<T> {
     /** @brief Allocate device memory.*/
     static T * malloc_(std::size_t size) {
         T * result;
-        cuda::check_cuda_error(::cudaMalloc(&result, sizeof(T) * size));
-        cuda::check_cuda_error(::cudaMemset(result, 0, sizeof(T) * size));
+        check_error(::cudaMalloc(&result, sizeof(T) * size));
+        check_error(::cudaMemset(result, 0, sizeof(T) * size));
         return result;
     }
 };

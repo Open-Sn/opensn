@@ -8,7 +8,7 @@
 #include <cstddef>  // std::size_t
 #include <vector>   // std::vector
 
-#include "exception.hpp"  // cuda::check_cuda_error
+#include "exception.hpp"  // caribou::check_error
 
 namespace caribou {
 
@@ -52,7 +52,7 @@ class cuda::PinnedHostAllocator {
             return nullptr;
         }
         T * result = nullptr;
-        cuda::check_cuda_error(::cudaMallocHost(&result, n * sizeof(T)));
+        check_error(::cudaMallocHost(&result, n * sizeof(T)));
         return result;
     }
     /** @brief Deallocate memory.*/
@@ -112,7 +112,7 @@ class MemoryPinningManager {
     /** @brief Pin allocated memory of an ``std::vector``.*/
     MemoryPinningManager(std::vector<T> & vec) {
         ::cudaError_t error = ::cudaHostRegister(vec.data(), vec.capacity() * sizeof(T), cudaHostRegisterDefault);
-        cuda::check_cuda_error(error);
+        check_error(error);
         this->ptr_ = vec.data();
         this->size_ = vec.capacity();
     }
@@ -120,7 +120,7 @@ class MemoryPinningManager {
     MemoryPinningManager(const std::vector<T> & vec) {
         ::cudaError_t error = ::cudaHostRegister(const_cast<T *>(vec.data()), vec.capacity() * sizeof(T),
                                                  cudaHostRegisterDefault);
-        cuda::check_cuda_error(error);
+        check_error(error);
         this->ptr_ = const_cast<T *>(vec.data());
         this->size_ = vec.capacity();
     }

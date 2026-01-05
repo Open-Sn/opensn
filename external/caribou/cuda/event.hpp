@@ -9,7 +9,7 @@
 #include <memory>       // std::shared_ptr
 #include <type_traits>  // std::remove_pointer_t
 
-#include "exception.hpp"  // cuda::check_cuda_error
+#include "exception.hpp"  // caribou::check_error
 
 namespace caribou {
 
@@ -26,6 +26,8 @@ struct InterprocedualEventHandle {
 
 class Event : public cuda::EventImpl {
   public:
+    /// @name Constructors
+    /// {
     /**
      * @brief Default constructor.
      * @details Create an event with a given flag.
@@ -51,10 +53,14 @@ class Event : public cuda::EventImpl {
         } else if (status == ::cudaErrorNotReady) {
             return false;
         } else {
-            cuda::check_cuda_error(status);
+            check_error(status);
             return false;  // Unreachable
         }
     }
+    /// @}
+
+    /** @brief Type-cast operator to ``::cudaEvent_t.``*/
+    inline operator ::cudaEvent_t(void) const { return this->get(); }
 
     /**
      * @brief Synchronize with an event.
@@ -64,7 +70,7 @@ class Event : public cuda::EventImpl {
      * blocked until the event occurs. Otherwise, the host thread will be busy-waiting until the event has been
      * completed by the device.
      */
-    inline void synchronize() const { cuda::check_cuda_error(::cudaEventSynchronize(this->get())); }
+    inline void synchronize() const { check_error(::cudaEventSynchronize(this->get())); }
 
     /**
      * @brief Get interprocess event handle.
@@ -75,7 +81,7 @@ class Event : public cuda::EventImpl {
      */
     inline InterprocedualEventHandle get_ipc_handle() const {
         ::cudaIpcEventHandle_t handle;
-        cuda::check_cuda_error(::cudaIpcGetEventHandle(&handle, this->get()));
+        check_error(::cudaIpcGetEventHandle(&handle, this->get()));
         return InterprocedualEventHandle{handle};
     }
 
@@ -98,7 +104,7 @@ class Event : public cuda::EventImpl {
         if (interprocess) {
             flag |= cudaEventInterprocess;
         }
-        cuda::check_cuda_error(::cudaEventCreateWithFlags(&result, flag));
+        check_error(::cudaEventCreateWithFlags(&result, flag));
         return result;
     }
 
@@ -108,7 +114,7 @@ class Event : public cuda::EventImpl {
      */
     static inline ::cudaEvent_t create_event_from_ipc(const InterprocedualEventHandle & ipc_handle) {
         ::cudaEvent_t result;
-        cuda::check_cuda_error(::cudaIpcOpenEventHandle(&result, ipc_handle.ptr));
+        check_error(::cudaIpcOpenEventHandle(&result, ipc_handle.ptr));
         return result;
     }
 };
@@ -116,7 +122,7 @@ class Event : public cuda::EventImpl {
 /** @brief Measure the elapsed time between 2 events (resolution ~0.5ms).*/
 inline std::chrono::duration<float, std::milli> operator-(const Event & end, const Event & start) {
     float time_in_ms = 0.0f;
-    cuda::check_cuda_error(::cudaEventElapsedTime(&time_in_ms, start.get(), end.get()));
+    check_error(::cudaEventElapsedTime(&time_in_ms, start.get(), end.get()));
     return std::chrono::duration<float, std::milli>(time_in_ms);
 }
 
