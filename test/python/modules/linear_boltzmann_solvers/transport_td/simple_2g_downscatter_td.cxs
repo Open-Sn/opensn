@@ -12,13 +12,13 @@ VELOCITY_BEGIN
 VELOCITY_END
 
 TRANSFER_MOMENTS_BEGIN
-# M_GPRIME_G_VAL ell gprime g value  (ell = 0 only)
+# M_GFROM_GTO_VAL ell gfrom gto value  (ell = 0 only)
 # group 0 -> 0: no self-scatter
-M_GPRIME_G_VAL   0   0   0   0.0
+M_GFROM_GTO_VAL   0   0   0   0.0
 # group 0 -> 1: downscatter
-M_GPRIME_G_VAL   0   0   1   0.5
+M_GFROM_GTO_VAL   0   0   1   0.5
 # group 1 -> 0: no upscatter
-M_GPRIME_G_VAL   0   1   0   0.0
+M_GFROM_GTO_VAL   0   1   0   0.0
 # group 1 -> 1: no self-scatter
-M_GPRIME_G_VAL   0   1   1   0.0
+M_GFROM_GTO_VAL   0   1   1   0.0
 TRANSFER_MOMENTS_END
