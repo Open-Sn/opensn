@@ -17,8 +17,9 @@ namespace opensn
 
 LebedevQuadrature3DXYZ::LebedevQuadrature3DXYZ(unsigned int quadrature_order,
                                                unsigned int scattering_order,
-                                               bool verbose)
-  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 3, scattering_order)
+                                               bool verbose,
+                                               OperatorConstructionMethod method)
+  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 3, scattering_order, method)
 {
   LoadFromOrder(quadrature_order, verbose);
   MakeHarmonicIndices();

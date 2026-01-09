@@ -552,8 +552,14 @@ WrapLebedevQuadrature(py::module& aquad)
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"quadrature_order", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<LebedevQuadrature3DXYZ, int, int, bool>(params, required_keys, optional_keys);
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {
+          {"verbose", py::bool_(false)},
+          {"operator_method", py::str("standard")}
+        };
+        auto [quadrature_order, scattering_order, verbose, method_str] =
+          extract_args_tuple<int, int, bool, std::string>(params, required_keys, optional_keys);
+        auto method = op_cons_type_map.at(method_str);
+        return std::make_shared<LebedevQuadrature3DXYZ>(quadrature_order, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -567,6 +573,8 @@ WrapLebedevQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Whether to print verbose output during initialization.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   // clang-format on

@@ -24,12 +24,15 @@ public:
   /**
    * @brief Constructor for Lebedev quadrature.
    *
-   * @param order The order of the Lebedev quadrature set to load
+   * @param quadrature_order The order of the Lebedev quadrature set to load
+   * @param scattering_order Maximum scattering order
    * @param verbose Flag to enable verbose output
+   * @param method Operator construction method
    */
   LebedevQuadrature3DXYZ(unsigned int quadrature_order,
                          unsigned int scattering_order,
-                         bool verbose = false);
+                         bool verbose = false,
+                         OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
 private:
   /**
