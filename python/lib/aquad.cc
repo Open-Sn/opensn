@@ -669,6 +669,8 @@ WrapLebedevQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Whether to print verbose output during initialization.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
 
