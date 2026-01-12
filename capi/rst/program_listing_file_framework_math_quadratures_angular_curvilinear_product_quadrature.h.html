@@ -110,7 +110,7 @@
 <span class="w">  </span><span class="o">~</span><span class="n">CurvilinearProductQuadrature</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">CurvilinearProductQuadrature</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
+<span class="w">  </span><span class="n">CurvilinearProductQuadrature</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">ProductQuadrature</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
@@ -128,7 +128,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">GLCProductQuadrature2DRZ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">CurvilinearProductQuadrature</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Nazimuthal</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">  </span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">int</span><span class="w"> </span><span class="n">Nazimuthal</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
 <span class="w">  </span><span class="o">~</span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
@@ -153,7 +156,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">GLProductQuadrature1DSpherical</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">CurvilinearProductQuadrature</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">  </span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
 <span class="w">  </span><span class="o">~</span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
