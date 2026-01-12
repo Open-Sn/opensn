@@ -1167,7 +1167,7 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "**** ERROR ****  Invalid param",
+        "key": "Invalid param ",
         "wordnum": 6,
         "gold": "\"wrong-parameter\""
       }

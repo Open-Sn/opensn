@@ -13,7 +13,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.math import Vector3
 
 if __name__ == "__main__":

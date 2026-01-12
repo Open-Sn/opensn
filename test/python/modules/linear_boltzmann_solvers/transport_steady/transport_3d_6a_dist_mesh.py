@@ -17,6 +17,8 @@ if "opensn_console" not in globals():
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.mesh import DistributedMeshGenerator, OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
+    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
