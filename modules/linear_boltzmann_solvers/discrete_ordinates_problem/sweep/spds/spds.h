@@ -51,10 +51,13 @@ public:
    * can readily read to and write from a common data structure. A SPLS contains one or more entire
    * cellsets — it cannot split a cellset.
    */
-  const std::vector<int>& GetLocalSubgrid() const { return spls_; }
+  const auto& GetLocalSubgrid() const { return spls_; }
 
   /// Return a reference to the levelized SPLS.
-  const std::vector<std::vector<int>>& GetLevelizedLocalSubgrid() const { return levelized_spls_; }
+  const std::vector<std::vector<std::uint32_t>>& GetLevelizedLocalSubgrid() const
+  {
+    return levelized_spls_;
+  }
 
   /// Returns the location dependencies for this SPDS.
   const std::vector<int>& GetLocationDependencies() const { return location_dependencies_; }
@@ -75,7 +78,10 @@ public:
   }
 
   /// Returns the feedback arc set (FAS) for the local cell sweep graph.
-  const std::vector<std::pair<int, int>>& GetLocalSweepFAS() const { return local_sweep_fas_; }
+  const std::vector<std::pair<std::uint32_t, std::uint32_t>>& GetLocalSweepFAS() const
+  {
+    return local_sweep_fas_;
+  }
 
   /// Return the cell face orientations for this SPDS.
   const std::vector<std::vector<FaceOrientation>>& GetCellFaceOrientations() const
@@ -89,7 +95,7 @@ public:
    * \param g The graph from which cyclic dependencies are to be removed.
    * \return FAS as a vector of graph edges.
    */
-  std::vector<std::pair<size_t, size_t>> RemoveCyclicDependencies(Graph& g);
+  std::vector<std::pair<Vertex, Vertex>> RemoveCyclicDependencies(Graph& g);
 
   /// Maps location J to a predecessor location.
   int MapLocJToPrelocI(int locJ) const;
@@ -110,10 +116,11 @@ protected:
    * \param location_successors Location successors.
    * \param cell_successors Cell successors.
    */
-  void PopulateCellRelationships(const Vector3& omega,
-                                 std::set<int>& location_dependencies,
-                                 std::set<int>& location_successors,
-                                 std::vector<std::set<std::pair<int, double>>>& cell_successors);
+  void PopulateCellRelationships(
+    const Vector3& omega,
+    std::set<int>& location_dependencies,
+    std::set<int>& location_successors,
+    std::vector<std::set<std::pair<std::uint32_t, double>>>& cell_successors);
 
   /// Find bi-, tri-, and n-connected strongly connected components (SCCs) in the given graph.
   std::vector<std::vector<Vertex>> FindSCCs(Graph& g);
@@ -146,8 +153,8 @@ protected:
    * \param scc_vertices Vertices within the current strongly connected component.
    * \return Vector of pairs representing edges to remove to break cycles.
    */
-  std::vector<std::pair<int, int>> FindApproxMinimumFAS(Graph& g,
-                                                        std::vector<Vertex>& scc_vertices);
+  std::vector<std::pair<Vertex, Vertex>> FindApproxMinimumFAS(Graph& g,
+                                                              std::vector<Vertex>& scc_vertices);
 
 protected:
   /// Angular direction vector.
@@ -155,9 +162,9 @@ protected:
   /// Reference to the grid.
   const std::shared_ptr<MeshContinuum> grid_;
   /// Sweep-plane local subgrid associated with this SPDS.
-  std::vector<int> spls_;
+  std::vector<std::uint32_t> spls_;
   /// Levelized sweep-plane local subgrid associated with this SPDS.
-  std::vector<std::vector<int>> levelized_spls_;
+  std::vector<std::vector<std::uint32_t>> levelized_spls_;
   /// Location dependencies.
   std::vector<int> location_dependencies_;
   /// Location successors.
@@ -167,7 +174,7 @@ protected:
   /// Delayed location successors.
   std::vector<int> delayed_location_successors_;
   /// Vector of edges representing the FAS used to break cycles in the local cell sweep graph.
-  std::vector<std::pair<int, int>> local_sweep_fas_;
+  std::vector<std::pair<std::uint32_t, std::uint32_t>> local_sweep_fas_;
   /// Cell face orientations for the cells in the local cell graph.
   std::vector<std::vector<FaceOrientation>> cell_face_orientations_;
 };

@@ -73,13 +73,13 @@ ParallelSTLVector::GetLocalSTLData()
 std::vector<double>
 ParallelSTLVector::MakeLocalVector()
 {
-  return {values_.begin(), values_.begin() + static_cast<int>(local_size_)};
+  return {values_.begin(), values_.begin() + static_cast<int64_t>(local_size_)};
 }
 
 double
 ParallelSTLVector::operator[](const uint64_t local_id) const
 {
-  OpenSnInvalidArgumentIf(local_id < 0 or local_id >= values_.size(),
+  OpenSnInvalidArgumentIf(local_id >= values_.size(),
                           "Invalid local index provided. " + std::to_string(local_id) + " vs [0," +
                             std::to_string(values_.size()) + ")");
 
@@ -89,7 +89,7 @@ ParallelSTLVector::operator[](const uint64_t local_id) const
 double&
 ParallelSTLVector::operator[](const uint64_t local_id)
 {
-  OpenSnInvalidArgumentIf(local_id < 0 or local_id >= values_.size(),
+  OpenSnInvalidArgumentIf(local_id >= values_.size(),
                           "Invalid local index provided. " + std::to_string(local_id) + " vs [0," +
                             std::to_string(values_.size()) + ")");
 
@@ -123,7 +123,7 @@ ParallelSTLVector::BlockSet(const std::vector<double>& y,
                           "y.size() < num_values " + std::to_string(y.size()) + " < " +
                             std::to_string(num_values));
 
-  const uint64_t local_end = local_offset + num_values;
+  const auto local_end = local_offset + num_values;
   OpenSnInvalidArgumentIf(local_end > local_size_,
                           "local_offset + num_values=" + std::to_string(local_end) +
                             ", is out of range for destination vector with local size " +
@@ -231,7 +231,7 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
 void
 ParallelSTLVector::SetValue(const uint64_t global_id, const double value, const VecOpType op_type)
 {
-  OpenSnInvalidArgumentIf(global_id < 0 or global_id >= global_size_,
+  OpenSnInvalidArgumentIf(global_id >= global_size_,
                           "Invalid global index encountered. Global indices "
                           "must be in the range [0, this->GlobalSize()].");
 
@@ -251,7 +251,7 @@ ParallelSTLVector::SetValues(const std::vector<uint64_t>& global_ids,
   for (size_t i = 0; i < global_ids.size(); ++i)
   {
     const auto& global_id = global_ids[i];
-    OpenSnInvalidArgumentIf(global_id < 0 or global_id >= global_size_,
+    OpenSnInvalidArgumentIf(global_id >= global_size_,
                             "Invalid global index encountered. Global indices "
                             "must be in the range [0, this->GlobalSize()].");
     op_cache.emplace_back(global_id, values[i]);
@@ -329,7 +329,7 @@ ParallelSTLVector::ComputeNorm(NormType norm_type) const
     case NormType::L1_NORM:
     {
       double norm_val =
-        std::accumulate(values_.begin(), values_.begin() + static_cast<int>(local_size_), 0.0);
+        std::accumulate(values_.begin(), values_.begin() + static_cast<int64_t>(local_size_), 0.0);
       comm_.all_reduce(norm_val, mpi::op::sum<double>());
       return norm_val;
     }
@@ -347,7 +347,7 @@ ParallelSTLVector::ComputeNorm(NormType norm_type) const
     case NormType::LINF_NORM:
     {
       double norm_val =
-        *std::max_element(values_.begin(), values_.begin() + static_cast<int>(local_size_));
+        *std::max_element(values_.begin(), values_.begin() + static_cast<int64_t>(local_size_));
       comm_.all_reduce(norm_val, mpi::op::max<double>());
       return norm_val;
     }
@@ -384,8 +384,8 @@ ParallelSTLVector::Assemble()
   auto& op_cache = global_op_type == OpType ::SET_VALUE ? set_cache_ : add_cache_;
 
   // First, segregate the local and non-local operations
-  std::vector<std::pair<int64_t, double>> local_cache;
-  std::vector<std::pair<int64_t, double>> nonlocal_cache;
+  std::vector<Operation> local_cache;
+  std::vector<Operation> nonlocal_cache;
   for (const auto& op : op_cache)
   {
     const int op_pid = FindOwnerPID(op.first);
@@ -398,9 +398,10 @@ ParallelSTLVector::Assemble()
   // The local operations can be handled immediately
   for (const auto& [global_id, value] : local_cache)
   {
-    const uint64_t local_id = global_id - extents_[location_id_];
-    OpenSnLogicalErrorIf(local_id < 0 or local_id >= local_size_,
+    OpenSnLogicalErrorIf(extents_[location_id_] > global_id,
                          "Invalid mapping from global to local.");
+    const auto local_id = global_id - extents_[location_id_];
+    OpenSnLogicalErrorIf(local_id >= local_size_, "Invalid mapping from global to local.");
 
     if (global_op_type == OpType::SET_VALUE)
       values_[local_id] = value;
@@ -439,7 +440,7 @@ ParallelSTLVector::Assemble()
   // necessary operations performed
   for (const auto& [pid, byte_vector] : pid_recv_map_bytes)
   {
-    const auto packet_size = sizeof(std::pair<int64_t, double>);
+    const auto packet_size = sizeof(Operation);
 
     OpenSnLogicalErrorIf(byte_vector.size() % packet_size != 0,
                          "Unrecognized received operations. Operations are serialized with "
@@ -451,16 +452,21 @@ ParallelSTLVector::Assemble()
     ByteArray byte_array(byte_vector);
     for (size_t k = 0; k < num_ops; ++k)
     {
-      const auto global_id = byte_array.Read<int64_t>();
+      const auto global_id = byte_array.Read<uint64_t>();
       const auto value = byte_array.Read<double>();
+
+      OpenSnLogicalErrorIf(global_id < extents_[location_id_],
+                           "A non-local global ID was received at rank " +
+                             std::to_string(location_id_) + " (sent by rank " +
+                             std::to_string(pid) + ") during vector assembly.");
 
       // Check that the global ID is in fact valid for this process
       const auto local_id = global_id - extents_[location_id_];
 
-      OpenSnLogicalErrorIf(local_id < 0 or local_id >= local_size_,
-                           "A non-local global ID was received by process " +
-                             std::to_string(location_id_) + " by process " + std::to_string(pid) +
-                             " during vector assembly.");
+      OpenSnLogicalErrorIf(local_id >= local_size_,
+                           "A non-local global ID was received by rank " +
+                             std::to_string(location_id_) + " (sent by rank " +
+                             std::to_string(pid) + ") during vector assembly.");
 
       // Contribute to the local vector
       if (global_op_type == OpType ::SET_VALUE)

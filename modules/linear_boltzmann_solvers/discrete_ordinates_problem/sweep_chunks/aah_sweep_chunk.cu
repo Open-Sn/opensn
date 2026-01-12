@@ -108,7 +108,7 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
   }
   // retrieve SPDS levels
   const AAH_SPDS& spds = dynamic_cast<const AAH_SPDS&>(angle_set.GetSPDS());
-  const std::vector<std::vector<int>>& levelized_spls = spds.GetLevelizedLocalSubgrid();
+  const std::vector<std::vector<std::uint32_t>>& levelized_spls = spds.GetLevelizedLocalSubgrid();
   // loop over each level based on saturation status
   unsigned int block_size_x = groupset_.groups.size(), block_size_y = angle_set.GetNumAngles();
   if (block_size_x * block_size_y <= gpu_kernel::threshold)
