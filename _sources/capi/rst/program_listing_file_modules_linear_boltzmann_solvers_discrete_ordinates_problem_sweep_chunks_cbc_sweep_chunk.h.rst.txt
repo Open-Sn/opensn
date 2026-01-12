@@ -70,7 +70,7 @@ Program Listing for File cbc_sweep_chunk.h
      bool surface_source_active_;
    
      const Cell* cell_;
-     uint64_t cell_local_id_;
+     std::uint32_t cell_local_id_;
      const CellMapping* cell_mapping_;
      CellLBSView* cell_transport_view_;
      size_t cell_num_faces_;

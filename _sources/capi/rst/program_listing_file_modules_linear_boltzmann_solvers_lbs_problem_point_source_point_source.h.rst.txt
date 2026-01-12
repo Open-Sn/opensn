@@ -48,7 +48,7 @@ Program Listing for File point_source.h
      struct Subscriber
      {
        double volume_weight = 0.0;
-       uint64_t cell_local_id = 0;
+       std::uint32_t cell_local_id = 0;
        Vector<double> shape_values;
        Vector<double> node_weights;
      };

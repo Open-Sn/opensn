@@ -96,7 +96,7 @@ Program Listing for File sweep_boundary.h
      virtual const Vector3* GetNormalForReflection() const { return nullptr; }
    
      /// Returns a pointer to the location of the incoming flux.
-     virtual double* PsiIncoming(uint64_t cell_local_id,
+     virtual double* PsiIncoming(std::uint32_t cell_local_id,
                                  unsigned int face_num,
                                  unsigned int fi,
                                  unsigned int angle_num,
