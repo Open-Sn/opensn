@@ -34,6 +34,8 @@ Includes
 
 - ``functional``
 
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
 
 
 Included By
@@ -43,6 +45,10 @@ Included By
 - :ref:`file_framework_field_functions_interpolation_ffinter_volume.h`
 
 - :ref:`file_modules_diffusion_diffusion_mip_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_arbitrary_boundary.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
 
 
 
@@ -57,6 +63,8 @@ Namespaces
 Classes
 -------
 
+
+- :ref:`exhale_class_classopensn_1_1_angular_flux_function`
 
 - :ref:`exhale_class_classopensn_1_1_vector_spatial_function`
 

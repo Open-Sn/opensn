@@ -66,6 +66,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_smm_acceleration.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_arbitrary_boundary.h`
+
 
 
 

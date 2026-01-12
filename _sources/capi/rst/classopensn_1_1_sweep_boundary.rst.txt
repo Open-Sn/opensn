@@ -12,6 +12,7 @@ Inheritance Relationships
 Derived Types
 *************
 
+- ``public opensn::ArbitraryBoundary`` (:ref:`exhale_class_classopensn_1_1_arbitrary_boundary`)
 - ``public opensn::IsotropicBoundary`` (:ref:`exhale_class_classopensn_1_1_isotropic_boundary`)
 - ``public opensn::ReflectingBoundary`` (:ref:`exhale_class_classopensn_1_1_reflecting_boundary`)
 - ``public opensn::VacuumBoundary`` (:ref:`exhale_class_classopensn_1_1_vacuum_boundary`)

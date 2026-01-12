@@ -660,7 +660,17 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_angular_flux_function.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_angular_quadrature.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_arbitrary_boundary.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2138,6 +2148,11 @@ Files
    :maxdepth: 1
 
    file_framework_math_quadratures_angular_angular_quadrature.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_arbitrary_boundary.h.rst
 
 .. toctree::
    :maxdepth: 1

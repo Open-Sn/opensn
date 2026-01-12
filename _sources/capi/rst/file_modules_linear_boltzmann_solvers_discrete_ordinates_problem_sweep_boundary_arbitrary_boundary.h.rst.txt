@@ -1,0 +1,58 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_arbitrary_boundary.h:
+
+File arbitrary_boundary.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/arbitrary_boundary.h``)
+----------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_arbitrary_boundary.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
+
+- ``framework/math/functions/function.h`` (:ref:`file_framework_math_functions_function.h`)
+
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_arbitrary_boundary`
+
