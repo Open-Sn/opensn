@@ -28,6 +28,14 @@ PyEnv::PyEnv()
     std::cout << Timer::GetLocalDateTimeString() << " Running " << program << " with "
               << mpi_comm.size() << " processes.\n\n";
   }
+  // check MPI threading level
+  int provided;
+  MPI_Query_thread(&provided);
+  if (provided != MPI_THREAD_MULTIPLE)
+  {
+    throw std::runtime_error("MPI must be initialized with thread_level \"multiple\". See "
+                             "mpi4py.rc for more information\n");
+  }
   // initialize PETSc and OpenSn
   ::PetscOptionsSetValue(NULL, "-options_left", "0");
   ::PetscOptionsInsertString(nullptr, "-no_signal_handler");

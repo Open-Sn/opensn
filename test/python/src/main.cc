@@ -62,7 +62,7 @@ register_bindings()
 int
 main(int argc, char** argv)
 {
-  mpi::Environment env(argc, argv);
+  mpi::Environement env(argc, argv, mpi::Environment::Threading::MULTIPLE);
 
   PetscCall(PetscInitializeNoArguments());
 

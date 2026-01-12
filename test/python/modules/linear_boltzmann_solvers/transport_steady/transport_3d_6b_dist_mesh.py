@@ -18,6 +18,8 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator, DistributedMeshGenerator
     from pyopensn.mesh import ExtruderMeshGenerator
     from pyopensn.xs import MultiGroupXS
+    from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
