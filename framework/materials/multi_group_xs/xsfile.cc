@@ -497,7 +497,7 @@ XSFile::ReadTransferMatrices(const std::string& keyword,
 
   std::string word, line;
   double value = 0.0;
-  size_t ell = 0, group = 0, gprime = 0;
+  size_t ell = 0, gto = 0, gfrom = 0;
 
   // Read the block
   std::getline(file, line);
@@ -507,11 +507,11 @@ XSFile::ReadTransferMatrices(const std::string& keyword,
   {
     // Check that this line contains an entry
     line_stream >> word;
-    if (word == "M_GPRIME_G_VAL")
+    if (word == "M_GFROM_GTO_VAL")
     {
       // Get data from current line
-      line_stream >> ell >> gprime >> group >> value;
-      destination.at(ell).Insert(group, gprime, value);
+      line_stream >> ell >> gfrom >> gto >> value;
+      destination.at(ell).Insert(gto, gfrom, value);
     }
 
     // Go to next line
