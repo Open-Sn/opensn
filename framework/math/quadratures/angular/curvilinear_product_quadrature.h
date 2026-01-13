@@ -23,7 +23,7 @@ public:
   ~CurvilinearProductQuadrature() override = default;
 
 protected:
-  CurvilinearProductQuadrature(int dimension, unsigned int scattering_order)
+  CurvilinearProductQuadrature(unsigned int dimension, unsigned int scattering_order)
     : ProductQuadrature(dimension, scattering_order)
   {
   }
@@ -41,8 +41,8 @@ protected:
 class GLCProductQuadrature2DRZ : public CurvilinearProductQuadrature
 {
 public:
-  GLCProductQuadrature2DRZ(int Npolar,
-                           int Nazimuthal,
+  GLCProductQuadrature2DRZ(unsigned int Npolar,
+                           unsigned int Nazimuthal,
                            unsigned int scattering_order,
                            bool verbose = false);
 
@@ -69,7 +69,9 @@ private:
 class GLProductQuadrature1DSpherical : public CurvilinearProductQuadrature
 {
 public:
-  GLProductQuadrature1DSpherical(int Npolar, unsigned int scattering_order, bool verbose = false);
+  GLProductQuadrature1DSpherical(unsigned int Npolar,
+                                 unsigned int scattering_order,
+                                 bool verbose = false);
 
   ~GLProductQuadrature1DSpherical() override = default;
 
@@ -77,7 +79,7 @@ public:
 
 private:
   /// Initialize with one-dimensional quadrature.
-  void Initialize(int Npolar, bool verbose = false);
+  void Initialize(unsigned int Npolar, bool verbose = false);
 
   /**
    * Initialize parametrizing factors of the spherical angular quadrature, starting from a fully

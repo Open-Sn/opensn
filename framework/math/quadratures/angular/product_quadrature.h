@@ -58,7 +58,7 @@ class GLProductQuadrature1DSlab : public ProductQuadrature
 {
 public:
   /// Constructor for 1D slab Gauss-Legendre product quadrature
-  explicit GLProductQuadrature1DSlab(int Npolar,
+  explicit GLProductQuadrature1DSlab(unsigned int Npolar,
                                      unsigned int scattering_order,
                                      bool verbose = false);
 };
@@ -67,8 +67,8 @@ class GLCProductQuadrature2DXY : public ProductQuadrature
 {
 public:
   /// Constructor for 2D XY Gauss-Legendre Chebyshev product quadrature
-  explicit GLCProductQuadrature2DXY(int Npolar,
-                                    int Nazimuthal,
+  explicit GLCProductQuadrature2DXY(unsigned int Npolar,
+                                    unsigned int Nazimuthal,
                                     unsigned int scattering_order,
                                     bool verbose = false);
 };
@@ -77,8 +77,8 @@ class GLCProductQuadrature3DXYZ : public ProductQuadrature
 {
 public:
   /// Constructor for 3D XYZ Gauss-Legendre Chebyshev product quadrature
-  explicit GLCProductQuadrature3DXYZ(int Npolar,
-                                     int Nazimuthal,
+  explicit GLCProductQuadrature3DXYZ(unsigned int Npolar,
+                                     unsigned int Nazimuthal,
                                      unsigned int scattering_order,
                                      bool verbose = false);
 };

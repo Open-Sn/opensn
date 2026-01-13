@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(int Npolar,
+GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(unsigned int Npolar,
                                                                unsigned int scattering_order,
                                                                bool verbose)
   : CurvilinearProductQuadrature(1, scattering_order)
@@ -27,7 +27,7 @@ GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(int Npolar,
 }
 
 void
-GLProductQuadrature1DSpherical::Initialize(int Npolar, const bool verbose)
+GLProductQuadrature1DSpherical::Initialize(unsigned int Npolar, const bool verbose)
 {
   const auto quad_polar = GaussLegendreQuadrature(Npolar, verbose);
   auto polar_quad(quad_polar);
@@ -183,8 +183,8 @@ GLProductQuadrature1DSpherical::MakeHarmonicIndices()
   }
 }
 
-GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(int Npolar,
-                                                   int Nazimuthal,
+GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(unsigned int Npolar,
+                                                   unsigned int Nazimuthal,
                                                    unsigned int scattering_order,
                                                    bool verbose)
   : CurvilinearProductQuadrature(2, scattering_order)
@@ -198,7 +198,7 @@ GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(int Npolar,
   const auto quad_polar = GaussLegendreQuadrature(Npolar, verbose);
   std::vector<GaussQuadrature> quad_azimuthal;
   quad_azimuthal.reserve(Npolar);
-  for (auto n = 0; n < Npolar; ++n)
+  for (unsigned int n = 0; n < Npolar; ++n)
     quad_azimuthal.emplace_back(GaussChebyshevQuadrature(Nazimuthal, verbose));
   Initialize(quad_polar, quad_azimuthal, verbose);
   MakeHarmonicIndices();

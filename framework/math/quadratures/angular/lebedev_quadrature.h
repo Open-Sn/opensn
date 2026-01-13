@@ -27,7 +27,9 @@ public:
    * @param order The order of the Lebedev quadrature set to load
    * @param verbose Flag to enable verbose output
    */
-  LebedevQuadrature3DXYZ(int quadrature_order, unsigned int scattering_order, bool verbose = false);
+  LebedevQuadrature3DXYZ(unsigned int quadrature_order,
+                         unsigned int scattering_order,
+                         bool verbose = false);
 
 private:
   /**
@@ -36,7 +38,7 @@ private:
    * @param order The order to load
    * @param verbose Flag to enable verbose output
    */
-  void LoadFromOrder(int quadrature_order, bool verbose = false);
+  void LoadFromOrder(unsigned int quadrature_order, bool verbose = false);
 };
 
 } // namespace opensn
