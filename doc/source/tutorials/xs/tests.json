@@ -6,6 +6,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "num_groups       =",
+        "goldvalue": 1,
+        "abs_tol": 1e-8
       }
     ]
   },
@@ -16,6 +22,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "num_groups       =",
+        "goldvalue": 2,
+        "abs_tol": 1e-8
       }
     ]
   },
@@ -26,6 +38,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "num_groups       =",
+        "goldvalue": 172,
+        "abs_tol": 1e-8
       }
     ]
   },
@@ -36,6 +54,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "num_groups       =",
+        "goldvalue": 1,
+        "abs_tol": 1e-8
       }
     ]
   }

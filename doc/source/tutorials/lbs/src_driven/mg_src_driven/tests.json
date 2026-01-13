@@ -6,6 +6,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Maximum flux =",
+        "goldvalue": 7.8163339e-2,
+        "abs_tol": 1e-6
       }
     ]
   }
