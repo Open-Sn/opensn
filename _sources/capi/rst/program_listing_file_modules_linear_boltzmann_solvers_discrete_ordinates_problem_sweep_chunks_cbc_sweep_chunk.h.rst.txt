@@ -63,7 +63,7 @@ Program Listing for File cbc_sweep_chunk.h
    private:
      CBC_FLUDS* fluds_;
      size_t gs_size_;
-     int gs_gi_;
+     unsigned int gs_gi_;
      size_t num_angles_in_as_;
      size_t group_stride_;       // Stride for consecutive angles
      size_t group_angle_stride_; // Stride for consecutive spatial DOFs

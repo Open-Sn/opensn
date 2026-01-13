@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a22863db76f9fc3f1dda77adc84efb5cd:
+.. _exhale_function_namespaceopensn_1a073c22c5a84f641da97dabf6ee200eb6:
 
 Function opensn::PackGroupsetXS
 ===============================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::PackGroupsetXS(const BlockID2XSMap&, int, int)
+.. doxygenfunction:: opensn::PackGroupsetXS(const BlockID2XSMap&, unsigned int, unsigned int)
    :project: opensn
