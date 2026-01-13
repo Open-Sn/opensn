@@ -17,8 +17,7 @@ class VacuumBoundary : public SweepBoundary
 public:
   explicit VacuumBoundary(size_t num_groups,
                           CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(LBSBoundaryType::VACUUM, num_groups, coord_type),
-      boundary_flux_(num_groups, 0.0)
+    : SweepBoundary(LBSBoundaryType::VACUUM, num_groups, coord_type)
   {
   }
 
@@ -28,11 +27,10 @@ public:
                       unsigned int angle_num,
                       unsigned int group_num) override
   {
-    return &boundary_flux_[group_num];
+    return ZeroFlux(group_num);
   }
 
 private:
-  std::vector<double> boundary_flux_;
 };
 
 } // namespace opensn

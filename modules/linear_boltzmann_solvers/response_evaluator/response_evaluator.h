@@ -63,7 +63,12 @@ private:
   using MaterialSources = std::map<unsigned int, std::vector<double>>;
   using PointSources = std::vector<std::shared_ptr<PointSource>>;
   using VolumetricSources = std::vector<std::shared_ptr<VolumetricSource>>;
-  using BoundarySources = std::map<uint64_t, BoundaryPreference>;
+  struct BoundarySource
+  {
+    LBSBoundaryType type = LBSBoundaryType::VACUUM;
+    std::vector<double> isotropic_mg_source;
+  };
+  using BoundarySources = std::map<uint64_t, BoundarySource>;
 
 public:
   explicit ResponseEvaluator(const InputParameters& params);
@@ -84,6 +89,8 @@ public:
   void AddResponseBuffers(const InputParameters& params);
 
   void AddResponseSources(const InputParameters& params);
+
+  static InputParameters GetBoundarySourceOptionsBlock();
 
   /**
    * Evaluate a response using the specified adjoint buffer with the currently defined sources in

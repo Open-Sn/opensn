@@ -7,7 +7,6 @@
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
 #include <vector>
-#include <limits>
 
 namespace opensn
 {

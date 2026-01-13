@@ -6,7 +6,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include <vector>
 #include <limits>
-
 namespace opensn
 {
 
