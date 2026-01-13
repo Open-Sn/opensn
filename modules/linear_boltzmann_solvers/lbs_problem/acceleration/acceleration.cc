@@ -32,10 +32,13 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
 }
 
 std::map<unsigned int, Multigroup_D_and_sigR>
-PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map, int first_grp_index, int last_group_index)
+PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
+               unsigned int first_grp_index,
+               unsigned int last_group_index)
 {
-  const int num_gs_groups = last_group_index - first_grp_index + 1;
-  OpenSnInvalidArgumentIf(num_gs_groups < 0, "last_grp_index must be >= first_grp_index");
+  OpenSnInvalidArgumentIf(last_group_index < first_grp_index,
+                          "last_grp_index must be >= first_grp_index");
+  const unsigned int num_gs_groups = last_group_index - first_grp_index + 1;
 
   std::map<unsigned int, Multigroup_D_and_sigR> matid_2_mgxs_map;
   for (const auto& matid_xs_pair : blkid_to_xs_map)
@@ -49,7 +52,7 @@ PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map, int first_grp_index, int la
     size_t g = 0;
     const auto& diffusion_coeff = xs->GetDiffusionCoefficient();
     const auto& sigma_removal = xs->GetSigmaRemoval();
-    for (int gprime = first_grp_index; gprime <= last_group_index; ++gprime)
+    for (unsigned int gprime = first_grp_index; gprime <= last_group_index; ++gprime)
     {
       D[g] = diffusion_coeff[gprime];
       sigma_r[g] = sigma_removal[gprime];

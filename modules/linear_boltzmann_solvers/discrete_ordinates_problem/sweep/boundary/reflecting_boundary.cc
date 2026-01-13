@@ -330,7 +330,7 @@ ReflectingBoundary::PsiIncoming(std::uint32_t cell_local_id,
                                 unsigned int face_num,
                                 unsigned int fi,
                                 unsigned int angle_num,
-                                int group_num)
+                                unsigned int group_num)
 {
   int reflected_angle_num = reflected_anglenum_[angle_num];
 

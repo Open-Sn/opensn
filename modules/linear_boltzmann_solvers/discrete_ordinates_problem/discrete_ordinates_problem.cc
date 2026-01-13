@@ -560,7 +560,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
           const auto& ell = moment_map[imom].ell;
           const auto dof_map = transport_view.MapDOF(i, imom, 0);
 
-          for (int g = gsg_i; g <= gsg_f; ++g)
+          for (auto g = gsg_i; g <= gsg_f; ++g)
           {
             phi_new_local_[dof_map + g] *= std::pow(-1.0, ell);
             phi_old_local_[dof_map + g] *= std::pow(-1.0, ell);

@@ -38,14 +38,17 @@ public:
 
   /// Assembles a vector for a given group span from a source vector.
   static void SetGroupScopedPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
-                                                         int first_group_id,
-                                                         int last_group_id,
+                                                         unsigned int first_group_id,
+                                                         unsigned int last_group_id,
                                                          Vec dest,
                                                          const std::vector<double>& src);
 
   /// Assembles a vector for a given groupset from a source vector.
-  static void SetPrimarySTLvectorFromGroupScopedPETScVec(
-    LBSProblem& lbs_problem, int first_group_id, int last_group_id, Vec src, PhiSTLOption dest);
+  static void SetPrimarySTLvectorFromGroupScopedPETScVec(LBSProblem& lbs_problem,
+                                                         unsigned int first_group_id,
+                                                         unsigned int last_group_id,
+                                                         Vec src,
+                                                         PhiSTLOption dest);
 
   /// Assembles a vector for a given groupset from a source vector.
   static void GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
@@ -61,13 +64,13 @@ public:
 
   /// Assembles a PETSc vector from multiple groupsets.
   static void SetMultiGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
-                                                     const std::vector<int>& groupset_ids,
+                                                     const std::vector<unsigned int>& groupset_ids,
                                                      Vec x,
                                                      PhiSTLOption which_phi);
 
   /// Disassembles a multiple Groupset PETSc vector STL vectors.
   static void SetPrimarySTLvectorFromMultiGSPETScVec(LBSProblem& lbs_problem,
-                                                     const std::vector<int>& groupset_ids,
+                                                     const std::vector<unsigned int>& groupset_ids,
                                                      Vec x,
                                                      PhiSTLOption which_phi);
 

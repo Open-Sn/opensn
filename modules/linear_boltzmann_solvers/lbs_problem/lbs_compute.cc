@@ -22,8 +22,8 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& options = lbs_problem.GetOptions();
 
-  const int first_grp = groups.front().id;
-  const int last_grp = groups.back().id;
+  const auto first_grp = groups.front().id;
+  const auto last_grp = groups.back().id;
 
   // Loop over local cells
   double local_production = 0.0;
@@ -51,7 +51,7 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
       for (auto g = first_grp; g <= last_grp; ++g)
       {
         const auto& prod = F[g];
-        for (auto gp = 0; gp <= last_grp; ++gp)
+        for (unsigned int gp = 0; gp <= last_grp; ++gp)
           local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
 
         if (options.use_precursors)
@@ -78,8 +78,8 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
 
-  const int first_grp = groups.front().id;
-  const int last_grp = groups.back().id;
+  const auto first_grp = groups.front().id;
+  const auto last_grp = groups.back().id;
 
   // Loop over local cells
   double local_fission_rate = 0.0;
@@ -253,7 +253,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
 
                   for (const auto& group : groupset.groups)
                   {
-                    const int g = group.id;
+                    const auto g = group.id;
                     const double psi = *bndry->PsiIncoming(cell.local_id, f, fi, n, g);
                     local_in_flow -= mu * wt * psi * IntFi_shapeI;
                   } // for group
@@ -326,7 +326,7 @@ GetInflow(const Cell& cell,
           const std::shared_ptr<AngularQuadrature> quadrature,
           SweepBoundary& boundary,
           unsigned int f,
-          int g)
+          unsigned int g)
 
 {
   const auto& fe_vals = unit_cell_matrices.at(cell.local_id);
@@ -454,7 +454,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
 
           for (const auto group : groupset.groups)
           {
-            const int g = group.id;
+            const auto g = group.id;
             local_leakage[face.neighbor_id][g] += transport_view.GetOutflow(f, g);
             local_leakage[face.neighbor_id][g] +=
               GetInflow(cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, g);

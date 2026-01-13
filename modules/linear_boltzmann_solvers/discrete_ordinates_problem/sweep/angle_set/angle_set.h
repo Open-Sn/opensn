@@ -92,7 +92,7 @@ public:
                                     uint64_t cell_local_id,
                                     unsigned int face_num,
                                     unsigned int fi,
-                                    int g,
+                                    unsigned int g,
                                     bool surface_source_active) = 0;
 
   /// Returns a pointer to outbound reflected flux data.

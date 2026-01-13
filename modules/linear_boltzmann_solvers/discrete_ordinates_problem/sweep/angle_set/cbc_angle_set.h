@@ -49,7 +49,7 @@ public:
                             uint64_t cell_local_id,
                             unsigned int face_num,
                             unsigned int fi,
-                            int g,
+                            unsigned int g,
                             bool surface_source_active) override;
 
   double* PsiReflected(uint64_t boundary_id,

@@ -74,7 +74,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
 
-  const int gsi = groupset.groups.front().id;
+  const auto gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
   delta_phi_local.clear();
@@ -115,7 +115,7 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
-  const int gsi = groupset.groups.front().id;
+  const auto gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid->local_cells)
@@ -158,7 +158,7 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
-  const int gsi = groupset.groups.front().id;
+  const auto gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
@@ -199,7 +199,7 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
-  const int gsi = groupset.groups.front().id;
+  const auto gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
   for (const auto& cell : grid->local_cells)

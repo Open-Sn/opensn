@@ -88,7 +88,7 @@ public:
                               unsigned int face_num,
                               unsigned int fi,
                               unsigned int angle_num,
-                              int group_num);
+                              unsigned int group_num);
 
   /// Returns a pointer to the location of the outgoing flux.
   virtual double* PsiOutgoing(uint64_t cell_local_id,
@@ -105,7 +105,7 @@ public:
   {
   }
 
-  double* ZeroFlux(int group_num) { return &zero_boundary_flux_[group_num]; }
+  double* ZeroFlux(unsigned int group_num) { return &zero_boundary_flux_[group_num]; }
 
 protected:
   std::vector<double> zero_boundary_flux_;

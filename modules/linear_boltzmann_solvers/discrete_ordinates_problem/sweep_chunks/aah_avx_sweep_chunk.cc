@@ -216,7 +216,7 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
   CALI_CXX_MARK_SCOPE("AAHSweepChunk::CPUSweep_FixedN");
 
   const size_t gs_size = groupset_.groups.size();
-  const size_t gs_gi = groupset_.groups.front().id;
+  const auto gs_gi = groupset_.groups.front().id;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
@@ -338,7 +338,7 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
                                         cell_local_id,
                                         f,
                                         fj,
-                                        static_cast<int>(gs_gi),
+                                        gs_gi,
                                         IsSurfaceSourceActive());
 
           for (size_t fi = 0; fi < num_face_nodes; ++fi)

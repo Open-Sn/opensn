@@ -134,7 +134,7 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
-  const int gsi = groupset.groups.front().id;
+  const auto gsi = groupset.groups.front().id;
   const size_t gss = groupset.groups.size();
 
   const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;

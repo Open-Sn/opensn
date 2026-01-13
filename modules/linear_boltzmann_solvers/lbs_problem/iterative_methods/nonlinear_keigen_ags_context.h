@@ -26,7 +26,7 @@ struct NLKEigenAGSContext : public NonLinearSolverContext
   std::shared_ptr<LBSProblem> lbs_problem;
   KResidualFunctionContext kresid_func_context;
 
-  std::vector<int> groupset_ids;
+  std::vector<unsigned int> groupset_ids;
 };
 
 } // namespace opensn
