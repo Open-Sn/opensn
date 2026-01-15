@@ -30,6 +30,10 @@ Includes
 --------
 
 
+- ``cstddef``
+
+- ``functional``
+
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
 - ``modules/solver.h`` (:ref:`file_modules_solver.h`)

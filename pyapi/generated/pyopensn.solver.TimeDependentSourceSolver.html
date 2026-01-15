@@ -138,6 +138,44 @@ repeatedly allows users to write custom python time loops.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.TimeDependentSourceSolver.SetPostAdvanceCallback">
+<span class="sig-name descname"><span class="pre">SetPostAdvanceCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopensn.solver.TimeDependentSourceSolver.SetPostAdvanceCallback" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>SetPostAdvanceCallback(self: pyopensn.solver.TimeDependentSourceSolver, arg0: std::function&lt;void ()&gt;) -&gt; None</p>
+<blockquote>
+<div><p>Register a callback that runs after each call to <a class="reference internal" href="#pyopensn.solver.TimeDependentSourceSolver.Advance" title="pyopensn.solver.TimeDependentSourceSolver.Advance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></a>.</p>
+<dl class="simple">
+<dt>callback<span class="classifier">Optional[Callable[[], None]]</span></dt><dd><p>Function invoked after the solver advances a timestep. Pass None to clear.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>SetPostAdvanceCallback(self: pyopensn.solver.TimeDependentSourceSolver, arg0: None) -&gt; None</p></li>
+</ol>
+<p>Clear the PostAdvance callback by passing None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.TimeDependentSourceSolver.SetPreAdvanceCallback">
+<span class="sig-name descname"><span class="pre">SetPreAdvanceCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopensn.solver.TimeDependentSourceSolver.SetPreAdvanceCallback" title="Link to this definition"></a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>SetPreAdvanceCallback(self: pyopensn.solver.TimeDependentSourceSolver, arg0: std::function&lt;void ()&gt;) -&gt; None</p>
+<blockquote>
+<div><p>Register a callback that runs before each call to <a class="reference internal" href="#pyopensn.solver.TimeDependentSourceSolver.Advance" title="pyopensn.solver.TimeDependentSourceSolver.Advance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></a>.</p>
+<dl class="simple">
+<dt>callback<span class="classifier">Optional[Callable[[], None]]</span></dt><dd><p>Function invoked before the solver advances a timestep. Pass None to clear.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>SetPreAdvanceCallback(self: pyopensn.solver.TimeDependentSourceSolver, arg0: None) -&gt; None</p></li>
+</ol>
+<p>Clear the PreAdvance callback by passing None.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.TimeDependentSourceSolver.SetTheta">
 <span class="sig-name descname"><span class="pre">SetTheta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.TimeDependentSourceSolver" title="pyopensn.solver.TimeDependentSourceSolver"><span class="pre">pyopensn.solver.TimeDependentSourceSolver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.TimeDependentSourceSolver.SetTheta" title="Link to this definition"></a></dt>
 <dd><p>Set the theta parameter used by <a class="reference internal" href="#pyopensn.solver.TimeDependentSourceSolver.Advance" title="pyopensn.solver.TimeDependentSourceSolver.Advance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></a>.</p>
