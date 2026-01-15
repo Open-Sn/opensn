@@ -1,0 +1,20 @@
+--- config/BuildSystem/config/packages/metis.py.org	2026-01-07 13:19:59
++++ config/BuildSystem/config/packages/metis.py	2026-01-07 13:19:54
+@@ -30,6 +30,7 @@
+ 
+   def formCMakeConfigureArgs(self):
+     args = config.package.CMakePackage.formCMakeConfigureArgs(self)
++    args.append("-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
+     args.append('-DGKLIB_PATH=../GKlib')
+     # force metis/parmetis to use a portable random number generator that will produce the same partitioning results on all systems
+     args.append('-DGKRAND=1')
+--- config/BuildSystem/config/packages/parmetis.py.org	2026-01-07 12:37:47
++++ config/BuildSystem/config/packages/parmetis.py	2026-01-07 12:34:25
+@@ -25,6 +25,7 @@
+   def formCMakeConfigureArgs(self):
+     '''Requires the same CMake options as Metis'''
+     args = config.package.CMakePackage.formCMakeConfigureArgs(self)
++    args.append("-DCMAKE_POLICY_VERSION_MINIMUM=3.5")
+     args.append('-DGKLIB_PATH=../headers')
+     args.append('-DMETIS_PATH='+self.metis.directory)
+     if self.mpi.include:
