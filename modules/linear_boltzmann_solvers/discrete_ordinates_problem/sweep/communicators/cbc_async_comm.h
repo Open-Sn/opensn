@@ -20,18 +20,14 @@ namespace opensn
 class MPICommunicatorSet;
 class ByteArray;
 class CBC_FLUDS;
+class CBCD_FLUDS;
 
 class CBC_ASynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
-  explicit CBC_ASynchronousCommunicator(size_t angle_set_id,
-                                        FLUDS& fluds,
-                                        const MPICommunicatorSet& comm_set)
-    : AsynchronousCommunicator(fluds, comm_set),
-      angle_set_id_(angle_set_id),
-      cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))
-  {
-  }
+  CBC_ASynchronousCommunicator(size_t angle_set_id,
+                               FLUDS& fluds,
+                               const MPICommunicatorSet& comm_set);
 
   std::vector<double>& InitGetDownwindMessageData(int location_id,
                                                   uint64_t cell_global_id,
@@ -50,8 +46,19 @@ public:
   }
 
 protected:
+  /// Sets FLUDS object to CBC_FLUDS for host-only sweeps
+  bool BuildFLUDSForCPU();
+
+  /// Sets FLUDS object to CBCD_FLUDS for device-only sweeps
+  bool BuildFLUDSForGPU();
+
+  /// Merge received messages into the FLUDS deplocs_outgoing_messages map
+  void MergeReceivedMessages(
+    std::map<std::pair<uint64_t, unsigned int>, std::vector<double>>& received_messages);
+
   const size_t angle_set_id_;
-  CBC_FLUDS& cbc_fluds_;
+  CBC_FLUDS* cbc_fluds_;
+  CBCD_FLUDS* cbcd_fluds_;
 
   // location_id, cell_global_id, face_id
   using MessageKey = std::tuple<int, uint64_t, unsigned int>;
@@ -60,7 +67,7 @@ protected:
   struct BufferItem
   {
     int destination = 0;
-    mpi::Request mpi_request;
+    mpi::Request mpi_request{};
     bool send_initiated = false;
     bool completed = false;
     ByteArray data_array;

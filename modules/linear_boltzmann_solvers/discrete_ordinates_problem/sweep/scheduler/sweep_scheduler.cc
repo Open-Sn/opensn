@@ -3,6 +3,8 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
@@ -221,7 +223,13 @@ SweepScheduler::Sweep()
   CALI_CXX_MARK_SCOPE("SweepScheduler::Sweep");
 
   if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
-    ScheduleAlgoFIFO(sweep_chunk_);
+  {
+    auto& cbc_sweep_chunk = dynamic_cast<CBCSweepChunk&>(sweep_chunk_);
+    if (cbc_sweep_chunk.IsUsingGPUs())
+      DeviceScheduleAlgoFIFO(sweep_chunk_);
+    else
+      ScheduleAlgoFIFO(sweep_chunk_);
+  }
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
 }
@@ -236,5 +244,12 @@ SweepScheduler::PrepareForSweep(bool use_boundary_source, bool zero_incoming_del
   sweep_chunk_.ZeroDestinationPhi();
   sweep_chunk_.SetBoundarySourceActiveFlag(use_boundary_source);
 }
+
+#ifndef __OPENSN_USE_CUDA__
+void
+SweepScheduler::DeviceScheduleAlgoFIFO(SweepChunk& sweep_chunk)
+{
+}
+#endif
 
 } // namespace opensn

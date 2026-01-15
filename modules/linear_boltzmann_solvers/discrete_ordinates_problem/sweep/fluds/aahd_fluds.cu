@@ -249,7 +249,7 @@ AAHD_FLUDS::CopyBoundaryPsiToDevice(MeshContinuum& grid,
   for (const auto& [face_node, node_index] : common_data_.GetNodeTracker())
   {
     // skip for undefined, non-boundary or outgoing faces
-    if (node_index.IsUndefined() || !node_index.IsBoundary() || node_index.IsOutGoing())
+    if (node_index.IsUndefined() || !node_index.IsBoundary() || node_index.IsOutgoing())
       continue;
     // get cell neighbor ID
     const CellFace& face =
@@ -302,7 +302,7 @@ AAHD_FLUDS::CopyBoundaryPsiFromDevice(MeshContinuum& grid, AngleSet& angle_set)
   for (const auto& [face_node, node_index] : common_data_.GetNodeTracker())
   {
     // skip for non-boundary or incoming faces
-    if (node_index.IsUndefined() || !node_index.IsBoundary() || !node_index.IsOutGoing())
+    if (node_index.IsUndefined() || !node_index.IsBoundary() || !node_index.IsOutgoing())
       continue;
     // get cell neighbor ID and check if it is a refelecting one
     const CellFace& face =

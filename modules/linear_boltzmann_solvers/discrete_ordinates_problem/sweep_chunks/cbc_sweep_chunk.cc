@@ -27,6 +27,7 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetNumMoments(),
                problem.GetMaxCellDOFCount(),
                problem.GetMinCellDOFCount()),
+    problem_(problem),
     fluds_(nullptr),
     gs_size_(0),
     gs_gi_(0),
@@ -39,7 +40,8 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
     cell_mapping_(nullptr),
     cell_transport_view_(nullptr),
     cell_num_faces_(0),
-    cell_num_nodes_(0)
+    cell_num_nodes_(0),
+    use_gpus_(problem.UseGPUs())
 {
 }
 
@@ -74,6 +76,12 @@ CBCSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
   M_ = unit_cell_matrices_[cell_local_id_].intV_shapeI_shapeJ;
   M_surf_ = unit_cell_matrices_[cell_local_id_].intS_shapeI_shapeJ;
   IntS_shapeI_ = unit_cell_matrices_[cell_local_id_].intS_shapeI;
+}
+
+const CellLBSView&
+CBCSweepChunk::GetCellTransportView(std::uint64_t cell_local_id) const
+{
+  return cell_transport_views_[cell_local_id];
 }
 
 void
@@ -291,4 +299,25 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
   } // for angleset/subset
 }
 
+#ifndef __OPENSN_USE_CUDA__
+void
+CBCSweepChunk::GPUSweep(AngleSet& angle_set, std::vector<Task*>& tasks_to_execute)
+{
+}
+
+void
+CBCSweepChunk::CopyPhiAndSrcToDevice()
+{
+}
+
+void
+CBCSweepChunk::CopyOutflowAndPhiFromDevice()
+{
+}
+
+void
+CBCSweepChunk::CopySavedPsiFromDevice(std::vector<CBC_AngleSet*>& angle_sets)
+{
+}
+#endif
 } // namespace opensn
