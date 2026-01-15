@@ -49,13 +49,14 @@ TimeDependentSourceSolver::Create(const ParameterBlock& params)
 TimeDependentSourceSolver::TimeDependentSourceSolver(const InputParameters& params)
   : Solver(params),
     lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem")),
-    dt_(params.GetParamValue<double>("dt")),
-    theta_(params.GetParamValue<double>("theta")),
     stop_time_(params.GetParamValue<double>("stop_time")),
     verbose_(params.GetParamValue<bool>("verbose"))
 {
   if (not lbs_problem_->IsTimeDependent())
     throw std::runtime_error(GetName() + ": Problem is not time dependent.");
+
+  lbs_problem_->SetTimeStep(params.GetParamValue<double>("dt"));
+  lbs_problem_->SetTheta(params.GetParamValue<double>("theta"));
 }
 
 void
@@ -72,7 +73,7 @@ TimeDependentSourceSolver::Execute()
 {
   const double t0 = current_time_;
   const double tf = stop_time_;
-  const double dt_nom = dt_;
+  const double dt_nom = lbs_problem_->GetTimeStep();
 
   if (dt_nom <= 0.0)
     throw std::runtime_error(GetName() + ": dt must be positive");
@@ -97,8 +98,16 @@ TimeDependentSourceSolver::Execute()
 
     double step_dt = (remaining < dt_nom) ? remaining : dt_nom;
 
-    SetTimeStep(step_dt);
+    lbs_problem_->SetTimeStep(step_dt);
+    lbs_problem_->SetTime(current_time_);
+
+    if (pre_advance_callback_)
+      pre_advance_callback_();
+
     Advance();
+
+    if (post_advance_callback_)
+      post_advance_callback_();
 
     if (std::abs(tf - current_time_) <= tol)
       current_time_ = tf;
@@ -108,25 +117,21 @@ TimeDependentSourceSolver::Execute()
 void
 TimeDependentSourceSolver::Advance()
 {
-  const double t_start = current_time_;
-  const double t_end = current_time_ + dt_;
-
-  lbs_problem_->SetTimeStep(dt_);
-  lbs_problem_->SetTheta(theta_);
-  lbs_problem_->SetTime(t_start);
+  const double dt = lbs_problem_->GetTimeStep();
+  const double theta = lbs_problem_->GetTheta();
 
   if (verbose_)
   {
     log.Log() << "\n*************** Time step #" << step_ << "  t = " << std::setprecision(6)
-              << t_end << "  (from = " << t_start << ", dt = " << dt_ << ", theta = " << theta_
-              << ") ***************\n";
+              << current_time_ + dt << "  (from = " << current_time_ << ", dt = " << dt
+              << ", theta = " << theta << ") ***************\n";
   }
 
   ags_solver_->Solve();
   lbs_problem_->UpdateFieldFunctions();
   lbs_problem_->UpdatePsiOld();
 
-  current_time_ = t_end;
+  current_time_ += dt;
   lbs_problem_->SetTime(current_time_);
   ++step_;
 }
@@ -134,17 +139,37 @@ TimeDependentSourceSolver::Advance()
 void
 TimeDependentSourceSolver::SetTimeStep(double dt)
 {
-  if (dt < 0.0)
-    throw std::runtime_error(GetName() + " dt must be non-negative");
-  dt_ = dt;
+  lbs_problem_->SetTimeStep(dt);
 }
 
 void
 TimeDependentSourceSolver::SetTheta(double theta)
 {
-  if (theta < 0.0 or theta > 1.0)
-    throw std::runtime_error(GetName() + " theta must be between 0.0 and 1.0.");
-  theta_ = theta;
+  lbs_problem_->SetTheta(theta);
+}
+
+void
+TimeDependentSourceSolver::SetPreAdvanceCallback(std::function<void()> callback)
+{
+  pre_advance_callback_ = std::move(callback);
+}
+
+void
+TimeDependentSourceSolver::SetPreAdvanceCallback(std::nullptr_t)
+{
+  pre_advance_callback_ = nullptr;
+}
+
+void
+TimeDependentSourceSolver::SetPostAdvanceCallback(std::function<void()> callback)
+{
+  post_advance_callback_ = std::move(callback);
+}
+
+void
+TimeDependentSourceSolver::SetPostAdvanceCallback(std::nullptr_t)
+{
+  post_advance_callback_ = nullptr;
 }
 
 } // namespace opensn

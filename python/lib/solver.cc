@@ -982,6 +982,40 @@ WrapTimeDependent(py::module& slv)
     theta : float
         Theta value between 0 and 1.
     )");
+  time_dependent_solver.def(
+    "SetPreAdvanceCallback",
+    static_cast<void (TimeDependentSourceSolver::*)(std::function<void()>)>(
+      &TimeDependentSourceSolver::SetPreAdvanceCallback),
+    R"(
+    Register a callback that runs before each call to :meth:`Advance`.
+
+    Parameters
+    ----------
+    callback : Optional[Callable[[], None]]
+        Function invoked before the solver advances a timestep. Pass None to clear.
+    )");
+  time_dependent_solver.def(
+    "SetPreAdvanceCallback",
+    static_cast<void (TimeDependentSourceSolver::*)(std::nullptr_t)>(
+      &TimeDependentSourceSolver::SetPreAdvanceCallback),
+    "Clear the PreAdvance callback by passing None.");
+  time_dependent_solver.def(
+    "SetPostAdvanceCallback",
+    static_cast<void (TimeDependentSourceSolver::*)(std::function<void()>)>(
+      &TimeDependentSourceSolver::SetPostAdvanceCallback),
+    R"(
+    Register a callback that runs after each call to :meth:`Advance`.
+
+    Parameters
+    ----------
+    callback : Optional[Callable[[], None]]
+        Function invoked after the solver advances a timestep. Pass None to clear.
+    )");
+  time_dependent_solver.def(
+    "SetPostAdvanceCallback",
+    static_cast<void (TimeDependentSourceSolver::*)(std::nullptr_t)>(
+      &TimeDependentSourceSolver::SetPostAdvanceCallback),
+    "Clear the PostAdvance callback by passing None.");
   slv.attr("BackwardEuler") = 1.0;
   slv.attr("CrankNicolson") = 0.5;
   // clang-format on
