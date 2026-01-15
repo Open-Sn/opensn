@@ -22,7 +22,7 @@ set(ENV_SCRIPT "${OPENSN_ENV_DIR}/set_opensn_env.sh")
 
 find_package(MPI REQUIRED)
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-find_package(mpicpp-lite 2.1 QUIET)
+find_package(mpicpp-lite 2.2 QUIET)
 
 option(ENABLE_BOOST   "Install Boost"   ON)
 option(ENABLE_PETSC   "Install PETSc"   ON)
@@ -47,7 +47,7 @@ if (TARGET mpicpp-lite::mpicpp-lite)
 else()
   message(STATUS "No")
   ExternalProject_Add(mpicpp-lite
-    URL https://github.com/andrsd/mpicpp-lite/archive/refs/tags/v2.1.0.tar.gz
+    URL https://github.com/andrsd/mpicpp-lite/archive/refs/tags/v2.2.0.tar.gz
     CONFIGURE_COMMAND ${CMAKE_COMMAND}
       -S <SOURCE_DIR>
       -B <BINARY_DIR>
