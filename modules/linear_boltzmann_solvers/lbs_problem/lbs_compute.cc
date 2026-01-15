@@ -231,7 +231,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
 
         if (bndry->IsReflecting())
         {
-          for (size_t g = 0; g < num_groups_; ++g)
+          for (std::size_t g = 0; g < num_groups_; ++g)
             local_in_flow += transport_view.GetOutflow(f, g);
         }
         else
@@ -267,7 +267,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
 
     // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
     for (size_t f = 0; f < cell.faces.size(); ++f)
-      for (size_t g = 0; g < num_groups_; ++g)
+      for (std::size_t g = 0; g < num_groups_; ++g)
         local_out_flow += transport_view.GetOutflow(f, g);
 
     // Absorption and sources
@@ -275,7 +275,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
     const auto& sigma_a = xs.GetSigmaAbsorption();
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      for (size_t g = 0; g < num_groups_; ++g)
+      for (std::size_t g = 0; g < num_groups_; ++g)
       {
         auto imap = transport_view.MapDOF(i, 0, g);
         double phi_0g = phi_new_local_[imap];

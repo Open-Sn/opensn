@@ -76,7 +76,7 @@ LBSProblem::GetInputParameters()
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
     time_dependent_(params.GetParamValue<bool>("time_dependent")),
-    num_groups_(params.GetParamValue<size_t>("num_groups")),
+    num_groups_(params.GetParamValue<std::size_t>("num_groups")),
     grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
@@ -210,7 +210,7 @@ LBSProblem::UseGPUs() const
   return use_gpus_;
 }
 
-size_t
+std::size_t
 LBSProblem::GetNumGroups() const
 {
   return num_groups_;
@@ -1421,7 +1421,7 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
     for (size_t m = 0; m < num_moments_; ++m)
       m_ids_to_copy.push_back(m);
   if (g_ids_to_copy.empty())
-    for (size_t g = 0; g < num_groups_; ++g)
+    for (std::size_t g = 0; g < num_groups_; ++g)
       g_ids_to_copy.push_back(g);
 
   const auto& sdm = *discretization_;
