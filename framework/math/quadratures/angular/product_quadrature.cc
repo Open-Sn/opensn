@@ -95,8 +95,9 @@ ProductQuadrature::AssembleCosines(const std::vector<double>& azimuthal,
 
 GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(unsigned int Npolar,
                                                      unsigned int scattering_order,
-                                                     bool verbose)
-  : ProductQuadrature(1, scattering_order)
+                                                     bool verbose,
+                                                     OperatorConstructionMethod method)
+  : ProductQuadrature(1, scattering_order, method)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLProductQuadrature1DSlab: Npolar must be even.");
@@ -132,8 +133,9 @@ GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(unsigned int Npolar,
 GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(unsigned int Npolar,
                                                    unsigned int Nazimuthal,
                                                    unsigned int scattering_order,
-                                                   bool verbose)
-  : ProductQuadrature(2, scattering_order)
+                                                   bool verbose,
+                                                   OperatorConstructionMethod method)
+  : ProductQuadrature(2, scattering_order, method)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCProductQuadraturee2DXY: Npolar must be even.");
@@ -179,8 +181,9 @@ GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(unsigned int Npolar,
 GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(unsigned int Npolar,
                                                      unsigned int Nazimuthal,
                                                      unsigned int scattering_order,
-                                                     bool verbose)
-  : ProductQuadrature(3, scattering_order)
+                                                     bool verbose,
+                                                     OperatorConstructionMethod method)
+  : ProductQuadrature(3, scattering_order, method)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCProductQuadraturee3DXYZ: Npolar must be even.");

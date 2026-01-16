@@ -732,7 +732,6 @@ LBSProblem::SetBoundaryOptions(const InputParameters& params)
     }
   }
 }
-}
 
 void
 LBSProblem::Initialize()

@@ -41,17 +41,42 @@ AngularQuadrature::MakeHarmonicIndices()
   else
   {
     // Standard method
+    log.Log() << "AngularQuadrature::MakeHarmonicIndices - STANDARD method";
+    log.Log() << "  Dimension: " << dimension_ << ", Scattering order: " << scattering_order_;
+
     if (dimension_ == 1)
+    {
       for (auto ell = 0; ell <= scattering_order_; ++ell)
         m_to_ell_em_map_.emplace_back(ell, 0);
+    }
     else if (dimension_ == 2)
+    {
+      log.Log() << "  2D Harmonic selection (STANDARD):";
       for (auto ell = 0; ell <= scattering_order_; ++ell)
+      {
+        std::stringstream ss;
+        ss << "    ℓ=" << ell << ": m = [";
+        bool first = true;
         for (auto m = -ell; m <= ell; m += 2)
+        {
           m_to_ell_em_map_.emplace_back(ell, m);
+          if (!first)
+            ss << ", ";
+          ss << (m >= 0 ? "+" : "") << m;
+          first = false;
+        }
+        ss << "]";
+        log.Log() << ss.str();
+      }
+    }
     else if (dimension_ == 3)
+    {
       for (auto ell = 0; ell <= scattering_order_; ++ell)
         for (auto m = -ell; m <= ell; ++m)
           m_to_ell_em_map_.emplace_back(ell, m);
+    }
+
+    log.Log() << "  Total harmonics selected: " << m_to_ell_em_map_.size();
   }
 }
 
@@ -122,6 +147,9 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
       {
         d2m_op_ = InvertMatrix(m2d_op_);
         log.Log0Verbose1() << "D2M operator successfully computed as inverse of M2D using PETSc";
+
+        // OpenSn stores the TRANSPOSE of the D2M Matrix, rather than it directly
+        d2m_op_ = Transpose(d2m_op_);
       }
       catch (const std::exception& e)
       {
@@ -186,6 +214,9 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         }
         d2m_op_.push_back(cur_mom);
       }
+
+      // OpenSn stores the TRANSPOSE of the D2M Matrix, rather than it directly
+      d2m_op_ = Transpose(d2m_op_);
 
       // Verbose printout
       std::stringstream outs;

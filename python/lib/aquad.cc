@@ -249,6 +249,8 @@ WrapProductQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
 
@@ -286,6 +288,8 @@ WrapProductQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
 
@@ -323,6 +327,8 @@ WrapProductQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   // clang-format on
@@ -481,6 +487,8 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   // clang-format on
