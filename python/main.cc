@@ -12,7 +12,7 @@ namespace mpi = mpicpp_lite;
 int
 main(int argc, char** argv)
 {
-  mpi::Environment env(argc, argv);
+  mpi::Environement env(argc, argv, mpi::Environment::Threading::MULTIPLE);
 
   PetscCall(PetscInitializeNoArguments()); // NOLINT(bugprone-casting-through-void)
 

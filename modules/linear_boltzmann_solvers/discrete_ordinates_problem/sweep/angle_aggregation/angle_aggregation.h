@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set_group.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
@@ -48,7 +48,20 @@ public:
                    std::shared_ptr<AngularQuadrature>& quadrature,
                    std::shared_ptr<MeshContinuum>& grid);
 
-  std::vector<AngleSetGroup> angle_set_groups;
+  using iterator = typename std::vector<std::shared_ptr<AngleSet>>::iterator;
+  using const_iterator = typename std::vector<std::shared_ptr<AngleSet>>::const_iterator;
+  iterator begin() { return angle_set_groups_.begin(); }
+  iterator end() { return angle_set_groups_.end(); }
+  const_iterator begin() const { return angle_set_groups_.begin(); }
+  const_iterator end() const { return angle_set_groups_.end(); }
+  std::shared_ptr<AngleSet> operator[](std::size_t idx) const { return angle_set_groups_[idx]; }
+
+  std::vector<std::shared_ptr<AngleSet>>& GetAngleSetGroups() { return angle_set_groups_; }
+  const std::vector<std::shared_ptr<AngleSet>>& GetAngleSetGroups() const
+  {
+    return angle_set_groups_;
+  }
+  std::size_t GetNumAngleSets() const { return angle_set_groups_.size(); }
 
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSimBoundaries() const
   {
@@ -106,6 +119,7 @@ private:
   std::shared_ptr<MeshContinuum> grid_;
   std::shared_ptr<AngularQuadrature> quadrature_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> boundaries_;
+  std::vector<std::shared_ptr<AngleSet>> angle_set_groups_;
 };
 
 } // namespace opensn

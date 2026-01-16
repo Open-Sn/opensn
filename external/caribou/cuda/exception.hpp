@@ -11,16 +11,15 @@
 
 namespace caribou {
 
-namespace cuda {
+namespace impl {
 class CudaException;
-inline void check_cuda_error(::cudaError_t error);
-}  // namespace cuda
+}  // namespace impl
 
 /** @brief Exception to be thrwon when encountering a CUDA error.*/
-class cuda::CudaException : public std::runtime_error {
+class impl::CudaException : public std::runtime_error {
   public:
     /** @brief Constructor.*/
-    explicit CudaException(::cudaError_t error) : std::runtime_error(cuda::CudaException::build_message(error)) {}
+    explicit CudaException(::cudaError_t error) : std::runtime_error(impl::CudaException::build_message(error)) {}
 
   private:
     /** @brief Helper function to build an informative error message.*/
@@ -31,10 +30,10 @@ class cuda::CudaException : public std::runtime_error {
     }
 };
 
-/** @brief Check for CUDA error and throw.*/
-inline void cuda::check_cuda_error(::cudaError_t error) {
+/** @brief Check error and throw.*/
+inline void check_error(::cudaError_t error) {
     if (error != 0) {
-        throw cuda::CudaException(error);
+        throw impl::CudaException(error);
     }
 }
 

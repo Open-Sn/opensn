@@ -5,6 +5,7 @@
  */
 #pragma once
 
+#include <cstddef>      // std::nullptr_t
 #include <cstdint>      // std::uintptr_t
 #include <memory>       // std::shared_ptr
 #include <tuple>        // std::tuple, std::apply
@@ -12,7 +13,7 @@
 #include <utility>      // std::forward
 
 #include "event.hpp"      // caribou::Event
-#include "exception.hpp"  // cuda::check_cuda_error
+#include "exception.hpp"  // caribou::check_error
 
 namespace caribou {
 
@@ -46,33 +47,42 @@ using StreamImpl = std::shared_ptr<std::remove_pointer<::cudaStream_t>::type>;
  */
 class Stream : public cuda::StreamImpl {
   public:
-    /**
-     * @brief Default constructor.
-     * @details Create a stream with default settings.
-     */
-    inline Stream(void) : cuda::StreamImpl(Stream::create_stream(), ::cudaStreamDestroy) {}
+    /// @name Constructors
+    /// @{
+    /** @brief Default constructor (null stream).*/
+    Stream(void) : cuda::StreamImpl(nullptr) {};
     /** @brief Take ownership from another pre-created CUDA stream.*/
-    inline Stream(::cudaStream_t stream_ptr) : cuda::StreamImpl(stream_ptr, ::cudaStreamDestroy) {}
+    template <typename Deleter>
+    requires(std::is_invocable_r_v<void, Deleter, ::cudaStream_t>)
+    inline Stream(::cudaStream_t stream_ptr, Deleter deleter = ::cudaStreamDestroy) :
+    cuda::StreamImpl(stream_ptr, deleter) {}
+    /// @}
 
+    /** @brief Create a new CUDA stream with default settings.*/
+    static inline Stream create(void) {
+        ::cudaStream_t result;
+        check_error(::cudaStreamCreate(&result));
+        return Stream(result, ::cudaStreamDestroy);
+    }
+
+    /** @brief Type-cast oeprator to ``::cudaStream_t.``*/
+    inline operator ::cudaStream_t(void) const { return this->get(); }
+
+    /// @name Actions
+    /// @{
     /**
      * @brief Record an event in the stream.
      * @param event The event to be recorded.
      * @details Record the given event in this stream. The event will be marked as completed when all previous
      * operations in this stream have been completed.
      */
-    inline void record_event(const Event & event) const {
-        cuda::check_cuda_error(::cudaEventRecord(event.get(), this->get()));
-    }
-
+    inline void record_event(const Event & event) const { check_error(::cudaEventRecord(event, this->get())); }
     /**
      * @brief Wait for an event in the stream.
      * @param event The event to wait for.
      * @details Make this stream wait until the given event is completed before executing any further operations
      */
-    inline void wait_event(const Event & event) const {
-        cuda::check_cuda_error(::cudaStreamWaitEvent(this->get(), event.get(), 0));
-    }
-
+    inline void wait_event(const Event & event) const { check_error(::cudaStreamWaitEvent(this->get(), event, 0)); }
     /**
      * @brief Add a host callback to the stream.
      * @details This function will be launched after the stream has finished its previous tasks. The callback
@@ -109,15 +119,15 @@ class Stream : public cuda::StreamImpl {
         std::uintptr_t * data = new std::uintptr_t[2];
         data[0] = reinterpret_cast<std::uintptr_t>(p_callback);
         data[1] = reinterpret_cast<std::uintptr_t>(p_args);
-        cuda::check_cuda_error(::cudaStreamAddCallback(this->get(), cuda::stream_callback_wrapper<Function, Args...>,
-                                                       reinterpret_cast<void *>(data), 0));
+        check_error(::cudaStreamAddCallback(this->get(), cuda::stream_callback_wrapper<Function, Args...>,
+                                            reinterpret_cast<void *>(data), 0));
     }
-
     /**
      * @brief Synchronize with the stream.
      * @details Wait until all works submitted to this stream are completed.
      */
-    inline void synchronize() const { cuda::check_cuda_error(::cudaStreamSynchronize(this->get())); }
+    inline void synchronize() const { check_error(::cudaStreamSynchronize(this->get())); }
+    /// @}
 
     /**
      * @brief Query stream status.
@@ -130,17 +140,9 @@ class Stream : public cuda::StreamImpl {
         } else if (status == ::cudaErrorNotReady) {
             return false;
         } else {
-            cuda::check_cuda_error(status);
-            return false;  // Unreachable
+            check_error(status);
+            return false;
         }
-    }
-
-  private:
-    /** @brief Create a stream with default settings.*/
-    static inline ::cudaStream_t create_stream(void) {
-        ::cudaStream_t result;
-        cuda::check_cuda_error(::cudaStreamCreate(&result));
-        return result;
     }
 };
 

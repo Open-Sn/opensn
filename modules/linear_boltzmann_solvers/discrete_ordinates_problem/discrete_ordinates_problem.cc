@@ -155,7 +155,7 @@ DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem()
 
     // Reset sweep orderings
     if (groupset.angle_agg != nullptr)
-      groupset.angle_agg->angle_set_groups.clear();
+      groupset.angle_agg->GetAngleSetGroups().clear();
   }
 }
 
@@ -441,19 +441,16 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
     // Max groupset size
     max_groupset_size_ = std::max(max_groupset_size_, groupset.groups.size());
 
-    for (auto& angle_set_group : groupset.angle_agg->angle_set_groups)
+    for (auto& angleset : *(groupset.angle_agg))
     {
-      for (auto& angleset : angle_set_group.GetAngleSets())
-      {
-        // Max level size
-        const auto& spds = angleset->GetSPDS();
-        const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
-        for (const auto& level : levelized_spls)
-          max_level_size_ = std::max(max_level_size_, level.size());
+      // Max level size
+      const auto& spds = angleset->GetSPDS();
+      const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
+      for (const auto& level : levelized_spls)
+        max_level_size_ = std::max(max_level_size_, level.size());
 
-        // Max angleset size
-        max_angleset_size_ = std::max(max_angleset_size_, angleset->GetAngleIndices().size());
-      }
+      // Max angleset size
+      max_angleset_size_ = std::max(max_angleset_size_, angleset->GetAngleIndices().size());
     }
   }
 
@@ -1030,7 +1027,6 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg =
     std::make_shared<AngleAggregation>(sweep_boundaries_, groupset.quadrature, grid_);
 
-  AngleSetGroup angle_set_group;
   size_t angle_set_id = 0;
   for (const auto& so_grouping : unique_so_groupings)
   {
@@ -1081,7 +1077,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                         *grid_local_comm_set_,
                                                         use_gpus_);
 
-        angle_set_group.GetAngleSets().push_back(angle_set);
+        groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }
       else if (sweep_type_ == "CBC")
       {
@@ -1101,14 +1097,12 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                         *grid_local_comm_set_,
                                                         use_gpus_);
 
-        angle_set_group.GetAngleSets().push_back(angle_set);
+        groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }
       else
         OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     } // for an_ss
   } // for so_grouping
-
-  groupset.angle_agg->angle_set_groups.push_back(std::move(angle_set_group));
 
   if (options_.verbose_inner_iterations)
     log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
