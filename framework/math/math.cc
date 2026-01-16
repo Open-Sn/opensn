@@ -54,6 +54,42 @@ OmegaToPhiThetaSafe(const Vector3& omega)
 }
 
 std::vector<std::vector<double>>
+Transpose(const std::vector<std::vector<double>>& matrix)
+{
+  // Check if matrix is empty
+  if (matrix.empty())
+  {
+    throw std::runtime_error("Cannot transpose empty matrix");
+  }
+
+  const size_t m = matrix.size();    // number of rows
+  const size_t n = matrix[0].size(); // number of columns
+
+  // Verify consistent row dimensions
+  for (size_t i = 1; i < m; ++i)
+  {
+    if (matrix[i].size() != n)
+    {
+      throw std::runtime_error("Matrix must have consistent row dimensions");
+    }
+  }
+
+  // Create transposed matrix with dimensions n x m
+  std::vector<std::vector<double>> transposed(n, std::vector<double>(m));
+
+  // Perform transpose: transposed[j][i] = matrix[i][j]
+  for (size_t i = 0; i < m; ++i)
+  {
+    for (size_t j = 0; j < n; ++j)
+    {
+      transposed[j][i] = matrix[i][j];
+    }
+  }
+
+  return transposed;
+}
+
+std::vector<std::vector<double>>
 InvertMatrix(const std::vector<std::vector<double>>& matrix)
 {
   const PetscInt n = static_cast<PetscInt>(matrix.size());

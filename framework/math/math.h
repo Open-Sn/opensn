@@ -79,6 +79,19 @@ enum class NormType : int
 int SampleCDF(double x, std::vector<double> cdf_bin);
 
 /**
+ * Transposes a matrix.
+ *
+ * Takes a matrix and returns its transpose. For a matrix A with dimensions m x n,
+ * the transpose A^T has dimensions n x m where A^T[j][i] = A[i][j].
+ *
+ * @param matrix Input matrix (m x n) represented as vector<vector<double>> where
+ *               matrix[i][j] represents row i, column j.
+ * @return Transposed matrix (n x m)
+ * @throws std::runtime_error if matrix is empty or has inconsistent row dimensions
+ */
+std::vector<std::vector<double>> Transpose(const std::vector<std::vector<double>>& matrix);
+
+/**
  * Inverts a square matrix using PETSc LU decomposition.
  *
  * @param matrix The square matrix to invert
