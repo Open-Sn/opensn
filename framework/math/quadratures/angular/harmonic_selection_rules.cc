@@ -63,12 +63,6 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
 
   Logger::GetInstance().Log0()
     << "HarmonicSelectionRules::Select2DCartesianProduct - GALERKIN method";
-  Logger::GetInstance().Log0() << "  n_polar = " << n_polar;
-  Logger::GetInstance().Log0() << "  n_azimuthal = " << n_azimuthal;
-  Logger::GetInstance().Log0() << "  num_directions = " << num_dir;
-  Logger::GetInstance().Log0() << "  nb_phi_90 = " << num_azimu_90;
-  Logger::GetInstance().Log0() << "  L_crit = " << L_crit;
-  Logger::GetInstance().Log0() << "  M_crit = " << M_crit;
   Logger::GetInstance().Log0Verbose1() << "  npolar = " << n_polar;
   Logger::GetInstance().Log0Verbose1() << "  nb_phi_90 = " << num_azimu_90;
   Logger::GetInstance().Log0Verbose1() << "  L_crit = " << L_crit;
