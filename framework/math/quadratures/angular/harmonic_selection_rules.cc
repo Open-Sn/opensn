@@ -53,7 +53,7 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
 {
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
 
-  const unsigned int n_polar = params.n_polar;
+  const unsigned int n_polar = params.n_polar / 2;
   const unsigned int n_azimuthal = params.n_azimuthal;
   const size_t num_dir = params.num_angles;
 
@@ -61,6 +61,14 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
   const unsigned int L_crit = 2 * n_polar - 1;
   const unsigned int M_crit = 2 * num_azimu_90;
 
+  Logger::GetInstance().Log0()
+    << "HarmonicSelectionRules::Select2DCartesianProduct - GALERKIN method";
+  Logger::GetInstance().Log0() << "  n_polar = " << n_polar;
+  Logger::GetInstance().Log0() << "  n_azimuthal = " << n_azimuthal;
+  Logger::GetInstance().Log0() << "  num_directions = " << num_dir;
+  Logger::GetInstance().Log0() << "  nb_phi_90 = " << num_azimu_90;
+  Logger::GetInstance().Log0() << "  L_crit = " << L_crit;
+  Logger::GetInstance().Log0() << "  M_crit = " << M_crit;
   Logger::GetInstance().Log0Verbose1() << "  npolar = " << n_polar;
   Logger::GetInstance().Log0Verbose1() << "  nb_phi_90 = " << num_azimu_90;
   Logger::GetInstance().Log0Verbose1() << "  L_crit = " << L_crit;
@@ -74,15 +82,6 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
     if (harmonics.size() >= num_dir)
       break;
 
-    // M=0 cosine only when L <= L_crit and even L
-    if (L <= L_crit && ind_L == 2)
-    {
-      harmonics.emplace_back(L, 0);
-      Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << 0;
-      if (harmonics.size() == num_dir)
-        break;
-    }
-
     // Determine min_M
     unsigned int min_M;
     if (L <= L_crit)
@@ -93,31 +92,50 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
     // Determine max_M
     const unsigned int max_M = std::min(L, M_crit);
 
-    // Loop over M with step of 2
+    // Loop over M with step of 2 - add sine first, then cosine
     for (unsigned int M = min_M; M <= max_M; M += 2)
     {
       if (harmonics.size() >= num_dir)
         break;
 
-      // Cosine only if M < M_crit
+      // Sine always (add negative m first)
+      harmonics.emplace_back(L, -static_cast<int>(M));
+      Logger::GetInstance().Log0() << "    Accepted: ℓ=" << L << ", m=-" << M;
+      Logger::GetInstance().Log0Verbose2()
+        << "    Accepted: ℓ=" << L << ", m=" << -static_cast<int>(M);
+      if (harmonics.size() == num_dir)
+        break;
+
+      // Cosine only if M < M_crit (add positive m second)
       if (M < M_crit)
       {
         harmonics.emplace_back(L, static_cast<int>(M));
+        Logger::GetInstance().Log0() << "    Accepted: ℓ=" << L << ", m=+" << M;
         Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << M;
         if (harmonics.size() == num_dir)
           break;
       }
+    }
 
-      // Sine always
-      harmonics.emplace_back(L, -static_cast<int>(M));
-      Logger::GetInstance().Log0Verbose2()
-        << "    Accepted: ℓ=" << L << ", m=" << -static_cast<int>(M);
+    if (harmonics.size() >= num_dir)
+      break;
+
+    // M=0 cosine only when L <= L_crit and even L (add last)
+    if (L <= L_crit && ind_L == 2)
+    {
+      harmonics.emplace_back(L, 0);
+      Logger::GetInstance().Log0() << "    Accepted: ℓ=" << L << ", m=" << 0;
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: ℓ=" << L << ", m=" << 0;
+      if (harmonics.size() == num_dir)
+        break;
     }
 
     // Toggle L parity
     ind_L = 3 - ind_L;
   }
 
+  Logger::GetInstance().Log0() << "2D Product (General): Selected " << harmonics.size()
+                               << " harmonics (needed " << num_dir << ")";
   Logger::GetInstance().Log0Verbose1()
     << "2D Product (General): Selected " << harmonics.size() << " harmonics";
 
@@ -382,6 +400,10 @@ HarmonicSelectionRules::SelectStandard(const SelectionParameters& params)
 {
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
 
+  Logger::GetInstance().Log0() << "HarmonicSelectionRules::SelectStandard - STANDARD method";
+  Logger::GetInstance().Log0() << "  Dimension: " << params.dimension
+                               << ", Scattering order: " << params.scattering_order;
+
   if (params.dimension == 1)
   {
     for (unsigned int ell = 0; ell <= params.scattering_order; ++ell)
@@ -389,9 +411,23 @@ HarmonicSelectionRules::SelectStandard(const SelectionParameters& params)
   }
   else if (params.dimension == 2)
   {
+    Logger::GetInstance().Log0() << "  2D Harmonic selection:";
     for (unsigned int ell = 0; ell <= params.scattering_order; ++ell)
+    {
+      std::stringstream ss;
+      ss << "    ℓ=" << ell << ": m = [";
+      bool first = true;
       for (int m = -static_cast<int>(ell); m <= static_cast<int>(ell); m += 2)
+      {
         harmonics.emplace_back(ell, m);
+        if (!first)
+          ss << ", ";
+        ss << (m >= 0 ? "+" : "") << m;
+        first = false;
+      }
+      ss << "]";
+      Logger::GetInstance().Log0() << ss.str();
+    }
   }
   else if (params.dimension == 3)
   {
@@ -399,6 +435,8 @@ HarmonicSelectionRules::SelectStandard(const SelectionParameters& params)
       for (int m = -static_cast<int>(ell); m <= static_cast<int>(ell); ++m)
         harmonics.emplace_back(ell, m);
   }
+
+  Logger::GetInstance().Log0() << "  Total harmonics selected: " << harmonics.size();
 
   return harmonics;
 }

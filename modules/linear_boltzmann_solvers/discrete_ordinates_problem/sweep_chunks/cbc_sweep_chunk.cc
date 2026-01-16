@@ -163,8 +163,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
             for (size_t gsg = 0; gsg < gs_size_; ++gsg)
               b[gsg](i) += psi[gsg] * mu_Nij;
         } // for face node j
-      } // for face node i
-    } // for f
+      }   // for face node i
+    }     // for f
 
     // Looping over groups, assembling mass terms
     for (size_t gsg = 0; gsg < gs_size_; ++gsg)
@@ -205,7 +205,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
     // Update phi
     for (std::size_t m = 0; m < num_moments_; ++m)
     {
-      const double wn_d2m = d2m_op[m][direction_num];
+      const double wn_d2m = d2m_op[direction_num][m];
       for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
         const auto ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
@@ -287,8 +287,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
           for (size_t gsg = 0; gsg < gs_size_; ++gsg)
             psi[gsg] = b[gsg](i);
       } // for fi
-    } // for face
-  } // for angleset/subset
+    }   // for face
+  }     // for angleset/subset
 }
 
 } // namespace opensn

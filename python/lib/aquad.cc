@@ -234,7 +234,7 @@ WrapProductQuadrature(py::module& aquad)
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"n_polar", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}, {"operator_method", py::str("standard")}};
         return construct_from_kwargs<GLProductQuadrature1DSlab, int, int, bool>(params, required_keys, optional_keys);
       }
     ),
@@ -249,6 +249,8 @@ WrapProductQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
 
@@ -269,8 +271,14 @@ WrapProductQuadrature(py::module& aquad)
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature2DXY, int, int, int, bool>(params, required_keys, optional_keys);
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {
+          {"verbose", py::bool_(false)},
+          {"operator_method", py::str("standard")}
+        };
+        auto [n_polar, n_azimuthal, scattering_order, verbose, method_str] =
+          extract_args_tuple<int, int, int, bool, std::string>(params, required_keys, optional_keys);
+        auto method = op_cons_type_map.at(method_str);
+        return std::make_shared<GLCProductQuadrature2DXY>(n_polar, n_azimuthal, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -286,6 +294,8 @@ WrapProductQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
 
@@ -306,8 +316,14 @@ WrapProductQuadrature(py::module& aquad)
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature3DXYZ, int, int, int, bool>(params, required_keys, optional_keys);
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {
+          {"verbose", py::bool_(false)},
+          {"operator_method", py::str("standard")}
+        };
+        auto [n_polar, n_azimuthal, scattering_order, verbose, method_str] =
+          extract_args_tuple<int, int, int, bool, std::string>(params, required_keys, optional_keys);
+        auto method = op_cons_type_map.at(method_str);
+        return std::make_shared<GLCProductQuadrature3DXYZ>(n_polar, n_azimuthal, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -323,6 +339,8 @@ WrapProductQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   // clang-format on
@@ -464,8 +482,14 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature2DRZ, int, int, int, bool>(params, required_keys, optional_keys);
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {
+          {"verbose", py::bool_(false)},
+          {"operator_method", py::str("standard")}
+        };
+        auto [n_polar, n_azimuthal, scattering_order, verbose, method_str] =
+          extract_args_tuple<int, int, int, bool, std::string>(params, required_keys, optional_keys);
+        auto method = op_cons_type_map.at(method_str);
+        return std::make_shared<GLCProductQuadrature2DRZ>(n_polar, n_azimuthal, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -481,6 +505,8 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   // clang-format on

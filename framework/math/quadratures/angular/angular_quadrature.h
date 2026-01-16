@@ -85,6 +85,7 @@ protected:
   /// Maximum scattering order for moment calculations.
   unsigned int scattering_order_;
   OperatorConstructionMethod construction_method_;
+  unsigned int quadrature_order_ = 0;
   unsigned int n_polar_ = 0;
   unsigned int n_azimuthal_ = 0;
 
@@ -142,6 +143,23 @@ public:
   size_t GetNumMoments() const { return m_to_ell_em_map_.size(); }
 
   AngularQuadratureType GetType() const { return type_; }
+
+  /**
+   * Sets the quadrature_order_ parameter depending on the quadrature type:
+   * For Lebedev Quadrature: Lebedev Order {3, 5, 7, ...}
+   * For SLDFE-S Quadrature: Uniform Refinement Level
+   */
+  void SetQuadratureOrder(unsigned int order) { quadrature_order_ = order; }
+
+  /**
+   * Sets the n_polar_ parameter for product quadrature types
+   */
+  void SetNumberOfPolar(unsigned int num_polar) { n_polar_ = num_polar; }
+
+  /**
+   * Sets the n_azimuthal_ parameter for product quadrature types
+   */
+  void SetNumberOfAzimuthal(unsigned int num_azimu) { n_azimuthal_ = num_azimu; }
 
   /// Quadrature point abscissae in spherical coordinates.
   std::vector<QuadraturePointPhiTheta> abscissae;
