@@ -366,12 +366,7 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
       }
 
       const double* __restrict m2d_row = m2d_op[direction_num].data();
-
-      // D2M is [moment][direction]
-      std::vector<double> d2m_col(num_moments_);
-      for (int m = 0; m < num_moments_; ++m)
-        d2m_col[m] = d2m_op[m][direction_num];
-      const double* __restrict d2m_row = d2m_col.data();
+      const double* __restrict d2m_row = d2m_op[direction_num].data();
 
       for (size_t g0 = 0; g0 < gs_size; g0 += group_block_size_)
       {
