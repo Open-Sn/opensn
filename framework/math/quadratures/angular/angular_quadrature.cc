@@ -103,7 +103,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         {
           const auto& ell_em = m_to_ell_em_map_[m];
           double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-          d2m_op_[m][n] = value * w;
+          d2m_op_[n][m] = value * w;
         }
       }
 
