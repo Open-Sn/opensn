@@ -18,6 +18,13 @@ enum class AngularQuadratureType
   LebedevQuadrature = 3,
 };
 
+enum class OperatorConstructionMethod
+{
+  STANDARD = 0,
+  GALERKIN_ONE = 1,
+  GALERKIN_THREE = 3
+};
+
 struct QuadraturePointPhiTheta
 {
   double phi = 0.0;
@@ -44,10 +51,15 @@ public:
   };
 
 protected:
-  explicit AngularQuadrature(AngularQuadratureType type,
-                             unsigned int dimension,
-                             unsigned int scattering_order)
-    : type_(type), dimension_(dimension), scattering_order_(scattering_order)
+  explicit AngularQuadrature(
+    AngularQuadratureType type,
+    unsigned int dimension,
+    unsigned int scattering_order,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD)
+    : type_(type),
+      dimension_(dimension),
+      scattering_order_(scattering_order),
+      construction_method_(method)
   {
   }
 
@@ -57,6 +69,10 @@ protected:
   AngularQuadratureType type_;
   unsigned int dimension_;
   unsigned int scattering_order_;
+  OperatorConstructionMethod construction_method_;
+  unsigned int quadrature_order_ = 0;
+  unsigned int n_polar_ = 0;
+  unsigned int n_azimuthal_ = 0;
 
   /// Populates a map of moment m to the Spherical Harmonic indices required.
   void MakeHarmonicIndices();
@@ -64,11 +80,20 @@ protected:
 public:
   virtual ~AngularQuadrature() = default;
 
-  /// Computes the discrete to moment operator.
+  /// Computes the discrete to moment operator based on construction method.
   void BuildDiscreteToMomentOperator();
 
-  /// Computes the moment to discrete operator.
+  /// Computes the moment to discrete operator based on construction method.
   void BuildMomentToDiscreteOperator();
+
+  /// Sets the operator construction method
+  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
+  {
+    construction_method_ = method;
+  }
+
+  /// Gets the current operator construction method
+  OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
 
   /**
    * Returns a reference to the precomputed d2m operator. The operator is accessed as [m][d], where
@@ -94,6 +119,23 @@ public:
   size_t GetNumMoments() const { return m_to_ell_em_map_.size(); }
 
   AngularQuadratureType GetType() const { return type_; }
+
+  /**
+   * Sets the quadrature_order_ parameter depending on the quadrature type:
+   * For Lebedev Quadrature: Lebedev Order {3, 5, 7, ...}
+   * For SLDFE-S Quadrature: Uniform Refinement Level
+   */
+  void SetQuadratureOrder(unsigned int order) { quadrature_order_ = order; }
+
+  /**
+   * Sets the n_polar_ parameter for product quadrature types
+   */
+  void SetNumberOfPolar(unsigned int num_polar) { n_polar_ = num_polar; }
+
+  /**
+   * Sets the n_azimuthal_ parameter for product quadrature types
+   */
+  void SetNumberOfAzimuthal(unsigned int num_azimu) { n_azimuthal_ = num_azimu; }
 
   std::vector<QuadraturePointPhiTheta> abscissae;
   std::vector<double> weights;
