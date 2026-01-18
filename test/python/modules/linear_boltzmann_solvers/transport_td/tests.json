@@ -39,6 +39,19 @@
     ]
   },
   {
+    "file": "transport_3d_1g_v1_inf_med_td_swap.py",
+    "comment": "3D unstructured mesh, 1 group, vel = 1.0, infinte medium, time dependent, swap xs at 0.5s",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi(1s) = ",
+        "goldvalue": 1.736077,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
     "file": "transport_3d_1g_v2_inf_med_td.py",
     "comment": "3D unstructured mesh, 1 group, vel = 2.0, infinte medium, time dependent",
     "num_procs": 4,
@@ -104,6 +117,25 @@
         "type": "KeyValuePair",
         "key": "Max phi1 = ",
         "goldvalue": 0.996756,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_2g_inf_med_downscatter_td_swap.py",
+    "comment": "3D unstructured mesh, 2 group, downscatter, infinte medium, time dependent, swap xs at 0.5s",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi0(1s) = ",
+        "goldvalue": 1.978816,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max phi1(1s) = ",
+        "goldvalue": 0.394171,
         "abs_tol": 1e-06
       }
     ]

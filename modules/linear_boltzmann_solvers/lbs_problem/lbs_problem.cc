@@ -285,6 +285,15 @@ LBSProblem::GetBlockID2XSMap() const
   return block_id_to_xs_map_;
 }
 
+void
+LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
+{
+  block_id_to_xs_map_ = xs_map;
+  InitializeMaterials();
+  ResetGPUCarriers();
+  InitializeGPUExtras();
+}
+
 std::shared_ptr<MeshContinuum>
 LBSProblem::GetGrid() const
 {

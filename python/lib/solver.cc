@@ -464,6 +464,46 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
+    "SetXSMap",
+    [](LBSProblem& self, py::kwargs& params)
+    {
+      BlockID2XSMap xs_map;
+      for (auto [key, value] : params)
+      {
+        auto c_key = key.cast<std::string>();
+        if (c_key == "xs_map")
+        {
+          auto xs_entries = value.cast<py::list>();
+          for (auto entry : xs_entries)
+          {
+            InputParameters xs_entry_pars = LBSProblem::GetXSMapEntryBlock();
+            xs_entry_pars.AssignParameters(pyobj_to_param_block("", entry.cast<py::dict>()));
+            const auto& block_ids =
+              xs_entry_pars.GetParam("block_ids").GetVectorValue<unsigned int>();
+            auto xs = xs_entry_pars.GetSharedPtrParam<MultiGroupXS>("xs");
+            for (const auto& block_id : block_ids)
+              xs_map[block_id] = xs;
+          }
+        }
+        else
+          throw std::runtime_error("Invalid argument provided to SetXSMap.\n");
+      }
+      self.SetBlockID2XSMap(xs_map);
+    },
+    R"(
+    Replace the block-id to cross-section map.
+
+    Parameters
+    ----------
+    xs_map: List[Dict]
+        A list of block-id to cross-section mapping dictionaries. Each dictionary supports:
+          - block_ids: List[int] (required)
+              Mesh block ids to associate with the cross section.
+          - xs: pyopensn.xs.MultiGroupXS (required)
+              Cross section object.
+    )"
+  );
+  lbs_problem.def(
     "SetAdjoint",
     [](LBSProblem& self, bool adjoint)
     {

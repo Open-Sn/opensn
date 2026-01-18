@@ -1,0 +1,24 @@
+NUM_GROUPS 2
+NUM_MOMENTS 1
+
+SIGMA_T_BEGIN
+0 2.0    # group 0
+1 1.2    # group 1
+SIGMA_T_END
+
+VELOCITY_BEGIN
+0 2.0    # v0
+1 0.5    # v1
+VELOCITY_END
+
+TRANSFER_MOMENTS_BEGIN
+# M_GFROM_GTO_VAL ell gfrom gto value  (ell = 0 only)
+# group 0 -> 0: no self-scatter
+M_GFROM_GTO_VAL   0   0   0   0.0
+# group 0 -> 1: downscatter
+M_GFROM_GTO_VAL   0   0   1   0.6
+# group 1 -> 0: no upscatter
+M_GFROM_GTO_VAL   0   1   0   0.0
+# group 1 -> 1: no self-scatter
+M_GFROM_GTO_VAL   0   1   1   0.0
+TRANSFER_MOMENTS_END
