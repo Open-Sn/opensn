@@ -1,7 +1,7 @@
 [
   {
-    "file": "lebedev_test.py",
-    "comment": "Lebedev Test",
+    "file": "lebedev_quad_3d_xyz.py",
+    "comment": "Lebedev 3D Test",
     "num_procs": 1,
     "checks": [
       {
@@ -11,7 +11,26 @@
         "abs_tol": 1e-03
       },
       {
-        "type": "KeyValuePair", 
+        "type": "KeyValuePair",
+        "key": "Weight-Sum-2=",
+        "goldvalue": 1.000e+00,
+        "abs_tol": 1e-03
+      }
+    ]
+  },
+  {
+    "file": "lebedev_quad_2d_xy.py",
+    "comment": "Lebedev 2D Test",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Weight-Sum-1=",
+        "goldvalue": 1.000e+00,
+        "abs_tol": 1e-03
+      },
+      {
+        "type": "KeyValuePair",
         "key": "Weight-Sum-2=",
         "goldvalue": 1.000e+00,
         "abs_tol": 1e-03
@@ -65,6 +84,28 @@
   },
   {
     "file": "prod_quad_3d_xyz.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "GoldFile",
+        "scope_keyword" : "TEST"
+      }
+    ]
+  },
+  {
+    "file": "triangular_quad_2d_xy.py",
+    "comment": "Triangular 2D Test",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "GoldFile",
+        "scope_keyword" : "TEST"
+      }
+    ]
+  },
+  {
+    "file": "triangular_quad_3d_xyz.py",
+    "comment": "Triangular 3D Test",
     "num_procs": 1,
     "checks": [
       {
