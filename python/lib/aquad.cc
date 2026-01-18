@@ -5,6 +5,7 @@
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
+#include "framework/math/quadratures/angular/triangular_quadrature.h"
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/math/quadratures/angular/lebedev_quadrature.h"
 #include <pybind11/stl.h>
@@ -201,6 +202,107 @@ WrapProductQuadrature(py::module& aquad)
         Number of polar angles.
     n_azimuthal: int
         Number of azimuthal angles.
+    scattering_order: int
+        Maximum scattering order supported by the angular quadrature.
+    verbose: bool, default=False
+        Verbosity.
+    )"
+  );
+  // clang-format on
+}
+
+// Wrap triangular quadrature
+void
+WrapTriangularQuadrature(py::module& aquad)
+{
+  // clang-format off
+  // triangular quadrature base class
+  auto triangular_quadrature = py::class_<TriangularQuadrature, std::shared_ptr<TriangularQuadrature>,
+                                          AngularQuadrature>(
+    aquad,
+    "TriangularQuadrature",
+    R"(
+    Triangular quadrature base class.
+
+    Unlike product quadratures which have a fixed number of azimuthal angles per polar level,
+    triangular quadratures have a varying number of azimuthal angles that decreases
+    as the polar angle moves away from the equatorial plane.
+
+    Wrapper of :cpp:class:`opensn::TriangularQuadrature`.
+    )"
+  );
+
+  // Triangular GLC 3D XYZ quadrature
+  auto angular_quadrature_triangular_glc_3d_xyz = py::class_<GLCTriangularQuadrature3DXYZ,
+                                                             std::shared_ptr<GLCTriangularQuadrature3DXYZ>,
+                                                             TriangularQuadrature>(
+    aquad,
+    "GLCTriangularQuadrature3DXYZ",
+    R"(
+    Triangular Gauss-Legendre-Chebyshev quadrature for 3D, XYZ geometry.
+
+    For each polar level away from the equator, there is 1 less azimuthal angle
+    per octant. The maximum number of azimuthal angles (at the equator) is
+    automatically computed as 2 * n_polar.
+
+    Wrapper of :cpp:class:`opensn::GLCTriangularQuadrature3DXYZ`.
+    )"
+  );
+  angular_quadrature_triangular_glc_3d_xyz.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        static const std::vector<std::string> required_keys = {"n_polar", "scattering_order"};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        return construct_from_kwargs<GLCTriangularQuadrature3DXYZ, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+      }
+    ),
+    R"(
+    Construct a Triangular Gauss-Legendre-Chebyshev quadrature for 3D, XYZ geometry.
+
+    Parameters
+    ----------
+    n_polar: int
+        Number of polar angles. The maximum number of azimuthal angles (at the equator)
+        is automatically computed as ``2 * n_polar``.
+    scattering_order: int
+        Maximum scattering order supported by the angular quadrature.
+    verbose: bool, default=False
+        Verbosity.
+    )"
+  );
+
+  // Triangular GLC 2D XY quadrature
+  auto angular_quadrature_triangular_glc_2d_xy = py::class_<GLCTriangularQuadrature2DXY,
+                                                            std::shared_ptr<GLCTriangularQuadrature2DXY>,
+                                                            TriangularQuadrature>(
+    aquad,
+    "GLCTriangularQuadrature2DXY",
+    R"(
+    Triangular Gauss-Legendre-Chebyshev quadrature for 2D, XY geometry.
+
+    Only includes points in the upper hemisphere (z >= 0).
+
+    Wrapper of :cpp:class:`opensn::GLCTriangularQuadrature2DXY`.
+    )"
+  );
+  angular_quadrature_triangular_glc_2d_xy.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        static const std::vector<std::string> required_keys = {"n_polar", "scattering_order"};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        return construct_from_kwargs<GLCTriangularQuadrature2DXY, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+      }
+    ),
+    R"(
+    Construct a Triangular Gauss-Legendre-Chebyshev quadrature for 2D, XY geometry.
+
+    Parameters
+    ----------
+    n_polar: int
+        Number of polar angles (only upper hemisphere will be used). The maximum
+        number of azimuthal angles (at the equator) is automatically computed as 2 * n_polar.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
@@ -452,6 +554,46 @@ WrapLebedevQuadrature(py::module& aquad)
         Whether to print verbose output during initialization.
     )"
   );
+
+  // Lebedev 2D XY quadrature
+  auto angular_quadrature_lebedev_2d_xy = py::class_<LebedevQuadrature2DXY,
+                                                     std::shared_ptr<LebedevQuadrature2DXY>,
+                                                     AngularQuadrature>(
+    aquad,
+    "LebedevQuadrature2DXY",
+    R"(
+    Lebedev quadrature for 2D, XY geometry.
+
+    This is a 2D version of the Lebedev quadrature that only includes points
+    in the upper hemisphere (z >= 0). Points on the equator (z = 0) have their
+    weights halved since they are shared between hemispheres.
+
+    Wrapper of :cpp:class:`opensn::LebedevQuadrature2DXY`.
+    )"
+  );
+
+  angular_quadrature_lebedev_2d_xy.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        static const std::vector<std::string> required_keys = {"quadrature_order", "scattering_order"};
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        return construct_from_kwargs<LebedevQuadrature2DXY, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+      }
+    ),
+    R"(
+    Constructs a Lebedev quadrature for 2D, XY geometry.
+
+    Parameters
+    ----------
+    quadrature_order: int
+        The order of the quadrature.
+    scattering_order: int
+        Maximum scattering order supported by the angular quadrature.
+    verbose: bool, default=False
+        Whether to print verbose output during initialization.
+    )"
+  );
   // clang-format on
 }
 
@@ -463,6 +605,7 @@ py_aquad(py::module& pyopensn)
   WrapQuadraturePointPhiTheta(aquad);
   WrapQuadrature(aquad);
   WrapProductQuadrature(aquad);
+  WrapTriangularQuadrature(aquad);
   WrapCurvilinearProductQuadrature(aquad);
   WrapSLDFEsqQuadrature(aquad);
   WrapLebedevQuadrature(aquad);

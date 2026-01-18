@@ -101,4 +101,94 @@ LebedevQuadrature3DXYZ::LoadFromOrder(unsigned int quadrature_order, bool verbos
   }
 }
 
+LebedevQuadrature2DXY::LebedevQuadrature2DXY(unsigned int quadrature_order,
+                                             unsigned int scattering_order,
+                                             bool verbose)
+  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 2, scattering_order)
+{
+  LoadFromOrder(quadrature_order, verbose);
+  MakeHarmonicIndices();
+  BuildDiscreteToMomentOperator();
+  BuildMomentToDiscreteOperator();
+}
+
+void
+LebedevQuadrature2DXY::LoadFromOrder(unsigned int quadrature_order, bool verbose)
+{
+  abscissae.clear();
+  weights.clear();
+  omegas.clear();
+
+  // Get points from LebedevOrders
+  const auto& points = LebedevOrders::GetOrderPoints(quadrature_order);
+
+  std::stringstream ostr;
+  double weight_sum = 0.0;
+
+  // Tolerance for determining if z is approximately zero (on the equator)
+  const double z_tolerance = 1.0e-12;
+
+  for (const auto& point : points)
+  {
+    const double x = point.x;
+    const double y = point.y;
+    const double z = point.z;
+    double w = point.weight;
+
+    // Skip points with z < 0 (lower hemisphere)
+    if (z < -z_tolerance)
+      continue;
+
+    // For points on the equator (z ≈ 0), halve the weight
+    if (std::fabs(z) <= z_tolerance)
+      w *= 0.5;
+
+    // Calculate phi and theta from x, y, z
+    const double r = std::sqrt(x * x + y * y + z * z);
+    const double theta = std::acos(z / r);
+    double phi = std::atan2(y, x);
+    if (phi < 0.0)
+      phi += 2.0 * M_PI;
+
+    // Create the point
+    QuadraturePointPhiTheta qpoint(phi, theta);
+    abscissae.push_back(qpoint);
+
+    // Create the direction vector
+    Vector3 omega{x / r, y / r, z / r};
+    omegas.push_back(omega);
+
+    // Store the weight (Doubled to renormalize from 0.5 to 1.0)
+    weights.push_back(2.0 * w);
+    weight_sum += 2.0 * w;
+
+    if (verbose)
+    {
+      ostr << "Varphi=" << std::fixed << std::setprecision(2) << qpoint.phi * 180.0 / M_PI
+           << " Theta=" << std::fixed << std::setprecision(2) << qpoint.theta * 180.0 / M_PI
+           << " Weight=" << std::scientific << std::setprecision(3) << w << '\n';
+    }
+  }
+
+  if (verbose)
+  {
+    log.Log() << "Loaded " << abscissae.size()
+              << " Lebedev 2D quadrature points (upper hemisphere) "
+              << "from quadrature order " << quadrature_order;
+    log.Log() << ostr.str() << "\n"
+              << "Weight sum=" << weight_sum;
+  }
+
+  // Check weight sum - should be 1.0 for upper hemisphere
+  const double expected_sum = 1.0;
+  if (std::fabs(weight_sum - expected_sum) > 1.0e-10)
+  {
+    if (verbose)
+    {
+      log.Log() << "Warning: Sum of weights differs from expected value 1.0.";
+      log.Log() << "Expected: " << expected_sum << ", Actual: " << weight_sum;
+    }
+  }
+}
+
 } // namespace opensn
