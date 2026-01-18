@@ -36,6 +36,7 @@ PyApp::PyApp(const mpi::Communicator& comm)
   Console::BindModule(WrapQuadraturePointPhiTheta);
   Console::BindModule(WrapQuadrature);
   Console::BindModule(WrapProductQuadrature);
+  Console::BindModule(WrapTriangularQuadrature);
   Console::BindModule(WrapCurvilinearProductQuadrature);
   Console::BindModule(WrapSLDFEsqQuadrature);
   Console::BindModule(WrapLebedevQuadrature);
