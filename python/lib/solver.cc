@@ -464,48 +464,6 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
-    "SetBoundaryOptions",
-    [](LBSProblem& self, py::kwargs& params)
-    {
-      for (auto [key, value] : params)
-      {
-        auto c_key = key.cast<std::string>();
-        if (c_key == "clear_boundary_conditions")
-          self.ClearBoundaries();
-        else if (c_key == "boundary_conditions")
-        {
-          auto boundaries = value.cast<py::list>();
-          for (auto boundary : boundaries)
-          {
-            InputParameters input = LBSProblem::GetBoundaryOptionsBlock();
-            input.AssignParameters(pyobj_to_param_block("", boundary.cast<py::dict>()));
-            self.SetBoundaryOptions(input);
-          }
-        }
-        else
-          throw std::runtime_error("Invalid argument provided to SetBoundaryOptions.\n");
-      }
-    },
-    R"(
-    Set or clear boundary conditions.
-
-    Parameters
-    ----------
-    clear_boundary_conditions: bool, default=False
-        If true, all current boundary conditions are deleted.
-    boundary_conditions: List[Dict]
-        A list of boundary condition dictionaries. Each dictionary supports:
-          - name: str (required)
-              Boundary name that identifies the specific boundary.
-          - type: {'vacuum', 'isotropic', 'reflecting'} (required)
-              Boundary type specification.
-          - group_strength: List[float], optional
-              Required when ``type='isotropic'``. Isotropic strength per group.
-          - function_name: str, optional, default=''
-              Name of a registered function to evaluate on the boundary.
-    )"
-  );
-  lbs_problem.def(
     "SetAdjoint",
     [](LBSProblem& self, bool adjoint)
     {
@@ -596,12 +554,12 @@ WrapLBS(py::module& slv)
         A list containing tables for each boundary specification. Each dictionary supports:
           - name: str (required)
               Boundary name that identifies the specific boundary.
-          - type: {'vacuum', 'isotropic', 'reflecting'} (required)
+          - type: {'vacuum', 'isotropic', 'reflecting', 'arbitrary'} (required)
               Boundary type specification.
           - group_strength: List[float], optional
               Required when ``type='isotropic'``. Isotropic strength per group.
-          - function_name: str, optional, default=''
-              Name of a registered function to evaluate on the boundary.
+          - function: AngularFluxFunction, optional
+              Required when ``type='arbitrary'``. Callable that returns incoming angular flux.
     point_sources: List[pyopensn.source.PointSource], default=[]
         A list of point sources.
     volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
@@ -653,6 +611,48 @@ WrapLBS(py::module& slv)
     ----------
     adjoint: bool, default=False
         Flag for toggling whether the solver is in adjoint mode.
+    )"
+  );
+  do_problem.def(
+    "SetBoundaryOptions",
+    [](DiscreteOrdinatesProblem& self, py::kwargs& params)
+    {
+      for (auto [key, value] : params)
+      {
+        auto c_key = key.cast<std::string>();
+        if (c_key == "clear_boundary_conditions")
+          self.ClearBoundaries();
+        else if (c_key == "boundary_conditions")
+        {
+          auto boundaries = value.cast<py::list>();
+          for (auto boundary : boundaries)
+          {
+            InputParameters input = DiscreteOrdinatesProblem::GetBoundaryOptionsBlock();
+            input.AssignParameters(pyobj_to_param_block("", boundary.cast<py::dict>()));
+            self.SetBoundaryOptions(input);
+          }
+        }
+        else
+          throw std::runtime_error("Invalid argument provided to SetBoundaryOptions.\n");
+      }
+    },
+    R"(
+    Set or clear boundary conditions.
+
+    Parameters
+    ----------
+    clear_boundary_conditions: bool, default=False
+        If true, all current boundary conditions are deleted.
+    boundary_conditions: List[Dict]
+        A list of boundary condition dictionaries. Each dictionary supports:
+          - name: str (required)
+              Boundary name that identifies the specific boundary.
+          - type: {'vacuum', 'isotropic', 'reflecting', 'arbitrary'} (required)
+              Boundary type specification.
+          - group_strength: List[float], optional
+              Required when ``type='isotropic'``. Isotropic strength per group.
+          - function: AngularFluxFunction, optional
+              Required when ``type='arbitrary'``. Callable that returns incoming angular flux.
     )"
   );
   do_problem.def(
@@ -839,12 +839,12 @@ WrapLBS(py::module& slv)
         A list containing tables for each boundary specification. Each dictionary supports:
           - name: str (required)
               Boundary name that identifies the specific boundary.
-          - type: {'vacuum', 'isotropic', 'reflecting'} (required)
+          - type: {'vacuum', 'isotropic', 'reflecting', 'arbitrary'} (required)
               Boundary type specification.
           - group_strength: List[float], optional
               Required when ``type='isotropic'``. Isotropic strength per group.
-          - function_name: str, optional, default=''
-              Name of a registered function to evaluate on the boundary.
+          - function: AngularFluxFunction, optional
+              Required when ``type='arbitrary'``. Callable that returns incoming angular flux.
     point_sources: List[pyopensn.source.PointSource], default=[]
         A list of point sources.
     volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]

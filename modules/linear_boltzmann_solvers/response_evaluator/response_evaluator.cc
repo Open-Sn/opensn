@@ -166,7 +166,26 @@ ResponseEvaluator::GetSourceOptionsBlock()
 
   params.AddOptionalParameterArray(
     "boundary", {}, "An array of tables containing boundary source specifications.");
-  params.LinkParameterToBlock("boundary", "BoundaryOptionsBlock");
+  params.LinkParameterToBlock("boundary", "response::BoundarySourceOptionsBlock");
+
+  return params;
+}
+
+InputParameters
+ResponseEvaluator::GetBoundarySourceOptionsBlock()
+{
+  InputParameters params;
+
+  params.SetGeneralDescription("Boundary source specification for response evaluations.");
+  params.SetClassName("Response Boundary Source");
+  params.AddRequiredParameter<std::string>("name",
+                                           "Boundary name that identifies the specific boundary");
+  params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
+  params.AddOptionalParameterArray<double>("group_strength",
+                                           {},
+                                           "Required only if \"type\" is \"isotropic\". An array "
+                                           "of isotropic strength per group");
+  params.ConstrainParameterRange("type", AllowableRangeList::New({"isotropic"}));
 
   return params;
 }
@@ -221,7 +240,7 @@ ResponseEvaluator::SetSourceOptions(const InputParameters& input)
     const auto& user_bsrc_params = params.GetParam("boundary");
     for (int p = 0; p < user_bsrc_params.GetNumParameters(); ++p)
     {
-      auto bsrc_params = LBSProblem::GetBoundaryOptionsBlock();
+      auto bsrc_params = ResponseEvaluator::GetBoundarySourceOptionsBlock();
       bsrc_params.AssignParameters(user_bsrc_params.GetParam(p));
       SetBoundarySourceOptions(bsrc_params);
     }
@@ -265,6 +284,9 @@ void
 ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
 {
   const auto bndry_name = params.GetParamValue<std::string>("name");
+  if (params.IsParameterValid("function"))
+    throw std::runtime_error("Boundary '" + bndry_name +
+                             "' in ResponseEvaluator does not support \"function\".");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
   auto grid = do_problem_->GetGrid();

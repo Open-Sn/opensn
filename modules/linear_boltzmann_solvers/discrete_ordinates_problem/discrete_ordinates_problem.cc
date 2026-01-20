@@ -18,6 +18,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "framework/math/functions/function.h"
+#include "framework/data_types/allowable_range.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/classic_richardson.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h"
@@ -58,6 +60,10 @@ DiscreteOrdinatesProblem::GetInputParameters()
   params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesProblem");
 
   params.AddOptionalParameterArray(
+    "boundary_conditions", {}, "An array containing tables for each boundary specification.");
+  params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
+
+  params.AddOptionalParameterArray(
     "directions_sweep_order_to_print",
     std::vector<int>(),
     "List of direction id's for which sweep ordering info is to be printed.");
@@ -65,6 +71,30 @@ DiscreteOrdinatesProblem::GetInputParameters()
   params.AddOptionalParameter(
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
   params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
+
+  return params;
+}
+
+InputParameters
+DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
+{
+  InputParameters params;
+
+  params.SetGeneralDescription("Set options for boundary conditions.");
+  params.AddRequiredParameter<std::string>("name",
+                                           "Boundary name that identifies the specific boundary");
+  params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
+  params.AddOptionalParameterArray<double>("group_strength",
+                                           {},
+                                           "Required only if \"type\" is \"isotropic\". An array "
+                                           "of isotropic strength per group");
+  params.AddOptionalParameter<std::shared_ptr<AngularFluxFunction>>(
+    "function",
+    std::shared_ptr<AngularFluxFunction>{},
+    "Angular flux function to be used for arbitrary boundary conditions. The function takes an "
+    "energy group index and a direction index and returns the incoming angular flux value.");
+  params.ConstrainParameterRange(
+    "type", AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary"}));
 
   return params;
 }
@@ -81,6 +111,13 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     verbose_sweep_angles_(params.GetParamVectorValue<int>("directions_sweep_order_to_print")),
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
+  if (params.Has("boundary_conditions"))
+  {
+    const auto& bcs = params.GetParam("boundary_conditions");
+    bcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    boundary_conditions_block_ = bcs;
+  }
+
   if (use_gpus_ && sweep_type_ == "CBC")
   {
     log.Log0Warning() << "Sweep computation on GPUs is not supported for the CBC sweep."
@@ -188,6 +225,120 @@ DiscreteOrdinatesProblem::GetSweepBoundaries() const
   return sweep_boundaries_;
 }
 
+const std::map<uint64_t, DiscreteOrdinatesProblem::BoundaryDefinition>&
+DiscreteOrdinatesProblem::GetBoundaryDefinitions() const
+{
+  return boundary_definitions_;
+}
+
+void
+DiscreteOrdinatesProblem::SetBoundaryOptions(const InputParameters& params)
+{
+  const auto boundary_name = params.GetParamValue<std::string>("name");
+  const auto bnd_name_map = grid_->GetBoundaryNameMap();
+  const auto bid = bnd_name_map.at(boundary_name);
+  boundary_definitions_[bid] = CreateBoundaryFromParams(params);
+}
+
+void
+DiscreteOrdinatesProblem::ClearBoundaries()
+{
+  boundary_definitions_.clear();
+}
+
+DiscreteOrdinatesProblem::BoundaryDefinition
+DiscreteOrdinatesProblem::CreateBoundaryFromParams(const InputParameters& params) const
+{
+  const auto boundary_name = params.GetParamValue<std::string>("name");
+  const auto bndry_type = params.GetParamValue<std::string>("type");
+  const std::map<std::string, LBSBoundaryType> type_list = {
+    {"vacuum", LBSBoundaryType::VACUUM},
+    {"isotropic", LBSBoundaryType::ISOTROPIC},
+    {"reflecting", LBSBoundaryType::REFLECTING},
+    {"arbitrary", LBSBoundaryType::ARBITRARY}};
+
+  const auto type = type_list.at(bndry_type);
+  if (type == LBSBoundaryType::ISOTROPIC)
+  {
+    if (not params.Has("group_strength"))
+      throw std::runtime_error("Boundary '" + boundary_name +
+                               "' with type=\"isotropic\" "
+                               "requires parameter \"group_strength\"");
+    if (params.IsParameterValid("function"))
+      throw std::runtime_error("Boundary '" + boundary_name +
+                               "' with type=\"isotropic\" does "
+                               "not support \"function\".");
+    params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
+    const auto group_strength = params.GetParamVectorValue<double>("group_strength");
+    if (group_strength.size() != GetNumGroups())
+      throw std::runtime_error(GetName() + ": Boundary '" + boundary_name +
+                               "' with type=\"isotropic\" requires \"group_strength\" to match "
+                               "the solver group count.");
+    return {type,
+            std::make_shared<IsotropicBoundary>(
+              GetNumGroups(), group_strength, MapGeometryTypeToCoordSys(geometry_type_))};
+  }
+  else if (type == LBSBoundaryType::ARBITRARY)
+  {
+    if (params.IsParameterValid("group_strength"))
+      throw std::runtime_error("Boundary '" + boundary_name +
+                               "' with type=\"arbitrary\" does "
+                               "not support \"group_strength\".");
+    if (not params.Has("function"))
+      throw std::runtime_error("Boundary '" + boundary_name +
+                               "' with type=\"arbitrary\" "
+                               "requires parameter \"function\"");
+    auto angular_flux_function = params.GetSharedPtrParam<AngularFluxFunction>("function", false);
+    if (not angular_flux_function)
+      throw std::runtime_error("Boundary '" + boundary_name +
+                               "' with type=\"arbitrary\" "
+                               "requires a non-null AngularFluxFunction passed via \"function\".");
+    return {type,
+            std::make_shared<ArbitraryBoundary>(
+              GetNumGroups(), angular_flux_function, MapGeometryTypeToCoordSys(geometry_type_))};
+  }
+
+  if (params.IsParameterValid("group_strength"))
+    throw std::runtime_error("Boundary '" + boundary_name + "' with type=" + bndry_type +
+                             " does not support group_strength.");
+  if (params.IsParameterValid("function"))
+    throw std::runtime_error("Boundary '" + boundary_name + "' with type=" + bndry_type +
+                             " does not support function.");
+
+  return {type, nullptr};
+}
+
+std::shared_ptr<SweepBoundary>
+DiscreteOrdinatesProblem::CreateSweepBoundary(uint64_t boundary_id) const
+{
+  auto it = boundary_definitions_.find(boundary_id);
+  if (it == boundary_definitions_.end())
+    return std::make_shared<VacuumBoundary>(num_groups_);
+
+  const auto& [type, boundary_ptr] = it->second;
+  if (type == LBSBoundaryType::VACUUM)
+    return std::make_shared<VacuumBoundary>(num_groups_);
+  if (type == LBSBoundaryType::ISOTROPIC)
+  {
+    if (not boundary_ptr)
+      throw std::runtime_error(
+        GetName() + ": Isotropic boundary specified without an associated boundary object.");
+    return boundary_ptr;
+  }
+  if (type == LBSBoundaryType::REFLECTING)
+    throw std::logic_error(GetName() +
+                           ": Reflecting boundaries must be initialized via InitializeBoundaries");
+  if (type == LBSBoundaryType::ARBITRARY)
+  {
+    if (not boundary_ptr)
+      throw std::runtime_error(
+        GetName() + ": Arbitrary boundary specified without an associated boundary object.");
+    return boundary_ptr;
+  }
+
+  throw std::logic_error(GetName() + ": Unknown boundary type requested.");
+}
+
 std::vector<std::vector<double>>&
 DiscreteOrdinatesProblem::GetPsiNewLocal()
 {
@@ -269,6 +420,17 @@ DiscreteOrdinatesProblem::Initialize()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::Initialize");
 
+  if (boundary_conditions_block_)
+  {
+    const auto& bcs = *boundary_conditions_block_;
+    for (size_t b = 0; b < bcs.GetNumParameters(); ++b)
+    {
+      auto bndry_params = GetBoundaryOptionsBlock();
+      bndry_params.AssignParameters(bcs.GetParam(b));
+      SetBoundaryOptions(bndry_params);
+    }
+  }
+
   LBSProblem::Initialize();
 
   // Make face histogram
@@ -343,91 +505,67 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
       global_unique_bids_set.insert(bid);
   }
 
-  // Initialize default incident boundary
-  const size_t G = num_groups_;
-
   sweep_boundaries_.clear();
   for (uint64_t bid : global_unique_bids_set)
   {
-    const bool has_no_preference = boundary_preferences_.count(bid) == 0;
-    const bool has_not_been_set = sweep_boundaries_.count(bid) == 0;
-    if (has_no_preference and has_not_been_set)
+    const auto bndry_it = boundary_definitions_.find(bid);
+    const auto bndry_type =
+      bndry_it == boundary_definitions_.end() ? LBSBoundaryType::VACUUM : bndry_it->second.first;
+
+    if (bndry_type == LBSBoundaryType::REFLECTING)
     {
-      sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(G);
-    } // defaulted
-    else if (has_not_been_set)
-    {
-      const auto& bndry_pref = boundary_preferences_.at(bid);
-      const auto& mg_q = bndry_pref.isotropic_mg_source;
-
-      if (bndry_pref.type == LBSBoundaryType::VACUUM)
-        sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(G);
-      else if (bndry_pref.type == LBSBoundaryType::ISOTROPIC)
-        sweep_boundaries_[bid] = std::make_shared<IsotropicBoundary>(G, mg_q);
-      else if (bndry_pref.type == LBSBoundaryType::REFLECTING)
-      {
-        // Locally check all faces, that subscribe to this boundary,
-        // have the same normal
-        const double EPSILON = 1.0e-12;
-        std::unique_ptr<Vector3> n_ptr = nullptr;
-        for (const auto& cell : grid_->local_cells)
-          for (const auto& face : cell.faces)
-            if (not face.has_neighbor and face.neighbor_id == bid)
-            {
-              if (not n_ptr)
-                n_ptr = std::make_unique<Vector3>(face.normal);
-              if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
-                throw std::logic_error(GetName() +
-                                       ": Not all face normals are, within tolerance, locally the "
-                                       "same for the reflecting boundary condition requested");
-            }
-
-        // Now check globally
-        const int local_has_bid = n_ptr != nullptr ? 1 : 0;
-        const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
-
-        std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
-        std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3L, 0.0);
-
-        mpi_comm.all_gather(local_has_bid, locJ_has_bid);
-        std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
-        mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
-
-        Vector3 global_normal;
-        for (int j = 0; j < opensn::mpi_comm.size(); ++j)
-        {
-          if (locJ_has_bid[j])
+      const double EPSILON = 1.0e-12;
+      std::unique_ptr<Vector3> n_ptr = nullptr;
+      for (const auto& cell : grid_->local_cells)
+        for (const auto& face : cell.faces)
+          if (not face.has_neighbor and face.neighbor_id == bid)
           {
-            int offset = 3 * j;
-            const double* n = &locJ_n_val[offset];
-            const Vector3 locJ_normal(n[0], n[1], n[2]);
-
-            if (local_has_bid)
-              if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
-                throw std::logic_error(GetName() +
-                                       ": Not all face normals are, within tolerance, globally the "
-                                       "same for the reflecting boundary condition requested");
-
-            global_normal = locJ_normal;
+            if (not n_ptr)
+              n_ptr = std::make_unique<Vector3>(face.normal);
+            if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
+              throw std::logic_error(
+                GetName() +
+                ": Not all face normals are, within tolerance, locally the same for the "
+                "reflecting boundary condition requested");
           }
-        }
 
-        sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
-          G, global_normal, MapGeometryTypeToCoordSys(geometry_type_));
-      }
-      else if (bndry_pref.type == LBSBoundaryType::ARBITRARY)
+      const int local_has_bid = n_ptr != nullptr ? 1 : 0;
+      const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
+
+      std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
+      std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3L, 0.0);
+
+      mpi_comm.all_gather(local_has_bid, locJ_has_bid);
+      std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
+      mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
+
+      Vector3 global_normal;
+      for (int j = 0; j < opensn::mpi_comm.size(); ++j)
       {
-        if (not bndry_pref.angular_flux_function)
-          throw std::runtime_error(
-            GetName() + ": Arbitrary boundary specified without an associated "
-                        "AngularFluxFunction.\nThis boundary type is only supported when "
-                        "a Python-defined angular flux function is provided through the "
-                        "\"function\" parameter.");
-        sweep_boundaries_[bid] = std::make_shared<ArbitraryBoundary>(
-          G, bndry_pref.angular_flux_function, MapGeometryTypeToCoordSys(geometry_type_));
+        if (locJ_has_bid[j])
+        {
+          int offset = 3 * j;
+          const double* n = &locJ_n_val[offset];
+          const Vector3 locJ_normal(n[0], n[1], n[2]);
+
+          if (local_has_bid)
+            if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
+              throw std::logic_error(
+                GetName() +
+                ": Not all face normals are, within tolerance, globally the same for the "
+                "reflecting boundary condition requested");
+
+          global_normal = locJ_normal;
+        }
       }
-    } // non-defaulted
-  } // for bndry id
+
+      sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
+        num_groups_, global_normal, MapGeometryTypeToCoordSys(geometry_type_));
+      continue;
+    }
+
+    sweep_boundaries_[bid] = CreateSweepBoundary(bid);
+  }
 }
 
 void

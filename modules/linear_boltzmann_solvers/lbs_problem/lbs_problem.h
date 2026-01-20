@@ -73,8 +73,6 @@ public:
   /// Is the problem time dependent
   bool IsTimeDependent() const;
 
-  void SetBoundaryOptions(const InputParameters& params);
-
   void SetAdjoint(bool adjoint);
 
   GeometryType GetGeometryType() const;
@@ -131,7 +129,7 @@ public:
   const std::vector<std::shared_ptr<VolumetricSource>>& GetVolumetricSources() const;
 
   /// Clears all the boundary conditions from the solver.
-  void ClearBoundaries();
+  virtual void ClearBoundaries() = 0;
 
   size_t& GetLastRestartTime();
 
@@ -161,9 +159,6 @@ public:
 
   /// Returns a const reference to the list of local cell transport views.
   const std::vector<CellLBSView>& GetCellTransportViews() const;
-
-  /// Read/Write access to the boundary preferences.
-  std::map<uint64_t, BoundaryPreference>& GetBoundaryPreferences();
 
   /// Obtains a reference to the unknown manager for flux-moments.
   const UnknownManager& GetUnknownManager() const;
@@ -281,6 +276,9 @@ protected:
   /// Initializes boundaries.
   virtual void InitializeBoundaries() {}
 
+  /// Derived problems handle boundary options.
+  virtual void SetBoundaryOptions(const InputParameters& params) = 0;
+
   void InitializeSolverSchemes();
 
   virtual void InitializeWGSSolvers() {};
@@ -322,8 +320,6 @@ protected:
   std::vector<UnitCellMatrices> unit_cell_matrices_;
   std::map<uint64_t, UnitCellMatrices> unit_ghost_cell_matrices_;
   std::vector<CellLBSView> cell_transport_views_;
-
-  std::map<uint64_t, BoundaryPreference> boundary_preferences_;
 
   UnknownManager flux_moments_uk_man_;
 
@@ -382,8 +378,6 @@ public:
   static InputParameters GetInputParameters();
 
   static InputParameters GetOptionsBlock();
-
-  static InputParameters GetBoundaryOptionsBlock();
 
   static InputParameters GetXSMapEntryBlock();
 

@@ -6,6 +6,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include "framework/parameters/parameter_block.h"
 #include <memory>
 
 namespace opensn
@@ -24,6 +25,8 @@ public:
   /// Static registration based constructor.
   explicit DiscreteOrdinatesProblem(const InputParameters& params);
   ~DiscreteOrdinatesProblem() override;
+
+  using BoundaryDefinition = std::pair<LBSBoundaryType, std::shared_ptr<SweepBoundary>>;
 
   const std::string& GetSweepType() const { return sweep_type_; }
 
@@ -57,11 +60,16 @@ public:
   /// Returns the sweep boundaries as a read only reference
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
 
+  const std::map<uint64_t, BoundaryDefinition>& GetBoundaryDefinitions() const;
+
   /// Reorient an adjoint solution to account for backwards streaming.
   void ReorientAdjointSolution() override;
 
   /// Zeroes all the outflow data-structures required to compute balance.
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
+
+  void SetBoundaryOptions(const InputParameters& params) override;
+  void ClearBoundaries() override;
 
 protected:
   explicit DiscreteOrdinatesProblem(const std::string& name,
@@ -97,6 +105,9 @@ protected:
 
   void ZeroSolutions() override;
 
+  BoundaryDefinition CreateBoundaryFromParams(const InputParameters& params) const;
+  std::shared_ptr<SweepBoundary> CreateSweepBoundary(uint64_t boundary_id) const;
+
   std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
     quadrature_unq_so_grouping_map_;
   std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::shared_ptr<SPDS>>>
@@ -107,6 +118,8 @@ protected:
   std::vector<int> verbose_sweep_angles_;
   const std::string sweep_type_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
+  std::map<uint64_t, BoundaryDefinition> boundary_definitions_;
+  std::optional<ParameterBlock> boundary_conditions_block_;
 
   /// Max level size.
   std::size_t max_level_size_ = 0;
@@ -138,6 +151,7 @@ private:
 
 public:
   static InputParameters GetInputParameters();
+  static InputParameters GetBoundaryOptionsBlock();
   static std::shared_ptr<DiscreteOrdinatesProblem> Create(const ParameterBlock& params);
 };
 

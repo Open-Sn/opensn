@@ -85,8 +85,8 @@ SMMAcceleration::Initialize()
   UnknownManager diff_uk_man;
   diff_uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
-  for (const auto& [bid, bc] : do_problem_.GetBoundaryPreferences())
-    if ((bc.type == LBSBoundaryType::ISOTROPIC) or (bc.type == LBSBoundaryType::ARBITRARY))
+  for (const auto& [bid, bc] : do_problem_.GetBoundaryDefinitions())
+    if ((bc.first == LBSBoundaryType::ISOTROPIC) or (bc.first == LBSBoundaryType::ARBITRARY))
       throw std::logic_error("Only vacuum and reflective boundaries are valid for "
                              "k-eigenvalue problems.");
 
