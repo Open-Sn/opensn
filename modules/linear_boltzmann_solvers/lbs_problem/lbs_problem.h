@@ -103,8 +103,6 @@ public:
    */
   size_t GetMaxPrecursorsPerMaterial() const;
 
-  const std::vector<LBSGroup>& GetGroups() const;
-
   std::vector<LBSGroupset>& GetGroupsets();
 
   const std::vector<LBSGroupset>& GetGroupsets() const;
@@ -304,7 +302,6 @@ protected:
   size_t num_precursors_ = 0;
   size_t max_precursors_per_material_ = 0;
 
-  std::vector<LBSGroup> groups_;
   std::vector<LBSGroupset> groupsets_;
 
   BlockID2XSMap block_id_to_xs_map_;

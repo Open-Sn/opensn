@@ -391,7 +391,7 @@ DiscreteOrdinatesProblem::PrintSimHeader()
            << "Initializing " << GetName() << "\n\n"
            << "Scattering order    : " << scattering_order_ << "\n"
            << "Number of moments   : " << num_moments_ << "\n"
-           << "Number of groups    : " << groups_.size() << "\n"
+           << "Number of groups    : " << num_groups_ << "\n"
            << "Number of groupsets : " << groupsets_.size() << "\n\n";
 
     for (const auto& groupset : groupsets_)
@@ -403,7 +403,7 @@ DiscreteOrdinatesProblem::PrintSimHeader()
       constexpr int groups_per_line = 12;
       for (size_t i = 0; i < groups.size(); ++i)
       {
-        outstr << std::setw(5) << groups[i].id << ' ';
+        outstr << std::setw(5) << groups[i] << ' ';
         if ((i + 1) % groups_per_line == 0)
           outstr << '\n';
       }
@@ -708,8 +708,8 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
     } // if saving angular flux
 
     const auto num_gs_groups = groupset.groups.size();
-    const auto gsg_i = groupset.groups.front().id;
-    const auto gsg_f = groupset.groups.back().id;
+    const auto gsg_i = groupset.groups.front();
+    const auto gsg_f = groupset.groups.back();
 
     for (const auto& cell : grid_->local_cells)
     {
@@ -763,7 +763,7 @@ DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
   for (const auto& cell : grid_->local_cells)
     for (int f = 0; f < cell.faces.size(); ++f)
       for (auto& group : groupset.groups)
-        cell_transport_views_[cell.local_id].ZeroOutflow(f, group.id);
+        cell_transport_views_[cell.local_id].ZeroOutflow(f, group);
 }
 
 void

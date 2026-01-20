@@ -70,7 +70,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 {
   const auto& groupset = data.groupset;
   const size_t gs_size = groupset.groups.size();
-  const auto gs_gi = groupset.groups.front().id;
+  const auto gs_gi = groupset.groups.front();
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;

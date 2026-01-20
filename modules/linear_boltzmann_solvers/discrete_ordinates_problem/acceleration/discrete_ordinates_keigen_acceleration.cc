@@ -255,7 +255,7 @@ DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
   const auto& phi_uk_man = do_problem_.GetUnknownManager();
-  const auto gsi = front_gs_.groups.front().id;
+  const auto gsi = front_gs_.groups.front();
   const size_t gss = front_gs_.groups.size();
   const size_t diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
                                                : diff_sdm.GetNumLocalDOFs(diff_uk_man);
@@ -294,7 +294,7 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
   const auto& phi_uk_man = do_problem_.GetUnknownManager();
-  const auto gsi = front_gs_.groups.front().id;
+  const auto gsi = front_gs_.groups.front();
   const size_t gss = front_gs_.groups.size();
   const size_t diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
                                                : diff_sdm.GetNumLocalDOFs(diff_uk_man);

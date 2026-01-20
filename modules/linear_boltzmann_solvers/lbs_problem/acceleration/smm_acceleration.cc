@@ -94,7 +94,7 @@ SMMAcceleration::Initialize()
 
   // Create the diffusion materials
   const auto xs_map = PackGroupsetXS(
-    do_problem_.GetBlockID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
+    do_problem_.GetBlockID2XSMap(), front_gs_.groups.front(), front_gs_.groups.back());
 
   // Create the appropriate solver
   log.Log() << "Creating diffusion solver";
@@ -425,7 +425,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
     const auto& quad = groupset.quadrature;
     const auto num_gs_dirs = quad->omegas.size();
 
-    const auto first_grp = groupset.groups.front().id;
+    const auto first_grp = groupset.groups.front();
     const auto num_gs_groups = groupset.groups.size();
 
     // Loop over cells
@@ -527,7 +527,7 @@ SMMAcceleration::ComputeSourceCorrection() const
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
-  const auto first_grp = front_gs_.groups.front().id;
+  const auto first_grp = front_gs_.groups.front();
   const auto num_gs_groups = front_gs_.groups.size();
 
   auto tensors = tensors_->MakeGhostedLocalVector();
@@ -810,7 +810,7 @@ SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
-  const auto first_grp = front_gs_.groups.front().id;
+  const auto first_grp = front_gs_.groups.front();
   const auto num_gs_groups = front_gs_.groups.size();
 
   // Clear the diffusion RHS

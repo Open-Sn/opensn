@@ -16,14 +16,13 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
 {
   CALI_CXX_MARK_SCOPE("ComputeFissionProduction");
 
-  const auto& groups = lbs_problem.GetGroups();
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& options = lbs_problem.GetOptions();
 
-  const auto first_grp = groups.front().id;
-  const auto last_grp = groups.back().id;
+  const auto first_grp = 0;
+  const auto last_grp = lbs_problem.GetNumGroups() - 1;
 
   // Loop over local cells
   double local_production = 0.0;
@@ -73,13 +72,12 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("ComputeFissionRate");
 
-  const auto& groups = lbs_problem.GetGroups();
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
 
-  const auto first_grp = groups.front().id;
-  const auto last_grp = groups.back().id;
+  const auto first_grp = 0;
+  const auto last_grp = lbs_problem.GetNumGroups() - 1;
 
   // Loop over local cells
   double local_fission_rate = 0.0;
@@ -127,7 +125,6 @@ ComputePrecursors(LBSProblem& lbs_problem)
   precursor_new_local.assign(precursor_new_local.size(), 0.0);
 
   const auto& grid = lbs_problem.GetGrid();
-  const auto& groups = lbs_problem.GetGroups();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto& phi_new_local = lbs_problem.GetPhiNewLocal();
@@ -158,7 +155,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
         const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
 
         // Loop over groups
-        for (unsigned int g = 0; g < groups.size(); ++g)
+        for (unsigned int g = 0; g < lbs_problem.GetNumGroups(); ++g)
           precursor_new_local[dof] +=
             coeff * nu_delayed_sigma_f[g] * phi_new_local[uk_map + g] * node_V_fraction;
       } // for node i
@@ -257,9 +254,8 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
                   const int i = cell_mapping.MapFaceNode(f, fi);
                   const auto& IntFi_shapeI = IntS_shapeI[f](i);
 
-                  for (const auto& group : groupset.groups)
+                  for (const auto& g : groupset.groups)
                   {
-                    const auto g = group.id;
                     const double psi = *bndry->PsiIncoming(cell.local_id, f, fi, n, g);
                     local_in_flow -= mu * wt * psi * IntFi_shapeI;
                   } // for group
@@ -320,7 +316,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
               phi_new += wt * psi_new_local_[groupset.id][imap + gsg];
             }
 
-            const auto g = groupset.groups[gsg].id;
+            const auto g = groupset.groups[gsg];
             const double val = inv_vel[g] * IntV_shapeI(i);
             local_initial += val * phi_old;
             local_final += val * phi_new;
@@ -463,7 +459,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
   const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
   const auto& quad = groupset.quadrature;
   const auto num_gs_groups = groupset.groups.size();
-  const auto gsi = groupset.groups.front().id;
+  const auto gsi = groupset.groups.front();
 
   std::vector<double> local_leakage(num_gs_groups, 0.0);
   for (const auto& cell : grid->local_cells)
@@ -541,9 +537,8 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
         {
           auto& bndry = *sweep_boundaries.at(face.neighbor_id);
 
-          for (const auto group : groupset.groups)
+          for (const auto g : groupset.groups)
           {
-            const auto g = group.id;
             local_leakage[face.neighbor_id][g] += transport_view.GetOutflow(f, g);
             local_leakage[face.neighbor_id][g] +=
               GetInflow(cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, g);

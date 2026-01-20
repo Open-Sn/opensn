@@ -51,7 +51,7 @@ CBCSweepChunk::SetAngleSet(AngleSet& angle_set)
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
   gs_size_ = groupset_.groups.size();
-  gs_gi_ = groupset_.groups.front().id;
+  gs_gi_ = groupset_.groups.front();
 
   surface_source_active_ = IsSurfaceSourceActive();
   num_angles_in_as_ = angle_set.GetNumAngles();

@@ -144,7 +144,7 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   {
     for (size_t g = from; g <= to; ++g)
     {
-      groups.push_back(lbs_problem.GetGroups().at(g));
+      groups.push_back(g);
     }
   }
   catch (const std::exception& exc)
