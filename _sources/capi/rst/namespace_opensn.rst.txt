@@ -285,8 +285,6 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_angle_set`
 
-- :ref:`exhale_class_classopensn_1_1_angle_set_group`
-
 - :ref:`exhale_class_classopensn_1_1_angular_flux_function`
 
 - :ref:`exhale_class_classopensn_1_1_angular_quadrature`

@@ -655,11 +655,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_angle_set_group.rst
-
-.. toctree::
-   :maxdepth: 1
-
    classopensn_1_1_angular_flux_function.rst
 
 .. toctree::
@@ -2138,11 +2133,6 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set_group.h.rst
 
 .. toctree::
    :maxdepth: 1

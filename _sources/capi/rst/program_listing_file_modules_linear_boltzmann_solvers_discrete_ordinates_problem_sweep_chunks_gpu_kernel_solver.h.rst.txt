@@ -19,7 +19,7 @@ Program Listing for File solver.h
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/buffer.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/device/view/mesh_view.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/device/view/quadrature_view.h"
-   #include "caribou/caribou.h"
+   #include "caribou/main.hpp"
    
    namespace crb = caribou;
    

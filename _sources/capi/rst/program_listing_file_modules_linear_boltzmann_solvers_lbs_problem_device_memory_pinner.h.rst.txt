@@ -15,7 +15,7 @@ Program Listing for File memory_pinner.h
    
    #pragma once
    
-   #include "caribou/caribou.h"
+   #include "caribou/main.hpp"
    #include <vector>
    
    namespace crb = caribou;

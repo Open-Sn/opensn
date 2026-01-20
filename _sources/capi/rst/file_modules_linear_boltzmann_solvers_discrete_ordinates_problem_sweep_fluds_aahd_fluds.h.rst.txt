@@ -30,7 +30,7 @@ Includes
 --------
 
 
-- ``caribou/caribou.h``
+- ``caribou/main.hpp``
 
 - ``cstdint``
 

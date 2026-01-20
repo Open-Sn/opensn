@@ -318,21 +318,21 @@ Program Listing for File aahd_structs.h
    struct AAHD_FLUDSPointerSet
    {
      /// Pointer to local angular fluxes.
-     double* local_psi = nullptr;
+     double* __restrict__ local_psi = nullptr;
      /// Pointer to delayed local angular fluxes.
-     double* delayed_local_psi = nullptr;
+     double* __restrict__ delayed_local_psi = nullptr;
      /// Pointer to delayed old local angular fluxes.
-     double* delayed_local_psi_old = nullptr;
+     double* __restrict__ delayed_local_psi_old = nullptr;
      /// Pointer to non-local incoming angular fluxes.
-     double* nonlocal_incoming_psi = nullptr;
+     double* __restrict__ nonlocal_incoming_psi = nullptr;
      /// Pointer to non-local delayed incoming angular fluxes.
-     double* nonlocal_delayed_incoming_psi = nullptr;
+     double* __restrict__ nonlocal_delayed_incoming_psi = nullptr;
      /// Pointer to non-local old delayed incoming angular fluxes.
-     double* nonlocal_delayed_incoming_psi_old = nullptr;
+     double* __restrict__ nonlocal_delayed_incoming_psi_old = nullptr;
      /// Pointer to non-local outgoing angular fluxes.
-     double* nonlocal_outgoing_psi = nullptr;
+     double* __restrict__ nonlocal_outgoing_psi = nullptr;
      /// Pointer to boundary angular fluxes.
-     double* boundary_psi = nullptr;
+     double* __restrict__ boundary_psi = nullptr;
      /// Stride size (number of groups times number of angles).
      std::uint64_t stride_size = 0;
    

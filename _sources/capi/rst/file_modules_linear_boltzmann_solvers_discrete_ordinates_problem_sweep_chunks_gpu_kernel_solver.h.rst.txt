@@ -30,7 +30,7 @@ Includes
 --------
 
 
-- ``caribou/caribou.h``
+- ``caribou/main.hpp``
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/arguments.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`)
 
