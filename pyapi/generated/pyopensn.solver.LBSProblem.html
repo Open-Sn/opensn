@@ -321,6 +321,32 @@ are exported as <code class="docutils literal notranslate"><span class="pre">pre
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetXSMap">
+<span class="sig-name descname"><span class="pre">SetXSMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.SetXSMap" title="Link to this definition"></a></dt>
+<dd><p>Replace the block-id to cross-section map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xs_map</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – <dl class="simple">
+<dt>A list of block-id to cross-section mapping dictionaries. Each dictionary supports:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>block_ids: List[int] (required)</dt><dd><p>Mesh block ids to associate with the cross section.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>xs: pyopensn.xs.MultiGroupXS (required)</dt><dd><p>Cross section object.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.WriteAngularFluxes">
 <span class="sig-name descname"><span class="pre">WriteAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.WriteAngularFluxes" title="Link to this definition"></a></dt>
 <dd><p>Write angular flux data to file.</p>
