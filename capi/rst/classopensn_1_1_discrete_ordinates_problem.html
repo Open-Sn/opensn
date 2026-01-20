@@ -110,6 +110,14 @@
 <dd><p>Base class for Discrete Ordinates solvers. This class mostly establishes utilities related to sweeping. From here we can derive a steady-state, transient, adjoint, and k-eigenvalue solver. </p>
 <p>Subclassed by <a class="reference internal" href="classopensn_1_1_discrete_ordinates_curvilinear_problem.html#classopensn_1_1_discrete_ordinates_curvilinear_problem"><span class="std std-ref">opensn::DiscreteOrdinatesCurvilinearProblem</span></a></p>
 <div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem18BoundaryDefinitionE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1abdec1196cc72374ee8fbceb6e6e66b0d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BoundaryDefinition</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="enum_namespaceopensn_1adbca6961a12788281ba4908a5ede2aa2.html#_CPPv4N6opensn15LBSBoundaryTypeE" title="opensn::LBSBoundaryType"><span class="n"><span class="pre">LBSBoundaryType</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_sweep_boundary.html#_CPPv4N6opensn13SweepBoundaryE" title="opensn::SweepBoundary"><span class="n"><span class="pre">SweepBoundary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18BoundaryDefinitionE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERK15InputParameters">
@@ -196,6 +204,11 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem22GetBoundaryDefinitionsEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ae4edc6e4c2592fb3272e40f47e38450e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18BoundaryDefinitionE" title="opensn::DiscreteOrdinatesProblem::BoundaryDefinition"><span class="n"><span class="pre">BoundaryDefinition</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundaryDefinitions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem22GetBoundaryDefinitionsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem23ReorientAdjointSolutionEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ad79f974ab8df726e4fc3f66886ff6c6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReorientAdjointSolution</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem23ReorientAdjointSolutionEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Reorient an adjoint solution to account for backwards streaming. </p>
@@ -207,12 +220,29 @@
 <dd><p>Zeroes all the outflow data-structures required to compute balance. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem18SetBoundaryOptionsERK15InputParameters">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a66b2daf81783057892afc4269ced1070"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetBoundaryOptions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetBoundaryOptionsERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd><p>Derived problems handle boundary options. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem15ClearBoundariesEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a82a5f96f075e5208b0aec54b02285a2f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem15ClearBoundariesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Clears all the boundary conditions from the solver. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem18GetInputParametersEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aa4a6b70e2de55d262f78c3d925591fad"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem23GetBoundaryOptionsBlockEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a41a8b4e53bd7b0897065bcbf9ced871b"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundaryOptionsBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem23GetBoundaryOptionsBlockEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -277,6 +307,16 @@
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1abc5b0f821f6058032c43f35a685046c4"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroSolutions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem13ZeroSolutionsEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem24CreateBoundaryFromParamsERK15InputParameters">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ac080c77de1afabf7e3e9571438cac166"></span><a class="reference internal" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18BoundaryDefinitionE" title="opensn::DiscreteOrdinatesProblem::BoundaryDefinition"><span class="n"><span class="pre">BoundaryDefinition</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateBoundaryFromParams</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem24CreateBoundaryFromParamsERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem19CreateSweepBoundaryE8uint64_t">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a8a68e83a2f275cb7f1dcf64cff26aeb8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_sweep_boundary.html#_CPPv4N6opensn13SweepBoundaryE" title="opensn::SweepBoundary"><span class="n"><span class="pre">SweepBoundary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateSweepBoundary</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">boundary_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem19CreateSweepBoundaryE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
@@ -308,6 +348,16 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem17sweep_boundaries_E">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a5e25b16cf1e38c66b8dc347a64067336"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_sweep_boundary.html#_CPPv4N6opensn13SweepBoundaryE" title="opensn::SweepBoundary"><span class="n"><span class="pre">SweepBoundary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sweep_boundaries_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem17sweep_boundaries_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem21boundary_definitions_E">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a1bb699004ffad34cd9869a5892609c62"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18BoundaryDefinitionE" title="opensn::DiscreteOrdinatesProblem::BoundaryDefinition"><span class="n"><span class="pre">BoundaryDefinition</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_definitions_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem21boundary_definitions_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem26boundary_conditions_block_E">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aa317d94f78fba712bc8a115319a42543"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_parameter_block.html#_CPPv4N6opensn14ParameterBlockE" title="opensn::ParameterBlock"><span class="n"><span class="pre">ParameterBlock</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_conditions_block_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem26boundary_conditions_block_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">

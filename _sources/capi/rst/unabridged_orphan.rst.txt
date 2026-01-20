@@ -85,11 +85,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_boundary_preference.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_cartesian_spatial_weight_function.rst
 
 .. toctree::
@@ -376,6 +371,11 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_ray_tracer_output_information.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_response_evaluator_1_1_boundary_source.rst
 
 .. toctree::
    :maxdepth: 1

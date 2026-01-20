@@ -54,5 +54,7 @@ Classes
 -------
 
 
+- :ref:`exhale_struct_structopensn_1_1_response_evaluator_1_1_boundary_source`
+
 - :ref:`exhale_class_classopensn_1_1_response_evaluator`
 

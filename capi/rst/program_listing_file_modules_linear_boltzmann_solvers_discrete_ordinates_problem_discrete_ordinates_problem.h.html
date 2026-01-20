@@ -93,6 +93,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/parameter_block.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -111,6 +112,8 @@
 <span class="w">  </span><span class="c1">/// Static registration based constructor.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 <span class="w">  </span><span class="o">~</span><span class="n">DiscreteOrdinatesProblem</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">BoundaryDefinition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">LBSBoundaryType</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetSweepType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">sweep_type_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
@@ -144,11 +147,16 @@
 <span class="w">  </span><span class="c1">/// Returns the sweep boundaries as a read only reference</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetSweepBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryDefinition</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetBoundaryDefinitions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// Reorient an adjoint solution to account for backwards streaming.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Zeroes all the outflow data-structures required to compute balance.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroOutflowBalanceVars</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
@@ -184,6 +192,9 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroSolutions</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
+<span class="w">  </span><span class="n">BoundaryDefinition</span><span class="w"> </span><span class="nf">CreateBoundaryFromParams</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateSweepBoundary</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">boundary_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngularQuadrature</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">SweepOrderGroupingInfo</span><span class="o">&gt;</span>
 <span class="w">    </span><span class="n">quadrature_unq_so_grouping_map_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngularQuadrature</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SPDS</span><span class="o">&gt;&gt;&gt;</span>
@@ -194,6 +205,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">verbose_sweep_angles_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">sweep_type_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">sweep_boundaries_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryDefinition</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_definitions_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">ParameterBlock</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_conditions_block_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Max level size.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_level_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
@@ -225,6 +238,7 @@
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBoundaryOptionsBlock</span><span class="p">();</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 <span class="p">};</span>
 

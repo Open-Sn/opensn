@@ -6,6 +6,16 @@ Class ResponseEvaluator
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_response_evaluator_1_1_boundary_source`
+
+
 Class Documentation
 -------------------
 

@@ -197,11 +197,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem18SetBoundaryOptionsERK15InputParameters">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a12c389eb96bc58a2472b088aa763c06a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetBoundaryOptions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem18SetBoundaryOptionsERK15InputParameters" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem10SetAdjointEb">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a323a600e07330180da692a0042843923"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetAdjoint</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adjoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem10SetAdjointEb" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -309,7 +304,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem15ClearBoundariesEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1aad2956d94f65e4b7e70165dee4ba01f8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem15ClearBoundariesEv" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a0fc3695393b9286ebf139592080d2a74"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem15ClearBoundariesEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Clears all the boundary conditions from the solver. </p>
 </dd></dl>
 
@@ -370,12 +365,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem21GetCellTransportViewsEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1ac3a6d06ad3143a12499e999b7cd124e4"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSViewE" title="opensn::CellLBSView"><span class="n"><span class="pre">CellLBSView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCellTransportViews</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem21GetCellTransportViewsEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns a const reference to the list of local cell transport views. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem22GetBoundaryPreferencesEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a25852fd246c46faa56b2f10b3b60b62d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_boundary_preference.html#_CPPv4N6opensn18BoundaryPreferenceE" title="opensn::BoundaryPreference"><span class="n"><span class="pre">BoundaryPreference</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundaryPreferences</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem22GetBoundaryPreferencesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Read/Write access to the boundary preferences. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -570,11 +559,6 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem23GetBoundaryOptionsBlockEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a7110032a1557f3d7fc9f97b24535b5bb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundaryOptionsBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem23GetBoundaryOptionsBlockEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem18GetXSMapEntryBlockEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a1e09270ad372e863398d643cb034f238"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetXSMapEntryBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem18GetXSMapEntryBlockEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -621,6 +605,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem20InitializeBoundariesEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1aadf8e0250d4d89a5b4f28646014683a1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem20InitializeBoundariesEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Initializes boundaries. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem18SetBoundaryOptionsERK15InputParameters">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a626be823c9ceab668390018f20fe12b7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetBoundaryOptions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem18SetBoundaryOptionsERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd><p>Derived problems handle boundary options. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -766,11 +756,6 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem21cell_transport_views_E">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a827ac7129b3f60af9d3c8a540c9ba68d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSViewE" title="opensn::CellLBSView"><span class="n"><span class="pre">CellLBSView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_transport_views_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem21cell_transport_views_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem21boundary_preferences_E">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1aa62b193a75790b90ebb5af38cf1d08bf"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_boundary_preference.html#_CPPv4N6opensn18BoundaryPreferenceE" title="opensn::BoundaryPreference"><span class="n"><span class="pre">BoundaryPreference</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_preferences_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem21boundary_preferences_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">

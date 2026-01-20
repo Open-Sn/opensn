@@ -19,7 +19,6 @@ Program Listing for File isotropic_boundary.h
    #include "framework/mesh/mesh.h"
    #include "framework/math/math.h"
    #include <vector>
-   #include <limits>
    
    namespace opensn
    {

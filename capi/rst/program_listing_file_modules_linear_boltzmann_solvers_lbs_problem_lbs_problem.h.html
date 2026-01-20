@@ -160,8 +160,6 @@
 <span class="w">  </span><span class="c1">/// Is the problem time dependent</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsTimeDependent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetAdjoint</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="p">);</span>
 
 <span class="w">  </span><span class="n">GeometryType</span><span class="w"> </span><span class="nf">GetGeometryType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -218,7 +216,7 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">VolumetricSource</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetVolumetricSources</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Clears all the boundary conditions from the solver.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaries</span><span class="p">();</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaries</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetLastRestartTime</span><span class="p">();</span>
 
@@ -248,9 +246,6 @@
 
 <span class="w">  </span><span class="c1">/// Returns a const reference to the list of local cell transport views.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellTransportViews</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">/// Read/Write access to the boundary preferences.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryPreference</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetBoundaryPreferences</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Obtains a reference to the unknown manager for flux-moments.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetUnknownManager</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -368,6 +363,9 @@
 <span class="w">  </span><span class="c1">/// Initializes boundaries.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaries</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
 
+<span class="w">  </span><span class="c1">/// Derived problems handle boundary options.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolverSchemes</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeWGSSolvers</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
@@ -409,8 +407,6 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unit_cell_matrices_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unit_ghost_cell_matrices_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_transport_views_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryPreference</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_preferences_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">UnknownManager</span><span class="w"> </span><span class="n">flux_moments_uk_man_</span><span class="p">;</span>
 
@@ -469,8 +465,6 @@
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetInputParameters</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetOptionsBlock</span><span class="p">();</span>
-
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBoundaryOptionsBlock</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetXSMapEntryBlock</span><span class="p">();</span>
 

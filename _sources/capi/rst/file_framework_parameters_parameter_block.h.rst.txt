@@ -52,6 +52,8 @@ Included By
 
 - :ref:`file_framework_parameters_input_parameters.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`
+
 
 
 

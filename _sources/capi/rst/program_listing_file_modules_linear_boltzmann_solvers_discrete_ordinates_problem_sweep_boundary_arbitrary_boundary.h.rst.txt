@@ -47,13 +47,17 @@ Program Listing for File arbitrary_boundary.h
                          unsigned int group_num) override
      {
        AllocateSpace(angle_num);
+       UpdateBoundaryFlux();
        return &boundary_flux_(angle_num, group_num);
      }
+   
+     void ResetAnglesReadyStatus() override { boundary_flux_ready_ = false; }
    
    private:
      std::shared_ptr<AngularFluxFunction> angular_flux_function_;
      NDArray<double, 2> boundary_flux_;
      std::size_t num_angles_ = 0;
+     bool boundary_flux_ready_ = false;
    
      void AllocateSpace(unsigned int angle_num)
      {
@@ -63,7 +67,17 @@ Program Listing for File arbitrary_boundary.h
    
        num_angles_ = required_angles;
        boundary_flux_.resize(std::array<size_t, 2>{num_angles_, num_groups_});
+       boundary_flux_ready_ = false;
+     }
    
+     void UpdateBoundaryFlux()
+     {
+       if (not angular_flux_function_)
+         return;
+       if (boundary_flux_ready_)
+         return;
+   
+       boundary_flux_ready_ = true;
        for (std::size_t angle = 0; angle < num_angles_; ++angle)
        {
          for (std::size_t group = 0; group < num_groups_; ++group)
