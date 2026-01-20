@@ -203,7 +203,7 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   tgdsa_string = params.GetParamValue<std::string>("tgdsa_petsc_options");
 }
 
-#ifndef __OPENSN_USE_CUDA__
+#ifndef __OPENSN_WITH_GPU__
 void
 LBSGroupset::InitializeGPUCarriers()
 {
@@ -213,7 +213,7 @@ void
 LBSGroupset::ResetGPUCarriers()
 {
 }
-#endif // __OPENSN_USE_CUDA__
+#endif // __OPENSN_WITH_GPU__
 
 LBSGroupset::~LBSGroupset()
 {

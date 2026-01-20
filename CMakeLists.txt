@@ -81,12 +81,27 @@ _add_cxx_cfg(Native "-fno-trapping-math")
 _add_cxx_cfg(Native "-ffp-contract=fast")
 
 option(OPENSN_WITH_CUDA "Enable CUDA support" OFF)
+option(OPENSN_WITH_HIP "Enable HIP support" OFF)
+if (OPENSN_WITH_CUDA AND OPENSN_WITH_HIP)
+  message(FATAL_ERROR "Cannot enable both CUDA and HIP support at the same time")
+endif()
 if (OPENSN_WITH_CUDA)
   set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
   find_package(CUDAToolkit 12.0 REQUIRED)
   message(STATUS "CUDA support enabled")
   message(STATUS "CUDA architectures detected: ${CMAKE_CUDA_ARCHITECTURES}")
   enable_language(CUDA)
+endif()
+if (OPENSN_WITH_HIP)
+  find_package(HIP REQUIRED)
+  message(STATUS "HIP support enabled")
+  message(STATUS "HIP platform: ${CMAKE_HIP_PLATFORM}")
+  message(STATUS "HIP architectures detected: ${CMAKE_HIP_ARCHITECTURES}")
+  enable_language(HIP)
+endif()
+set(OPENSN_WITH_GPU OFF)
+if (OPENSN_WITH_CUDA OR OPENSN_WITH_HIP)
+  set(OPENSN_WITH_GPU ON FORCE)
 endif()
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
@@ -194,7 +209,7 @@ endif()
 # compile options
 set(OPENSN_CXX_FLAGS)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  if (NOT OPENSN_WITH_CUDA)
+  if (NOT OPENSN_WITH_GPU)
     list(APPEND OPENSN_CXX_FLAGS "-pedantic")
   endif()
   list(APPEND OPENSN_CXX_FLAGS "-Wall")
@@ -206,7 +221,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
   list(APPEND OPENSN_CXX_FLAGS "-Wno-unused-variable")
   list(APPEND OPENSN_CXX_FLAGS "-Wno-c11-extensions")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-  if (NOT OPENSN_WITH_CUDA)
+  if (NOT OPENSN_WITH_GPU)
     list(APPEND OPENSN_CXX_FLAGS "-pedantic")
   endif()
   list(APPEND OPENSN_CXX_FLAGS "-Wall")
@@ -226,22 +241,32 @@ file(GLOB_RECURSE LIBOPENSN_SRCS CONFIGURE_DEPENDS
     modules/*.cc
 )
 
-if (OPENSN_WITH_CUDA)
-  file(GLOB_RECURSE LIBOPENSN_CUDA_SRCS CONFIGURE_DEPENDS modules/*.cu)
-  add_library(libopensncuda STATIC ${LIBOPENSN_CUDA_SRCS})
+if (OPENSN_WITH_GPU)
+  file(GLOB_RECURSE LIBOPENSNGPU_SRCS CONFIGURE_DEPENDS modules/*.cu)
+  if (OPENSN_WITH_CUDA)
+    set_source_files_properties(${LIBOPENSNGPU_SRCS} PROPERTIES LANGUAGE CUDA)
+  elseif (OPENSN_WITH_HIP)
+    set_source_files_properties(${LIBOPENSNGPU_SRCS} PROPERTIES LANGUAGE HIP)
+  endif()
+  add_library(libopensngpu STATIC ${LIBOPENSNGPU_SRCS})
 endif()
 
 add_library(libopensn SHARED ${LIBOPENSN_SRCS})
 
-if (OPENSN_WITH_CUDA)
-  target_compile_options(libopensncuda PRIVATE --expt-extended-lambda --expt-relaxed-constexpr)
-  target_compile_features(libopensncuda PUBLIC cuda_std_20)
-  target_compile_definitions(libopensncuda PRIVATE __OPENSN_USE_CUDA__)
-  target_compile_definitions(libopensn PRIVATE __OPENSN_USE_CUDA__)
-  set_property(TARGET libopensncuda PROPERTY POSITION_INDEPENDENT_CODE ON)
-  set_property(TARGET libopensncuda PROPERTY OUTPUT_NAME opensncuda)
+if (OPENSN_WITH_GPU)
+  target_compile_options(libopensngpu PRIVATE --expt-extended-lambda --expt-relaxed-constexpr)
+  if (OPENSN_WITH_CUDA)
+    target_compile_features(libopensngpu PUBLIC cuda_std_20)
+  elseif (OPENSN_WITH_HIP)
+    set_property(TARGET libopensngpu PROPERTY HIP_STANDARD 20)
+    set_property(TARGET libopensngpu PROPERTY HIP_STANDARD_REQUIRED ON)
+  endif()
+  target_compile_definitions(libopensngpu PRIVATE __OPENSN_WITH_GPU__)
+  target_compile_definitions(libopensn PRIVATE __OPENSN_WITH_GPU__)
+  set_property(TARGET libopensngpu PROPERTY POSITION_INDEPENDENT_CODE ON)
+  set_property(TARGET libopensngpu PROPERTY OUTPUT_NAME opensngpu)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-    target_compile_options(libopensncuda PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
+    target_compile_options(libopensngpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
   endif()
 endif()
 
@@ -260,19 +285,20 @@ target_include_directories(libopensn
     $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
 )
 
-if (OPENSN_WITH_CUDA)
-  target_include_directories(libopensncuda PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
-  target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:${OPENSN_CXX_FLAGS}>)
-  target_compile_options(libopensncuda PRIVATE $<BUILD_INTERFACE:-diag-suppress 1301>)
-  target_compile_options(libopensncuda PRIVATE
-    $<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CUDA>>:
+if (OPENSN_WITH_GPU)
+  target_include_directories(libopensngpu PUBLIC $<BUILD_INTERFACE:${MPI_CXX_INCLUDE_DIRS}>)
+  target_compile_options(libopensngpu PRIVATE $<BUILD_INTERFACE:${OPENSN_CXX_FLAGS}>)
+  target_compile_options(libopensngpu PRIVATE $<BUILD_INTERFACE:-diag-suppress 1301>)
+  set(GPU_LANG_CONDITION $<OR:$<COMPILE_LANGUAGE:CUDA>,$<COMPILE_LANGUAGE:HIP>>)
+  target_compile_options(libopensngpu PRIVATE
+    $<$<AND:$<CXX_COMPILER_ID:GNU>,${GPU_LANG_CONDITION}>:
     $<BUILD_INTERFACE:-Wno-deprecated-declarations -Wno-non-template-friend -Wno-parentheses>>
   )
-  target_compile_options(libopensncuda PRIVATE
-    $<$<AND:$<CXX_COMPILER_ID:Clang>,$<COMPILE_LANGUAGE:CUDA>>:
+  target_compile_options(libopensngpu PRIVATE
+    $<$<AND:$<CXX_COMPILER_ID:Clang>,${GPU_LANG_CONDITION}>:
     $<BUILD_INTERFACE:-Wno-unused-function -Wno-constant-logical-operand>>
   )
-  target_include_directories(libopensncuda
+  target_include_directories(libopensngpu
       PRIVATE
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
       $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
@@ -286,7 +312,7 @@ if (OPENSN_WITH_CUDA)
       $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
   )
-  target_link_libraries(libopensncuda PRIVATE MPI::MPI_CXX)
+  target_link_libraries(libopensngpu PRIVATE MPI::MPI_CXX)
 endif()
 
 target_link_libraries(libopensn
@@ -298,9 +324,8 @@ target_link_libraries(libopensn
     mpicpp-lite::mpicpp-lite
     MPI::MPI_CXX
 )
-if (OPENSN_WITH_CUDA)
-  target_link_libraries(libopensncuda PRIVATE ${CUDA_LIBRARIES} CUDA::cublas)
-  target_link_libraries(libopensn INTERFACE libopensncuda)
+if (OPENSN_WITH_GPU)
+  target_link_libraries(libopensn INTERFACE libopensngpu)
 endif()
 
 target_compile_options(libopensn PRIVATE ${OPENSN_CXX_FLAGS})
@@ -314,8 +339,8 @@ set_target_properties(
 )
 
 set_target_properties(libopensn PROPERTIES EXPORT_NAME opensn)
-if (OPENSN_WITH_CUDA)
-  set_target_properties(libopensncuda PROPERTIES EXPORT_NAME opensncuda)
+if (OPENSN_WITH_GPU)
+  set_target_properties(libopensngpu PROPERTIES EXPORT_NAME opensngpu)
 endif()
 
 if(OPENSN_WITH_PYTHON)
@@ -363,9 +388,9 @@ install(
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-if(OPENSN_WITH_CUDA)
+if(OPENSN_WITH_GPU)
   install(
-        TARGETS libopensncuda
+        TARGETS libopensngpu
         EXPORT openSnTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

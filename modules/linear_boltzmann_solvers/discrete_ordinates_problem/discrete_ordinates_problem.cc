@@ -966,7 +966,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
   log.Log() << program_timer.GetTimeString() << " Done initializing sweep datastructures.\n";
 }
 
-#ifndef __OPENSN_USE_CUDA__
+#ifndef __OPENSN_WITH_GPU__
 void
 DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
 {

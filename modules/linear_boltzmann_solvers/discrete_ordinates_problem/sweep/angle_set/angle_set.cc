@@ -6,7 +6,7 @@
 namespace opensn
 {
 
-#ifndef __OPENSN_USE_CUDA__
+#ifndef __OPENSN_WITH_GPU__
 void
 AngleSet::InitializeMemoryPin()
 {
@@ -16,7 +16,7 @@ void
 AngleSet::ResetMemoryPin()
 {
 }
-#endif // __OPENSN_USE_CUDA__
+#endif // __OPENSN_WITH_GPU__
 
 AngleSet::~AngleSet()
 {
