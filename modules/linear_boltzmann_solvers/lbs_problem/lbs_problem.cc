@@ -82,12 +82,12 @@ LBSProblem::LBSProblem(const InputParameters& params)
     if (time_dependent_)
       throw std::invalid_argument(GetName() +
                                   ": Time dependent problems are not supported on GPUs.");
-#ifdef __OPENSN_USE_CUDA__
+#ifdef __OPENSN_WITH_GPU__
     CheckCapableDevices();
 #else
     throw std::invalid_argument(
       GetName() + ": GPU support was requested, but OpenSn was built without CUDA enabled.");
-#endif // __OPENSN_USE_CUDA__
+#endif // __OPENSN_WITH_GPU__
   }
 
   // Initialize options
@@ -1171,7 +1171,7 @@ LBSProblem::InitializeSolverSchemes()
   ags_solver_->SetTolerance(options_.ags_tolerance);
 }
 
-#ifndef __OPENSN_USE_CUDA__
+#ifndef __OPENSN_WITH_GPU__
 void
 LBSProblem::InitializeGPUExtras()
 {
@@ -1186,7 +1186,7 @@ void
 LBSProblem::CheckCapableDevices()
 {
 }
-#endif // __OPENSN_USE_CUDA__
+#endif // __OPENSN_WITH_GPU__
 
 std::vector<double>
 LBSProblem::MakeSourceMomentsFromPhi()

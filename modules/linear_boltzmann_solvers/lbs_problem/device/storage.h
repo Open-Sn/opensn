@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "caribou/caribou.h"
+#include "caribou/main.hpp"
 #include <concepts>
 #include <iterator>
 #include <vector>

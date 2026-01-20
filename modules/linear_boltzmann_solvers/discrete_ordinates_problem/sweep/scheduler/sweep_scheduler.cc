@@ -6,8 +6,8 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
-#include <sstream>
 #include <algorithm>
+#include <sstream>
 
 namespace opensn
 {
@@ -25,24 +25,21 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
     InitializeAlgoDOG();
 
   // Initialize delayed upstream data
-  for (auto& angsetgrp : angle_agg.angle_set_groups)
-    for (auto& angset : angsetgrp.GetAngleSets())
-      angset->InitializeDelayedUpstreamData();
+  for (auto& angset : angle_agg_)
+    angset->InitializeDelayedUpstreamData();
 
   // Get local max num messages accross anglesets
   int local_max_num_messages = 0;
-  for (auto& angsetgrp : angle_agg.angle_set_groups)
-    for (auto& angset : angsetgrp.GetAngleSets())
-      local_max_num_messages = std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
+  for (auto& angset : angle_agg_)
+    local_max_num_messages = std::max(angset->GetMaxBufferMessages(), local_max_num_messages);
 
   // Reconcile all local maximums
   int global_max_num_messages = 0;
   mpi_comm.all_reduce(local_max_num_messages, global_max_num_messages, mpi::op::max<int>());
 
   // Propogate items back to sweep buffers
-  for (auto& angsetgrp : angle_agg.angle_set_groups)
-    for (auto& angset : angsetgrp.GetAngleSets())
-      angset->SetMaxBufferMessages(global_max_num_messages);
+  for (auto& angset : angle_agg_)
+    angset->SetMaxBufferMessages(global_max_num_messages);
 }
 
 void
@@ -51,52 +48,45 @@ SweepScheduler::InitializeAlgoDOG()
   CALI_CXX_MARK_SCOPE("SweepScheduler::InitializeAlgoDOG");
 
   // Load all anglesets in preperation for sorting
-  // Loop over angleset groups
-  for (size_t q = 0; q < angle_agg_.angle_set_groups.size(); ++q)
+  size_t num_anglesets = angle_agg_.GetNumAngleSets();
+  for (size_t as = 0; as < num_anglesets; ++as)
   {
-    AngleSetGroup& angleset_group = angle_agg_.angle_set_groups[q];
+    auto angleset = angle_agg_[as];
+    const auto& spds = dynamic_cast<const AAH_SPDS&>(angleset->GetSPDS());
 
-    // Loop over anglesets in group
-    size_t num_anglesets = angleset_group.GetAngleSets().size();
-    for (size_t as = 0; as < num_anglesets; ++as)
+    const std::vector<STDG>& leveled_graph = spds.GetGlobalSweepPlanes();
+
+    // Find location depth
+    int loc_depth = -1;
+    for (size_t level = 0; level < leveled_graph.size(); ++level)
     {
-      auto angleset = angleset_group.GetAngleSets()[as];
-      const auto& spds = dynamic_cast<const AAH_SPDS&>(angleset->GetSPDS());
-
-      const std::vector<STDG>& leveled_graph = spds.GetGlobalSweepPlanes();
-
-      // Find location depth
-      int loc_depth = -1;
-      for (size_t level = 0; level < leveled_graph.size(); ++level)
+      for (size_t index = 0; index < leveled_graph[level].item_id.size(); ++index)
       {
-        for (size_t index = 0; index < leveled_graph[level].item_id.size(); ++index)
+        if (leveled_graph[level].item_id[index] == opensn::mpi_comm.rank())
         {
-          if (leveled_graph[level].item_id[index] == opensn::mpi_comm.rank())
-          {
-            loc_depth = static_cast<int>(leveled_graph.size() - level);
-            break;
-          }
-        } // for locations in plane
-      } // for sweep planes
+          loc_depth = static_cast<int>(leveled_graph.size() - level);
+          break;
+        }
+      } // for locations in plane
+    } // for sweep planes
 
-      // Set up rule values
-      if (loc_depth >= 0)
-      {
-        RuleValues new_rule_vals(angleset);
-        new_rule_vals.depth_of_graph = loc_depth;
-        new_rule_vals.set_index = as + q * num_anglesets;
+    // Set up rule values
+    if (loc_depth >= 0)
+    {
+      RuleValues new_rule_vals(angleset);
+      new_rule_vals.depth_of_graph = loc_depth;
+      new_rule_vals.set_index = as;
 
-        const auto& omega = spds.GetOmega();
-        new_rule_vals.sign_of_omegax = (omega.x >= 0) ? 2 : 1;
-        new_rule_vals.sign_of_omegay = (omega.y >= 0) ? 2 : 1;
-        new_rule_vals.sign_of_omegaz = (omega.z >= 0) ? 2 : 1;
+      const auto& omega = spds.GetOmega();
+      new_rule_vals.sign_of_omegax = (omega.x >= 0) ? 2 : 1;
+      new_rule_vals.sign_of_omegay = (omega.y >= 0) ? 2 : 1;
+      new_rule_vals.sign_of_omegaz = (omega.z >= 0) ? 2 : 1;
 
-        rule_values_.push_back(new_rule_vals);
-      }
-      else
-        throw std::runtime_error("InitializeAlgoDOG: Failed to find location depth");
-    } // for anglesets
-  } // for quadrants/anglesetgroups
+      rule_values_.push_back(new_rule_vals);
+    }
+    else
+      throw std::runtime_error("InitializeAlgoDOG: Failed to find location depth");
+  } // for anglesets
 
   std::stable_sort(rule_values_.begin(),
                    rule_values_.end(),
@@ -148,21 +138,19 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   {
     received_delayed_data = true;
 
-    for (auto& angle_set_group : angle_agg_.angle_set_groups)
-      for (auto& angle_set : angle_set_group.GetAngleSets())
-      {
-        if (angle_set->FlushSendBuffers() == AngleSetStatus::MESSAGES_PENDING)
-          received_delayed_data = false;
+    for (auto& angle_set : angle_agg_)
+    {
+      if (angle_set->FlushSendBuffers() == AngleSetStatus::MESSAGES_PENDING)
+        received_delayed_data = false;
 
-        if (not angle_set->ReceiveDelayedData())
-          received_delayed_data = false;
-      }
+      if (not angle_set->ReceiveDelayedData())
+        received_delayed_data = false;
+    }
   }
 
   // Reset all
-  for (auto& angle_set_group : angle_agg_.angle_set_groups)
-    for (auto& angle_set : angle_set_group.GetAngleSets())
-      angle_set->ResetSweepBuffers();
+  for (auto& angle_set : angle_agg_)
+    angle_set->ResetSweepBuffers();
 
   for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
     bndry->ResetAnglesReadyStatus();
@@ -179,13 +167,12 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
   {
     finished = true;
 
-    for (auto& angle_set_group : angle_agg_.angle_set_groups)
-      for (auto& angle_set : angle_set_group.GetAngleSets())
-      {
-        AngleSetStatus status = angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
-        if (status != AngleSetStatus::FINISHED)
-          finished = false;
-      } // for angleset
+    for (auto& angle_set : angle_agg_)
+    {
+      AngleSetStatus status = angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+      if (status != AngleSetStatus::FINISHED)
+        finished = false;
+    } // for angleset
   } // while not finished
 
   // Receive delayed data
@@ -195,21 +182,19 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
   {
     received_delayed_data = true;
 
-    for (auto& angle_set_group : angle_agg_.angle_set_groups)
-      for (auto& angle_set : angle_set_group.GetAngleSets())
-      {
-        if (angle_set->FlushSendBuffers() == AngleSetStatus::MESSAGES_PENDING)
-          received_delayed_data = false;
+    for (auto& angle_set : angle_agg_)
+    {
+      if (angle_set->FlushSendBuffers() == AngleSetStatus::MESSAGES_PENDING)
+        received_delayed_data = false;
 
-        if (not angle_set->ReceiveDelayedData())
-          received_delayed_data = false;
-      }
+      if (not angle_set->ReceiveDelayedData())
+        received_delayed_data = false;
+    }
   }
 
   // Reset all
-  for (auto& angle_set_group : angle_agg_.angle_set_groups)
-    for (auto& angle_set : angle_set_group.GetAngleSets())
-      angle_set->ResetSweepBuffers();
+  for (auto& angle_set : angle_agg_)
+    angle_set->ResetSweepBuffers();
 
   for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
     bndry->ResetAnglesReadyStatus();

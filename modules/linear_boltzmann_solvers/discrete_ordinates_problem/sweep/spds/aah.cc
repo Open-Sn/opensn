@@ -262,7 +262,7 @@ AAH_SPDS::BuildGlobalSweepTDG()
   }
 }
 
-#ifndef __OPENSN_USE_CUDA__
+#ifndef __OPENSN_WITH_GPU__
 void
 AAH_SPDS::CopySPLSDataOnDevice()
 {

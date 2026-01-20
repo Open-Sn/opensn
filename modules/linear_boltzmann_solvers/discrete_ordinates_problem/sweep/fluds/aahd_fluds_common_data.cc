@@ -336,7 +336,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForParallelFaces(const SpatialDiscretizati
   }
 }
 
-#ifndef __OPENSN_USE_CUDA__
+#ifndef __OPENSN_WITH_GPU__
 void
 AAHD_FLUDSCommonData::CopyFlattenNodeIndexToDevice(const SpatialDiscretization& sdm)
 {

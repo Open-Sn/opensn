@@ -26,16 +26,14 @@ AngleAggregation::ZeroOutgoingDelayedPsi()
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::ZeroOutgoingDelayedPsi");
 
-  for (auto& angsetgrp : angle_set_groups)
-    for (auto& angset : angsetgrp.GetAngleSets())
-      for (auto& delayed_data : angset->GetFLUDS().DelayedPrelocIOutgoingPsi())
-        std::fill(delayed_data.begin(), delayed_data.end(), 0.0);
+  for (auto& angset : angle_set_groups_)
+    for (auto& delayed_data : angset->GetFLUDS().DelayedPrelocIOutgoingPsi())
+      std::fill(delayed_data.begin(), delayed_data.end(), 0.0);
 
-  for (auto& angsetgrp : angle_set_groups)
-    for (auto& angset : angsetgrp.GetAngleSets())
-      std::fill(angset->GetFLUDS().DelayedLocalPsi().begin(),
-                angset->GetFLUDS().DelayedLocalPsi().end(),
-                0.0);
+  for (auto& angset : angle_set_groups_)
+    std::fill(angset->GetFLUDS().DelayedLocalPsi().begin(),
+              angset->GetFLUDS().DelayedLocalPsi().end(),
+              0.0);
 }
 
 void
@@ -48,23 +46,23 @@ AngleAggregation::ZeroIncomingDelayedPsi()
     bndry->ZeroOpposingDelayedAngularFluxOld();
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      std::fill(angle_set->GetFLUDS().DelayedLocalPsiOld().begin(),
-                angle_set->GetFLUDS().DelayedLocalPsiOld().end(),
-                0.0);
+  for (auto& angle_set : angle_set_groups_)
+    std::fill(angle_set->GetFLUDS().DelayedLocalPsiOld().begin(),
+              angle_set->GetFLUDS().DelayedLocalPsiOld().end(),
+              0.0);
 
   // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
-        std::fill(loc_vector.begin(), loc_vector.end(), 0.0);
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
+      std::fill(loc_vector.begin(), loc_vector.end(), 0.0);
 }
 
 void
 AngleAggregation::InitializeReflectingBCs()
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::InitializeReflectingBCs");
+
+  const double epsilon = 1.0e-8;
 
   bool reflecting_bcs_initialized = false;
 
@@ -98,15 +96,13 @@ AngleAggregation::GetNumDelayedAngularDOFs()
     local_ang_unknowns += bndry->CountDelayedAngularDOFsNew();
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      local_ang_unknowns += angle_set->GetFLUDS().DelayedLocalPsi().size();
+  for (auto& angle_set : angle_set_groups_)
+    local_ang_unknowns += angle_set->GetFLUDS().DelayedLocalPsi().size();
 
   // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
-        local_ang_unknowns += loc_vector.size();
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
+      local_ang_unknowns += loc_vector.size();
 
   size_t global_ang_unknowns = 0;
   mpi_comm.all_reduce(local_ang_unknowns, global_ang_unknowns, mpi::op::sum<size_t>());
@@ -126,23 +122,21 @@ AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_r
     bndry->AppendNewDelayedAngularDOFsToArray(index, x_ref);
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto val : angle_set->GetFLUDS().DelayedLocalPsi())
+  for (auto& angle_set : angle_set_groups_)
+    for (auto val : angle_set->GetFLUDS().DelayedLocalPsi())
+    {
+      index++;
+      x_ref[index] = val;
+    }
+
+  // Inter location cycles
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
+      for (auto val : loc_vector)
       {
         index++;
         x_ref[index] = val;
       }
-
-  // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
-        for (auto val : loc_vector)
-        {
-          index++;
-          x_ref[index] = val;
-        }
 }
 
 void
@@ -154,23 +148,21 @@ AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_r
     bndry->AppendOldDelayedAngularDOFsToArray(index, x_ref);
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto val : angle_set->GetFLUDS().DelayedLocalPsiOld())
+  for (auto& angle_set : angle_set_groups_)
+    for (auto val : angle_set->GetFLUDS().DelayedLocalPsiOld())
+    {
+      index++;
+      x_ref[index] = val;
+    }
+
+  // Inter location cycles
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
+      for (auto val : loc_vector)
       {
         index++;
         x_ref[index] = val;
       }
-
-  // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
-        for (auto val : loc_vector)
-        {
-          index++;
-          x_ref[index] = val;
-        }
 }
 
 void
@@ -182,23 +174,21 @@ AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double
     bndry->SetOldDelayedAngularDOFsFromArray(index, x_ref);
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& val : angle_set->GetFLUDS().DelayedLocalPsiOld())
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& val : angle_set->GetFLUDS().DelayedLocalPsiOld())
+    {
+      index++;
+      val = x_ref[index];
+    }
+
+  // Inter location cycles
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
+      for (auto& val : loc_vector)
       {
         index++;
         val = x_ref[index];
       }
-
-  // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
-        for (auto& val : loc_vector)
-        {
-          index++;
-          val = x_ref[index];
-        }
 }
 
 void
@@ -210,23 +200,21 @@ AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double
     bndry->SetNewDelayedAngularDOFsFromArray(index, x_ref);
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& val : angle_set->GetFLUDS().DelayedLocalPsi())
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& val : angle_set->GetFLUDS().DelayedLocalPsi())
+    {
+      index++;
+      val = x_ref[index];
+    }
+
+  // Inter location cycles
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
+      for (auto& val : loc_vector)
       {
         index++;
         val = x_ref[index];
       }
-
-  // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
-        for (auto& val : loc_vector)
-        {
-          index++;
-          val = x_ref[index];
-        }
 }
 
 std::vector<double>
@@ -243,17 +231,15 @@ AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
     bndry->AppendNewDelayedAngularDOFsToVector(psi_vector);
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto val : angle_set->GetFLUDS().DelayedLocalPsi())
-        psi_vector.push_back(val);
+  for (auto& angle_set : angle_set_groups_)
+    for (auto val : angle_set->GetFLUDS().DelayedLocalPsi())
+      psi_vector.push_back(val);
 
   // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
-        for (auto val : loc_vector)
-          psi_vector.push_back(val);
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
+      for (auto val : loc_vector)
+        psi_vector.push_back(val);
 
   return psi_vector;
 }
@@ -276,17 +262,15 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
     bndry->SetNewDelayedAngularDOFsFromVector(stl_vector, index);
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& val : angle_set->GetFLUDS().DelayedLocalPsi())
-        val = stl_vector[index++];
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& val : angle_set->GetFLUDS().DelayedLocalPsi())
+      val = stl_vector[index++];
 
   // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
-        for (auto& val : loc_vector)
-          val = stl_vector[index++];
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsi())
+      for (auto& val : loc_vector)
+        val = stl_vector[index++];
 }
 
 std::vector<double>
@@ -303,17 +287,15 @@ AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
     bndry->AppendOldDelayedAngularDOFsToVector(psi_vector);
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto val : angle_set->GetFLUDS().DelayedLocalPsiOld())
-        psi_vector.push_back(val);
+  for (auto& angle_set : angle_set_groups_)
+    for (auto val : angle_set->GetFLUDS().DelayedLocalPsiOld())
+      psi_vector.push_back(val);
 
   // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
-        for (auto val : loc_vector)
-          psi_vector.push_back(val);
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
+      for (auto val : loc_vector)
+        psi_vector.push_back(val);
 
   return psi_vector;
 }
@@ -336,17 +318,15 @@ AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double
     bndry->SetOldDelayedAngularDOFsFromVector(stl_vector, index);
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& val : angle_set->GetFLUDS().DelayedLocalPsiOld())
-        val = stl_vector[index++];
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& val : angle_set->GetFLUDS().DelayedLocalPsiOld())
+      val = stl_vector[index++];
 
   // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
-        for (auto& val : loc_vector)
-          val = stl_vector[index++];
+  for (auto& angle_set : angle_set_groups_)
+    for (auto& loc_vector : angle_set->GetFLUDS().DelayedPrelocIOutgoingPsiOld())
+      for (auto& val : loc_vector)
+        val = stl_vector[index++];
 }
 
 void
@@ -358,14 +338,12 @@ AngleAggregation::SetDelayedPsiOld2New()
     bndry->CopyDelayedAngularFluxOldToNew();
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      angle_set->GetFLUDS().SetDelayedLocalPsiOldToNew();
+  for (auto& angle_set : angle_set_groups_)
+    angle_set->GetFLUDS().SetDelayedLocalPsiOldToNew();
 
   // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      angle_set->GetFLUDS().SetDelayedOutgoingPsiOldToNew();
+  for (auto& angle_set : angle_set_groups_)
+    angle_set->GetFLUDS().SetDelayedOutgoingPsiOldToNew();
 }
 
 void
@@ -377,14 +355,12 @@ AngleAggregation::SetDelayedPsiNew2Old()
     bndry->CopyDelayedAngularFluxNewToOld();
 
   // Intra-cell cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      angle_set->GetFLUDS().SetDelayedLocalPsiNewToOld();
+  for (auto& angle_set : angle_set_groups_)
+    angle_set->GetFLUDS().SetDelayedLocalPsiNewToOld();
 
   // Inter location cycles
-  for (auto& as_group : angle_set_groups)
-    for (auto& angle_set : as_group.GetAngleSets())
-      angle_set->GetFLUDS().SetDelayedOutgoingPsiNewToOld();
+  for (auto& angle_set : angle_set_groups_)
+    angle_set->GetFLUDS().SetDelayedOutgoingPsiNewToOld();
 }
 
 } // namespace opensn

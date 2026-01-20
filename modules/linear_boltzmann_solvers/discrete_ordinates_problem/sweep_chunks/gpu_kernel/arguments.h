@@ -28,13 +28,13 @@ struct Arguments
             bool is_surface_source_active);
 
   // mesh and quadrature
-  const char* mesh_data;
-  const char* quad_data;
+  const char* __restrict__ mesh_data;
+  const char* __restrict__ quad_data;
   // source moments and phi
-  const double* src_moment;
-  double* phi;
+  const double* __restrict__ src_moment;
+  double* __restrict__ phi;
   // angle set
-  const std::uint32_t* directions;
+  const std::uint32_t* __restrict__ directions;
   std::uint32_t angleset_size;
   // group set
   std::uint32_t num_groups;
@@ -42,7 +42,7 @@ struct Arguments
   std::uint32_t groupset_size;
   // fluds
   AAHD_FLUDSPointerSet flud_data;
-  const std::uint64_t* flud_index;
+  const std::uint64_t* __restrict__ flud_index;
 };
 
 } // namespace opensn::gpu_kernel

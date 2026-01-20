@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "caribou/caribou.h"
+#include "caribou/main.hpp"
 namespace crb = caribou;
 
 static_assert(sizeof(double) == sizeof(std::uint64_t),

@@ -35,7 +35,7 @@ AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(FLUDS& fluds,
   bool cpu_success = this->BuildMessageStructureForCPUSweep();
   if (cpu_success)
     return;
-#ifdef __OPENSN_USE_CUDA__
+#ifdef __OPENSN_WITH_GPU__
   bool gpu_success = this->BuildMessageStructureForGPUSweep();
   if (gpu_success)
     return;
@@ -258,12 +258,12 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
   }
 }
 
-#ifndef __OPENSN_USE_CUDA__
+#ifndef __OPENSN_WITH_GPU__
 bool
 AAH_ASynchronousCommunicator::BuildMessageStructureForGPUSweep()
 {
   return false;
 }
-#endif // __OPENSN_USE_CUDA__
+#endif // __OPENSN_WITH_GPU__
 
 } // namespace opensn

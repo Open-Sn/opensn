@@ -332,12 +332,12 @@ AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
   } // for cell
 }
 
-#ifndef __OPENSN_USE_CUDA__
+#ifndef __OPENSN_WITH_GPU__
 void
 AAHSweepChunk::GPUSweep(AngleSet& angle_set)
 {
   throw std::runtime_error("OpenSn was not compiled with CUDA.\n");
 }
-#endif // __OPENSN_USE_CUDA__
+#endif // __OPENSN_WITH_GPU__
 
 } // namespace opensn

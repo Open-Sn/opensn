@@ -9,7 +9,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
 #include "caliper/cali.h"
-#include "caribou/caribou.h"
+#include "caribou/main.hpp"
 
 namespace crb = caribou;
 
