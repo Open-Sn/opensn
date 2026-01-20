@@ -19,7 +19,7 @@ namespace opensn
 class ArbitraryBoundary : public SweepBoundary
 {
 public:
-  ArbitraryBoundary(size_t num_groups,
+  ArbitraryBoundary(unsigned int num_groups,
                     std::shared_ptr<AngularFluxFunction> angular_flux_function,
                     CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
     : SweepBoundary(LBSBoundaryType::ARBITRARY, num_groups, coord_type),
@@ -68,7 +68,7 @@ private:
     boundary_flux_ready_ = true;
     for (std::size_t angle = 0; angle < num_angles_; ++angle)
     {
-      for (std::size_t group = 0; group < num_groups_; ++group)
+      for (unsigned int group = 0; group < num_groups_; ++group)
       {
         const double value =
           (*angular_flux_function_)(static_cast<int>(group), static_cast<int>(angle));

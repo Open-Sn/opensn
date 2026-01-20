@@ -15,7 +15,7 @@ namespace opensn
 class VacuumBoundary : public SweepBoundary
 {
 public:
-  explicit VacuumBoundary(size_t num_groups,
+  explicit VacuumBoundary(unsigned int num_groups,
                           CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
     : SweepBoundary(LBSBoundaryType::VACUUM, num_groups, coord_type)
   {

@@ -380,7 +380,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
         {
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
           const auto& V_i = fe_values.intV_shapeI(i);
-          for (size_t g = 0; g < num_groups; ++g)
+          for (unsigned int g = 0; g < num_groups; ++g)
             local_response += src[g] * phi_dagger[dof_map + g] * V_i;
         }
       }
@@ -457,7 +457,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       {
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
         const auto& shape_val = subscriber.shape_values(i);
-        for (size_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
           local_response += vol_wt * shape_val * src[g] * phi_dagger[dof_map + g];
       } // for node i
     } // for subscriber
@@ -477,7 +477,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
         const auto& V_i = fe_values.intV_shapeI(i);
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
         const auto& vals = (*volumetric_source)(cell, nodes[i], num_groups);
-        for (size_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
           local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
       }
     }

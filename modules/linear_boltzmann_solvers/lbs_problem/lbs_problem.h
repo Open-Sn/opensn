@@ -86,7 +86,7 @@ public:
   bool UseGPUs() const;
 
   /// Returns the number of groups for the solver. This will only be non-zero after initialization.
-  std::size_t GetNumGroups() const;
+  unsigned int GetNumGroups() const;
 
   /// Returns the scattering order for the solver. This will only be non-zero after initialization.
   unsigned int GetScatteringOrder() const;
@@ -220,7 +220,7 @@ public:
   virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
 
   /// Gets the local handle of a flux-moment based field function.
-  size_t MapPhiFieldFunction(size_t g, size_t m) const;
+  size_t MapPhiFieldFunction(unsigned int g, size_t m) const;
 
   /// Returns the power generation field function, if enabled.
   std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;
@@ -297,7 +297,7 @@ protected:
   double dt_ = 1.0;
   GeometryType geometry_type_ = GeometryType::INVALID;
   size_t num_moments_ = 0;
-  std::size_t num_groups_ = 0;
+  unsigned int num_groups_ = 0;
   unsigned int scattering_order_ = 0;
   size_t num_precursors_ = 0;
   size_t max_precursors_per_material_ = 0;
@@ -336,7 +336,7 @@ protected:
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
 
-  std::map<std::pair<size_t, size_t>, size_t> phi_field_functions_local_map_;
+  std::map<std::pair<unsigned int, size_t>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;
 
   /**

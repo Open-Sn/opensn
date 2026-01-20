@@ -72,7 +72,7 @@ SMMAcceleration::Initialize()
   }
 
   // Create tensor structure
-  for (size_t g = 0; g < num_groups; ++g)
+  for (unsigned int g = 0; g < num_groups; ++g)
     tensor_uk_man_.AddUnknown(UnknownType::VECTOR_N, dimension_ * dimension_);
 
   const auto local_size = sdm.GetNumLocalDOFs(tensor_uk_man_);

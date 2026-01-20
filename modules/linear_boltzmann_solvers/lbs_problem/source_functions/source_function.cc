@@ -36,11 +36,11 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& densities = lbs_problem_.GetDensitiesLocal();
 
   // Get group setup
-  gs_i_ = static_cast<size_t>(groupset.groups.front());
-  gs_f_ = static_cast<size_t>(groupset.groups.back());
+  gs_i_ = groupset.groups.front();
+  gs_f_ = groupset.groups.back();
 
   first_grp_ = 0;
-  last_grp_ = static_cast<size_t>(lbs_problem_.GetNumGroups() - 1);
+  last_grp_ = lbs_problem_.GetNumGroups() - 1;
 
   default_zero_src_.assign(lbs_problem_.GetNumGroups(), 0.0);
 
@@ -85,7 +85,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
           fixed_src_moments_ = &ext_src_moments_local[uk_map];
 
         // Loop over groupset groups
-        for (size_t g = gs_i_; g <= gs_f_; ++g)
+        for (auto g = gs_i_; g <= gs_f_; ++g)
         {
           g_ = g;
 
@@ -158,14 +158,14 @@ SourceFunction::DelayedFission(const PrecursorList& precursors,
 {
   double value = 0.0;
   if (apply_ags_fission_src_)
-    for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
+    for (auto gp = first_grp_; gp <= last_grp_; ++gp)
       if (gp < gs_i_ or gp > gs_f_)
         for (const auto& precursor : precursors)
           value += precursor.emission_spectrum[g_] * precursor.fractional_yield * rho *
                    nu_delayed_sigma_f[gp] * phi[gp];
 
   if (apply_wgs_fission_src_)
-    for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
+    for (auto gp = gs_i_; gp <= gs_f_; ++gp)
       for (const auto& precursor : precursors)
         value += precursor.emission_spectrum[g_] * precursor.fractional_yield * rho *
                  nu_delayed_sigma_f[gp] * phi[gp];

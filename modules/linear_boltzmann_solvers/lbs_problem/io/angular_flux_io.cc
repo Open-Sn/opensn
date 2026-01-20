@@ -198,7 +198,7 @@ LBSSolverIO::ReadAngularFluxes(
   for (uint64_t gs = 0; gs < num_groupsets; ++gs)
   {
     uint64_t file_num_gs_dirs = 0;
-    uint64_t file_num_gs_groups = 0;
+    unsigned int file_num_gs_groups = 0;
 
     auto group_name = "groupset_" + std::to_string(gs);
     H5ReadAttribute(file_id, group_name + "/num_directions", file_num_gs_dirs);

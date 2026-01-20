@@ -47,7 +47,7 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
-      for (auto g = first_grp; g <= last_grp; ++g)
+      for (unsigned int g = first_grp; g <= last_grp; ++g)
       {
         const auto& prod = F[g];
         for (unsigned int gp = 0; gp <= last_grp; ++gp)
@@ -102,7 +102,7 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
-      for (auto g = first_grp; g <= last_grp; ++g)
+      for (unsigned int g = first_grp; g <= last_grp; ++g)
         local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
     } // for node
   } // for cell
@@ -234,7 +234,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 
         if (bndry->IsReflecting())
         {
-          for (std::size_t g = 0; g < num_groups_; ++g)
+          for (unsigned int g = 0; g < num_groups_; ++g)
             local_in_flow += transport_view.GetOutflow(f, g);
         }
         else
@@ -269,7 +269,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 
     // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
     for (size_t f = 0; f < cell.faces.size(); ++f)
-      for (std::size_t g = 0; g < num_groups_; ++g)
+      for (unsigned int g = 0; g < num_groups_; ++g)
         local_out_flow += transport_view.GetOutflow(f, g);
 
     // Absorption and sources
@@ -278,7 +278,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     const auto& inv_vel = xs.GetInverseVelocity();
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      for (std::size_t g = 0; g < num_groups_; ++g)
+      for (unsigned int g = 0; g < num_groups_; ++g)
       {
         auto imap = transport_view.MapDOF(i, 0, g);
         double phi_0g = phi_new_local_[imap];
@@ -571,7 +571,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
   {
     auto& vec = global_leakage[boundary_ids[b]];
     vec.reserve(num_groups);
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
       vec.push_back(global_data[b * num_groups + g]);
   }
 

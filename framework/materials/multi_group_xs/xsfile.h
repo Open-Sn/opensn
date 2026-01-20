@@ -27,7 +27,7 @@ public:
 
   std::string file_name_;
   std::ifstream file_;
-  std::size_t num_groups_;
+  unsigned int num_groups_;
   unsigned int scattering_order_;
   size_t num_precursors_;
   std::vector<MultiGroupXS::Precursor> precursors_;
@@ -53,7 +53,7 @@ private:
   /// Reading group structure data.
   void ReadGroupStructure(const std::string& keyword,
                           std::vector<double>& destination,
-                          size_t n_grps,
+                          unsigned int n_grps,
                           std::ifstream& file,
                           std::istringstream& line_stream,
                           size_t& line_number);

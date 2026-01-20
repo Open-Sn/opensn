@@ -42,7 +42,8 @@ LBSProblem::GetInputParameters()
 
   params.AddRequiredParameter<std::shared_ptr<MeshContinuum>>("mesh", "Mesh");
 
-  params.AddRequiredParameter<size_t>("num_groups", "The total number of groups within the solver");
+  params.AddRequiredParameter<unsigned int>("num_groups",
+                                            "The total number of groups within the solver");
 
   params.AddRequiredParameterArray("groupsets",
                                    "An array of blocks each specifying the input parameters for a "
@@ -69,7 +70,7 @@ LBSProblem::GetInputParameters()
 
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
-    num_groups_(params.GetParamValue<std::size_t>("num_groups")),
+    num_groups_(params.GetParamValue<unsigned int>("num_groups")),
     grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
@@ -185,7 +186,7 @@ LBSProblem::UseGPUs() const
   return use_gpus_;
 }
 
-std::size_t
+unsigned int
 LBSProblem::GetNumGroups() const
 {
   return num_groups_;
@@ -441,7 +442,7 @@ LBSProblem::GetNumPhiIterativeUnknowns()
 }
 
 size_t
-LBSProblem::MapPhiFieldFunction(size_t g, size_t m) const
+LBSProblem::MapPhiFieldFunction(unsigned int g, size_t m) const
 {
   OpenSnLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
                        std::string("Failure to map phi field function g") + std::to_string(g) +
@@ -1075,7 +1076,7 @@ LBSProblem::InitializeFieldFunctions()
   // Initialize Field Functions for flux moments
   phi_field_functions_local_map_.clear();
 
-  for (size_t g = 0; g < num_groups_; ++g)
+  for (unsigned int g = 0; g < num_groups_; ++g)
   {
     for (size_t m = 0; m < num_moments_; ++m)
     {
@@ -1198,7 +1199,7 @@ LBSProblem::UpdateFieldFunctions()
   // Update flux moments
   for (const auto& [g_and_m, ff_index] : phi_field_functions_local_map_)
   {
-    const size_t g = g_and_m.first;
+    const auto g = g_and_m.first;
     const size_t m = g_and_m.second;
 
     std::vector<double> data_vector_local(local_node_count_, 0.0);
@@ -1245,7 +1246,7 @@ LBSProblem::UpdateFieldFunctions()
         const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
 
         double nodal_power = 0.0;
-        for (size_t g = 0; g < num_groups_; ++g)
+        for (unsigned int g = 0; g < num_groups_; ++g)
         {
           const double sigma_fg = xs->GetSigmaFission()[g];
           // const double kappa_g = xs->Kappa()[g];
@@ -1276,7 +1277,7 @@ LBSProblem::UpdateFieldFunctions()
     // scale scalar flux if neccessary
     if (scale_factor != 1.0)
     {
-      for (size_t g = 0; g < num_groups_; ++g)
+      for (unsigned int g = 0; g < num_groups_; ++g)
       {
         const size_t phi_ff_index = phi_field_functions_local_map_.at({g, size_t{0}});
         auto& phi_ff_ptr = field_functions_.at(phi_ff_index);
@@ -1302,7 +1303,7 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
     for (size_t m = 0; m < num_moments_; ++m)
       m_ids_to_copy.push_back(m);
   if (g_ids_to_copy.empty())
-    for (std::size_t g = 0; g < num_groups_; ++g)
+    for (unsigned int g = 0; g < num_groups_; ++g)
       g_ids_to_copy.push_back(g);
 
   const auto& sdm = *discretization_;

@@ -80,7 +80,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
       const auto& nu_delayed_sigma_f = GetNuDelayedSigmaF();
 
       std::vector<double> nu_prompt, nu_delayed;
-      for (std::size_t g = 0; g < GetNumGroups(); ++g)
+      for (unsigned int g = 0; g < GetNumGroups(); ++g)
       {
         nu_prompt.emplace_back(sigma_f[g] > 0.0 ? nu_prompt_sigma_f[g] / sigma_f[g] : 0.0);
         nu_delayed.emplace_back(sigma_f[g] > 0.0 ? nu_delayed_sigma_f[g] / sigma_f[g] : 0.0);
@@ -100,7 +100,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
       ofile << "\nCHI_DELAYED_BEGIN\n";
       const auto& precursors = GetPrecursors();
       for (size_t j = 0; j < GetNumPrecursors(); ++j)
-        for (std::size_t g = 0; g < GetNumGroups(); ++g)
+        for (unsigned int g = 0; g < GetNumGroups(); ++g)
           ofile << "G_PRECURSOR_VAL"
                 << " " << g << " " << j << " " << precursors[j].emission_spectrum[g] << "\n";
       ofile << "CHI_DELAYED_END\n";
@@ -116,7 +116,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
 
       std::vector<double> nu;
       nu.reserve(GetNumGroups());
-      for (std::size_t g = 0; g < GetNumGroups(); ++g)
+      for (unsigned int g = 0; g < GetNumGroups(); ++g)
         nu.emplace_back(sigma_f[g] > 0.0 ? nu_sigma_f[g] / sigma_f[g] : 0.0);
 
       Print1DXS(ofile, "NU", nu, 1.0e-20);
@@ -160,8 +160,8 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
   {
     ofile << "\n";
     ofile << "PRODUCTION_MATRIX_BEGIN\n";
-    for (std::size_t g = 0; g < GetNumGroups(); ++g)
-      for (std::size_t gp = 0; gp < GetNumGroups(); ++gp)
+    for (unsigned int g = 0; g < GetNumGroups(); ++g)
+      for (unsigned int gp = 0; gp < GetNumGroups(); ++gp)
         ofile << "G_GPRIME_VAL " << g << " " << gp << " "
               << fission_scaling * GetProductionMatrix()[g][gp] << "\n";
   }

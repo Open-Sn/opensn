@@ -25,28 +25,28 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
   const auto& isotropic_transfer_matrix = xs.GetTransferMatrix(0);
 
   DenseMatrix<double> S(num_groups, num_groups, 0.0);
-  for (size_t g = 0; g < num_groups; ++g)
+  for (unsigned int g = 0; g < num_groups; ++g)
     for (const auto& [row_g, gprime, sigma] : isotropic_transfer_matrix.Row(g))
       S(g, gprime) = sigma;
 
   // Compiling the A and B matrices for different methods
   DenseMatrix<double> A(num_groups, num_groups, 0.0);
   DenseMatrix<double> B(num_groups, num_groups, 0.0);
-  for (size_t g = 0; g < num_groups; ++g)
+  for (unsigned int g = 0; g < num_groups; ++g)
   {
     if (scheme == EnergyCollapseScheme::JFULL)
     {
       A(g, g) = sigma_t[g] - S(g, g);
-      for (size_t gp = 0; gp < g; ++gp)
+      for (unsigned int gp = 0; gp < g; ++gp)
         B(g, gp) = S(g, gp);
 
-      for (size_t gp = g + 1; gp < num_groups; ++gp)
+      for (unsigned int gp = g + 1; gp < num_groups; ++gp)
         B(g, gp) = S(g, gp);
     }
     else if (scheme == EnergyCollapseScheme::JPARTIAL)
     {
       A(g, g) = sigma_t[g];
-      for (size_t gp = 0; gp < num_groups; ++gp)
+      for (unsigned int gp = 0; gp < num_groups; ++gp)
         B(g, gp) = S(g, gp);
     }
   } // for g
@@ -57,7 +57,7 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
   // having zero cross sections. In that case
   // it will screw up the power iteration
   // initial guess of 1.0. Here we reset them
-  for (size_t g = 0; g < num_groups; ++g)
+  for (unsigned int g = 0; g < num_groups; ++g)
     if (sigma_t[g] < 1.0e-16)
       A(g, g) = 1.0;
 
@@ -74,19 +74,19 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme)
 
   // Compute two-grid diffusion quantities
   double sum = 0.0;
-  for (size_t g = 0; g < num_groups; ++g)
+  for (unsigned int g = 0; g < num_groups; ++g)
     sum += std::fabs(E(g));
 
-  for (size_t g = 0; g < num_groups; ++g)
+  for (unsigned int g = 0; g < num_groups; ++g)
     spectrum[g] = std::fabs(E(g)) / sum;
 
-  for (size_t g = 0; g < num_groups; ++g)
+  for (unsigned int g = 0; g < num_groups; ++g)
   {
     collapsed_D += diffusion_coeff[g] * spectrum[g];
 
     collapsed_sig_a += sigma_t[g] * spectrum[g];
 
-    for (size_t gp = 0; gp < num_groups; ++gp)
+    for (unsigned int gp = 0; gp < num_groups; ++gp)
       collapsed_sig_a -= S(g, gp) * spectrum[gp];
   }
 

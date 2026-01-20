@@ -9,7 +9,10 @@ namespace opensn
 
 template <typename Functor>
 int64_t
-LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, uint64_t gsi, uint64_t gss, Functor func)
+LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
+                              unsigned int gsi,
+                              unsigned int gss,
+                              Functor func)
 {
   CALI_CXX_MARK_SCOPE("LBSVecOps::GroupsetScopedCopy");
 
@@ -26,7 +29,7 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem, uint64_t gsi, uint64_t gs
       for (size_t m = 0; m < num_moments; ++m)
       {
         auto mapped_idx = transport_view.MapDOF(i, m, gsi);
-        for (std::size_t g = 0; g < gss; ++g)
+        for (unsigned int g = 0; g < gss; ++g)
         {
           ++idx;
           func(idx, mapped_idx + g);

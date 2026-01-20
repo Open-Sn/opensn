@@ -18,7 +18,7 @@ class CellLBSView
 public:
   CellLBSView(size_t phi_address,
               int num_nodes,
-              std::size_t num_groups,
+              unsigned int num_groups,
               int num_moments,
               int num_faces,
               const MultiGroupXS& xs_mapping,
@@ -41,7 +41,7 @@ public:
       outflow_.resize(num_faces);
   }
 
-  size_t MapDOF(uint64_t node, uint64_t moment, uint64_t grp) const
+  size_t MapDOF(uint64_t node, uint64_t moment, unsigned int grp) const
   {
     return phi_address_ + node * num_grps_moms_ + num_groups_ * moment + grp;
   }
@@ -58,13 +58,13 @@ public:
 
   double GetVolume() const { return volume_; }
 
-  void ZeroOutflow(std::size_t f, std::size_t g)
+  void ZeroOutflow(std::size_t f, unsigned int g)
   {
     if (f < outflow_.size() and g < outflow_[f].size())
       outflow_[f][g] = 0.0;
   }
 
-  void AddOutflow(std::size_t f, std::size_t g, double intS_mu_psi)
+  void AddOutflow(std::size_t f, unsigned int g, double intS_mu_psi)
   {
     if (f < outflow_.size())
     {
@@ -75,7 +75,7 @@ public:
     }
   }
 
-  double GetOutflow(std::size_t f, std::size_t g) const
+  double GetOutflow(std::size_t f, unsigned int g) const
   {
     if (f < outflow_.size() and g < outflow_[f].size())
       return outflow_[f][g];
@@ -87,8 +87,8 @@ public:
 private:
   size_t phi_address_;
   int num_nodes_;
-  std::size_t num_groups_;
-  std::size_t num_grps_moms_;
+  unsigned int num_groups_;
+  unsigned int num_grps_moms_;
   const MultiGroupXS* xs_;
   double volume_;
   const std::vector<bool> face_local_flags_;
