@@ -170,7 +170,7 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   {
     groupset.psi_uk_man_.unknowns.clear();
     size_t num_angles = groupset.quadrature->abscissae.size();
-    size_t gs_num_groups = groupset.groups.size();
+    auto gs_num_groups = groupset.GetNumGroups();
     auto& grpset_psi_uk_man = groupset.psi_uk_man_;
     const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
@@ -399,15 +399,15 @@ DiscreteOrdinatesProblem::PrintSimHeader()
       outstr << "***** Groupset " << groupset.id << " *****\n"
              << "Number of angles: " << groupset.quadrature->abscissae.size() << "\n"
              << "Groups:\n";
-      const auto& groups = groupset.groups;
+      const auto n_gs_groups = groupset.GetNumGroups();
       constexpr int groups_per_line = 12;
-      for (size_t i = 0; i < groups.size(); ++i)
+      for (size_t i = 0; i < n_gs_groups; ++i)
       {
-        outstr << std::setw(5) << groups[i] << ' ';
+        outstr << std::setw(5) << groupset.first_group + i << ' ';
         if ((i + 1) % groups_per_line == 0)
           outstr << '\n';
       }
-      if (!groups.empty() && groups.size() % groups_per_line != 0)
+      if (n_gs_groups > 0 && n_gs_groups % groups_per_line != 0)
         outstr << '\n';
     }
 
@@ -611,7 +611,7 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
   for (auto& groupset : groupsets_)
   {
     // Max groupset size
-    max_groupset_size_ = std::max(max_groupset_size_, groupset.groups.size());
+    max_groupset_size_ = std::max(max_groupset_size_, groupset.GetNumGroups());
 
     for (auto& angleset : *(groupset.angle_agg))
     {
@@ -707,9 +707,9 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
       } // for angle m
     } // if saving angular flux
 
-    const auto num_gs_groups = groupset.groups.size();
-    const auto gsg_i = groupset.groups.front();
-    const auto gsg_f = groupset.groups.back();
+    const auto num_gs_groups = groupset.GetNumGroups();
+    const auto gsg_i = groupset.first_group;
+    const auto gsg_f = groupset.last_group;
 
     for (const auto& cell : grid_->local_cells)
     {
@@ -762,7 +762,7 @@ DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 
   for (const auto& cell : grid_->local_cells)
     for (int f = 0; f < cell.faces.size(); ++f)
-      for (auto& group : groupset.groups)
+      for (auto group = groupset.first_group; group <= groupset.last_group; ++group)
         cell_transport_views_[cell.local_id].ZeroOutflow(f, group);
 }
 
@@ -1229,7 +1229,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
   const auto& unique_so_groupings = quadrature_sweep_info.first;
   const auto& dir_id_to_so_map = quadrature_sweep_info.second;
 
-  const size_t gs_num_grps = groupset.groups.size();
+  const size_t gs_num_grps = groupset.GetNumGroups();
 
   // Passing the sweep boundaries to the angle aggregation
   groupset.angle_agg =

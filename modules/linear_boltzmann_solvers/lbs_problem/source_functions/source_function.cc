@@ -36,8 +36,8 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& densities = lbs_problem_.GetDensitiesLocal();
 
   // Get group setup
-  gs_i_ = groupset.groups.front();
-  gs_f_ = groupset.groups.back();
+  gs_i_ = groupset.first_group;
+  gs_f_ = groupset.last_group;
 
   first_grp_ = 0;
   last_grp_ = lbs_problem_.GetNumGroups() - 1;
@@ -183,8 +183,8 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 
   const auto& transport_views = lbs_problem_.GetCellTransportViews();
 
-  const auto gs_i = groupset.groups.front();
-  const auto gs_f = groupset.groups.back();
+  const auto gs_i = groupset.first_group;
+  const auto gs_f = groupset.last_group;
   const double source_time = lbs_problem_.GetTime();
 
   // Apply point sources
@@ -227,8 +227,8 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
   const auto& cell_transport_views = lbs_problem_.GetCellTransportViews();
   const auto num_groups = lbs_problem_.GetNumGroups();
 
-  const auto gs_i = groupset.groups.front();
-  const auto gs_f = groupset.groups.back();
+  const auto gs_i = groupset.first_group;
+  const auto gs_f = groupset.last_group;
   const double source_time = lbs_problem_.GetTime();
 
   // Go through each volumetric source, and its subscribing cells

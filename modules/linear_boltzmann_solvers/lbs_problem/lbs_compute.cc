@@ -254,7 +254,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
                   const int i = cell_mapping.MapFaceNode(f, fi);
                   const auto& IntFi_shapeI = IntS_shapeI[f](i);
 
-                  for (const auto& g : groupset.groups)
+                  for (unsigned int g = groupset.first_group; g <= groupset.last_group; ++g)
                   {
                     const double psi = *bndry->PsiIncoming(cell.local_id, f, fi, n, g);
                     local_in_flow -= mu * wt * psi * IntFi_shapeI;
@@ -295,7 +295,8 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
       {
         const auto& quad = groupset.quadrature;
         const auto num_angles = quad->omegas.size();
-        const auto num_gs_groups = groupset.groups.size();
+        const auto first_grp = groupset.first_group;
+        const auto num_gs_groups = groupset.GetNumGroups();
         const size_t groupset_angle_group_stride =
           groupset.psi_uk_man_.GetNumberOfUnknowns() * num_gs_groups;
         const size_t groupset_group_stride = num_gs_groups;
@@ -316,7 +317,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
               phi_new += wt * psi_new_local_[groupset.id][imap + gsg];
             }
 
-            const auto g = groupset.groups[gsg];
+            const auto g = first_grp + gsg;
             const double val = inv_vel[g] * IntV_shapeI(i);
             local_initial += val * phi_old;
             local_final += val * phi_new;
@@ -458,8 +459,8 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
   const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
   const auto& quad = groupset.quadrature;
-  const auto num_gs_groups = groupset.groups.size();
-  const auto gsi = groupset.groups.front();
+  const auto num_gs_groups = groupset.GetNumGroups();
+  const auto gsi = groupset.first_group;
 
   std::vector<double> local_leakage(num_gs_groups, 0.0);
   for (const auto& cell : grid->local_cells)
@@ -475,9 +476,9 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
       {
         auto& bndry = *sweep_boundaries.at(face.neighbor_id);
 
-        for (std::size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+        for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
         {
-          auto g = static_cast<const int>(gsi + gsg);
+          auto g = gsi + gsg;
           local_leakage[gsg] += transport_view.GetOutflow(f, g);
           local_leakage[gsg] +=
             GetInflow(cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, g);
@@ -537,7 +538,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
         {
           auto& bndry = *sweep_boundaries.at(face.neighbor_id);
 
-          for (const auto g : groupset.groups)
+          for (auto g = groupset.first_group; g <= groupset.last_group; ++g)
           {
             local_leakage[face.neighbor_id][g] += transport_view.GetOutflow(f, g);
             local_leakage[face.neighbor_id][g] +=

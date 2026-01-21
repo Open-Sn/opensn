@@ -270,7 +270,7 @@ AAHD_FLUDS::CopyBoundaryToDevice(MeshContinuum& grid,
     const CellFace& face =
       grid.local_cells[face_node.GetCellIndex()].faces[face_node.GetFaceIndex()];
     // get start group index in the groupset
-    auto gs_gi = groupset.groups.front();
+    auto gs_gi = groupset.first_group;
     // get destination pointer in the host vector
     double* dest =
       boundary_psi_.host_storage.data() + node_index.GetIndex() * num_groups_and_angles_;
@@ -407,7 +407,7 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();
   std::size_t groupset_angle_group_stride =
-    groupset.psi_uk_man_.GetNumberOfUnknowns() * groupset.groups.size();
+    groupset.psi_uk_man_.GetNumberOfUnknowns() * groupset.GetNumGroups();
   for (const Cell& cell : grid->local_cells)
   {
     // get pointer to the cell's angular fluxes

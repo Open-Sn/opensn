@@ -19,7 +19,7 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
   if (groupset.apply_wgdsa)
   {
     // Make UnknownManager
-    const size_t num_gs_groups = groupset.groups.size();
+    const auto num_gs_groups = groupset.GetNumGroups();
     opensn::UnknownManager uk_man;
     uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
@@ -30,7 +30,7 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
     // Make xs map
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
     auto matid_2_mgxs_map =
-      PackGroupsetXS(block_id_to_xs_map, groupset.groups.front(), groupset.groups.back());
+      PackGroupsetXS(block_id_to_xs_map, groupset.first_group, groupset.last_group);
 
     // Create solver
     const auto& sdm = do_problem.GetSpatialDiscretization();
@@ -74,8 +74,8 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
 
-  const auto gsi = groupset.groups.front();
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.first_group;
+  const auto gss = groupset.GetNumGroups();
 
   delta_phi_local.clear();
   delta_phi_local.assign(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
@@ -94,7 +94,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
       double* delta_phi_mapped = &delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
 
-      for (size_t g = 0; g < gss; ++g)
+      for (unsigned int g = 0; g < gss; ++g)
       {
         delta_phi_mapped[g] = sigma_s[gsi + g] * phi_in_mapped[g];
       }
@@ -115,8 +115,8 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
-  const auto gsi = groupset.groups.front();
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.first_group;
+  const auto gss = groupset.GetNumGroups();
 
   for (const auto& cell : grid->local_cells)
   {
@@ -131,7 +131,7 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
       const double* delta_phi_mapped = &delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
 
-      for (size_t g = 0; g < gss; ++g)
+      for (unsigned int g = 0; g < gss; ++g)
         phi_new_mapped[g] += delta_phi_mapped[g];
     }
   }
@@ -158,8 +158,8 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
-  const auto gsi = groupset.groups.front();
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.first_group;
+  const auto gss = groupset.GetNumGroups();
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
 
@@ -176,7 +176,7 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
       double* output_mapped = &output_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
 
-      for (size_t g = 0; g < gss; ++g)
+      for (unsigned int g = 0; g < gss; ++g)
       {
         output_mapped[g] = phi_in_mapped[g];
       } // for g
@@ -199,8 +199,8 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
-  const auto gsi = groupset.groups.front();
-  const size_t gss = groupset.groups.size();
+  const auto gsi = groupset.first_group;
+  const auto gss = groupset.GetNumGroups();
 
   for (const auto& cell : grid->local_cells)
   {
@@ -215,7 +215,7 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];
 
-      for (size_t g = 0; g < gss; ++g)
+      for (unsigned int g = 0; g < gss; ++g)
         output_mapped[g] = input_mapped[g];
     } // for dof
   } // for cell

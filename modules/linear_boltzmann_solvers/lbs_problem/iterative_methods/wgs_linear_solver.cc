@@ -109,7 +109,7 @@ WGSLinearSolver::PreSolveCallback()
   if (do_problem.GetOptions().verbose_inner_iterations)
   {
     log.Log() << "Solving groupset " << groupset.id << " with " << this->GetIterativeMethodName()
-              << " (groups " << groupset.groups.front() << "-" << groupset.groups.back() << ", "
+              << " (groups " << groupset.first_group << "-" << groupset.last_group << ", "
               << groupset.quadrature->abscissae.size() << " angles)\n";
   }
   gs_context_ptr->PreSolveCallback();

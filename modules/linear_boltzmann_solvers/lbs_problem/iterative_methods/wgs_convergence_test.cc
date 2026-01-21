@@ -59,7 +59,7 @@ GSConvergenceTest(
 
   std::stringstream iter_info;
   iter_info << program_timer.GetTimeString() << " " << offset << "WGS groups ["
-            << context->groupset.groups.front() << "-" << context->groupset.groups.back() << "]"
+            << context->groupset.first_group << "-" << context->groupset.last_group << "]"
             << " Iteration " << std::setw(5) << n << " Residual " << std::setw(9)
             << scaled_residual;
 

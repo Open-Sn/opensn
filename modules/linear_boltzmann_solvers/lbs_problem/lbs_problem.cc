@@ -702,15 +702,15 @@ LBSProblem::PrintSimHeader()
     {
       outstr << "***** Groupset " << groupset.id << " *****\n"
              << "Groups:\n";
-      const auto& groups = groupset.groups;
+      const auto n_gs_groups = groupset.GetNumGroups();
       constexpr int groups_per_line = 12;
-      for (size_t i = 0; i < groups.size(); ++i)
+      for (size_t i = 0; i < n_gs_groups; ++i)
       {
-        outstr << std::setw(5) << groups[i] << ' ';
+        outstr << std::setw(5) << groupset.first_group + i << ' ';
         if ((i + 1) % groups_per_line == 0)
           outstr << '\n';
       }
-      if (!groups.empty() && groups.size() % groups_per_line != 0)
+      if (n_gs_groups > 0 && n_gs_groups % groups_per_line != 0)
         outstr << '\n';
     }
 
@@ -757,7 +757,7 @@ LBSProblem::InitializeGroupsets(const InputParameters& params)
     gs_input_params.SetObjectType("LBSProblem:LBSGroupset");
     gs_input_params.AssignParameters(groupset_params);
     groupsets_.emplace_back(gs_input_params, gs, *this);
-    if (groupsets_.back().groups.empty())
+    if (groupsets_.back().GetNumGroups() == 0)
     {
       std::stringstream oss;
       oss << GetName() << ": No groups added to groupset " << groupsets_.back().id;

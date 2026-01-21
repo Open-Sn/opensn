@@ -39,8 +39,14 @@ public:
 
   ~LBSGroupset();
 
+  /// Return number of groups in the groupset
+  unsigned int GetNumGroups() const;
+
   int id;
-  std::vector<unsigned int> groups;
+  /// First group number
+  unsigned int first_group;
+  /// Last groups number
+  unsigned int last_group;
   std::shared_ptr<AngularQuadrature> quadrature;
   std::shared_ptr<AngleAggregation> angle_agg;
   UniqueSOGroupings unique_so_groupings;

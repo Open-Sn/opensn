@@ -57,7 +57,7 @@ SMMAcceleration::Initialize()
 {
   const auto& sdm = do_problem_.GetSpatialDiscretization();
   const auto num_groups = do_problem_.GetNumGroups();
-  const auto num_gs_groups = front_gs_.groups.size();
+  const auto num_gs_groups = front_gs_.GetNumGroups();
 
   // Specialized SMM data
   dimension_ = do_problem_.GetGrid()->GetDimension();
@@ -93,8 +93,8 @@ SMMAcceleration::Initialize()
   const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), false);
 
   // Create the diffusion materials
-  const auto xs_map = PackGroupsetXS(
-    do_problem_.GetBlockID2XSMap(), front_gs_.groups.front(), front_gs_.groups.back());
+  const auto xs_map =
+    PackGroupsetXS(do_problem_.GetBlockID2XSMap(), front_gs_.first_group, front_gs_.last_group);
 
   // Create the appropriate solver
   log.Log() << "Creating diffusion solver";
@@ -344,7 +344,7 @@ SMMAcceleration::AssembleDiffusionBCs() const
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
-  const auto num_gs_groups = front_gs_.groups.size();
+  const auto num_gs_groups = front_gs_.GetNumGroups();
 
   // Loop over cells
   std::vector<int64_t> rows;
@@ -385,7 +385,7 @@ SMMAcceleration::AssembleDiffusionBCs() const
               const auto jmap = diff_sd.MapDOF(cell, j, diff_uk_man, 0, 0);
               const auto bfac = bndry_factors_.at(pwld.MapDOFLocal(cell, j))[0];
 
-              for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+              for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
               {
                 // This will not work if extended to multiple groupsets because in
                 // the current paradigm, one diffusion solver per groupset would be
@@ -425,8 +425,8 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
     const auto& quad = groupset.quadrature;
     const auto num_gs_dirs = quad->omegas.size();
 
-    const auto first_grp = groupset.groups.front();
-    const auto num_gs_groups = groupset.groups.size();
+    const auto first_grp = groupset.first_group;
+    const auto num_gs_groups = groupset.GetNumGroups();
 
     // Loop over cells
     for (const auto& cell : grid->local_cells)
@@ -437,7 +437,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
       // Compute node-wise, groupset wise tensors
       for (auto i = 0; i < transport_view.GetNumNodes(); ++i)
       {
-        for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+        for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
         {
           const auto g = first_grp + gsg;
 
@@ -487,7 +487,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
             auto& beta = betas_[imap];
 
             // Compute the boundary closure
-            for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+            for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
             {
               const auto g = first_grp + gsg;
 
@@ -527,8 +527,8 @@ SMMAcceleration::ComputeSourceCorrection() const
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
-  const auto first_grp = front_gs_.groups.front();
-  const auto num_gs_groups = front_gs_.groups.size();
+  const auto first_grp = front_gs_.first_group;
+  const auto num_gs_groups = front_gs_.GetNumGroups();
 
   auto tensors = tensors_->MakeGhostedLocalVector();
 
@@ -552,7 +552,7 @@ SMMAcceleration::ComputeSourceCorrection() const
     const auto& sigma_tr = xs->GetSigmaTransport();
 
     // Volumetric term
-    for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+    for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
     {
       const auto g = first_grp + gsg;
       const auto& sig_tr = rho * sigma_tr[g];
@@ -604,7 +604,7 @@ SMMAcceleration::ComputeSourceCorrection() const
         const auto& nbr_cell_mapping = pwld.GetCellMapping(nbr_cell);
         const auto& nbr_nodes = nbr_cell_mapping.GetNodeLocations();
 
-        for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+        for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
         {
           const auto g = first_grp + gsg;
           const auto& sig_tr = sigma_tr[g];
@@ -719,7 +719,7 @@ SMMAcceleration::ComputeSourceCorrection() const
             continue;
 
           const auto& face_M = fe_values.intS_shapeI_shapeJ[f];
-          for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+          for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
           {
             const auto g = first_grp + gsg;
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -810,8 +810,8 @@ SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
 
-  const auto first_grp = front_gs_.groups.front();
-  const auto num_gs_groups = front_gs_.groups.size();
+  const auto first_grp = front_gs_.first_group;
+  const auto num_gs_groups = front_gs_.GetNumGroups();
 
   // Clear the diffusion RHS
   const auto num_local_diff_dofs =
@@ -829,7 +829,7 @@ SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
     const auto& M = unit_cell_matrices[cell.local_id].intV_shapeI_shapeJ;
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
-    for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+    for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
     {
       const auto g = first_grp + gsg;
       for (size_t i = 0; i < num_cell_nodes; ++i)

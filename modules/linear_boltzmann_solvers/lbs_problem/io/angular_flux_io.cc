@@ -81,7 +81,7 @@ LBSSolverIO::WriteAngularFluxes(
 
     auto groupset_id = groupset.id;
     auto num_gs_dirs = quadrature->omegas.size();
-    auto num_gs_groups = groupset.groups.size();
+    auto num_gs_groups = groupset.GetNumGroups();
 
     const auto group_name = "groupset_" + std::to_string(groupset_id);
     H5CreateGroup(file_id, group_name);
@@ -93,7 +93,7 @@ LBSSolverIO::WriteAngularFluxes(
     for (const auto& cell : grid->local_cells)
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
-          for (uint64_t g = 0; g < num_gs_groups; ++g)
+          for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
             const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
             values.push_back(src[groupset_id][dof_map]);
@@ -209,7 +209,7 @@ LBSSolverIO::ReadAngularFluxes(
     const auto& quadrature = groupset.quadrature;
 
     const auto num_gs_dirs = quadrature->omegas.size();
-    const auto num_gs_groups = groupset.groups.size();
+    const auto num_gs_groups = groupset.GetNumGroups();
     OpenSnLogicalErrorIf(file_num_gs_dirs != num_gs_dirs,
                          "Incompatible number of groupset angles found in file " + file_name +
                            " for groupset " + std::to_string(gs) + ".");
@@ -232,7 +232,7 @@ LBSSolverIO::ReadAngularFluxes(
       const auto& cell = grid->cells[cell_global_id];
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
-          for (uint64_t g = 0; g < num_gs_groups; ++g)
+          for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
             const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
             const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, n, g);

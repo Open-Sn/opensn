@@ -78,14 +78,14 @@ SweepWGSContext::GetSystemSize()
   const size_t global_node_count = do_problem.GetGlobalNodeCount();
   const size_t num_moments = do_problem.GetNumMoments();
 
-  const size_t groupset_numgrps = groupset.groups.size();
+  const auto groupset_numgrps = groupset.GetNumGroups();
   const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
   const size_t local_size =
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
   const size_t global_size =
     global_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
   const size_t num_angles = groupset.quadrature->abscissae.size();
-  const size_t num_psi_global = global_node_count * num_angles * groupset.groups.size();
+  const size_t num_psi_global = global_node_count * num_angles * groupset.GetNumGroups();
   const size_t num_delayed_psi_global = num_delayed_psi_info.second;
 
   if (log_info)
@@ -158,7 +158,7 @@ SweepWGSContext::PostSolveCallback()
       tot_sweep_time += time;
     double avg_sweep_time = tot_sweep_time / num_sweeps;
     size_t num_angles = groupset.quadrature->abscissae.size();
-    size_t num_unknowns = do_problem.GetGlobalNodeCount() * num_angles * groupset.groups.size();
+    size_t num_unknowns = do_problem.GetGlobalNodeCount() * num_angles * groupset.GetNumGroups();
 
     log.Log() << "\n       Average sweep time (s):        "
               << tot_sweep_time / static_cast<double>(sweep_times.size())

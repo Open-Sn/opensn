@@ -149,7 +149,7 @@ protected:
   /// Max angle-set size.
   std::size_t max_angleset_size_ = 0;
   /// Max group-set size.
-  std::size_t max_groupset_size_ = 0;
+  unsigned int max_groupset_size_ = 0;
 
   std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
 
