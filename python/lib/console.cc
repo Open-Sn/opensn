@@ -41,6 +41,38 @@ Console::BindBarrier(const mpi::Communicator& comm)
 }
 
 void
+Console::BindAllReduce(const mpi::Communicator& comm)
+{
+  // clang-format off
+  py::module main = py::module::import("__main__");
+  main.def(
+    "MPIAllReduce",
+    [comm](double value)
+    {
+      double out = 0.0;
+      comm.all_reduce(value, out, mpi::op::sum<double>());
+      return out;
+    },
+    "MPI all-reduce sum for a scalar."
+  );
+  main.def(
+    "MPIAllReduce",
+    [comm](const std::vector<double>& values)
+    {
+      std::vector<double> out(values.size(), 0.0);
+      if (not values.empty())
+      {
+        const auto count = static_cast<int>(values.size());
+        comm.all_reduce(values.data(), count, out.data(), mpi::op::sum<double>());
+      }
+      return out;
+    },
+    "MPI all-reduce sum for a list of doubles."
+  );
+  // clang-format on
+}
+
+void
 Console::InitConsole()
 {
   assert(Py_IsInitialized());

@@ -29,6 +29,7 @@ public:
   void InitConsole();
   void ExecuteFile(const std::string& input_filename) const;
   void BindBarrier(const mpi::Communicator& comm);
+  void BindAllReduce(const mpi::Communicator& comm);
 
   static void BindModule(std::function<void(py::module&)> bind_function);
 

@@ -1136,27 +1136,9 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "psi values match for rank",
-        "wordnum": 5,
-        "gold": "0"
-      },
-      {
-        "type": "StrCompare",
-        "key": "psi values match for rank",
-        "wordnum": 5,
-        "gold": "1"
-      },
-      {
-        "type": "StrCompare",
-        "key": "psi values match for rank",
-        "wordnum": 5,
-        "gold": "2"
-      },
-      {
-        "type": "StrCompare",
-        "key": "psi values match for rank",
-        "wordnum": 5,
-        "gold": "3"
+        "key": "psi_match = ",
+        "wordnum": 3,
+        "gold": "true"
       }
     ]
   },
