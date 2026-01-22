@@ -6,4 +6,5 @@ Developer's Guide
 
    workflow
    coding_standard
+   doxygen
    py_bindings

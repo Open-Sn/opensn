@@ -206,21 +206,7 @@ In-code comments should use ``//``.
    // in-code comment
    call();
 
-For `doxygen <https://www.doxygen.nl/>`_-style comments, use ``///`` for single-line comments
-and ``/** */`` for multi-line comments with the following formatting:
-
-.. code-block:: c++
-
-   /**
-    * Function description
-    *
-    * \param i Description of the first parameter
-    * \return Description of the return value
-    */
-   double SomeMemberFunction(int i)
-
-   /// Single-line comment
-   int my_member_variable;
+For `doxygen <https://www.doxygen.nl/>`_-style comments, refer to :ref:`doxygen-guidelines` section.
 
 Include directives
 ~~~~~~~~~~~~~~~~~~
