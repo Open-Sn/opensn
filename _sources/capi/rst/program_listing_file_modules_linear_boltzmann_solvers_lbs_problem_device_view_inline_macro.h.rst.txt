@@ -1,0 +1,22 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_view_inline_macro.h:
+
+Program Listing for File inline_macro.h
+=======================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_device_view_inline_macro.h>` (``modules/linear_boltzmann_solvers/lbs_problem/device/view/inline_macro.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #if defined(__NVCC__) || defined(__HIPCC__)
+   #define __inline_host_dev__ inline __host__ __device__
+   #else
+   #define __inline_host_dev__ inline
+   #endif

@@ -32,6 +32,8 @@ Includes
 
 - ``cstdint``
 
+- ``modules/linear_boltzmann_solvers/lbs_problem/device/view/inline_macro.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_inline_macro.h`)
+
 
 
 
@@ -49,11 +51,4 @@ Classes
 
 
 - :ref:`exhale_struct_structopensn_1_1_x_s_view`
-
-
-Defines
--------
-
-
-- :ref:`exhale_define_xs__view_8h_1aee06755a82a192ec6876e3c80dce7345`
 

@@ -2407,6 +2407,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_modules_linear_boltzmann_solvers_lbs_problem_device_view_inline_macro.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_framework_parameters_input_parameters.h.rst
 
 .. toctree::

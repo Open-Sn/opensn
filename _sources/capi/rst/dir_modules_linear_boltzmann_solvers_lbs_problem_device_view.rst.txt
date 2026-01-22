@@ -16,6 +16,7 @@ Directory view
 Files
 -----
 
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_inline_macro.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_mesh_view.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_quadrature_view.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_xs_view.h`

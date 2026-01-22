@@ -90,14 +90,9 @@
 
 <span class="cp">#pragma once</span>
 
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/view/inline_macro.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
-
-<span class="cp">#if defined(__NVCC__)</span>
-<span class="cp">#define __inline_host_dev__ inline __host__ __device__</span>
-<span class="cp">#else</span>
-<span class="cp">#define __inline_host_dev__ inline</span>
-<span class="cp">#endif</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>

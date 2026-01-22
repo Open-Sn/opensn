@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>File mesh_view.h &mdash; OpenSn 0.0.1 documentation</title>
+  <title>Program Listing for File inline_macro.h &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -73,7 +73,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">File mesh_view.h</li>
+      <li class="breadcrumb-item active">Program Listing for File inline_macro.h</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -82,55 +82,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="file-mesh-view-h">
-<span id="file-modules-linear-boltzmann-solvers-lbs-problem-device-view-mesh-view-h"></span><h1>File mesh_view.h<a class="headerlink" href="#file-mesh-view-h" title="Link to this heading"></a></h1>
-<p>↰ <a class="reference internal" href="dir_modules_linear_boltzmann_solvers_lbs_problem_device_view.html#dir-modules-linear-boltzmann-solvers-lbs-problem-device-view"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/device/view</span></code>)</p>
-<nav class="contents local" id="contents">
-<p class="topic-title">Contents</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#definition-modules-linear-boltzmann-solvers-lbs-problem-device-view-mesh-view-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/device/view/mesh_view.h</span></code>)</a></p></li>
-<li><p><a class="reference internal" href="#includes" id="id2">Includes</a></p></li>
-<li><p><a class="reference internal" href="#included-by" id="id3">Included By</a></p></li>
-<li><p><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></p></li>
-<li><p><a class="reference internal" href="#classes" id="id5">Classes</a></p></li>
-</ul>
-</nav>
-<section id="definition-modules-linear-boltzmann-solvers-lbs-problem-device-view-mesh-view-h">
-<h2>Definition (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/device/view/mesh_view.h</span></code>)<a class="headerlink" href="#definition-modules-linear-boltzmann-solvers-lbs-problem-device-view-mesh-view-h" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_view_mesh_view.h.html">Program Listing for File mesh_view.h</a></li>
-</ul>
+  <section id="program-listing-for-file-inline-macro-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-lbs-problem-device-view-inline-macro-h"></span><h1>Program Listing for File inline_macro.h<a class="headerlink" href="#program-listing-for-file-inline-macro-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_device_view_inline_macro.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-device-view-inline-macro-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/device/view/inline_macro.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2026 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#if defined(__NVCC__) || defined(__HIPCC__)</span>
+<span class="cp">#define __inline_host_dev__ inline __host__ __device__</span>
+<span class="cp">#else</span>
+<span class="cp">#define __inline_host_dev__ inline</span>
+<span class="cp">#endif</span>
+</pre></div>
 </div>
-</section>
-<section id="includes">
-<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">array</span></code> (<a class="reference internal" href="file_framework_data_types_byte_array.h.html#file-framework-data-types-byte-array-h"><span class="std std-ref">File byte_array.h</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cstdint</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/device/view/inline_macro.h</span></code> (<a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_device_view_inline_macro.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-device-view-inline-macro-h"><span class="std std-ref">File inline_macro.h</span></a>)</p></li>
-</ul>
-</section>
-<section id="included-by">
-<h2>Included By<a class="headerlink" href="#included-by" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_solver.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-solver-h"><span class="std std-ref">File solver.h</span></a></p></li>
-</ul>
-</section>
-<section id="namespaces">
-<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="namespace_opensn.html#namespace-opensn"><span class="std std-ref">Namespace opensn</span></a></p></li>
-</ul>
-</section>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="structopensn_1_1_cell_view.html#exhale-struct-structopensn-1-1-cell-view"><span class="std std-ref">Struct CellView</span></a></p></li>
-<li><p><a class="reference internal" href="structopensn_1_1_face_view.html#exhale-struct-structopensn-1-1-face-view"><span class="std std-ref">Struct FaceView</span></a></p></li>
-<li><p><a class="reference internal" href="structopensn_1_1_mesh_view.html#exhale-struct-structopensn-1-1-mesh-view"><span class="std std-ref">Struct MeshView</span></a></p></li>
-</ul>
-</section>
 </section>
 
 
