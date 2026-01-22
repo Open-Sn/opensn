@@ -103,7 +103,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11PointSourceE">
 <span class="target" id="classopensn_1_1_point_source"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PointSource</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11PointSourceE" title="Link to this definition"></a><br /></dt>
-<dd><p>A class for point sources, which is defined by its location and a group-wise strength vector.</p>
+<dd><p>A class for point sources, which is defined by its location and a group-wise strength vector. </p>
 <p>A point source can belong to one or more cells based on whether it lies on the interior of a cell, a face, or a vertex. When a point source lies on a face or vertex, it belongs to multiple cells. Each of these cells are called subscribers. In this case, the source strength is split amongst the cells using a volumetric weighting. On each cell, the point source is defined in the finite element basis to obtain the contribution to each node. Defining the point source as <span class="math notranslate nohighlight">\( Q(x) = S \delta(x - x_0) = \sum_j s_j b_j \)</span>, this implies that  <div class="math notranslate nohighlight">
 \[ \int Q(x) dx = S \int
 \delta(x - x_0) dx = \sum_j s_j \int b_j dx. \]</div>
@@ -125,7 +125,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11PointSource10InitializeERK10LBSProblem">
 <span class="target" id="classopensn_1_1_point_source_1a9da34df3367c8f20c05140fb300a83ca"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lbs_problem</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11PointSource10InitializeERK10LBSProblem" title="Link to this definition"></a><br /></dt>
-<dd><p>Initializes the cell subscriber info from the given solver.</p>
+<dd><p>Initializes the cell subscriber info from the given solver. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Uninitialized point sources will not contribute to sources. </p>

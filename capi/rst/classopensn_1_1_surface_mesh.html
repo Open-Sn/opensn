@@ -92,7 +92,8 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMeshE">
 <span class="target" id="classopensn_1_1_surface_mesh"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceMesh</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMeshE" title="Link to this definition"></a><br /></dt>
-<dd><p>Generic surface mesh class. This class facilitates many functions within the mesh environment including logically determining volumes. </p>
+<dd><p>Generic surface mesh class. </p>
+<p>This class facilitates many functions within the mesh environment including logically determining volumes. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -141,13 +142,15 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh26UpdateInternalConnectivityEv">
 <span class="target" id="classopensn_1_1_surface_mesh_1ac1ad4108dc00f5c40e2cf869bfe55d75"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateInternalConnectivity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh26UpdateInternalConnectivityEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Runs over the faces of the surfacemesh and determines neighbors. The algorithm first establishes which cells subscribe to each vertex and then loops over faces and edges. For each edge, only the subscribing faces are searched for neighbors. This routine has time complexity O(N). </p>
+<dd><p>Runs over the faces of the surfacemesh and determines neighbors. </p>
+<p>The algorithm first establishes which cells subscribe to each vertex and then loops over faces and edges. For each edge, only the subscribing faces are searched for neighbors. This routine has time complexity O(N). </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11SurfaceMesh20ComputeLoadBalancingERNSt6vectorIdEERNSt6vectorIdEE">
 <span class="target" id="classopensn_1_1_surface_mesh_1a54095d098dd415a05b4280522d3a80cc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeLoadBalancing</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">x_cuts</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">y_cuts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11SurfaceMesh20ComputeLoadBalancingERNSt6vectorIdEERNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Computes load balancing parameters from a set of predictive cuts. Does not actually perform these cuts. </p>
+<dd><p>Computes load balancing parameters from a set of predictive cuts. </p>
+<p>Does not actually perform these cuts. </p>
 </dd></dl>
 
 </div>

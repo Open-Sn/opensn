@@ -123,7 +123,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData17SerializeCellInfoERNSt6vectorI15CompactCellViewEERNSt6vectorI7int64_tEE8uint64_t">
 <span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1adf8ac95ff508e2fbd80df923a5449085"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SerializeCellInfo</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="typedef_namespaceopensn_1af22b592ef6d05c38e1c97745f4137cdf.html#_CPPv4N6opensn15CompactCellViewE" title="opensn::CompactCellView"><span class="n"><span class="pre">CompactCellView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell_views</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">face_indices</span></span>, <span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_face_dofs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData17SerializeCellInfoERNSt6vectorI15CompactCellViewEERNSt6vectorI7int64_tEE8uint64_t" title="Link to this definition"></a><br /></dt>
-<dd><p>This cell takes a hierarchy of a cell compact view and serializes it for MPI transmission. This is easy since all the values are integers. </p>
+<dd><p>This cell takes a hierarchy of a cell compact view and serializes it for MPI transmission. </p>
+<p>This is easy since all the values are integers. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -173,7 +174,8 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData25local_psi_n_block_stride_E">
 <span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1ad1dce095f083bf1275d24af7c8afe03e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">local_psi_n_block_stride_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData25local_psi_n_block_stride_E" title="Link to this definition"></a><br /></dt>
-<dd><p>local_psi_n_block_stride[fc]. Given face category fc, the value is total number of faces that store information in this category’s buffer per angle </p>
+<dd><p>local_psi_n_block_stride[fc]. </p>
+<p>Given face category fc, the value is total number of faces that store information in this category’s buffer per angle </p>
 </dd></dl>
 
 <dl class="cpp var">
@@ -200,25 +202,28 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData19deplocI_cell_views_E">
 <span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a88ccbedbacb4c582a2241f15e9145730"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="typedef_namespaceopensn_1af22b592ef6d05c38e1c97745f4137cdf.html#_CPPv4N6opensn15CompactCellViewE" title="opensn::CompactCellView"><span class="n"><span class="pre">CompactCellView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deplocI_cell_views_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData19deplocI_cell_views_E" title="Link to this definition"></a><br /></dt>
-<dd><p>This is a vector [dependent_location][unordered_cell_index] that holds an AlphaPair. AlphaPair-first is the cell’s global_id and AlphaPair-second holds a number of BetaPairs. Each BetaPair comprises BetaPair-first = face_slot_index (the location of this faces data in the psi vector, and then a vector of vertex indexes that can be used for dof_mapping. Filled during slot-dynamics. Cleared after beta-pass. </p>
+<dd><p>This is a vector [dependent_location][unordered_cell_index] that holds an AlphaPair. </p>
+<p>AlphaPair-first is the cell’s global_id and AlphaPair-second holds a number of BetaPairs. Each BetaPair comprises BetaPair-first = face_slot_index (the location of this faces data in the psi vector, and then a vector of vertex indexes that can be used for dof_mapping. Filled during slot-dynamics. Cleared after beta-pass. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData31so_cell_outb_face_slot_indices_E">
 <span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1ab37bd1e14bde42a8fc928b7d6431c2cc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">so_cell_outb_face_slot_indices_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData31so_cell_outb_face_slot_indices_E" title="Link to this definition"></a><br /></dt>
-<dd><p>This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the slot address in the local psi vector where the first face dof will store its data </p>
+<dd><p>This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the slot address in the local psi vector where the first face dof will store its data. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData32so_cell_outb_face_face_category_E">
 <span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a56e2967279f5e67ccd1ef0f8367d46b5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">so_cell_outb_face_face_category_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData32so_cell_outb_face_face_category_E" title="Link to this definition"></a><br /></dt>
-<dd><p>This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the face categorization for the face. i.e. the local psi vector that hold faces of the same category. </p>
+<dd><p>This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the face categorization for the face. </p>
+<p>i.e. the local psi vector that hold faces of the same category. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData32so_cell_inco_face_face_category_E">
 <span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a7363582a25615798b39fabce40d3b9e0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">so_cell_inco_face_face_category_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData32so_cell_inco_face_face_category_E" title="Link to this definition"></a><br /></dt>
-<dd><p>This is a vector [cell_sweep_order_index][incoming_face_count] which holds the face categorization for the face. i.e. the local psi vector that hold faces of the same category. </p>
+<dd><p>This is a vector [cell_sweep_order_index][incoming_face_count] which holds the face categorization for the face. </p>
+<p>i.e. the local psi vector that hold faces of the same category. </p>
 </dd></dl>
 
 </div>

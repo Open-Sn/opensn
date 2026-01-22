@@ -127,13 +127,15 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator29InitializeDelayedUpstreamDataEv">
 <span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1a5a207825da939ca58f3e03b075e2302b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeDelayedUpstreamData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator29InitializeDelayedUpstreamDataEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initializes delayed upstream data. This method gets called when a sweep scheduler is constructed. </p>
+<dd><p>Initializes delayed upstream data. </p>
+<p>This method gets called when a sweep scheduler is constructed. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator35InitializeLocalAndDownstreamBuffersEv">
 <span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1aba1e613ab238786e158f16ae8a46dbeb"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeLocalAndDownstreamBuffers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator35InitializeLocalAndDownstreamBuffersEv" title="Link to this definition"></a><br /></dt>
-<dd><p>This is the final level of initialization before a sweep-chunk executes. Once all upstream dependencies are met and if the sweep scheduler places this angleset as “ready-to-execute”, then the angle-set will call this method. It is also fairly important in terms of memory to only allocate these chunks of memory when actually ready to use them since they form the majority of memory usage. </p>
+<dd><p>This is the final level of initialization before a sweep-chunk executes. </p>
+<p>Once all upstream dependencies are met and if the sweep scheduler places this angleset as “ready-to-execute”, then the angle-set will call this method. It is also fairly important in terms of memory to only allocate these chunks of memory when actually ready to use them since they form the majority of memory usage. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -163,7 +165,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator27ClearLocalAndReceiveBuffersEv">
 <span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1a2dd097419fc35349ce395e432dca5b53"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearLocalAndReceiveBuffers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator27ClearLocalAndReceiveBuffersEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Receive all upstream Psi. This method is called from within an advancement of an angleset, right after execution. </p>
+<dd><p>Receive all upstream Psi. </p>
+<p>This method is called from within an advancement of an angleset, right after execution. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -178,7 +181,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator32BuildMessageStructureForCPUSweepEv">
 <span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1acfa0be8e3e30e100404638ecbac3ddd3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildMessageStructureForCPUSweep</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator32BuildMessageStructureForCPUSweepEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Builds message structure.</p>
+<dd><p>Builds message structure. </p>
 <p>Outgoing and incoming data needs to be sub-divided into messages each of which is smaller than the maximum message size. There are three parts to this: predecessors, delayed-predecessors and successors.</p>
 <p>This method gets called by an angleset that subscribes to this sweepbuffer. </p>
 </dd></dl>

@@ -111,28 +111,32 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15SMMAcceleration10InitializeEv">
 <span class="target" id="classopensn_1_1_s_m_m_acceleration_1ac115776a45c9d69145c4c634d5758440"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4N6opensn15SMMAcceleration10InitializeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initialization method for derived classes. Must be overridden.</p>
+<dd><p>Initialization method for derived classes. </p>
+<p>Must be overridden.</p>
 <p>Called by the other <a class="reference internal" href="#classopensn_1_1_s_m_m_acceleration_1ac115776a45c9d69145c4c634d5758440"><span class="std std-ref">Initialize()</span></a> method that takes a solver. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15SMMAcceleration10PreExecuteEv">
 <span class="target" id="classopensn_1_1_s_m_m_acceleration_1ac12314905632189f38e7a31c4c1a9d86"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreExecute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4N6opensn15SMMAcceleration10PreExecuteEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Pre-execute method for derived classes. Must be overridden.</p>
+<dd><p>Pre-execute method for derived classes. </p>
+<p>Must be overridden.</p>
 <p>Called by the owning solver at the beginning of its Execute(). </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15SMMAcceleration17PrePowerIterationEv">
 <span class="target" id="classopensn_1_1_s_m_m_acceleration_1af198b63536d1df11905a3d92a8a7553c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrePowerIteration</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4N6opensn15SMMAcceleration17PrePowerIterationEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Pre-power iteration method for derived classes. Must be overridden.</p>
+<dd><p>Pre-power iteration method for derived classes. </p>
+<p>Must be overridden.</p>
 <p>Called by the owning solver at the beginning of the power iteration loop after the fission source is set and the local moments are scaled. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15SMMAcceleration18PostPowerIterationEv">
 <span class="target" id="classopensn_1_1_s_m_m_acceleration_1a42ac803dcfc03aef37db0edcacb3fc43"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PostPowerIteration</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4N6opensn15SMMAcceleration18PostPowerIterationEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Post-power iteration method for derived classes. Must be overridden.</p>
+<dd><p>Post-power iteration method for derived classes. </p>
+<p>Must be overridden.</p>
 <p>Called by the owning solver at the end of the power iteration loop after transport is solved.</p>
 <p>Returns the k-eigenvalue from the acceleration solve. </p>
 </dd></dl>

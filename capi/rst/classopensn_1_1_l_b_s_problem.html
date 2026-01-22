@@ -242,13 +242,15 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem16GetNumPrecursorsEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1ac53521baecae3bf686f929817b751d08"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumPrecursors</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem16GetNumPrecursorsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the number of precursors for the solver. This will only be non-zero after initialization. </p>
+<dd><p>Returns the number of precursors for the solver. </p>
+<p>This will only be non-zero after initialization. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem27GetMaxPrecursorsPerMaterialEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a1d2409f2f23036824720c2937e7dfeea"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMaxPrecursorsPerMaterial</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem27GetMaxPrecursorsPerMaterialEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the maximum number of precursors defined on any material. This will only be non-zero after initialization. </p>
+<dd><p>Returns the maximum number of precursors defined on any material. </p>
+<p>This will only be non-zero after initialization. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -486,7 +488,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem26GetNumPhiIterativeUnknownsEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a79b103977590ad8bed4d24423eab56e1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumPhiIterativeUnknowns</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem26GetNumPhiIterativeUnknownsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Gets the local and global number of iterative unknowns. This normally is only the flux moments, however, the sweep based solvers might include delayed angular fluxes in this number. </p>
+<dd><p>Gets the local and global number of iterative unknowns. </p>
+<p>This normally is only the flux moments, however, the sweep based solvers might include delayed angular fluxes in this number. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -538,7 +541,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem23ReorientAdjointSolutionEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a18fe8f79093fd555692a0acc54044567"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReorientAdjointSolution</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem23ReorientAdjointSolutionEv" title="Link to this definition"></a><br /></dt>
-<dd><p>A method for post-processing an adjoint solution.</p>
+<dd><p>A method for post-processing an adjoint solution. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This does nothing for diffusion-based solvers. </p>

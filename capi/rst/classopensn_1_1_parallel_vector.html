@@ -126,25 +126,27 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14ParallelVector8MakeCopyEv">
 <span class="target" id="classopensn_1_1_parallel_vector_1a4f7f49de2bcb5eb7b1c553b21e34475b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn14ParallelVectorE" title="opensn::ParallelVector"><span class="n"><span class="pre">ParallelVector</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MakeCopy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn14ParallelVector8MakeCopyEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Creates a copy of the vector datastructures AND values. This routine requires no communication. </p>
+<dd><p>Creates a copy of the vector datastructures AND values. </p>
+<p>This routine requires no communication. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14ParallelVector9MakeCloneEv">
 <span class="target" id="classopensn_1_1_parallel_vector_1a83711a32bc5795a9269f9cdcfffb790b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn14ParallelVectorE" title="opensn::ParallelVector"><span class="n"><span class="pre">ParallelVector</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MakeClone</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn14ParallelVector9MakeCloneEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Creates a copy of the vector datastructures but NOT the values. The values are defaulted to zero. This routine requires no communication. </p>
+<dd><p>Creates a copy of the vector datastructures but NOT the values. </p>
+<p>The values are defaulted to zero. This routine requires no communication. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14ParallelVector7GetDataEv">
 <span class="target" id="classopensn_1_1_parallel_vector_1adc1d817350e250f8856721ac9fb81eee"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn14ParallelVector7GetDataEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns a direct pointer to the memory array used internally by the vector to store its owned elements </p>
+<dd><p>Returns a direct pointer to the memory array used internally by the vector to store its owned elements. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14ParallelVector7GetDataEv">
 <span class="target" id="classopensn_1_1_parallel_vector_1aae82828e33c5fa7dc6af036124f275f5"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn14ParallelVector7GetDataEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns a direct const pointer to the memory array used internally by the vector to store its owned elements </p>
+<dd><p>Returns a direct const pointer to the memory array used internally by the vector to store its owned elements. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -162,7 +164,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14ParallelVectorixE8uint64_t">
 <span class="target" id="classopensn_1_1_parallel_vector_1a7373de244f181dceaf5125948f104cd8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">local_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn14ParallelVectorixE8uint64_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Read only accessor to the entry at the given local index of the local vector.</p>
+<dd><p>Read only accessor to the entry at the given local index of the local vector. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This accessor allows access to all locally stored elements, including any data beyond local_size_ that may exist in derived classes. </p>
@@ -172,7 +174,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14ParallelVectorixE8uint64_t">
 <span class="target" id="classopensn_1_1_parallel_vector_1a958fc88b02de2039af75f8a57192933f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">local_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn14ParallelVectorixE8uint64_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Read/write accessor to the entry at the given local index of the local vector.</p>
+<dd><p>Read/write accessor to the entry at the given local index of the local vector. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This accessor allows access to all locally stored elements, including any data beyond local_size_ that may exist in derived classes. </p>
@@ -200,7 +202,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14ParallelVector8BlockSetERKNSt6vectorIdEE8uint64_t8uint64_t">
 <span class="target" id="classopensn_1_1_parallel_vector_1ad1c450756ef491ab413c4d99407e55ed"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockSet</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">local_offset</span></span>, <span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_values</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn14ParallelVector8BlockSetERKNSt6vectorIdEE8uint64_t8uint64_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Copies a contiguous block of data from the source STL vector to the current vector starting at local_offset. The input STL vector must have exactly num_values entries. </p>
+<dd><p>Copies a contiguous block of data from the source STL vector to the current vector starting at local_offset. </p>
+<p>The input STL vector must have exactly num_values entries. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -212,7 +215,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14ParallelVector15CopyLocalValuesE3Vec">
 <span class="target" id="classopensn_1_1_parallel_vector_1a7bac1005d8eb4c032a98828f9110c1d2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyLocalValues</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn14ParallelVector15CopyLocalValuesE3Vec" title="Link to this definition"></a><br /></dt>
-<dd><p>Sets the local values of the vector equal to that of the PETSc vector. The sizes must be compatible. </p>
+<dd><p>Sets the local values of the vector equal to that of the PETSc vector. </p>
+<p>The sizes must be compatible. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -224,20 +228,21 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14ParallelVector20BlockCopyLocalValuesE3Vec8uint64_t8uint64_t8uint64_t">
 <span class="target" id="classopensn_1_1_parallel_vector_1a4536ed9fde04f189b763d9f396d003e1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BlockCopyLocalValues</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y_offset</span></span>, <span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">local_offset</span></span>, <span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_values</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn14ParallelVector20BlockCopyLocalValuesE3Vec8uint64_t8uint64_t8uint64_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Copies a contiguous block of local data (num_values entries) from the source vector (starting at y_offset) to the current vector starting at local_offset. PETSc flavor. </p>
+<dd><p>Copies a contiguous block of local data (num_values entries) from the source vector (starting at y_offset) to the current vector starting at local_offset. </p>
+<p>PETSc flavor. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14ParallelVector8SetValueE8uint64_td9VecOpType">
 <span class="target" id="classopensn_1_1_parallel_vector_1aff4a0357035a325fc6d925d3ad3c4e6a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">global_id</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>, <a class="reference internal" href="enum_namespaceopensn_1af267ae634279759f1b058fdb17b8db75.html#_CPPv4N6opensn9VecOpTypeE" title="opensn::VecOpType"><span class="n"><span class="pre">VecOpType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">op_type</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn14ParallelVector8SetValueE8uint64_td9VecOpType" title="Link to this definition"></a><br /></dt>
-<dd><p>Define a set or add operation for the given global id-value pair</p>
+<dd><p>Define a set or add operation for the given global id-value pair. </p>
 <p>This routine adds the global id-value pair to the set operation cache, which upon execution of Assemble, communicates the operations to the appropriate process. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14ParallelVector9SetValuesERKNSt6vectorI8uint64_tEERKNSt6vectorIdEE9VecOpType">
 <span class="target" id="classopensn_1_1_parallel_vector_1af01c23817c8d888a1c4daae4501c04bb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetValues</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">global_ids</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">values</span></span>, <a class="reference internal" href="enum_namespaceopensn_1af267ae634279759f1b058fdb17b8db75.html#_CPPv4N6opensn9VecOpTypeE" title="opensn::VecOpType"><span class="n"><span class="pre">VecOpType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">op_type</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn14ParallelVector9SetValuesERKNSt6vectorI8uint64_tEERKNSt6vectorIdEE9VecOpType" title="Link to this definition"></a><br /></dt>
-<dd><p>Group multiple operations into a single call.</p>
+<dd><p>Group multiple operations into a single call. </p>
 <p>This routine goes through the given global id-value pairs and calls SetValue for each. </p>
 </dd></dl>
 
@@ -280,7 +285,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14ParallelVector8AssembleEv">
 <span class="target" id="classopensn_1_1_parallel_vector_1ac3a5f72b6acff3fd79185f7241cc951d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Assemble</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn14ParallelVector8AssembleEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Communicate all operations stored within the operation cache to the corresponding processes that own the respective global indices, and apply the operations.</p>
+<dd><p>Communicate all operations stored within the operation cache to the corresponding processes that own the respective global indices, and apply the operations. </p>
 <p>This routine clears the respective operation cache once completed. </p>
 </dd></dl>
 

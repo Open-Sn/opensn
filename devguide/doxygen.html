@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doxygen guidelines &mdash; OpenSn 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Binding C++ classes to Python" href="py_bindings.html" />
+    <link rel="prev" title="Coding Standards" href="coding_standard.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="workflow.html">Developer Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Doxygen guidelines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coverage-requirements">Coverage Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generic-guidelines">Generic guidelines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#classes-structs">Classes/structs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unions">Unions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions-methods">Functions/methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#variables-class-members">Variables/class members</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#template-parameters">Template parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c-20-concept">C++20 concept</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#macro-dependent-implementation">Macro-dependent implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="py_bindings.html">Binding C++ classes to Python</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer’s Guide</a></li>
+      <li class="breadcrumb-item active">Doxygen guidelines</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="doxygen-guidelines">
+<span id="id1"></span><h1>Doxygen guidelines<a class="headerlink" href="#doxygen-guidelines" title="Link to this heading"></a></h1>
+<section id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Link to this heading"></a></h2>
+<p>Provide developer-facing documentation for OpenSn using Doxygen.</p>
+<p>Documentation must enable:</p>
+<ul class="simple">
+<li><p>New developers to understand code structure and intent.</p></li>
+<li><p>Existing developers to navigate APIs easily.</p></li>
+<li><p>Focus is on public and developer-relevant internal APIs, not just end-user manuals.</p></li>
+</ul>
+</section>
+<section id="coverage-requirements">
+<h2>Coverage Requirements<a class="headerlink" href="#coverage-requirements" title="Link to this heading"></a></h2>
+<p>Mandatory documentation:</p>
+<ul>
+<li><p>All classes, structs, and unions.</p></li>
+<li><p>All public methods except for trivial getters/setters, such as:
+- Reference or constant/volatile reference to a member variable.
+- Methods that get or set the value of a class member.</p></li>
+<li><p>All member variables (private, protected, public).</p></li>
+<li><p>All <code class="docutils literal notranslate"><span class="pre">static</span></code> members and methods.</p></li>
+<li><p>All functions except for translation-unit local functions. Exceptions include:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">static</span></code> functions (C++98 approach):</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">helpFunction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Anonymous namespace functions (C++11 approach):</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="p">{</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">helpFunction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>All <code class="docutils literal notranslate"><span class="pre">extern</span></code> and <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> variables declared in headers.</p></li>
+<li><p>All C++20 concepts.</p></li>
+</ul>
+<p>Optional documentation:</p>
+<ul class="simple">
+<li><p>Protected methods: document if they are non-trivial.</p></li>
+<li><p>Private methods: document only if logic is complex or non-obvious.</p></li>
+<li><p>Deprecated APIs: only leave a brief note or no documentation at all.</p></li>
+<li><p>Enums: give a brief description of the enum purpose and a description for each enum value. Skip if
+the name is too obvious.</p></li>
+<li><p>Operator overloading: document if its intended usage is not self-explanatory.</p></li>
+</ul>
+<p>Do not document:</p>
+<ul class="simple">
+<li><p>Files.</p></li>
+<li><p>Entities not declared in header files.</p></li>
+<li><p>Type aliasing (<code class="docutils literal notranslate"><span class="pre">using</span></code> or <code class="docutils literal notranslate"><span class="pre">typedef</span></code>).</p></li>
+<li><p>Namespaces.</p></li>
+<li><p>Preprocessor macros (macro constants and macro functions).</p></li>
+<li><p>Default constructors.</p></li>
+<li><p>Copy/move constructors and copy/move assignments.</p></li>
+<li><p>Destructors.</p></li>
+</ul>
+</section>
+<section id="generic-guidelines">
+<h2>Generic guidelines<a class="headerlink" href="#generic-guidelines" title="Link to this heading"></a></h2>
+<ul>
+<li><p>Use backslash-style commands (<code class="docutils literal notranslate"><span class="pre">\return</span></code>, <code class="docutils literal notranslate"><span class="pre">\param</span></code>) instead of &#64;-style commands.</p></li>
+<li><p>For single-line comments, use <code class="docutils literal notranslate"><span class="pre">///</span></code>. For multi-line comments, use <code class="docutils literal notranslate"><span class="pre">/**</span> <span class="pre">*/</span></code>.</p></li>
+<li><p>The Doxygen commands <code class="docutils literal notranslate"><span class="pre">\brief</span></code> and <code class="docutils literal notranslate"><span class="pre">\details</span></code> should not be used. Doxygen is configured with
+<code class="docutils literal notranslate"><span class="pre">JAVADOC_AUTOBRIEF=ON</span></code>, so the text up to the first full stop is automatically interpreted as
+the brief description. Any optional detailed description should begin on a new line following the
+brief description. For example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Brief description.</span>
+<span class="cm"> * Long and more descriptive comments.</span>
+<span class="cm"> * ...</span>
+<span class="cm"> */</span>
+</pre></div>
+</div>
+</li>
+<li><p>Write in clear, concise English. Avoid implementation details unless necessary for correct usage.</p></li>
+<li><p>Potential pitfalls (such as manual resource deallocation, possible segmentation faults, or
+infinite loops) caused by misuse must be documented using the <code class="docutils literal notranslate"><span class="pre">\note</span></code> (what the user should
+notice) or <code class="docutils literal notranslate"><span class="pre">\warning</span></code> (what to avoid) command.</p></li>
+</ul>
+<section id="classes-structs">
+<h3>Classes/structs<a class="headerlink" href="#classes-structs" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Class or struct documentation must include a <strong>one-line</strong> summary of the class purpose. The brief
+description must be a <strong>noun phrase</strong>, not a verb or a complete sentence.</p></li>
+<li><p>Avoid redundant comments, such as “Class that represents…”.</p></li>
+<li><p>The detailed description is optional. Full sentences can be used. When provided, it should
+explain:</p>
+<ul class="simple">
+<li><p>Design rationale</p></li>
+<li><p>Usage guidelines</p></li>
+<li><p>Valid conditions (if relevant)</p></li>
+<li><p>Ownership (if relevant)</p></li>
+<li><p>Thread-safety (if relevant)</p></li>
+<li><p>Applied design patterns (if relevant)</p></li>
+<li><p>Interaction with other classes (if relevant)</p></li>
+<li><p>Performance considerations (if relevant)</p></li>
+</ul>
+</li>
+<li><p>Document the class <strong>only at its definition</strong>, not at forward declarations.</p></li>
+<li><p>All class members must be documented <strong>inside the class body</strong>, not outside. Do not document
+methods defined outside the class in the header.</p></li>
+<li><p>For C++17 class template argument deduction (CTAD):</p>
+<ul class="simple">
+<li><p>Only document the class definition.</p></li>
+<li><p>Deduction guides should be documented either in the class description or in the appropriate
+constructor.</p></li>
+<li><p>If additional clarification is needed for deduction guides, use <code class="docutils literal notranslate"><span class="pre">//</span></code> comments only.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Non-owning view (brief description).</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">View</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">/// Data pointer.</span>
+<span class="w">  </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Size.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">View</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">data</span><span class="p">(</span><span class="k">nullptr</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="c1">/// Constructor from range iterators.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">It</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">View</span><span class="p">(</span><span class="n">It</span><span class="w"> </span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">It</span><span class="w"> </span><span class="n">last</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// Deduce T from the iterator&#39;s value type</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">It</span><span class="o">&gt;</span>
+<span class="n">View</span><span class="p">(</span><span class="n">It</span><span class="p">,</span><span class="w"> </span><span class="n">It</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">View</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">std</span><span class="o">::</span><span class="n">iterator_traits</span><span class="o">&lt;</span><span class="n">It</span><span class="o">&gt;::</span><span class="n">value_type</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="unions">
+<h3>Unions<a class="headerlink" href="#unions" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Document the union <strong>only at its definition</strong>, not at forward declarations.</p></li>
+<li><p>Provide a <strong>one-line noun phrase</strong> brief description of the union’s purpose at the top of the
+union body.</p></li>
+<li><p>Document all fields inside the union body using <strong>one-line noun phrase</strong> brief descriptions.</p></li>
+<li><p>If the union contains complex or nested types, provide additional explanation in inline comments
+(<code class="docutils literal notranslate"><span class="pre">//</span></code>) only as needed.</p></li>
+<li><p>Do not document methods outside the union body.</p></li>
+</ul>
+</section>
+<section id="functions-methods">
+<h3>Functions/methods<a class="headerlink" href="#functions-methods" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Function or class method documentation must include a <strong>one-line</strong> summary describing what the
+function does, using the <strong>verb in its base form</strong> (without “s” or “es”).</p></li>
+<li><p>Document functions/methods <strong>only at their declaration</strong> in the header file, not at their
+definition in the source file.</p></li>
+<li><p>The optional detailed description should explain:</p>
+<ul>
+<li><p>Purpose</p></li>
+<li><p>Algorithm</p></li>
+<li><p>Input and output behavior (if applicable)</p></li>
+<li><p>Assumptions (if applicable)</p></li>
+<li><p>Side effects (if applicable)</p></li>
+<li><p>Performance notes (if applicable)</p></li>
+<li><p>Preconditions (if applicable)</p></li>
+<li><p>Exceptions (if applicable)</p></li>
+</ul>
+</li>
+<li><p>Use full sentences when possible.</p></li>
+<li><p>Include <code class="docutils literal notranslate"><span class="pre">\param</span></code>, <code class="docutils literal notranslate"><span class="pre">\return</span></code> (if not <code class="docutils literal notranslate"><span class="pre">void</span></code> and the returned value is not trivial from the
+function name), and <code class="docutils literal notranslate"><span class="pre">\throw</span></code> / <code class="docutils literal notranslate"><span class="pre">\exception</span></code> (if applicable).</p></li>
+</ul>
+</section>
+<section id="variables-class-members">
+<h3>Variables/class members<a class="headerlink" href="#variables-class-members" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Extern variables or class members must include a <strong>one-line noun phrase</strong> summary describing the
+variable’s nature or purpose.</p></li>
+<li><p>Documentation must <strong>not</strong> describe entities solely by naming a mathematical symbol. For example,
+the following is unacceptable:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Alpha.</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">alpha</span><span class="p">;</span>
+<span class="c1">/// Value of x in the algorithm.</span>
+<span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Exceptions are allowed if the variables are class members explicitly defined in a mathematical
+formulation or algorithm provided in the class documentation.</p>
+</li>
+<li><p>Documentation should describe <strong>what the variable represents or how it is used</strong>, not just restate
+its symbolic name.</p></li>
+</ul>
+</section>
+<section id="template-parameters">
+<h3>Template parameters<a class="headerlink" href="#template-parameters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Document template parameters using <code class="docutils literal notranslate"><span class="pre">\tparam</span></code> when:</p>
+<ul>
+<li><p>The template parameter has semantic meaning beyond a generic STL type (<code class="docutils literal notranslate"><span class="pre">typename</span> <span class="pre">T</span></code>).</p></li>
+<li><p>The parameter imposes constraints (<code class="docutils literal notranslate"><span class="pre">requires</span></code>), expectations (<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">constexpr</span></code>), or specific
+behavior.</p></li>
+<li><p>The intended use is not obvious from standard STL conventions.</p></li>
+<li><p>The parameter affects algorithm behavior, ownership, or performance.</p></li>
+</ul>
+</li>
+<li><p>Documentation may be omitted when:</p>
+<ul>
+<li><p>The template parameter is a generic typename.</p></li>
+<li><p>Usage strictly follows well-known STL conventions.</p></li>
+<li><p>No additional assumptions or constraints apply.</p></li>
+</ul>
+</li>
+<li><p>Describe what the type represents and state all parameter constraints (e.g., arithmetic, movable,
+comparable) in a <strong>noun phrase</strong>.</p></li>
+</ul>
+</section>
+<section id="c-20-concept">
+<h3>C++20 concept<a class="headerlink" href="#c-20-concept" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>All concepts must be documented.</p></li>
+<li><p>Use a <strong>noun phrase</strong> describing the requirements and focus on what the concept guarantees.</p></li>
+<li><p>If the concept’s behavior is complex, provide additional explanation in the detailed description.</p></li>
+</ul>
+</section>
+<section id="macro-dependent-implementation">
+<h3>Macro-dependent implementation<a class="headerlink" href="#macro-dependent-implementation" title="Link to this heading"></a></h3>
+<ul>
+<li><p>For any class, function, or variable affected by macros, the documentation must state:</p>
+<ul class="simple">
+<li><p>Macro dependency.</p></li>
+<li><p>Behavioral difference.</p></li>
+<li><p>Availability.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Brief description...</span>
+<span class="cm"> * - If ``__ABC__`` is defined, ...</span>
+<span class="cm"> * - Otherwise, ...</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">processData</span><span class="p">();</span>
+</pre></div>
+</div>
+</li>
+<li><p>If an API only exists under a macro, the mandatory wording is <code class="docutils literal notranslate"><span class="pre">Only</span> <span class="pre">available</span> <span class="pre">when</span> <span class="pre">`MACRO_NAME`</span>
+<span class="pre">is</span> <span class="pre">defined</span></code>.</p></li>
+<li><p>If the macro is not defined for Doxygen parsing and the API must still be documented, add <code class="docutils literal notranslate"><span class="pre">||</span>
+<span class="pre">defined(DOXYGEN_SHOULD_SKIP_THIS)</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#if defined(__ABC__) || defined(DOXYGEN_SHOULD_SKIP_THIS)</span>
+<span class="cm">/**</span>
+<span class="cm"> * Brief description...</span>
+<span class="cm"> * Only available when ``__ABC__`` is defined.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="cp">#elif !defined(__ABC__) || defined(DOXYGEN_SHOULD_SKIP_THIS)</span>
+<span class="cm">/**</span>
+<span class="cm"> * Brief description...</span>
+<span class="cm"> * Only available when ``__ABC__`` is not defined.</span>
+<span class="cm"> */</span>
+<span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="coding_standard.html" class="btn btn-neutral float-left" title="Coding Standards" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="py_bindings.html" class="btn btn-neutral float-right" title="Binding C++ classes to Python" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -162,7 +162,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver10InitializeEv">
 <span class="target" id="classopensn_1_1_diffusion_solver_1a29998f4fb375d643d32ba61163228d04"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver10InitializeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initializes the diffusion solver. This involves creating the sparse matrix with the appropriate sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very specialized parameters for Hypre’s BooomerAMG. Note: <code class="docutils literal notranslate"><span class="pre">PCSetFromOptions</span></code> and <code class="docutils literal notranslate"><span class="pre">KSPSetFromOptions</span></code> are called at the end. Therefore, any number of additional PETSc options can be passed via the commandline. </p>
+<dd><p>Initializes the diffusion solver. </p>
+<p>This involves creating the sparse matrix with the appropriate sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very specialized parameters for Hypre’s BooomerAMG. Note: <code class="docutils literal notranslate"><span class="pre">PCSetFromOptions</span></code> and <code class="docutils literal notranslate"><span class="pre">KSPSetFromOptions</span></code> are called at the end. Therefore, any number of additional PETSc options can be passed via the commandline. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -195,7 +196,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver5SolveERNSt6vectorIdEEb">
 <span class="target" id="classopensn_1_1_diffusion_solver_1aea160f1c4ac92490c2ac20e26a2fec1a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Solve</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">solution</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">use_initial_guess</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver5SolveERNSt6vectorIdEEb" title="Link to this definition"></a><br /></dt>
-<dd><p>Solves the system and stores the local solution in the vector provide.</p>
+<dd><p>Solves the system and stores the local solution in the vector provide. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -209,7 +210,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver5SolveE3Vecb">
 <span class="target" id="classopensn_1_1_diffusion_solver_1a7e02570e53abbf33be5cbd09678e8c70"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Solve</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">petsc_solution</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">use_initial_guess</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver5SolveE3Vecb" title="Link to this definition"></a><br /></dt>
-<dd><p>Solves the system and stores the local solution in the vector provide.</p>
+<dd><p>Solves the system and stores the local solution in the vector provide. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

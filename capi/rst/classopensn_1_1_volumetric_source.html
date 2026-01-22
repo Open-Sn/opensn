@@ -92,7 +92,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn16VolumetricSourceE">
 <span class="target" id="classopensn_1_1_volumetric_source"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VolumetricSource</span></span></span><a class="headerlink" href="#_CPPv4N6opensn16VolumetricSourceE" title="Link to this definition"></a><br /></dt>
-<dd><p>A class for multi-group isotropic volumetric sources.</p>
+<dd><p>A class for multi-group isotropic volumetric sources. </p>
 <p>This class differs from the standard material property sources in that it can be specified for an arbitrary logical volume that may span multiple material regions and with spatial, material id, and group-wise behaviors via a <a class="reference internal" href="classopensn_1_1_vector_spatial_function.html#classopensn_1_1_vector_spatial_function"><span class="std std-ref">VectorSpatialFunction</span></a>.</p>
 <p>The flexibility of this object allows for its use as a standard volumetric source or as a volumetric response function for adjoint calculations. </p>
 <div class="breathe-sectiondef docutils container">
@@ -110,7 +110,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn16VolumetricSourceclERK4CellRK7Vector3NSt6size_tE">
 <span class="target" id="classopensn_1_1_volumetric_source_1af52299b3dafdcd6f182e305521d1c1c9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xyz</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_groups</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn16VolumetricSourceclERK4CellRK7Vector3NSt6size_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>Evaluate the distributed source for a given cell node for all groups</p>
+<dd><p>Evaluate the distributed source for a given cell node for all groups. </p>
 <p>If the cell does not belong to the logical volume tied to this source, a vector of zeros are returned. </p>
 </dd></dl>
 

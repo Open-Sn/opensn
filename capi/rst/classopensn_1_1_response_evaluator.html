@@ -101,7 +101,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17ResponseEvaluatorE">
 <span class="target" id="classopensn_1_1_response_evaluator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResponseEvaluator</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17ResponseEvaluatorE" title="Link to this definition"></a><br /></dt>
-<dd><p>A class used for evaluating responses by folding sources against adjoint solutions.</p>
+<dd><p>A class used for evaluating responses by folding sources against adjoint solutions. </p>
 <p>The workflow for this utility is constructed to minimize the file reading necessary for evaluations. To begin, one should add all adjoint solutions that are desired for response computations into the buffer. Then, one should define the different forward source configurations of interest in the input. With this, the user can now iterate over the source configurations in the input and convolve them against all available adjoint solutions in the buffer. For example, <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">buffers</span> <span class="o">=</span> <span class="p">{</span>
       <span class="p">{</span>
           <span class="n">buffer1</span><span class="p">,</span>

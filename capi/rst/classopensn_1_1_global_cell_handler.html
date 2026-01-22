@@ -127,13 +127,15 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn17GlobalCellHandler17GetGhostGlobalIDsEv">
 <span class="target" id="classopensn_1_1_global_cell_handler_1a4675bb9f038d9ab894ddf98cf8ec4d57"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGhostGlobalIDs</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17GlobalCellHandler17GetGhostGlobalIDsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the cell global ids of all ghost cells. These are cells that neighbors to this partition’s cells but are on a different partition. </p>
+<dd><p>Returns the cell global ids of all ghost cells. </p>
+<p>These are cells that neighbors to this partition’s cells but are on a different partition. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn17GlobalCellHandler15GetGhostLocalIDE8uint64_t">
 <span class="target" id="classopensn_1_1_global_cell_handler_1a3cfb846f0ad41dcca760c820cca1368d"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGhostLocalID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_global_index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17GlobalCellHandler15GetGhostLocalIDE8uint64_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the local storage address of a ghost cell. If the ghost is not truly a ghost then -1 is returned, but is wasteful and therefore the user of this function should implement code to prevent it. </p>
+<dd><p>Returns the local storage address of a ghost cell. </p>
+<p>If the ghost is not truly a ghost then -1 is returned, but is wasteful and therefore the user of this function should implement code to prevent it. </p>
 </dd></dl>
 
 </div>

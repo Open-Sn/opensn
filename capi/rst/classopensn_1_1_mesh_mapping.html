@@ -102,7 +102,8 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11MeshMappingE">
 <span class="target" id="classopensn_1_1_mesh_mapping"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MeshMapping</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11MeshMappingE" title="Link to this definition"></a><br /></dt>
-<dd><p>Produces a mapping between a fine mesh and a coarse mesh. Each fine mesh cell face must be fully contained within a coarse mesh face. The meshes can be the same. </p>
+<dd><p>Produces a mapping between a fine mesh and a coarse mesh. </p>
+<p>Each fine mesh cell face must be fully contained within a coarse mesh face. The meshes can be the same. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -162,7 +163,8 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11MeshMapping13CoarseMapping10fine_facesE">
 <span class="target" id="structopensn_1_1_mesh_mapping_1_1_coarse_mapping_1a535ecb866a2d9c1f5cf537b1fc6537f9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fine_faces</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11MeshMapping13CoarseMapping10fine_facesE" title="Link to this definition"></a><br /></dt>
-<dd><p>The fine cell faces contained within each coarse cell face. Outer index coarse cell face index (size == # of faces in coarse cell) Inner index is arbitrary and entries are fine <a class="reference internal" href="classopensn_1_1_cell.html#classopensn_1_1_cell"><span class="std std-ref">Cell</span></a> -&gt; fine <a class="reference internal" href="classopensn_1_1_cell_face.html#classopensn_1_1_cell_face"><span class="std std-ref">CellFace</span></a> index </p>
+<dd><p>The fine cell faces contained within each coarse cell face. </p>
+<p>Outer index coarse cell face index (size == # of faces in coarse cell) Inner index is arbitrary and entries are fine <a class="reference internal" href="classopensn_1_1_cell.html#classopensn_1_1_cell"><span class="std std-ref">Cell</span></a> -&gt; fine <a class="reference internal" href="classopensn_1_1_cell_face.html#classopensn_1_1_cell_face"><span class="std std-ref">CellFace</span></a> index </p>
 </dd></dl>
 
 </div>
