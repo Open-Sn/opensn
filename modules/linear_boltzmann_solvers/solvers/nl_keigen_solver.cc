@@ -111,6 +111,11 @@ NonLinearKEigenSolver::Execute()
   }
 
   do_problem_->UpdateFieldFunctions();
+  if (IsBalanceEnabled())
+  {
+    ComputeBalance(*do_problem_, 1.0 / nl_context_->kresid_func_context.k_eff);
+    log.Log() << "Balance table uses k-eigenvalue normalization (production scaled by 1/k_eff)";
+  }
 
   log.Log() << "LinearBoltzmann::NonLinearKEigenvalueSolver execution completed\n\n";
 }

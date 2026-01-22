@@ -75,9 +75,8 @@ if __name__ == "__main__":
         ],
         sweep_type="CBC"
     )
-    ss_solver = SteadyStateSourceSolver(problem=phys)
+    ss_solver = SteadyStateSourceSolver(problem=phys, compute_balance=True)
     ss_solver.Initialize()
     ss_solver.Execute()
 
     # Compute particle balance
-    phys.ComputeBalance()

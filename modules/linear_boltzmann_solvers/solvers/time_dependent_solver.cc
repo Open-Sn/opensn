@@ -129,6 +129,9 @@ TimeDependentSourceSolver::Advance()
 
   ags_solver_->Solve();
   lbs_problem_->UpdateFieldFunctions();
+  if (IsBalanceEnabled())
+    if (auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(lbs_problem_))
+      ComputeBalance(*do_problem);
   lbs_problem_->UpdatePsiOld();
 
   current_time_ += dt;

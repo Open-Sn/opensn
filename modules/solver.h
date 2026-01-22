@@ -35,8 +35,11 @@ public:
   /// PreCheck call to GetInfo.
   ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
 
+  bool IsBalanceEnabled() const { return compute_balance_; }
+
 private:
   const std::string name_;
+  bool compute_balance_ = false;
 
 public:
   /// Returns the input parameters.

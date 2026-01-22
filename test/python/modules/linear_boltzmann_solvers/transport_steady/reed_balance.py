@@ -85,9 +85,6 @@ if __name__ == "__main__":
     )
 
     # Initialize and execute solver
-    ss_solver = SteadyStateSourceSolver(problem=phys)
+    ss_solver = SteadyStateSourceSolver(problem=phys, compute_balance=True)
     ss_solver.Initialize()
     ss_solver.Execute()
-
-    # compute particle balance
-    phys.ComputeBalance()

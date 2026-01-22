@@ -716,16 +716,6 @@ WrapLBS(py::module& slv)
     )"
   );
   do_problem.def(
-    "ComputeBalance",
-    [](DiscreteOrdinatesProblem& self)
-    {
-      ComputeBalance(self);
-    },
-    R"(
-    Compute and print particle balance for the problem.
-    )"
-  );
-  do_problem.def(
     "ComputeLeakage",
     [](DiscreteOrdinatesProblem& self, py::list bnd_names)
     {
