@@ -53,13 +53,13 @@ class impl::PinnedHostAllocator {
             return nullptr;
         }
         T * result = nullptr;
-        check_error(::GPU_API(MallocHost)(&result, n * sizeof(T)));
+        check_error(::GPU_API(MallocHost)(reinterpret_cast<void **>(&result), n * sizeof(T)));
         return result;
     }
     /** @brief Deallocate memory.*/
     void deallocate(T * ptr, std::size_t n) noexcept {
         if (ptr) {
-            ::GPU_API(FreeHost)(ptr);
+            static_cast<void>(::GPU_API(FreeHost)(ptr));
         }
     }
     /** @brief Construct an object at a given address in the allocated memory (remove after C++17).*/
@@ -140,7 +140,7 @@ class MemoryPinningManager {
     /** @brief Default destructor.*/
     ~MemoryPinningManager(void) {
         if (this->ptr_) {
-            ::GPU_API(HostUnregister)(this->ptr_);
+            static_cast<void>(::GPU_API(HostUnregister)(this->ptr_));
         }
     }
     /// @}

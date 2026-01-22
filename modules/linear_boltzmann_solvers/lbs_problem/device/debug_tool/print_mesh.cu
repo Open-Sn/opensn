@@ -24,34 +24,34 @@ inline __device__ void
 PrintFace(FaceView& face)
 {
   // basic data
-  std::printf(INDENT(4) "num_face_nodes: %" PRIu32 "\n", face.num_face_nodes);
-  std::printf(INDENT(4) "outflow: %p %s\n",
-              face.outflow,
-              ((face.outflow) ? "-> boundary face" : "         -> non-boundary face"));
-  std::printf(INDENT(4) "normal: (%f %f %f)\n", face.normal[0], face.normal[1], face.normal[2]);
-  std::printf(INDENT(4) "M_surf:\n");
+  printf(INDENT(4) "num_face_nodes: %" PRIu32 "\n", face.num_face_nodes);
+  printf(INDENT(4) "outflow: %p %s\n",
+         face.outflow,
+         ((face.outflow) ? "-> boundary face" : "         -> non-boundary face"));
+  printf(INDENT(4) "normal: (%f %f %f)\n", face.normal[0], face.normal[1], face.normal[2]);
+  printf(INDENT(4) "M_surf:\n");
   // M_surf
   for (std::uint32_t i = 0; i < face.num_face_nodes; ++i)
   {
-    std::printf(INDENT(5) "" BOX_DRAWING_VERTICAL);
+    printf(INDENT(5) "" BOX_DRAWING_VERTICAL);
     for (std::uint32_t j = 0; j < face.num_face_nodes; ++j)
     {
-      std::printf("%s%8.6lf", ((j != 0) ? " " : ""), face.M_surf_data[i * face.num_face_nodes + j]);
+      printf("%s%8.6lf", ((j != 0) ? " " : ""), face.M_surf_data[i * face.num_face_nodes + j]);
     }
-    std::printf(BOX_DRAWING_VERTICAL "\n");
+    printf(BOX_DRAWING_VERTICAL "\n");
   }
   // IntS_shapeI
-  std::printf(INDENT(4) "IntS_shapeI: [");
+  printf(INDENT(4) "IntS_shapeI: [");
   for (std::uint32_t i = 0; i < face.num_face_nodes; ++i)
   {
-    std::printf("%s%8.6f", ((i != 0) ? " " : ""), face.IntS_shapeI_data[i]);
+    printf("%s%8.6f", ((i != 0) ? " " : ""), face.IntS_shapeI_data[i]);
   }
-  std::printf("]\n");
+  printf("]\n");
   // cell mapping
-  std::printf(INDENT(4) "Cell mapping (face node -> cell node):\n");
+  printf(INDENT(4) "Cell mapping (face node -> cell node):\n");
   for (std::uint32_t i = 0; i < face.num_face_nodes; ++i)
   {
-    std::printf(INDENT(5) "%" PRIu32 " -> %" PRIu32 "\n", i, face.cell_mapping_data[i]);
+    printf(INDENT(5) "%" PRIu32 " -> %" PRIu32 "\n", i, face.cell_mapping_data[i]);
   }
 }
 
@@ -59,44 +59,44 @@ inline __device__ void
 PrintCell(CellView& cell)
 {
   // basic data
-  std::printf(INDENT(2) "num_nodes: %" PRIu32 "\n", cell.num_nodes);
-  std::printf(INDENT(2) "num_faces: %" PRIu32 "\n", cell.num_faces);
-  std::printf(INDENT(2) "density: %lf\n", cell.density);
-  std::printf(INDENT(2) "total_xs_ptr: %p\n", cell.total_xs);
-  std::printf(INDENT(2) "phi-address: %" PRIu64 "\n", cell.phi_address);
-  std::printf(INDENT(2) "save_psi_index: %" PRIu64 "\n", cell.save_psi_index);
+  printf(INDENT(2) "num_nodes: %" PRIu32 "\n", cell.num_nodes);
+  printf(INDENT(2) "num_faces: %" PRIu32 "\n", cell.num_faces);
+  printf(INDENT(2) "density: %lf\n", cell.density);
+  printf(INDENT(2) "total_xs_ptr: %p\n", cell.total_xs);
+  printf(INDENT(2) "phi-address: %" PRIu64 "\n", cell.phi_address);
+  printf(INDENT(2) "save_psi_index: %" PRIu64 "\n", cell.save_psi_index);
   // GM matrix
-  std::printf(INDENT(2) "G Matrix:\n");
+  printf(INDENT(2) "G Matrix:\n");
   for (std::uint32_t i = 0; i < cell.num_nodes; ++i)
   {
-    std::printf(INDENT(3) "" BOX_DRAWING_VERTICAL);
+    printf(INDENT(3) "" BOX_DRAWING_VERTICAL);
     const double* GM_row = cell.GM_data + i * cell.num_nodes * 4;
     for (std::uint32_t j = 0; j < cell.num_nodes; ++j)
     {
-      std::printf("%s(%8.6lf %8.6lf %8.6lf)",
-                  ((j != 0) ? " " : ""),
-                  GM_row[j * 4],
-                  GM_row[j * 4 + 1],
-                  GM_row[j * 4 + 2]);
+      printf("%s(%8.6lf %8.6lf %8.6lf)",
+             ((j != 0) ? " " : ""),
+             GM_row[j * 4],
+             GM_row[j * 4 + 1],
+             GM_row[j * 4 + 2]);
     }
-    std::printf(BOX_DRAWING_VERTICAL "\n");
+    printf(BOX_DRAWING_VERTICAL "\n");
   }
-  std::printf(INDENT(2) "M Matrix:\n");
+  printf(INDENT(2) "M Matrix:\n");
   for (std::uint32_t i = 0; i < cell.num_nodes; ++i)
   {
-    std::printf(INDENT(3) BOX_DRAWING_VERTICAL);
+    printf(INDENT(3) BOX_DRAWING_VERTICAL);
     const double* GM_row = cell.GM_data + i * cell.num_nodes * 4;
     for (std::uint32_t j = 0; j < cell.num_nodes; ++j)
     {
-      std::printf("%s%8.6lf", ((j != 0) ? " " : ""), GM_row[j * 4 + 3]);
+      printf("%s%8.6lf", ((j != 0) ? " " : ""), GM_row[j * 4 + 3]);
     }
-    std::printf(BOX_DRAWING_VERTICAL "\n");
+    printf(BOX_DRAWING_VERTICAL "\n");
   }
   // faces
-  std::printf(INDENT(2) "Faces:\n");
+  printf(INDENT(2) "Faces:\n");
   for (std::uint32_t f = 0; f < cell.num_faces; ++f)
   {
-    std::printf(INDENT(3) "Face %" PRIu32 ":\n", f);
+    printf(INDENT(3) "Face %" PRIu32 ":\n", f);
     FaceView face;
     cell.GetFaceView(face, f);
     PrintFace(face);
@@ -107,10 +107,10 @@ __global__ void
 PrintMesh(char* mesh_data)
 {
   MeshView mesh(mesh_data);
-  std::printf(INDENT(0) "Print mesh on GPU with %" PRIu64 " cells:\n", mesh.num_cells);
+  printf(INDENT(0) "Print mesh on GPU with %" PRIu64 " cells:\n", mesh.num_cells);
   for (std::uint32_t cell_idx = 0; cell_idx < mesh.num_cells; ++cell_idx)
   {
-    std::printf(INDENT(1) "Cell %" PRIu32 ":\n", cell_idx);
+    printf(INDENT(1) "Cell %" PRIu32 ":\n", cell_idx);
     CellView cell;
     mesh.GetCellView(cell, cell_idx);
     PrintCell(cell);

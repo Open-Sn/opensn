@@ -3,13 +3,8 @@
 
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/lbs_problem/device/view/inline_macro.h"
 #include <cstdint>
-
-#if defined(__NVCC__)
-#define __inline_host_dev__ inline __host__ __device__
-#else
-#define __inline_host_dev__ inline
-#endif
 
 namespace opensn
 {

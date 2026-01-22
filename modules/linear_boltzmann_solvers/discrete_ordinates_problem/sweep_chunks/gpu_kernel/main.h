@@ -34,7 +34,7 @@ template <std::size_t... IntSequence>
 __device__ constexpr std::array<SweepFunc, sizeof...(IntSequence)>
 MakeSweepKernelSpecificationMap(std::index_sequence<IntSequence...>)
 {
-  return std::array{&gpu_kernel::Sweep<IntSequence>...};
+  return std::array<SweepFunc, sizeof...(IntSequence)>{&gpu_kernel::Sweep<IntSequence>...};
 }
 __device__ std::array<SweepFunc, LBSProblem::max_dofs_gpu> sweep_spec_map =
   MakeSweepKernelSpecificationMap(MakeIndexSequenceFromRange<1, LBSProblem::max_dofs_gpu + 1>{});
