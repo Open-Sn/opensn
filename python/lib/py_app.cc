@@ -28,6 +28,7 @@ PyApp::PyApp(const mpi::Communicator& comm)
   py::exec("opensn_console = True");
 
   console.BindBarrier(comm);
+  console.BindAllReduce(comm);
 
   Console::BindModule(WrapYlm);
   Console::BindModule(WrapVector3);

@@ -101,15 +101,20 @@ if __name__ == "__main__":
     phys2.ReadAngularFluxes("angular_io")
     psi2 = phys2.GetPsi()
 
+    local_ok = 1
     for i, (arr1, arr2) in enumerate(zip(psi1, psi2)):
         if arr1.shape != arr2.shape:
-            raise ValueError(f"Different shapes at index {i}: {arr1.shape} vs {arr2.shape}")
+            local_ok = 0
+            break
+        if not np.allclose(arr1, arr2, rtol=1e-8, atol=1e-12):
+            local_ok = 0
+            break
 
-    if not np.allclose(arr1, arr2, rtol=1e-8, atol=1e-12):
-        diff = np.max(np.abs(arr1 - arr2))
-        print(f"Difference at index {i}, max diff = {diff}")
-        raise ValueError(f"psi mismatch at index {i}")
+    global_ok = MPIAllReduce(float(local_ok))
+    if global_ok != size:
+        raise ValueError("psi mismatch across ranks")
 
-    print(f"psi values match for rank {rank}")
+    if rank == 0:
+        print("psi_match = true")
 
     os.remove(f"angular_io{rank}.h5")
