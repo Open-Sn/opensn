@@ -118,8 +118,8 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
       // perform the sweep on device
       std::size_t level_size = levelized_spls[level].size();
       const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
-      gpu_kernel::UnsaturatedKernel<<<level_size, {block_size_x, block_size_y}>>>(
-        args, level_data, saved_psi.get());
+      ::dim3 block_size{block_size_x, block_size_y};
+      gpu_kernel::UnsaturatedKernel<<<level_size, block_size>>>(args, level_data, saved_psi.get());
     }
   }
   else

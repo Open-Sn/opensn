@@ -15,29 +15,29 @@ __global__ void
 PrintQuadrature(char* quad_data)
 {
   QuadratureView quad(quad_data);
-  std::printf("[DB] Quadrature(num_angles: %" PRIu32 ", num_moments: %" PRIu32 ")\n",
-              quad.num_angles,
-              quad.num_moments);
+  printf("[DB] Quadrature(num_angles: %" PRIu32 ", num_moments: %" PRIu32 ")\n",
+         quad.num_angles,
+         quad.num_moments);
   for (std::uint32_t angle_idx = 0; angle_idx < quad.num_angles; ++angle_idx)
   {
     DirectionView direction;
     quad.GetDirectionView(direction, angle_idx);
-    std::printf("[DB]   Direction %" PRIu32 ":\n", angle_idx);
-    std::printf(
+    printf("[DB]   Direction %" PRIu32 ":\n", angle_idx);
+    printf(
       "[DB]     Omega: %f %f %f\n", direction.omega[0], direction.omega[1], direction.omega[2]);
-    std::printf("[DB]     weight: %f\n", direction.weight);
-    std::printf("[DB]     m2d: [");
+    printf("[DB]     weight: %f\n", direction.weight);
+    printf("[DB]     m2d: [");
     for (std::uint32_t m = 0; m < quad.num_moments; ++m)
     {
-      std::printf("%s%f", ((m != 0) ? " " : ""), direction.m2d[m]);
+      printf("%s%f", ((m != 0) ? " " : ""), direction.m2d[m]);
     }
-    std::printf("]\n");
-    std::printf("[DB]     d2m: [");
+    printf("]\n");
+    printf("[DB]     d2m: [");
     for (std::uint32_t m = 0; m < quad.num_moments; ++m)
     {
-      std::printf("%s%f", ((m != 0) ? " " : ""), direction.d2m[m]);
+      printf("%s%f", ((m != 0) ? " " : ""), direction.d2m[m]);
     }
-    std::printf("]\n");
+    printf("]\n");
   }
 }
 

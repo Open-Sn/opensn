@@ -12,12 +12,12 @@ namespace device_dbg
 __global__ void
 PrintXS(double* xs, int block_id, std::uint32_t num_groups)
 {
-  std::printf("[DB]   Total XS for block ID %d at %p:", block_id, xs);
+  printf("[DB]   Total XS for block ID %d at %p:", block_id, xs);
   for (std::uint32_t g = 0; g < num_groups; ++g)
   {
-    std::printf(" %f", xs[g]);
+    printf(" %f", xs[g]);
   }
-  std::printf("\n");
+  printf("\n");
 }
 
 } // namespace device_dbg
@@ -25,7 +25,7 @@ PrintXS(double* xs, int block_id, std::uint32_t num_groups)
 void
 device_dbg::PrintTotalXSOnDevice(TotalXSCarrier& xs)
 {
-  std::printf("[DB] Print total cross sections on GPU for each block ID:\n");
+  printf("[DB] Print total cross sections on GPU for each block ID:\n");
   for (auto& [block_id, index] : xs.block_id_to_index)
   {
     PrintXS<<<1, 1>>>(xs.GetXSGPUData(block_id), block_id, xs.num_groups);
