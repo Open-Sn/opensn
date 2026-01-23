@@ -250,8 +250,8 @@ public:
 
   /// Sets the internal phi vector to the value in the associated field function.
   void SetPhiFromFieldFunctions(PhiSTLOption which_phi,
-                                const std::vector<size_t>& m_indices,
-                                const std::vector<size_t>& g_indices);
+                                const std::vector<unsigned int>& m_indices,
+                                const std::vector<unsigned int>& g_indices);
 
   /**
    * A method for post-processing an adjoint solution.

@@ -1295,13 +1295,13 @@ LBSProblem::UpdateFieldFunctions()
 
 void
 LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
-                                     const std::vector<size_t>& m_indices,
-                                     const std::vector<size_t>& g_indices)
+                                     const std::vector<unsigned int>& m_indices,
+                                     const std::vector<unsigned int>& g_indices)
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::SetPhiFromFieldFunctions");
 
-  std::vector<size_t> m_ids_to_copy = m_indices;
-  std::vector<size_t> g_ids_to_copy = g_indices;
+  std::vector<unsigned int> m_ids_to_copy = m_indices;
+  std::vector<unsigned int> g_ids_to_copy = g_indices;
   if (m_indices.empty())
     for (unsigned int m = 0; m < num_moments_; ++m)
       m_ids_to_copy.push_back(m);
@@ -1312,9 +1312,9 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  for (const size_t m : m_ids_to_copy)
+  for (const auto m : m_ids_to_copy)
   {
-    for (const size_t g : g_ids_to_copy)
+    for (const auto g : g_ids_to_copy)
     {
       const size_t ff_index = phi_field_functions_local_map_.at({g, m});
       const auto& ff_ptr = field_functions_.at(ff_index);
