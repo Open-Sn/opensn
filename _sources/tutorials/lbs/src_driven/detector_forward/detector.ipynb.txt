@@ -1027,7 +1027,7 @@
     }
    ],
    "source": [
-    "balance = phys.ComputeBalance()"
+    "ss_solver = SteadyStateSourceSolver(problem=phys, compute_balance=True)"
    ]
   },
   {

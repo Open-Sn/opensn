@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a9acf489324751a3f667a593d348fe4e5:
+.. _exhale_function_namespaceopensn_1a34bfa5e3ac31f79a84eb9e4fdce91166:
 
 Function opensn::ComputeBalance
 ===============================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::ComputeBalance(DiscreteOrdinatesProblem&)
+.. doxygenfunction:: opensn::ComputeBalance(DiscreteOrdinatesProblem&, double)
    :project: opensn

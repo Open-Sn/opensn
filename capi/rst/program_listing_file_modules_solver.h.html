@@ -122,8 +122,11 @@
 <span class="w">  </span><span class="c1">/// PreCheck call to GetInfo.</span>
 <span class="w">  </span><span class="n">ParameterBlock</span><span class="w"> </span><span class="nf">GetInfoWithPreCheck</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsBalanceEnabled</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">compute_balance_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">compute_balance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Returns the input parameters.</span>

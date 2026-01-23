@@ -39,7 +39,7 @@ Program Listing for File lbs_compute.h
    void ComputePrecursors(LBSProblem& lbs_problem);
    
    /// Compute balance
-   void ComputeBalance(DiscreteOrdinatesProblem& do_problem);
+   void ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor = 1.0);
    
    /**
     * Computes the angular flux based leakage from boundary surfaces.

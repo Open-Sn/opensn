@@ -52,7 +52,7 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a9acf489324751a3f667a593d348fe4e5`
+- :ref:`exhale_function_namespaceopensn_1a34bfa5e3ac31f79a84eb9e4fdce91166`
 
 - :ref:`exhale_function_namespaceopensn_1a21e5d619af536033b843a74678414013`
 
