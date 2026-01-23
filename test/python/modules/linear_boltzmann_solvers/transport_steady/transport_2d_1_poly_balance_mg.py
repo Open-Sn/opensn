@@ -102,11 +102,9 @@ if __name__ == "__main__":
     )
 
     # Initialize and Execute Solver
-    ss_solver = SteadyStateSourceSolver(problem=phys)
+    ss_solver = SteadyStateSourceSolver(problem=phys, compute_balance=True)
     ss_solver.Initialize()
     ss_solver.Execute()
-
-    phys.ComputeBalance()
 
     # Get field functions
     fflist = phys.GetScalarFieldFunctionList()

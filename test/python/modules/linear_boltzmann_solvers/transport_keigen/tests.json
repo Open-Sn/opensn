@@ -265,5 +265,25 @@
         "abs_tol": 1e-06
       }
     ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_1g_reflecting_balance.py",
+    "comment": "3D 1G reflecting infinite-medium k-eigenvalue with balance check",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.995,
+        "abs_tol": 1e-04
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Conservation error          = ",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
   }
 ]

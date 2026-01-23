@@ -77,8 +77,6 @@ if __name__ == "__main__":
             {"name": "zmax", "type": "reflecting"},
         ],
     )
-    ss_solver = SteadyStateSourceSolver(problem=phys)
+    ss_solver = SteadyStateSourceSolver(problem=phys, compute_balance=True)
     ss_solver.Initialize()
     ss_solver.Execute()
-
-    phys.ComputeBalance()

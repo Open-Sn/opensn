@@ -167,7 +167,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
 }
 
 void
-ComputeBalance(DiscreteOrdinatesProblem& do_problem)
+ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ComputeBalance");
 
@@ -183,6 +183,10 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
   const auto& unit_cell_matrices_ = do_problem.GetUnitCellMatrices();
   const auto& sweep_boundaries_ = do_problem.GetSweepBoundaries();
   const auto num_groups_ = do_problem.GetNumGroups();
+  const auto time_dependent = do_problem.IsTimeDependent();
+  const auto dt = time_dependent ? do_problem.GetTimeStep() : 0.0;
+  const auto& psi_new_local_ = do_problem.GetPsiNewLocal();
+  const auto& psi_old_local_ = do_problem.GetPsiOldLocal();
 
   // Get material source
   // This is done using the SetSource routine because it allows a lot of flexibility.
@@ -208,6 +212,8 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
   double local_in_flow = 0.0;
   double local_absorption = 0.0;
   double local_production = 0.0;
+  double local_initial = 0.0;
+  double local_final = 0.0;
   for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = discretization_.GetCellMapping(cell);
@@ -273,6 +279,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
     // Absorption and sources
     const auto& xs = transport_view.GetXS();
     const auto& sigma_a = xs.GetSigmaAbsorption();
+    const auto& inv_vel = xs.GetInverseVelocity();
     for (size_t i = 0; i < num_nodes; ++i)
     {
       for (size_t g = 0; g < num_groups_; ++g)
@@ -285,6 +292,42 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
         local_production += q_0g * IntV_shapeI(i);
       } // for g
     } // for i
+
+    if (time_dependent)
+    {
+      for (const auto& groupset : groupsets_)
+      {
+        const auto& quad = groupset.quadrature;
+        const auto num_angles = quad->omegas.size();
+        const auto num_gs_groups = groupset.groups.size();
+        const size_t groupset_angle_group_stride =
+          groupset.psi_uk_man_.GetNumberOfUnknowns() * num_gs_groups;
+        const size_t groupset_group_stride = num_gs_groups;
+        const size_t base = discretization_.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0);
+
+        for (size_t i = 0; i < num_nodes; ++i)
+        {
+          for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+          {
+            double phi_old = 0.0;
+            double phi_new = 0.0;
+            for (size_t n = 0; n < num_angles; ++n)
+            {
+              const size_t imap =
+                base + i * groupset_angle_group_stride + n * groupset_group_stride;
+              const double wt = quad->weights[n];
+              phi_old += wt * psi_old_local_[groupset.id][imap + gsg];
+              phi_new += wt * psi_new_local_[groupset.id][imap + gsg];
+            }
+
+            const auto g = groupset.groups[gsg].id;
+            const double val = inv_vel[g] * IntV_shapeI(i);
+            local_initial += val * phi_old;
+            local_final += val * phi_new;
+          }
+        }
+      }
+    }
   } // for cell
 
   // Compute local balance
@@ -292,6 +335,11 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
   double local_gain = local_production + local_in_flow;
   std::vector<double> local_balance_table = {
     local_absorption, local_production, local_in_flow, local_out_flow, local_balance, local_gain};
+  if (time_dependent)
+  {
+    local_balance_table.push_back(local_initial);
+    local_balance_table.push_back(local_final);
+  }
   auto table_size = static_cast<int>(local_balance_table.size());
 
   // Compute global balance
@@ -304,16 +352,57 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem)
   double global_out_flow = global_balance_table.at(3);
   double global_balance = global_balance_table.at(4);
   double global_gain = global_balance_table.at(5);
+  double global_initial = 0.0;
+  double global_final = 0.0;
+  if (scaling_factor != 1.0)
+  {
+    global_production *= scaling_factor;
+    global_gain = global_production + global_in_flow;
+    global_balance = global_gain - (global_absorption + global_out_flow);
+  }
 
-  log.Log() << "Balance table:\n"
-            << std::setprecision(6) << std::scientific
-            << " Absorption rate             = " << global_absorption << "\n"
-            << " Production rate             = " << global_production << "\n"
-            << " In-flow rate                = " << global_in_flow << "\n"
-            << " Out-flow rate               = " << global_out_flow << "\n"
-            << " Gain (In-flow + Production) = " << global_gain << "\n"
-            << " Balance (Gain - Loss)       = " << global_balance << "\n"
-            << " Balance/Gain, in %          = " << global_balance / global_gain * 100. << "\n";
+  if (time_dependent)
+  {
+    global_initial = global_balance_table.at(6);
+    global_final = global_balance_table.at(7);
+  }
+
+  if (time_dependent)
+  {
+    // NOTE: The time-dependent balance calculation uses end-of-step rates and a simple
+    // initial/final calculation. For full consistency with the time discretization, it
+    // should use theta-centered rates (sources/absorption), time-averaged boundary
+    // inflow/outflow, and a correct handling of pulsed sources/boundaries when
+    // start/end times fall inside the timestep.
+    const double source = dt * global_production;
+    const double absorption = dt * global_absorption;
+    const double net_outflow = dt * (global_out_flow - global_in_flow);
+    const double net_gain = source - absorption - net_outflow;
+    const double conservation_error =
+      (global_final == 0.0) ? 0.0 : (global_final - (global_initial + net_gain)) / global_final;
+
+    log.Log() << "\nTimestep balance (dt = " << std::setprecision(6) << std::fixed << dt << "):\n"
+              << std::setprecision(6) << std::scientific
+              << " Source                      = " << source << "\n"
+              << " Absorption                  = " << absorption << "\n"
+              << " Net out-flow                = " << net_outflow << "\n"
+              << " Initial                     = " << global_initial << "\n"
+              << " Final                       = " << global_final << "\n"
+              << " Conservation error          = " << conservation_error << "\n\n";
+  }
+  else
+  {
+    const double conservation_error = (global_gain == 0.0) ? 0.0 : (global_balance / global_gain);
+    log.Log() << "\nBalance table:\n"
+              << std::setprecision(6) << std::scientific
+              << " Absorption rate             = " << global_absorption << "\n"
+              << " Production rate             = " << global_production << "\n"
+              << " In-flow rate                = " << global_in_flow << "\n"
+              << " Out-flow rate               = " << global_out_flow << "\n"
+              << " Gain (In-flow + Production) = " << global_gain << "\n"
+              << " Balance (Gain - Loss)       = " << global_balance << "\n"
+              << " Conservation error          = " << conservation_error << "\n\n";
+  }
 
   opensn::mpi_comm.barrier();
 }

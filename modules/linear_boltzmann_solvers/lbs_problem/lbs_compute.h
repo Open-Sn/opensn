@@ -27,7 +27,7 @@ double ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& ph
 void ComputePrecursors(LBSProblem& lbs_problem);
 
 /// Compute balance
-void ComputeBalance(DiscreteOrdinatesProblem& do_problem);
+void ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor = 1.0);
 
 /**
  * Computes the angular flux based leakage from boundary surfaces.

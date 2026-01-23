@@ -18,6 +18,8 @@ Solver::GetInputParameters()
     "name",
     "A text name to associate with the solver. This name will be used "
     "in status messages and verbose iterative convergence monitors.");
+  params.AddOptionalParameter(
+    "compute_balance", false, "If true, compute and print balance information.");
 
   return params;
 }
@@ -26,7 +28,9 @@ Solver::Solver(std::string name) : name_(std::move(name))
 {
 }
 
-Solver::Solver(const InputParameters& params) : name_(params.GetParamValue<std::string>("name"))
+Solver::Solver(const InputParameters& params)
+  : name_(params.GetParamValue<std::string>("name")),
+    compute_balance_(params.GetParamValue<bool>("compute_balance"))
 {
 }
 

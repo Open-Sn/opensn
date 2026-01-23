@@ -77,11 +77,9 @@ if __name__ == "__main__":
         volumetric_sources=[mg_src0, mg_src1],
     )
 
-    ss_solver = SteadyStateSourceSolver(problem=phys)
+    ss_solver = SteadyStateSourceSolver(problem=phys, compute_balance=True)
     ss_solver.Initialize()
     ss_solver.Execute()
-
-    phys.ComputeBalance()
 
     # Get field functions
     fflist = phys.GetScalarFieldFunctionList()

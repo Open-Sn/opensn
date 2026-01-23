@@ -205,6 +205,11 @@ PowerIterationKEigenSolver::Execute()
   }
 
   do_problem_->UpdateFieldFunctions();
+  if (IsBalanceEnabled())
+  {
+    ComputeBalance(*do_problem_, 1.0 / k_eff_);
+    log.Log() << "Balance table uses k-eigenvalue normalization (production scaled by 1/k_eff)";
+  }
 
   log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
