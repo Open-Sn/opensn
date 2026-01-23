@@ -117,7 +117,7 @@ WrapProductQuadrature(py::module& aquad)
       {
         static const std::vector<std::string> required_keys = {"n_polar", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLProductQuadrature1DSlab, int, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<GLProductQuadrature1DSlab, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -152,7 +152,7 @@ WrapProductQuadrature(py::module& aquad)
       {
         static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature2DXY, int, int, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<GLCProductQuadrature2DXY, unsigned int, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -189,7 +189,7 @@ WrapProductQuadrature(py::module& aquad)
       {
         static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature3DXYZ, int, int, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<GLCProductQuadrature3DXYZ, unsigned int, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -246,7 +246,7 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
       {
         static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature2DRZ, int, int, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<GLCProductQuadrature2DRZ, unsigned int, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
@@ -422,21 +422,21 @@ WrapLebedevQuadrature(py::module& aquad)
     "LebedevQuadrature3DXYZ",
     R"(
     Lebedev quadrature for 3D, XYZ geometry.
-    
+
     This quadrature provides high-order accuracy for spherical integration with
     symmetric distribution of points on the sphere.
 
     Wrapper of :cpp:class:`opensn::LebedevQuadrature3DXYZ`.
     )"
   );
-  
+
   angular_quadrature_lebedev_3d_xyz.def(
     py::init(
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"quadrature_order", "scattering_order"};
         static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<LebedevQuadrature3DXYZ, int, int, bool>(params, required_keys, optional_keys);
+        return construct_from_kwargs<LebedevQuadrature3DXYZ, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
       }
     ),
     R"(
