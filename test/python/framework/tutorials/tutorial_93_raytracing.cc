@@ -30,10 +30,10 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
   const unsigned int num_groups = 1;
   const unsigned int scattering_order = 1;
   const auto& L = scattering_order;
-  const size_t num_moments = (dimension == 1)   ? L + 1
-                             : (dimension == 2) ? (L + 1) * (L + 2) / 2
-                             : (dimension == 3) ? (L + 1) * (L + 1)
-                                                : 0;
+  const unsigned int num_moments = (dimension == 1)   ? L + 1
+                                   : (dimension == 2) ? (L + 1) * (L + 2) / 2
+                                   : (dimension == 3) ? (L + 1) * (L + 1)
+                                                      : 0;
   const double sigma_t = 0.27;
 
   // Build harmonic map
@@ -55,7 +55,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
   const auto& sdm = *sdm_ptr;
 
   UnknownManager phi_uk_man;
-  for (size_t m = 0; m < num_moments; ++m)
+  for (unsigned int m = 0; m < num_moments; ++m)
     phi_uk_man.AddUnknown(UnknownType::VECTOR_N, num_groups);
 
   const size_t num_fem_local_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
@@ -149,7 +149,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
         const double C0 = b_ik(i) * ell_k;
         const double C1 = b_ikp1(i) - b_ik(i);
 
-        for (size_t m = 0; m < num_moments; ++m)
+        for (unsigned int m = 0; m < num_moments; ++m)
         {
           const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
 
@@ -284,7 +284,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
     // Apply projection
     Vector<double> T(num_nodes, 0.0);
-    for (size_t m = 0; m < num_moments; ++m)
+    for (unsigned int m = 0; m < num_moments; ++m)
       for (unsigned int g = 0; g < num_groups; ++g)
       {
         for (size_t i = 0; i < num_nodes; ++i)

@@ -88,7 +88,7 @@ SweepWGSContext::GetSystemSize()
 
   const size_t local_node_count = do_problem.GetLocalNodeCount();
   const size_t global_node_count = do_problem.GetGlobalNodeCount();
-  const size_t num_moments = do_problem.GetNumMoments();
+  const auto num_moments = do_problem.GetNumMoments();
 
   const auto groupset_numgrps = groupset.GetNumGroups();
   const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();

@@ -19,7 +19,7 @@ public:
   CellLBSView(size_t phi_address,
               int num_nodes,
               unsigned int num_groups,
-              int num_moments,
+              unsigned int num_moments,
               int num_faces,
               const MultiGroupXS& xs_mapping,
               double volume,

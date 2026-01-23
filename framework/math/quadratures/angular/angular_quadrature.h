@@ -106,7 +106,7 @@ public:
 
   unsigned int GetScatteringOrder() const { return scattering_order_; }
 
-  size_t GetNumMoments() const { return m_to_ell_em_map_.size(); }
+  unsigned int GetNumMoments() const { return m_to_ell_em_map_.size(); }
 
   AngularQuadratureType GetType() const { return type_; }
 

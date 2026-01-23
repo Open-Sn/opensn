@@ -90,7 +90,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
   const auto& d2m = quadrature->GetDiscreteToMomentOperator();
   const auto& m_ell_em_map = quadrature->GetMomentToHarmonicsIndexMap();
 
-  const size_t num_moments = m_ell_em_map.size();
+  const unsigned int num_moments = m_ell_em_map.size();
   const size_t num_dirs = quadrature->omegas.size();
 
   opensn::log.Log() << "End Set/Get params." << std::endl;
@@ -206,7 +206,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
     {
       double rhs = 0.0;
       // Source moments
-      for (size_t m = 0; m < num_moments; ++m)
+      for (unsigned int m = 0; m < num_moments; ++m)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
         rhs += source_moments[dof_map] * m2d[d][m];
@@ -230,7 +230,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
       double psi_ijk = rhs / lhs;
 
       // Accumulate flux-moments
-      for (size_t m = 0; m < num_moments; ++m)
+      for (unsigned int m = 0; m < num_moments; ++m)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, 0, phi_uk_man, m, g);
         phi_new[dof_map] += d2m[d][m] * psi_ijk;
@@ -328,7 +328,7 @@ ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
                         const std::vector<double>& in_phi_old)
 {
   double pw_change = 0.0;
-  const size_t num_moments = phi_uk_man.unknowns.size();
+  const unsigned int num_moments = phi_uk_man.unknowns.size();
   const unsigned int num_groups = phi_uk_man.unknowns.front().num_components;
 
   for (const auto& cell : grid->local_cells)
@@ -343,7 +343,7 @@ ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
 
       const double* phi_new_m0 = &in_phi_new[m0_map];
       const double* phi_old_m0 = &in_phi_old[m0_map];
-      for (size_t m = 0; m < num_moments; ++m)
+      for (unsigned int m = 0; m < num_moments; ++m)
       {
         const auto m_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
 
@@ -383,7 +383,7 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
   const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   std::vector<double> source_moments(num_local_phi_dofs, 0.0);
 
-  const size_t num_moments = phi_uk_man.unknowns.size();
+  const unsigned int num_moments = phi_uk_man.unknowns.size();
   const unsigned int num_groups = phi_uk_man.unknowns.front().num_components;
 
   for (const auto& cell : grid->local_cells)
@@ -394,7 +394,7 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      for (size_t m = 0; m < num_moments; ++m)
+      for (unsigned int m = 0; m < num_moments; ++m)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
         const auto ell = m_ell_em_map[m].ell;

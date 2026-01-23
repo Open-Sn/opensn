@@ -72,7 +72,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     for (int i = 0; i < num_nodes; ++i)
     {
       // Loop over moments
-      for (size_t m = 0; m < num_moments; ++m)
+      for (unsigned int m = 0; m < num_moments; ++m)
       {
         const auto ell = m_to_ell_em_map[m].ell;
         const auto uk_map = transport_view.MapDOF(i, m, 0);
