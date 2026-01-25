@@ -30,6 +30,8 @@ class AAHSweepChunk : public SweepChunk
 public:
   AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
+  DiscreteOrdinatesProblem& GetProblem() { return problem_; }
+
   void Sweep(AngleSet& angle_set) override;
 
 protected:

@@ -27,10 +27,8 @@ gpu_kernel::Arguments::Arguments(DiscreteOrdinatesProblem& problem,
   quad_data = quadrature->GetDevicePtr();
   // copy source moment and destination phi data to GPU
   auto* src = reinterpret_cast<MemoryPinner<double>*>(problem.GetPinner(0));
-  src->CopyToDevice();
   src_moment = src->GetDevicePtr();
   MemoryPinner<double>* scalar_flux = reinterpret_cast<MemoryPinner<double>*>(problem.GetPinner(1));
-  scalar_flux->CopyToDevice();
   phi = scalar_flux->GetDevicePtr();
   // copy angleset data to GPU
   auto* directions_num = reinterpret_cast<MemoryPinner<std::uint32_t>*>(angle_set.GetMemoryPin());
