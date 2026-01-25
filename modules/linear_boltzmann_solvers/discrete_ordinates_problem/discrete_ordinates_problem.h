@@ -139,8 +139,17 @@ protected:
 private:
   void CreateAAHD_FLUDSCommonData();
   std::shared_ptr<FLUDS> CreateAAHD_FLUDS(std::size_t num_groups,
-                                              std::size_t num_angles,
-                                              const FLUDSCommonData& common_data);
+                                          std::size_t num_angles,
+                                          const FLUDSCommonData& common_data);
+  std::shared_ptr<AngleSet>
+  CreateAAHD_AngleSet(size_t id,
+                      size_t num_groups,
+                      const SPDS& spds,
+                      std::shared_ptr<FLUDS>& fluds,
+                      std::vector<size_t>& angle_indices,
+                      std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+                      int maximum_message_size,
+                      const MPICommunicatorSet& in_comm_set);
 
   /**
    * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes

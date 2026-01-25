@@ -976,8 +976,8 @@ DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
 
 std::shared_ptr<FLUDS>
 DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
-                                               std::size_t num_angles,
-                                               const FLUDSCommonData& common_data)
+                                           std::size_t num_angles,
+                                           const FLUDSCommonData& common_data)
 {
   throw std::runtime_error(
     "DiscreteOrdinatesProblem::CreateAAHD_FLUDS : OPENSN_WITH_CUDA not enabled.");
@@ -1215,16 +1215,30 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
             dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data));
         }
 
-        auto angle_set = std::make_shared<AAH_AngleSet>(angle_set_id++,
-                                                        gs_num_grps,
-                                                        *sweep_ordering,
-                                                        fluds,
-                                                        angle_indices,
-                                                        sweep_boundaries_,
-                                                        options_.max_mpi_message_size,
-                                                        *grid_local_comm_set_,
-                                                        use_gpus_);
-
+        std::shared_ptr<AngleSet> angle_set;
+        if (use_gpus_)
+        {
+          angle_set = CreateAAHD_AngleSet(angle_set_id++,
+                                          gs_num_grps,
+                                          *sweep_ordering,
+                                          fluds,
+                                          angle_indices,
+                                          sweep_boundaries_,
+                                          options_.max_mpi_message_size,
+                                          *grid_local_comm_set_);
+        }
+        else
+        {
+          angle_set = std::make_shared<AAH_AngleSet>(angle_set_id++,
+                                                     gs_num_grps,
+                                                     *sweep_ordering,
+                                                     fluds,
+                                                     angle_indices,
+                                                     sweep_boundaries_,
+                                                     options_.max_mpi_message_size,
+                                                     *grid_local_comm_set_,
+                                                     use_gpus_);
+        }
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }
       else if (sweep_type_ == "CBC")

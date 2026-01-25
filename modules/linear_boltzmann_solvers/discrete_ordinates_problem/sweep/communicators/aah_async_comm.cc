@@ -32,15 +32,7 @@ AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(FLUDS& fluds,
     data_initialized_(false),
     upstream_data_initialized_(false)
 {
-  bool cpu_success = this->BuildMessageStructureForCPUSweep();
-  if (cpu_success)
-    return;
-#ifdef __OPENSN_WITH_GPU__
-  bool gpu_success = this->BuildMessageStructureForGPUSweep();
-  if (gpu_success)
-    return;
-#endif
-  throw std::runtime_error("AAH_ASynchronousCommunicator got neither AAH_FLUDS nor AAHD_FLUDS.\n");
+  BuildMessageStructure();
 }
 
 bool
@@ -83,14 +75,14 @@ AAH_ASynchronousCommunicator::Reset()
     rcv_flags.assign(rcv_flags.size(), false);
 }
 
-bool
-AAH_ASynchronousCommunicator::BuildMessageStructureForCPUSweep()
+void
+AAH_ASynchronousCommunicator::BuildMessageStructure()
 {
   CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::BuildMessageStructure");
   const auto& spds = fluds_.GetSPDS();
   auto* aah_fluds = dynamic_cast<AAH_FLUDS*>(&fluds_);
   if (aah_fluds == nullptr)
-    return false;
+    throw std::runtime_error("AAH_ASynchronousCommunicator does not get AAH_FLUDS.\n");
   // Predecessor locations
   SetupMessageData(
     spds.GetLocationDependencies(),
@@ -130,7 +122,6 @@ AAH_ASynchronousCommunicator::BuildMessageStructureForCPUSweep()
                                                             std::plus<>{},
                                                             [](const auto& v) { return v.size(); });
   deploc_msg_request_.resize(total_deploc_messages);
-  return true;
 }
 
 void

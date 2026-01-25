@@ -3,7 +3,6 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -109,9 +108,6 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoDOG");
 
-  auto aah_sweep_chunk = dynamic_cast<AAHSweepChunk&>(sweep_chunk);
-  aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
-
   // Loop till done
   bool finished = false;
   while (not finished)
@@ -135,8 +131,6 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
         finished = false;
     } // for each angleset rule
   } // while not finished
-
-  aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
 
   // Receive delayed data
   opensn::mpi_comm.barrier();
@@ -214,6 +208,8 @@ SweepScheduler::Sweep()
 
   if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
     ScheduleAlgoFIFO(sweep_chunk_);
+  else if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
+    ScheduleAlgoAAO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
 }

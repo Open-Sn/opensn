@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
@@ -30,6 +31,21 @@ DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
 {
   return std::make_shared<AAHD_FLUDS>(
     num_groups, num_angles, dynamic_cast<const AAHD_FLUDSCommonData&>(common_data));
+}
+
+std::shared_ptr<AngleSet>
+DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
+  size_t id,
+  size_t num_groups,
+  const SPDS& spds,
+  std::shared_ptr<FLUDS>& fluds,
+  std::vector<size_t>& angle_indices,
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+  int maximum_message_size,
+  const MPICommunicatorSet& in_comm_set)
+{
+  return std::make_shared<AAHD_AngleSet>(
+    id, num_groups, spds, fluds, angle_indices, boundaries, maximum_message_size, in_comm_set);
 }
 
 void
