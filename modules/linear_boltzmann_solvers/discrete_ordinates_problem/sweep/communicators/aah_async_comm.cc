@@ -98,6 +98,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructureForCPUSweep()
     { return aah_fluds->GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_; },
     preloc_msg_data_,
     &preloc_msg_received_,
+    false,
     max_num_messages_,
     comm_set_,
     max_mpi_message_size_);
@@ -108,6 +109,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructureForCPUSweep()
     { return aah_fluds->GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_; },
     delayed_preloc_msg_data_,
     &delayed_preloc_msg_received_,
+    false,
     max_num_messages_,
     comm_set_,
     max_mpi_message_size_);
@@ -118,6 +120,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructureForCPUSweep()
     { return aah_fluds->GetDeplocIFaceDOFCount(i) * num_groups_ * num_angles_; },
     deploc_msg_data_,
     nullptr,
+    true,
     max_num_messages_,
     comm_set_,
     max_mpi_message_size_);
