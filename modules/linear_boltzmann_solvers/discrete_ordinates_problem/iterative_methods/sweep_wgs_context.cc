@@ -17,6 +17,22 @@ namespace opensn
 using PCShellPtr = PetscErrorCode (*)(PC, Vec, Vec);
 using namespace std::chrono;
 
+static inline SchedulingAlgorithm
+GetSchedulingAlgorithm(const std::string& sweep_type, bool use_gpu)
+{
+  if (sweep_type == "AAH")
+  {
+    if (use_gpu)
+      return SchedulingAlgorithm::ALL_AT_ONCE;
+    else
+      return SchedulingAlgorithm::DEPTH_OF_GRAPH;
+  }
+  else if (sweep_type == "CBC")
+    return SchedulingAlgorithm::FIRST_IN_FIRST_OUT;
+  else
+    throw std::runtime_error("Unsupported sweep scheduling algorithm: " + sweep_type + "\n");
+}
+
 SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
                                  LBSGroupset& groupset,
                                  const SetSourceFunction& set_source_function,
@@ -26,8 +42,7 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
                                  std::shared_ptr<SweepChunk> swp_chnk)
   : WGSContext(do_problem, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
     sweep_chunk(std::move(swp_chnk)),
-    sweep_scheduler(do_problem.GetSweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
-                                                       : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
+    sweep_scheduler(GetSchedulingAlgorithm(do_problem.GetSweepType(), do_problem.UseGPUs()),
                     *groupset.angle_agg,
                     *sweep_chunk)
 {

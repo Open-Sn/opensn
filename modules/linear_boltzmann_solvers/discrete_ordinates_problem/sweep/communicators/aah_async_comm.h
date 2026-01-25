@@ -80,11 +80,7 @@ protected:
    * This method gets called by an angleset that subscribes to this
    * sweepbuffer.
    */
-  bool BuildMessageStructureForCPUSweep();
-  /**
-   * Builds message structure for device FLUDS.
-   */
-  bool BuildMessageStructureForGPUSweep();
+  void BuildMessageStructure();
 
 private:
   std::size_t num_groups_;
