@@ -6,6 +6,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total Response Detector 1:",
+        "goldvalue": 4.451637e-3,
+        "abs_tol": 1e-6
       }
     ]
   }

@@ -6,6 +6,12 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Eigenvalue =",
+        "goldvalue": 1.171551,
+        "abs_tol": 1e-6
       }
     ]
   }
