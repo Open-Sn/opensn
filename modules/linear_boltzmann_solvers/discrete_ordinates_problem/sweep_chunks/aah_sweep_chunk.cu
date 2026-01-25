@@ -134,11 +134,6 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
   }
   // clean up memory after sweep and copy data back to the host
   fluds.CleanUpAfterSweep(*problem_.GetGrid(), angle_set);
-  auto* phi = reinterpret_cast<MemoryPinner<double>*>(problem_.GetPinner(1));
-  phi->CopyFromDevice();
-  auto* outflow = reinterpret_cast<OutflowCarrier*>(problem_.GetCarrier(1));
-  outflow->AccumulateBack(cell_transport_views_);
-  outflow->Reset();
   // save angular flux to unknowns manager
   if (save_angular_flux_)
   {

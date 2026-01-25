@@ -983,6 +983,16 @@ DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
     "DiscreteOrdinatesProblem::CreateFLUDSForDevice : OPENSN_WITH_CUDA not enabled.");
   return {};
 }
+
+void
+DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
+{
+}
+
+void
+DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
+{
+}
 #endif
 
 std::pair<UniqueSOGroupings, DirIDToSOMap>

@@ -71,6 +71,9 @@ public:
   void SetBoundaryOptions(const InputParameters& params) override;
   void ClearBoundaries() override;
 
+  void CopyPhiAndSrcToDevice();
+  void CopyPhiAndOutflowBackToHost();
+
 protected:
   explicit DiscreteOrdinatesProblem(const std::string& name,
                                     std::shared_ptr<MeshContinuum> grid_ptr);
