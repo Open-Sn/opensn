@@ -25,6 +25,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructureForGPUSweep()
     [aahd_fluds](std::size_t i) { return aahd_fluds->GetNonLocalIncomingNumUnknowns(i); },
     preloc_msg_data_,
     &preloc_msg_received_,
+    false,
     max_num_messages_,
     comm_set_,
     max_mpi_message_size_);
@@ -34,6 +35,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructureForGPUSweep()
     [aahd_fluds](std::size_t i) { return aahd_fluds->GetNonLocalDelayedIncomingNumUnknowns(i); },
     delayed_preloc_msg_data_,
     &delayed_preloc_msg_received_,
+    false,
     max_num_messages_,
     comm_set_,
     max_mpi_message_size_);
@@ -43,6 +45,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructureForGPUSweep()
     [aahd_fluds](std::size_t i) { return aahd_fluds->GetNonLocalOutgoingNumUnknowns(i); },
     deploc_msg_data_,
     nullptr,
+    true,
     max_num_messages_,
     comm_set_,
     max_mpi_message_size_);
