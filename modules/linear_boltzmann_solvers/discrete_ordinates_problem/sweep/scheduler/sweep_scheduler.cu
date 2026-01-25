@@ -26,6 +26,13 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   std::size_t num_anglesets = angle_agg_.GetNumAngleSets();
   sweep_threads.resize(num_anglesets);
 
+  // set the latches for all anglesets
+  for (auto & angle_set : angle_agg_)
+  {
+    auto aahd_angle_set = static_cast<AAHD_AngleSet*>(angle_set.get());
+    aahd_angle_set->SetStartingLatch();
+  }
+
   // launch threads
   for (std::size_t i = 0; i < angle_agg_.GetNumAngleSets(); ++i)
   {

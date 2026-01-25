@@ -53,6 +53,14 @@ public:
 
   size_t GetNumAngles() const { return angles_.size(); }
 
+  bool HasAngleIndex(std::uint32_t angle_index) const;
+
+  /**
+   * Update the starting latch and following angle sets.
+   * This method can only be applied to device AAH (AAHD) anglesets.
+   */
+  virtual void UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets) {}
+
   virtual AsynchronousCommunicator* GetCommunicator()
   {
     OpenSnLogicalError("Method not implemented");

@@ -25,6 +25,9 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
   if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     InitializeAlgoDOG();
 
+  if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
+    angle_agg_.SetupAngleSetDependencies();
+
   // Initialize delayed upstream data
   for (auto& angset : angle_agg_)
     angset->InitializeDelayedUpstreamData();

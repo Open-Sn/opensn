@@ -27,6 +27,25 @@ AAHD_AngleSet::AAHD_AngleSet(size_t id,
 }
 
 void
+AAHD_AngleSet::UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets)
+{
+  std::transform(following_angle_sets.begin(),
+                 following_angle_sets.end(),
+                 std::back_inserter(following_angle_sets_),
+                 [](AngleSet* as) { return static_cast<AAHD_AngleSet*>(as); });
+  for (auto* following_angle_set : following_angle_sets_)
+  {
+    ++(following_angle_set->num_dependencies_);
+  }
+}
+
+void
+AAHD_AngleSet::SetStartingLatch()
+{
+  starting_latch_ = std::make_unique<std::latch>(num_dependencies_);
+}
+
+void
 AAHD_AngleSet::InitializeDelayedUpstreamData()
 {
   async_comm_.InitializeDelayedUpstreamData();
@@ -41,6 +60,7 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
     return AngleSetStatus::FINISHED;
 
   async_comm_.ReceiveUpstreamPsi(static_cast<int>(this->GetID()), stream_);
+  starting_latch_->wait();
   async_comm_.InitializeLocalAndDownstreamBuffers(stream_);
 
   sweep_chunk.Sweep(*this);
@@ -48,6 +68,11 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
   async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()), stream_);
   async_comm_.ClearLocalAndReceiveBuffers(stream_);
   async_comm_.ReceiveDelayedData(static_cast<int>(this->GetID()));
+
+  for (auto& following_as : following_angle_sets_)
+  {
+    following_as->starting_latch_->count_down();
+  }
   async_comm_.Wait();
 
   executed_ = true;
