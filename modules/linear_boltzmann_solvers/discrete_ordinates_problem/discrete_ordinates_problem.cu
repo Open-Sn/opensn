@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h"
 
@@ -46,6 +47,12 @@ DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
 {
   return std::make_shared<AAHD_AngleSet>(
     id, num_groups, spds, fluds, angle_indices, boundaries, maximum_message_size, in_comm_set);
+}
+
+std::shared_ptr<SweepChunk>
+DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
+{
+  return std::make_shared<AAHDSweepChunk>(*this, groupset);
 }
 
 void

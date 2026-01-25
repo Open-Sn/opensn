@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/main.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
@@ -92,11 +92,29 @@ const unsigned int threshold = 256;
 
 } // namespace gpu_kernel
 
+AAHDSweepChunk::AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
+  : SweepChunk(problem.GetPhiNewLocal(),
+               problem.GetPsiNewLocal()[groupset.id],
+               problem.GetGrid(),
+               problem.GetSpatialDiscretization(),
+               problem.GetUnitCellMatrices(),
+               problem.GetCellTransportViews(),
+               problem.GetDensitiesLocal(),
+               problem.GetQMomentsLocal(),
+               groupset,
+               problem.GetBlockID2XSMap(),
+               problem.GetNumMoments(),
+               problem.GetMaxCellDOFCount(),
+               problem.GetMinCellDOFCount()),
+    problem_(problem)
+{
+}
+
 void
-AAHSweepChunk::GPUSweep(AngleSet& angle_set)
+AAHDSweepChunk::Sweep(AngleSet& angle_set)
 {
   // prepare arguments
-  AAHD_FLUDS& fluds = dynamic_cast<AAHD_FLUDS&>(angle_set.GetFLUDS());
+  AAHD_FLUDS& fluds = static_cast<AAHD_FLUDS&>(angle_set.GetFLUDS());
   gpu_kernel::Arguments args(problem_, groupset_, angle_set, fluds, surface_source_active_);
   // allocate memory for saved angular flux
   crb::DeviceMemory<double> saved_psi;
@@ -107,7 +125,7 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
       crb::DeviceMemory<double>(mesh_carrier_ptr->num_nodes_total * fluds.GetStrideSize());
   }
   // retrieve SPDS levels
-  const AAH_SPDS& spds = dynamic_cast<const AAH_SPDS&>(angle_set.GetSPDS());
+  const AAH_SPDS& spds = static_cast<const AAH_SPDS&>(angle_set.GetSPDS());
   const std::vector<std::vector<std::uint32_t>>& levelized_spls = spds.GetLevelizedLocalSubgrid();
   // loop over each level based on saturation status
   unsigned int block_size_x = groupset_.groups.size(), block_size_y = angle_set.GetNumAngles();
