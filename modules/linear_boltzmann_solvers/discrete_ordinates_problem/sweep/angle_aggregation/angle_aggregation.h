@@ -67,6 +67,7 @@ public:
   {
     return boundaries_;
   }
+  std::shared_ptr<AngularQuadrature> GetQuadrature() const { return quadrature_; }
 
   /// Resets all the outgoing intra-location and inter-location cyclic interfaces.
   void ZeroOutgoingDelayedPsi();
@@ -76,6 +77,9 @@ public:
 
   /// Initializes reflecting boundary conditions.
   void InitializeReflectingBCs();
+
+  /// Establishes dependencies between angle sets for reflecting boundaries.
+  void SetupAngleSetDependencies();
 
   /**
    * Returns a pair of numbers containing the number of delayed angular unknowns both locally and

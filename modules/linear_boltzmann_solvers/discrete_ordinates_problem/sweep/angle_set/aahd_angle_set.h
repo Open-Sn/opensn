@@ -36,6 +36,12 @@ public:
     return angle_indices_pinner_.GetDevicePtr();
   }
 
+  /// Update the starting latch and following angle sets.
+  void UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets) override;
+
+  /// Set the latch value to wait on before starting the sweep.
+  void SetStartingLatch();
+
   void InitializeDelayedUpstreamData() override;
 
   int GetMaxBufferMessages() const override { return async_comm_.GetMaxNumMessages(); }
@@ -85,6 +91,21 @@ protected:
 
   /// Pinner for angle indices.
   MemoryPinner<std::uint32_t> angle_indices_pinner_;
+
+  /** Number of anglesets the current angle set depends on.*/
+  std::size_t num_dependencies_ = 0;
+  /**
+   * @brief Starting latch.
+   * @details Sweep operations wait on this latch to be fully released before starting. The OS puts
+   * the thread to sleep while waiting, avoiding taking up CPU resources for spinning wait.
+   */
+  std::unique_ptr<std::latch> starting_latch_;
+  /**
+   * @brief List of AAHD_AngleSets waiting after this angle set.
+   * @details After this angle set completes its sweep chunk, it decrements the latches of the angle
+   * sets waiting after it to allow them to proceed.
+   */
+  std::vector<AAHD_AngleSet*> following_angle_sets_;
 };
 
 } // namespace opensn
