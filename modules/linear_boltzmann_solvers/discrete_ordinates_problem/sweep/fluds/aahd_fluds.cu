@@ -49,26 +49,61 @@ AAHD_Bank::Clear()
   device_storage.reset();
 }
 
-AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& location_sizes,
-                                     const std::vector<std::size_t>& location_offsets,
-                                     std::size_t stride_size)
-  : location_sizes_(&location_sizes),
-    location_offsets_(&location_offsets),
-    stride_size_(stride_size)
+AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
+                                     const std::vector<std::size_t>& loc_offsets,
+                                     std::size_t stride)
+  : location_sizes(&loc_sizes), location_offsets(&loc_offsets), stride_size(stride)
 {
-  host_storage = crb::HostVector<double>(location_offsets.back() * stride_size, 0.0);
-  device_storage = crb::DeviceMemory<double>(location_offsets.back() * stride_size);
+  host_storage = crb::HostVector<double>(loc_offsets.back() * stride_size, 0.0);
+  device_storage = crb::DeviceMemory<double>(loc_offsets.back() * stride_size);
 }
 
 void
 AAHD_NonLocalBank::UpdateViews(std::vector<std::span<double>>& views)
 {
-  views.resize(location_sizes_->size());
-  for (std::size_t i = 0; i < location_sizes_->size(); ++i)
+  views.resize(location_sizes->size());
+  for (std::size_t i = 0; i < location_sizes->size(); ++i)
   {
-    views[i] = std::span<double>(host_storage.data() + (*location_offsets_)[i] * stride_size_,
-                                 (*location_sizes_)[i] * stride_size_);
+    views[i] = std::span<double>(host_storage.data() + (*location_offsets)[i] * stride_size,
+                                 (*location_sizes)[i] * stride_size);
   }
+}
+
+AAHD_NonLocalDelayedBank::AAHD_NonLocalDelayedBank(const std::vector<std::size_t>& loc_sizes,
+                                                   const std::vector<std::size_t>& loc_offsets,
+                                                   std::size_t stride)
+  : AAHD_NonLocalBank(loc_sizes, loc_offsets, stride)
+{
+  host_current_storage = crb::HostVector<double>(loc_offsets.back() * stride_size, 0.0);
+}
+
+void
+AAHD_NonLocalDelayedBank::UpdateViews(std::vector<std::span<double>>& current_delayed_views,
+                                      std::vector<std::span<double>>& old_delayed_views)
+{
+  current_delayed_views.resize(location_sizes->size());
+  old_delayed_views.resize(location_sizes->size());
+  for (std::size_t i = 0; i < location_sizes->size(); ++i)
+  {
+    current_delayed_views[i] =
+      std::span<double>(host_current_storage.data() + (*location_offsets)[i] * stride_size,
+                        (*location_sizes)[i] * stride_size);
+    old_delayed_views[i] =
+      std::span<double>(host_storage.data() + (*location_offsets)[i] * stride_size,
+                        (*location_sizes)[i] * stride_size);
+  }
+}
+
+void
+AAHD_NonLocalDelayedBank::SetOldToNew()
+{
+  host_current_storage = host_storage;
+}
+
+void
+AAHD_NonLocalDelayedBank::SetNewToOld()
+{
+  host_storage = host_current_storage;
 }
 
 AAHD_FLUDS::AAHD_FLUDS(std::size_t num_groups,
@@ -133,29 +168,27 @@ void
 AAHD_FLUDS::AllocateDelayedPrelocIOutgoingPsi()
 {
   nonlocal_delayed_incoming_psi_bank_ =
-    AAHD_NonLocalBank(common_data_.GetNumNonLocalDelayedIncomingNodes(),
-                      common_data_.GetNonLocalDelayedIncomingNodeOffsets(),
-                      num_groups_and_angles_);
-  nonlocal_delayed_incoming_psi_bank_.UpdateViews(delayed_prelocI_outgoing_psi_view_);
-  nonlocal_delayed_incoming_psi_old_bank_ =
-    AAHD_NonLocalBank(common_data_.GetNumNonLocalDelayedIncomingNodes(),
-                      common_data_.GetNonLocalDelayedIncomingNodeOffsets(),
-                      num_groups_and_angles_);
-  nonlocal_delayed_incoming_psi_old_bank_.UpdateViews(delayed_prelocI_outgoing_psi_old_view_);
+    AAHD_NonLocalDelayedBank(common_data_.GetNumNonLocalDelayedIncomingNodes(),
+                             common_data_.GetNonLocalDelayedIncomingNodeOffsets(),
+                             num_groups_and_angles_);
+  nonlocal_delayed_incoming_psi_bank_.UpdateViews(delayed_prelocI_outgoing_psi_view_,
+                                                  delayed_prelocI_outgoing_psi_old_view_);
 }
 
 void
 AAHD_FLUDS::SetDelayedOutgoingPsiOldToNew()
 {
-  nonlocal_delayed_incoming_psi_bank_ = nonlocal_delayed_incoming_psi_old_bank_;
-  nonlocal_delayed_incoming_psi_bank_.UpdateViews(delayed_prelocI_outgoing_psi_view_);
+  nonlocal_delayed_incoming_psi_bank_.SetOldToNew();
+  nonlocal_delayed_incoming_psi_bank_.UpdateViews(delayed_prelocI_outgoing_psi_view_,
+                                                  delayed_prelocI_outgoing_psi_old_view_);
 }
 
 void
 AAHD_FLUDS::SetDelayedOutgoingPsiNewToOld()
 {
-  nonlocal_delayed_incoming_psi_old_bank_ = nonlocal_delayed_incoming_psi_bank_;
-  nonlocal_delayed_incoming_psi_old_bank_.UpdateViews(delayed_prelocI_outgoing_psi_old_view_);
+  nonlocal_delayed_incoming_psi_bank_.SetNewToOld();
+  nonlocal_delayed_incoming_psi_bank_.UpdateViews(delayed_prelocI_outgoing_psi_view_,
+                                                  delayed_prelocI_outgoing_psi_old_view_);
 }
 
 void
@@ -179,12 +212,9 @@ AAHD_FLUDS::PrepareForSweep(MeshContinuum& grid,
                             bool is_surface_source_active)
 {
   // copy psi banks to device
-  delayed_local_psi_bank_.UploadToDevice();
   delayed_local_psi_old_bank_.UploadToDevice();
   nonlocal_incoming_psi_bank_.UploadToDevice();
   nonlocal_delayed_incoming_psi_bank_.UploadToDevice();
-  nonlocal_delayed_incoming_psi_old_bank_.UploadToDevice();
-  nonlocal_outgoing_psi_bank_.UploadToDevice();
   // copy boundary psi to device
   boundary_psi_ = AAHD_BoundaryBank(common_data_.GetNumBoundaryNodes(), num_groups_and_angles_);
   CopyBoundaryPsiToDevice(grid, angle_set, groupset, is_surface_source_active);
@@ -214,13 +244,10 @@ AAHD_FLUDS::GetDevicePointerSet()
   {
     assert(pointer_set.nonlocal_incoming_psi != nullptr);
   }
-  pointer_set.nonlocal_delayed_incoming_psi =
-    nonlocal_delayed_incoming_psi_bank_.device_storage.get();
   pointer_set.nonlocal_delayed_incoming_psi_old =
-    nonlocal_delayed_incoming_psi_old_bank_.device_storage.get();
+    nonlocal_delayed_incoming_psi_bank_.device_storage.get();
   if (common_data_.GetNonLocalDelayedIncomingNodeOffsets().back() > 0)
   {
-    assert(pointer_set.nonlocal_delayed_incoming_psi != nullptr);
     assert(pointer_set.nonlocal_delayed_incoming_psi_old != nullptr);
   }
   pointer_set.nonlocal_outgoing_psi = nonlocal_outgoing_psi_bank_.device_storage.get();
@@ -283,10 +310,6 @@ AAHD_FLUDS::CleanUpAfterSweep(MeshContinuum& grid, AngleSet& angle_set)
 {
   // copy psi banks from device
   delayed_local_psi_bank_.DownloadToHost();
-  delayed_local_psi_old_bank_.DownloadToHost();
-  nonlocal_incoming_psi_bank_.DownloadToHost();
-  nonlocal_delayed_incoming_psi_bank_.DownloadToHost();
-  nonlocal_delayed_incoming_psi_old_bank_.DownloadToHost();
   nonlocal_outgoing_psi_bank_.DownloadToHost();
   // copy boundary psi from device and deallocate the boudnary bank on device
   CopyBoundaryPsiFromDevice(grid, angle_set);
