@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
@@ -23,6 +24,7 @@ AAHD_AngleSet::AAHD_AngleSet(size_t id,
     angle_indices_pinner_(angles_)
 {
   stream_ = crb::Stream::create();
+  std::dynamic_pointer_cast<AAHD_FLUDS>(fluds_)->GetStream() = stream_;
   angle_indices_pinner_.CopyToDevice();
 }
 
@@ -48,7 +50,9 @@ AAHD_AngleSet::SetStartingLatch()
 void
 AAHD_AngleSet::InitializeDelayedUpstreamData()
 {
-  async_comm_.InitializeDelayedUpstreamData();
+  auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
+  aahd_fluds->AllocateDelayedPrelocIOutgoingPsi();
+  aahd_fluds->AllocateDelayedLocalPsi();
 }
 
 AngleSetStatus
@@ -59,31 +63,69 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
   if (executed_)
     return AngleSetStatus::FINISHED;
 
-  async_comm_.ReceiveUpstreamPsi(static_cast<int>(this->GetID()), stream_);
+  auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
+  auto& aahd_sweep_chunk = static_cast<AAHDSweepChunk&>(sweep_chunk);
+
+  // Note: Order matters. Simultaneous operations (thread, stream, mpi) must not be separated by
+  // empty lines. Empty lines represent synchronization points with thread.
+
+  // stream: allocate memory and asynchronously copy delayed psi to device
+  aahd_fluds->AllocateInternalLocalPsi();
+  aahd_fluds->AllocateOutgoingPsi();
+  aahd_fluds->CopyDelayedPsiToDevice();
+  // mpi: allocate memory and pre-post receive for non-local incoming psi
+  aahd_fluds->AllocatePrelocIOutgoingPsi();
+  async_comm_.PrepostReceiveUpstreamPsi(static_cast<int>(this->GetID()));
+  // thread: wait for reflecting boundary data and copy boundary data to device
   starting_latch_->wait();
-  async_comm_.InitializeLocalAndDownstreamBuffers(stream_);
+  aahd_fluds->CopyBoundaryToDevice(aahd_sweep_chunk.GetGrid(),
+                                   *this,
+                                   aahd_sweep_chunk.GetGroupset(),
+                                   aahd_sweep_chunk.IsSurfaceSourceActive());
 
+  // thread: wait for upstream data to arrive
+  async_comm_.WaitForUpstreamPsi();
+
+  // stream: copy data to device, sweep and copy data back to host buffers
+  aahd_fluds->CopyNonLocalIncomingPsiToDevice();
+  aahd_fluds->AllocateSaveAngularFlux(aahd_sweep_chunk.GetProblem(),
+                                      aahd_sweep_chunk.GetGroupset());
   sweep_chunk.Sweep(*this);
+  aahd_fluds->CopyPsiFromDevice();
+  // thread: wait for all sweep computations and data transfer to finish
+  stream_.synchronize();
 
-  async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()), stream_);
-  async_comm_.ClearLocalAndReceiveBuffers(stream_);
-  async_comm_.ReceiveDelayedData(static_cast<int>(this->GetID()));
-
+  // stream: copy save angular flux to contiguous buffer on host, free local + upstream
+  aahd_fluds->CopySaveAngularFluxFromDevice();
+  aahd_fluds->ClearLocalAndReceivePsi();
+  // mpi: send non-local outgoing psi and pre-post receive delayed data
+  async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
+  async_comm_.PrepostReceiveDelayedData(static_cast<int>(this->GetID()));
+  // thread: copy boundary data to angle set to unlock the latches of following angle sets,
+  aahd_fluds->CopyBoundaryPsiToAngleSet(aahd_sweep_chunk.GetGrid(), *this);
   for (auto& following_as : following_angle_sets_)
   {
     following_as->starting_latch_->count_down();
   }
-  async_comm_.Wait();
+  // thread: copy save angular flux to destination psi,
+  if (aahd_fluds->HasSaveAngularFlux())
+  {
+    stream_.synchronize();
+    aahd_fluds->CopySaveAngularFluxToDestinationPsi(
+      aahd_sweep_chunk.GetProblem(), aahd_sweep_chunk.GetGroupset(), *this);
+  }
+  // thread: wait for downstream sends
+  async_comm_.WaitForDownstreamPsi();
+
+  // stream: deallocate downstream psi memory
+  aahd_fluds->ClearSendPsi();
+  // thread: wait for delayed incoming messages
+  async_comm_.WaitForDelayedIncomingPsi();
+  // thread: wait for all device memory deallocations
+  stream_.synchronize();
 
   executed_ = true;
   return AngleSetStatus::FINISHED;
-}
-
-void
-AAHD_AngleSet::ResetSweepBuffers()
-{
-  async_comm_.Reset();
-  executed_ = false;
 }
 
 } // namespace opensn

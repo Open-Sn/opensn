@@ -79,23 +79,13 @@ AAHD_ASynchronousCommunicator::BuildMessageStructure()
 }
 
 void
-AAHD_ASynchronousCommunicator::InitializeDelayedUpstreamData()
+AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi(int angle_set_num)
 {
-  fluds_.AllocateDelayedPrelocIOutgoingPsi();
-  fluds_.AllocateDelayedLocalPsi();
-}
-
-void
-AAHD_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num, crb::Stream& stream)
-{
-  CALI_CXX_MARK_SCOPE("AAHD_ASynchronousCommunicator::ReceiveUpstreamPsi");
+  CALI_CXX_MARK_SCOPE("AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi");
 
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
   const std::size_t num_dependencies = spds.GetLocationDependencies().size();
-
-  // allocate non-local incoming psi
-  fluds_.AllocatePrelocIOutgoingPsi();
 
   for (std::size_t i = 0, req = 0; i < num_dependencies; ++i)
   {
@@ -108,20 +98,18 @@ AAHD_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num, crb::Stream
       preloc_msg_request_[req] = comm.irecv(source, tag, &upstream_psi[block_pos], size);
     }
   }
+}
+
+void
+AAHD_ASynchronousCommunicator::WaitForUpstreamPsi()
+{
   mpi::wait_all(preloc_msg_request_);
 }
 
 void
-AAHD_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers(crb::Stream& stream)
+AAHD_ASynchronousCommunicator::PrepostReceiveDelayedData(int angle_set_num)
 {
-  fluds_.AllocateInternalLocalPsi();
-  fluds_.AllocateOutgoingPsi();
-}
-
-void
-AAHD_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
-{
-  CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::ReceiveDelayedData");
+  CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::PrepostReceiveDelayedData");
 
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
@@ -141,7 +129,13 @@ AAHD_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 }
 
 void
-AAHD_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num, crb::Stream& stream)
+AAHD_ASynchronousCommunicator::WaitForDelayedIncomingPsi()
+{
+  mpi::wait_all(delayed_preloc_msg_request_);
+}
+
+void
+AAHD_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
 {
   CALI_CXX_MARK_SCOPE("AAHD_ASynchronousCommunicator::SendDownstreamPsi");
 
@@ -164,22 +158,9 @@ AAHD_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num, crb::Stream&
 }
 
 void
-AAHD_ASynchronousCommunicator::Wait()
+AAHD_ASynchronousCommunicator::WaitForDownstreamPsi()
 {
-  mpi::wait_all(delayed_preloc_msg_request_);
   mpi::wait_all(deploc_msg_request_);
-  fluds_.ClearSendPsi();
-}
-
-void
-AAHD_ASynchronousCommunicator::ClearLocalAndReceiveBuffers(crb::Stream& stream)
-{
-  fluds_.ClearLocalAndReceivePsi();
-}
-
-void
-AAHD_ASynchronousCommunicator::Reset()
-{
 }
 
 } // namespace opensn

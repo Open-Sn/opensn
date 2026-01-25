@@ -89,7 +89,7 @@ SaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
   }
 }
 
-const unsigned int threshold = 256;
+constexpr unsigned int threshold = 256;
 
 } // namespace gpu_kernel
 
@@ -116,19 +116,13 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
 {
   // prepare arguments
   auto& aahd_angle_set = static_cast<AAHD_AngleSet&>(angle_set);
-  AAHD_FLUDS& fluds = static_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
+  auto& fluds = static_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
+  auto& stream = aahd_angle_set.GetStream();
   gpu_kernel::Arguments args(problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
-  // allocate memory for saved angular flux
-  crb::DeviceMemory<double> saved_psi;
-  if (save_angular_flux_)
-  {
-    auto* mesh_carrier_ptr = reinterpret_cast<MeshCarrier*>(problem_.GetCarrier(2));
-    saved_psi =
-      crb::DeviceMemory<double>(mesh_carrier_ptr->num_nodes_total * fluds.GetStrideSize());
-  }
+  double* saved_psi = fluds.GetSavedAngularFluxDevicePointer();
   // retrieve SPDS levels
-  const AAH_SPDS& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
-  const std::vector<std::vector<std::uint32_t>>& levelized_spls = spds.GetLevelizedLocalSubgrid();
+  const auto& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
+  const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
   // loop over each level based on saturation status
   unsigned int block_size_x = groupset_.groups.size(), block_size_y = aahd_angle_set.GetNumAngles();
   if (block_size_x * block_size_y <= gpu_kernel::threshold)
@@ -139,7 +133,8 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
       std::size_t level_size = levelized_spls[level].size();
       const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
       ::dim3 block_size{block_size_x, block_size_y};
-      gpu_kernel::UnsaturatedKernel<<<level_size, block_size>>>(args, level_data, saved_psi.get());
+      gpu_kernel::UnsaturatedKernel<<<level_size, block_size, 0, stream>>>(
+        args, level_data, saved_psi);
     }
   }
   else
@@ -149,45 +144,8 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
       // perform the sweep on device
       std::size_t level_size = levelized_spls[level].size();
       const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
-      gpu_kernel::SaturatedKernel<<<level_size, 256>>>(args, level_data, saved_psi.get());
-    }
-  }
-  // clean up memory after sweep and copy data back to the host
-  fluds.CleanUpAfterSweep(*problem_.GetGrid(), angle_set);
-  // save angular flux to unknowns manager
-  if (save_angular_flux_)
-  {
-    // copy saved psi back to host
-    crb::HostVector<double> psi_host(saved_psi.size());
-    crb::copy(psi_host, saved_psi, psi_host.size());
-    // loop for each cell in the mesh
-    auto* mesh_carrier = reinterpret_cast<MeshCarrier*>(problem_.GetCarrier(2));
-    for (const Cell& cell : grid_->local_cells)
-    {
-      // get pointer to the cell's angular fluxes
-      double* dst_psi =
-        &destination_psi_[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
-      double* src_psi =
-        psi_host.data() + mesh_carrier->saved_psi_offset[cell.local_id] * fluds.GetStrideSize();
-      // get number of cell nodes
-      std::uint32_t cell_num_nodes = discretization_.GetCellMapping(cell).GetNumNodes();
-      // loop for each cell node
-      for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
-      {
-        // loop for each angle
-        for (std::uint32_t as_ss_idx = 0; as_ss_idx < aahd_angle_set.GetNumAngles(); ++as_ss_idx)
-        {
-          auto direction_num = aahd_angle_set.GetAngleIndices()[as_ss_idx];
-          // compute dst and src corresponding to the direction
-          double* dst = dst_psi + direction_num * groupset_group_stride_;
-          double* src = src_psi + as_ss_idx * groupset_.groups.size();
-          // copy the flux for each group
-          std::memcpy(dst, src, groupset_group_stride_ * sizeof(double));
-        }
-        // move src and dts to next node
-        dst_psi += groupset_angle_group_stride_;
-        src_psi += fluds.GetStrideSize();
-      }
+      gpu_kernel::SaturatedKernel<<<level_size, gpu_kernel::threshold, 0, stream>>>(
+        args, level_data, saved_psi);
     }
   }
 }

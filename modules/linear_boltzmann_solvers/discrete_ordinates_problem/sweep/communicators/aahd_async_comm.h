@@ -5,10 +5,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aah_message_struct.h"
 #include "mpicpp-lite/mpicpp-lite.h"
-#include "caribou/main.hpp"
 #include <vector>
 
-namespace crb = caribou;
 namespace mpi = mpicpp_lite;
 
 namespace opensn
@@ -28,32 +26,23 @@ public:
 
   void SetMaxNumMessages(int count) { max_num_messages_ = count; }
 
-  /**
-   * Initialize delayed upstream data.
-   * This method gets called when a sweep scheduler is constructed.
-   */
-  void InitializeDelayedUpstreamData();
+  /// Pre-post receiving upstream dependencies have been met.
+  void PrepostReceiveUpstreamPsi(int angle_set_num);
 
-  /// Allocate local and non-local outgoing memory.
-  void InitializeLocalAndDownstreamBuffers(crb::Stream& stream);
+  /// Block until all upstream messages have been received.
+  void WaitForUpstreamPsi();
 
-  /// Block until all upstream dependencies have been met.
-  void ReceiveUpstreamPsi(int angle_set_num, crb::Stream& stream);
+  /// Pre-post receive delayed data from successor locations.
+  void PrepostReceiveDelayedData(int angle_set_num);
+
+  /// Wait until all delayed incoming messages have been received.
+  void WaitForDelayedIncomingPsi();
 
   /// Send non-local outgoing psi.
-  void SendDownstreamPsi(int angle_set_num, crb::Stream& stream);
+  void SendDownstreamPsi(int angle_set_num);
 
-  /// Receive delayed data from successor locations.
-  void ReceiveDelayedData(int angle_set_num);
-
-  /// Wait until all outgoing messages have been sent and all delayed incoming messages have been received.
-  void Wait();
-
-  /// Deallocate memory for local and non-local incoming psi after the sweep.
-  void ClearLocalAndReceiveBuffers(crb::Stream& stream);
-
-  /// Clear flags in preperation for another sweep.
-  void Reset();
+  /// Wait until all downstream messages have been sent.
+  void WaitForDownstreamPsi();
 
 protected:
   /**

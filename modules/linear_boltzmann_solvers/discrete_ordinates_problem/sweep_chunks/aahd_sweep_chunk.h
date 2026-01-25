@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
 #pragma once
@@ -21,6 +21,8 @@ public:
   AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
   DiscreteOrdinatesProblem& GetProblem() { return problem_; }
+  MeshContinuum& GetGrid() { return *grid_; }
+  const LBSGroupset& GetGroupset() const { return groupset_; }
 
   void Sweep(AngleSet& angle_set) override;
 

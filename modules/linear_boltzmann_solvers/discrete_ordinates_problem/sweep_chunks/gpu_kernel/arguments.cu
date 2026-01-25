@@ -31,8 +31,6 @@ gpu_kernel::Arguments::Arguments(DiscreteOrdinatesProblem& problem,
   MemoryPinner<double>* scalar_flux = reinterpret_cast<MemoryPinner<double>*>(problem.GetPinner(1));
   phi = scalar_flux->GetDevicePtr();
   // copy angleset data to GPU
-  /*auto* directions_num = reinterpret_cast<MemoryPinner<std::uint32_t>*>(angle_set.GetMemoryPin());
-  directions = directions_num->GetDevicePtr();*/
   directions = angle_set.GetDeviceAngleIndices();
   angleset_size = angle_set.GetNumAngles();
   // copy groupset data to GPU
@@ -40,8 +38,7 @@ gpu_kernel::Arguments::Arguments(DiscreteOrdinatesProblem& problem,
   groupset_start = groupset.groups.front().id;
   num_groups = problem.GetGroups().size();
   // copy FLUDS data to GPU and retrieve the pointer set
-  flud_data =
-    fluds.PrepareForSweep(*(problem.GetGrid()), angle_set, groupset, is_surface_source_active);
+  flud_data = fluds.GetDevicePointerSet();
   flud_index = fluds.GetCommonData().GetDeviceIndex();
 }
 
