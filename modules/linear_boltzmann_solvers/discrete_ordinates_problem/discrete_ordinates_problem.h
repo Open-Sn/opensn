@@ -137,8 +137,8 @@ protected:
   std::vector<std::vector<double>> psi_old_local_;
 
 private:
-  void CreateFLUDSCommonDataForDevice();
-  std::shared_ptr<FLUDS> CreateFLUDSForDevice(std::size_t num_groups,
+  void CreateAAHD_FLUDSCommonData();
+  std::shared_ptr<FLUDS> CreateAAHD_FLUDS(std::size_t num_groups,
                                               std::size_t num_angles,
                                               const FLUDSCommonData& common_data);
 
