@@ -119,6 +119,8 @@ if(ENABLE_PETSC)
     ExternalProject_Add(petsc
       URL https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.23.0.tar.gz
       SOURCE_DIR ${CMAKE_BINARY_DIR}/petsc-src
+      PATCH_COMMAND
+        COMMAND patch -p0 < ${CMAKE_CURRENT_SOURCE_DIR}/patches/petsc-build-with-cmake-4.patch
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> ./configure --prefix=${CMAKE_INSTALL_PREFIX}
                         --download-hypre=yes --with-ssl=no --with-debugging=no --with-pic=yes --with-fc=0
                         --with-shared-libraries=yes --download-bison=yes --download-f2cblaslapack=yes
