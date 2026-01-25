@@ -1260,8 +1260,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                      angle_indices,
                                                      sweep_boundaries_,
                                                      options_.max_mpi_message_size,
-                                                     *grid_local_comm_set_,
-                                                     use_gpus_);
+                                                     *grid_local_comm_set_);
         }
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }
@@ -1280,8 +1279,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                         fluds,
                                                         angle_indices,
                                                         sweep_boundaries_,
-                                                        *grid_local_comm_set_,
-                                                        use_gpus_);
+                                                        *grid_local_comm_set_);
 
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }

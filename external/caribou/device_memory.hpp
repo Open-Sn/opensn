@@ -10,6 +10,7 @@
 
 #include "api_mapping.hpp"  // GPU_API
 #include "exception.hpp"    // caribou::check_error
+#include "stream.hpp"       // caribou::Stream
 
 namespace caribou {
 
@@ -57,6 +58,9 @@ class DeviceMemory : public impl::MemoryImpl<T> {
     DeviceMemory(void) = default;
     /** @brief Allocate memory for holding n elements.*/
     DeviceMemory(std::size_t n) : impl::MemoryImpl<T>(DeviceMemory<T>::malloc_(n)), size_(n) {}
+    /** @brief Allocate memory for holding n elements asynchronously.*/
+    DeviceMemory(std::size_t n, Stream & stream) :
+    impl::MemoryImpl<T>(DeviceMemory<T>::malloc_async_(n, stream)), size_(n) {}
     /** @brief Owning a pre-allocated memory.*/
     DeviceMemory(T * ptr, std::size_t n = 0) : impl::MemoryImpl<T>(ptr), size_(n) {}
     /// @}
@@ -104,6 +108,14 @@ class DeviceMemory : public impl::MemoryImpl<T> {
         T * result;
         check_error(::GPU_API(Malloc)(&result, sizeof(T) * size));
         check_error(::GPU_API(Memset)(result, 0, sizeof(T) * size));
+        return result;
+    }
+
+    /** @brief Allocate device memory asynchronously.*/
+    static T * malloc_async_(std::size_t size, Stream & stream) {
+        T * result;
+        check_error(::GPU_API(MallocAsync)(&result, sizeof(T) * size, stream));
+        check_error(::GPU_API(MemsetAsync)(result, 0, sizeof(T) * size, stream));
         return result;
     }
 };

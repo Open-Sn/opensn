@@ -18,10 +18,12 @@ AAHD_AngleSet::AAHD_AngleSet(size_t id,
                              std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                              int maximum_message_size,
                              const MPICommunicatorSet& comm_set)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, true),
-    async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set)
+  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
+    async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set),
+    angle_indices_pinner_(angles_)
 {
   stream_ = crb::Stream::create();
+  angle_indices_pinner_.CopyToDevice();
 }
 
 void
