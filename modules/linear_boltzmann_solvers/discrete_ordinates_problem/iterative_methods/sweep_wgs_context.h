@@ -30,6 +30,7 @@ struct SweepWGSContext : public WGSContext
   void PostSolveCallback() override;
 
   void ResetSweepChunk(std::shared_ptr<SweepChunk> new_chunk);
+  void RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term);
 
   std::shared_ptr<SweepChunk> sweep_chunk;
   std::unique_ptr<SweepScheduler> sweep_scheduler;

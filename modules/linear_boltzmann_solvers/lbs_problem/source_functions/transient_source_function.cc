@@ -8,8 +8,8 @@ namespace opensn
 
 TransientSourceFunction::TransientSourceFunction(const LBSProblem& lbs_problem,
                                                  double& ref_dt,
-                                                 SteppingMethod& method)
-  : SourceFunction(lbs_problem), dt_(ref_dt), method_(method)
+                                                 double& ref_theta)
+  : SourceFunction(lbs_problem), dt_(ref_dt), theta_(ref_theta)
 {
 }
 
@@ -19,16 +19,7 @@ TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
                                         const std::vector<double>& nu_delayed_sigma_f,
                                         const double* phi) const
 {
-  const auto& BackwardEuler = SteppingMethod::IMPLICIT_EULER;
-  const auto& CrankNicolson = SteppingMethod::CRANK_NICOLSON;
-
-  double theta = 0.7;
-  if (method_ == BackwardEuler)
-    theta = 1.0;
-  else if (method_ == CrankNicolson)
-    theta = 0.5;
-
-  const double eff_dt = theta * dt_;
+  const double eff_dt = theta_ * dt_;
 
   double value = 0.0;
   if (apply_ags_fission_src_)

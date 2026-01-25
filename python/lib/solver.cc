@@ -173,6 +173,20 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
+    "GetTime",
+    &LBSProblem::GetTime,
+    R"(
+    Get the current simulation time in seconds.
+    )"
+  );
+  lbs_problem.def(
+    "GetTimeStep",
+    &LBSProblem::GetTimeStep,
+    R"(
+    Get the current timestep size.
+    )"
+  );
+  lbs_problem.def(
     "SetOptions",
     [](LBSProblem& self, py::kwargs& params)
     {
@@ -272,6 +286,77 @@ WrapLBS(py::module& slv)
         If `scalar_flux_iterate` is not 'old' or 'new'.
     )",
     py::arg("scalar_flux_iterate")
+  );
+  lbs_problem.def(
+    "ComputeFissionProduction",
+    [](LBSProblem& self, const std::string& scalar_flux_iterate)
+    {
+      const std::vector<double>* phi_ptr = nullptr;
+      if (scalar_flux_iterate == "old")
+      {
+        phi_ptr = &self.GetPhiOldLocal();
+      }
+      else if (scalar_flux_iterate == "new")
+      {
+        phi_ptr = &self.GetPhiNewLocal();
+      }
+      else
+      {
+        throw std::invalid_argument("Unknown scalar_flux_iterate value: \"" + scalar_flux_iterate + "\".");
+      }
+      return ComputeFissionProduction(self, *phi_ptr);
+    },
+    R"(
+    Computes the total fission production (nu*fission).
+
+    Parameters
+    ----------
+    scalar_flux_iterate : {'old', 'new'}
+        Specifies which scalar flux vector to use in the calculation.
+            - 'old': Use the previous scalar flux iterate.
+            - 'new': Use the current scalar flux iterate.
+
+    Returns
+    -------
+    float
+        The total fission production.
+
+    Raises
+    ------
+    ValueError
+        If `scalar_flux_iterate` is not 'old' or 'new'.
+    )",
+    py::arg("scalar_flux_iterate")
+  );
+  lbs_problem.def(
+    "GetPhiOldLocal",
+    [](LBSProblem& self)
+    {
+      return convert_vector(self.GetPhiOldLocal());
+    },
+    R"(
+    Get the previous scalar flux iterate (local vector).
+
+    Returns
+    -------
+    memoryview
+        Memory view of the local old scalar flux vector.
+    )"
+  );
+  lbs_problem.def(
+    "GetPhiNewLocal",
+    [](LBSProblem& self)
+    {
+      return convert_vector(self.GetPhiNewLocal());
+    },
+    R"(
+    Get the current scalar flux iterate (local vector).
+
+    Returns
+    -------
+    memoryview
+        Memory view of the local new scalar flux vector.
+    )"
   );
   lbs_problem.def(
     "WriteFluxMoments",

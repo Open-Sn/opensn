@@ -66,7 +66,7 @@ MultiGroupXS::Combine(
                          "All cross sections being combined must have the same group structure.");
 
     // Increment number of precursors
-    n_precs += mgxs.num_precursors_;
+    n_precs += xs->GetNumPrecursors();
   } // for cross section
 
   // Check that the fissile and precursor densities are greater than
@@ -184,11 +184,12 @@ MultiGroupXS::Combine(
     }
 
     // Set inverse velocity data
-    if (x == 0 and xsecs[x]->GetInverseVelocity().empty())
+    if (x == 0 and not xsecs[x]->GetInverseVelocity().empty())
       mgxs.inv_velocity_ = xsecs[x]->GetInverseVelocity();
-    OpenSnLogicalErrorIf(
-      xsecs[x]->GetInverseVelocity() != mgxs.inv_velocity_,
-      "All cross sections being combined must have the same group-wise velocities.");
+    if (not mgxs.inv_velocity_.empty())
+      OpenSnLogicalErrorIf(
+        xsecs[x]->GetInverseVelocity() != mgxs.inv_velocity_,
+        "All cross sections being combined must have the same group-wise velocities.");
 
     // Combine transfer matrices
 

@@ -4,9 +4,9 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
-#include "framework/math/math_time_stepping.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
+#include <functional>
 
 namespace opensn
 {
@@ -18,7 +18,6 @@ class TransientKEigenSolver : public PowerIterationKEigenSolver
 {
 public:
   static InputParameters GetInputParameters();
-  SteppingMethod method = SteppingMethod::CRANK_NICOLSON;
 
   /// Options for initial condition normalization
   enum class NormalizationMethod
@@ -28,17 +27,17 @@ public:
     NONE = 2            ///< No normalization
   };
 
-  struct Options
-  {
-    int verbosity_level = 1;
+  void SetPreAdvanceCallback(std::function<void()> callback);
 
-    bool inhibit_advance = false;
-    double t_final = 0.1;
-    int max_time_steps = 10;
+  void SetPreAdvanceCallback(std::nullptr_t);
 
-    bool scale_fission_xs = false;
-    NormalizationMethod normalization_method = NormalizationMethod::TOTAL_POWER;
-  } transient_options_;
+  void SetPostAdvanceCallback(std::function<void()> callback);
+
+  void SetPostAdvanceCallback(std::nullptr_t);
+
+  double GetCurrentTime() const { return current_time_; }
+
+  unsigned int GetStep() const { return step_; }
 
 
 protected:
@@ -59,7 +58,12 @@ protected:
   /// Temporal domain and discretization information
   double dt_ = 2.0e-3;
   double theta_ = 0.5;
-  double time_ = 0.0;
+  double stop_time_ = 0.1;
+  double current_time_ = 0.0;
+  unsigned int step_ = 0;
+  bool verbose_ = true;
+  std::function<void()> pre_advance_callback_;
+  std::function<void()> post_advance_callback_;
 
 public:
   explicit TransientKEigenSolver(const InputParameters& params);
@@ -75,11 +79,7 @@ public:
   void SetTimeStep(double dt);
   void SetTheta(double theta);
 
-  //Iterative operations
-  std::shared_ptr<SweepChunk> SetTransientSweepChunk(LBSGroupset& groupset);
-
   //double ComputeBeta();
-  void PostStepCallBackFunction() const;
   void StepPrecursors();
 };
 
