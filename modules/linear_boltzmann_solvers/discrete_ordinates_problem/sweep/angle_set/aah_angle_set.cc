@@ -17,9 +17,8 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                            std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                            int maximum_message_size,
-                           const MPICommunicatorSet& comm_set,
-                           bool use_gpu)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries, use_gpu),
+                           const MPICommunicatorSet& comm_set)
+  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
     async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set)
 {
 }

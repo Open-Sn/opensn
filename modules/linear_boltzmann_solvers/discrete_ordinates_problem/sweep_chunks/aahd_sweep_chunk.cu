@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/main.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
@@ -114,8 +115,9 @@ void
 AAHDSweepChunk::Sweep(AngleSet& angle_set)
 {
   // prepare arguments
-  AAHD_FLUDS& fluds = static_cast<AAHD_FLUDS&>(angle_set.GetFLUDS());
-  gpu_kernel::Arguments args(problem_, groupset_, angle_set, fluds, surface_source_active_);
+  auto& aahd_angle_set = static_cast<AAHD_AngleSet&>(angle_set);
+  AAHD_FLUDS& fluds = static_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
+  gpu_kernel::Arguments args(problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
   // allocate memory for saved angular flux
   crb::DeviceMemory<double> saved_psi;
   if (save_angular_flux_)
@@ -125,10 +127,10 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
       crb::DeviceMemory<double>(mesh_carrier_ptr->num_nodes_total * fluds.GetStrideSize());
   }
   // retrieve SPDS levels
-  const AAH_SPDS& spds = static_cast<const AAH_SPDS&>(angle_set.GetSPDS());
+  const AAH_SPDS& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
   const std::vector<std::vector<std::uint32_t>>& levelized_spls = spds.GetLevelizedLocalSubgrid();
   // loop over each level based on saturation status
-  unsigned int block_size_x = groupset_.groups.size(), block_size_y = angle_set.GetNumAngles();
+  unsigned int block_size_x = groupset_.groups.size(), block_size_y = aahd_angle_set.GetNumAngles();
   if (block_size_x * block_size_y <= gpu_kernel::threshold)
   {
     for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)
@@ -173,9 +175,9 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
       for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
       {
         // loop for each angle
-        for (std::uint32_t as_ss_idx = 0; as_ss_idx < angle_set.GetNumAngles(); ++as_ss_idx)
+        for (std::uint32_t as_ss_idx = 0; as_ss_idx < aahd_angle_set.GetNumAngles(); ++as_ss_idx)
         {
-          auto direction_num = angle_set.GetAngleIndices()[as_ss_idx];
+          auto direction_num = aahd_angle_set.GetAngleIndices()[as_ss_idx];
           // compute dst and src corresponding to the direction
           double* dst = dst_psi + direction_num * groupset_group_stride_;
           double* src = src_psi + as_ss_idx * groupset_.groups.size();

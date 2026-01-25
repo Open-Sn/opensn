@@ -31,6 +31,11 @@ public:
 
   crb::Stream& GetStream() { return stream_; }
 
+  std::uint32_t* GetDeviceAngleIndices()
+  {
+    return angle_indices_pinner_.GetDevicePtr();
+  }
+
   void InitializeDelayedUpstreamData() override;
 
   int GetMaxBufferMessages() const override { return async_comm_.GetMaxNumMessages(); }
@@ -77,6 +82,9 @@ protected:
 
   /// Asynchronous communicator.
   AAHD_ASynchronousCommunicator async_comm_;
+
+  /// Pinner for angle indices.
+  MemoryPinner<std::uint32_t> angle_indices_pinner_;
 };
 
 } // namespace opensn
