@@ -31,6 +31,7 @@ struct AAH_MessageDetails
  * \param get_unknown_count Function getting the number of unknowns for a given location.
  * \param msg_data List of vector of message data per location.
  * \param msg_received Pointer to the vector of message received flag.
+ * \param is_outgoing Flag indicating if the messages are for non-local downstream or upstream.
  * \param max_num_messages Reference to max number of message.
  * \param comm_set Communicator set.
  * \param max_mpi_message_size Max size (in bytes) of MPI messages.

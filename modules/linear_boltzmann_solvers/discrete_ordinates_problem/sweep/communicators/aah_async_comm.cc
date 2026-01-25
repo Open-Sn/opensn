@@ -252,12 +252,4 @@ AAH_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers()
   }
 }
 
-#ifndef __OPENSN_WITH_GPU__
-bool
-AAH_ASynchronousCommunicator::BuildMessageStructureForGPUSweep()
-{
-  return false;
-}
-#endif // __OPENSN_WITH_GPU__
-
 } // namespace opensn

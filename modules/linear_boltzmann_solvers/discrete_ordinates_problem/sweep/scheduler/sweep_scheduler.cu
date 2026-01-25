@@ -27,7 +27,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   sweep_threads.resize(num_anglesets);
 
   // set the latches for all anglesets
-  for (auto & angle_set : angle_agg_)
+  for (auto& angle_set : angle_agg_)
   {
     auto aahd_angle_set = static_cast<AAHD_AngleSet*>(angle_set.get());
     aahd_angle_set->SetStartingLatch();
@@ -37,11 +37,9 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   for (std::size_t i = 0; i < angle_agg_.GetNumAngleSets(); ++i)
   {
     auto aahd_angle_set = static_cast<AAHD_AngleSet*>(angle_agg_[i].get());
-    sweep_threads[i] = std::thread(
-      [&sweep_chunk, aahd_angle_set]()
-      {
-        aahd_angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
-      });
+    sweep_threads[i] =
+      std::thread([&sweep_chunk, aahd_angle_set]()
+                  { aahd_angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE); });
   }
   // wait for all threads to complete
   for (auto& thread : sweep_threads)

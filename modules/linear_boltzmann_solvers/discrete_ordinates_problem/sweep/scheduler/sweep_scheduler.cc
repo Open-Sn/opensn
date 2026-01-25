@@ -204,6 +204,17 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
     bndry->ResetAnglesReadyStatus();
 }
 
+#ifndef __OPENSN_WITH_GPU__
+
+void
+SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
+{
+  throw std::runtime_error("SweepScheduler::ScheduleAlgoAAO: AAO scheduling is only "
+                           "available for builds with GPU support.");
+}
+
+#endif // __OPENSN_WITH_GPU__
+
 void
 SweepScheduler::Sweep()
 {

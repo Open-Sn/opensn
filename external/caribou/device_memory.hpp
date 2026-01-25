@@ -95,6 +95,11 @@ class DeviceMemory : public impl::MemoryImpl<T> {
         size_ = 0;
         return impl::MemoryImpl<T>::release();
     }
+    /** @brief Asynchronously free the managed memory.*/
+    void async_free(Stream & stream) noexcept {
+        T * ptr = this->release();
+        static_cast<void>(::GPU_API(FreeAsync)(reinterpret_cast<void *>(ptr), stream));
+    }
     /** @brief Zero-fill device memory with zeros.*/
     void zero_fill(void) { check_error(::GPU_API(Memset)(this->get(), 0, this->size_ * sizeof(T))); }
     /// @}
