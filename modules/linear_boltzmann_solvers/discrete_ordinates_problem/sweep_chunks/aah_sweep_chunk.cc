@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
+
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
@@ -26,75 +27,67 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetNumMoments(),
                problem.GetMaxCellDOFCount(),
                problem.GetMinCellDOFCount()),
-    problem_(problem),
-    max_level_size_(problem.GetMaxLevelSize()),
-    use_gpus_(problem.UseGPUs())
+    max_level_size_(problem.GetMaxLevelSize())
 {
-  if (!use_gpus_)
+  cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_Generic;
+
+  if (min_num_cell_dofs_ == max_num_cell_dofs_ and min_num_cell_dofs_ >= 2 and
+      min_num_cell_dofs_ <= 8)
   {
-    cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_Generic;
-
-    if (min_num_cell_dofs_ == max_num_cell_dofs_ and min_num_cell_dofs_ >= 2 and
-        min_num_cell_dofs_ <= 8)
+    switch (min_num_cell_dofs_)
     {
-      switch (min_num_cell_dofs_)
-      {
-        case 2:
-          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<2>;
-          break;
-        case 3:
-          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<3>;
-          break;
-        case 4:
-          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<4>;
-          break;
-        case 5:
-          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<5>;
-          break;
-        case 6:
-          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<6>;
-          break;
-        case 7:
-          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<7>;
-          break;
-        case 8:
-          cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<8>;
-          break;
-        default:
-          break;
-      }
+      case 2:
+        cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<2>;
+        break;
+      case 3:
+        cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<3>;
+        break;
+      case 4:
+        cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<4>;
+        break;
+      case 5:
+        cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<5>;
+        break;
+      case 6:
+        cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<6>;
+        break;
+      case 7:
+        cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<7>;
+        break;
+      case 8:
+        cpu_sweep_impl_ = &AAHSweepChunk::CPUSweep_FixedN<8>;
+        break;
+      default:
+        break;
     }
-
-    auto block_size = [&](size_t gs_size) -> size_t
-    {
-      if (gs_size <= simd_width)
-        return gs_size;
-
-      size_t target = 0;
-      if (gs_size >= 16 * simd_width)
-        target = 4 * simd_width;
-      else if (gs_size >= 4 * simd_width)
-        target = 2 * simd_width;
-      else
-        target = 1 * simd_width;
-
-      target = std::min(target, gs_size);
-      if (target >= simd_width)
-        target = (target / simd_width) * simd_width;
-      return target;
-    };
-
-    group_block_size_ = block_size(groupset_.groups.size());
   }
+
+  auto block_size = [&](size_t gs_size) -> size_t
+  {
+    if (gs_size <= simd_width)
+      return gs_size;
+
+    size_t target = 0;
+    if (gs_size >= 16 * simd_width)
+      target = 4 * simd_width;
+    else if (gs_size >= 4 * simd_width)
+      target = 2 * simd_width;
+    else
+      target = 1 * simd_width;
+
+    target = std::min(target, gs_size);
+    if (target >= simd_width)
+      target = (target / simd_width) * simd_width;
+    return target;
+  };
+
+  group_block_size_ = block_size(groupset_.groups.size());
 }
 
 void
 AAHSweepChunk::Sweep(AngleSet& angle_set)
 {
-  if (use_gpus_)
-    GPUSweep(angle_set);
-  else
-    (this->*cpu_sweep_impl_)(angle_set);
+  (this->*cpu_sweep_impl_)(angle_set);
 }
 
 void
@@ -331,13 +324,5 @@ AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
     } // for angleset/subset
   } // for cell
 }
-
-#ifndef __OPENSN_WITH_GPU__
-void
-AAHSweepChunk::GPUSweep(AngleSet& angle_set)
-{
-  throw std::runtime_error("OpenSn was not compiled with CUDA.\n");
-}
-#endif // __OPENSN_WITH_GPU__
 
 } // namespace opensn

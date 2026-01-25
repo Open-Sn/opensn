@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "caliper/cali.h"
 #include <thread>
@@ -18,7 +18,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoAAO");
 
   // copy phi and src moments to device
-  auto aah_sweep_chunk = dynamic_cast<AAHSweepChunk&>(sweep_chunk);
+  auto aah_sweep_chunk = static_cast<AAHDSweepChunk&>(sweep_chunk);
   aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
 
   // allocate threads for each angleset

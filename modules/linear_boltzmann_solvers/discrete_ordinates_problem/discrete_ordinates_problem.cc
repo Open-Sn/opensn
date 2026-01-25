@@ -984,6 +984,30 @@ DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
   return {};
 }
 
+std::shared_ptr<AngleSet>
+DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
+  size_t id,
+  size_t num_groups,
+  const SPDS& spds,
+  std::shared_ptr<FLUDS>& fluds,
+  std::vector<size_t>& angle_indices,
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+  int maximum_message_size,
+  const MPICommunicatorSet& in_comm_set)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateAAHD_AngleSet : OPENSN_WITH_CUDA not enabled.");
+  return {};
+}
+
+std::shared_ptr<SweepChunk>
+DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateAAHD_SweepChunk : OPENSN_WITH_CUDA not enabled.");
+  return {};
+}
+
 void
 DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
 {
@@ -1286,6 +1310,13 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
     if (time_dependent_)
     {
       auto sweep_chunk = std::make_shared<AAHSweepChunkTD>(*this, groupset);
+
+      return sweep_chunk;
+    }
+
+    if (use_gpus_)
+    {
+      auto sweep_chunk = CreateAAHD_SweepChunk(groupset);
 
       return sweep_chunk;
     }

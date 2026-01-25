@@ -30,19 +30,13 @@ class AAHSweepChunk : public SweepChunk
 public:
   AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
-  DiscreteOrdinatesProblem& GetProblem() { return problem_; }
-
   void Sweep(AngleSet& angle_set) override;
 
 protected:
   void CPUSweep(AngleSet& angle_set);
-  void GPUSweep(AngleSet& angle_set);
 
-  DiscreteOrdinatesProblem& problem_;
   size_t max_level_size_;
   size_t group_block_size_;
-  bool use_gpus_;
-  void* level_vector_ = nullptr;
 
 private:
   using CpuSweepFunc = void (AAHSweepChunk::*)(AngleSet&);
