@@ -94,12 +94,8 @@ AAHD_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num, crb::Stream
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
   const std::size_t num_dependencies = spds.GetLocationDependencies().size();
 
-  // allocate non-local incoming psi if not yet done
-  if (not upstream_data_initialized_)
-  {
-    fluds_.AllocatePrelocIOutgoingPsi();
-    upstream_data_initialized_ = true;
-  }
+  // allocate non-local incoming psi
+  fluds_.AllocatePrelocIOutgoingPsi();
 
   for (std::size_t i = 0, req = 0; i < num_dependencies; ++i)
   {
@@ -118,12 +114,8 @@ AAHD_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num, crb::Stream
 void
 AAHD_ASynchronousCommunicator::InitializeLocalAndDownstreamBuffers(crb::Stream& stream)
 {
-  if (not data_initialized_)
-  {
-    fluds_.AllocateInternalLocalPsi();
-    fluds_.AllocateOutgoingPsi();
-    data_initialized_ = true;
-  }
+  fluds_.AllocateInternalLocalPsi();
+  fluds_.AllocateOutgoingPsi();
 }
 
 void
@@ -188,8 +180,6 @@ AAHD_ASynchronousCommunicator::ClearLocalAndReceiveBuffers(crb::Stream& stream)
 void
 AAHD_ASynchronousCommunicator::Reset()
 {
-  data_initialized_ = false;
-  upstream_data_initialized_ = false;
 }
 
 } // namespace opensn

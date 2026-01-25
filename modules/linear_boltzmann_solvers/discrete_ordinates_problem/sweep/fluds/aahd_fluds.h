@@ -97,9 +97,9 @@ struct AAHD_NonLocalBank : public AAHD_Bank
   /// \brief Default constructor.
   AAHD_NonLocalBank() = default;
   /// \brief Member constructor.
-  AAHD_NonLocalBank(const std::vector<std::size_t>& location_sizes,
-                    const std::vector<std::size_t>& location_offsets,
-                    std::size_t stride_size);
+  AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
+                    const std::vector<std::size_t>& loc_offsets,
+                    std::size_t stride);
   /// \}
 
   /// \name Copy and move
@@ -123,12 +123,54 @@ struct AAHD_NonLocalBank : public AAHD_Bank
   /// \name Members
   /// \{
   /// Reference to the sizes of each location.
-  const std::vector<std::size_t>* location_sizes_;
+  const std::vector<std::size_t>* location_sizes;
   /// Reference to the offsets of each location.
-  const std::vector<std::size_t>* location_offsets_;
+  const std::vector<std::size_t>* location_offsets;
   /// Stride size.
-  std::size_t stride_size_;
+  std::size_t stride_size;
   /// \}
+};
+
+/**
+ * \brief Non-local delayed bank storage structure.
+ */
+struct AAHD_NonLocalDelayedBank : public AAHD_NonLocalBank
+{
+  /// \name Constructors
+  /// \{
+  /// \brief Default constructor.
+  AAHD_NonLocalDelayedBank() = default;
+  /// \brief Member constructor.
+  AAHD_NonLocalDelayedBank(const std::vector<std::size_t>& loc_sizes,
+                           const std::vector<std::size_t>& loc_offsets,
+                           std::size_t stride);
+  /// \}
+
+  /// \name Copy and move
+  /// \{
+  /// \brief Copy constructor.
+  AAHD_NonLocalDelayedBank(const AAHD_NonLocalDelayedBank& other) = default;
+  /// \brief Copy assignment.
+  AAHD_NonLocalDelayedBank& operator=(const AAHD_NonLocalDelayedBank& other) = default;
+  /// \brief Move constructor.
+  AAHD_NonLocalDelayedBank(AAHD_NonLocalDelayedBank&& other) = default;
+  /// \brief Move assignment.
+  AAHD_NonLocalDelayedBank& operator=(AAHD_NonLocalDelayedBank&& other) = default;
+  /// \}
+
+  /// \name Actions
+  /// \{
+  /// \brief Update views.
+  void UpdateViews(std::vector<std::span<double>>& current_delayed_views,
+                   std::vector<std::span<double>>& old_delayed_views);
+  /// \brief Set current delayed views to old delayed views.
+  void SetNewToOld();
+  /// \brief Set old delayed views to current delayed views.
+  void SetOldToNew();
+  /// \}
+
+  /// \brief Host storage for current delayed bank.
+  crb::HostVector<double> host_current_storage;
 };
 
 /**
@@ -229,9 +271,7 @@ protected:
   /// Non-local bank for incoming angular fluxes.
   AAHD_NonLocalBank nonlocal_incoming_psi_bank_;
   /// Non-local bank for delayed incoming angular fluxes.
-  AAHD_NonLocalBank nonlocal_delayed_incoming_psi_bank_;
-  /// Non-local bank for old delayed incoming angular fluxes.
-  AAHD_NonLocalBank nonlocal_delayed_incoming_psi_old_bank_;
+  AAHD_NonLocalDelayedBank nonlocal_delayed_incoming_psi_bank_;
   /// Non-local bank for outgoing angular fluxes.
   AAHD_NonLocalBank nonlocal_outgoing_psi_bank_;
 
