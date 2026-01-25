@@ -11,7 +11,7 @@ namespace opensn
 {
 
 void
-DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
+DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
 {
   for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
   {
@@ -24,9 +24,9 @@ DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
 }
 
 std::shared_ptr<FLUDS>
-DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
-                                               std::size_t num_angles,
-                                               const FLUDSCommonData& common_data)
+DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
+                                           std::size_t num_angles,
+                                           const FLUDSCommonData& common_data)
 {
   return std::make_shared<AAHD_FLUDS>(
     num_groups, num_angles, dynamic_cast<const AAHD_FLUDSCommonData&>(common_data));

@@ -937,7 +937,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
   quadrature_fluds_commondata_map_.clear();
   if (sweep_type_ == "AAH" && use_gpus_)
   {
-    CreateFLUDSCommonDataForDevice();
+    CreateAAHD_FLUDSCommonData();
   }
   else if (sweep_type_ == "AAH")
   {
@@ -968,19 +968,19 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
 
 #ifndef __OPENSN_WITH_GPU__
 void
-DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
+DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
 {
   throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice : OPENSN_WITH_CUDA not enabled.");
+    "DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData : OPENSN_WITH_CUDA not enabled.");
 }
 
 std::shared_ptr<FLUDS>
-DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
+DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
                                                std::size_t num_angles,
                                                const FLUDSCommonData& common_data)
 {
   throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateFLUDSForDevice : OPENSN_WITH_CUDA not enabled.");
+    "DiscreteOrdinatesProblem::CreateAAHD_FLUDS : OPENSN_WITH_CUDA not enabled.");
   return {};
 }
 
@@ -1205,7 +1205,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         std::shared_ptr<FLUDS> fluds;
         if (use_gpus_)
         {
-          fluds = CreateFLUDSForDevice(gs_num_grps, angle_indices.size(), fluds_common_data);
+          fluds = CreateAAHD_FLUDS(gs_num_grps, angle_indices.size(), fluds_common_data);
         }
         else
         {
