@@ -29,8 +29,10 @@ struct SweepWGSContext : public WGSContext
 
   void PostSolveCallback() override;
 
+  void ResetSweepChunk(std::shared_ptr<SweepChunk> new_chunk);
+
   std::shared_ptr<SweepChunk> sweep_chunk;
-  SweepScheduler sweep_scheduler;
+  std::unique_ptr<SweepScheduler> sweep_scheduler;
   std::vector<double> sweep_times;
 };
 

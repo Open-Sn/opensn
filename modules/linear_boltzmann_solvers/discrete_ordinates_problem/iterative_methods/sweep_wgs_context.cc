@@ -42,10 +42,22 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
                                  std::shared_ptr<SweepChunk> swp_chnk)
   : WGSContext(do_problem, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
     sweep_chunk(std::move(swp_chnk)),
-    sweep_scheduler(GetSchedulingAlgorithm(do_problem.GetSweepType(), do_problem.UseGPUs()),
-                    *groupset.angle_agg,
-                    *sweep_chunk)
+    sweep_scheduler(std::make_unique<SweepScheduler>(
+      GetSchedulingAlgorithm(do_problem.GetSweepType(), do_problem.UseGPUs()),
+      *groupset.angle_agg,
+      *sweep_chunk))
 {
+}
+
+void
+SweepWGSContext::ResetSweepChunk(std::shared_ptr<SweepChunk> new_chunk)
+{
+  sweep_chunk = std::move(new_chunk);
+  sweep_scheduler = std::make_unique<SweepScheduler>(
+    do_problem.GetSweepType() == "AAH" ? SchedulingAlgorithm::DEPTH_OF_GRAPH
+                                       : SchedulingAlgorithm::FIRST_IN_FIRST_OUT,
+    *groupset.angle_agg,
+    *sweep_chunk);
 }
 
 void
@@ -113,10 +125,10 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
     (scope & APPLY_FIXED_SOURCES) and (not do_problem.GetOptions().use_src_moments);
   const bool zero_incoming_delayed_psi = (scope & ZERO_INCOMING_DELAYED_PSI);
   do_problem.ZeroOutflowBalanceVars(groupset);
-  sweep_scheduler.PrepareForSweep(use_bndry_source_flag, zero_incoming_delayed_psi);
+  sweep_scheduler->PrepareForSweep(use_bndry_source_flag, zero_incoming_delayed_psi);
 
   high_resolution_clock::time_point sweep_start = high_resolution_clock::now();
-  sweep_scheduler.Sweep();
+  sweep_scheduler->Sweep();
   high_resolution_clock::time_point sweep_end = high_resolution_clock::now();
 
   auto sweep_time =

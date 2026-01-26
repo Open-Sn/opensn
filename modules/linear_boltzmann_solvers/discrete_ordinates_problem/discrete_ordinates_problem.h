@@ -36,10 +36,7 @@ public:
   {
     return sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent;
   }
-  std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset)
-  {
-    return SetSweepChunk(groupset);
-  }
+  std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset) { return SetSweepChunk(groupset); }
   void EnableTimeDependentMode();
 
   /// Static registration based constructor.
