@@ -29,7 +29,7 @@ class Cell;
 class CBC_FLUDS : public FLUDS
 {
 public:
-  CBC_FLUDS(size_t num_groups,
+  CBC_FLUDS(unsigned int num_groups,
             size_t num_angles,
             const CBC_FLUDSCommonData& common_data,
             const UnknownManager& psi_uk_man,

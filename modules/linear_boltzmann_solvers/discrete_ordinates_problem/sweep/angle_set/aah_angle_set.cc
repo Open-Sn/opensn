@@ -11,7 +11,7 @@ namespace opensn
 {
 
 AAH_AngleSet::AAH_AngleSet(size_t id,
-                           size_t num_groups,
+                           unsigned int num_groups,
                            const SPDS& spds,
                            std::shared_ptr<FLUDS>& fluds,
                            std::vector<size_t>& angle_indices,

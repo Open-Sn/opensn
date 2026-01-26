@@ -22,7 +22,7 @@ DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
 }
 
 std::shared_ptr<FLUDS>
-DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
+DiscreteOrdinatesProblem::CreateFLUDSForDevice(unsigned int num_groups,
                                                std::size_t num_angles,
                                                const FLUDSCommonData& common_data)
 {

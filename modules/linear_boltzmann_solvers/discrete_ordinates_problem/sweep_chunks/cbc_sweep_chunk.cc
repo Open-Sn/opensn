@@ -50,8 +50,8 @@ CBCSweepChunk::SetAngleSet(AngleSet& angle_set)
 
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
-  gs_size_ = groupset_.groups.size();
-  gs_gi_ = groupset_.groups.front().id;
+  gs_size_ = groupset_.GetNumGroups();
+  gs_gi_ = groupset_.first_group;
 
   surface_source_active_ = IsSurfaceSourceActive();
   num_angles_in_as_ = angle_set.GetNumAngles();
@@ -167,7 +167,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
     } // for f
 
     // Looping over groups, assembling mass terms
-    for (size_t gsg = 0; gsg < gs_size_; ++gsg)
+    for (unsigned int gsg = 0; gsg < gs_size_; ++gsg)
     {
       double sigma_tg = rho * sigma_t[gs_gi_ + gsg];
 

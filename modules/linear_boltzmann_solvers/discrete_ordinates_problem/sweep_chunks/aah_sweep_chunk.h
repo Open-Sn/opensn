@@ -38,7 +38,7 @@ protected:
 
   DiscreteOrdinatesProblem& problem_;
   size_t max_level_size_;
-  size_t group_block_size_;
+  unsigned int group_block_size_;
   bool use_gpus_;
   void* level_vector_ = nullptr;
 
@@ -47,7 +47,7 @@ private:
   CpuSweepFunc cpu_sweep_impl_ = nullptr;
 
   void CPUSweep_Generic(AngleSet& angle_set);
-  template <int NumNodes>
+  template <unsigned int NumNodes>
   void CPUSweep_FixedN(AngleSet& angle_set);
 };
 

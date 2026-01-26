@@ -49,7 +49,7 @@ SCDSAAcceleration::Initialize()
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
 
   // Make UnknownManager
-  const size_t num_gs_groups = front_gs_.groups.size();
+  const auto num_gs_groups = front_gs_.GetNumGroups();
   UnknownManager uk_man;
   uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
@@ -57,8 +57,8 @@ SCDSAAcceleration::Initialize()
   const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), true);
 
   // Make xs map
-  const auto matid_2_mgxs_map = PackGroupsetXS(
-    do_problem_.GetBlockID2XSMap(), front_gs_.groups.front().id, front_gs_.groups.back().id);
+  const auto matid_2_mgxs_map =
+    PackGroupsetXS(do_problem_.GetBlockID2XSMap(), front_gs_.first_group, front_gs_.last_group);
 
   // Create solver
   const auto& sdm = do_problem_.GetSpatialDiscretization();

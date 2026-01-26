@@ -10,7 +10,7 @@
 namespace opensn
 {
 
-CBC_FLUDS::CBC_FLUDS(size_t num_groups,
+CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
                      size_t num_angles,
                      const CBC_FLUDSCommonData& common_data,
                      const UnknownManager& psi_uk_man,

@@ -120,7 +120,7 @@ WrapLBS(py::module& slv)
     [](LBSProblem& self, bool only_scalar_flux)
     {
       py::list field_function_list_per_group;
-      for (std::size_t group = 0; group < self.GetNumGroups(); group++)
+      for (unsigned int group = 0; group < self.GetNumGroups(); group++)
       {
         if (only_scalar_flux)
         {

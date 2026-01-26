@@ -15,7 +15,7 @@ namespace opensn
 class IsotropicBoundary : public SweepBoundary
 {
 public:
-  explicit IsotropicBoundary(size_t num_groups,
+  explicit IsotropicBoundary(unsigned int num_groups,
                              std::vector<double> boundary_flux,
                              CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
     : SweepBoundary(LBSBoundaryType::ISOTROPIC, num_groups, coord_type),

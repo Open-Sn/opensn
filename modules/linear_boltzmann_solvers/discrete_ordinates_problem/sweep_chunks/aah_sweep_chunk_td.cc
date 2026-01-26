@@ -46,8 +46,8 @@ AAHSweepChunkTD::CPUSweep(AngleSet& angle_set)
 {
   CALI_CXX_MARK_SCOPE("AAHSweepChunkTD::Sweep");
 
-  auto gs_size = groupset_.groups.size();
-  auto gs_gi = groupset_.groups.front().id;
+  auto gs_size = groupset_.GetNumGroups();
+  auto gs_gi = groupset_.first_group;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
@@ -58,13 +58,12 @@ AAHSweepChunkTD::CPUSweep(AngleSet& angle_set)
 
   DenseMatrix<double> Amat(max_num_cell_dofs_, max_num_cell_dofs_);
   DenseMatrix<double> Atemp(max_num_cell_dofs_, max_num_cell_dofs_);
-  std::vector<Vector<double>> b(groupset_.groups.size(), Vector<double>(max_num_cell_dofs_, 0.));
+  std::vector<Vector<double>> b(groupset_.GetNumGroups(), Vector<double>(max_num_cell_dofs_, 0.));
   std::vector<double> source(max_num_cell_dofs_);
 
   const auto& spds = angle_set.GetSPDS();
   const auto& spls = spds.GetLocalSubgrid();
   const size_t num_spls = spls.size();
-  const auto& groups = groupset_.groups;
 
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
@@ -106,7 +105,7 @@ AAHSweepChunkTD::CPUSweep(AngleSet& angle_set)
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;
 
-      for (size_t gsg = 0; gsg < gs_size; ++gsg)
+      for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
         for (size_t i = 0; i < cell_num_nodes; ++i)
           b[gsg](i) = 0.0;
 
@@ -159,7 +158,7 @@ AAHSweepChunkTD::CPUSweep(AngleSet& angle_set)
             if (not psi)
               continue;
 
-            for (size_t gsg = 0; gsg < gs_size; ++gsg)
+            for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
               b[gsg](i) += psi[gsg] * mu_Nij;
           }
         }

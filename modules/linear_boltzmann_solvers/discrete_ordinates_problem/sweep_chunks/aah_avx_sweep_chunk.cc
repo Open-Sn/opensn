@@ -207,7 +207,7 @@ inline void static SimdBatchSolve(const double* Am,
 
 } // namespace detail
 
-template <int NumNodes>
+template <unsigned int NumNodes>
 void
 AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
 {
@@ -215,8 +215,8 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
 
   CALI_CXX_MARK_SCOPE("AAHSweepChunk::CPUSweep_FixedN");
 
-  const size_t gs_size = groupset_.groups.size();
-  const auto gs_gi = groupset_.groups.front().id;
+  const auto gs_size = groupset_.GetNumGroups();
+  const auto gs_gi = groupset_.first_group;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
@@ -225,7 +225,7 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
   const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
 
-  std::vector<double> b(gs_size * NumNodes, 0.0);
+  std::vector<double> b(static_cast<std::size_t>(gs_size) * NumNodes, 0.0);
   std::vector<double> sigma_block;
   sigma_block.reserve(group_block_size_);
 
@@ -359,19 +359,19 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
       const double* __restrict m2d_row = m2d_op[direction_num].data();
       const double* __restrict d2m_row = d2m_op[direction_num].data();
 
-      for (size_t g0 = 0; g0 < gs_size; g0 += group_block_size_)
+      for (unsigned int g0 = 0; g0 < gs_size; g0 += group_block_size_)
       {
-        const size_t g1 = std::min(g0 + group_block_size_, gs_size);
-        const size_t block_len = g1 - g0;
+        const auto g1 = std::min(g0 + group_block_size_, gs_size);
+        const auto block_len = g1 - g0;
         sigma_block.resize(block_len);
 
-        for (size_t gsg = g0; gsg < g1; ++gsg)
+        for (unsigned int gsg = g0; gsg < g1; ++gsg)
         {
-          const size_t rel = gsg - g0;
+          const auto rel = gsg - g0;
           const double sigma_tg = rho * sigma_t[gs_gi + gsg];
           sigma_block[rel] = sigma_tg;
 
-          double* __restrict bg = &b[gsg * NumNodes];
+          double* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
           for (std::size_t m = 0; m < num_moments_; ++m)
           {
             const double w = m2d_row[m];

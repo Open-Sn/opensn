@@ -65,12 +65,12 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
       }
     }
 
-    auto block_size = [&](size_t gs_size) -> size_t
+    auto block_size = [&](unsigned int gs_size) -> unsigned int
     {
       if (gs_size <= simd_width)
         return gs_size;
 
-      size_t target = 0;
+      unsigned int target = 0;
       if (gs_size >= 16 * simd_width)
         target = 4 * simd_width;
       else if (gs_size >= 4 * simd_width)
@@ -84,7 +84,7 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
       return target;
     };
 
-    group_block_size_ = block_size(groupset_.groups.size());
+    group_block_size_ = block_size(groupset_.GetNumGroups());
   }
 }
 
@@ -100,8 +100,8 @@ AAHSweepChunk::Sweep(AngleSet& angle_set)
 void
 AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
 {
-  auto gs_size = groupset_.groups.size();
-  auto gs_gi = groupset_.groups.front().id;
+  auto gs_size = groupset_.GetNumGroups();
+  auto gs_gi = groupset_.first_group;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
@@ -112,7 +112,7 @@ AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
 
   DenseMatrix<double> Amat(max_num_cell_dofs_, max_num_cell_dofs_);
   DenseMatrix<double> Atemp(max_num_cell_dofs_, max_num_cell_dofs_);
-  std::vector<Vector<double>> b(groupset_.groups.size(), Vector<double>(max_num_cell_dofs_, 0.));
+  std::vector<Vector<double>> b(groupset_.GetNumGroups(), Vector<double>(max_num_cell_dofs_, 0.));
   std::vector<double> source(max_num_cell_dofs_);
 
   // Loop over each cell
@@ -218,7 +218,7 @@ AAHSweepChunk::CPUSweep_Generic(AngleSet& angle_set)
       } // for f
 
       // Looping over groups, assembling mass terms
-      for (size_t gsg = 0; gsg < gs_size; ++gsg)
+      for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
       {
         double sigma_tg = rho * sigma_t[gs_gi + gsg];
 

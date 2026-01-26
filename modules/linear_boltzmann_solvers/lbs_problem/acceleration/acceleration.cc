@@ -49,7 +49,7 @@ PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
     std::vector<double> D(num_gs_groups, 0.0);
     std::vector<double> sigma_r(num_gs_groups, 0.0);
 
-    size_t g = 0;
+    unsigned int g = 0;
     const auto& diffusion_coeff = xs->GetDiffusionCoefficient();
     const auto& sigma_removal = xs->GetSigmaRemoval();
     for (unsigned int gprime = first_grp_index; gprime <= last_group_index; ++gprime)

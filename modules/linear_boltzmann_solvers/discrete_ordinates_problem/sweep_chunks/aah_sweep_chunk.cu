@@ -110,7 +110,7 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
   const AAH_SPDS& spds = dynamic_cast<const AAH_SPDS&>(angle_set.GetSPDS());
   const std::vector<std::vector<std::uint32_t>>& levelized_spls = spds.GetLevelizedLocalSubgrid();
   // loop over each level based on saturation status
-  unsigned int block_size_x = groupset_.groups.size(), block_size_y = angle_set.GetNumAngles();
+  unsigned int block_size_x = groupset_.GetNumGroups(), block_size_y = angle_set.GetNumAngles();
   if (block_size_x * block_size_y <= gpu_kernel::threshold)
   {
     for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)
@@ -165,7 +165,7 @@ AAHSweepChunk::GPUSweep(AngleSet& angle_set)
           auto direction_num = angle_set.GetAngleIndices()[as_ss_idx];
           // compute dst and src corresponding to the direction
           double* dst = dst_psi + direction_num * groupset_group_stride_;
-          double* src = src_psi + as_ss_idx * groupset_.groups.size();
+          double* src = src_psi + as_ss_idx * groupset_.GetNumGroups();
           // copy the flux for each group
           std::memcpy(dst, src, groupset_group_stride_ * sizeof(double));
         }

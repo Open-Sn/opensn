@@ -380,7 +380,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
         {
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
           const auto& V_i = fe_values.intV_shapeI(i);
-          for (size_t g = 0; g < num_groups; ++g)
+          for (unsigned int g = 0; g < num_groups; ++g)
             local_response += src[g] * phi_dagger[dof_map + g] * V_i;
         }
       }
@@ -396,7 +396,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& uk_man = groupset.psi_uk_man_;
       const auto& quadrature = groupset.quadrature;
       const auto& num_gs_angles = quadrature->omegas.size();
-      const auto& num_gs_groups = groupset.groups.size();
+      const auto& num_gs_groups = groupset.GetNumGroups();
 
       for (const auto& cell : grid->local_cells)
       {
@@ -428,7 +428,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                   const auto weight = -mu * wt * intF_shapeI;
                   const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
 
-                  for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+                  for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
                     local_response +=
                       weight * psi_dagger[gs][dof_map + gsg] * psi_bndry[num_gs_groups * n + gsg];
                 } // if outgoing
@@ -457,7 +457,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       {
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
         const auto& shape_val = subscriber.shape_values(i);
-        for (size_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
           local_response += vol_wt * shape_val * src[g] * phi_dagger[dof_map + g];
       } // for node i
     } // for subscriber
@@ -477,7 +477,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
         const auto& V_i = fe_values.intV_shapeI(i);
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
         const auto& vals = (*volumetric_source)(cell, nodes[i], num_groups);
-        for (size_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
           local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
       }
     }
@@ -494,15 +494,15 @@ ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
                                              const double /*unused*/) const
 {
   const auto num_gs_angles = groupset.quadrature->omegas.size();
-  const auto num_gs_groups = groupset.groups.size();
-  const auto first_group = groupset.groups.front().id;
+  const auto num_gs_groups = groupset.GetNumGroups();
+  const auto first_group = groupset.first_group;
 
   std::vector<double> psi;
   const auto& bc = boundary_sources_.at(boundary_id);
   if (bc.type == LBSBoundaryType::ISOTROPIC)
   {
     for (size_t n = 0; n < num_gs_angles; ++n)
-      for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
+      for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
         psi.emplace_back(bc.isotropic_mg_source[first_group + gsg]);
     return psi;
   }
