@@ -5,8 +5,9 @@
  */
 #pragma once
 
-#include <cstddef>  // std::size_t
-#include <vector>   // std::vector
+#include <cstddef>      // std::size_t
+#include <type_traits>  // std::integral_constant
+#include <vector>       // std::vector
 
 #include "api_mapping.hpp"  // GPU_API
 #include "exception.hpp"    // caribou::check_error
@@ -17,43 +18,45 @@ namespace caribou {
 // -----------------------
 
 namespace impl {
-template <typename T>
-class PinnedHostAllocator;
+template <typename T, typename Flag>
+class HostAllocator;
 }  // namespace impl
 
 /**
- * @brief Allocator for host pinned memory.
- * @details A memory allocator for host memory, designed to ensure compatibility with C++ containers (after C++20).
- * Memory pages of the allocated region are pinned to the physical memory, ensuring seamless asynchronous data
- * transfer.
+ * @brief Allocator for host memory with specified flag.
+ * @details A memory allocator for host memory with specified allocation flag, designed to ensure compatibility
+ * with C++ containers (after C++20).
+ * Memory pages of the allocated region are pinned to the physical memory, ensuring seamless asynchronous
+ * data transfer.
  */
-template <typename T>
-class impl::PinnedHostAllocator {
+template <typename T, typename Flag>
+class impl::HostAllocator {
   public:
     /** @brief Value type */
     using value_type = T;
 
-    /// @name Contructors
+    /// @name Constructors
     /// @{
     /** @brief Default constructor.*/
-    PinnedHostAllocator() noexcept = default;
+    HostAllocator() noexcept = default;
     /** @brief Constructor from another allocator.*/
-    template <class U>
-    PinnedHostAllocator(const impl::PinnedHostAllocator<U> & src) noexcept {}
+    template <class U, typename F>
+    HostAllocator(const impl::HostAllocator<U, F> & src) noexcept {}
     /// @}
 
     /// @name Actions
     /// @{
     /**
      * @brief Allocate memory.
-     * @details Allocate ``n * sizeof(T)`` bytes on the current device and return the pointer to the allocated region.
+     * @details Allocate ``n * sizeof(T)`` bytes on the current device using the specified flag, and
+     * return the pointer to the allocated region.
      */
     T * allocate(std::size_t n) {
         if (n == 0) {
             return nullptr;
         }
         T * result = nullptr;
-        check_error(::GPU_API(MallocHost)(reinterpret_cast<void **>(&result), n * sizeof(T)));
+        check_error(::GPU_API(HostAlloc)(reinterpret_cast<void **>(&result), n * sizeof(T), Flag::value));
         return result;
     }
     /** @brief Deallocate memory.*/
@@ -77,27 +80,41 @@ class impl::PinnedHostAllocator {
     /// @name Comparison operators
     /// @{
     /** @brief Equality operator.*/
-    template <class U>
-    constexpr bool operator==(const impl::PinnedHostAllocator<U> & other) const noexcept {
+    template <class U, typename F>
+    constexpr bool operator==(const impl::HostAllocator<U, F> & other) const noexcept {
         return true;
     }
     /** @brief Inequality operator.*/
-    template <class U>
-    constexpr bool operator!=(const impl::PinnedHostAllocator<U> & other) const noexcept {
+    template <class U, typename F>
+    constexpr bool operator!=(const impl::HostAllocator<U, F> & other) const noexcept {
         return false;
     }
     /// @}
 };
 
-// Host vector
-// -----------
+// Flags
+// -----
+using HostAllocDefaultFlag = std::integral_constant<unsigned int, GPU_API(HostAllocDefault)>;
+using HostAllocMappedFlag = std::integral_constant<unsigned int, GPU_API(HostAllocMapped)>;
+
+// Host vectors
+// ------------
 
 /**
  * @brief Pinned memory host vector.
  * @details Vector with memory allocated on pinned pages.
  */
 template <typename T>
-using HostVector = std::vector<T, impl::PinnedHostAllocator<T>>;
+using HostVector = std::vector<T, impl::HostAllocator<T, HostAllocDefaultFlag>>;
+
+/**
+ * @brief Mapped memory host vector (zero-copy).
+ * @details Vector with memory allocated on pinned pages and mapped to the device address space. As the CPU writes to
+ * the memory, the GPU sees the updates immediately. Use this to avoid PCIe transfer setup costs.
+ * @note This class should only be used to store small structs or small-sized data that are frequently updated.
+ */
+template <typename T>
+using MappedHostVector = std::vector<T, impl::HostAllocator<T, HostAllocMappedFlag>>;
 
 // Memory pinning resource manager
 // -------------------------------
