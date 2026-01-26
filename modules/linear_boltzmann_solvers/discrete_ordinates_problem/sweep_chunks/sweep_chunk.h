@@ -80,6 +80,8 @@ public:
   /// Include contribution from previous psi_n in RHS source term
   void IncludeRHSTimeTerm(bool status) { include_rhs_time_term_ = status; }
 
+  virtual bool IsTimeDependent() const { return false; }
+
   virtual ~SweepChunk() = default;
 
   /**

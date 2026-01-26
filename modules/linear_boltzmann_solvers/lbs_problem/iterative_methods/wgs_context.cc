@@ -45,12 +45,10 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   set_source_function(groupset, q_moments_local, do_problem.GetPhiOldLocal(), lhs_src_scope);
 
   // Disable RHS time term in Krylov operator
-  if (do_problem.IsTimeDependent())
+  if (auto* sweep_ctx = dynamic_cast<SweepWGSContext*>(gs_context_ptr))
   {
-    auto* sweep_ctx = dynamic_cast<SweepWGSContext*>(gs_context_ptr);
-    if (!sweep_ctx)
-      throw std::runtime_error("MatrixAction expected SweepWGSContext but got something else.");
-    sweep_ctx->sweep_chunk->IncludeRHSTimeTerm(false);
+    if (sweep_ctx->sweep_chunk->IsTimeDependent())
+      sweep_ctx->sweep_chunk->IncludeRHSTimeTerm(false);
   }
 
   // Apply transport operator

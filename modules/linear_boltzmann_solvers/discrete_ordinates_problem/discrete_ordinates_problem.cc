@@ -442,11 +442,13 @@ DiscreteOrdinatesProblem::Initialize()
   {
     psi_new_local_.emplace_back();
     psi_old_local_.emplace_back();
-    if (options_.save_angular_flux || time_dependent_)
+    const bool save_old =
+      (sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent);
+    if (options_.save_angular_flux || save_old)
     {
       size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
       psi_new_local_.back().assign(num_ang_unknowns, 0.0);
-      if (time_dependent_)
+      if (save_old)
         psi_old_local_.back().assign(num_ang_unknowns, 0.0);
     }
   }
@@ -478,6 +480,38 @@ DiscreteOrdinatesProblem::Initialize()
     TGDSA::Init(*this, groupset);
   }
   InitializeSolverSchemes();
+}
+
+void
+DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
+{
+  sweep_chunk_mode_ = mode;
+  if (mode == SweepChunkMode::TimeDependent && discretization_)
+  {
+    if (psi_old_local_.empty())
+      return;
+    if (psi_old_local_.front().empty())
+    {
+      for (auto& groupset : groupsets_)
+      {
+        size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
+        psi_old_local_.at(groupset.id).assign(num_ang_unknowns, 0.0);
+      }
+    }
+  }
+}
+
+void
+DiscreteOrdinatesProblem::EnableTimeDependentMode()
+{
+  if (UseGPUs())
+    throw std::runtime_error(GetName() + ": Time dependent problems are not supported on GPUs.");
+  if (options_.adjoint)
+    throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
+  if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
+    throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
+
+  SetSweepChunkMode(SweepChunkMode::TimeDependent);
 }
 
 void
@@ -1301,35 +1335,25 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::SetSweepChunk");
 
-  if (time_dependent_ && sweep_type_ != "AAH")
+  const auto mode = sweep_chunk_mode_.value_or(SweepChunkMode::Default);
+
+  const bool use_time_dependent_chunk = (mode == SweepChunkMode::TimeDependent);
+
+  if (use_time_dependent_chunk && sweep_type_ != "AAH")
     throw std::invalid_argument(GetName() +
                                 ": Time dependent is only supported with sweep_type='AAH'.");
 
   if (sweep_type_ == "AAH")
   {
-    if (time_dependent_)
-    {
-      auto sweep_chunk = std::make_shared<AAHSweepChunkTD>(*this, groupset);
-
-      return sweep_chunk;
-    }
-
+    if (use_time_dependent_chunk)
+      return std::make_shared<AAHSweepChunkTD>(*this, groupset);
     if (use_gpus_)
-    {
-      auto sweep_chunk = CreateAAHD_SweepChunk(groupset);
-
-      return sweep_chunk;
-    }
-
-    auto sweep_chunk = std::make_shared<AAHSweepChunk>(*this, groupset);
-
-    return sweep_chunk;
+      return CreateAAHD_SweepChunk(groupset);
+    return std::make_shared<AAHSweepChunk>(*this, groupset);
   }
   else if (sweep_type_ == "CBC")
   {
-    auto sweep_chunk = std::make_shared<CBCSweepChunk>(*this, groupset);
-
-    return sweep_chunk;
+    return std::make_shared<CBCSweepChunk>(*this, groupset);
   }
   else
     OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");

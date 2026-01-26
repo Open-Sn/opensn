@@ -64,14 +64,11 @@ LBSProblem::GetInputParameters()
 
   params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
 
-  params.AddOptionalParameter(
-    "time_dependent", false, "Flag indicating whether the problem is time dependent.");
   return params;
 }
 
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
-    time_dependent_(params.GetParamValue<bool>("time_dependent")),
     num_groups_(params.GetParamValue<size_t>("num_groups")),
     grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
@@ -79,9 +76,6 @@ LBSProblem::LBSProblem(const InputParameters& params)
   // Check system for GPU acceleration
   if (use_gpus_)
   {
-    if (time_dependent_)
-      throw std::invalid_argument(GetName() +
-                                  ": Time dependent problems are not supported on GPUs.");
 #ifdef __OPENSN_WITH_GPU__
     CheckCapableDevices();
 #else
@@ -145,12 +139,6 @@ double
 LBSProblem::GetTimeStep() const
 {
   return dt_;
-}
-
-bool
-LBSProblem::IsTimeDependent() const
-{
-  return time_dependent_;
 }
 
 void
@@ -1365,9 +1353,6 @@ LBSProblem::~LBSProblem()
 void
 LBSProblem::SetAdjoint(bool adjoint)
 {
-  if (adjoint and time_dependent_)
-    throw std::invalid_argument(GetName() + ": Time-dependent adjoint problems are not supported.");
-
   if (adjoint != options_.adjoint)
   {
     options_.adjoint = adjoint;

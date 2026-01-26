@@ -3,13 +3,13 @@
 
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/object_factory.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include <stdexcept>
 #include <memory>
 
@@ -41,11 +41,8 @@ SteadyStateSourceSolver::Create(const ParameterBlock& params)
 SteadyStateSourceSolver::SteadyStateSourceSolver(const InputParameters& params)
   : Solver(params), lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem"))
 {
-  if (lbs_problem_->IsTimeDependent())
-  {
-    throw std::runtime_error(
-      "SteadyStateSourceSolver cannot be used with a time-dependent DiscreteOrdinatesProblem.");
-  }
+  if (auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(lbs_problem_))
+    do_problem->SetSweepChunkMode(DiscreteOrdinatesProblem::SweepChunkMode::SteadyState);
 }
 
 void

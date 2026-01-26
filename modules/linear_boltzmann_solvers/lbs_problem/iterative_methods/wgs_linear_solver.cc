@@ -164,13 +164,9 @@ WGSLinearSolver::SetRHS()
       groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
 
     // Enable RHS time (tau*psi^n)
-    if (do_problem.IsTimeDependent())
-    {
-      auto sweep_ctx = std::dynamic_pointer_cast<SweepWGSContext>(gs_context_ptr);
-      if (!sweep_ctx)
-        throw std::runtime_error("MatrixAction requires SweepWGSContext.");
+    auto sweep_ctx = std::dynamic_pointer_cast<SweepWGSContext>(gs_context_ptr);
+    if (sweep_ctx && sweep_ctx->sweep_chunk->IsTimeDependent())
       sweep_ctx->sweep_chunk->IncludeRHSTimeTerm(true);
-    }
 
     // Apply transport operator
     gs_context_ptr->ApplyInverseTransportOperator(scope);

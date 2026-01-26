@@ -63,7 +63,6 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_water},
         ],
         volumetric_sources=[src1],
-        time_dependent=True,
     )
 
     solver = TimeDependentSourceSolver(problem=phys, dt=0.01, theta=0.5, stop_time=0.1)
