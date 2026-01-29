@@ -17,6 +17,7 @@ if "opensn_console" not in globals():
     from pyopensn.aquad import GLProductQuadrature1DSlab
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.post import VolumePostprocessor
 
 if __name__ == "__main__":
 
@@ -88,3 +89,14 @@ if __name__ == "__main__":
     ss_solver = SteadyStateSourceSolver(problem=phys, compute_balance=True)
     ss_solver.Initialize()
     ss_solver.Execute()
+
+    pps1 = VolumePostprocessor(
+        problem=phys
+    )
+    pps1.Initialize()
+    pps1.Execute()
+    vals = pps1.GetValue()
+    print(vals)
+
+    fflist = phys.GetScalarFieldFunctionList()
+    FieldFunctionGridBased.ExportMultipleToPVTU([fflist[0]], "reed")

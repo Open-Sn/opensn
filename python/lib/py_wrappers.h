@@ -241,4 +241,8 @@ void WrapVolumetricSource(py::module& src);
 void py_xs(py::module& pyopensn);
 void WrapMultiGroupXS(py::module& xs);
 
+/// Wrap the post-processing components of OpenSn
+void py_post(py::module& pyopensn);
+void WrapPostprocessors(py::module& post);
+
 } // namespace opensn
