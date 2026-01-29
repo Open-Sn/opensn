@@ -207,6 +207,8 @@ SweepScheduler::Sweep()
 
   if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
     ScheduleAlgoFIFO(sweep_chunk_);
+  else if (scheduler_type_ == SchedulingAlgorithm::ASYNC_FIFO)
+    ScheduleAlgoAsyncFIFO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
 }
@@ -221,5 +223,12 @@ SweepScheduler::PrepareForSweep(bool use_boundary_source, bool zero_incoming_del
   sweep_chunk_.ZeroDestinationPhi();
   sweep_chunk_.SetBoundarySourceActiveFlag(use_boundary_source);
 }
+
+#ifndef __OPENSN_WITH_GPU__
+void
+SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
+{
+}
+#endif
 
 } // namespace opensn
