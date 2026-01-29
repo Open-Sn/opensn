@@ -14,7 +14,7 @@ namespace opensn
 {
 
 std::vector<double>&
-CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
+CBC_AsynchronousCommunicator::InitGetDownwindMessageData(int location_id,
                                                          uint64_t cell_global_id,
                                                          unsigned int face_id,
                                                          size_t angle_set_id,
@@ -28,9 +28,9 @@ CBC_ASynchronousCommunicator::InitGetDownwindMessageData(int location_id,
 }
 
 bool
-CBC_ASynchronousCommunicator::SendData()
+CBC_AsynchronousCommunicator::SendData()
 {
-  CALI_CXX_MARK_SCOPE("CBC_ASynchronousCommunicator::SendData");
+  CALI_CXX_MARK_SCOPE("CBC_AsynchronousCommunicator::SendData");
 
   // First we convert any new outgoing messages from the queue into
   // buffer messages. We aggregate these messages per location-id
@@ -89,9 +89,9 @@ CBC_ASynchronousCommunicator::SendData()
 }
 
 std::vector<uint64_t>
-CBC_ASynchronousCommunicator::ReceiveData()
+CBC_AsynchronousCommunicator::ReceiveData()
 {
-  CALI_CXX_MARK_SCOPE("CBC_ASynchronousCommunicator::ReceiveData");
+  CALI_CXX_MARK_SCOPE("CBC_AsynchronousCommunicator::ReceiveData");
 
   using CellFaceKey = std::pair<uint64_t, unsigned int>; // cell_gid + face_id
   std::map<CellFaceKey, std::vector<double>> received_messages;

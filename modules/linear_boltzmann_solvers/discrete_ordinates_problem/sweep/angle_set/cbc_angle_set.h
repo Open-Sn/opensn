@@ -9,7 +9,6 @@
 namespace opensn
 {
 
-struct Task;
 class CBC_SPDS;
 
 class CBC_AngleSet : public AngleSet
@@ -20,7 +19,7 @@ public:
                const SPDS& spds,
                std::shared_ptr<FLUDS>& fluds,
                const std::vector<size_t>& angle_indices,
-               std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+               std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                const MPICommunicatorSet& comm_set,
                bool use_gpu);
 
@@ -61,7 +60,7 @@ public:
 protected:
   const CBC_SPDS& cbc_spds_;
   std::vector<Task> current_task_list_;
-  CBC_ASynchronousCommunicator async_comm_;
+  CBC_AsynchronousCommunicator async_comm_;
 };
 
 } // namespace opensn
