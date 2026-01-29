@@ -786,27 +786,29 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
       }
     }
 
-    // Accumulate global edge weights for each SPDS across all ranks.
+    // Accumulate global edge weights for each SPDS on the owning rank only.
     const int comm_size = opensn::mpi_comm.size();
     const int matrix_size = comm_size * comm_size;
+    std::vector<int> recv_counts(opensn::mpi_comm.size(), comm_size);
+    std::vector<int> recv_displacements(opensn::mpi_comm.size(), 0);
+    for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc)
+      recv_displacements[loc] = loc * comm_size;
     for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
     {
       for (const auto& spds : spds_list)
       {
         auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
+        const int owner = aah_spds->GetId() % opensn::mpi_comm.size();
 
         // Local contributions - weights from this rank to all others for this SPDS
         const auto local_row = aah_spds->ComputeLocalLocationEdgeWeights();
-        std::vector<double> send(matrix_size, 0.0);
-        std::vector<double> recv(matrix_size, 0.0);
+        std::vector<double> recv;
+        if (opensn::mpi_comm.rank() == owner)
+          recv.assign(matrix_size, 0.0);
+        opensn::mpi_comm.gather(local_row, recv, recv_counts, recv_displacements, owner);
 
-        const int rank = opensn::mpi_comm.rank();
-        for (int to = 0; to < comm_size; ++to)
-          send[rank * comm_size + to] = local_row[to];
-
-        opensn::mpi_comm.all_reduce(send.data(), matrix_size, recv.data(), mpi::op::sum<double>());
-
-        aah_spds->SetGlobalEdgeWeights(recv);
+        if (opensn::mpi_comm.rank() == owner)
+          aah_spds->SetGlobalEdgeWeights(recv);
       }
     }
 
