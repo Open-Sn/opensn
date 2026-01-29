@@ -32,4 +32,5 @@ PYBIND11_MODULE(pyopensn, pyopensn)
   py_ffunc(pyopensn);
   py_response(pyopensn);
   py_solver(pyopensn);
+  py_post(pyopensn);
 }
