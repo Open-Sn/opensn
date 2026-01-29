@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h"
@@ -16,7 +16,7 @@ namespace opensn
 
 gpu_kernel::Arguments::Arguments(DiscreteOrdinatesProblem& problem,
                                  const LBSGroupset& groupset,
-                                 AngleSet& angle_set,
+                                 AAHD_AngleSet& angle_set,
                                  AAHD_FLUDS& fluds,
                                  bool is_surface_source_active)
 {
@@ -27,22 +27,18 @@ gpu_kernel::Arguments::Arguments(DiscreteOrdinatesProblem& problem,
   quad_data = quadrature->GetDevicePtr();
   // copy source moment and destination phi data to GPU
   auto* src = reinterpret_cast<MemoryPinner<double>*>(problem.GetPinner(0));
-  src->CopyToDevice();
   src_moment = src->GetDevicePtr();
   MemoryPinner<double>* scalar_flux = reinterpret_cast<MemoryPinner<double>*>(problem.GetPinner(1));
-  scalar_flux->CopyToDevice();
   phi = scalar_flux->GetDevicePtr();
   // copy angleset data to GPU
-  auto* directions_num = reinterpret_cast<MemoryPinner<std::uint32_t>*>(angle_set.GetMemoryPin());
-  directions = directions_num->GetDevicePtr();
+  directions = angle_set.GetDeviceAngleIndices();
   angleset_size = angle_set.GetNumAngles();
   // copy groupset data to GPU
   groupset_size = groupset.groups.size();
   groupset_start = groupset.groups.front().id;
   num_groups = problem.GetGroups().size();
   // copy FLUDS data to GPU and retrieve the pointer set
-  flud_data =
-    fluds.PrepareForSweep(*(problem.GetGrid()), angle_set, groupset, is_surface_source_active);
+  flud_data = fluds.GetDevicePointerSet();
   flud_index = fluds.GetCommonData().GetDeviceIndex();
 }
 

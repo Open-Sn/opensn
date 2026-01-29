@@ -24,8 +24,7 @@ public:
            const SPDS& spds,
            std::shared_ptr<FLUDS>& fluds,
            const std::vector<size_t>& angle_indices,
-           std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-           bool use_gpu)
+           std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
     : id_(id),
       num_groups_(num_groups),
       spds_(spds),
@@ -33,8 +32,6 @@ public:
       angles_(angle_indices.begin(), angle_indices.end()),
       boundaries_(boundaries)
   {
-    if (use_gpu)
-      InitializeMemoryPin();
   }
 
   /// Returns the angleset's unique id.
@@ -56,7 +53,13 @@ public:
 
   size_t GetNumAngles() const { return angles_.size(); }
 
-  void* GetMemoryPin() { return memory_pin_; }
+  bool HasAngleIndex(std::uint32_t angle_index) const;
+
+  /**
+   * Update the starting latch and following angle sets.
+   * This method can only be applied to device AAH (AAHD) anglesets.
+   */
+  virtual void UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets) {}
 
   virtual AsynchronousCommunicator* GetCommunicator()
   {
@@ -102,13 +105,7 @@ public:
                                unsigned int face_num,
                                unsigned int fi) = 0;
 
-  /// Initialize memory pinning manager.
-  void InitializeMemoryPin();
-
-  /// Reset memory pinning manager.
-  void ResetMemoryPin();
-
-  virtual ~AngleSet();
+  virtual ~AngleSet() = default;
 
 protected:
   const size_t id_;
@@ -118,7 +115,6 @@ protected:
   std::vector<std::uint32_t> angles_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries_;
   bool executed_ = false;
-  void* memory_pin_ = nullptr;
 };
 
 } // namespace opensn

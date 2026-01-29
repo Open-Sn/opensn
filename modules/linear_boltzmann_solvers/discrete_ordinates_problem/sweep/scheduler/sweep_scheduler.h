@@ -14,7 +14,8 @@ class SweepChunk;
 enum class SchedulingAlgorithm
 {
   FIRST_IN_FIRST_OUT = 1, ///< FIFO
-  DEPTH_OF_GRAPH = 2      ///< DOG
+  DEPTH_OF_GRAPH = 2,     ///< DOG
+  ALL_AT_ONCE = 3         ///< AAO
 };
 
 class SweepScheduler
@@ -37,6 +38,9 @@ private:
 
   /// Executes the depth-of-graph algorithm.
   void ScheduleAlgoDOG(SweepChunk& sweep_chunk);
+
+  /// Performs the all-at-once scheduling algorithm.
+  void ScheduleAlgoAAO(SweepChunk& sweep_chunk);
 
 private:
   SchedulingAlgorithm scheduler_type_;

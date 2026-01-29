@@ -2,14 +2,18 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h"
 
 namespace opensn
 {
 
 void
-DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
+DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
 {
   for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
   {
@@ -22,12 +26,56 @@ DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
 }
 
 std::shared_ptr<FLUDS>
-DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
-                                               std::size_t num_angles,
-                                               const FLUDSCommonData& common_data)
+DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
+                                           std::size_t num_angles,
+                                           const FLUDSCommonData& common_data)
 {
   return std::make_shared<AAHD_FLUDS>(
     num_groups, num_angles, dynamic_cast<const AAHD_FLUDSCommonData&>(common_data));
+}
+
+std::shared_ptr<AngleSet>
+DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
+  size_t id,
+  size_t num_groups,
+  const SPDS& spds,
+  std::shared_ptr<FLUDS>& fluds,
+  std::vector<size_t>& angle_indices,
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+  int maximum_message_size,
+  const MPICommunicatorSet& in_comm_set)
+{
+  return std::make_shared<AAHD_AngleSet>(
+    id, num_groups, spds, fluds, angle_indices, boundaries, maximum_message_size, in_comm_set);
+}
+
+std::shared_ptr<SweepChunk>
+DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
+{
+  return std::make_shared<AAHDSweepChunk>(*this, groupset);
+}
+
+void
+DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
+{
+  if (!use_gpus_)
+    return;
+  auto* src = reinterpret_cast<MemoryPinner<double>*>(GetPinner(0));
+  src->CopyToDevice();
+  MemoryPinner<double>* phi = reinterpret_cast<MemoryPinner<double>*>(GetPinner(1));
+  phi->CopyToDevice();
+}
+
+void
+DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
+{
+  if (!use_gpus_)
+    return;
+  auto* phi = reinterpret_cast<MemoryPinner<double>*>(GetPinner(1));
+  phi->CopyFromDevice();
+  auto* outflow = reinterpret_cast<OutflowCarrier*>(GetCarrier(1));
+  outflow->AccumulateBack(GetCellTransportViews());
+  outflow->Reset();
 }
 
 } // namespace opensn

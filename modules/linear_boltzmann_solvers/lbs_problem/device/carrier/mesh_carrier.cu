@@ -211,7 +211,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       {
         cell_mapping_data[i] = face_node_mappings[f][i];
       }
-      cell_mapping_data += ((num_face_nodes + 1) & ~1zu);
+      cell_mapping_data += ((num_face_nodes + 1) & ~static_cast<std::size_t>(1));
       face_data = reinterpret_cast<char*>(cell_mapping_data);
     }
     // put cell data pointer as face data end

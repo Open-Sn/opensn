@@ -2,25 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
+#include <algorithm>
 
 namespace opensn
 {
 
-#ifndef __OPENSN_WITH_GPU__
-void
-AngleSet::InitializeMemoryPin()
+bool
+AngleSet::HasAngleIndex(std::uint32_t angle_index) const
 {
-}
-
-void
-AngleSet::ResetMemoryPin()
-{
-}
-#endif // __OPENSN_WITH_GPU__
-
-AngleSet::~AngleSet()
-{
-  ResetMemoryPin();
+  return std::find(angles_.begin(), angles_.end(), angle_index) != angles_.end();
 }
 
 } // namespace opensn

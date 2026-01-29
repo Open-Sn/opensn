@@ -10,7 +10,7 @@ namespace opensn
 {
 class DiscreteOrdinatesProblem;
 class LBSGroupset;
-class AngleSet;
+class AAHD_AngleSet;
 class AAHD_FLUDS;
 } // namespace opensn
 
@@ -23,7 +23,7 @@ struct Arguments
   /// Constructor
   Arguments(DiscreteOrdinatesProblem& problem,
             const LBSGroupset& groupset,
-            AngleSet& angle_set,
+            AAHD_AngleSet& angle_set,
             AAHD_FLUDS& fluds,
             bool is_surface_source_active);
 
