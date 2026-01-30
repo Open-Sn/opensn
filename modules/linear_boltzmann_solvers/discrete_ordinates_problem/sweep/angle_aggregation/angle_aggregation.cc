@@ -80,6 +80,20 @@ AngleAggregation::InitializeReflectingBCs()
     log.Log0Verbose1() << "Reflecting boundary conditions initialized.";
 }
 
+void
+AngleAggregation::SetupAngleSetDependencies()
+{
+  CALI_CXX_MARK_SCOPE("AngleAggregation::SetupAngleSetDependencies");
+
+  for (auto& angle_set : angle_set_groups_)
+  {
+    std::set<AngleSet*> following_angle_sets;
+    for (const auto& [bid, bndry] : boundaries_)
+      bndry->GetFollowingAngleSets(following_angle_sets, *this, *angle_set);
+    angle_set->UpdateSweepDependencies(following_angle_sets);
+  }
+}
+
 std::pair<size_t, size_t>
 AngleAggregation::GetNumDelayedAngularDOFs()
 {

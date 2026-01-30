@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include <algorithm>
 #include <cmath>
@@ -151,6 +153,35 @@ ReflectingBoundary::InitializeDelayedAngularFlux(const std::shared_ptr<MeshConti
         }
         ++f;
       }
+    }
+  }
+}
+
+void
+ReflectingBoundary::GetFollowingAngleSets(std::set<AngleSet*>& following_angle_sets,
+                                          const AngleAggregation& angle_agg,
+                                          const AngleSet& angleset)
+{
+  if (opposing_reflected_)
+    return;
+
+  const auto& omegas = angle_agg.GetQuadrature()->omegas;
+  for (const auto& angle_idx : angleset.GetAngleIndices())
+  {
+    if (omegas[angle_idx].Dot(normal_) < 0.0)
+      continue;
+    auto reflected_angle_num = reflected_anglenum_[angle_idx];
+    auto following_angle_set = std::find_if(angle_agg.begin(),
+                                            angle_agg.end(),
+                                            [&](std::shared_ptr<AngleSet> as)
+                                            { return as->HasAngleIndex(reflected_angle_num); });
+    if (following_angle_set != angle_agg.end())
+      following_angle_sets.insert(following_angle_set->get());
+    else
+    {
+      throw std::logic_error("ReflectingBoundary: Could not find predecessor angleset for "
+                             "angle index " +
+                             std::to_string(reflected_angle_num) + ".");
     }
   }
 }

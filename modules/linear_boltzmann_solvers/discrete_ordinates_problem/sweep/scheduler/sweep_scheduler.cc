@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
@@ -23,6 +24,9 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
 
   if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     InitializeAlgoDOG();
+
+  if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
+    angle_agg_.SetupAngleSetDependencies();
 
   // Initialize delayed upstream data
   for (auto& angset : angle_agg_)
@@ -200,6 +204,17 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
     bndry->ResetAnglesReadyStatus();
 }
 
+#ifndef __OPENSN_WITH_GPU__
+
+void
+SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
+{
+  throw std::runtime_error("SweepScheduler::ScheduleAlgoAAO: AAO scheduling is only "
+                           "available for builds with GPU support.");
+}
+
+#endif // __OPENSN_WITH_GPU__
+
 void
 SweepScheduler::Sweep()
 {
@@ -207,6 +222,8 @@ SweepScheduler::Sweep()
 
   if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
     ScheduleAlgoFIFO(sweep_chunk_);
+  else if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
+    ScheduleAlgoAAO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
 }

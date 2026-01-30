@@ -939,7 +939,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
   quadrature_fluds_commondata_map_.clear();
   if (sweep_type_ == "AAH" && use_gpus_)
   {
-    CreateFLUDSCommonDataForDevice();
+    CreateAAHD_FLUDSCommonData();
   }
   else if (sweep_type_ == "AAH")
   {
@@ -970,20 +970,54 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
 
 #ifndef __OPENSN_WITH_GPU__
 void
-DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice()
+DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
 {
   throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateFLUDSCommonDataForDevice : OPENSN_WITH_CUDA not enabled.");
+    "DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData : OPENSN_WITH_CUDA not enabled.");
 }
 
 std::shared_ptr<FLUDS>
-DiscreteOrdinatesProblem::CreateFLUDSForDevice(std::size_t num_groups,
-                                               std::size_t num_angles,
-                                               const FLUDSCommonData& common_data)
+DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
+                                           std::size_t num_angles,
+                                           const FLUDSCommonData& common_data)
 {
   throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateFLUDSForDevice : OPENSN_WITH_CUDA not enabled.");
+    "DiscreteOrdinatesProblem::CreateAAHD_FLUDS : OPENSN_WITH_CUDA not enabled.");
   return {};
+}
+
+std::shared_ptr<AngleSet>
+DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
+  size_t id,
+  size_t num_groups,
+  const SPDS& spds,
+  std::shared_ptr<FLUDS>& fluds,
+  std::vector<size_t>& angle_indices,
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+  int maximum_message_size,
+  const MPICommunicatorSet& in_comm_set)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateAAHD_AngleSet : OPENSN_WITH_CUDA not enabled.");
+  return {};
+}
+
+std::shared_ptr<SweepChunk>
+DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
+{
+  throw std::runtime_error(
+    "DiscreteOrdinatesProblem::CreateAAHD_SweepChunk : OPENSN_WITH_CUDA not enabled.");
+  return {};
+}
+
+void
+DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
+{
+}
+
+void
+DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
+{
 }
 #endif
 
@@ -1197,7 +1231,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         std::shared_ptr<FLUDS> fluds;
         if (use_gpus_)
         {
-          fluds = CreateFLUDSForDevice(gs_num_grps, angle_indices.size(), fluds_common_data);
+          fluds = CreateAAHD_FLUDS(gs_num_grps, angle_indices.size(), fluds_common_data);
         }
         else
         {
@@ -1207,16 +1241,29 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
             dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data));
         }
 
-        auto angle_set = std::make_shared<AAH_AngleSet>(angle_set_id++,
-                                                        gs_num_grps,
-                                                        *sweep_ordering,
-                                                        fluds,
-                                                        angle_indices,
-                                                        sweep_boundaries_,
-                                                        options_.max_mpi_message_size,
-                                                        *grid_local_comm_set_,
-                                                        use_gpus_);
-
+        std::shared_ptr<AngleSet> angle_set;
+        if (use_gpus_)
+        {
+          angle_set = CreateAAHD_AngleSet(angle_set_id++,
+                                          gs_num_grps,
+                                          *sweep_ordering,
+                                          fluds,
+                                          angle_indices,
+                                          sweep_boundaries_,
+                                          options_.max_mpi_message_size,
+                                          *grid_local_comm_set_);
+        }
+        else
+        {
+          angle_set = std::make_shared<AAH_AngleSet>(angle_set_id++,
+                                                     gs_num_grps,
+                                                     *sweep_ordering,
+                                                     fluds,
+                                                     angle_indices,
+                                                     sweep_boundaries_,
+                                                     options_.max_mpi_message_size,
+                                                     *grid_local_comm_set_);
+        }
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }
       else if (sweep_type_ == "CBC")
@@ -1234,8 +1281,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                         fluds,
                                                         angle_indices,
                                                         sweep_boundaries_,
-                                                        *grid_local_comm_set_,
-                                                        use_gpus_);
+                                                        *grid_local_comm_set_);
 
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }
@@ -1264,6 +1310,13 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
     if (time_dependent_)
     {
       auto sweep_chunk = std::make_shared<AAHSweepChunkTD>(*this, groupset);
+
+      return sweep_chunk;
+    }
+
+    if (use_gpus_)
+    {
+      auto sweep_chunk = CreateAAHD_SweepChunk(groupset);
 
       return sweep_chunk;
     }

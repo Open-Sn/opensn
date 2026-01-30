@@ -313,8 +313,6 @@ struct AAHD_FLUDSPointerSet
   double* __restrict__ delayed_local_psi_old = nullptr;
   /// Pointer to non-local incoming angular fluxes.
   double* __restrict__ nonlocal_incoming_psi = nullptr;
-  /// Pointer to non-local delayed incoming angular fluxes.
-  double* __restrict__ nonlocal_delayed_incoming_psi = nullptr;
   /// Pointer to non-local old delayed incoming angular fluxes.
   double* __restrict__ nonlocal_delayed_incoming_psi_old = nullptr;
   /// Pointer to non-local outgoing angular fluxes.

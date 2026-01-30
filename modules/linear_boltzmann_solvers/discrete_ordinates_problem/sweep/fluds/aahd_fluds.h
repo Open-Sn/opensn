@@ -16,128 +16,116 @@ namespace crb = caribou;
 namespace opensn
 {
 
+class DiscreteOrdinatesProblem;
+
 /// Host-device bank storage structure for device-transportable FLUDS.
 struct AAHD_Bank
 {
-  /// \name Constructors
-  /// \{
-  /// \brief Default constructor.
   AAHD_Bank() = default;
-  /**
-   * \brief Construct and allocate memory.
-   */
+  /// Construct and allocate memory.
   AAHD_Bank(std::size_t size) : host_storage(size, 0.0), device_storage(size) {}
-  /// \}
+  /// Construct and allocate memory asynchronously.
+  AAHD_Bank(std::size_t size, crb::Stream& stream)
+    : host_storage(size, 0.0), device_storage(size, stream)
+  {
+  }
 
-  /// \name Copy and move
-  /// \{
-  /// \brief Copy constructor.
   AAHD_Bank(const AAHD_Bank& other);
-  /// \brief Copy assignment.
   AAHD_Bank& operator=(const AAHD_Bank& other);
-  /// \brief Move constructor.
   AAHD_Bank(AAHD_Bank&& other) = default;
-  /// \brief Move assignment.
   AAHD_Bank& operator=(AAHD_Bank&& other) = default;
-  /// \}
 
-  /// \name Actions
-  /// \{
-  /// \brief Clear host and device storage.
+  /// Clear host and device storage.
   void Clear();
-  /// \brief Upload data from host to device.
+  /// Asynchronously clear of device storage.
+  void Clear(crb::Stream& stream);
+  /// Upload data from host to device.
   void UploadToDevice();
-  /// \brief Download data from device to host.
+  /// Upload data from host to device asynchronously.
+  void UploadToDevice(crb::Stream& stream);
+  /// Download data from device to host.
   void DownloadToHost();
-  /// \}
+  /// Download data from device to host asynchronously.
+  void DownloadToHost(crb::Stream& stream);
 
-  /// \brief Host storage for the bank.
+  /// Host storage for the bank.
   crb::HostVector<double> host_storage;
-  /// \brief Device storage for the bank.
+  /// Device storage for the bank.
   crb::DeviceMemory<double> device_storage;
 };
 
-/**
- * \brief Delayed local bank storage structure.
- */
+/// Delayed local bank storage structure.
 struct AAHD_DelayedLocalBank : public AAHD_Bank
 {
-  /// \name Constructors
-  /// \{
-  /// \brief Default constructor.
   AAHD_DelayedLocalBank() = default;
-  /// \brief Member constructor.
+  /// Member constructor.
   AAHD_DelayedLocalBank(std::size_t size, std::size_t stride_size) : AAHD_Bank(size * stride_size)
   {
   }
-  /// \}
 };
 
-/**
- * \brief Boundary bank storage structure.
- */
+/// Boundary bank storage structure.
 struct AAHD_BoundaryBank : public AAHD_Bank
 {
-  /// \name Constructors
-  /// \{
-  /// \brief Default constructor.
   AAHD_BoundaryBank() = default;
-  /// \brief Member constructor.
-  AAHD_BoundaryBank(std::size_t size, std::size_t stride_size) : AAHD_Bank(size * stride_size) {}
-  /// \}
+  /// Member constructor.
+  AAHD_BoundaryBank(std::size_t size, std::size_t stride_size, crb::Stream& stream)
+    : AAHD_Bank(size * stride_size, stream)
+  {
+  }
 };
 
-/**
- * \brief Non-local bank storage structure.
- */
+/// Non-local bank storage structure.
 struct AAHD_NonLocalBank : public AAHD_Bank
 {
-  /// \name Constructors
-  /// \{
-  /// \brief Default constructor.
   AAHD_NonLocalBank() = default;
-  /// \brief Member constructor.
-  AAHD_NonLocalBank(const std::vector<std::size_t>& location_sizes,
-                    const std::vector<std::size_t>& location_offsets,
-                    std::size_t stride_size);
-  /// \}
+  /// Member constructor.
+  AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
+                    const std::vector<std::size_t>& loc_offsets,
+                    std::size_t stride);
+  /// Asynchronous member constructor.
+  AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
+                    const std::vector<std::size_t>& loc_offsets,
+                    std::size_t stride,
+                    crb::Stream& stream);
 
-  /// \name Copy and move
-  /// \{
-  /// \brief Copy constructor.
-  AAHD_NonLocalBank(const AAHD_NonLocalBank& other) = default;
-  /// \brief Copy assignment.
-  AAHD_NonLocalBank& operator=(const AAHD_NonLocalBank& other) = default;
-  /// \brief Move constructor.
-  AAHD_NonLocalBank(AAHD_NonLocalBank&& other) = default;
-  /// \brief Move assignment.
-  AAHD_NonLocalBank& operator=(AAHD_NonLocalBank&& other) = default;
-  /// \}
-
-  /// \name Actions
-  /// \{
   /// \brief Update views.
   void UpdateViews(std::vector<std::span<double>>& views);
-  /// \}
 
-  /// \name Members
-  /// \{
   /// Reference to the sizes of each location.
-  const std::vector<std::size_t>* location_sizes_;
+  const std::vector<std::size_t>* location_sizes;
   /// Reference to the offsets of each location.
-  const std::vector<std::size_t>* location_offsets_;
+  const std::vector<std::size_t>* location_offsets;
   /// Stride size.
-  std::size_t stride_size_;
-  /// \}
+  std::size_t stride_size;
 };
 
-/**
- * \brief AAH FLUDS for device.
- */
+/// Non-local delayed bank storage structure.
+struct AAHD_NonLocalDelayedBank : public AAHD_NonLocalBank
+{
+  AAHD_NonLocalDelayedBank() = default;
+  /// Member constructor.
+  AAHD_NonLocalDelayedBank(const std::vector<std::size_t>& loc_sizes,
+                           const std::vector<std::size_t>& loc_offsets,
+                           std::size_t stride);
+
+  /// Update views.
+  void UpdateViews(std::vector<std::span<double>>& current_delayed_views,
+                   std::vector<std::span<double>>& old_delayed_views);
+  /// Set current delayed views to old delayed views.
+  void SetNewToOld();
+  /// Set old delayed views to current delayed views.
+  void SetOldToNew();
+
+  /// Host storage for current delayed bank.
+  crb::HostVector<double> host_current_storage;
+};
+
+/// AAH FLUDS for device.
 class AAHD_FLUDS : public FLUDS
 {
 public:
-  /// \name Constructors
+  /// \name Constructor
   /// \{
   /// Contruct and allocate memory for the FLUDS on both the host and device.
   AAHD_FLUDS(std::size_t num_groups,
@@ -165,6 +153,8 @@ public:
   void AllocateDelayedPrelocIOutgoingPsi() override;
   /// Allocate non-local outgoing psi storage.
   void AllocateOutgoingPsi() override;
+  /// Allocate memory for save angular flux if needed.
+  void AllocateSaveAngularFlux(DiscreteOrdinatesProblem& problem, const LBSGroupset& groupset);
   /// \}
 
   /// \name Size getters
@@ -202,17 +192,37 @@ public:
 
   /// \name Sweep preparation and clean up
   /// \{
-  /// Prepare for sweep by uploading data to device and return pointer set to banks on device.
-  AAHD_FLUDSPointerSet PrepareForSweep(MeshContinuum& grid,
-                                       AngleSet& angle_set,
-                                       const LBSGroupset& groupset,
-                                       bool is_surface_source_active);
-  /// Clean up after sweep by downloading non-local and delayed fluxes from device.
-  void CleanUpAfterSweep(MeshContinuum& grid, AngleSet& angle_set);
+  /// Copy delayed local and delayed non-local incoming psi to device.
+  void CopyDelayedPsiToDevice();
+  /// Copy boundary psi from angle set to device boundary storage.
+  void CopyBoundaryToDevice(MeshContinuum& grid,
+                            AngleSet& angle_set,
+                            const LBSGroupset& groupset,
+                            bool is_surface_source_active);
+  /// Copy non-local incoming psi to device.
+  void CopyNonLocalIncomingPsiToDevice();
+  /// Get device pointers for each bank in FLUDS.
+  AAHD_FLUDSPointerSet GetDevicePointerSet();
+  /// Copy boundary psi, non-local outgoing and delayed local psi from device to host.
+  void CopyPsiFromDevice();
+  /// Copy boundary psi from contiguous boundary storage to angle set.
+  void CopyBoundaryPsiToAngleSet(MeshContinuum& grid, AngleSet& angle_set);
+  /// Copy save angular flux from device to host.
+  void CopySaveAngularFluxFromDevice();
+  /// Copy save angular flux from host contiguous buffer to destination psi.
+  void CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& problem,
+                                           const LBSGroupset& groupset,
+                                           AngleSet& angle_set);
   /// \}
 
   /// Get reference to the common data
   const AAHD_FLUDSCommonData& GetCommonData() { return common_data_; }
+  /// Get reference to stream.
+  crb::Stream& GetStream() { return stream_; }
+  /// Get saved angular flux device pointer.
+  double* GetSavedAngularFluxDevicePointer() { return save_angular_flux_.device_storage.get(); }
+  /// Check if the FLUDS has save angular flux storage.
+  bool HasSaveAngularFlux() const { return not save_angular_flux_.host_storage.empty(); }
 
 protected:
   /// Reference to the common data.
@@ -229,25 +239,18 @@ protected:
   /// Non-local bank for incoming angular fluxes.
   AAHD_NonLocalBank nonlocal_incoming_psi_bank_;
   /// Non-local bank for delayed incoming angular fluxes.
-  AAHD_NonLocalBank nonlocal_delayed_incoming_psi_bank_;
-  /// Non-local bank for old delayed incoming angular fluxes.
-  AAHD_NonLocalBank nonlocal_delayed_incoming_psi_old_bank_;
+  AAHD_NonLocalDelayedBank nonlocal_delayed_incoming_psi_bank_;
   /// Non-local bank for outgoing angular fluxes.
   AAHD_NonLocalBank nonlocal_outgoing_psi_bank_;
 
-  /// Device storage for boundary angular fluxes.
+  /// Storage for boundary angular fluxes.
   AAHD_BoundaryBank boundary_psi_;
 
-private:
-  /// Get device pointers for each bank in FLUDS.
-  AAHD_FLUDSPointerSet GetDevicePointerSet();
-  /// Copy boundary psi from angle set to device boundary storage.
-  void CopyBoundaryPsiToDevice(MeshContinuum& grid,
-                               AngleSet& angle_set,
-                               const LBSGroupset& groupset,
-                               bool is_surface_source_active);
-  /// Copy boundary psi from device boundary storage to angle set.
-  void CopyBoundaryPsiFromDevice(MeshContinuum& grid, AngleSet& angle_set);
+  /// Storage for saved angular fluxes.
+  AAHD_Bank save_angular_flux_;
+
+  /// Stream for asynchronous operations.
+  crb::Stream stream_;
 };
 
 } // namespace opensn
