@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_a_a_h_sweep_data:
+
+Struct AAHSweepData
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_kernels.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::AAHSweepData
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

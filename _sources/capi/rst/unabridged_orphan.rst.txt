@@ -80,6 +80,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_a_a_h_sweep_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_angular_quadrature_1_1_harmonic_indices.rst
 
 .. toctree::
@@ -2118,6 +2123,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk_td.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_kernels.h.rst
 
 .. toctree::
    :maxdepth: 1

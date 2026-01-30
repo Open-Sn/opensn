@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad137c5d303e39cb4af7e7e2bebd821a1:
+
+Function opensn::ComputeGroupBlockSize
+======================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_kernels.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeGroupBlockSize(size_t)
+   :project: opensn

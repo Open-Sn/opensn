@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a04a67c05c34902044010502ff03712e2:
+
+Template Function opensn::AAH_Sweep_FixedN
+==========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_kernels.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::AAH_Sweep_FixedN(AAHSweepData&, AngleSet&)
+   :project: opensn
