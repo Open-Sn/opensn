@@ -158,7 +158,6 @@
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetTheta</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Is the problem time dependent</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsTimeDependent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetAdjoint</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="p">);</span>
 
@@ -383,7 +382,6 @@
 
 <span class="w">  </span><span class="n">LBSOptions</span><span class="w"> </span><span class="n">options_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">time_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">time_dependent_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">theta_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">dt_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
 <span class="w">  </span><span class="n">GeometryType</span><span class="w"> </span><span class="n">geometry_type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GeometryType</span><span class="o">::</span><span class="n">INVALID</span><span class="p">;</span>

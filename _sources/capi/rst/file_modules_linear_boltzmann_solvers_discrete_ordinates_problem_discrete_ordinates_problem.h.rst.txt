@@ -40,6 +40,8 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`)
 
+- ``optional``
+
 
 
 Included By
