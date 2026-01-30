@@ -21,11 +21,12 @@ AAHD_AngleSet::AAHD_AngleSet(size_t id,
                              const MPICommunicatorSet& comm_set)
   : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
     async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set),
-    angle_indices_pinner_(angles_)
+    device_angle_indices_(angles_.size())
 {
   stream_ = crb::Stream::create();
   std::dynamic_pointer_cast<AAHD_FLUDS>(fluds_)->GetStream() = stream_;
-  angle_indices_pinner_.CopyToDevice();
+  crb::MemoryPinningManager angle_indices_pinner_(angles_);
+  crb::copy(device_angle_indices_, angle_indices_pinner_, angles_.size());
 }
 
 void

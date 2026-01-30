@@ -5,7 +5,6 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aahd_async_comm.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
 #include "caribou/main.hpp"
 #include <latch>
 #include <memory>
@@ -31,7 +30,7 @@ public:
 
   crb::Stream& GetStream() { return stream_; }
 
-  std::uint32_t* GetDeviceAngleIndices() { return angle_indices_pinner_.GetDevicePtr(); }
+  std::uint32_t* GetDeviceAngleIndices() { return device_angle_indices_.get(); }
 
   /// Update the starting latch and following angle sets.
   void UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets) override;
@@ -86,8 +85,8 @@ protected:
   /// Asynchronous communicator.
   AAHD_ASynchronousCommunicator async_comm_;
 
-  /// Pinner for angle indices.
-  MemoryPinner<std::uint32_t> angle_indices_pinner_;
+  /// Angle indices on GPU.
+  crb::DeviceMemory<std::uint32_t> device_angle_indices_;
 
   /// Number of anglesets the current angle set depends on.
   std::size_t num_dependencies_ = 0;
