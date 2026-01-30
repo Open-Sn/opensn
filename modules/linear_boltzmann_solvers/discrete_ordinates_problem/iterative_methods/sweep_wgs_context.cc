@@ -142,7 +142,7 @@ SweepWGSContext::PostSolveCallback()
       groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
 
     // Add RHS time term (tau*psi^n)
-    if (do_problem.IsTimeDependent())
+    if (sweep_chunk->IsTimeDependent())
       sweep_chunk->IncludeRHSTimeTerm(true);
 
     ApplyInverseTransportOperator(scope);

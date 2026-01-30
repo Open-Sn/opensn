@@ -63,11 +63,7 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
 {
   auto& tolerances = nl_solver_.GetToleranceOptions();
 
-  if (do_problem_->IsTimeDependent())
-  {
-    throw std::runtime_error(
-      "NonLinearKEigenSolver cannot be used with a time-dependent DiscreteOrdinatesProblem.");
-  }
+  do_problem_->SetSweepChunkMode(DiscreteOrdinatesProblem::SweepChunkMode::SteadyState);
 
   tolerances.nl_abs_tol = params.GetParamValue<double>("nl_abs_tol");
   tolerances.nl_rel_tol = params.GetParamValue<double>("nl_rel_tol");

@@ -71,7 +71,6 @@ public:
   double GetTheta() const;
 
   /// Is the problem time dependent
-  bool IsTimeDependent() const;
 
   void SetAdjoint(bool adjoint);
 
@@ -296,7 +295,6 @@ protected:
 
   LBSOptions options_;
   double time_ = 0.0;
-  bool time_dependent_ = false;
   double theta_ = 1.0;
   double dt_ = 1.0;
   GeometryType geometry_type_ = GeometryType::INVALID;

@@ -52,8 +52,10 @@ TimeDependentSourceSolver::TimeDependentSourceSolver(const InputParameters& para
     stop_time_(params.GetParamValue<double>("stop_time")),
     verbose_(params.GetParamValue<bool>("verbose"))
 {
-  if (not lbs_problem_->IsTimeDependent())
-    throw std::runtime_error(GetName() + ": Problem is not time dependent.");
+  if (auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(lbs_problem_))
+  {
+    do_problem->EnableTimeDependentMode();
+  }
 
   lbs_problem_->SetTimeStep(params.GetParamValue<double>("dt"));
   lbs_problem_->SetTheta(params.GetParamValue<double>("theta"));

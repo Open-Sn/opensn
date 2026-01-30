@@ -632,8 +632,6 @@ WrapLBS(py::module& slv)
     use_gpus : bool, default=False
         A flag specifying whether GPU acceleration is used for the sweep. Currently, only ``AAH`` is
         supported.
-    time_dependent : bool, default=False
-        Enable time-dependent sweeps. Currently only supported with ``sweep_type="AAH"``.
     )"
   );
   do_problem.def(
@@ -904,8 +902,6 @@ WrapLBS(py::module& slv)
           - field_function_prefix: str, default=''
     sweep_type : str, optional
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
-    time_dependent : bool, default=False
-        Enable time-dependent sweeps. Currently only supported with ``sweep_type="AAH"``.
     )"
   );
 }

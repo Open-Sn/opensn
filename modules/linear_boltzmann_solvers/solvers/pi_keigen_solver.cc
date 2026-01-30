@@ -63,11 +63,7 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
     groupsets_(do_problem_->GetGroupsets()),
     front_gs_(groupsets_.front())
 {
-  if (do_problem_->IsTimeDependent())
-  {
-    throw std::runtime_error(
-      "PowerIterationKEigenSolver cannot be used with a time-dependent DiscreteOrdinatesProblem.");
-  }
+  do_problem_->SetSweepChunkMode(DiscreteOrdinatesProblem::SweepChunkMode::SteadyState);
 }
 
 void

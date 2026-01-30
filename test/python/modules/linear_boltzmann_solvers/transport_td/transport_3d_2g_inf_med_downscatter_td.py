@@ -85,7 +85,6 @@ if __name__ == "__main__":
             {"name": "zmin", "type": "reflecting"},
             {"name": "zmax", "type": "reflecting"},
         ],
-        time_dependent=True,
     )
 
     solver = TimeDependentSourceSolver(problem=phys, dt=0.05, theta=1.0, stop_time=2.0)

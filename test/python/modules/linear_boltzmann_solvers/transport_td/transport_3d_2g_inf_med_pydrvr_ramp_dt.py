@@ -89,7 +89,6 @@ if __name__ == "__main__":
         options={
             "verbose_inner_iterations": False,
         },
-        time_dependent=True,
     )
 
     # Create the time-dependent solver without stop_time, we will loop in Python
