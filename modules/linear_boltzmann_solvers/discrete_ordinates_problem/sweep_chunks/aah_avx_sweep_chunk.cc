@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_kernels.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log_exceptions.h"
@@ -207,27 +208,28 @@ inline void static SimdBatchSolve(const double* Am,
 
 } // namespace detail
 
-template <int NumNodes>
+template <int NumNodes, bool time_dependent>
 void
-AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
+AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 {
   static_assert(NumNodes >= 1 and NumNodes <= 8);
 
-  CALI_CXX_MARK_SCOPE("AAHSweepChunk::CPUSweep_FixedN");
+  CALI_CXX_MARK_SCOPE("AAH_Sweep_FixedN");
 
-  const size_t gs_size = groupset_.groups.size();
-  const auto gs_gi = groupset_.groups.front().id;
+  const auto& groupset = data.groupset;
+  const size_t gs_size = groupset.groups.size();
+  const auto gs_gi = groupset.groups.front().id;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
 
   auto& fluds = dynamic_cast<AAH_FLUDS&>(angle_set.GetFLUDS());
-  const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
-  const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
+  const auto& m2d_op = groupset.quadrature->GetMomentToDiscreteOperator();
+  const auto& d2m_op = groupset.quadrature->GetDiscreteToMomentOperator();
 
   std::vector<double> b(gs_size * NumNodes, 0.0);
   std::vector<double> sigma_block;
-  sigma_block.reserve(group_block_size_);
+  sigma_block.reserve(data.group_block_size);
 
   const auto& spds = angle_set.GetSPDS();
   const auto& spls = spds.GetLocalSubgrid();
@@ -235,14 +237,13 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     const uint64_t cell_local_id = spls[spls_index];
-    auto& cell = grid_->local_cells[cell_local_id];
-    auto& cell_transport_view = cell_transport_views_[cell_local_id];
-    const auto& cell_mapping = discretization_.GetCellMapping(cell);
+    auto& cell = data.grid->local_cells[cell_local_id];
+    auto& cell_transport_view = data.cell_transport_views[cell_local_id];
+    const auto& cell_mapping = data.discretization.GetCellMapping(cell);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     constexpr auto expected_nodes = static_cast<size_t>(NumNodes);
-    OpenSnInvalidArgumentIf(
-      cell_num_nodes != expected_nodes,
-      "AAHSweepChunk::CPUSweep_FixedN invoked for an incompatible cell topology.");
+    OpenSnInvalidArgumentIf(cell_num_nodes != expected_nodes,
+                            "AAH_Sweep_FixedN invoked for an incompatible cell topology.");
 
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
     const size_t cell_num_faces = cell.faces.size();
@@ -251,10 +252,10 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
 
-    const double rho = densities_[cell.local_id];
-    const auto& sigma_t = xs_.at(cell.block_id)->GetSigmaTotal();
+    const double rho = data.densities[cell.local_id];
+    const auto& sigma_t = data.xs.at(cell.block_id)->GetSigmaTotal();
 
-    const auto& unit_mats = unit_cell_matrices_[cell_local_id];
+    const auto& unit_mats = data.unit_cell_matrices[cell_local_id];
     const auto& G = unit_mats.intV_shapeI_gradshapeJ;
     const auto& M = unit_mats.intV_shapeI_shapeJ;
     const auto& M_surf = unit_mats.intS_shapeI_shapeJ;
@@ -273,20 +274,33 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
     }
 
     std::array<double, matrix_size> Amat{};
-    std::vector<std::array<size_t, NumNodes>> moment_dof_map(num_moments_);
-    for (std::size_t m = 0; m < num_moments_; ++m)
+    std::vector<std::array<size_t, NumNodes>> moment_dof_map(data.num_moments);
+    for (size_t m = 0; m < data.num_moments; ++m)
     {
       PRAGMA_UNROLL
       for (int i = 0; i < NumNodes; ++i)
         moment_dof_map[m][i] = cell_transport_view.MapDOF(i, m, gs_gi);
     }
 
+    std::vector<double> tau_gsg;
+    if constexpr (time_dependent)
+    {
+      const auto& inv_velg = data.xs.at(cell.block_id)->GetInverseVelocity();
+      const double theta = data.problem.GetTheta();
+      const double inv_theta = 1.0 / theta;
+      const double dt = data.problem.GetTimeStep();
+      const double inv_dt = 1.0 / dt;
+      tau_gsg.assign(gs_size, 0.0);
+      for (size_t gsg = 0; gsg < gs_size; ++gsg)
+        tau_gsg[gsg] = inv_velg[gs_gi + gsg] * inv_theta * inv_dt;
+    }
+
     const std::vector<std::uint32_t>& as_angle_indices = angle_set.GetAngleIndices();
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
       const auto direction_num = as_angle_indices[as_ss_idx];
-      const auto omega = groupset_.quadrature->omegas[direction_num];
-      const auto wt = groupset_.quadrature->weights[direction_num];
+      const auto omega = groupset.quadrature->omegas[direction_num];
+      const auto wt = groupset.quadrature->weights[direction_num];
 
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;
@@ -339,7 +353,7 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
                                         f,
                                         fj,
                                         gs_gi,
-                                        IsSurfaceSourceActive());
+                                        data.surface_source_active);
 
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
@@ -359,25 +373,32 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
       const double* __restrict m2d_row = m2d_op[direction_num].data();
       const double* __restrict d2m_row = d2m_op[direction_num].data();
 
-      for (size_t g0 = 0; g0 < gs_size; g0 += group_block_size_)
+      const double* psi_old =
+        (time_dependent and data.psi_old)
+          ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
+          : nullptr;
+
+      for (size_t g0 = 0; g0 < gs_size; g0 += data.group_block_size)
       {
-        const size_t g1 = std::min(g0 + group_block_size_, gs_size);
+        const size_t g1 = std::min(g0 + data.group_block_size, gs_size);
         const size_t block_len = g1 - g0;
         sigma_block.resize(block_len);
 
         for (size_t gsg = g0; gsg < g1; ++gsg)
         {
           const size_t rel = gsg - g0;
-          const double sigma_tg = rho * sigma_t[gs_gi + gsg];
+          double sigma_tg = rho * sigma_t[gs_gi + gsg];
+          if constexpr (time_dependent)
+            sigma_tg += tau_gsg[gsg];
           sigma_block[rel] = sigma_tg;
 
           double* __restrict bg = &b[gsg * NumNodes];
-          for (std::size_t m = 0; m < num_moments_; ++m)
+          for (size_t m = 0; m < data.num_moments; ++m)
           {
             const double w = m2d_row[m];
             std::array<double, NumNodes> nodal_source{};
             for (int i = 0; i < NumNodes; ++i)
-              nodal_source[i] = w * source_moments_[moment_dof_map[m][i] + gsg];
+              nodal_source[i] = w * data.source_moments[moment_dof_map[m][i] + gsg];
 
             for (int i = 0; i < NumNodes; ++i)
             {
@@ -387,6 +408,33 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
               for (int j = 0; j < NumNodes; ++j)
                 value += row[j] * nodal_source[j];
               bg[i] += value;
+            }
+          }
+        }
+
+        if constexpr (time_dependent)
+        {
+          if (data.include_rhs_time_term and psi_old)
+          {
+            for (size_t gsg = g0; gsg < g1; ++gsg)
+            {
+              const double tau = tau_gsg[gsg];
+              double* __restrict bg = &b[gsg * NumNodes];
+
+              for (int i = 0; i < NumNodes; ++i)
+              {
+                double value = 0.0;
+                const double* row = &mass_matrix[idx(i, 0)];
+                PRAGMA_UNROLL
+                for (int j = 0; j < NumNodes; ++j)
+                {
+                  const size_t imap = static_cast<size_t>(j) * data.groupset_angle_group_stride +
+                                      direction_num * data.groupset_group_stride;
+                  const double psi_old_val = psi_old[imap + gsg];
+                  value += row[j] * psi_old_val;
+                }
+                bg[i] += tau * value;
+              }
             }
           }
         }
@@ -444,30 +492,42 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
         for (size_t gsg = g0; gsg < g1; ++gsg)
         {
           const double* __restrict bg = &b[gsg * NumNodes];
-          for (std::size_t m = 0; m < num_moments_; ++m)
+          for (size_t m = 0; m < data.num_moments; ++m)
           {
             const double w = d2m_row[m];
             PRAGMA_UNROLL
             for (int i = 0; i < NumNodes; ++i)
             {
               const size_t dof = cell_transport_view.MapDOF(i, m, gs_gi);
-              destination_phi_[dof + gsg] += w * bg[i];
+              data.destination_phi[dof + gsg] += w * bg[i];
             }
           }
         }
       }
 
-      if (save_angular_flux_)
+      if (data.save_angular_flux)
       {
         double* cell_psi_data =
-          &destination_psi_[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
+          &data
+             .destination_psi[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
         PRAGMA_UNROLL
         for (int i = 0; i < NumNodes; ++i)
         {
           const size_t imap =
-            i * groupset_angle_group_stride_ + direction_num * groupset_group_stride_;
+            i * data.groupset_angle_group_stride + direction_num * data.groupset_group_stride;
           for (size_t gsg = 0; gsg < gs_size; ++gsg)
-            cell_psi_data[imap + gsg] = b[gsg * NumNodes + i];
+          {
+            const double psi_sol = b[gsg * NumNodes + i];
+            if constexpr (time_dependent)
+            {
+              const double theta = data.problem.GetTheta();
+              const double inv_theta = 1.0 / theta;
+              const double psi_old_val = psi_old ? psi_old[imap + gsg] : 0.0;
+              cell_psi_data[imap + gsg] = inv_theta * (psi_sol + (theta - 1.0) * psi_old_val);
+            }
+            else
+              cell_psi_data[imap + gsg] = psi_sol;
+          }
         }
       }
 
@@ -523,12 +583,56 @@ AAHSweepChunk::CPUSweep_FixedN(AngleSet& angle_set)
   }
 }
 
-template void AAHSweepChunk::CPUSweep_FixedN<2>(AngleSet&);
-template void AAHSweepChunk::CPUSweep_FixedN<3>(AngleSet&);
-template void AAHSweepChunk::CPUSweep_FixedN<4>(AngleSet&);
-template void AAHSweepChunk::CPUSweep_FixedN<5>(AngleSet&);
-template void AAHSweepChunk::CPUSweep_FixedN<6>(AngleSet&);
-template void AAHSweepChunk::CPUSweep_FixedN<7>(AngleSet&);
-template void AAHSweepChunk::CPUSweep_FixedN<8>(AngleSet&);
+template <int NumNodes>
+void
+AAHSweepChunk::Sweep_FixedN(AngleSet& angle_set)
+{
+  AAHSweepData data{grid_,
+                    discretization_,
+                    unit_cell_matrices_,
+                    cell_transport_views_,
+                    densities_,
+                    source_moments_,
+                    groupset_,
+                    xs_,
+                    num_moments_,
+                    max_num_cell_dofs_,
+                    min_num_cell_dofs_,
+                    save_angular_flux_,
+                    groupset_angle_group_stride_,
+                    groupset_group_stride_,
+                    destination_phi_,
+                    destination_psi_,
+                    surface_source_active_,
+                    include_rhs_time_term_,
+                    problem_,
+                    nullptr,
+                    group_block_size_};
+
+  AAH_Sweep_FixedN<NumNodes, false>(data, angle_set);
+}
+
+template void AAH_Sweep_FixedN<2, false>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<3, false>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<4, false>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<5, false>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<6, false>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<7, false>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<8, false>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<2, true>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<3, true>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<4, true>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<5, true>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<6, true>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<7, true>(AAHSweepData&, AngleSet&);
+template void AAH_Sweep_FixedN<8, true>(AAHSweepData&, AngleSet&);
+
+template void AAHSweepChunk::Sweep_FixedN<2>(AngleSet&);
+template void AAHSweepChunk::Sweep_FixedN<3>(AngleSet&);
+template void AAHSweepChunk::Sweep_FixedN<4>(AngleSet&);
+template void AAHSweepChunk::Sweep_FixedN<5>(AngleSet&);
+template void AAHSweepChunk::Sweep_FixedN<6>(AngleSet&);
+template void AAHSweepChunk::Sweep_FixedN<7>(AngleSet&);
+template void AAHSweepChunk::Sweep_FixedN<8>(AngleSet&);
 
 } // namespace opensn
