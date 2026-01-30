@@ -121,13 +121,9 @@
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CPUSweep</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">GPUSweep</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
 
-<span class="w">  </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_level_size_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">group_block_size_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpus_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">level_vector_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">CpuSweepFunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="n">AAHSweepChunk</span><span class="o">::*</span><span class="p">)(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="p">);</span>

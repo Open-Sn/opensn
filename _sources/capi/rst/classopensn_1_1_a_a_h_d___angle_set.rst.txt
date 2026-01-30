@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_a_a_h_d___angle_set:
+
+Class AAHD_AngleSet
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aahd_angle_set.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::AngleSet`` (:ref:`exhale_class_classopensn_1_1_angle_set`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::AAHD_AngleSet
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

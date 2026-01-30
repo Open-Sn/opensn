@@ -103,7 +103,7 @@
 <span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_FLUDS</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE" title="opensn::FLUDS"><span class="n"><span class="pre">FLUDS</span></span></a><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDSE" title="Link to this definition"></a><br /></dt>
 <dd><p>AAH <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a> for device. </p>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-constructors">Constructors</p>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-constructor">Constructor</p>
 <p>Contruct and allocate memory for the <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a> on both the host and device. </p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS10AAHD_FLUDSENSt6size_tENSt6size_tERK20AAHD_FLUDSCommonData">
@@ -158,6 +158,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS19AllocateOutgoingPsiEv">
 <span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a290a008221afe47dd21e053774df171c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllocateOutgoingPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS19AllocateOutgoingPsiEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Allocate non-local outgoing psi storage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS23AllocateSaveAngularFluxER24DiscreteOrdinatesProblemRK11LBSGroupset">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a1d03b550048c80d08df655bd37d04396"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllocateSaveAngularFlux</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS23AllocateSaveAngularFluxER24DiscreteOrdinatesProblemRK11LBSGroupset" title="Link to this definition"></a><br /></dt>
+<dd><p>Allocate memory for save angular flux if needed. </p>
 </dd></dl>
 
 </div>
@@ -219,17 +225,53 @@
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-sweep-preparation-and-clean-up">Sweep preparation and clean up</p>
-<p>Prepare for sweep by uploading data to device and return pointer set to banks on device. </p>
+<p>Copy delayed local and delayed non-local incoming psi to device. </p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS15PrepareForSweepER13MeshContinuumR8AngleSetRK11LBSGroupsetb">
-<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1ab3ab20617702337e61537b8e55e7c03e"></span><a class="reference internal" href="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set.html#_CPPv4N6opensn20AAHD_FLUDSPointerSetE" title="opensn::AAHD_FLUDSPointerSet"><span class="n"><span class="pre">AAHD_FLUDSPointerSet</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrepareForSweep</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_surface_source_active</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS15PrepareForSweepER13MeshContinuumR8AngleSetRK11LBSGroupsetb" title="Link to this definition"></a><br /></dt>
-<dd><p>Clean up after sweep by downloading non-local and delayed fluxes from device. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS22CopyDelayedPsiToDeviceEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a58f14bc6b48978451da608e96d436ae2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyDelayedPsiToDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS22CopyDelayedPsiToDeviceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy boundary psi from angle set to device boundary storage. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS17CleanUpAfterSweepER13MeshContinuumR8AngleSet">
-<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a32c010a72375d3aa3eea1aabf8d1bef4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CleanUpAfterSweep</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS17CleanUpAfterSweepER13MeshContinuumR8AngleSet" title="Link to this definition"></a><br /></dt>
-<dd><p>Clean up after sweep by downloading non-local and delayed fluxes from device. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS20CopyBoundaryToDeviceER13MeshContinuumR8AngleSetRK11LBSGroupsetb">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a5bb447e04fdafa8b21b63e9be4b07ed4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyBoundaryToDevice</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_surface_source_active</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS20CopyBoundaryToDeviceER13MeshContinuumR8AngleSetRK11LBSGroupsetb" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy boundary psi from angle set to device boundary storage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS31CopyNonLocalIncomingPsiToDeviceEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a2d59c2b53a17974ac6cfec92d9086d44"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyNonLocalIncomingPsiToDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS31CopyNonLocalIncomingPsiToDeviceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy non-local incoming psi to device. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS19GetDevicePointerSetEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1aa35db669b14b14fd3ff00ccf2400758a"></span><a class="reference internal" href="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set.html#_CPPv4N6opensn20AAHD_FLUDSPointerSetE" title="opensn::AAHD_FLUDSPointerSet"><span class="n"><span class="pre">AAHD_FLUDSPointerSet</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetDevicePointerSet</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS19GetDevicePointerSetEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get device pointers for each bank in <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS17CopyPsiFromDeviceEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1ad4d8e7bdbac556f49250480b9258e554"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyPsiFromDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS17CopyPsiFromDeviceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy boundary psi, non-local outgoing and delayed local psi from device to host. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS25CopyBoundaryPsiToAngleSetER13MeshContinuumR8AngleSet">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1aedcb3c48c899b32cd853afd6a6649831"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyBoundaryPsiToAngleSet</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS25CopyBoundaryPsiToAngleSetER13MeshContinuumR8AngleSet" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy boundary psi from contiguous boundary storage to angle set. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS29CopySaveAngularFluxFromDeviceEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a6daf45a7cca66d7bc87738ed9c9f8ff8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopySaveAngularFluxFromDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS29CopySaveAngularFluxFromDeviceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy save angular flux from device to host. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS35CopySaveAngularFluxToDestinationPsiER24DiscreteOrdinatesProblemRK11LBSGroupsetR8AngleSet">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1afe4a7e442ed2a75a2ececf3d3cba032c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopySaveAngularFluxToDestinationPsi</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span>, <a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS35CopySaveAngularFluxToDestinationPsiER24DiscreteOrdinatesProblemRK11LBSGroupsetR8AngleSet" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy save angular flux from host contiguous buffer to destination psi. </p>
 </dd></dl>
 
 </div>
@@ -239,6 +281,24 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS13GetCommonDataEv">
 <span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1aae84f7223ec6e392c2a3a5bb1dd6886a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_a_a_h_d___f_l_u_d_s_common_data.html#_CPPv4N6opensn20AAHD_FLUDSCommonDataE" title="opensn::AAHD_FLUDSCommonData"><span class="n"><span class="pre">AAHD_FLUDSCommonData</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCommonData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS13GetCommonDataEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Get reference to the common data. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS9GetStreamEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a300b1f184c0cc4f4bfe7ba9f89ad4a1e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">crb</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Stream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetStream</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS9GetStreamEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get reference to stream. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS32GetSavedAngularFluxDevicePointerEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a3d438b9a53400089efcf37efe0860a75"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetSavedAngularFluxDevicePointer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS32GetSavedAngularFluxDevicePointerEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get saved angular flux device pointer. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10AAHD_FLUDS18HasSaveAngularFluxEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a273a27bb237ce40140e3e4cda848951f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasSaveAngularFlux</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10AAHD_FLUDS18HasSaveAngularFluxEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Check if the <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a> has save angular flux storage. </p>
 </dd></dl>
 
 </div>
@@ -276,14 +336,8 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS35nonlocal_delayed_incoming_psi_bank_E">
-<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1ad391797663d813306079e7c28f9a6051"></span><a class="reference internal" href="structopensn_1_1_a_a_h_d___non_local_bank.html#_CPPv4N6opensn17AAHD_NonLocalBankE" title="opensn::AAHD_NonLocalBank"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nonlocal_delayed_incoming_psi_bank_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS35nonlocal_delayed_incoming_psi_bank_E" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1af58985b162ef1138167ac09f500d0a88"></span><a class="reference internal" href="structopensn_1_1_a_a_h_d___non_local_delayed_bank.html#_CPPv4N6opensn24AAHD_NonLocalDelayedBankE" title="opensn::AAHD_NonLocalDelayedBank"><span class="n"><span class="pre">AAHD_NonLocalDelayedBank</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nonlocal_delayed_incoming_psi_bank_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS35nonlocal_delayed_incoming_psi_bank_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Non-local bank for delayed incoming angular fluxes. </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS39nonlocal_delayed_incoming_psi_old_bank_E">
-<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1aaef0b94da4ef64ee58fe0af42b0d9979"></span><a class="reference internal" href="structopensn_1_1_a_a_h_d___non_local_bank.html#_CPPv4N6opensn17AAHD_NonLocalBankE" title="opensn::AAHD_NonLocalBank"><span class="n"><span class="pre">AAHD_NonLocalBank</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nonlocal_delayed_incoming_psi_old_bank_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS39nonlocal_delayed_incoming_psi_old_bank_E" title="Link to this definition"></a><br /></dt>
-<dd><p>Non-local bank for old delayed incoming angular fluxes. </p>
 </dd></dl>
 
 <dl class="cpp var">
@@ -295,7 +349,19 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS13boundary_psi_E">
 <span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a100f4dbd1a76158c5514cfa3a4e08387"></span><a class="reference internal" href="structopensn_1_1_a_a_h_d___boundary_bank.html#_CPPv4N6opensn17AAHD_BoundaryBankE" title="opensn::AAHD_BoundaryBank"><span class="n"><span class="pre">AAHD_BoundaryBank</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_psi_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS13boundary_psi_E" title="Link to this definition"></a><br /></dt>
-<dd><p>Device storage for boundary angular fluxes. </p>
+<dd><p><a class="reference internal" href="structopensn_1_1_storage.html#structopensn_1_1_storage"><span class="std std-ref">Storage</span></a> for boundary angular fluxes. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS18save_angular_flux_E">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a0c4e837814e44308d5b06616efdd1c00"></span><a class="reference internal" href="structopensn_1_1_a_a_h_d___bank.html#_CPPv4N6opensn9AAHD_BankE" title="opensn::AAHD_Bank"><span class="n"><span class="pre">AAHD_Bank</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">save_angular_flux_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS18save_angular_flux_E" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="structopensn_1_1_storage.html#structopensn_1_1_storage"><span class="std std-ref">Storage</span></a> for saved angular fluxes. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10AAHD_FLUDS7stream_E">
+<span class="target" id="classopensn_1_1_a_a_h_d___f_l_u_d_s_1a30238ca7c3120ce5a548150e7c754881"></span><span class="n"><span class="pre">crb</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Stream</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stream_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10AAHD_FLUDS7stream_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Stream for asynchronous operations. </p>
 </dd></dl>
 
 </div>

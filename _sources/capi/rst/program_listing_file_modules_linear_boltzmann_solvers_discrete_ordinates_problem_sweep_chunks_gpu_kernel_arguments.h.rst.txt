@@ -22,7 +22,7 @@ Program Listing for File arguments.h
    {
    class DiscreteOrdinatesProblem;
    class LBSGroupset;
-   class AngleSet;
+   class AAHD_AngleSet;
    class AAHD_FLUDS;
    } // namespace opensn
    
@@ -35,7 +35,7 @@ Program Listing for File arguments.h
      /// Constructor
      Arguments(DiscreteOrdinatesProblem& problem,
                const LBSGroupset& groupset,
-               AngleSet& angle_set,
+               AAHD_AngleSet& angle_set,
                AAHD_FLUDS& fluds,
                bool is_surface_source_active);
    

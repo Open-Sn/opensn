@@ -15,6 +15,12 @@ Base Type
 - ``public opensn::AAHD_Bank`` (:ref:`exhale_struct_structopensn_1_1_a_a_h_d___bank`)
 
 
+Derived Type
+************
+
+- ``public opensn::AAHD_NonLocalDelayedBank`` (:ref:`exhale_struct_structopensn_1_1_a_a_h_d___non_local_delayed_bank`)
+
+
 Struct Documentation
 --------------------
 

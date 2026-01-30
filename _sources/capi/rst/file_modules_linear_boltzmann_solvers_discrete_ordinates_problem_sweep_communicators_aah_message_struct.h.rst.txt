@@ -1,0 +1,77 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_message_struct.h:
+
+File aah_message_struct.h
+=========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aah_message_struct.h``)
+---------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_message_struct.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``concepts``
+
+- ``cstddef``
+
+- ``framework/mpi/mpi_comm_set.h`` (:ref:`file_framework_mpi_mpi_comm_set.h`)
+
+- ``limits``
+
+- ``type_traits``
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_async_comm.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aahd_async_comm.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h___message_details`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a3266e9b3b3fa81018b9b218563dda4f5`
+

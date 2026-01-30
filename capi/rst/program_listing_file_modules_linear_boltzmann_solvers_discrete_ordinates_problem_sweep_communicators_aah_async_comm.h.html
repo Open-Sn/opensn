@@ -91,110 +91,15 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aah_message_struct.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mpi/mpi_comm_set.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mpicpp-lite/mpicpp-lite.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;concepts&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;type_traits&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">mpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">mpicpp_lite</span><span class="p">;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
-
-<span class="c1">/// \brief Message details for each message passing.</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">AAH_MessageDetails</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="c1">/// MPI rank of the peer partition.</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">peer</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Size of the message (in number of doubles).</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Position of the block in the data buffer.</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">block_pos</span><span class="p">;</span>
-<span class="p">};</span>
-
-<span class="cm">/**</span>
-<span class="cm"> * Compute AAH message data structure.</span>
-<span class="cm"> * \tparam GetUnknownCountFunc Function getting the number of unknown to transfer for each location.</span>
-<span class="cm"> * \param locations SPDS vector of locations.</span>
-<span class="cm"> * \param get_unknown_count Function getting the number of unknowns for a given location.</span>
-<span class="cm"> * \param msg_data List of vector of message data per location.</span>
-<span class="cm"> * \param msg_received Pointer to the vector of message received flag.</span>
-<span class="cm"> * \param max_num_messages Reference to max number of message.</span>
-<span class="cm"> * \param comm_set Communicator set.</span>
-<span class="cm"> * \param max_mpi_message_size Max size (in bytes) of MPI messages.</span>
-<span class="cm"> */</span>
-<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">GetUnknownCountFunc</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="k">requires</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">is_invocable_v</span><span class="o">&lt;</span><span class="n">GetUnknownCountFunc</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">           </span><span class="n">std</span><span class="o">::</span><span class="n">is_convertible_v</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">invoke_result_t</span><span class="o">&lt;</span><span class="n">GetUnknownCountFunc</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">,</span>
-<span class="w">                                 </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span>
-<span class="kt">void</span>
-<span class="n">SetupMessageData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">locations</span><span class="p">,</span>
-<span class="w">                 </span><span class="k">const</span><span class="w"> </span><span class="n">GetUnknownCountFunc</span><span class="o">&amp;</span><span class="w"> </span><span class="n">get_unknown_count</span><span class="p">,</span>
-<span class="w">                 </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">msg_data</span><span class="p">,</span>
-<span class="w">                 </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;*</span><span class="w"> </span><span class="n">msg_received</span><span class="p">,</span>
-<span class="w">                 </span><span class="kt">int</span><span class="o">&amp;</span><span class="w"> </span><span class="n">max_num_messages</span><span class="p">,</span>
-<span class="w">                 </span><span class="k">const</span><span class="w"> </span><span class="n">MPICommunicatorSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm_set</span><span class="p">,</span>
-<span class="w">                 </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="c1">// allocate memory for message data message reveived status</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_locations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locations</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
-<span class="w">  </span><span class="n">msg_data</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">num_locations</span><span class="p">);</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">msg_received</span><span class="p">)</span>
-<span class="w">    </span><span class="n">msg_received</span><span class="o">-&gt;</span><span class="n">resize</span><span class="p">(</span><span class="n">num_locations</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">// loop for each SPDS location</span>
-<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_locations</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">num_unknowns_64</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_unknown_count</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">num_unknowns_64</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">()))</span>
-<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">overflow_error</span><span class="p">(</span><span class="s">&quot;Number of unknowns is too large for int&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">num_unknowns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">num_unknowns_64</span><span class="p">);</span>
-<span class="w">    </span><span class="c1">// compute message count and size</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">message_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">message_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">num_unknowns</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">total_bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_unknowns</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
-<span class="w">      </span><span class="n">message_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">total_bytes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">max_mpi_message_size</span><span class="p">)</span>
-<span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="n">message_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">total_bytes</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">max_mpi_message_size</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">max_mpi_message_size</span><span class="p">;</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">      </span><span class="n">message_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">message_count</span><span class="p">,</span><span class="w"> </span><span class="n">num_unknowns</span><span class="p">);</span>
-<span class="w">      </span><span class="n">message_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">num_unknowns</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">message_count</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">message_count</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// skip if no message</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">message_count</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="n">msg_data</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">clear</span><span class="p">();</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">msg_received</span><span class="p">)</span>
-<span class="w">        </span><span class="p">(</span><span class="o">*</span><span class="n">msg_received</span><span class="p">)[</span><span class="n">i</span><span class="p">].</span><span class="n">clear</span><span class="p">();</span>
-<span class="w">      </span><span class="k">continue</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// get MPI rank of peer partition</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">peer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">msg_received</span><span class="p">)</span>
-<span class="w">      </span><span class="n">peer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">comm_set</span><span class="p">.</span><span class="n">MapIonJ</span><span class="p">(</span><span class="n">locations</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">opensn</span><span class="o">::</span><span class="n">mpi_comm</span><span class="p">.</span><span class="n">rank</span><span class="p">());</span>
-<span class="w">    </span><span class="k">else</span>
-<span class="w">      </span><span class="n">peer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">comm_set</span><span class="p">.</span><span class="n">MapIonJ</span><span class="p">(</span><span class="n">locations</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">locations</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-<span class="w">    </span><span class="c1">// initialize message blocks for each message</span>
-<span class="w">    </span><span class="n">msg_data</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">reserve</span><span class="p">(</span><span class="n">message_count</span><span class="p">);</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">block_pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">message_count</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">m</span><span class="p">)</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="n">msg_data</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span><span class="w"> </span><span class="n">message_size</span><span class="p">,</span><span class="w"> </span><span class="n">block_pos</span><span class="p">);</span>
-<span class="w">      </span><span class="n">num_unknowns</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">message_size</span><span class="p">;</span>
-<span class="w">      </span><span class="n">block_pos</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">message_size</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="n">msg_data</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span><span class="w"> </span><span class="n">num_unknowns</span><span class="p">,</span><span class="w"> </span><span class="n">block_pos</span><span class="p">);</span>
-<span class="w">    </span><span class="c1">// resize receive status vector</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">msg_received</span><span class="p">)</span>
-<span class="w">      </span><span class="p">(</span><span class="o">*</span><span class="n">msg_received</span><span class="p">)[</span><span class="n">i</span><span class="p">].</span><span class="n">resize</span><span class="p">(</span><span class="n">message_count</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
-<span class="w">    </span><span class="c1">// save max number of messages</span>
-<span class="w">    </span><span class="n">max_num_messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">max_num_messages</span><span class="p">,</span><span class="w"> </span><span class="n">message_count</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Handles interprocess communication related to sweeping.</span>
@@ -262,11 +167,7 @@
 <span class="cm">   * This method gets called by an angleset that subscribes to this</span>
 <span class="cm">   * sweepbuffer.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">BuildMessageStructureForCPUSweep</span><span class="p">();</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Builds message structure for device FLUDS.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">BuildMessageStructureForGPUSweep</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">BuildMessageStructure</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>

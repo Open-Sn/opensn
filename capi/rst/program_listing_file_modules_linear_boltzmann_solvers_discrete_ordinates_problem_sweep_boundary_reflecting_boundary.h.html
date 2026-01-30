@@ -116,6 +116,18 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeDelayedAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
 <span class="w">                                    </span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Get the list of anglesets that depend on a given angleset.</span>
+<span class="cm">   * If the boundary is not opposing reflecting, this method extracts all anglesets in the angle</span>
+<span class="cm">   * aggregation that can only begin sweeping after the given angle set has completed its sweep.</span>
+<span class="cm">   * \param following_angle_sets Output set to which the dependent anglesets will be added.</span>
+<span class="cm">   * \param angle_agg Angle aggregation containing all anglesets.</span>
+<span class="cm">   * \param angleset Angleset for which dependent anglesets are sought.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">GetFollowingAngleSets</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*&gt;&amp;</span><span class="w"> </span><span class="n">following_angle_sets</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">AngleAggregation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_agg</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angleset</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">FinalizeDelayedAngularFluxSetup</span><span class="p">(</span>
 <span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">boundary_id</span><span class="p">,</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">boundaries</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>

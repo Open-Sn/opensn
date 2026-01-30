@@ -12,6 +12,7 @@ Inheritance Relationships
 Derived Types
 *************
 
+- ``public opensn::AAHDSweepChunk`` (:ref:`exhale_class_classopensn_1_1_a_a_h_d_sweep_chunk`)
 - ``public opensn::AAHSweepChunk`` (:ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk`)
 - ``public opensn::AAHSweepChunkRZ`` (:ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk_r_z`)
 - ``public opensn::AAHSweepChunkTD`` (:ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk_t_d`)

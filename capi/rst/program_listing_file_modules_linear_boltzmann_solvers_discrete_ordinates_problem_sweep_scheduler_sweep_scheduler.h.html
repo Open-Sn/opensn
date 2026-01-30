@@ -101,7 +101,8 @@
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SchedulingAlgorithm</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="n">FIRST_IN_FIRST_OUT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="c1">///&lt; FIFO</span>
-<span class="w">  </span><span class="n">DEPTH_OF_GRAPH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w">      </span><span class="c1">///&lt; DOG</span>
+<span class="w">  </span><span class="n">DEPTH_OF_GRAPH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">     </span><span class="c1">///&lt; DOG</span>
+<span class="w">  </span><span class="n">ALL_AT_ONCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w">         </span><span class="c1">///&lt; AAO</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SweepScheduler</span>
@@ -124,6 +125,9 @@
 
 <span class="w">  </span><span class="c1">/// Executes the depth-of-graph algorithm.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScheduleAlgoDOG</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Performs the all-at-once scheduling algorithm.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScheduleAlgoAAO</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="n">SchedulingAlgorithm</span><span class="w"> </span><span class="n">scheduler_type_</span><span class="p">;</span>

@@ -12,6 +12,7 @@ Inheritance Relationships
 Derived Types
 *************
 
+- ``public opensn::AAHD_AngleSet`` (:ref:`exhale_class_classopensn_1_1_a_a_h_d___angle_set`)
 - ``public opensn::AAH_AngleSet`` (:ref:`exhale_class_classopensn_1_1_a_a_h___angle_set`)
 - ``public opensn::CBC_AngleSet`` (:ref:`exhale_class_classopensn_1_1_c_b_c___angle_set`)
 

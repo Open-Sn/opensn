@@ -42,7 +42,7 @@ Included By
 -----------
 
 
-- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_async_comm.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_message_struct.h`
 
 
 

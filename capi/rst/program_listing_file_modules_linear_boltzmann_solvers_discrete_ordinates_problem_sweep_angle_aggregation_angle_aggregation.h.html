@@ -154,6 +154,7 @@
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">boundaries_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngularQuadrature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetQuadrature</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">quadrature_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Resets all the outgoing intra-location and inter-location cyclic interfaces.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ZeroOutgoingDelayedPsi</span><span class="p">();</span>
@@ -163,6 +164,9 @@
 
 <span class="w">  </span><span class="c1">/// Initializes reflecting boundary conditions.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeReflectingBCs</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Establishes dependencies between angle sets for reflecting boundaries.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetupAngleSetDependencies</span><span class="p">();</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Returns a pair of numbers containing the number of delayed angular unknowns both locally and</span>

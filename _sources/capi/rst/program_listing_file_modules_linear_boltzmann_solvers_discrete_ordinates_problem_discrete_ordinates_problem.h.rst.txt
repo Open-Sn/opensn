@@ -83,6 +83,9 @@ Program Listing for File discrete_ordinates_problem.h
      void SetBoundaryOptions(const InputParameters& params) override;
      void ClearBoundaries() override;
    
+     void CopyPhiAndSrcToDevice();
+     void CopyPhiAndOutflowBackToHost();
+   
    protected:
      explicit DiscreteOrdinatesProblem(const std::string& name,
                                        std::shared_ptr<MeshContinuum> grid_ptr);
@@ -146,10 +149,20 @@ Program Listing for File discrete_ordinates_problem.h
      std::vector<std::vector<double>> psi_old_local_;
    
    private:
-     void CreateFLUDSCommonDataForDevice();
-     std::shared_ptr<FLUDS> CreateFLUDSForDevice(std::size_t num_groups,
-                                                 std::size_t num_angles,
-                                                 const FLUDSCommonData& common_data);
+     void CreateAAHD_FLUDSCommonData();
+     std::shared_ptr<FLUDS> CreateAAHD_FLUDS(std::size_t num_groups,
+                                             std::size_t num_angles,
+                                             const FLUDSCommonData& common_data);
+     std::shared_ptr<AngleSet>
+     CreateAAHD_AngleSet(size_t id,
+                         size_t num_groups,
+                         const SPDS& spds,
+                         std::shared_ptr<FLUDS>& fluds,
+                         std::vector<size_t>& angle_indices,
+                         std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+                         int maximum_message_size,
+                         const MPICommunicatorSet& in_comm_set);
+     std::shared_ptr<SweepChunk> CreateAAHD_SweepChunk(LBSGroupset& groupset);
    
      /**
       * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes

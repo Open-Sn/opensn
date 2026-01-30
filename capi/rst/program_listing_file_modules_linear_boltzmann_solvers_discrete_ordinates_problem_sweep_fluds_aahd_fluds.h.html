@@ -103,128 +103,116 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
+<span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
+
 <span class="c1">/// Host-device bank storage structure for device-transportable FLUDS.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">AAHD_Bank</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="c1">/// \name Constructors</span>
-<span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Default constructor.</span>
 <span class="w">  </span><span class="n">AAHD_Bank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * \brief Construct and allocate memory.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Construct and allocate memory.</span>
 <span class="w">  </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">host_storage</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">),</span><span class="w"> </span><span class="n">device_storage</span><span class="p">(</span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
-<span class="w">  </span><span class="c1">/// \}</span>
+<span class="w">  </span><span class="c1">/// Construct and allocate memory asynchronously.</span>
+<span class="w">  </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">host_storage</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">),</span><span class="w"> </span><span class="n">device_storage</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// \name Copy and move</span>
-<span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Copy constructor.</span>
 <span class="w">  </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// \brief Copy assignment.</span>
 <span class="w">  </span><span class="n">AAHD_Bank</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// \brief Move constructor.</span>
 <span class="w">  </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">AAHD_Bank</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Move assignment.</span>
 <span class="w">  </span><span class="n">AAHD_Bank</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">AAHD_Bank</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \}</span>
 
-<span class="w">  </span><span class="c1">/// \name Actions</span>
-<span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Clear host and device storage.</span>
+<span class="w">  </span><span class="c1">/// Clear host and device storage.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Clear</span><span class="p">();</span>
-<span class="w">  </span><span class="c1">/// \brief Upload data from host to device.</span>
+<span class="w">  </span><span class="c1">/// Asynchronously clear of device storage.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Clear</span><span class="p">(</span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Upload data from host to device.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UploadToDevice</span><span class="p">();</span>
-<span class="w">  </span><span class="c1">/// \brief Download data from device to host.</span>
+<span class="w">  </span><span class="c1">/// Upload data from host to device asynchronously.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UploadToDevice</span><span class="p">(</span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Download data from device to host.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">DownloadToHost</span><span class="p">();</span>
-<span class="w">  </span><span class="c1">/// \}</span>
+<span class="w">  </span><span class="c1">/// Download data from device to host asynchronously.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">DownloadToHost</span><span class="p">(</span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// \brief Host storage for the bank.</span>
+<span class="w">  </span><span class="c1">/// Host storage for the bank.</span>
 <span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">HostVector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">host_storage</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Device storage for the bank.</span>
+<span class="w">  </span><span class="c1">/// Device storage for the bank.</span>
 <span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">DeviceMemory</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">device_storage</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * \brief Delayed local bank storage structure.</span>
-<span class="cm"> */</span>
+<span class="c1">/// Delayed local bank storage structure.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">AAHD_DelayedLocalBank</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AAHD_Bank</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="c1">/// \name Constructors</span>
-<span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Default constructor.</span>
 <span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Member constructor.</span>
+<span class="w">  </span><span class="c1">/// Member constructor.</span>
 <span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="c1">/// \}</span>
 <span class="p">};</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * \brief Boundary bank storage structure.</span>
-<span class="cm"> */</span>
+<span class="c1">/// Boundary bank storage structure.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">AAHD_BoundaryBank</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AAHD_Bank</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="c1">/// \name Constructors</span>
-<span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Default constructor.</span>
 <span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Member constructor.</span>
-<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
-<span class="w">  </span><span class="c1">/// \}</span>
+<span class="w">  </span><span class="c1">/// Member constructor.</span>
+<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">,</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">,</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="p">};</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * \brief Non-local bank storage structure.</span>
-<span class="cm"> */</span>
+<span class="c1">/// Non-local bank storage structure.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">AAHD_NonLocalBank</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AAHD_Bank</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="c1">/// \name Constructors</span>
-<span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Default constructor.</span>
 <span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Member constructor.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_sizes</span><span class="p">,</span>
-<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_offsets</span><span class="p">,</span>
-<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// \}</span>
+<span class="w">  </span><span class="c1">/// Member constructor.</span>
+<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">loc_sizes</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">loc_offsets</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Asynchronous member constructor.</span>
+<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">loc_sizes</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">loc_offsets</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// \name Copy and move</span>
-<span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// \brief Copy constructor.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Copy assignment.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Move constructor.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="p">(</span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \brief Move assignment.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">AAHD_NonLocalBank</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \}</span>
-
-<span class="w">  </span><span class="c1">/// \name Actions</span>
-<span class="w">  </span><span class="c1">/// \{</span>
 <span class="w">  </span><span class="c1">/// \brief Update views.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateViews</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">views</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// \}</span>
 
-<span class="w">  </span><span class="c1">/// \name Members</span>
-<span class="w">  </span><span class="c1">/// \{</span>
 <span class="w">  </span><span class="c1">/// Reference to the sizes of each location.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_sizes_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_sizes</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Reference to the offsets of each location.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_offsets_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_offsets</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Stride size.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// \}</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * \brief AAH FLUDS for device.</span>
-<span class="cm"> */</span>
+<span class="c1">/// Non-local delayed bank storage structure.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">AAHD_NonLocalDelayedBank</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AAHD_NonLocalBank</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">AAHD_NonLocalDelayedBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Member constructor.</span>
+<span class="w">  </span><span class="n">AAHD_NonLocalDelayedBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">loc_sizes</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">loc_offsets</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Update views.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateViews</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">current_delayed_views</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">old_delayed_views</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Set current delayed views to old delayed views.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetNewToOld</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Set old delayed views to current delayed views.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOldToNew</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Host storage for current delayed bank.</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">HostVector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">host_current_storage</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// AAH FLUDS for device.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AAHD_FLUDS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FLUDS</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// \name Constructors</span>
+<span class="w">  </span><span class="c1">/// \name Constructor</span>
 <span class="w">  </span><span class="c1">/// \{</span>
 <span class="w">  </span><span class="c1">/// Contruct and allocate memory for the FLUDS on both the host and device.</span>
 <span class="w">  </span><span class="n">AAHD_FLUDS</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
@@ -252,6 +240,8 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateDelayedPrelocIOutgoingPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Allocate non-local outgoing psi storage.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateOutgoingPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Allocate memory for save angular flux if needed.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateSaveAngularFlux</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// \name Size getters</span>
@@ -289,17 +279,37 @@
 
 <span class="w">  </span><span class="c1">/// \name Sweep preparation and clean up</span>
 <span class="w">  </span><span class="c1">/// \{</span>
-<span class="w">  </span><span class="c1">/// Prepare for sweep by uploading data to device and return pointer set to banks on device.</span>
-<span class="w">  </span><span class="n">AAHD_FLUDSPointerSet</span><span class="w"> </span><span class="nf">PrepareForSweep</span><span class="p">(</span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
-<span class="w">                                       </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">,</span>
-<span class="w">                                       </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
-<span class="w">                                       </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_surface_source_active</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// Clean up after sweep by downloading non-local and delayed fluxes from device.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CleanUpAfterSweep</span><span class="p">(</span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Copy delayed local and delayed non-local incoming psi to device.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyDelayedPsiToDevice</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Copy boundary psi from angle set to device boundary storage.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyBoundaryToDevice</span><span class="p">(</span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">,</span>
+<span class="w">                            </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
+<span class="w">                            </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_surface_source_active</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Copy non-local incoming psi to device.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyNonLocalIncomingPsiToDevice</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Get device pointers for each bank in FLUDS.</span>
+<span class="w">  </span><span class="n">AAHD_FLUDSPointerSet</span><span class="w"> </span><span class="nf">GetDevicePointerSet</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Copy boundary psi, non-local outgoing and delayed local psi from device to host.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyPsiFromDevice</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Copy boundary psi from contiguous boundary storage to angle set.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyBoundaryPsiToAngleSet</span><span class="p">(</span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Copy save angular flux from device to host.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopySaveAngularFluxFromDevice</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Copy save angular flux from host contiguous buffer to destination psi.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopySaveAngularFluxToDestinationPsi</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem</span><span class="p">,</span>
+<span class="w">                                           </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
+<span class="w">                                           </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// Get reference to the common data</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetCommonData</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Get reference to stream.</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetStream</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">stream_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Get saved angular flux device pointer.</span>
+<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">GetSavedAngularFluxDevicePointer</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">save_angular_flux_</span><span class="p">.</span><span class="n">device_storage</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Check if the FLUDS has save angular flux storage.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasSaveAngularFlux</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">save_angular_flux_</span><span class="p">.</span><span class="n">host_storage</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Reference to the common data.</span>
@@ -316,25 +326,18 @@
 <span class="w">  </span><span class="c1">/// Non-local bank for incoming angular fluxes.</span>
 <span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="w"> </span><span class="n">nonlocal_incoming_psi_bank_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Non-local bank for delayed incoming angular fluxes.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_psi_bank_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Non-local bank for old delayed incoming angular fluxes.</span>
-<span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_psi_old_bank_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">AAHD_NonLocalDelayedBank</span><span class="w"> </span><span class="n">nonlocal_delayed_incoming_psi_bank_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Non-local bank for outgoing angular fluxes.</span>
 <span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="w"> </span><span class="n">nonlocal_outgoing_psi_bank_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Device storage for boundary angular fluxes.</span>
+<span class="w">  </span><span class="c1">/// Storage for boundary angular fluxes.</span>
 <span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="w"> </span><span class="n">boundary_psi_</span><span class="p">;</span>
 
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Get device pointers for each bank in FLUDS.</span>
-<span class="w">  </span><span class="n">AAHD_FLUDSPointerSet</span><span class="w"> </span><span class="n">GetDevicePointerSet</span><span class="p">();</span>
-<span class="w">  </span><span class="c1">/// Copy boundary psi from angle set to device boundary storage.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyBoundaryPsiToDevice</span><span class="p">(</span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
-<span class="w">                               </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">,</span>
-<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
-<span class="w">                               </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_surface_source_active</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// Copy boundary psi from device boundary storage to angle set.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyBoundaryPsiFromDevice</span><span class="p">(</span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Storage for saved angular fluxes.</span>
+<span class="w">  </span><span class="n">AAHD_Bank</span><span class="w"> </span><span class="n">save_angular_flux_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Stream for asynchronous operations.</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="w"> </span><span class="n">stream_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

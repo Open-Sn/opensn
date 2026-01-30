@@ -12,6 +12,7 @@ Inheritance Relationships
 Derived Types
 *************
 
+- ``public opensn::AAHD_ASynchronousCommunicator`` (:ref:`exhale_class_classopensn_1_1_a_a_h_d___a_synchronous_communicator`)
 - ``public opensn::AAH_ASynchronousCommunicator`` (:ref:`exhale_class_classopensn_1_1_a_a_h___a_synchronous_communicator`)
 - ``public opensn::CBC_ASynchronousCommunicator`` (:ref:`exhale_class_classopensn_1_1_c_b_c___a_synchronous_communicator`)
 

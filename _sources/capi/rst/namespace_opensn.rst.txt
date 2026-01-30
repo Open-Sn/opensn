@@ -55,6 +55,8 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_a_a_h_d___non_local_bank`
 
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___non_local_delayed_bank`
+
 - :ref:`exhale_struct_structopensn_1_1_angular_quadrature_1_1_harmonic_indices`
 
 - :ref:`exhale_struct_structopensn_1_1_boundary_condition`
@@ -253,6 +255,10 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h___s_p_d_s`
 
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___angle_set`
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d___a_synchronous_communicator`
+
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___face_node`
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___f_l_u_d_s`
@@ -262,6 +268,8 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___node_index`
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___non_local_face_node`
+
+- :ref:`exhale_class_classopensn_1_1_a_a_h_d_sweep_chunk`
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk`
 
@@ -967,7 +975,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a8fa43a9fc19c5746a332686cd872ab64`
 
-- :ref:`exhale_function_namespaceopensn_1a92a4cb795280267f730aeeadc6ef6285`
+- :ref:`exhale_function_namespaceopensn_1a3266e9b3b3fa81018b9b218563dda4f5`
 
 - :ref:`exhale_function_namespaceopensn_1ac26c01c7e45e9babbf3c72f2e05e69d7`
 

@@ -93,11 +93,14 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;set&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
+<span class="k">class</span><span class="w"> </span><span class="nc">AngleSet</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AngleAggregation</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span><span class="p">;</span>
 
 <span class="c1">/// Base class for sweep related boundaries.</span>
@@ -128,6 +131,16 @@
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeDelayedAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
 <span class="w">                                            </span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Get the list of anglesets that depend on a given angleset.</span>
+<span class="cm">   * This function can only be applied to reflecting boundary and AAHD anglesets.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">GetFollowingAngleSets</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*&gt;&amp;</span><span class="w"> </span><span class="n">following_angle_sets</span><span class="p">,</span>
+<span class="w">                                     </span><span class="k">const</span><span class="w"> </span><span class="n">AngleAggregation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_agg</span><span class="p">,</span>
+<span class="w">                                     </span><span class="k">const</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angleset</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
