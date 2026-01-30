@@ -50,6 +50,7 @@ private:
   double current_time_ = 0.0;
   unsigned int step_ = 0;
   bool verbose_ = true;
+  bool initialized_ = false;
   std::function<void()> pre_advance_callback_;
   std::function<void()> post_advance_callback_;
 

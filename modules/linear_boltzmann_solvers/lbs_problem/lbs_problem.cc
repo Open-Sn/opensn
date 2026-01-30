@@ -144,8 +144,8 @@ LBSProblem::GetTimeStep() const
 void
 LBSProblem::SetTheta(double theta)
 {
-  if (theta < 0.0 or theta > 1.0)
-    throw std::runtime_error(GetName() + " theta must be between 0.0 and 1.0.");
+  if (theta <= 0.0 or theta > 1.0)
+    throw std::runtime_error(GetName() + " theta must be in (0.0, 1.0].");
   theta_ = theta;
 }
 
@@ -412,6 +412,12 @@ SetSourceFunction
 LBSProblem::GetActiveSetSourceFunction() const
 {
   return active_set_source_function_;
+}
+
+void
+LBSProblem::SetActiveSetSourceFunction(SetSourceFunction source_function)
+{
+  active_set_source_function_ = std::move(source_function);
 }
 
 std::shared_ptr<AGSLinearSolver>

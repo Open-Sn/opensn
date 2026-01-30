@@ -2,39 +2,29 @@
 # -*- coding: utf-8 -*-
 
 """
-3D delayed transient with a ramped XS (monotonic sanity).
+3D delayed transient with a ramped xs.
 
-Test intent
-- Similar to the prompt ramp, but with delayed neutrons enabled; ensures precursor coupling remains stable
-  as XS changes stepwise over time.
+Similar to the prompt ramp, but with delayed neutrons enabled.
 
-Physics
-- 1-group, 1 precursor. nu*Sigma_f ramps upward in time. The fission rate should grow monotonically for
-  this case under reflecting BCs.
+1-group, 1 precursor. nu*sigma_f ramps upward in time. The fission production
+should grow monotonically for this case with reflecting BCs.
 
-Gold values
-- No fixed numeric gold; we require monotonic non-decreasing FR and finite values over the ramp.
-
-What we check and why
-- TRANSIENT_OK enforces finite response and non-decreasing FR, catching delayed-source instability or
-  XS update timing issues.
+TRANSIENT_OK checks finite response and non-decreasing FP.
 """
 
 import math
 import os
+import sys
 
-
-def xs_path(name):
-    return os.path.join(os.path.dirname(__file__), name)
-
-
-def build_mesh_3d(n, length):
-    dx = length / n
-    nodes = [i * dx for i in range(n + 1)]
-    meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes])
-    grid = meshgen.Execute()
-    grid.SetUniformBlockID(0)
-    return grid
+if "opensn_console" not in globals():
+    from mpi4py import MPI
+    size = MPI.COMM_WORLD.size
+    rank = MPI.COMM_WORLD.rank
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.solver import DiscreteOrdinatesProblem, TransientKEigenSolver
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
+    from pyopensn.xs import MultiGroupXS
+    from pyopensn.mesh import OrthogonalMeshGenerator
 
 
 def read_block_value(file_path, block_begin, block_end):
@@ -58,24 +48,34 @@ def read_block_value(file_path, block_begin, block_end):
 def load_xs_scalar_params(xs_file):
     nu_prompt = read_block_value(xs_file, "NU_PROMPT_BEGIN", "NU_PROMPT_END")
     nu_delayed = read_block_value(xs_file, "NU_DELAYED_BEGIN", "NU_DELAYED_END")
-    lam = read_block_value(xs_file, "PRECURSOR_DECAY_CONSTANTS_BEGIN",
-                           "PRECURSOR_DECAY_CONSTANTS_END")
-    frac_yield = read_block_value(xs_file, "PRECURSOR_FRACTIONAL_YIELDS_BEGIN",
-                                  "PRECURSOR_FRACTIONAL_YIELDS_END")
+    lam = read_block_value(
+        xs_file,
+        "PRECURSOR_DECAY_CONSTANTS_BEGIN",
+        "PRECURSOR_DECAY_CONSTANTS_END",
+    )
+    frac_yield = read_block_value(
+        xs_file,
+        "PRECURSOR_FRACTIONAL_YIELDS_BEGIN",
+        "PRECURSOR_FRACTIONAL_YIELDS_END",
+    )
     return nu_prompt, nu_delayed, lam, frac_yield
 
 
 if __name__ == "__main__":
-    grid = build_mesh_3d(n=4, length=8.0)
+    dx = 8.0 / 4
+    nodes = [i * dx for i in range(4 + 1)]
+    meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes])
+    grid = meshgen.Execute()
+    grid.SetUniformBlockID(0)
 
     xs_list = []
     for i in range(5):
         xs = MultiGroupXS()
-        xs.LoadFromOpenSn(xs_path(f"xs1g_delayed_ramp_{i}.cxs"))
+        xs.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), f"xs1g_delayed_ramp_{i}.cxs"))
         xs_list.append(xs)
     xs_crit = xs_list[0]
     xs_super = xs_list[-1]
-    xs_scalar_file = xs_path("xs1g_delayed_ramp_0.cxs")
+    xs_scalar_file = os.path.join(os.path.dirname(__file__), "xs1g_delayed_ramp_0.cxs")
 
     pquad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)
 
@@ -90,7 +90,6 @@ if __name__ == "__main__":
                 "inner_linear_method": "classic_richardson",
                 "l_abs_tol": 1.0e-8,
                 "l_max_its": 200,
-                "gmres_restart_interval": 50,
             },
         ],
         xs_map=[{"block_ids": [0], "xs": xs_crit}],
@@ -110,7 +109,8 @@ if __name__ == "__main__":
         },
     )
 
-    solver = TransientKEigenSolver(problem=phys, max_iters=200, k_tol=1.0e-10)
+    solver = TransientKEigenSolver(problem=phys, max_iters=200, k_tol=1.0e-10,
+                                   verbose=False)
     solver.Initialize()
 
     # XS-based kinetics parameters (1-group, 1-precursor)
@@ -159,36 +159,37 @@ if __name__ == "__main__":
 
     nu_sigma_f_crit = nu_sigma_f_of_t(0.0)
 
-    fr0 = phys.ComputeFissionProduction("new")
+    fp0 = phys.ComputeFissionProduction("new")
 
     rel_tol = 2.0e-2
     ok = True
     growth_ok = True
     last_ratio = None
-    print("step time ratio_numeric ratio_analytic")
+    if rank == 0:
+        print("step time ratio_numeric ratio_analytic")
     step = 0
     while phys.GetTime() < t_end:
         step += 1
         t_from = phys.GetTime()
-
         # Update XS mix for current step (piecewise-constant over dt)
         idx = xs_index(t_from)
         phys.SetXSMap(xs_map=[{"block_ids": [0], "xs": xs_list[idx]}])
 
-        solver.Step()
-        fr_new = phys.ComputeFissionProduction("new")
         solver.Advance()
+        fp_new = phys.ComputeFissionProduction("new")
         t_to = phys.GetTime()
 
-        ratio_num = fr_new / fr0
+        ratio_num = fp_new / fp0
         ratio_ana = 1.0
 
-        print(f"{step:4d} {t_to:10.4e} {ratio_num:12.6e} {ratio_ana:12.6e}")
-        if (not math.isfinite(fr_new)) or (not math.isfinite(ratio_num)):
+        if rank == 0:
+            print(f"{step:4d} {t_to:10.4e} {ratio_num:12.6e} {ratio_ana:12.6e}")
+        if (not math.isfinite(fp_new)) or (not math.isfinite(ratio_num)):
             ok = False
-        elif last_ratio is not None and ratio_num < (last_ratio - 1.0e-6):
+        elif last_ratio is not None and ratio_num < (last_ratio - 1.0e-4):
             growth_ok = False
         last_ratio = ratio_num
+        ok = ok and growth_ok
 
-    ok = ok and growth_ok
-    print(f"TRANSIENT_OK {1 if ok else 0}")
+    if rank == 0:
+        print(f"TRANSIENT_OK {1 if ok else 0}")

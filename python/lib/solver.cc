@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include <pybind11/functional.h>
 #include "framework/runtime.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
@@ -1085,14 +1086,50 @@ WrapTransientKEigen(py::module& slv)
         Theta value between 0 and 1.
     )");
   transient_solver.def(
-    "Step",
-    &TransientKEigenSolver::Step,
+    "Advance",
+    &TransientKEigenSolver::Advance,
     R"(
-    Execute a single transient solve at the current time.
+    Advance the solver by a single timestep.
 
-    This performs the transient sweep for the current timestep but does not
-    advance the internal time. Call :meth:`Advance` after this to advance time.
+    Notes
+    -----
+    You must call :meth:`Initialize` before calling :meth:`Advance` or
+    :meth:`Execute`.
     )");
+  transient_solver.def(
+    "SetPreAdvanceCallback",
+    static_cast<void (TransientKEigenSolver::*)(std::function<void()>)>(
+      &TransientKEigenSolver::SetPreAdvanceCallback),
+    R"(
+    Register a callback that runs before each advance within :meth:`Execute`.
+
+    Parameters
+    ----------
+    callback : Optional[Callable[[], None]]
+        Function invoked before the solver advances a timestep. Pass None to clear.
+    )");
+  transient_solver.def(
+    "SetPreAdvanceCallback",
+    static_cast<void (TransientKEigenSolver::*)(std::nullptr_t)>(
+      &TransientKEigenSolver::SetPreAdvanceCallback),
+    "Clear the PreAdvance callback by passing None.");
+  transient_solver.def(
+    "SetPostAdvanceCallback",
+    static_cast<void (TransientKEigenSolver::*)(std::function<void()>)>(
+      &TransientKEigenSolver::SetPostAdvanceCallback),
+    R"(
+    Register a callback that runs after each advance within :meth:`Execute`.
+
+    Parameters
+    ----------
+    callback : Optional[Callable[[], None]]
+        Function invoked after the solver advances a timestep. Pass None to clear.
+    )");
+  transient_solver.def(
+    "SetPostAdvanceCallback",
+    static_cast<void (TransientKEigenSolver::*)(std::nullptr_t)>(
+      &TransientKEigenSolver::SetPostAdvanceCallback),
+    "Clear the PostAdvance callback by passing None.");
   slv.attr("BackwardEuler") = 1.0;
   slv.attr("CrankNicolson") = 0.5;
   // clang-format on

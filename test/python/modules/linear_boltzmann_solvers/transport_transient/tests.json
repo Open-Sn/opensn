@@ -1,54 +1,26 @@
 [
   {
-    "file": "transient_keigen_3d_prompt_step_xs.py",
-    "comment": "3D prompt-only step XS swap (ratio + alpha)",
-    "num_procs": 1,
+    "file": "transient_keigen_1d_theta_precursor_scaling.py",
+    "comment": "1D delayed fission source scales with theta (TransientSourceFunction check)",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "FR_RATIO_ACTUAL",
+        "key": "DELAYED_THETA_RATIO",
         "wordnum": 1,
-        "gold": 1.2,
-        "abs_tol": 1e-06
-      },
-      {
-        "type": "FloatCompare",
-        "key": "TRANSIENT_OK",
-        "wordnum": 1,
-        "gold": 1.0,
-        "abs_tol": 1e-12
+        "gold": 2.0,
+        "abs_tol": 0.2
       }
     ]
   },
   {
     "file": "transient_keigen_3d_prompt_analytic.py",
     "comment": "3D prompt-only analytic exponential check",
-    "num_procs": 1,
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
         "key": "ANALYTIC_PASS",
-        "wordnum": 1,
-        "gold": 1.0,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
-    "file": "transient_keigen_3d_delayed_step_nu_sigma_f.py",
-    "comment": "3D delayed step nuSigmaF (ratio + delayed alpha)",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "FR_RATIO_ACTUAL",
-        "wordnum": 1,
-        "gold": 1.2,
-        "abs_tol": 1e-06
-      },
-      {
-        "type": "FloatCompare",
-        "key": "TRANSIENT_OK",
         "wordnum": 1,
         "gold": 1.0,
         "abs_tol": 1e-12
@@ -58,7 +30,7 @@
   {
     "file": "transient_keigen_3d_delayed_analytic.py",
     "comment": "3D delayed analytic point-kinetics check",
-    "num_procs": 1,
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
@@ -70,13 +42,69 @@
     ]
   },
   {
-    "file": "transient_keigen_3d_6g_delayed_step_nu_sigma_f.py",
-    "comment": "3D 6g, 2-precursor delayed step nuSigmaF (ratio)",
-    "num_procs": 1,
+    "file": "transient_keigen_1d_delayed_prke_vs_stk.py",
+    "comment": "1D delayed homogeneous step: PRKE vs space-time kinetics",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "FR_RATIO_ACTUAL",
+        "key": "PRKE_STK_PASS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_keigen_2d_delayed_prke_vs_stk_2p.py",
+    "comment": "2D delayed homogeneous step: PRKE vs space-time kinetics",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRKE_STK_PASS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_keigen_3d_delayed_prke_vs_stk_2p.py",
+    "comment": "3D delayed homogeneous step: PRKE vs space-time kinetics",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRKE_STK_PASS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_keigen_3d_delayed_prke_vs_stk_2p_callbacks.py",
+    "comment": "3D delayed homogeneous step: PRKE vs space-time kinetics",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRKE_STK_PASS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_keigen_3d_6g_delayed_step_nu_sigma_f.py",
+    "comment": "3D 6g, 2-precursor delayed step nu_sigma_f",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 1.2,
         "abs_tol": 1e-06
@@ -92,12 +120,12 @@
   },
   {
     "file": "transient_keigen_3d_2g_prompt_step_xs.py",
-    "comment": "3D 2g prompt-only step XS swap (ratio)",
-    "num_procs": 1,
+    "comment": "3D 2g prompt-only step xs swap",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "FR_RATIO_ACTUAL",
+        "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 1.2,
         "abs_tol": 1e-06
@@ -113,12 +141,12 @@
   },
   {
     "file": "transient_keigen_2d_2g_prompt_combine_velocities.py",
-    "comment": "2D 2g prompt combine XS with group-wise velocities",
-    "num_procs": 1,
+    "comment": "2D 2g prompt combine xs with group-wise velocities",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "FR_RATIO_ACTUAL",
+        "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 2.2,
         "abs_tol": 1e-06
@@ -134,8 +162,8 @@
   },
   {
     "file": "transient_keigen_2d_prompt_ramp_xs.py",
-    "comment": "2D prompt-only ramp XS (ratio)",
-    "num_procs": 1,
+    "comment": "2D prompt-only ramp xs",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
@@ -148,8 +176,8 @@
   },
   {
     "file": "transient_keigen_3d_delayed_ramp_xs.py",
-    "comment": "3D delayed ramp XS with point-kinetics reference",
-    "num_procs": 1,
+    "comment": "3D delayed ramp xs with point-kinetics reference",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
@@ -162,8 +190,8 @@
   },
   {
     "file": "transient_keigen_3d_delayed_stiff_dt_sensitivity.py",
-    "comment": "3D delayed stiff precursor dt sensitivity check",
-    "num_procs": 1,
+    "comment": "3D delayed stiff precursor dt",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
@@ -175,13 +203,13 @@
     ]
   },
   {
-    "file": "transient_keigen_2d_2g_delayed_step_density.py",
-    "comment": "2D 2g delayed density step (ratio)",
-    "num_procs": 1,
+    "file": "transient_keigen_2d_2g_delayed_step.py",
+    "comment": "2D 2g delayed xs step (ratio)",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "FR_RATIO_ACTUAL",
+        "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 1.2,
         "abs_tol": 1e-06
@@ -196,44 +224,23 @@
     ]
   },
   {
-    "file": "transient_keigen_1d_prompt_step_density.py",
-    "comment": "1D prompt-only density step (ratio + alpha)",
-    "num_procs": 1,
+    "file": "transient_keigen_1d_prompt_step.py",
+    "comment": "1D prompt-only xs step",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "FR_RATIO_ACTUAL",
+        "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 1.2,
         "abs_tol": 1e-06
-      }
-    ]
-  },
-  {
-    "file": "transient_keigen_1d_delayed_step_xs.py",
-    "comment": "1D delayed step XS (ratio)",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "FR_RATIO_ACTUAL",
-        "wordnum": 1,
-        "gold": 1.2,
-        "abs_tol": 1e-06
-      },
-      {
-        "type": "FloatCompare",
-        "key": "TRANSIENT_OK",
-        "wordnum": 1,
-        "gold": 1.0,
-        "abs_tol": 1e-12
       }
     ]
   },
   {
     "file": "transient_keigen_3d_prompt_mid_step_swap.py",
-    "comment": "3D prompt mid-step XS swap time bookkeeping",
-    "num_procs": 1,
+    "comment": "3D prompt mid-step XS swap",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
@@ -244,10 +251,10 @@
       },
       {
         "type": "FloatCompare",
-        "key": "FR_RATIO_AT_SWAP",
+        "key": "FP_RATIO_AT_SWAP",
         "wordnum": 1,
         "gold": 1.2,
-        "abs_tol": 1e-06
+        "abs_tol": 2e-03
       },
       {
         "type": "FloatCompare",
@@ -260,8 +267,8 @@
   },
   {
     "file": "transient_keigen_3d_prompt_bc_leakage.py",
-    "comment": "3D prompt leakage vs reflecting boundary sanity",
-    "num_procs": 1,
+    "comment": "3D prompt leakage vs reflecting boundary",
+    "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",

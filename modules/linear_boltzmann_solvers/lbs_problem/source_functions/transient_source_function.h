@@ -19,7 +19,7 @@ public:
    * Constructor for the transient source function. The only difference as compared to a steady
    * source function is the treatment of delayed fission.
    */
-  TransientSourceFunction(const LBSProblem& lbs_problem, double& ref_dt, double& ref_theta);
+  explicit TransientSourceFunction(const LBSProblem& lbs_problem);
 
   double DelayedFission(const PrecursorList& precursors,
                         const double& rho,
@@ -27,8 +27,7 @@ public:
                         const double* phi) const override;
 
 private:
-  double& dt_;
-  double& theta_;
+  const LBSProblem& lbs_problem_;
 };
 
 } // namespace opensn

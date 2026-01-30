@@ -4,45 +4,37 @@
 """
 2D prompt-only transient with a ramped XS.
 
-Test intent
-- Exercise repeated XS updates over time (piecewise-constant ramp) and ensure the transient solver remains
-  stable across many steps.
+Prompt-only with a monotonic increase in nu*sigma_f across a discrete xs list.
+With reflecting BCs and no delayed neutrons, the fission production should be
+increasing in time.
 
-Physics
-- Prompt-only with a monotonic increase in nu*Sigma_f across a discrete XS list. With reflecting BCs and
-  no delayed neutrons, the fission rate should be non-decreasing in time for this setup.
-
-Gold values
-- No fixed numeric gold; we require monotonic non-decreasing FR and finite values over the ramp.
-
-What we check and why
-- TRANSIENT_OK enforces finite response and non-decreasing FR across the ramp, catching time-stepping or
-  XS-map update errors.
+TRANSIENT_OK checks finite response and increasing FP over the ramp.
 """
 
 import os
+import sys
 
+if "opensn_console" not in globals():
+    from mpi4py import MPI
+    size = MPI.COMM_WORLD.size
+    rank = MPI.COMM_WORLD.rank
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.solver import DiscreteOrdinatesProblem, TransientKEigenSolver
+    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.xs import MultiGroupXS
+    from pyopensn.mesh import OrthogonalMeshGenerator
 
-def xs_path(name):
-    return os.path.join(os.path.dirname(__file__), name)
-
-
-def build_mesh_2d(n, length):
-    dx = length / n
-    nodes = [i * dx for i in range(n + 1)]
+if __name__ == "__main__":
+    dx = 8.0 / 8
+    nodes = [i * dx for i in range(8 + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
-    return grid
-
-
-if __name__ == "__main__":
-    grid = build_mesh_2d(n=8, length=8.0)
 
     xs_list = []
     for i in range(5):
         xs = MultiGroupXS()
-        xs.LoadFromOpenSn(xs_path(f"xs1g_prompt_ramp_{i}.cxs"))
+        xs.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), f"xs1g_prompt_ramp_{i}.cxs"))
         xs_list.append(xs)
 
     pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=4, scattering_order=0)
@@ -58,7 +50,6 @@ if __name__ == "__main__":
                 "inner_linear_method": "classic_richardson",
                 "l_abs_tol": 1.0e-8,
                 "l_max_its": 200,
-                "gmres_restart_interval": 50,
             },
         ],
         xs_map=[{"block_ids": [0], "xs": xs_list[0]}],
@@ -79,7 +70,7 @@ if __name__ == "__main__":
     solver = TransientKEigenSolver(problem=phys)
     solver.Initialize()
 
-    fr_old = phys.ComputeFissionRate("new")
+    fp_old = phys.ComputeFissionProduction("new")
 
     sigma_f_vals = [0.150000, 0.157500, 0.165000, 0.172500, 0.180000]
     dt = 2.0e-2
@@ -87,18 +78,18 @@ if __name__ == "__main__":
     solver.SetTheta(1.0)
 
     growth_ok = True
-    last_fr = fr_old
+    last_fr = fp_old
     for i in range(1, len(xs_list)):
         phys.SetXSMap(xs_map=[{"block_ids": [0], "xs": xs_list[i]}])
 
-        solver.Step()
-        fr = phys.ComputeFissionRate("new")
         solver.Advance()
+        fp = phys.ComputeFissionProduction("new")
 
-        if fr <= last_fr:
+        if fp <= last_fr:
             growth_ok = False
-        last_fr = fr
+        last_fr = fp
 
     transient_ok = 1 if growth_ok else 0
 
-    print(f"TRANSIENT_OK {transient_ok}")
+    if rank == 0:
+        print(f"TRANSIENT_OK {transient_ok}")

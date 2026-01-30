@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/transient_source_function.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 
 namespace opensn
 {
 
-TransientSourceFunction::TransientSourceFunction(const LBSProblem& lbs_problem,
-                                                 double& ref_dt,
-                                                 double& ref_theta)
-  : SourceFunction(lbs_problem), dt_(ref_dt), theta_(ref_theta)
+TransientSourceFunction::TransientSourceFunction(const LBSProblem& lbs_problem)
+  : SourceFunction(lbs_problem), lbs_problem_(lbs_problem)
 {
 }
 
@@ -19,7 +18,7 @@ TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
                                         const std::vector<double>& nu_delayed_sigma_f,
                                         const double* phi) const
 {
-  const double eff_dt = theta_ * dt_;
+  const double eff_dt = lbs_problem_.GetTheta() * lbs_problem_.GetTimeStep();
 
   double value = 0.0;
   if (apply_ags_fission_src_)

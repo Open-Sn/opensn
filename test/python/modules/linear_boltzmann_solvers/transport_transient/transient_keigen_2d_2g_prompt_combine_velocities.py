@@ -2,49 +2,43 @@
 # -*- coding: utf-8 -*-
 
 """
-2D 2-group prompt: Combine XS with group-wise velocities.
+2D 2-group prompt: Combine xs with group-wise velocities.
 
-Test intent
-- Verify MultiGroupXS::Combine handles different group velocities and that the time term is applied
-  per-group without assuming identical velocities.
+2-group prompt-only. Combine forms a composite xs from two macroscopic xs
+inputs.
 
-Physics
-- 2-group prompt-only. Combine forms a composite XS from two macroscopic XS inputs.
-
-Gold values
-- FR_RATIO_ACTUAL = 2.2 with the current Combine semantics. If Combine sums inputs without normalizing weights,
-  then Sigma_f_mix = Sigma_f_crit + Sigma_f_super, so ratio = (1.0 + 1.2) = 2.2 relative to the critical XS.
-  This test pins the current behavior to detect regressions.
-
-What we check and why
-- FR_RATIO_ACTUAL checks Combine behavior with mixed group velocities.
-- TRANSIENT_OK ensures the first transient step is finite and positive.
+FP_RATIO_ACTUAL = 2.2
+sigma_f_mix = sigma_f_crit + sigma_f_super, so ratio = (1.0 + 1.2) = 2.2
+relative to the critical xs. FP_RATIO_ACTUAL checks Combine behavior with
+mixed group velocities. TRANSIENT_OK ensures the first transient step is
+finite and positive.
 """
 
 import os
+import sys
 
+if "opensn_console" not in globals():
+    from mpi4py import MPI
+    size = MPI.COMM_WORLD.size
+    rank = MPI.COMM_WORLD.rank
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.solver import DiscreteOrdinatesProblem, TransientKEigenSolver
+    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.xs import MultiGroupXS
+    from pyopensn.mesh import OrthogonalMeshGenerator
 
-def xs_path(name):
-    return os.path.join(os.path.dirname(__file__), name)
-
-
-def build_mesh_2d(n, length):
-    dx = length / n
-    nodes = [i * dx for i in range(n + 1)]
+if __name__ == "__main__":
+    dx = 6.0 / 6
+    nodes = [i * dx for i in range(6 + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
-    return grid
-
-
-if __name__ == "__main__":
-    grid = build_mesh_2d(n=6, length=6.0)
 
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(xs_path("xs2g_prompt_crit.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs2g_prompt_crit.cxs"))
 
     xs_super = MultiGroupXS()
-    xs_super.LoadFromOpenSn(xs_path("xs2g_prompt_super.cxs"))
+    xs_super.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs2g_prompt_super.cxs"))
 
     xs_mix = MultiGroupXS()
     xs_mix.Combine([(xs_crit, 0.5), (xs_super, 0.5)])
@@ -59,10 +53,10 @@ if __name__ == "__main__":
             {
                 "groups_from_to": (0, num_groups - 1),
                 "angular_quadrature": pquad,
-                "inner_linear_method": "classic_richardson",
+                "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-8,
                 "l_max_its": 200,
-                "gmres_restart_interval": 50,
+                "gmres_restart_interval": 10,
             },
         ],
         xs_map=[{"block_ids": [0], "xs": xs_crit}],
@@ -83,20 +77,20 @@ if __name__ == "__main__":
     solver = TransientKEigenSolver(problem=phys)
     solver.Initialize()
 
-    fr_old = phys.ComputeFissionRate("new")
+    fp_old = phys.ComputeFissionProduction("new")
 
     phys.SetXSMap(xs_map=[{"block_ids": [0], "xs": xs_mix}])
-    fr_new = phys.ComputeFissionRate("new")
+    fp_new = phys.ComputeFissionProduction("new")
 
     dt = 1.0e-2
     solver.SetTimeStep(dt)
     solver.SetTheta(1.0)
 
-    solver.Step()
-    fr1 = phys.ComputeFissionRate("new")
     solver.Advance()
+    fp1 = phys.ComputeFissionProduction("new")
 
-    transient_ok = 1 if (fr1 > 0.0) else 0
+    transient_ok = 1 if (fp1 > 0.0) else 0
 
-    print(f"FR_RATIO_ACTUAL {fr_new / fr_old:.12e}")
-    print(f"TRANSIENT_OK {transient_ok}")
+    if rank == 0:
+        print(f"FP_RATIO_ACTUAL {fp_new / fp_old:.12e}")
+        print(f"TRANSIENT_OK {transient_ok}")

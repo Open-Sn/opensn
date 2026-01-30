@@ -208,6 +208,7 @@ public:
   const std::vector<double>& GetDensitiesLocal() const;
 
   SetSourceFunction GetActiveSetSourceFunction() const;
+  void SetActiveSetSourceFunction(SetSourceFunction source_function);
 
   std::shared_ptr<AGSLinearSolver> GetAGSSolver();
 

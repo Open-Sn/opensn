@@ -2,47 +2,44 @@
 # -*- coding: utf-8 -*-
 
 """
-2D 2-group delayed transient: density (XS) step change.
+2D 2-group delayed transient xs step change.
 
-Test intent
-- Confirm delayed-neutron coupling with a density-based XS step in a multi-group setting.
+Confirm delayed-neutron coupling with an xs step in a multi-group
+setting.
 
-Physics
-- 2-group, delayed neutrons enabled. A density step scales macroscopic fission terms; scattering couples
-  groups, so response need not be strictly monotonic.
+2-group, delayed neutrons enabled. A step change scales macroscopic fission
+terms.
 
-Gold values
-- FR_RATIO_ACTUAL = 1.2 from scaling Sigma_f by 1.2 via density increase.
-
-What we check and why
-- FR_RATIO_ACTUAL == 1.2 validates the prompt source scaling.
-- TRANSIENT_OK enforces positive response and bounded step ratios, guarding against instability.
+FP_RATIO_ACTUAL = 1.2 from scaling sigma_f by 1.2.
 """
 
 import os
+import sys
 
+if "opensn_console" not in globals():
+    from mpi4py import MPI
+    size = MPI.COMM_WORLD.size
+    rank = MPI.COMM_WORLD.rank
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.solver import DiscreteOrdinatesProblem, TransientKEigenSolver
+    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.xs import MultiGroupXS
+    from pyopensn.mesh import OrthogonalMeshGenerator
 
-def xs_path(name):
-    return os.path.join(os.path.dirname(__file__), name)
-
-
-def build_mesh_2d(n, length):
-    dx = length / n
-    nodes = [i * dx for i in range(n + 1)]
+if __name__ == "__main__":
+    dx = 6.0 / 6
+    nodes = [i * dx for i in range(6 + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
-    return grid
-
-
-if __name__ == "__main__":
-    grid = build_mesh_2d(n=6, length=6.0)
 
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(xs_path("xs2g_delayed_crit_1p.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs2g_delayed_crit_1p.cxs"))
 
     xs_dense = MultiGroupXS()
-    xs_dense.LoadFromOpenSn(xs_path("xs2g_delayed_density_up_1p.cxs"))
+    xs_dense.LoadFromOpenSn(
+        os.path.join(os.path.dirname(__file__), "xs2g_delayed_density_up_1p.cxs")
+    )
 
     pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=4, scattering_order=0)
 
@@ -78,26 +75,25 @@ if __name__ == "__main__":
     solver = TransientKEigenSolver(problem=phys)
     solver.Initialize()
 
-    fr_old = phys.ComputeFissionRate("new")
+    fp_old = phys.ComputeFissionProduction("new")
 
     phys.SetXSMap(xs_map=[{"block_ids": [0], "xs": xs_dense}])
-    fr_new = phys.ComputeFissionRate("new")
+    fp_new = phys.ComputeFissionProduction("new")
 
     dt = 1.0e-2
     solver.SetTimeStep(dt)
     solver.SetTheta(1.0)
 
-    solver.Step()
-    fr1 = phys.ComputeFissionRate("new")
     solver.Advance()
+    fp1 = phys.ComputeFissionProduction("new")
 
-    solver.Step()
-    fr2 = phys.ComputeFissionRate("new")
     solver.Advance()
+    fp2 = phys.ComputeFissionProduction("new")
 
-    r1 = fr1 / fr_new
-    r2 = fr2 / fr1
-    transient_ok = 1 if (fr1 > 0.0 and fr2 > 0.0 and 0.5 < r1 < 2.0 and 0.5 < r2 < 2.0) else 0
+    r1 = fp1 / fp_new
+    r2 = fp2 / fp1
+    transient_ok = 1 if (fp1 > 0.0 and fp2 > 0.0 and 0.5 < r1 < 2.0 and 0.5 < r2 < 2.0) else 0
 
-    print(f"FR_RATIO_ACTUAL {fr_new / fr_old:.12e}")
-    print(f"TRANSIENT_OK {transient_ok}")
+    if rank == 0:
+        print(f"FP_RATIO_ACTUAL {fp_new / fp_old:.12e}")
+        print(f"TRANSIENT_OK {transient_ok}")

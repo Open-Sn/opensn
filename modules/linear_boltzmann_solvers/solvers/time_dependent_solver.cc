@@ -68,11 +68,14 @@ TimeDependentSourceSolver::Initialize()
 
   lbs_problem_->Initialize();
   ags_solver_ = lbs_problem_->GetAGSSolver();
+  initialized_ = true;
 }
 
 void
 TimeDependentSourceSolver::Execute()
 {
+  if (not initialized_)
+    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
   const double t0 = current_time_;
   const double tf = stop_time_;
   const double dt_nom = lbs_problem_->GetTimeStep();
@@ -119,6 +122,8 @@ TimeDependentSourceSolver::Execute()
 void
 TimeDependentSourceSolver::Advance()
 {
+  if (not initialized_)
+    throw std::runtime_error(GetName() + ": Initialize must be called before Advance.");
   const double dt = lbs_problem_->GetTimeStep();
   const double theta = lbs_problem_->GetTheta();
 

@@ -36,8 +36,13 @@ public:
   {
     return sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent;
   }
-  std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset) { return SetSweepChunk(groupset); }
+  std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset)
+  {
+    return SetSweepChunk(groupset);
+  }
   void EnableTimeDependentMode();
+  /// Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode).
+  void ReinitializeSolverSchemes();
 
   /// Static registration based constructor.
   explicit DiscreteOrdinatesProblem(const InputParameters& params);

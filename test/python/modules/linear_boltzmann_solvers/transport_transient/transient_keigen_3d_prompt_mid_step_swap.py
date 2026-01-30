@@ -2,49 +2,45 @@
 # -*- coding: utf-8 -*-
 
 """
-3D prompt transient: mid-step XS swap time bookkeeping.
+3D prompt transient: mid-step xs swap time.
 
-Test intent
-- Validate time bookkeeping when swapping XS at a non-integer time, ensuring reported time matches the
-  swap and that the fission rate reflects the new XS immediately.
+Validate swapping xs at a non-integer time, ensuring reported time matches
+the swap and that the fission production reflects the new xs immediately.
 
-Physics
-- Prompt-only. First step to t=0.07, swap XS, then step to t=0.12. The fission rate computed at the swap
-  time should scale by the XS ratio.
+Prompt-only. First step to t=0.07, swap xs, then step to t=0.12. The fission
+production computed at the swap time should scale by the xs ratio.
 
-Gold values
-- TIME_AT_SWAP = 0.07 because we advance with dt=0.07 before swapping.
-- FR_RATIO_AT_SWAP = 1.2 from Sigma_f ratio 0.180/0.150 at the swap time.
-
-What we check and why
-- TIME_AT_SWAP verifies correct time advance.
-- FR_RATIO_AT_SWAP verifies immediate response to XS swap at that time.
+TIME_AT_SWAP = 0.07 because we advance with dt=0.07 before swapping.
+FP_RATIO_AT_SWAP = 1.2 from sigma_f ratio 0.180/0.150 at the swap time.
+TIME_AT_SWAP verifies correct time advance. FP_RATIO_AT_SWAP verifies immediate
+response to XS swap at that time.
 """
 
 import os
+import sys
 
+if "opensn_console" not in globals():
+    from mpi4py import MPI
+    size = MPI.COMM_WORLD.size
+    rank = MPI.COMM_WORLD.rank
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.solver import DiscreteOrdinatesProblem, TransientKEigenSolver
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
+    from pyopensn.xs import MultiGroupXS
+    from pyopensn.mesh import OrthogonalMeshGenerator
 
-def xs_path(name):
-    return os.path.join(os.path.dirname(__file__), name)
-
-
-def build_mesh_3d(n, length):
-    dx = length / n
-    nodes = [i * dx for i in range(n + 1)]
+if __name__ == "__main__":
+    dx = 8.0 / 4
+    nodes = [i * dx for i in range(4 + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes])
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
-    return grid
-
-
-if __name__ == "__main__":
-    grid = build_mesh_3d(n=4, length=8.0)
 
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(xs_path("xs1g_prompt_crit.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_prompt_crit.cxs"))
 
     xs_super = MultiGroupXS()
-    xs_super.LoadFromOpenSn(xs_path("xs1g_prompt_super.cxs"))
+    xs_super.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_prompt_super.cxs"))
 
     pquad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)
 
@@ -55,10 +51,10 @@ if __name__ == "__main__":
             {
                 "groups_from_to": (0, 0),
                 "angular_quadrature": pquad,
-                "inner_linear_method": "classic_richardson",
+                "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-8,
                 "l_max_its": 200,
-                "gmres_restart_interval": 50,
+                "gmres_restart_interval": 10,
             },
         ],
         xs_map=[{"block_ids": [0], "xs": xs_crit}],
@@ -81,26 +77,25 @@ if __name__ == "__main__":
     solver = TransientKEigenSolver(problem=phys)
     solver.Initialize()
 
-    fr0 = phys.ComputeFissionRate("new")
+    fp0 = phys.ComputeFissionProduction("new")
 
     solver.SetTheta(1.0)
 
     # First step to t=0.07
     solver.SetTimeStep(0.07)
-    solver.Step()
     solver.Advance()
 
     time_at_swap = phys.GetTime()
 
     # Swap XS at non-integer time
     phys.SetXSMap(xs_map=[{"block_ids": [0], "xs": xs_super}])
-    fr_swap = phys.ComputeFissionRate("new")
+    fp_swap = phys.ComputeFissionProduction("new")
 
     # Next step to t=0.12
     solver.SetTimeStep(0.05)
-    solver.Step()
     solver.Advance()
 
-    print(f"TIME_AT_SWAP {time_at_swap:.12e}")
-    print(f"FR_RATIO_AT_SWAP {fr_swap / fr0:.12e}")
-    print("TRANSIENT_OK 1")
+    if rank == 0:
+        print(f"TIME_AT_SWAP {time_at_swap:.12e}")
+        print(f"FP_RATIO_AT_SWAP {fp_swap / fp0:.12e}")
+        print("TRANSIENT_OK 1")
