@@ -431,8 +431,9 @@
     "ffi.Initialize()\n",
     "ffi.Execute()\n",
     "val_whole = ffi.GetValue()\n",
-    "print(f\"value (edit zone: whole domain)   = {val_whole}\")\n",
-    "print(f\"ratio =\",val_whole/val)"
+    "if rank == 0:\n",
+    "    print(f\"value (edit zone: whole domain)   = {val_whole}\")\n",
+    "    print(f\"ratio =\",val_whole/val)"
    ]
   },
   {

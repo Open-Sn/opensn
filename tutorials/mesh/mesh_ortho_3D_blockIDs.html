@@ -67,7 +67,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mesh_read_vtu_3D.html">1.7. Reading a 3D VTU file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mesh_extrude.html">1.8. Reading a 2D mesh file and extruding it</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">1.9. 3D Orthogonal Grid Generation with multiple block IDs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#List-of-Nodes,-Mesh-GGeneration-and-Partition">1.9.1. List of Nodes, Mesh GGeneration and Partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#List-of-Nodes,-Mesh-Generation-and-Partition">1.9.1. List of Nodes, Mesh Generation and Partition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Material-IDs">1.9.2. Material IDs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Export-the-mesh">1.9.3. Export the mesh</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">1.9.4. Finalize (for Jupyter Notebook only)</a></li>
@@ -127,6 +127,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
 
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
 
@@ -137,8 +138,8 @@
 </pre></div>
 </div>
 </div>
-<section id="List-of-Nodes,-Mesh-GGeneration-and-Partition">
-<h2><span class="section-number">1.9.1. </span>List of Nodes, Mesh GGeneration and Partition<a class="headerlink" href="#List-of-Nodes,-Mesh-GGeneration-and-Partition" title="Link to this heading"></a></h2>
+<section id="List-of-Nodes,-Mesh-Generation-and-Partition">
+<h2><span class="section-number">1.9.1. </span>List of Nodes, Mesh Generation and Partition<a class="headerlink" href="#List-of-Nodes,-Mesh-Generation-and-Partition" title="Link to this heading"></a></h2>
 <p>We create a list of geometry nodes that are evenly spaced from 0 to +L. These nodes are employed to define block IDs interfaces.</p>
 <p>We create a list of mesh nodes that are evenly spaced from 0 to +L. These nodes are the standard ones, used to define the vertices of our computational grid.</p>
 <div class="nbinput nblast docutils container">
@@ -233,6 +234,16 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span><span class="o">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;ortho_3D_BlockIDs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_glob_cells</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">GetGlobalNumberOfCells</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of cells = </span><span class="si">{</span><span class="n">n_glob_cells</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

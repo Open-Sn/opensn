@@ -109,6 +109,11 @@
     ")\n",
     "grid.SetBlockIDFromLogicalVolume(lv2, 3, True)\n",
     "\n",
+    "volumes_per_block = grid.ComputeVolumePerBlockID()\n",
+    "for block_id, volume in volumes_per_block.items():\n",
+    "    print(f\"1-Block {block_id}: volume = {volume:.4f}\")\n",
+    "\n",
+    "\n",
     "# Export\n",
     "grid.ExportToPVTU(\"RCC_mesh\")"
    ]
@@ -143,6 +148,10 @@
     "lv3 = RPPLogicalVolume(xmin=-0.5, xmax=0.5, infy=True, infz=True)\n",
     "grid.SetBlockIDFromLogicalVolume(lv3, 2, True)\n",
     "\n",
+    "volumes_per_block = grid.ComputeVolumePerBlockID()\n",
+    "for block_id, volume in volumes_per_block.items():\n",
+    "    print(f\"2-Block {block_id}: volume = {volume:.4f}\")\n",
+    "\n",
     "# Export\n",
     "grid.ExportToPVTU(\"RPP_mesh\")"
    ]
@@ -176,6 +185,10 @@
     "# Sphere\n",
     "lv4 = SphereLogicalVolume(r=0.5, x=0., y=0., z=0.)\n",
     "grid.SetBlockIDFromLogicalVolume(lv4, 2, True)\n",
+    "\n",
+    "volumes_per_block = grid.ComputeVolumePerBlockID()\n",
+    "for block_id, volume in volumes_per_block.items():\n",
+    "    print(f\"3-Block {block_id}: volume = {volume:.4f}\")\n",
     "\n",
     "# Export\n",
     "grid.ExportToPVTU(\"Sphere_mesh\")"
@@ -273,6 +286,10 @@
     "# Assign block ID 3 to all cells in lv1\n",
     "grid.SetBlockIDFromLogicalVolume(lv1, 3, True)\n",
     "\n",
+    "volumes_per_block = grid.ComputeVolumePerBlockID()\n",
+    "for block_id, volume in volumes_per_block.items():\n",
+    "    print(f\"4-Block {block_id}: volume = {volume:.4f}\")\n",
+    "\n",
     "# Export\n",
     "grid.ExportToPVTU(\"Bool_mesh\")"
    ]
@@ -333,6 +350,10 @@
     "lv_skinmesh = SurfaceMeshLogicalVolume(surface_mesh=surfmesh)\n",
     "# Assign mat ID 3 to lv of skin mesh\n",
     "grid.SetBlockIDFromLogicalVolume(lv_skinmesh, 3, True)\n",
+    "\n",
+    "volumes_per_block = grid.ComputeVolumePerBlockID()\n",
+    "for block_id, volume in volumes_per_block.items():\n",
+    "    print(f\"5-Block {block_id}: volume = {volume:.4f}\")\n",
     "\n",
     "# Export to vtk\n",
     "grid.ExportToPVTU(\"lv_skinmesh\")"

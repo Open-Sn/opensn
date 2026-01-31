@@ -184,6 +184,11 @@
 <span class="p">)</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">lv2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
+<span class="n">volumes_per_block</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">ComputeVolumePerBlockID</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">volumes_per_block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;1-Block </span><span class="si">{</span><span class="n">block_id</span><span class="si">}</span><span class="s2">: volume = </span><span class="si">{</span><span class="n">volume</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
 <span class="c1"># Export</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;RCC_mesh&quot;</span><span class="p">)</span>
 </pre></div>
@@ -207,6 +212,10 @@
 <span class="n">lv3</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">xmin</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">lv3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
+<span class="n">volumes_per_block</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">ComputeVolumePerBlockID</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">volumes_per_block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;2-Block </span><span class="si">{</span><span class="n">block_id</span><span class="si">}</span><span class="s2">: volume = </span><span class="si">{</span><span class="n">volume</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 <span class="c1"># Export</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;RPP_mesh&quot;</span><span class="p">)</span>
 </pre></div>
@@ -229,6 +238,10 @@
 <span class="c1"># Sphere</span>
 <span class="n">lv4</span> <span class="o">=</span> <span class="n">SphereLogicalVolume</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">lv4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">volumes_per_block</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">ComputeVolumePerBlockID</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">volumes_per_block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;3-Block </span><span class="si">{</span><span class="n">block_id</span><span class="si">}</span><span class="s2">: volume = </span><span class="si">{</span><span class="n">volume</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># Export</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;Sphere_mesh&quot;</span><span class="p">)</span>
@@ -304,6 +317,10 @@
 <span class="c1"># Assign block ID 3 to all cells in lv1</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">lv1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
+<span class="n">volumes_per_block</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">ComputeVolumePerBlockID</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">volumes_per_block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;4-Block </span><span class="si">{</span><span class="n">block_id</span><span class="si">}</span><span class="s2">: volume = </span><span class="si">{</span><span class="n">volume</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 <span class="c1"># Export</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;Bool_mesh&quot;</span><span class="p">)</span>
 </pre></div>
@@ -353,6 +370,10 @@
 <span class="n">lv_skinmesh</span> <span class="o">=</span> <span class="n">SurfaceMeshLogicalVolume</span><span class="p">(</span><span class="n">surface_mesh</span><span class="o">=</span><span class="n">surfmesh</span><span class="p">)</span>
 <span class="c1"># Assign mat ID 3 to lv of skin mesh</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">lv_skinmesh</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">volumes_per_block</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">ComputeVolumePerBlockID</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">volumes_per_block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;5-Block </span><span class="si">{</span><span class="n">block_id</span><span class="si">}</span><span class="s2">: volume = </span><span class="si">{</span><span class="n">volume</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># Export to vtk</span>
 <span class="n">grid</span><span class="o">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;lv_skinmesh&quot;</span><span class="p">)</span>

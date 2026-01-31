@@ -198,7 +198,7 @@
 <section id="Geometry">
 <h2><span class="section-number">5.3.5.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="80c42fdfb8b34c1e9451845f60cfcc24" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="0b1d451ff671417ea8bfa2fdb5211c4d" src="../../../../_images/glovebox_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -217,9 +217,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="8af93103d9a545eca0abec0790816b0e" src="../../../../_images/glovebox_mesh.png" /></p>
-<p><img alt="e148f4817af540ac9da867a0ca31d9b2" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
-<p><img alt="d7f0ce4b7e214b76bded84e1253f8843" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
+<p><img alt="81dc46bb118d49f998a0dfaf23e5db88" src="../../../../_images/glovebox_mesh.png" /></p>
+<p><img alt="cfadd9dff86d4b2fafa32b956dfb48cd" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
+<p><img alt="dafe62ca8cee46bdb7e6d503ed10e899" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">5.3.5.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -465,7 +465,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adj_resp</span> <span class="o">=</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">EvaluateResponse</span><span class="p">(</span><span class="s2">&quot;detector1&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Response Detector 1:&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">adj_resp</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total Response Detector 1: </span><span class="si">{</span><span class="n">adj_resp</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -490,14 +490,14 @@
 </div>
 <p>Detector 1:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="c76bb69e724348d89fefd7c6ff5c48e6" src="../../../../_images/det1_g3.png" /></p>
+<p><img alt="de56f3bea8d34c71a5970570c55415dc" src="../../../../_images/det1_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="6d30364f65da408d93e2df2636e6613c" src="../../../../_images/det1_g52.png" /></p>
+<p><img alt="28110c8e1d1f467badf57933f6847d32" src="../../../../_images/det1_g52.png" /></p>
 <p>Detector 2:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="d4041d70e3b54cab91d53a643681a835" src="../../../../_images/det2_g3.png" /></p>
+<p><img alt="0ce17257a4104000b93e8c4d0df9bf63" src="../../../../_images/det2_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="963e156a01144dd9b28d01920f34ddb7" src="../../../../_images/det2_g52.png" /></p>
+<p><img alt="44ce055d50614d01b112c83b4d1026b4" src="../../../../_images/det2_g52.png" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">

@@ -395,8 +395,9 @@
 <span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
 <span class="n">val_whole</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value (edit zone: whole domain)   = </span><span class="si">{</span><span class="n">val_whole</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ratio =&quot;</span><span class="p">,</span><span class="n">val_whole</span><span class="o">/</span><span class="n">val</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;value (edit zone: whole domain)   = </span><span class="si">{</span><span class="n">val_whole</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ratio =&quot;</span><span class="p">,</span><span class="n">val_whole</span><span class="o">/</span><span class="n">val</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
