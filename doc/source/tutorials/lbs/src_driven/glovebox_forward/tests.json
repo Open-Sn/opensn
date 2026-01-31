@@ -6,6 +6,30 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total Flux in Detector-1:",
+        "goldvalue": 6.109007e-2,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total Flux in Detector-2:",
+        "goldvalue": 6.121125e-2,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total Response in Detector-1:",
+        "goldvalue": 4.451617e-3,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total Response in Detector-2:",
+        "goldvalue": 4.452532e-3,
+        "abs_tol": 1e-6
       }
     ]
   }
