@@ -17,7 +17,11 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.solver import DiscreteOrdinatesProblem, TransientKEigenSolver
+    from pyopensn.solver import (
+        DiscreteOrdinatesProblem,
+        PowerIterationKEigenSolver,
+        TransientSolver,
+    )
     from pyopensn.aquad import GLProductQuadrature1DSlab
     from pyopensn.xs import MultiGroupXS
     from pyopensn.mesh import OrthogonalMeshGenerator
@@ -50,6 +54,7 @@ def run_case(theta, use_precursors, xs):
             {"name": "zmax", "type": "reflecting"},
         ],
         options={
+            "save_angular_flux": True,
             "use_precursors": use_precursors,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
@@ -57,7 +62,11 @@ def run_case(theta, use_precursors, xs):
         },
     )
 
-    solver = TransientKEigenSolver(problem=phys)
+    keigen = PowerIterationKEigenSolver(problem=phys)
+    keigen.Initialize()
+    keigen.Execute()
+
+    solver = TransientSolver(problem=phys, initial_state="existing")
     solver.Initialize()
     solver.SetTheta(theta)
     solver.SetTimeStep(1.0e-2)

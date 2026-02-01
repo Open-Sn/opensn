@@ -29,7 +29,11 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.solver import DiscreteOrdinatesProblem, TransientKEigenSolver
+    from pyopensn.solver import (
+        DiscreteOrdinatesProblem,
+        PowerIterationKEigenSolver,
+        TransientSolver,
+    )
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.xs import MultiGroupXS
     from pyopensn.mesh import OrthogonalMeshGenerator
@@ -91,6 +95,7 @@ if __name__ == "__main__":
             {"name": "zmax", "type": "reflecting"},
         ],
         options={
+            "save_angular_flux": True,
             "use_precursors": True,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
@@ -98,8 +103,11 @@ if __name__ == "__main__":
         },
     )
 
-    solver = TransientKEigenSolver(problem=phys, max_iters=200, k_tol=1.0e-10,
-                                   verbose=False)
+    keigen = PowerIterationKEigenSolver(problem=phys, max_iters=200, k_tol=1.0e-10)
+    keigen.Initialize()
+    keigen.Execute()
+
+    solver = TransientSolver(problem=phys, verbose=False, initial_state="existing")
     solver.Initialize()
 
     # Swap to supercritical XS at t=0

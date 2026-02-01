@@ -1030,42 +1030,48 @@ WrapSteadyState(py::module& slv)
 
 // Wrap transient solver
 void
-WrapTransientKEigen(py::module& slv)
+WrapTransient(py::module& slv)
 {
   // clang-format off
   auto transient_solver =
-    py::class_<TransientKEigenSolver, std::shared_ptr<TransientKEigenSolver>, Solver>(
+    py::class_<TransientSolver, std::shared_ptr<TransientSolver>, Solver>(
       slv,
-      "TransientKEigenSolver",
+      "TransientSolver",
       R"(
-      Transient k-eigenvalue solver.
+      Transient solver.
 
-      Wrapper of :cpp:class:`opensn::TransientKEigenSolver`.
+      Wrapper of :cpp:class:`opensn::TransientSolver`.
       )"
     );
   transient_solver.def(
     py::init(
       [](py::kwargs& params)
       {
-        return TransientKEigenSolver::Create(kwargs_to_param_block(params));
+        return TransientSolver::Create(kwargs_to_param_block(params));
       }
     ),
     R"(
-    Construct a Transient solver.
+    Construct a transient solver.
 
     Parameters
     ----------
-    pyopensn.solver.LBSProblem : LBSProblem
-        Existing LBSProblem instance.
-    dt : float, optional, default=1.0
+    pyopensn.solver.DiscreteOrdinatesProblem : DiscreteOrdinatesProblem
+        Existing discrete ordinates problem instance.
+    dt : float, optional, default=2.0e-3
         Time step size used during the simulation.
-    stop_time : float, optional, default=1.0
+    stop_time : float, optional, default=0.1
         Simulation end time.
+    theta : float, optional, default=0.5
+        Time differencing scheme parameter.
+    initial_state : str, optional, default="existing"
+        Initial state for the transient solve. Allowed values: existing, zero.
+    verbose : bool, optional, default=True
+        Enable verbose logging.
     )"
   );
   transient_solver.def(
     "SetTimeStep",
-    &TransientKEigenSolver::SetTimeStep,
+    &TransientSolver::SetTimeStep,
     R"(
     Set the timestep size used by :meth:`Advance`.
 
@@ -1076,18 +1082,18 @@ WrapTransientKEigen(py::module& slv)
     )");
   transient_solver.def(
     "SetTheta",
-    &TransientKEigenSolver::SetTheta,
+    &TransientSolver::SetTheta,
     R"(
     Set the theta parameter used by :meth:`Advance`.
 
     Parameters
     ----------
     theta : float
-        Theta value between 0 and 1.
+        Theta value between 1.0e-16 and 1.
     )");
   transient_solver.def(
     "Advance",
-    &TransientKEigenSolver::Advance,
+    &TransientSolver::Advance,
     R"(
     Advance the solver by a single timestep.
 
@@ -1098,8 +1104,8 @@ WrapTransientKEigen(py::module& slv)
     )");
   transient_solver.def(
     "SetPreAdvanceCallback",
-    static_cast<void (TransientKEigenSolver::*)(std::function<void()>)>(
-      &TransientKEigenSolver::SetPreAdvanceCallback),
+    static_cast<void (TransientSolver::*)(std::function<void()>)>(
+      &TransientSolver::SetPreAdvanceCallback),
     R"(
     Register a callback that runs before each advance within :meth:`Execute`.
 
@@ -1110,13 +1116,13 @@ WrapTransientKEigen(py::module& slv)
     )");
   transient_solver.def(
     "SetPreAdvanceCallback",
-    static_cast<void (TransientKEigenSolver::*)(std::nullptr_t)>(
-      &TransientKEigenSolver::SetPreAdvanceCallback),
+    static_cast<void (TransientSolver::*)(std::nullptr_t)>(
+      &TransientSolver::SetPreAdvanceCallback),
     "Clear the PreAdvance callback by passing None.");
   transient_solver.def(
     "SetPostAdvanceCallback",
-    static_cast<void (TransientKEigenSolver::*)(std::function<void()>)>(
-      &TransientKEigenSolver::SetPostAdvanceCallback),
+    static_cast<void (TransientSolver::*)(std::function<void()>)>(
+      &TransientSolver::SetPostAdvanceCallback),
     R"(
     Register a callback that runs after each advance within :meth:`Execute`.
 
@@ -1127,8 +1133,8 @@ WrapTransientKEigen(py::module& slv)
     )");
   transient_solver.def(
     "SetPostAdvanceCallback",
-    static_cast<void (TransientKEigenSolver::*)(std::nullptr_t)>(
-      &TransientKEigenSolver::SetPostAdvanceCallback),
+    static_cast<void (TransientSolver::*)(std::nullptr_t)>(
+      &TransientSolver::SetPostAdvanceCallback),
     "Clear the PostAdvance callback by passing None.");
   slv.attr("BackwardEuler") = 1.0;
   slv.attr("CrankNicolson") = 0.5;
@@ -1213,6 +1219,8 @@ WrapTimeDependent(py::module& slv)
     ----------
     callback : Optional[Callable[[], None]]
         Function invoked before the solver advances a timestep. Pass None to clear.
+        If the callback modifies the timestep, the new value is used for the
+        upcoming step.
     )");
   time_dependent_solver.def(
     "SetPreAdvanceCallback",
@@ -1480,7 +1488,7 @@ py_solver(py::module& pyopensn)
   WrapSolver(slv);
   WrapLBS(slv);
   WrapSteadyState(slv);
-  WrapTransientKEigen(slv);
+  WrapTransient(slv);
   WrapTimeDependent(slv);
   WrapNLKEigen(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);

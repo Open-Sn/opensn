@@ -25,7 +25,11 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.solver import DiscreteOrdinatesProblem, TransientKEigenSolver
+    from pyopensn.solver import (
+        DiscreteOrdinatesProblem,
+        PowerIterationKEigenSolver,
+        TransientSolver,
+    )
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.xs import MultiGroupXS
     from pyopensn.mesh import OrthogonalMeshGenerator
@@ -63,6 +67,7 @@ def run_transient(dt, t_end, xs_crit, xs_super):
             {"name": "zmax", "type": "reflecting"},
         ],
         options={
+            "save_angular_flux": True,
             "use_precursors": True,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
@@ -70,7 +75,11 @@ def run_transient(dt, t_end, xs_crit, xs_super):
         },
     )
 
-    solver = TransientKEigenSolver(problem=phys)
+    keigen = PowerIterationKEigenSolver(problem=phys)
+    keigen.Initialize()
+    keigen.Execute()
+
+    solver = TransientSolver(problem=phys, initial_state="existing")
     solver.Initialize()
 
     fp0 = phys.ComputeFissionProduction("new")

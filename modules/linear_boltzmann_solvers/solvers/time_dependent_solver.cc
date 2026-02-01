@@ -78,10 +78,6 @@ TimeDependentSourceSolver::Execute()
     throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
   const double t0 = current_time_;
   const double tf = stop_time_;
-  const double dt_nom = lbs_problem_->GetTimeStep();
-
-  if (dt_nom <= 0.0)
-    throw std::runtime_error(GetName() + ": dt must be positive");
 
   if (tf < t0)
     throw std::runtime_error(GetName() + ": stop_time must be >= current_time");
@@ -101,13 +97,16 @@ TimeDependentSourceSolver::Execute()
       break;
     }
 
-    double step_dt = (remaining < dt_nom) ? remaining : dt_nom;
+    if (pre_advance_callback_)
+      pre_advance_callback_();
+
+    const double dt = lbs_problem_->GetTimeStep();
+    if (dt <= 0.0)
+      throw std::runtime_error(GetName() + ": dt must be positive");
+    const double step_dt = (remaining < dt) ? remaining : dt;
 
     lbs_problem_->SetTimeStep(step_dt);
     lbs_problem_->SetTime(current_time_);
-
-    if (pre_advance_callback_)
-      pre_advance_callback_();
 
     Advance();
 
