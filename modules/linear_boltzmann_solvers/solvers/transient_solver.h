@@ -38,6 +38,7 @@ public:
 
 private:
   void RefreshLocalViews();
+  void UpdateHasFissionableMaterial();
 
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   std::shared_ptr<AGSLinearSolver> ags_solver_;
@@ -61,6 +62,7 @@ private:
   bool verbose_ = true;
   bool initialized_ = false;
   bool enforce_stop_time_ = false;
+  bool has_fissionable_material_ = false;
   std::string initial_state_;
   std::function<void()> pre_advance_callback_;
   std::function<void()> post_advance_callback_;

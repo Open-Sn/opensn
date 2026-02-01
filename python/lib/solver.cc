@@ -1065,6 +1065,7 @@ WrapTransient(py::module& slv)
         Time differencing scheme parameter.
     initial_state : str, optional, default="existing"
         Initial state for the transient solve. Allowed values: existing, zero.
+        In "zero" mode, the solver may initialize the problem internally if needed.
     verbose : bool, optional, default=True
         Enable verbose logging.
     )"
@@ -1113,6 +1114,8 @@ WrapTransient(py::module& slv)
     ----------
     callback : Optional[Callable[[], None]]
         Function invoked before the solver advances a timestep. Pass None to clear.
+        If the callback modifies the timestep, the new value is used for the
+        upcoming step.
     )");
   transient_solver.def(
     "SetPreAdvanceCallback",

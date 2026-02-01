@@ -24,7 +24,8 @@ TransientSolver::GetInputParameters()
   InputParameters params = Solver::GetInputParameters();
   params.SetGeneralDescription("Generalized implementation of a transient solver");
   params.ChangeExistingParamToOptional("name", "TransientSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
+                                                        "An existing discrete ordinates problem");
   params.AddOptionalParameter<double>("dt", 2.0e-3, "Time step");
   params.ConstrainParameterRange("dt", AllowableRangeLowLimit::New(1.0e-18));
   params.AddOptionalParameter<double>("stop_time", 0.1, "Time duration to run the solver");
@@ -81,25 +82,34 @@ TransientSolver::RefreshLocalViews()
 }
 
 void
+TransientSolver::UpdateHasFissionableMaterial()
+{
+  has_fissionable_material_ = false;
+  for (const auto& [_, xs] : do_problem_->GetBlockID2XSMap())
+    has_fissionable_material_ = has_fissionable_material_ or xs->IsFissionable();
+}
+
+void
 TransientSolver::Initialize()
 {
   log.Log() << "Initializing " << GetName() << ".";
   enforce_stop_time_ = false;
 
   // Ensure angular fluxes are available from the initial condition.
-  do_problem_->GetOptions().save_angular_flux = true;
+  auto& options = do_problem_->GetOptions();
+  options.save_angular_flux = true;
   do_problem_->SetTime(current_time_);
 
   const std::string& init_state = initial_state_;
   RefreshLocalViews();
-  if (not phi_new_local_ || phi_new_local_->empty())
+  if (not phi_new_local_ or phi_new_local_->empty())
   {
     if (init_state != "zero")
       throw std::runtime_error(GetName() + ": Problem must be initialized before TransientSolver.");
     do_problem_->Initialize();
     RefreshLocalViews();
   }
-  if (not phi_new_local_ || phi_new_local_->empty())
+  if (not phi_new_local_ or phi_new_local_->empty())
     throw std::runtime_error(GetName() + ": Problem initialization failed.");
 
   if (init_state == "zero")
@@ -128,8 +138,16 @@ TransientSolver::Initialize()
   do_problem_->ReinitializeSolverSchemes();
   RefreshLocalViews();
   ags_solver_ = do_problem_->GetAGSSolver();
+  UpdateHasFissionableMaterial();
+  if (options.use_precursors and not has_fissionable_material_)
+    log.Log0Warning() << GetName()
+                      << ": use_precursors is enabled but no fissionable material is present.";
+  if ((not options.use_precursors) and has_fissionable_material_)
+    log.Log0Warning() << GetName()
+                      << ": fissionable material is present but use_precursors is disabled. "
+                         "Running prompt-only transient.";
 
-  // Configure fission sources for transient solve after power iteration. For transients
+  // Configure fission sources for transient solve. For transients
   // we treat fission as an explicit source (RHS), not on the LHS.
   for (auto& wgs_solver : do_problem_->GetWGSSolvers())
   {
@@ -146,17 +164,9 @@ TransientSolver::Initialize()
   // Sync psi_old with the steady-state angular flux before enabling RHS time term
   do_problem_->UpdatePsiOld();
 
-  // Rebuild angular flux with the transient RHS time term enabled to ensure psi is consistent
+  // Keep initialization side-effect free: zero/existing differ only by
+  // initial-condition setup, not by additional sweeps.
   *phi_old_local_ = *phi_new_local_;
-  for (auto& wgs_solver : do_problem_->GetWGSSolvers())
-  {
-    auto context = wgs_solver->GetContext();
-    auto sweep_context = std::dynamic_pointer_cast<SweepWGSContext>(context);
-    if (not sweep_context)
-      continue;
-
-    sweep_context->RebuildAngularFluxFromConvergedPhi(true);
-  }
 
   // Sync with the current solution
   phi_prev_local_ = *phi_new_local_;
@@ -175,6 +185,7 @@ TransientSolver::Execute()
 
   const double t0 = current_time_;
   const double tf = stop_time_;
+  const double dt_nominal = do_problem_->GetTimeStep();
 
   if (tf < t0)
     throw std::runtime_error(GetName() + ": stop_time must be >= current_time");
@@ -183,39 +194,49 @@ TransientSolver::Execute()
     64.0 * std::numeric_limits<double>::epsilon() * std::max({1.0, std::abs(tf), std::abs(t0)});
 
   enforce_stop_time_ = true;
-  while (true)
+  try
   {
-    const double remaining = tf - current_time_;
-
-    if (remaining <= tol)
+    while (true)
     {
-      current_time_ = tf;
+      const double remaining = tf - current_time_;
+
+      if (remaining <= tol)
+      {
+        current_time_ = tf;
+        do_problem_->SetTime(current_time_);
+        break;
+      }
+
+      if (pre_advance_callback_)
+        pre_advance_callback_();
+
+      const double dt = do_problem_->GetTimeStep();
+      if (dt <= 0.0)
+        throw std::runtime_error(GetName() + ": dt must be positive");
+      const double step_dt = (remaining < dt) ? remaining : dt;
+      do_problem_->SetTimeStep(step_dt);
       do_problem_->SetTime(current_time_);
-      break;
-    }
 
-    if (pre_advance_callback_)
-      pre_advance_callback_();
+      Advance();
 
-    const double dt = do_problem_->GetTimeStep();
-    if (dt <= 0.0)
-      throw std::runtime_error(GetName() + ": dt must be positive");
-    const double step_dt = (remaining < dt) ? remaining : dt;
-    do_problem_->SetTimeStep(step_dt);
-    do_problem_->SetTime(current_time_);
+      if (post_advance_callback_)
+        post_advance_callback_();
 
-    Advance();
-
-    if (post_advance_callback_)
-      post_advance_callback_();
-
-    if (std::abs(tf - current_time_) <= tol)
-    {
-      current_time_ = tf;
-      do_problem_->SetTime(current_time_);
+      if (std::abs(tf - current_time_) <= tol)
+      {
+        current_time_ = tf;
+        do_problem_->SetTime(current_time_);
+      }
     }
   }
+  catch (...)
+  {
+    do_problem_->SetTimeStep(dt_nominal);
+    enforce_stop_time_ = false;
+    throw;
+  }
 
+  do_problem_->SetTimeStep(dt_nominal);
   enforce_stop_time_ = false;
   log.Log() << "Done executing " << GetName() << ".";
 }
@@ -226,7 +247,7 @@ TransientSolver::Advance()
   auto& options = do_problem_->GetOptions();
   if (not initialized_)
     throw std::runtime_error(GetName() + ": Initialize must be called before Advance.");
-  if (enforce_stop_time_ && stop_time_ <= current_time_)
+  if (enforce_stop_time_ and stop_time_ <= current_time_)
   {
     if (verbose_)
       log.Log() << GetName() << " Advance skipped (stop_time <= current_time).";
@@ -234,9 +255,6 @@ TransientSolver::Advance()
   }
   const double dt = do_problem_->GetTimeStep();
   const double theta = do_problem_->GetTheta();
-
-  if (verbose_)
-    log.Log() << GetName() << " Advancing with dt " << dt;
 
   // Ensure RHS time term is enabled for transient sweeps
   for (auto& wgs_solver : do_problem_->GetWGSSolvers())
@@ -251,6 +269,7 @@ TransientSolver::Advance()
 
   // Zero source moments before recomputing sources for this step
   q_moments_local_->assign(q_moments_local_->size(), 0.0);
+  UpdateHasFissionableMaterial();
 
   // Solve
   *phi_old_local_ = phi_prev_local_;
@@ -263,22 +282,35 @@ TransientSolver::Advance()
     throw std::runtime_error(GetName() + ": AGS solver not available.");
   ags_solver_->Solve();
 
-  // Compute t^{n+1} value
-  const double inv_theta = 1.0 / theta;
-  auto& phi = *phi_new_local_;
-  const auto& phi_prev = phi_prev_local_;
-  for (size_t i = 0; i < phi.size(); ++i)
-    phi[i] = inv_theta * (phi[i] + (theta - 1.0) * phi_prev[i]);
-  if (options.use_precursors)
-    StepPrecursors();
-
-  const double FP_new = ComputeFissionProduction(*do_problem_, *phi_new_local_);
+  // For non-fission source-only problems, match TimeDependentSourceSolver behavior.
+  // For fissioning problems (and any precursor case), apply the transient
+  // reconstruction so delayed/prompt source coupling is time-consistent.
+  if (has_fissionable_material_ or options.use_precursors)
+  {
+    // Compute t^{n+1} value
+    const double inv_theta = 1.0 / theta;
+    auto& phi = *phi_new_local_;
+    const auto& phi_prev = phi_prev_local_;
+    for (size_t i = 0; i < phi.size(); ++i)
+      phi[i] = inv_theta * (phi[i] + (theta - 1.0) * phi_prev[i]);
+    if (options.use_precursors)
+      StepPrecursors();
+  }
 
   if (verbose_)
   {
-    log.Log() << GetName() << " dt = " << std::scientific << std::setprecision(1) << dt
-              << " time = " << std::fixed << std::setprecision(4) << (current_time_ + dt)
-              << " FP = " << std::scientific << std::setprecision(6) << FP_new;
+    if (has_fissionable_material_ or options.use_precursors)
+    {
+      const double FP_new = ComputeFissionProduction(*do_problem_, *phi_new_local_);
+      log.Log() << GetName() << " dt = " << std::scientific << std::setprecision(1) << dt
+                << " time = " << std::fixed << std::setprecision(4) << (current_time_ + dt)
+                << " FP = " << std::scientific << std::setprecision(6) << FP_new;
+    }
+    else
+    {
+      log.Log() << GetName() << " dt = " << std::scientific << std::setprecision(1) << dt
+                << " time = " << std::fixed << std::setprecision(4) << (current_time_ + dt);
+    }
   }
 
   current_time_ += dt;
