@@ -49,6 +49,18 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
 }
 
 void
+SweepWGSContext::RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term)
+{
+  const auto scope = lhs_src_scope | rhs_src_scope;
+  set_source_function(groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+
+  sweep_chunk->IncludeRHSTimeTerm(include_rhs_time_term);
+  ApplyInverseTransportOperator(scope);
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(
+    do_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+}
+
+void
 SweepWGSContext::SetPreconditioner(KSP& solver)
 {
   CALI_CXX_MARK_SCOPE("SweepWGSContext::SetPreconditioner");
@@ -137,17 +149,7 @@ SweepWGSContext::PostSolveCallback()
       (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
        groupset.max_iterations > 1))
   {
-    const auto scope = lhs_src_scope | rhs_src_scope;
-    set_source_function(
-      groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
-
-    // Add RHS time term (tau*psi^n)
-    if (sweep_chunk->IsTimeDependent())
-      sweep_chunk->IncludeRHSTimeTerm(true);
-
-    ApplyInverseTransportOperator(scope);
-    LBSVecOps::GSScopedCopyPrimarySTLvectors(
-      do_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+    RebuildAngularFluxFromConvergedPhi(sweep_chunk->IsTimeDependent());
   }
 
   if (log_info)
