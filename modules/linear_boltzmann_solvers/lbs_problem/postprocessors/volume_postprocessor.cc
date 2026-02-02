@@ -23,6 +23,10 @@ VolumePostprocessor::GetInputParameters()
     "logical_volume", nullptr, "Logical volume to restrict the computation to.");
   params.AddOptionalParameter<std::string>(
     "value_type", "integral", "Type of value to compute: 'integral', 'max', 'min', or 'avg'");
+  params.AddOptionalParameter(
+    "group", -1, "Single group to compute (mutually exclusive with groupset).");
+  params.AddOptionalParameter(
+    "groupset", -1, "Single groupset to compute (mutually exclusive with group).");
   return params;
 }
 
@@ -35,8 +39,26 @@ VolumePostprocessor::Create(const ParameterBlock& params)
 
 VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
   : lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem")),
-    logical_volume_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume"))
+    logical_volume_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume")),
+    selected_group_(params.IsParameterValid("group")
+                      ? std::make_optional(params.GetParamValue<unsigned int>("group"))
+                      : std::nullopt),
+    selected_groupset_(params.IsParameterValid("groupset")
+                         ? std::make_optional(params.GetParamValue<unsigned int>("groupset"))
+                         : std::nullopt)
 {
+  if (selected_group_.has_value() && selected_groupset_.has_value())
+    throw std::invalid_argument("'group' and 'groupset' cannot be specified together");
+
+  if (selected_group_.has_value() && selected_group_.value() >= lbs_problem_->GetNumGroups())
+    throw std::invalid_argument("'group' must be less than " +
+                                std::to_string(lbs_problem_->GetNumGroups()));
+
+  if (selected_groupset_.has_value() &&
+      selected_groupset_.value() >= lbs_problem_->GetGroupsets().size())
+    throw std::invalid_argument("'groupset' must be less than " +
+                                std::to_string(lbs_problem_->GetGroupsets().size()));
+
   const auto value_type_str = params.GetParamValue<std::string>("value_type");
   if (value_type_str == "max")
     value_type_ = ValueType::MAX;
@@ -67,9 +89,21 @@ VolumePostprocessor::Initialize()
       cell_local_ids_.push_back(cell.local_id);
   }
 
-  // TODO: do a single groupset, or a single group
-  for (unsigned int g = 0; g < lbs_problem_->GetNumGroups(); ++g)
-    groups_.push_back(g);
+  if (selected_group_.has_value())
+  {
+    groups_.push_back(selected_group_.value());
+  }
+  else if (selected_groupset_.has_value())
+  {
+    const auto& groupset = lbs_problem_->GetGroupsets()[selected_groupset_.value()];
+    for (unsigned int g = groupset.first_group; g < groupset.last_group; ++g)
+      groups_.push_back(g);
+  }
+  else
+  {
+    for (unsigned int g = 0; g < lbs_problem_->GetNumGroups(); ++g)
+      groups_.push_back(g);
+  }
 
   values_.resize(groups_.size());
 }

@@ -43,6 +43,10 @@ private:
   ValueType value_type_;
   /// Computed postprocessed values
   std::vector<double> values_;
+  /// Selected group (-1 means not selected)
+  std::optional<unsigned int> selected_group_;
+  /// Selected groupset (-1 means not selected)
+  std::optional<unsigned int> selected_groupset_;
 
   // Helper functions for different computation types
   void ComputeIntegral();
