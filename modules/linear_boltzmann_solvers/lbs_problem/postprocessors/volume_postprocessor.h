@@ -14,6 +14,14 @@ namespace opensn
 class VolumePostprocessor
 {
 public:
+  enum class ValueType
+  {
+    INTEGRAL,
+    MAX,
+    MIN,
+    AVERAGE
+  };
+
   /// Input parameters based construction.
   explicit VolumePostprocessor(const InputParameters& params);
 
@@ -31,8 +39,16 @@ private:
   std::vector<std::uint32_t> cell_local_ids_;
   /// Groups
   std::vector<unsigned int> groups_;
+  /// Type of value to compute
+  ValueType value_type_;
   /// Computed postprocessed values
   std::vector<double> values_;
+
+  // Helper functions for different computation types
+  void ComputeIntegral();
+  void ComputeMax();
+  void ComputeMin();
+  void ComputeVolumeWeightedAverage();
 
 public:
   /// Returns the input parameters for this object.

@@ -13,6 +13,13 @@ void
 WrapPostprocessors(py::module& post)
 {
   // clang-format off
+  // Volume post-processor value type enum
+  py::enum_<VolumePostprocessor::ValueType>(post, "VolumePostprocessorValueType")
+    .value("INTEGRAL", VolumePostprocessor::ValueType::INTEGRAL)
+    .value("MAX", VolumePostprocessor::ValueType::MAX)
+    .value("MIN", VolumePostprocessor::ValueType::MIN)
+    .value("AVERAGE", VolumePostprocessor::ValueType::AVERAGE);
+
   // Volume post-processor
   auto vp = py::class_<VolumePostprocessor, std::shared_ptr<VolumePostprocessor>>(
     post,
@@ -32,6 +39,13 @@ WrapPostprocessors(py::module& post)
     ),
     R"(
     Construct a volume post processor object.
+
+    Parameters
+    ----------
+    problem : LBSProblem
+        A handle to an existing LBS problem.
+    value_type : str, optional
+        Type of value to compute: 'integral' (default), 'max', 'min', or 'avg'.
     )"
   );
   vp.def(
