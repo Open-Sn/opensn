@@ -1,0 +1,41 @@
+[
+  {
+    "file": "transport_2d_cyl_disk_keigen_vacuum_bcs.py",
+    "comment": "RZ disk k-eigenvalue vacuum boundaries (3D disk reference)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "K_EIGEN",
+        "goldvalue": 0.0900968,
+        "abs_tol": 0.005
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_disk_keigen_vacuum_gmsh_struct.py",
+    "comment": "RZ disk k-eigenvalue vacuum boundaries (gmsh structured)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "K_EIGEN",
+        "goldvalue": 0.0900968,
+        "abs_tol": 0.005
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_disk_keigen_vacuum_gmsh_unstruct.py",
+    "comment": "RZ disk k-eigenvalue vacuum boundaries (gmsh unstructured)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "K_EIGEN",
+        "goldvalue": 0.0900968,
+        "abs_tol": 0.005
+      }
+    ]
+  }
+]

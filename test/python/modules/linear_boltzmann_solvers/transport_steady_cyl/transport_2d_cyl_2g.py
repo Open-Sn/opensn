@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-2D multigroup transport test in axialsymmetric cylindrical geometry with vacuum boundary
-conditions and DSA.
-
-Test: Max-valueG1=1.00000, Max-valueG2=0.25000
+transport_2d_cyl_2_multigroup.py: 2-group fixed-source with leakage
+Expected: Max-valueG1=1.0, Max-valueG2=0.25.
 """
 
 import os
@@ -59,7 +57,7 @@ if __name__ == "__main__":
 
     # Load cross-section data from file
     xs_data = MultiGroupXS()
-    xs_data.LoadFromOpenSn("transport_2d_cyl_2_multigroup.xs")
+    xs_data.LoadFromOpenSn("transport_2d_cyl_2g.xs")
 
     # Angular quadrature
     pquad = GLCProductQuadrature2DRZ(n_polar=4, n_azimuthal=8, scattering_order=0)
@@ -85,7 +83,7 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_data},
         ],
         volumetric_sources=[mg_src],
-        boundary_conditions=[{"name": "xmin", "type": "reflecting"}],
+        boundary_conditions=[{"name": "rmin", "type": "reflecting"}],
     )
     ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()

@@ -3,12 +3,15 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "framework/math/quadratures/angular/product_quadrature.h"
+#include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
-#include <sstream>
+#include <unordered_map>
 
 namespace opensn
 {
@@ -25,12 +28,29 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
   if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     InitializeAlgoDOG();
 
-  if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
+  if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE ||
+      scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
+  {
     angle_agg_.SetupAngleSetDependencies();
+  }
 
   // Initialize delayed upstream data
   for (auto& angset : angle_agg_)
     angset->InitializeDelayedUpstreamData();
+
+  if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
+  {
+    const auto* curvi_quad =
+      dynamic_cast<const CurvilinearProductQuadrature*>(angle_agg_.GetQuadrature().get());
+    if (curvi_quad && angle_agg_.GetQuadrature()->GetDimension() == 2 &&
+        angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL)
+    {
+      const auto& following_map = angle_agg_.GetFollowingAngleSetsMap();
+      for (const auto& [from, to_set] : following_map)
+        for (auto* to : to_set)
+          preceding_angle_sets_[to].insert(from);
+    }
+  }
 
   // Get local max num messages accross anglesets
   int local_max_num_messages = 0;
@@ -51,6 +71,21 @@ SweepScheduler::InitializeAlgoDOG()
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::InitializeAlgoDOG");
 
+  const bool is_cylindrical = angle_agg_.GetQuadrature()->GetDimension() == 2 &&
+                              angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL;
+
+  std::unordered_map<unsigned int, int> angle_order;
+  const auto* curvi_quad =
+    dynamic_cast<const CurvilinearProductQuadrature*>(angle_agg_.GetQuadrature().get());
+  const auto* product_quad =
+    dynamic_cast<const ProductQuadrature*>(angle_agg_.GetQuadrature().get());
+  if (is_cylindrical && curvi_quad && product_quad)
+  {
+    int order = 0;
+    for (const auto& dir_set : product_quad->GetDirectionMap())
+      for (const auto dir_id : dir_set.second)
+        angle_order.emplace(dir_id, order++);
+  }
   // Load all anglesets in preperation for sorting
   size_t num_anglesets = angle_agg_.GetNumAngleSets();
   for (size_t as = 0; as < num_anglesets; ++as)
@@ -85,6 +120,13 @@ SweepScheduler::InitializeAlgoDOG()
       new_rule_vals.sign_of_omegax = (omega.x >= 0) ? 2 : 1;
       new_rule_vals.sign_of_omegay = (omega.y >= 0) ? 2 : 1;
       new_rule_vals.sign_of_omegaz = (omega.z >= 0) ? 2 : 1;
+      if (is_cylindrical && !angle_order.empty() && angleset->GetNumAngles() == 1)
+      {
+        const auto angle_idx = angleset->GetAngleIndices().front();
+        const auto it = angle_order.find(angle_idx);
+        if (it != angle_order.end())
+          new_rule_vals.azimuthal_order = it->second;
+      }
 
       rule_values_.push_back(new_rule_vals);
     }
@@ -92,6 +134,38 @@ SweepScheduler::InitializeAlgoDOG()
       throw std::runtime_error("InitializeAlgoDOG: Failed to find location depth");
   } // for anglesets
 
+  if (is_cylindrical)
+    SortRuleValuesDOGRZ();
+  else
+    SortRuleValuesDOGDefault();
+}
+
+void
+SweepScheduler::SortRuleValuesDOGRZ()
+{
+  std::stable_sort(rule_values_.begin(),
+                   rule_values_.end(),
+                   [](const RuleValues& a, const RuleValues& b)
+                   {
+                     if (a.sign_of_omegax != b.sign_of_omegax)
+                       return a.sign_of_omegax > b.sign_of_omegax;
+                     if (a.depth_of_graph != b.depth_of_graph)
+                       return a.depth_of_graph > b.depth_of_graph;
+                     if (a.sign_of_omegax != b.sign_of_omegax)
+                       return a.sign_of_omegax > b.sign_of_omegax;
+                     if (a.sign_of_omegay != b.sign_of_omegay)
+                       return a.sign_of_omegay > b.sign_of_omegay;
+                     if (a.sign_of_omegaz != b.sign_of_omegaz)
+                       return a.sign_of_omegaz > b.sign_of_omegaz;
+                     if (a.azimuthal_order != b.azimuthal_order)
+                       return a.azimuthal_order < b.azimuthal_order;
+                     return a.set_index < b.set_index;
+                   });
+}
+
+void
+SweepScheduler::SortRuleValuesDOGDefault()
+{
   std::stable_sort(rule_values_.begin(),
                    rule_values_.end(),
                    [](const RuleValues& a, const RuleValues& b)
@@ -111,29 +185,13 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoDOG");
 
-  // Loop till done
-  bool finished = false;
-  while (not finished)
-  {
-    finished = true;
-    for (auto& rule_value : rule_values_)
-    {
-      auto angleset = rule_value.angle_set;
+  const bool is_cylindrical = angle_agg_.GetQuadrature()->GetDimension() == 2 &&
+                              angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL;
 
-      // Query angleset status
-      // Angleset status will be one of the following:
-      //  - RECEIVING.
-      //      Meaning it is either waiting for messages or actively receiving it
-      //  - READY_TO_EXECUTE.
-      //      Meaning it has received all upstream data and can be executed
-      //  - FINISHED.
-      //      Meaning the angleset has executed its sweep chunk
-      AngleSetStatus status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
-
-      if (status != AngleSetStatus::FINISHED)
-        finished = false;
-    } // for each angleset rule
-  } // while not finished
+  if (is_cylindrical)
+    ScheduleAlgoDOGRZ(sweep_chunk);
+  else
+    ScheduleAlgoDOGDefault(sweep_chunk);
 
   // Receive delayed data
   opensn::mpi_comm.barrier();
@@ -158,6 +216,68 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 
   for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
     bndry->ResetAnglesReadyStatus();
+}
+
+void
+SweepScheduler::ScheduleAlgoDOGRZ(SweepChunk& sweep_chunk)
+{
+  bool finished = false;
+  std::unordered_set<AngleSet*> completed;
+  while (not finished)
+  {
+    finished = true;
+    for (auto& rule_value : rule_values_)
+    {
+      auto angleset = rule_value.angle_set;
+
+      auto dep_it = preceding_angle_sets_.find(angleset.get());
+      if (dep_it != preceding_angle_sets_.end())
+      {
+        bool deps_ready = true;
+        for (auto* dep : dep_it->second)
+        {
+          if (completed.find(dep) == completed.end())
+          {
+            deps_ready = false;
+            break;
+          }
+        }
+        if (!deps_ready)
+        {
+          AngleSetStatus status =
+            angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::READY_TO_EXECUTE);
+          if (status != AngleSetStatus::FINISHED)
+            finished = false;
+          else
+            completed.insert(angleset.get());
+          continue;
+        }
+      }
+
+      AngleSetStatus status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+      if (status == AngleSetStatus::FINISHED)
+        completed.insert(angleset.get());
+      if (status != AngleSetStatus::FINISHED)
+        finished = false;
+    }
+  }
+}
+
+void
+SweepScheduler::ScheduleAlgoDOGDefault(SweepChunk& sweep_chunk)
+{
+  bool finished = false;
+  while (not finished)
+  {
+    finished = true;
+    for (auto& rule_value : rule_values_)
+    {
+      auto angleset = rule_value.angle_set;
+      AngleSetStatus status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+      if (status != AngleSetStatus::FINISHED)
+        finished = false;
+    }
+  }
 }
 
 void

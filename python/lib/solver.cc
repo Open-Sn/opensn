@@ -721,6 +721,9 @@ WrapLBS(py::module& slv)
       // get the supported boundaries
       std::map<std::string, std::uint64_t> allowed_bd_names = grid->GetBoundaryNameMap();
       std::map<std::uint64_t, std::string> allowed_bd_ids = grid->GetBoundaryIDMap();
+      const auto coord_sys = grid->GetCoordinateSystem();
+      const auto mesh_type = grid->GetType();
+      const auto dim = grid->GetDimension();
       // get the boundaries to parse, preserving user order
       std::vector<std::uint64_t> bndry_ids;
       if (bnd_names.size() > 1)
@@ -728,6 +731,21 @@ WrapLBS(py::module& slv)
         for (py::handle name : bnd_names)
         {
           auto sname = name.cast<std::string>();
+          if (coord_sys == CoordinateSystemType::CYLINDRICAL && dim == 2)
+          {
+            if (sname == "xmin" || sname == "xmax" || sname == "ymin" || sname == "ymax")
+              throw std::runtime_error("ComputeLeakage: Boundary name '" + sname +
+                                       "' is invalid for cylindrical orthogonal meshes. "
+                                       "Use rmin, rmax, zmin, zmax.");
+
+            if (mesh_type == MeshType::ORTHOGONAL)
+            {
+              if (sname == "rmin") sname = "xmin";
+              else if (sname == "rmax") sname = "xmax";
+              else if (sname == "zmin") sname = "ymin";
+              else if (sname == "zmax") sname = "ymax";
+            }
+          }
           bndry_ids.push_back(allowed_bd_names.at(sname));
         }
       }
@@ -737,6 +755,18 @@ WrapLBS(py::module& slv)
       }
       // compute the leakage
       std::map<std::uint64_t, std::vector<double>> leakage = ComputeLeakage(self, bndry_ids);
+      const bool rz_ortho = (coord_sys == CoordinateSystemType::CYLINDRICAL &&
+                             mesh_type == MeshType::ORTHOGONAL && dim == 2);
+
+      auto to_rz_name = [](const std::string& name)
+      {
+        if (name == "xmin") return std::string("rmin");
+        if (name == "xmax") return std::string("rmax");
+        if (name == "ymin") return std::string("zmin");
+        if (name == "ymax") return std::string("zmax");
+        return name;
+      };
+
       // convert result to native Python
       py::dict result;
       for (const auto& bndry_id : bndry_ids)
@@ -750,7 +780,9 @@ WrapLBS(py::module& slv)
         auto buffer = np_vector.request();
         auto *np_vector_data = static_cast<double*>(buffer.ptr);
         std::copy(grp_wise_leakage.begin(), grp_wise_leakage.end(), np_vector_data);
-        const std::string& name = allowed_bd_ids.at(bndry_id);
+        std::string name = allowed_bd_ids.at(bndry_id);
+        if (rz_ortho)
+          name = to_rz_name(name);
         result[py::str(name)] = std::move(np_vector);
       }
 
