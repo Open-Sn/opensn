@@ -6,6 +6,7 @@
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/logging/log.h"
 #include <algorithm>
+#include <map>
 #include <sstream>
 
 namespace opensn
@@ -28,6 +29,13 @@ HarmonicSelectionRules::SelectHarmonics(const SelectionParameters& params)
         return Select2DCartesianProduct(params);
       else if (params.dimension == 3)
         return Select3DCartesianProduct(params);
+      break;
+
+    case AngularQuadratureType::TriangularQuadrature:
+      if (params.dimension == 2)
+        return Select2DTriangular(params);
+      else if (params.dimension == 3)
+        return Select3DTriangular(params);
       break;
 
     case AngularQuadratureType::LebedevQuadrature:
@@ -215,6 +223,171 @@ HarmonicSelectionRules::Select3DCartesianProduct(const SelectionParameters& para
   return harmonics;
 }
 
+// 2D Triangular Quadrature Rules
+std::vector<AngularQuadrature::HarmonicIndices>
+HarmonicSelectionRules::Select2DTriangular(const SelectionParameters& params)
+{
+  std::vector<AngularQuadrature::HarmonicIndices> harmonics;
+  const size_t nb_dir = params.num_angles;
+
+  // Compute directions per octant
+  // For 2D: nb_dir = ndir_oct * 4 (4 quadrants)
+  const size_t ndir_oct = nb_dir / 4;
+
+  Logger::GetInstance().Log0Verbose1() << "2D Triangular Galerkin rules:";
+  Logger::GetInstance().Log0Verbose1() << "  nb_dir     = " << nb_dir;
+  Logger::GetInstance().Log0Verbose1() << "  ndir_oct   = " << ndir_oct;
+
+  // Parity mode indices: ee=1, eo=2, oe=3, oo=4
+  enum ParityMode
+  {
+    ee = 1,
+    eo = 2,
+    oe = 3,
+    oo = 4
+  };
+
+  std::map<int, size_t> nb_C = {{ee, 0}, {eo, 0}, {oe, 0}, {oo, 0}}; // cosine counts
+  std::map<int, size_t> nb_S = {{ee, 0}, {eo, 0}, {oe, 0}, {oo, 0}}; // sine counts
+
+  int ind_K = 2; // 2 for even K, 1 for odd K (toggled each K)
+  int K = -1;
+
+  while (harmonics.size() < nb_dir)
+  {
+    K++;
+    // mode = 7 - 3*ind_K -> 1 (ee) when K even, 4 (oo) when K odd
+    int mode = 7 - 3 * ind_K;
+
+    // cosine (K,0) only when mode==ee and we still have capacity
+    if (mode == ee && nb_C[ee] < ndir_oct)
+    {
+      harmonics.emplace_back(K, 0);
+      nb_C[ee]++;
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: K=" << K << ", L=0 (cosine)";
+      if (harmonics.size() == nb_dir)
+        break;
+    }
+
+    // Then L with the same parity as K: L = ind_K, ind_K+2, ..., K
+    int Lcur = ind_K;
+    while (Lcur <= K && harmonics.size() < nb_dir)
+    {
+      // cosine (K, +L)
+      if (nb_C[mode] < ndir_oct)
+      {
+        harmonics.emplace_back(K, Lcur);
+        nb_C[mode]++;
+        Logger::GetInstance().Log0Verbose2()
+          << "    Accepted: K=" << K << ", L=" << Lcur << " (cosine)";
+        if (harmonics.size() == nb_dir)
+          break;
+      }
+      // sine (K, -L)
+      if (nb_S[mode] < ndir_oct && harmonics.size() < nb_dir)
+      {
+        harmonics.emplace_back(K, -Lcur);
+        nb_S[mode]++;
+        Logger::GetInstance().Log0Verbose2()
+          << "    Accepted: K=" << K << ", L=" << -Lcur << " (sine)";
+      }
+      Lcur += 2;
+    }
+
+    // Toggle K parity
+    ind_K = 3 - ind_K;
+  }
+
+  Logger::GetInstance().Log0Verbose1()
+    << "2D Triangular: Selected " << harmonics.size() << " harmonics";
+
+  return harmonics;
+}
+
+// 3D Triangular Quadrature Rules
+std::vector<AngularQuadrature::HarmonicIndices>
+HarmonicSelectionRules::Select3DTriangular(const SelectionParameters& params)
+{
+  std::vector<AngularQuadrature::HarmonicIndices> harmonics;
+  const size_t nb_dir = params.num_angles;
+
+  // Compute directions per octant
+  // For 3D: nb_dir = ndir_oct * 8 (8 octants)
+  const size_t ndir_oct = nb_dir / 8;
+
+  Logger::GetInstance().Log0Verbose1() << "3D Triangular Galerkin rules:";
+  Logger::GetInstance().Log0Verbose1() << "  nb_dir     = " << nb_dir;
+  Logger::GetInstance().Log0Verbose1() << "  ndir_oct   = " << ndir_oct;
+
+  // Parity mode indices: ee=1, eo=2, oe=3, oo=4
+  enum ParityMode
+  {
+    ee = 1,
+    eo = 2,
+    oe = 3,
+    oo = 4
+  };
+
+  std::map<int, size_t> nb_C = {{ee, 0}, {eo, 0}, {oe, 0}, {oo, 0}}; // cosine counts
+  std::map<int, size_t> nb_S = {{ee, 0}, {eo, 0}, {oe, 0}, {oo, 0}}; // sine counts
+
+  int ind_K = 2; // 2 for even K, 1 for odd K (toggled each K)
+  int K = -1;
+
+  while (harmonics.size() < nb_dir)
+  {
+    K++;
+    int ind_L = 1;             // 1=even L, 2=odd L (toggled as L increases)
+    int id_ = 2 * (2 - ind_K); // id=0 for even K, 2 for odd K
+
+    // L=0 cosine first
+    int mode = ind_L + id_; // ee if even K, oe if odd K
+    if (nb_C[mode] < ndir_oct)
+    {
+      harmonics.emplace_back(K, 0);
+      nb_C[mode]++;
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: K=" << K << ", L=0 (cosine)";
+      if (harmonics.size() == nb_dir)
+        break;
+    }
+
+    // L = 1..K with toggling L parity
+    for (int L = 1; L <= K; ++L)
+    {
+      ind_L = 3 - ind_L; // toggle L parity
+      mode = ind_L + id_;
+
+      // cosine (K, +L)
+      if (nb_C[mode] < ndir_oct)
+      {
+        harmonics.emplace_back(K, L);
+        nb_C[mode]++;
+        Logger::GetInstance().Log0Verbose2()
+          << "    Accepted: K=" << K << ", L=" << L << " (cosine)";
+        if (harmonics.size() == nb_dir)
+          break;
+      }
+
+      // sine (K, -L)
+      if (nb_S[mode] < ndir_oct && harmonics.size() < nb_dir)
+      {
+        harmonics.emplace_back(K, -L);
+        nb_S[mode]++;
+        Logger::GetInstance().Log0Verbose2()
+          << "    Accepted: K=" << K << ", L=" << -L << " (sine)";
+      }
+    }
+
+    // Toggle K parity
+    ind_K = 3 - ind_K;
+  }
+
+  Logger::GetInstance().Log0Verbose1()
+    << "3D Triangular: Selected " << harmonics.size() << " harmonics";
+
+  return harmonics;
+}
+
 // Lebedev Quadrature Rules
 std::vector<AngularQuadrature::HarmonicIndices>
 HarmonicSelectionRules::SelectLebedev(const SelectionParameters& params)
@@ -228,7 +401,7 @@ HarmonicSelectionRules::SelectLebedev(const SelectionParameters& params)
     // Obtain from Lookup Table
     try
     {
-      lebedev_order = DetermineLebedevOrder(params.num_angles);
+      lebedev_order = DetermineLebedevOrder(params.num_angles, params.dimension);
     }
     // If not in Lookup Table - Error
     catch (const std::runtime_error& e)
@@ -240,12 +413,17 @@ HarmonicSelectionRules::SelectLebedev(const SelectionParameters& params)
     }
   }
 
+  // Select the appropriate empirical harmonics map based on dimension
+  const auto& lebedev_harmonics = (params.dimension == 2)
+                                    ? EmpiricalHarmonicRules::LebedevHarmonics2D
+                                    : EmpiricalHarmonicRules::LebedevHarmonics3D;
+
   // Look up empirical harmonics
-  auto order_num = EmpiricalHarmonicRules::LebedevHarmonics.find(lebedev_order);
-  if (order_num != EmpiricalHarmonicRules::LebedevHarmonics.end())
+  auto order_num = lebedev_harmonics.find(lebedev_order);
+  if (order_num != lebedev_harmonics.end())
   {
     Logger::GetInstance().Log0Verbose1()
-      << "Lebedev Galerkin rules (order " << lebedev_order << "):";
+      << "Lebedev " << params.dimension << "D Galerkin rules (order " << lebedev_order << "):";
 
     for (const auto& [ell, m] : order_num->second.harmonics)
     {
@@ -262,14 +440,15 @@ HarmonicSelectionRules::SelectLebedev(const SelectionParameters& params)
       }
     }
 
-    Logger::GetInstance().Log0Verbose1() << "Lebedev Galerkin: Selected " << harmonics.size()
-                                         << " harmonics for order " << lebedev_order;
+    Logger::GetInstance().Log0Verbose1()
+      << "Lebedev " << params.dimension << "D Galerkin: Selected " << harmonics.size()
+      << " harmonics for order " << lebedev_order;
   }
   else
   {
     Logger::GetInstance().Log0Warning()
-      << "No empirical harmonic rules found for Lebedev order " << lebedev_order
-      << ". Falling back to standard harmonic selection.";
+      << "No empirical harmonic rules found for " << params.dimension << "D Lebedev order "
+      << lebedev_order << ". Falling back to standard harmonic selection.";
     return SelectStandard(params);
   }
 
@@ -278,11 +457,10 @@ HarmonicSelectionRules::SelectLebedev(const SelectionParameters& params)
 
 // Helper function to map number of angles to Lebedev order
 int
-HarmonicSelectionRules::DetermineLebedevOrder(size_t num_angles)
+HarmonicSelectionRules::DetermineLebedevOrder(size_t num_angles, unsigned int dimension)
 {
-  // Lebedev sets have specific numbers of points
-  // Map num_angles to the corresponding order
-  static const std::map<size_t, int> angle_to_order =
+  // 3D Lebedev sets have specific numbers of points (full sphere)
+  static const std::map<size_t, int> angle_to_order_3d =
     {
       {6, 3},   // Order 3
       {14, 5},  // Order 5
@@ -298,12 +476,26 @@ HarmonicSelectionRules::DetermineLebedevOrder(size_t num_angles)
       {2354, 83}, {2702, 89}, {3074, 95}, {3470, 101} // End of calculated Lebedev Quadrature
     };
 
+  // 2D Lebedev sets have fewer points (upper hemisphere only)
+  // These values depend on how many points have z >= 0 for each order
+  static const std::map<size_t, int> angle_to_order_2d = {
+    {5, 3},   // Order 3
+    {9, 5},   // Order 5
+    {17, 7},  // Order 7
+    {25, 9},  // Order 9
+    {29, 11}, // Order etc...
+    {45, 13},  {49, 15},   {61, 17},   {77, 19},   {93, 21},   {105, 23},  {125, 25}, {141, 27},
+    {161, 29}, {185, 31},  {229, 35},  {309, 41},  {401, 47},  {505, 53},  {621, 59}, {749, 65},
+    {889, 71}, {1041, 77}, {1205, 83}, {1381, 89}, {1569, 95}, {1769, 101}};
+
+  const auto& angle_to_order = (dimension == 2) ? angle_to_order_2d : angle_to_order_3d;
+
   auto order_num = angle_to_order.find(num_angles);
   if (order_num != angle_to_order.end())
     return order_num->second;
   else
-    throw std::runtime_error("Unknown Lebedev quadrature with " + std::to_string(num_angles) +
-                             " angles");
+    throw std::runtime_error("Unknown " + std::to_string(dimension) + "D Lebedev quadrature with " +
+                             std::to_string(num_angles) + " angles");
 }
 
 // SLDFESQ Quadrature Rules
@@ -319,7 +511,7 @@ HarmonicSelectionRules::SelectSLDFESQ(const SelectionParameters& params)
     // Try to infer from number of angles
     try
     {
-      refinement_level = DetermineSLDFELevel(params.num_angles);
+      refinement_level = DetermineSLDFELevel(params.num_angles, params.dimension);
     }
     catch (const std::runtime_error& e)
     {
@@ -331,12 +523,17 @@ HarmonicSelectionRules::SelectSLDFESQ(const SelectionParameters& params)
     }
   }
 
+  // Select the appropriate empirical harmonics map based on dimension
+  const auto& sldfe_harmonics_map = (params.dimension == 2)
+                                      ? EmpiricalHarmonicRules::SLDFEHarmonics2D
+                                      : EmpiricalHarmonicRules::SLDFEHarmonics;
+
   // Look up empirical harmonics
-  auto sldfe_harmonics = EmpiricalHarmonicRules::SLDFEHarmonics.find(refinement_level);
-  if (sldfe_harmonics != EmpiricalHarmonicRules::SLDFEHarmonics.end())
+  auto sldfe_harmonics = sldfe_harmonics_map.find(refinement_level);
+  if (sldfe_harmonics != sldfe_harmonics_map.end())
   {
     Logger::GetInstance().Log0Verbose1()
-      << "SLDFESQ Galerkin rules (level " << refinement_level << "):";
+      << "SLDFESQ " << params.dimension << "D Galerkin rules (level " << refinement_level << "):";
 
     for (const auto& [ell, m] : sldfe_harmonics->second.harmonics)
     {
@@ -353,14 +550,15 @@ HarmonicSelectionRules::SelectSLDFESQ(const SelectionParameters& params)
       }
     }
 
-    Logger::GetInstance().Log0Verbose1() << "SLDFESQ Galerkin: Selected " << harmonics.size()
-                                         << " harmonics for refinement level " << refinement_level;
+    Logger::GetInstance().Log0Verbose1()
+      << "SLDFESQ " << params.dimension << "D Galerkin: Selected " << harmonics.size()
+      << " harmonics for refinement level " << refinement_level;
   }
   else
   {
     Logger::GetInstance().Log0Warning()
-      << "No empirical harmonic rules found for SLDFESQ refinement level " << refinement_level
-      << ". Falling back to standard harmonic selection.";
+      << "No empirical harmonic rules found for " << params.dimension << "D SLDFESQ refinement level "
+      << refinement_level << ". Falling back to standard harmonic selection.";
     return SelectStandard(params);
   }
 
@@ -369,23 +567,34 @@ HarmonicSelectionRules::SelectSLDFESQ(const SelectionParameters& params)
 
 // Helper function to map number of angles to SLDFESQ refinement level
 int
-HarmonicSelectionRules::DetermineSLDFELevel(size_t num_angles)
+HarmonicSelectionRules::DetermineSLDFELevel(size_t num_angles, unsigned int dimension)
 {
-  // SLDFESQ refinement levels have specific numbers of points
-  // These are approximations - adjust based on actual SLDFESQ implementation
-  static const std::map<size_t, int> angle_to_level = {
-    {96, 0},   // Level 0
-    {384, 1},  // Level 1
-    {1536, 2}, // Level 2
-    {6144, 3}, // Level 3
+  // 3D SLDFESQ refinement levels have specific numbers of points (full sphere)
+  // Formula: 96 × (level+1)² directions
+  static const std::map<size_t, int> angle_to_level_3d = {
+    {96, 0},   // Level 0: 96 × 1² = 96
+    {384, 1},  // Level 1: 96 × 2² = 384
+    {864, 2},  // Level 2: 96 × 3² = 864
+    {1536, 3}, // Level 3: 96 × 4² = 1536
   };
+
+  // 2D SLDFESQ sets have fewer points (upper hemisphere only, z > 0)
+  // Formula: 48 × (level+1)² directions
+  static const std::map<size_t, int> angle_to_level_2d = {
+    {48, 0},   // Level 0: 48 × 1² = 48
+    {192, 1},  // Level 1: 48 × 2² = 192
+    {432, 2},  // Level 2: 48 × 3² = 432
+    {768, 3},  // Level 3: 48 × 4² = 768
+  };
+
+  const auto& angle_to_level = (dimension == 2) ? angle_to_level_2d : angle_to_level_3d;
 
   auto refinement_level = angle_to_level.find(num_angles);
   if (refinement_level != angle_to_level.end())
     return refinement_level->second;
   else
-    throw std::runtime_error("Unknown SLDFESQ quadrature with " + std::to_string(num_angles) +
-                             " angles");
+    throw std::runtime_error("Unknown " + std::to_string(dimension) + "D SLDFESQ quadrature with " +
+                             std::to_string(num_angles) + " angles");
 }
 
 // Standard method
