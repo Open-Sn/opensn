@@ -50,6 +50,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_solvers_time_dependent_solver.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_solvers_transient_solver.h`
+
 
 
 

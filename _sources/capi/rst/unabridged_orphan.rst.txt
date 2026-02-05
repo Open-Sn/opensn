@@ -1440,6 +1440,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_transient_solver.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_transient_source_function.rst
 
 .. toctree::
@@ -3083,6 +3088,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_total_xs_carrier.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_solvers_transient_solver.h.rst
 
 .. toctree::
    :maxdepth: 1

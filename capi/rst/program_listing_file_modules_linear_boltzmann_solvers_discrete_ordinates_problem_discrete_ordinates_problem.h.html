@@ -128,6 +128,8 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">SetSweepChunk</span><span class="p">(</span><span class="n">groupset</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">EnableTimeDependentMode</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReinitializeSolverSchemes</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Static registration based constructor.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>

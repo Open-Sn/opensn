@@ -30,8 +30,6 @@ Includes
 --------
 
 
-- ``framework/math/math_time_stepping.h`` (:ref:`file_framework_math_math_time_stepping.h`)
-
 - ``modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h`)
 
 

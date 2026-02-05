@@ -115,6 +115,33 @@
 <dd><p>Base class for discrete ordinates problems in curvilinear geometry.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_discrete_ordinates_curvilinear_problem.html#_CPPv4N6opensn35DiscreteOrdinatesCurvilinearProblemE" title="opensn::DiscreteOrdinatesCurvilinearProblem"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::DiscreteOrdinatesCurvilinearProblem</span></code></a>.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ComputeFissionProduction">
+<span class="sig-name descname"><span class="pre">ComputeFissionProduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalar_flux_iterate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ComputeFissionProduction" title="Link to this definition"></a></dt>
+<dd><p>Computes the total fission production (nu*fission).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar_flux_iterate</strong> (<em>{'old'</em><em>, </em><em>'new'}</em>) – <dl class="simple">
+<dt>Specifies which scalar flux vector to use in the calculation.</dt><dd><ul class="simple">
+<li><p>’old’: Use the previous scalar flux iterate.</p></li>
+<li><p>’new’: Use the current scalar flux iterate.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total fission production.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>scalar_flux_iterate</cite> is not ‘old’ or ‘new’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ComputeFissionRate">
 <span class="sig-name descname"><span class="pre">ComputeFissionRate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalar_flux_iterate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ComputeFissionRate" title="Link to this definition"></a></dt>
 <dd><p>Computes the total fission rate.</p>
@@ -192,6 +219,34 @@ the corresponding boundary surface.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPhiNewLocal">
+<span class="sig-name descname"><span class="pre">GetPhiNewLocal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">memoryview</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPhiNewLocal" title="Link to this definition"></a></dt>
+<dd><p>Get the current scalar flux iterate (local vector).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Memory view of the local new scalar flux vector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>memoryview</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPhiOldLocal">
+<span class="sig-name descname"><span class="pre">GetPhiOldLocal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">memoryview</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPhiOldLocal" title="Link to this definition"></a></dt>
+<dd><p>Get the previous scalar flux iterate (local vector).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Memory view of the local old scalar flux vector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>memoryview</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPowerFieldFunction">
 <span class="sig-name descname"><span class="pre">GetPowerFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPowerFieldFunction" title="Link to this definition"></a></dt>
 <dd><p>Returns the power generation field function, if enabled.</p>
@@ -226,6 +281,18 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 </dl>
 <p class="rubric">Notes</p>
 <p>The moment index varies more rapidly than the group index when <cite>only_scalar_flux</cite> is False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetTime">
+<span class="sig-name descname"><span class="pre">GetTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetTime" title="Link to this definition"></a></dt>
+<dd><p>Get the current simulation time in seconds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetTimeStep">
+<span class="sig-name descname"><span class="pre">GetTimeStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetTimeStep" title="Link to this definition"></a></dt>
+<dd><p>Get the current timestep size.</p>
 </dd></dl>
 
 <dl class="py method">

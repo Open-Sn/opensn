@@ -34,12 +34,6 @@ Includes
 
 
 
-Included By
------------
-
-
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_transient_source_function.h`
-
 
 
 

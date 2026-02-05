@@ -115,6 +115,7 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ApplyInverseTransportOperator</span><span class="p">(</span><span class="n">SourceFlags</span><span class="w"> </span><span class="n">scope</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PostSolveCallback</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RebuildAngularFluxFromConvergedPhi</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">include_rhs_time_term</span><span class="p">);</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepChunk</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">;</span>
 <span class="w">  </span><span class="n">SweepScheduler</span><span class="w"> </span><span class="n">sweep_scheduler</span><span class="p">;</span>

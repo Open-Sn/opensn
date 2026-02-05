@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_transient_solver:
+
+Class TransientSolver
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_solvers_transient_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::Solver`` (:ref:`exhale_class_classopensn_1_1_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::TransientSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

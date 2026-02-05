@@ -50,6 +50,8 @@ Included By
 
 - :ref:`file_framework_math_quadratures_gausslegendre_quadrature.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_solvers_transient_solver.h`
+
 
 
 

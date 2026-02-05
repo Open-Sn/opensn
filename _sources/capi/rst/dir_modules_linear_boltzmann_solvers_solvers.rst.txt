@@ -20,5 +20,6 @@ Files
 - :ref:`file_modules_linear_boltzmann_solvers_solvers_pi_keigen_solver.h`
 - :ref:`file_modules_linear_boltzmann_solvers_solvers_steady_state_solver.h`
 - :ref:`file_modules_linear_boltzmann_solvers_solvers_time_dependent_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_solvers_transient_solver.h`
 
 

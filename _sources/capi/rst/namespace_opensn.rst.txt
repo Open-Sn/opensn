@@ -597,6 +597,8 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_total_x_s_carrier`
 
+- :ref:`exhale_class_classopensn_1_1_transient_solver`
+
 - :ref:`exhale_class_classopensn_1_1_transient_source_function`
 
 - :ref:`exhale_class_classopensn_1_1_triangle_quadrature`
@@ -969,15 +971,15 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a66d063a5930d52b5e36dfb7571799817`
 
-- :ref:`exhale_function_namespaceopensn_1aea72142b190ab466352b392df242bcde`
-
 - :ref:`exhale_function_namespaceopensn_1aaf78d2f2764a5e7e5ea187aa45f776b6`
 
 - :ref:`exhale_function_namespaceopensn_1a1bea552a3cd9dec00e2872622a33d676`
 
-- :ref:`exhale_function_namespaceopensn_1af19640fd7bf1b121d528bd8ff125963b`
+- :ref:`exhale_function_namespaceopensn_1aea72142b190ab466352b392df242bcde`
 
 - :ref:`exhale_function_namespaceopensn_1a2b52e15f8ca0086f83f7213e4c48e3ee`
+
+- :ref:`exhale_function_namespaceopensn_1af19640fd7bf1b121d528bd8ff125963b`
 
 - :ref:`exhale_function_namespaceopensn_1a29b56d0fb78a6d7899dfcc7f7209bb61`
 
