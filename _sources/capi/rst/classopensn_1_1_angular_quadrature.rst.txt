@@ -22,9 +22,11 @@ Inheritance Relationships
 Derived Types
 *************
 
+- ``public opensn::LebedevQuadrature2DXY`` (:ref:`exhale_class_classopensn_1_1_lebedev_quadrature2_d_x_y`)
 - ``public opensn::LebedevQuadrature3DXYZ`` (:ref:`exhale_class_classopensn_1_1_lebedev_quadrature3_d_x_y_z`)
 - ``public opensn::ProductQuadrature`` (:ref:`exhale_class_classopensn_1_1_product_quadrature`)
 - ``public opensn::SLDFEsqQuadrature`` (:ref:`exhale_class_classopensn_1_1_s_l_d_f_esq_quadrature`)
+- ``public opensn::TriangularQuadrature`` (:ref:`exhale_class_classopensn_1_1_triangular_quadrature`)
 
 
 Class Documentation

@@ -1,0 +1,8 @@
+﻿pyopensn.aquad.TriangularQuadrature
+===================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: TriangularQuadrature
+   :members:
+   :inherited-members:

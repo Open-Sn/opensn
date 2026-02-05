@@ -90,6 +90,24 @@ Product quadratures
 
    aquad.GLCProductQuadrature2DRZ
 
+Triangular quadrature
+^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   aquad.TriangularQuadrature
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
+   aquad.GLCTriangularQuadrature2DXY
+   aquad.GLCTriangularQuadrature3DXYZ
+
 Lebedev quadrature
 ^^^^^^^^^^^^^^^^^^
 
@@ -98,6 +116,7 @@ Lebedev quadrature
    :nosignatures:
    :template: python.rst
 
+   aquad.LebedevQuadrature2DXY
    aquad.LebedevQuadrature3DXYZ
 
 Simplified LDFES quadrature

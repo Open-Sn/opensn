@@ -54,5 +54,7 @@ Classes
 -------
 
 
+- :ref:`exhale_class_classopensn_1_1_lebedev_quadrature2_d_x_y`
+
 - :ref:`exhale_class_classopensn_1_1_lebedev_quadrature3_d_x_y_z`
 

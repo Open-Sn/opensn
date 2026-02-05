@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_g_l_c_triangular_quadrature2_d_x_y:
+
+Class GLCTriangularQuadrature2DXY
+=================================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_triangular_quadrature.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::TriangularQuadrature`` (:ref:`exhale_class_classopensn_1_1_triangular_quadrature`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::GLCTriangularQuadrature2DXY
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

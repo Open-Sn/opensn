@@ -930,6 +930,16 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_g_l_c_triangular_quadrature2_d_x_y.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_g_l_c_triangular_quadrature3_d_x_y_z.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_global_cell_handler.rst
 
 .. toctree::
@@ -1006,6 +1016,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_lebedev_orders.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_lebedev_quadrature2_d_x_y.rst
 
 .. toctree::
    :maxdepth: 1
@@ -1451,6 +1466,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_triangle_quadrature.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_triangular_quadrature.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3103,6 +3123,11 @@ Files
    :maxdepth: 1
 
    file_framework_math_quadratures_spatial_triangle_quadrature.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_math_quadratures_angular_triangular_quadrature.h.rst
 
 .. toctree::
    :maxdepth: 1

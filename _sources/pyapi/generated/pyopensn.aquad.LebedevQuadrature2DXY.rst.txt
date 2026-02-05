@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.LebedevQuadrature2DXY
+====================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: LebedevQuadrature2DXY
+   :special-members: __init__
+   :members:
+   :inherited-members:

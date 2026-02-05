@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.GLCTriangularQuadrature3DXYZ
+===========================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: GLCTriangularQuadrature3DXYZ
+   :special-members: __init__
+   :members:
+   :inherited-members:

@@ -101,19 +101,20 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn22LebedevQuadrature3DXYZE">
 <span class="target" id="classopensn_1_1_lebedev_quadrature3_d_x_y_z"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LebedevQuadrature3DXYZ</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_angular_quadrature.html#_CPPv4N6opensn17AngularQuadratureE" title="opensn::AngularQuadrature"><span class="n"><span class="pre">AngularQuadrature</span></span></a><a class="headerlink" href="#_CPPv4N6opensn22LebedevQuadrature3DXYZE" title="Link to this definition"></a><br /></dt>
-<dd><p>Implementation of Lebedev quadrature for angular integration on the surface of a sphere. </p>
+<dd><p>Lebedev quadrature for angular integration on the surface of a sphere. </p>
 <p>Lebedev quadrature provides a set of points on the surface of a sphere that allows for symmetric and efficient angular integration. This implementation reads point data from files and constructs the quadrature set. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn22LebedevQuadrature3DXYZ22LebedevQuadrature3DXYZEjjb">
 <span class="target" id="classopensn_1_1_lebedev_quadrature3_d_x_y_z_1a8fd6340d544efc3ba002372b080c5535"></span><span class="sig-name descname"><span class="n"><span class="pre">LebedevQuadrature3DXYZ</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">quadrature_order</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scattering_order</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">verbose</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn22LebedevQuadrature3DXYZ22LebedevQuadrature3DXYZEjjb" title="Link to this definition"></a><br /></dt>
-<dd><p>Constructor for Lebedev quadrature. </p>
+<dd><p>Construct a Lebedev quadrature. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>order</strong> – The order of the Lebedev quadrature set to load </p></li>
-<li><p><strong>verbose</strong> – Flag to enable verbose output </p></li>
+<li><p><strong>quadrature_order</strong> – Order of the Lebedev quadrature set to load. </p></li>
+<li><p><strong>scattering_order</strong> – Scattering order for moment calculations. </p></li>
+<li><p><strong>verbose</strong> – Flag to enable verbose output. </p></li>
 </ul>
 </dd>
 </dl>

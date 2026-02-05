@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.GLCTriangularQuadrature2DXY
+==========================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: GLCTriangularQuadrature2DXY
+   :special-members: __init__
+   :members:
+   :inherited-members:

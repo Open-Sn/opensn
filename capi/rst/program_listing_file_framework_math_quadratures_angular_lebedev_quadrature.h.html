@@ -99,7 +99,7 @@
 <span class="p">{</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * @brief Implementation of Lebedev quadrature for angular integration on the surface of a sphere.</span>
+<span class="cm"> * Lebedev quadrature for angular integration on the surface of a sphere.</span>
 <span class="cm"> *</span>
 <span class="cm"> * Lebedev quadrature provides a set of points on the surface of a sphere that allows for</span>
 <span class="cm"> * symmetric and efficient angular integration. This implementation reads point data from</span>
@@ -109,10 +109,11 @@
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * @brief Constructor for Lebedev quadrature.</span>
+<span class="cm">   * Construct a Lebedev quadrature.</span>
 <span class="cm">   *</span>
-<span class="cm">   * @param order The order of the Lebedev quadrature set to load</span>
-<span class="cm">   * @param verbose Flag to enable verbose output</span>
+<span class="cm">   * \param quadrature_order Order of the Lebedev quadrature set to load.</span>
+<span class="cm">   * \param scattering_order Scattering order for moment calculations.</span>
+<span class="cm">   * \param verbose Flag to enable verbose output.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">LebedevQuadrature3DXYZ</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">quadrature_order</span><span class="p">,</span>
 <span class="w">                         </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
@@ -120,10 +121,43 @@
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * @brief Loads quadrature points for the specified order from predefined data.</span>
+<span class="cm">   * Load quadrature points for the specified order from predefined data.</span>
 <span class="cm">   *</span>
-<span class="cm">   * @param order The order to load</span>
-<span class="cm">   * @param verbose Flag to enable verbose output</span>
+<span class="cm">   * \param quadrature_order Order to load.</span>
+<span class="cm">   * \param verbose Flag to enable verbose output.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">LoadFromOrder</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">quadrature_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * 2D Lebedev quadrature for angular integration on the upper hemisphere.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This is a 2D version of the Lebedev quadrature that only includes points with z &gt;= 0</span>
+<span class="cm"> * (i.e., polar angles theta &lt;= pi/2). Points on the equator (z = 0) have their weights halved</span>
+<span class="cm"> * since they are shared between the upper and lower hemispheres.</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LebedevQuadrature2DXY</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AngularQuadrature</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Construct a 2D Lebedev quadrature.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param quadrature_order Order of the Lebedev quadrature set to load.</span>
+<span class="cm">   * \param scattering_order Scattering order for moment calculations.</span>
+<span class="cm">   * \param verbose Flag to enable verbose output.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">LebedevQuadrature2DXY</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">quadrature_order</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Load quadrature points for the specified order from predefined data.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Keep only upper hemisphere points (z &gt;= 0) and halve weights for z = 0.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param quadrature_order Order to load.</span>
+<span class="cm">   * \param verbose Flag to enable verbose output.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">LoadFromOrder</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">quadrature_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 <span class="p">};</span>

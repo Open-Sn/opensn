@@ -50,6 +50,8 @@ Included By
 
 - :ref:`file_framework_math_quadratures_angular_sldfe_sq_quadrature.h`
 
+- :ref:`file_framework_math_quadratures_angular_triangular_quadrature.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
