@@ -41,6 +41,8 @@ public:
     return SetSweepChunk(groupset);
   }
   void EnableTimeDependentMode();
+  /// Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode).
+  void ReinitializeSolverSchemes();
 
   /// Static registration based constructor.
   explicit DiscreteOrdinatesProblem(const InputParameters& params);

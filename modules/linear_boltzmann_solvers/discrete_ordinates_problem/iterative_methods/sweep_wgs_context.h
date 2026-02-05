@@ -28,6 +28,7 @@ struct SweepWGSContext : public WGSContext
   void ApplyInverseTransportOperator(SourceFlags scope) override;
 
   void PostSolveCallback() override;
+  void RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term);
 
   std::shared_ptr<SweepChunk> sweep_chunk;
   SweepScheduler sweep_scheduler;

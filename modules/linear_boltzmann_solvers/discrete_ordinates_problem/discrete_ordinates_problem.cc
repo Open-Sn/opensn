@@ -515,6 +515,12 @@ DiscreteOrdinatesProblem::EnableTimeDependentMode()
 }
 
 void
+DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
+{
+  InitializeSolverSchemes();
+}
+
+void
 DiscreteOrdinatesProblem::InitializeBoundaries()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeBoundaries");

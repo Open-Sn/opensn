@@ -68,17 +68,17 @@ TimeDependentSourceSolver::Initialize()
 
   lbs_problem_->Initialize();
   ags_solver_ = lbs_problem_->GetAGSSolver();
+  initialized_ = true;
 }
 
 void
 TimeDependentSourceSolver::Execute()
 {
+  if (not initialized_)
+    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
   const double t0 = current_time_;
   const double tf = stop_time_;
-  const double dt_nom = lbs_problem_->GetTimeStep();
-
-  if (dt_nom <= 0.0)
-    throw std::runtime_error(GetName() + ": dt must be positive");
+  const double dt_nominal = lbs_problem_->GetTimeStep();
 
   if (tf < t0)
     throw std::runtime_error(GetName() + ": stop_time must be >= current_time");
@@ -88,37 +88,51 @@ TimeDependentSourceSolver::Execute()
   const double tol =
     64.0 * std::numeric_limits<double>::epsilon() * std::max({1.0, std::abs(tf), std::abs(t0)});
 
-  while (true)
+  try
   {
-    const double remaining = tf - current_time_;
-
-    if (remaining <= tol)
+    while (true)
     {
-      current_time_ = tf;
-      break;
+      const double remaining = tf - current_time_;
+
+      if (remaining <= tol)
+      {
+        current_time_ = tf;
+        break;
+      }
+
+      if (pre_advance_callback_)
+        pre_advance_callback_();
+
+      const double dt = lbs_problem_->GetTimeStep();
+      if (dt <= 0.0)
+        throw std::runtime_error(GetName() + ": dt must be positive");
+      const double step_dt = (remaining < dt) ? remaining : dt;
+
+      lbs_problem_->SetTimeStep(step_dt);
+      lbs_problem_->SetTime(current_time_);
+
+      Advance();
+
+      if (post_advance_callback_)
+        post_advance_callback_();
+
+      if (std::abs(tf - current_time_) <= tol)
+        current_time_ = tf;
     }
-
-    double step_dt = (remaining < dt_nom) ? remaining : dt_nom;
-
-    lbs_problem_->SetTimeStep(step_dt);
-    lbs_problem_->SetTime(current_time_);
-
-    if (pre_advance_callback_)
-      pre_advance_callback_();
-
-    Advance();
-
-    if (post_advance_callback_)
-      post_advance_callback_();
-
-    if (std::abs(tf - current_time_) <= tol)
-      current_time_ = tf;
   }
+  catch (...)
+  {
+    lbs_problem_->SetTimeStep(dt_nominal);
+    throw;
+  }
+  lbs_problem_->SetTimeStep(dt_nominal);
 }
 
 void
 TimeDependentSourceSolver::Advance()
 {
+  if (not initialized_)
+    throw std::runtime_error(GetName() + ": Initialize must be called before Advance.");
   const double dt = lbs_problem_->GetTimeStep();
   const double theta = lbs_problem_->GetTheta();
 

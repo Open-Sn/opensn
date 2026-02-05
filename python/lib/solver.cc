@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include <pybind11/functional.h>
 #include "framework/runtime.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
@@ -10,6 +11,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/solvers/time_dependent_solver.h"
+#include "modules/linear_boltzmann_solvers/solvers/transient_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
@@ -172,6 +174,20 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
+    "GetTime",
+    &LBSProblem::GetTime,
+    R"(
+    Get the current simulation time in seconds.
+    )"
+  );
+  lbs_problem.def(
+    "GetTimeStep",
+    &LBSProblem::GetTimeStep,
+    R"(
+    Get the current timestep size.
+    )"
+  );
+  lbs_problem.def(
     "SetOptions",
     [](LBSProblem& self, py::kwargs& params)
     {
@@ -271,6 +287,77 @@ WrapLBS(py::module& slv)
         If `scalar_flux_iterate` is not 'old' or 'new'.
     )",
     py::arg("scalar_flux_iterate")
+  );
+  lbs_problem.def(
+    "ComputeFissionProduction",
+    [](LBSProblem& self, const std::string& scalar_flux_iterate)
+    {
+      const std::vector<double>* phi_ptr = nullptr;
+      if (scalar_flux_iterate == "old")
+      {
+        phi_ptr = &self.GetPhiOldLocal();
+      }
+      else if (scalar_flux_iterate == "new")
+      {
+        phi_ptr = &self.GetPhiNewLocal();
+      }
+      else
+      {
+        throw std::invalid_argument("Unknown scalar_flux_iterate value: \"" + scalar_flux_iterate + "\".");
+      }
+      return ComputeFissionProduction(self, *phi_ptr);
+    },
+    R"(
+    Computes the total fission production (nu*fission).
+
+    Parameters
+    ----------
+    scalar_flux_iterate : {'old', 'new'}
+        Specifies which scalar flux vector to use in the calculation.
+            - 'old': Use the previous scalar flux iterate.
+            - 'new': Use the current scalar flux iterate.
+
+    Returns
+    -------
+    float
+        The total fission production.
+
+    Raises
+    ------
+    ValueError
+        If `scalar_flux_iterate` is not 'old' or 'new'.
+    )",
+    py::arg("scalar_flux_iterate")
+  );
+  lbs_problem.def(
+    "GetPhiOldLocal",
+    [](LBSProblem& self)
+    {
+      return convert_vector(self.GetPhiOldLocal());
+    },
+    R"(
+    Get the previous scalar flux iterate (local vector).
+
+    Returns
+    -------
+    memoryview
+        Memory view of the local old scalar flux vector.
+    )"
+  );
+  lbs_problem.def(
+    "GetPhiNewLocal",
+    [](LBSProblem& self)
+    {
+      return convert_vector(self.GetPhiNewLocal());
+    },
+    R"(
+    Get the current scalar flux iterate (local vector).
+
+    Returns
+    -------
+    memoryview
+        Memory view of the local new scalar flux vector.
+    )"
   );
   lbs_problem.def(
     "WriteFluxMoments",
@@ -941,6 +1028,122 @@ WrapSteadyState(py::module& slv)
   // clang-format on
 }
 
+// Wrap transient solver
+void
+WrapTransient(py::module& slv)
+{
+  // clang-format off
+  auto transient_solver =
+    py::class_<TransientSolver, std::shared_ptr<TransientSolver>, Solver>(
+      slv,
+      "TransientSolver",
+      R"(
+      Transient solver.
+
+      Wrapper of :cpp:class:`opensn::TransientSolver`.
+      )"
+    );
+  transient_solver.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return TransientSolver::Create(kwargs_to_param_block(params));
+      }
+    ),
+    R"(
+    Construct a transient solver.
+
+    Parameters
+    ----------
+    pyopensn.solver.DiscreteOrdinatesProblem : DiscreteOrdinatesProblem
+        Existing discrete ordinates problem instance.
+    dt : float, optional, default=2.0e-3
+        Time step size used during the simulation.
+    stop_time : float, optional, default=0.1
+        Simulation end time.
+    theta : float, optional, default=0.5
+        Time differencing scheme parameter.
+    initial_state : str, optional, default="existing"
+        Initial state for the transient solve. Allowed values: existing, zero.
+        In "zero" mode, the solver may initialize the problem internally if needed.
+    verbose : bool, optional, default=True
+        Enable verbose logging.
+    )"
+  );
+  transient_solver.def(
+    "SetTimeStep",
+    &TransientSolver::SetTimeStep,
+    R"(
+    Set the timestep size used by :meth:`Advance`.
+
+    Parameters
+    ----------
+    dt : float
+        New timestep size.
+    )");
+  transient_solver.def(
+    "SetTheta",
+    &TransientSolver::SetTheta,
+    R"(
+    Set the theta parameter used by :meth:`Advance`.
+
+    Parameters
+    ----------
+    theta : float
+        Theta value between 1.0e-16 and 1.
+    )");
+  transient_solver.def(
+    "Advance",
+    &TransientSolver::Advance,
+    R"(
+    Advance the solver by a single timestep.
+
+    Notes
+    -----
+    You must call :meth:`Initialize` before calling :meth:`Advance` or
+    :meth:`Execute`.
+    )");
+  transient_solver.def(
+    "SetPreAdvanceCallback",
+    static_cast<void (TransientSolver::*)(std::function<void()>)>(
+      &TransientSolver::SetPreAdvanceCallback),
+    R"(
+    Register a callback that runs before each advance within :meth:`Execute`.
+
+    Parameters
+    ----------
+    callback : Optional[Callable[[], None]]
+        Function invoked before the solver advances a timestep. Pass None to clear.
+        If the callback modifies the timestep, the new value is used for the
+        upcoming step.
+    )");
+  transient_solver.def(
+    "SetPreAdvanceCallback",
+    static_cast<void (TransientSolver::*)(std::nullptr_t)>(
+      &TransientSolver::SetPreAdvanceCallback),
+    "Clear the PreAdvance callback by passing None.");
+  transient_solver.def(
+    "SetPostAdvanceCallback",
+    static_cast<void (TransientSolver::*)(std::function<void()>)>(
+      &TransientSolver::SetPostAdvanceCallback),
+    R"(
+    Register a callback that runs after each advance within :meth:`Execute`.
+
+    Parameters
+    ----------
+    callback : Optional[Callable[[], None]]
+        Function invoked after the solver advances a timestep. Pass None to clear.
+    )");
+  transient_solver.def(
+    "SetPostAdvanceCallback",
+    static_cast<void (TransientSolver::*)(std::nullptr_t)>(
+      &TransientSolver::SetPostAdvanceCallback),
+    "Clear the PostAdvance callback by passing None.");
+  slv.attr("BackwardEuler") = 1.0;
+  slv.attr("CrankNicolson") = 0.5;
+  // clang-format on
+}
+
 // Wrap time-dependent solver
 void
 WrapTimeDependent(py::module& slv)
@@ -1019,6 +1222,8 @@ WrapTimeDependent(py::module& slv)
     ----------
     callback : Optional[Callable[[], None]]
         Function invoked before the solver advances a timestep. Pass None to clear.
+        If the callback modifies the timestep, the new value is used for the
+        upcoming step.
     )");
   time_dependent_solver.def(
     "SetPreAdvanceCallback",
@@ -1286,6 +1491,7 @@ py_solver(py::module& pyopensn)
   WrapSolver(slv);
   WrapLBS(slv);
   WrapSteadyState(slv);
+  WrapTransient(slv);
   WrapTimeDependent(slv);
   WrapNLKEigen(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);
