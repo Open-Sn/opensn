@@ -392,6 +392,8 @@ WrapTriangularQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
 
@@ -430,6 +432,8 @@ WrapTriangularQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   // clang-format on
@@ -516,8 +520,14 @@ WrapSLDFEsqQuadrature(py::module& aquad)
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"level", "scattering_order"};
-        auto [level, scattering_order] = extract_args_tuple<int, int>(params, required_keys);
-        return std::make_shared<SLDFEsqQuadrature3DXYZ>(level, scattering_order);
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {
+          {"verbose", py::bool_(false)},
+          {"operator_method", py::str("standard")}
+        };
+        auto [level, scattering_order, verbose, method_str] =
+          extract_args_tuple<int, int, bool, std::string>(params, required_keys, optional_keys);
+        auto method = op_cons_type_map.at(method_str);
+        return std::make_shared<SLDFEsqQuadrature3DXYZ>(level, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -529,6 +539,10 @@ WrapSLDFEsqQuadrature(py::module& aquad)
         Number of subdivisions of the inscribed cube.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
+    verbose: bool, default=False
+        Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   sldfesq_quadrature_3d_xyz.def(
@@ -585,8 +599,14 @@ WrapSLDFEsqQuadrature(py::module& aquad)
       [](py::kwargs& params)
       {
         static const std::vector<std::string> required_keys = {"level", "scattering_order"};
-        auto [level, scattering_order] = extract_args_tuple<int, int>(params, required_keys);
-        return std::make_shared<SLDFEsqQuadrature2DXY>(level, scattering_order);
+        static const std::vector<std::pair<std::string, py::object>> optional_keys = {
+          {"verbose", py::bool_(false)},
+          {"operator_method", py::str("standard")}
+        };
+        auto [level, scattering_order, verbose, method_str] =
+          extract_args_tuple<int, int, bool, std::string>(params, required_keys, optional_keys);
+        auto method = op_cons_type_map.at(method_str);
+        return std::make_shared<SLDFEsqQuadrature2DXY>(level, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -598,6 +618,10 @@ WrapSLDFEsqQuadrature(py::module& aquad)
         Number of subdivisions of the inscribed cube.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
+    verbose: bool, default=False
+        Verbosity.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   sldfesq_quadrature_2d_xy.def(
@@ -719,6 +743,8 @@ WrapLebedevQuadrature(py::module& aquad)
         Maximum scattering order supported by the angular quadrature.
     verbose: bool, default=False
         Whether to print verbose output during initialization.
+    operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
+        Method used to construct the discrete-to-moment and moment-to-discrete operators.
     )"
   );
   // clang-format on

@@ -58,6 +58,13 @@ private:
   static bool CheckCartesian2DRules(unsigned int ell, int m, unsigned int N);
   static bool CheckCartesian3DRules(unsigned int ell, int m, unsigned int N);
 
+  // Triangular quadrature rules
+  static std::vector<AngularQuadrature::HarmonicIndices>
+  Select2DTriangular(const SelectionParameters& params);
+
+  static std::vector<AngularQuadrature::HarmonicIndices>
+  Select3DTriangular(const SelectionParameters& params);
+
   // Lebedev quadrature rules
   static std::vector<AngularQuadrature::HarmonicIndices>
   SelectLebedev(const SelectionParameters& params);
@@ -67,8 +74,8 @@ private:
   SelectSLDFESQ(const SelectionParameters& params);
 
   // Helper functions for determining quadrature order from number of angles
-  static int DetermineLebedevOrder(size_t num_angles);
-  static int DetermineSLDFELevel(size_t num_angles);
+  static int DetermineLebedevOrder(size_t num_angles, unsigned int dimension = 3);
+  static int DetermineSLDFELevel(size_t num_angles, unsigned int dimension = 3);
 
   // Standard fallback for non-Galerkin methods
   static std::vector<AngularQuadrature::HarmonicIndices>

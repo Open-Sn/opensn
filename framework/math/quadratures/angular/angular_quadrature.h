@@ -110,15 +110,6 @@ public:
   /// Gets the current operator construction method
   OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
 
-  /// Sets the operator construction method
-  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
-  {
-    construction_method_ = method;
-  }
-
-  /// Gets the current operator construction method
-  OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
-
   /**
    * Return a reference to the precomputed discrete-to-moment operator.
    *

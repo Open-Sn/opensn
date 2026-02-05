@@ -3,11 +3,14 @@
 
 #include "framework/math/math.h"
 #include "framework/runtime.h"
+#include "framework/logging/log.h"
 #include <cassert>
 #include <petscmat.h>
 #include <petscksp.h>
+#include <petscblaslapack.h>
 #include <iostream>
 #include <iomanip>
+#include <limits>
 
 namespace opensn
 {
@@ -108,121 +111,108 @@ InvertMatrix(const std::vector<std::vector<double>>& matrix)
     }
   }
 
-  Mat A, B, X;
-  MatFactorInfo info;
+  // Use SVD-based pseudo-inverse for numerical stability
+  // This is more robust than LU factorization for ill-conditioned matrices
 
-  // Create dense matrix A directly
-  MatCreateSeqDense(PETSC_COMM_SELF, n, n, NULL, &A);
+  // Create working arrays for LAPACK SVD (dgesvd)
+  // A = U * S * V^T, so A^(-1) = V * S^(-1) * U^T
+  std::vector<double> A_col_major(n * n);
+  std::vector<double> U(n * n);
+  std::vector<double> VT(n * n);
+  std::vector<double> S(n);
 
-  // Fill matrix A using array access (column-major storage)
-  PetscScalar* aArray;
-  MatDenseGetArrayWrite(A, &aArray);
-
-  for (PetscInt j = 0; j < n; ++j) // columns
+  // Copy matrix to column-major format for LAPACK
+  for (PetscInt j = 0; j < n; ++j)
   {
-    for (PetscInt i = 0; i < n; ++i) // rows
+    for (PetscInt i = 0; i < n; ++i)
     {
-      aArray[j * n + i] = matrix[i][j]; // Column-major: col j, row i
+      A_col_major[j * n + i] = matrix[i][j];
     }
   }
 
-  MatDenseRestoreArrayWrite(A, &aArray);
-  MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
-  MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
+  // Call LAPACK dgesvd for SVD decomposition
+  // jobu = 'A' means compute all columns of U
+  // jobvt = 'A' means compute all rows of V^T
+  char jobu = 'A';
+  char jobvt = 'A';
+  PetscBLASInt n_blas = static_cast<PetscBLASInt>(n);
+  PetscBLASInt lwork = std::max(PetscBLASInt(1), 5 * n_blas);
+  std::vector<double> work(lwork);
+  PetscBLASInt info_svd = 0;
 
-  // Create identity matrix B (right-hand side)
-  MatCreateSeqDense(PETSC_COMM_SELF, n, n, NULL, &B);
+  // LAPACK SVD: dgesvd
+  LAPACKgesvd_(&jobu,
+               &jobvt,
+               &n_blas,
+               &n_blas,
+               A_col_major.data(),
+               &n_blas,
+               S.data(),
+               U.data(),
+               &n_blas,
+               VT.data(),
+               &n_blas,
+               work.data(),
+               &lwork,
+               &info_svd);
 
-  // Fill B with identity matrix using array access
-  PetscScalar* bArray;
-  MatDenseGetArrayWrite(B, &bArray);
-
-  // Initialize to zero first
-  for (PetscInt idx = 0; idx < n * n; ++idx)
+  if (info_svd != 0)
   {
-    bArray[idx] = 0.0;
-  }
-  // Set diagonal to 1
-  for (PetscInt i = 0; i < n; ++i)
-  {
-    bArray[i * n + i] = 1.0; // Column-major: diagonal elements
-  }
-
-  MatDenseRestoreArrayWrite(B, &bArray);
-  MatAssemblyBegin(B, MAT_FINAL_ASSEMBLY);
-  MatAssemblyEnd(B, MAT_FINAL_ASSEMBLY);
-
-  // Create solution matrix X
-  MatDuplicate(B, MAT_DO_NOT_COPY_VALUES, &X);
-
-  // Perform LU factorization directly
-  IS rowPerm, colPerm;
-  Mat F; // Factored matrix
-
-  MatGetOrdering(A, MATORDERINGND, &rowPerm, &colPerm);
-  MatFactorInfoInitialize(&info);
-  MatGetFactor(A, MATSOLVERPETSC, MAT_FACTOR_LU, &F);
-  MatLUFactorSymbolic(F, A, rowPerm, colPerm, &info);
-
-  // This is the critical operation that can fail for singular matrices
-  PetscErrorCode ierr = MatLUFactorNumeric(F, A, &info);
-  if (ierr != 0)
-  {
-    // Clean up before throwing
-    MatDestroy(&A);
-    MatDestroy(&B);
-    MatDestroy(&X);
-    MatDestroy(&F);
-    ISDestroy(&rowPerm);
-    ISDestroy(&colPerm);
-    throw std::runtime_error("LU factorization failed - matrix may be singular");
+    throw std::runtime_error("SVD decomposition failed with LAPACK error code: " +
+                             std::to_string(info_svd));
   }
 
-  // Check if factorization succeeded (check for zero pivot)
-  PetscBool zeropivot;
-  MatFactorGetError(F, (MatFactorError*)&zeropivot);
+  // Compute condition number and determine tolerance for singular values
+  double sigma_max = S[0];
+  double sigma_min = S[n - 1];
 
-  if (zeropivot)
+  // Use machine epsilon scaled by matrix size and largest singular value as tolerance
+  // This is a standard approach for pseudo-inverse computation
+  const double machine_eps = std::numeric_limits<double>::epsilon();
+  const double tol = n * machine_eps * sigma_max;
+
+  // Log condition number for debugging ill-conditioned matrices
+  double condition_number = (sigma_min > tol) ? (sigma_max / sigma_min) : INFINITY;
+  if (condition_number > 1.0e10)
   {
-    // Clean up before throwing
-    MatDestroy(&A);
-    MatDestroy(&B);
-    MatDestroy(&X);
-    MatDestroy(&F);
-    ISDestroy(&rowPerm);
-    ISDestroy(&colPerm);
-    throw std::runtime_error(
-      "Matrix is singular or nearly singular (zero pivot in LU factorization)");
+    log.Log0Warning() << "InvertMatrix: Matrix is ill-conditioned (condition number = "
+                      << std::scientific << std::setprecision(3) << condition_number << ")";
   }
 
-  // Solve AX = B (where B is identity, so X will be A^-1)
-  MatMatSolve(F, B, X);
+  // Compute pseudo-inverse: A^(-1) = V * S^(-1) * U^T
+  // Since we have V^T from SVD, we need V = (V^T)^T
+  // Result[i][j] = sum_k V[i][k] * (1/S[k]) * U[j][k]
+  //              = sum_k VT[k][i] * (1/S[k]) * U[j][k]
+  // In column-major: VT[k*n + i], U[k*n + j]
 
-  // Extract solution back to std::vector format
-  std::vector<std::vector<double>> inverse(n, std::vector<double>(n));
+  std::vector<std::vector<double>> inverse(n, std::vector<double>(n, 0.0));
 
-  // Get array from PETSc dense matrix (read-only)
-  const PetscScalar* xArray;
-  MatDenseGetArrayRead(X, &xArray);
-
-  // Copy data (PETSc uses column-major storage for dense matrices)
   for (PetscInt i = 0; i < n; ++i)
   {
     for (PetscInt j = 0; j < n; ++j)
     {
-      inverse[i][j] = PetscRealPart(xArray[j * n + i]); // Transpose due to column-major
+      double sum = 0.0;
+      for (PetscInt k = 0; k < n; ++k)
+      {
+        // Only include contributions from singular values above tolerance
+        if (S[k] > tol)
+        {
+          // V[i][k] = VT[k][i] (in row-major) = VT[i + k*n] (in col-major storage of VT)
+          // U[j][k] = U[k][j]^T, but U is stored col-major, so U[j][k] = U[j + k*n]
+          // Wait, let me reconsider the indexing carefully:
+          // VT is stored column-major, VT(i,j) = VT[i + j*n]
+          // U is stored column-major, U(i,j) = U[i + j*n]
+          // We want: V(i,k) * U^T(k,j) = V(i,k) * U(j,k)
+          // V = VT^T, so V(i,k) = VT(k,i) = VT[k + i*n]
+          // U(j,k) = U[j + k*n]
+          double v_ik = VT[k + i * n];
+          double u_jk = U[j + k * n];
+          sum += v_ik * (1.0 / S[k]) * u_jk;
+        }
+      }
+      inverse[i][j] = sum;
     }
   }
-
-  MatDenseRestoreArrayRead(X, &xArray);
-
-  // Clean up PETSc objects
-  MatDestroy(&A);
-  MatDestroy(&B);
-  MatDestroy(&X);
-  MatDestroy(&F);
-  ISDestroy(&rowPerm);
-  ISDestroy(&colPerm);
 
   return inverse;
 }

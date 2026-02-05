@@ -104,8 +104,9 @@ LebedevQuadrature3DXYZ::LoadFromOrder(unsigned int quadrature_order, bool verbos
 
 LebedevQuadrature2DXY::LebedevQuadrature2DXY(unsigned int quadrature_order,
                                              unsigned int scattering_order,
-                                             bool verbose)
-  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 2, scattering_order)
+                                             bool verbose,
+                                             OperatorConstructionMethod method)
+  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 2, scattering_order, method)
 {
   LoadFromOrder(quadrature_order, verbose);
   MakeHarmonicIndices();
