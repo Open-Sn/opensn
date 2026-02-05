@@ -186,6 +186,7 @@ void py_aquad(py::module& pyopensn);
 void WrapQuadraturePointPhiTheta(py::module& aquad);
 void WrapQuadrature(py::module& aquad);
 void WrapProductQuadrature(py::module& aquad);
+void WrapTriangularQuadrature(py::module& aquad);
 void WrapCurvilinearProductQuadrature(py::module& aquad);
 void WrapSLDFEsqQuadrature(py::module& aquad);
 void WrapLebedevQuadrature(py::module& aquad);
