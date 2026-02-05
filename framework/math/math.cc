@@ -240,28 +240,34 @@ OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix,
   }
 
   // Orthogonalize columns using Modified Gram-Schmidt with weighted inner product
-  // This keeps each column as close to its original form as possible while ensuring orthogonality
+  // and re-orthogonalization (MGS2) for numerical stability. Single-pass MGS loses
+  // orthogonality for ill-conditioned or square systems; a second pass guarantees
+  // orthogonality to machine precision.
 
   // Create working copy of the matrix - we will orthogonalize its columns in place
   std::vector<std::vector<double>> Q = matrix;
 
-  // Orthogonalize columns using Modified Gram-Schmidt
+  // Orthogonalize columns using Modified Gram-Schmidt with re-orthogonalization
   for (size_t j = 0; j < n; ++j)
   {
-    // Orthogonalize column j against all previous columns
-    for (size_t i = 0; i < j; ++i)
+    // Two passes of orthogonalization for numerical stability
+    for (int pass = 0; pass < 2; ++pass)
     {
-      // Compute weighted inner product <Q[:,i], Q[:,j]>
-      double dot_product = 0.0;
-      for (size_t row = 0; row < m; ++row)
+      // Orthogonalize column j against all previous columns
+      for (size_t i = 0; i < j; ++i)
       {
-        dot_product += weights[row] * Q[row][i] * Q[row][j];
-      }
+        // Compute weighted inner product <Q[:,i], Q[:,j]>
+        double dot_product = 0.0;
+        for (size_t row = 0; row < m; ++row)
+        {
+          dot_product += weights[row] * Q[row][i] * Q[row][j];
+        }
 
-      // Subtract projection: Q[:,j] -= dot_product * Q[:,i]
-      for (size_t row = 0; row < m; ++row)
-      {
-        Q[row][j] -= dot_product * Q[row][i];
+        // Subtract projection: Q[:,j] -= dot_product * Q[:,i]
+        for (size_t row = 0; row < m; ++row)
+        {
+          Q[row][j] -= dot_product * Q[row][i];
+        }
       }
     }
 
