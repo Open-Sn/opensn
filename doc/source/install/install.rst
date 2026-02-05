@@ -4,17 +4,33 @@ OpenSn Installation
 Install Development Tools
 -------------------------
 
-The following packages are required for **OpenSn** installation and development:
+Before installing OpenSn, you must have the following packages installed on
+your system:
 
 1. A recent version of ``clang++``/``g++`` that supports C++20
-2. ``flex`` (required by the PTSCOTCH component of PETSc)
-3. Python3 v3.9+ and ``pip`` (required by PETSc and OpenSn)
-4. Git version control system
-5. CMake v3.20.2+
-6. MPI (OpenMPI, MPICH, and MVAPICH have been tested)
-7. PETSc 3.17.0+, Boost 1.86+, HDF5 1.14+, VTK 9.3.0+, Caliper 2.10+
-8. pybind11 installed via ``pip``
-9. Pandoc and Doxygen (required for generating the OpenSn documentation)
+2. Python 3.9+ and ``pip``
+3. Git version control system
+4. CMake v3.29+
+5. MPI (OpenMPI, MPICH, and MVAPICH have been tested)
+6. ``flex`` (required by the PTSCOTCH component of PETSc)
+7. Pandoc and Doxygen (only if you plan to build documentation)
+
+Installed by the OpenSn dependency build (if not found on your system):
+
+1. PETSc 3.17.0+
+2. Boost 1.86+
+3. HDF5 1.14+
+4. VTK 9.3.0+
+5. Caliper 2.10+
+
+Installed by ``pip`` during the Python module install:
+
+1. pybind11
+
+.. tip::
+
+   If you plan to install the Python module, it is recommended to create and
+   activate a virtual environment before running ``pip install``.
 
 .. tab-set::
 
