@@ -345,6 +345,19 @@
     ]
   },
   {
+    "file": "transport_2d_gmsh_v4_binary.py",
+    "comment": "2D LinearBSolver Test Unstructured Gmsh V4 binary format - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 1083.08555,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_gmsh_v2.py",
     "comment": "3D LinearBSolver Test Unstructured Gmsh V2 grid - PWLD",
     "num_procs": 4,
@@ -360,6 +373,19 @@
   {
     "file": "transport_3d_gmsh_v4.py",
     "comment": "3D LinearBSolver Test Unstructured Gmsh V4 grid - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 41.58445,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_gmsh_v4_binary.py",
+    "comment": "3D LinearBSolver Test Unstructured Gmsh V4 binary grid - PWLD",
     "num_procs": 4,
     "checks": [
       {
