@@ -8,8 +8,12 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh.h"
 #include <memory>
 #include <map>
+#include <set>
+#include <unordered_map>
 #include <vector>
 
 namespace opensn
@@ -68,6 +72,10 @@ public:
     return boundaries_;
   }
   std::shared_ptr<AngularQuadrature> GetQuadrature() const { return quadrature_; }
+  CoordinateSystemType GetCoordinateSystem() const
+  {
+    return grid_ ? grid_->GetCoordinateSystem() : CoordinateSystemType::UNDEFINED;
+  }
 
   /// Resets all the outgoing intra-location and inter-location cyclic interfaces.
   void ZeroOutgoingDelayedPsi();
@@ -80,6 +88,12 @@ public:
 
   /// Establishes dependencies between angle sets for reflecting boundaries.
   void SetupAngleSetDependencies();
+
+  /// Returns a map of following angle sets per angle set.
+  const std::unordered_map<AngleSet*, std::set<AngleSet*>>& GetFollowingAngleSetsMap() const
+  {
+    return following_angle_sets_map_;
+  }
 
   /**
    * Returns a pair of numbers containing the number of delayed angular unknowns both locally and
@@ -124,6 +138,7 @@ private:
   std::shared_ptr<AngularQuadrature> quadrature_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> boundaries_;
   std::vector<std::shared_ptr<AngleSet>> angle_set_groups_;
+  std::unordered_map<AngleSet*, std::set<AngleSet*>> following_angle_sets_map_;
 };
 
 } // namespace opensn

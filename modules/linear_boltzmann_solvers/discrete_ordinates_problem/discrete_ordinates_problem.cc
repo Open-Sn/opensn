@@ -37,6 +37,7 @@
 #include "caliper/cali.h"
 #include <algorithm>
 #include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 namespace opensn
@@ -235,8 +236,47 @@ void
 DiscreteOrdinatesProblem::SetBoundaryOptions(const InputParameters& params)
 {
   const auto boundary_name = params.GetParamValue<std::string>("name");
+  const auto coord_sys = grid_->GetCoordinateSystem();
   const auto bnd_name_map = grid_->GetBoundaryNameMap();
-  const auto bid = bnd_name_map.at(boundary_name);
+  const auto mesh_type = grid_->GetType();
+
+  // If we're using RZ, the user should use rmin/rmax/zmin/zmax and we'll
+  // map internally to xmin/xmax/ymin/max
+  std::string lookup_name = boundary_name;
+  if (coord_sys == CoordinateSystemType::CYLINDRICAL and mesh_type == MeshType::ORTHOGONAL and
+      grid_->GetDimension() == 2)
+  {
+    if (boundary_name != "rmin" and boundary_name != "rmax" and boundary_name != "zmin" and
+        boundary_name != "zmax")
+    {
+      throw std::runtime_error(GetName() + ": Boundary name '" + boundary_name +
+                               "' is invalid for cylindrical orthogonal meshes. "
+                               "Use rmin, rmax, zmin, zmax.");
+    }
+
+    const std::map<std::string, std::string> rz_map = {
+      {"rmin", "xmin"}, {"rmax", "xmax"}, {"zmin", "ymin"}, {"zmax", "ymax"}};
+    const auto rz_it = rz_map.find(boundary_name);
+    if (rz_it != rz_map.end())
+      lookup_name = rz_it->second;
+  }
+
+  const auto it = bnd_name_map.find(lookup_name);
+  if (it == bnd_name_map.end())
+  {
+    std::ostringstream names;
+    bool first = true;
+    for (const auto& [_, name] : bnd_name_map)
+    {
+      if (not first)
+        names << ", ";
+      names << name;
+      first = false;
+    }
+    throw std::runtime_error(GetName() + ": Boundary name '" + boundary_name +
+                             "' not found in mesh. Available boundaries: [" + names.str() + "].");
+  }
+  const auto bid = it->second;
   boundary_definitions_[bid] = CreateBoundaryFromParams(params);
 }
 
@@ -257,7 +297,23 @@ DiscreteOrdinatesProblem::CreateBoundaryFromParams(const InputParameters& params
     {"reflecting", LBSBoundaryType::REFLECTING},
     {"arbitrary", LBSBoundaryType::ARBITRARY}};
 
-  const auto type = type_list.at(bndry_type);
+  const auto type_it = type_list.find(bndry_type);
+  if (type_it == type_list.end())
+  {
+    std::ostringstream types;
+    bool first = true;
+    for (const auto& [name, _] : type_list)
+    {
+      if (not first)
+        types << ", ";
+      types << name;
+      first = false;
+    }
+    throw std::runtime_error("Boundary '" + boundary_name + "' has unknown type='" + bndry_type +
+                             "'. Allowed types: [" + types.str() + "].");
+  }
+
+  const auto type = type_it->second;
   if (type == LBSBoundaryType::ISOTROPIC)
   {
     if (not params.Has("group_strength"))
@@ -524,6 +580,27 @@ void
 DiscreteOrdinatesProblem::InitializeBoundaries()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeBoundaries");
+
+  // RZ doesn't yet support reflecting boundaries on rmax
+  if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
+  {
+    const auto& bndry_map = grid_->GetBoundaryNameMap();
+    const auto it = bndry_map.find("xmax");
+    if (it != bndry_map.end())
+    {
+      const uint64_t bid = it->second;
+      const auto bndry_it = boundary_definitions_.find(bid);
+      if (bndry_it != boundary_definitions_.end() &&
+          bndry_it->second.first == LBSBoundaryType::REFLECTING)
+      {
+        std::ostringstream oss;
+        oss << GetName() << ":\n"
+            << "Reflecting boundary on rmax is not supported in RZ.\n"
+            << "Please use vacuum or isotropic on rmax.";
+        throw std::runtime_error(oss.str());
+      }
+    }
+  }
 
   // Determine boundary-ids involved in the problem
   std::set<uint64_t> global_unique_bids_set;
@@ -1079,22 +1156,39 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
   UniqueSOGroupings unq_so_grps;
   switch (agg_type)
   {
-    // Single
-    // The easiest aggregation type. Every direction
-    // either has/is assumed to have a unique sweep
-    // ordering. Hence there is only group holding ALL
-    // the direction indices.
+    // SINGLE AGGREGATION
+    // The simplest aggregation type. Every direction is assumed to have a unique sweep ordering.
+    // There are as many direction sets as there are directions.
     case AngleAggregationType::SINGLE:
     {
-      const size_t num_dirs = quadrature.omegas.size();
-      for (size_t n = 0; n < num_dirs; ++n)
-        unq_so_grps.push_back({n});
+      if (lbs_geo_type == GeometryType::TWOD_CYLINDRICAL)
+      {
+        // Preserve azimuthal ordering per polar level
+        const auto* product_quad = dynamic_cast<const ProductQuadrature*>(&quadrature);
+        if (product_quad)
+        {
+          for (const auto& dir_set : product_quad->GetDirectionMap())
+            for (const auto dir_id : dir_set.second)
+              unq_so_grps.push_back({dir_id});
+        }
+        else
+        {
+          const size_t num_dirs = quadrature.omegas.size();
+          for (size_t n = 0; n < num_dirs; ++n)
+            unq_so_grps.push_back({n});
+        }
+      }
+      else
+      {
+        const size_t num_dirs = quadrature.omegas.size();
+        for (size_t n = 0; n < num_dirs; ++n)
+          unq_so_grps.push_back({n});
+      }
       break;
     } // case agg_type SINGLE
 
-      // Polar
-      // The following conditions allow for polar
-      // angle aggregation.
+    // POLAR AGGREGATION
+    // Aggregate all polar directions for a given azimuthal direction into a direction set.
     case AngleAggregationType::POLAR:
     {
       // Check geometry types
@@ -1158,22 +1252,21 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
       break;
     } // case agg_type POLAR
 
-      // Azimuthal
+    // AZIMUTHAL AGGREGATION
+    // All azimuthal direction in a quadrant/octant are assigned to a direction set
     case AngleAggregationType::AZIMUTHAL:
     {
       // Check geometry types
       if (lbs_geo_type != GeometryType::ONED_SPHERICAL and
           lbs_geo_type != GeometryType::TWOD_CYLINDRICAL)
         throw std::logic_error(
-          GetName() + ": The simulation is using azimuthal angle aggregation for which only "
-                      "the TWOD_CYLINDRICAL derived geometry type is supported");
+          GetName() + ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL geometry");
 
       // Check quadrature type
       const auto quad_type = quadrature.GetType();
       if (quad_type != AngularQuadratureType::ProductQuadrature)
-        throw std::logic_error(GetName() +
-                               ": The simulation is using azimuthal angle aggregation for "
-                               "which only product-type quadratures are supported");
+        throw std::logic_error(
+          GetName() + ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL geometry.");
 
       // Process Product Quadrature
       try

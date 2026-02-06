@@ -5,8 +5,11 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/math/quadratures/angular/product_quadrature.h"
+#include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <unordered_map>
 
 namespace opensn
 {
@@ -85,11 +88,59 @@ AngleAggregation::SetupAngleSetDependencies()
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::SetupAngleSetDependencies");
 
+  std::unordered_map<AngleSet*, std::set<AngleSet*>> extra_following;
+  following_angle_sets_map_.clear();
+
+  // Build angleset dependencies for RZ
+  const auto* curvi_quad = dynamic_cast<const CurvilinearProductQuadrature*>(quadrature_.get());
+  const auto* product_quad = dynamic_cast<const ProductQuadrature*>(quadrature_.get());
+  if (curvi_quad && product_quad && quadrature_->GetDimension() == 2 &&
+      GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL)
+  {
+    bool single_angle_sets = true;
+    std::unordered_map<size_t, AngleSet*> dir_to_angleset;
+    dir_to_angleset.reserve(angle_set_groups_.size());
+    for (const auto& angle_set : angle_set_groups_)
+    {
+      if (angle_set->GetAngleIndices().size() != 1)
+      {
+        single_angle_sets = false;
+        break;
+      }
+      dir_to_angleset[angle_set->GetAngleIndices().front()] = angle_set.get();
+    }
+
+    if (single_angle_sets)
+    {
+      for (const auto& dir_set : product_quad->GetDirectionMap())
+      {
+        AngleSet* prev = nullptr;
+        for (const auto dir_id : dir_set.second)
+        {
+          auto it = dir_to_angleset.find(dir_id);
+          if (it == dir_to_angleset.end())
+            continue;
+          AngleSet* current = it->second;
+          if (prev && prev != current)
+            extra_following[prev].insert(current);
+          prev = current;
+        }
+      }
+    }
+  }
+
   for (auto& angle_set : angle_set_groups_)
   {
     std::set<AngleSet*> following_angle_sets;
     for (const auto& [bid, bndry] : boundaries_)
       bndry->GetFollowingAngleSets(following_angle_sets, *this, *angle_set);
+    if (!extra_following.empty())
+    {
+      const auto it = extra_following.find(angle_set.get());
+      if (it != extra_following.end())
+        following_angle_sets.insert(it->second.begin(), it->second.end());
+    }
+    following_angle_sets_map_[angle_set.get()] = following_angle_sets;
     angle_set->UpdateSweepDependencies(following_angle_sets);
   }
 }

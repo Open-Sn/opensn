@@ -1,6 +1,6 @@
 [
   {
-    "file": "transport_2d_cyl_1_monoenergetic.py",
+    "file": "transport_2d_cyl_1g.py",
     "comment": "2D LinearBSolver Cylindrical Test mono-energetic - PWLD",
     "num_procs": 4,
     "checks": [
@@ -13,7 +13,7 @@
     ]
   },
   {
-    "file": "transport_2d_cyl_2_multigroup.py",
+    "file": "transport_2d_cyl_2g.py",
     "comment": "2D LinearBSolver Cylindrical Test multi-group - PWLD",
     "num_procs": 4,
     "checks": [
@@ -28,6 +28,222 @@
         "key": "Max-valueG2=",
         "goldvalue": 0.25,
         "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_reflective_uniform_1g.py",
+    "comment": "RZ gmsh case 01: reflective 1g uniform",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "MAX",
+        "goldvalue": 0.8437473489223,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_reflective_uniform_2g.py",
+    "comment": "RZ gmsh case 02: reflective 2g uniform",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "G0_MAX",
+        "goldvalue": 0.8437473489224,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "G1_MAX",
+        "goldvalue": 0.3658623519312,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_annulus_zero_solution.py",
+    "comment": "RZ gmsh case 04: annulus zero-solution",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "MAX",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_unstructured_reflective_uniform_1g.py",
+    "comment": "RZ gmsh case 05: unstructured reflective",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "MAX",
+        "goldvalue": 0.9065113759285,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2g_scatter_vacuum.py",
+    "comment": "RZ gmsh case 07: 2g scatter with vacuum boundaries",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "G0_MAX",
+        "goldvalue": 0.8429208738494,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "G1_MAX",
+        "goldvalue": 0.3655486193072,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_zero_source_vacuum_1g_struct.py",
+    "comment": "RZ analytic: zero source with vacuum boundaries (structured)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_disk_leakage_vacuum_bcs.py",
+    "comment": "RZ disk leakage: vacuum bcs compared to 3D reference",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Top leakage=",
+        "goldvalue": 36.173790857624596,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Bottom leakage=",
+        "goldvalue": 36.17379086382096,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Side leakage=",
+        "goldvalue": 39.74878117223803,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total leakage=",
+        "goldvalue": 112.0963628936836,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Leakage/Source=",
+        "goldvalue": 0.9144851226179025,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_disk_leakage_reflecting_bcs.py",
+    "comment": "RZ disk leakage: reflecting z, vacuum side compared to 3D reference",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Top leakage=",
+        "goldvalue": -6.190966583965322e-15,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Bottom leakage=",
+        "goldvalue": -5.231802747012948e-16,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Side leakage=",
+        "goldvalue": 97.24938933424164,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total leakage=",
+        "goldvalue": 97.24938933424164,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Leakage/Source=",
+        "goldvalue": 0.7933631157523604,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_disk_source_vacuum_hdpe_struct.py",
+    "comment": "RZ disk fixed-source vacuum boundaries (HDPE OpenMC XS, PHI_MAX reference)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX",
+        "goldvalue": 0.1224546944901,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_ucoarse.py",
+    "comment": "RZ gmsh unstructured 2g scatter vacuum (coarse)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_umed.py",
+    "comment": "RZ gmsh unstructured 2g scatter vacuum (medium)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_ufine.py",
+    "comment": "RZ gmsh unstructured 2g scatter vacuum (fine)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
       }
     ]
   }

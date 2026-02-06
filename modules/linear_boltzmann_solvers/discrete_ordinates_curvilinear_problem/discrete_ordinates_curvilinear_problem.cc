@@ -9,6 +9,7 @@
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
+#include <cmath>
 #include <iomanip>
 #include <stdexcept>
 
@@ -114,18 +115,29 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       }
     }
 
+    if (grid_->GetType() == MeshType::UNSTRUCTURED &&
+        grid_->GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL &&
+        groupsets_[gs].angleagg_method != AngleAggregationType::SINGLE)
+    {
+      log.Log0Warning() << GetName() << ":\n"
+                        << "Forcing SINGLE angle aggregation for unstructured RZ meshes (groupset "
+                        << gs << ").";
+      groupsets_[gs].angleagg_method = AngleAggregationType::SINGLE;
+    }
+
     // angle aggregation type must be compatible with coordinate system
     const auto angleagg_method = groupsets_[gs].angleagg_method;
     switch (grid_->GetCoordinateSystem())
     {
       case CoordinateSystemType::CYLINDRICAL:
       {
-        if (angleagg_method != AngleAggregationType::AZIMUTHAL)
+        if (angleagg_method != AngleAggregationType::AZIMUTHAL and
+            angleagg_method != AngleAggregationType::SINGLE)
         {
           std::ostringstream oss;
           oss << GetName() << ":\n"
               << "Invalid angle aggregation (type = " << static_cast<int>(angleagg_method)
-              << ") for groupsset " << gs;
+              << ") for groupsset " << gs << ". Supported: AZIMUTHAL, SINGLE.";
           throw std::runtime_error(oss.str());
         }
         break;
@@ -168,26 +180,9 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         for (size_t d = 0; d < unit_normal_vectors.size(); ++d)
         {
           const auto n_dot_e = face.normal.Dot(unit_normal_vectors[d]);
-          if (n_dot_e > 0.999999)
+          if (std::fabs(n_dot_e) > 0.999999)
           {
-            face_orthogonal = true;
-            break;
-          }
-          else if (n_dot_e < -0.999999)
-          {
-            for (const auto& v_id : face.vertex_ids)
-            {
-              const auto& vertex = grid_->vertices[v_id];
-              if (std::abs(vertex[d]) > 1.0e-12)
-              {
-                std::ostringstream oss;
-                oss << GetName() << ":\n"
-                    << "Mesh contains boundary faces with outward-oriented unit normal vector "
-                    << (-1 * unit_normal_vectors[d]).PrintStr()
-                    << ", with vertices characterized by v(" + std::to_string(d) + ") != 0";
-                throw std::runtime_error(oss.str());
-              }
-            }
+            // Allow inner radial boundaries if faces are axis-aligned
             face_orthogonal = true;
             break;
           }
@@ -251,9 +246,10 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   log.Log() << "Computing RZ secondary unit integrals.\n";
   const auto& sdm = *discretization_;
 
-  // Define spatial weighting functions
-  std::function<double(const Vector3&)> swf =
-    SpatialDiscretization::CylindricalRZSpatialWeightFunction;
+  // Secondary matrices are used for the azimuthal streaming term in RZ.
+  // That term carries a 1/r factor, so use unweighted volume integrals
+  // here.
+  const auto swf = [](const Vector3&) { return 1.0; };
 
   // Define lambda for cell-wise comps
   auto ComputeCellUnitIntegrals = [&sdm, &swf](const Cell& cell)

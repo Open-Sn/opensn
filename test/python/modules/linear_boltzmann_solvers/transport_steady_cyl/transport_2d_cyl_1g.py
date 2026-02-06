@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-2D monoenergetic transport test in axialsymmetric cylindrical geometry with
-vacuum boundary conditions
-
-Test: Max-value=1.00000
+transport_2d_cyl_1_monoenergetic.py: 1-group fixed-source with leakage
+Expected: Max-value=1.0
 """
 
 import os
@@ -85,7 +83,7 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_1g},
         ],
         volumetric_sources=[mg_src],
-        boundary_conditions=[{"name": "xmin", "type": "reflecting"}],
+        boundary_conditions=[{"name": "rmin", "type": "reflecting"}],
     )
     ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()
