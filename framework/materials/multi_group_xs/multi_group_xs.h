@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/data_types/sparse_matrix/sparse_matrix.h"
+#include <map>
 
 namespace opensn
 {
@@ -110,6 +111,10 @@ public:
 
   const std::vector<double>& GetSigmaSGtoG() const { return sigma_s_gtog_; }
 
+  bool HasCustomXS(const std::string& name) const;
+  const std::vector<double>& GetCustomXS(const std::string& name) const;
+  std::vector<std::string> GetCustomXSNames() const;
+
 private:
   /// Total number of groups
   unsigned int num_groups_;
@@ -162,6 +167,8 @@ private:
   /// Within-group scattering cross section
   std::vector<double> sigma_s_gtog_;
 
+  std::map<std::string, std::vector<double>> custom_xs_;
+
   void Reset();
 
   void ComputeAbsorption();
@@ -175,8 +182,10 @@ public:
   static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c, double velocity = 0.0);
   static MultiGroupXS LoadFromOpenSn(const std::string& filename);
   /// This method populates transport cross sections from an OpenMC cross-section file.
-  static MultiGroupXS
-  LoadFromOpenMC(const std::string& file_name, const std::string& dataset_name, double temperature);
+  static MultiGroupXS LoadFromOpenMC(const std::string& file_name,
+                                     const std::string& dataset_name,
+                                     double temperature,
+                                     const std::vector<std::string>& extra_xs_names = {});
   /// Populates the cross section from a combination of others.
   static MultiGroupXS
   Combine(const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations);

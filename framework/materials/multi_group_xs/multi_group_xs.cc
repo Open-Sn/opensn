@@ -248,6 +248,32 @@ MultiGroupXS::Reset()
   diffusion_coeff_.clear();
   sigma_r_.clear();
   sigma_s_gtog_.clear();
+  custom_xs_.clear();
+}
+
+bool
+MultiGroupXS::HasCustomXS(const std::string& name) const
+{
+  return custom_xs_.find(name) != custom_xs_.end();
+}
+
+const std::vector<double>&
+MultiGroupXS::GetCustomXS(const std::string& name) const
+{
+  const auto it = custom_xs_.find(name);
+  if (it == custom_xs_.end())
+    throw std::runtime_error("MultiGroupXS: Custom XS not found: " + name);
+  return it->second;
+}
+
+std::vector<std::string>
+MultiGroupXS::GetCustomXSNames() const
+{
+  std::vector<std::string> names;
+  names.reserve(custom_xs_.size());
+  for (const auto& entry : custom_xs_)
+    names.push_back(entry.first);
+  return names;
 }
 
 void
