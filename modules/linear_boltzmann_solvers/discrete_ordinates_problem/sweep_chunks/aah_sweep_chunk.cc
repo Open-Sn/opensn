@@ -62,7 +62,7 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
         break;
     }
   }
-  group_block_size_ = ComputeGroupBlockSize(groupset_.groups.size());
+  group_block_size_ = ComputeGroupBlockSize(groupset_.GetNumGroups());
 }
 
 void

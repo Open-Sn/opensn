@@ -124,7 +124,8 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
   const auto& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
   const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
   // loop over each level based on saturation status
-  unsigned int block_size_x = groupset_.groups.size(), block_size_y = aahd_angle_set.GetNumAngles();
+  unsigned int block_size_x = groupset_.GetNumGroups(),
+               block_size_y = aahd_angle_set.GetNumAngles();
   if (block_size_x * block_size_y <= gpu_kernel::threshold)
   {
     for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)

@@ -208,7 +208,7 @@ inline void static SimdBatchSolve(const double* Am,
 
 } // namespace detail
 
-template <int NumNodes, bool time_dependent>
+template <unsigned int NumNodes, bool time_dependent>
 void
 AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 {
@@ -217,8 +217,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   CALI_CXX_MARK_SCOPE("AAH_Sweep_FixedN");
 
   const auto& groupset = data.groupset;
-  const size_t gs_size = groupset.groups.size();
-  const auto gs_gi = groupset.groups.front().id;
+  const auto gs_size = groupset.GetNumGroups();
+  const auto gs_gi = groupset.first_group;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
@@ -227,7 +227,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   const auto& m2d_op = groupset.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset.quadrature->GetDiscreteToMomentOperator();
 
-  std::vector<double> b(gs_size * NumNodes, 0.0);
+  std::vector<double> b(static_cast<std::size_t>(gs_size) * NumNodes, 0.0);
   std::vector<double> sigma_block;
   sigma_block.reserve(data.group_block_size);
 
@@ -378,13 +378,13 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
           ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
           : nullptr;
 
-      for (size_t g0 = 0; g0 < gs_size; g0 += data.group_block_size)
+      for (unsigned int g0 = 0; g0 < gs_size; g0 += data.group_block_size)
       {
-        const size_t g1 = std::min(g0 + data.group_block_size, gs_size);
-        const size_t block_len = g1 - g0;
+        const auto g1 = std::min(g0 + data.group_block_size, gs_size);
+        const auto block_len = g1 - g0;
         sigma_block.resize(block_len);
 
-        for (size_t gsg = g0; gsg < g1; ++gsg)
+        for (unsigned int gsg = g0; gsg < g1; ++gsg)
         {
           const size_t rel = gsg - g0;
           double sigma_tg = rho * sigma_t[gs_gi + gsg];
@@ -392,8 +392,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
             sigma_tg += tau_gsg[gsg];
           sigma_block[rel] = sigma_tg;
 
-          double* __restrict bg = &b[gsg * NumNodes];
-          for (size_t m = 0; m < data.num_moments; ++m)
+          double* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
+          for (std::size_t m = 0; m < data.num_moments; ++m)
           {
             const double w = m2d_row[m];
             std::array<double, NumNodes> nodal_source{};
@@ -583,7 +583,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   }
 }
 
-template <int NumNodes>
+template <unsigned int NumNodes>
 void
 AAHSweepChunk::Sweep_FixedN(AngleSet& angle_set)
 {

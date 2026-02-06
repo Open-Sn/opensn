@@ -84,7 +84,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "Quadrature created." << std::endl;
 
   // Set/Get params
-  const size_t num_groups = 20;
+  const unsigned int num_groups = 20;
 
   const auto& m2d = quadrature->GetMomentToDiscreteOperator();
   const auto& d2m = quadrature->GetDiscreteToMomentOperator();
@@ -202,7 +202,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
       psi_us_z = &psi_ds_z(i, j, k + 1, 0);
 
     const auto& sigma_t = cell_xs.GetSigmaTotal();
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       double rhs = 0.0;
       // Source moments
@@ -329,7 +329,7 @@ ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
 {
   double pw_change = 0.0;
   const size_t num_moments = phi_uk_man.unknowns.size();
-  const size_t num_groups = phi_uk_man.unknowns.front().num_components;
+  const unsigned int num_groups = phi_uk_man.unknowns.front().num_components;
 
   for (const auto& cell : grid->local_cells)
   {
@@ -350,7 +350,7 @@ ComputeRelativePWChange(const std::shared_ptr<MeshContinuum> grid,
         const double* phi_new_m = &in_phi_new[m_map];
         const double* phi_old_m = &in_phi_old[m_map];
 
-        for (size_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
         {
           const double abs_phi_new_g_m0 = std::fabs(phi_new_m0[g]);
           const double abs_phi_old_g_m0 = std::fabs(phi_old_m0[g]);
@@ -384,7 +384,7 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
   std::vector<double> source_moments(num_local_phi_dofs, 0.0);
 
   const size_t num_moments = phi_uk_man.unknowns.size();
-  const size_t num_groups = phi_uk_man.unknowns.front().num_components;
+  const unsigned int num_groups = phi_uk_man.unknowns.front().num_components;
 
   for (const auto& cell : grid->local_cells)
   {
@@ -399,7 +399,7 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
         const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
         const auto ell = m_ell_em_map[m].ell;
 
-        for (size_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
         {
           // Fixed source
           source_moments[dof_map + g] = q_source[dof_map + g];

@@ -21,7 +21,7 @@ class AAH_ASynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
   AAH_ASynchronousCommunicator(FLUDS& fluds,
-                               std::size_t num_groups,
+                               unsigned int num_groups,
                                std::size_t num_angles,
                                int max_mpi_message_size,
                                const MPICommunicatorSet& comm_set);
@@ -83,7 +83,7 @@ protected:
   void BuildMessageStructure();
 
 private:
-  std::size_t num_groups_;
+  unsigned int num_groups_;
   std::size_t num_angles_;
   int max_num_messages_;
   int max_mpi_message_size_;

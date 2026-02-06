@@ -26,7 +26,7 @@ DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
 }
 
 std::shared_ptr<FLUDS>
-DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
+DiscreteOrdinatesProblem::CreateAAHD_FLUDS(unsigned int num_groups,
                                            std::size_t num_angles,
                                            const FLUDSCommonData& common_data)
 {
@@ -37,7 +37,7 @@ DiscreteOrdinatesProblem::CreateAAHD_FLUDS(std::size_t num_groups,
 std::shared_ptr<AngleSet>
 DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
   size_t id,
-  size_t num_groups,
+  unsigned int num_groups,
   const SPDS& spds,
   std::shared_ptr<FLUDS>& fluds,
   std::vector<size_t>& angle_indices,

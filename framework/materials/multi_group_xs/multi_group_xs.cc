@@ -38,7 +38,7 @@ MultiGroupXS::Combine(
   std::vector<std::shared_ptr<MultiGroupXS>> xsecs;
   xsecs.reserve(combinations.size());
 
-  size_t n_grps = 0;
+  unsigned int n_grps = 0;
   unsigned int n_precs = 0;
   double Nf_total = 0.0; // Total density of fissile materials
 
@@ -138,7 +138,7 @@ MultiGroupXS::Combine(
 
     // Here, raw cross sections are scaled by densities and spectra by
     // fractional densities. The latter is done to preserve a unit spectra.
-    for (size_t g = 0; g < n_grps; ++g)
+    for (unsigned int g = 0; g < n_grps; ++g)
     {
       mgxs.sigma_t_[g] += sig_t[g];
       mgxs.sigma_a_[g] += sig_a[g];
@@ -149,7 +149,7 @@ MultiGroupXS::Combine(
         if (not chi.empty())
           mgxs.chi_[g] += ff_i * chi[g];
         mgxs.nu_sigma_f_[g] += sig_f[g];
-        for (size_t gp = 0; gp < mgxs.num_groups_; ++gp)
+        for (unsigned int gp = 0; gp < mgxs.num_groups_; ++gp)
           mgxs.production_matrix_[g][gp] += F[g][gp];
 
         if (n_precs > 0)
@@ -204,7 +204,7 @@ MultiGroupXS::Combine(
       {
         auto& Sm = mgxs.transfer_matrices_[m];
         const auto& Sm_other = xsecs[x]->GetTransferMatrix(m);
-        for (size_t g = 0; g < mgxs.num_groups_; ++g)
+        for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
         {
           const auto& cols = Sm_other.rowI_indices[g];
           const auto& vals = Sm_other.rowI_values[g];
@@ -258,7 +258,7 @@ MultiGroupXS::ComputeAbsorption()
   // Compute for a pure absorber
   if (transfer_matrices_.empty())
   {
-    for (size_t g = 0; g < num_groups_; ++g)
+    for (unsigned int g = 0; g < num_groups_; ++g)
       sigma_a_[g] = sigma_t_[g];
   }
 
@@ -268,7 +268,7 @@ MultiGroupXS::ComputeAbsorption()
     log.Log0Warning() << "Estimating absorption from the transfer matrices.";
 
     const auto& S0 = transfer_matrices_.front();
-    for (size_t g = 0; g < num_groups_; ++g)
+    for (unsigned int g = 0; g < num_groups_; ++g)
     {
       // Estimate the scattering cross section
       double sigma_s = 0.0;
@@ -309,13 +309,13 @@ MultiGroupXS::ComputeDiffusionParameters()
 
   // Perform computations group-wise
   const auto& S = transfer_matrices_;
-  for (size_t g = 0; g < num_groups_; ++g)
+  for (unsigned int g = 0; g < num_groups_; ++g)
   {
     // Determine transport correction
     double sigma_1 = 0.0;
     if (S.size() > 1)
     {
-      for (size_t gp = 0; gp < num_groups_; ++gp)
+      for (unsigned int gp = 0; gp < num_groups_; ++gp)
       {
         const auto& cols = S[1].rowI_indices[gp];
         const auto& vals = S[1].rowI_values[gp];
@@ -375,7 +375,7 @@ MultiGroupXS::SetScalingFactor(const double factor)
   scaling_factor_ = factor;
 
   // Apply to STL vector-based data
-  for (size_t g = 0; g < num_groups_; ++g)
+  for (unsigned int g = 0; g < num_groups_; ++g)
   {
     sigma_t_[g] *= m;
     sigma_a_[g] *= m;
@@ -397,7 +397,7 @@ MultiGroupXS::SetScalingFactor(const double factor)
 
   // Apply to transfer matrices
   for (auto& S_ell : transfer_matrices_)
-    for (size_t g = 0; g < num_groups_; ++g)
+    for (unsigned int g = 0; g < num_groups_; ++g)
       for (const auto& [_, gp, sig_ell] : S_ell.Row(g))
         sig_ell *= m;
 
@@ -414,7 +414,7 @@ MultiGroupXS::TransposeTransferAndProduction()
   {
     const auto& S_ell = transfer_matrices_[ell];
     SparseMatrix S_ell_transpose(num_groups_, num_groups_);
-    for (size_t g = 0; g < num_groups_; ++g)
+    for (unsigned int g = 0; g < num_groups_; ++g)
     {
       const size_t row_len = S_ell.rowI_indices[g].size();
       const size_t* col_ptr = S_ell.rowI_indices[g].data();
@@ -432,8 +432,8 @@ MultiGroupXS::TransposeTransferAndProduction()
     transposed_production_matrix_.clear();
     transposed_production_matrix_.resize(num_groups_);
     const auto& F = production_matrix_;
-    for (size_t g = 0; g < num_groups_; ++g)
-      for (size_t gp = 0; gp < num_groups_; ++gp)
+    for (unsigned int g = 0; g < num_groups_; ++g)
+      for (unsigned int gp = 0; gp < num_groups_; ++gp)
         transposed_production_matrix_[g].push_back(F[gp][g]);
   }
 }

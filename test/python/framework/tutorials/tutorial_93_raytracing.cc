@@ -27,7 +27,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
   const auto dimension = grid->GetDimension();
 
   // Set parameters
-  const size_t num_groups = 1;
+  const unsigned int num_groups = 1;
   const unsigned int scattering_order = 1;
   const auto& L = scattering_order;
   const size_t num_moments = (dimension == 1)   ? L + 1
@@ -285,7 +285,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
     // Apply projection
     Vector<double> T(num_nodes, 0.0);
     for (size_t m = 0; m < num_moments; ++m)
-      for (size_t g = 0; g < num_groups; ++g)
+      for (unsigned int g = 0; g < num_groups; ++g)
       {
         for (size_t i = 0; i < num_nodes; ++i)
         {

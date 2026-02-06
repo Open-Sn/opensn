@@ -50,7 +50,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns.front().num_components;
+  const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
 
@@ -68,7 +68,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
     // For component/group
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_A.Set(0.);
       cell_rhs.Set(0.);
@@ -398,14 +398,14 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
     const auto& cell_mapping = sdm_.GetCellMapping(cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const size_t num_groups = uk_man_.unknowns.front().num_components;
+    const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
     const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
     // For component/group
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
@@ -589,7 +589,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns.front().num_components;
+  const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_->local_cells)
@@ -608,7 +608,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_A.Set(0.);
       cell_rhs.Set(0.);
@@ -881,7 +881,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns.front().num_components;
+  const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_->local_cells)
@@ -898,7 +898,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
@@ -1032,7 +1032,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns.front().num_components;
+  const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   const double* q_vector = nullptr;
   VecGetArrayRead(petsc_q_vector, &q_vector);
@@ -1052,7 +1052,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
