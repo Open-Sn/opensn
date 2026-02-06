@@ -163,8 +163,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
             for (size_t gsg = 0; gsg < gs_size_; ++gsg)
               b[gsg](i) += psi[gsg] * mu_Nij;
         } // for face node j
-      } // for face node i
-    } // for f
+      }   // for face node i
+    }     // for f
 
     // Looping over groups, assembling mass terms
     for (size_t gsg = 0; gsg < gs_size_; ++gsg)
@@ -287,8 +287,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
           for (size_t gsg = 0; gsg < gs_size_; ++gsg)
             psi[gsg] = b[gsg](i);
       } // for fi
-    } // for face
-  } // for angleset/subset
+    }   // for face
+  }     // for angleset/subset
 }
 
 } // namespace opensn
