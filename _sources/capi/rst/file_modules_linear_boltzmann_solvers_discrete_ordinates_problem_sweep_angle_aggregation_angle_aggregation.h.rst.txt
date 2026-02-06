@@ -32,6 +32,10 @@ Includes
 
 - ``framework/math/quadratures/angular/angular_quadrature.h`` (:ref:`file_framework_math_quadratures_angular_angular_quadrature.h`)
 
+- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+
+- ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
+
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
@@ -43,6 +47,10 @@ Includes
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
+
+- ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
+
+- ``unordered_map``
 
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 

@@ -64,6 +64,8 @@ Included By
 
 - :ref:`file_framework_mpi_mpi_comm_set.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_isotropic_boundary.h`

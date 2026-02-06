@@ -92,6 +92,9 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;set&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unordered_map&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unordered_set&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -126,6 +129,18 @@
 <span class="w">  </span><span class="c1">/// Executes the depth-of-graph algorithm.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScheduleAlgoDOG</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
 
+<span class="w">  </span><span class="c1">/// Sort rule values for DOG scheduling (RZ).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SortRuleValuesDOGRZ</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Sort rule values for DOG scheduling (default).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SortRuleValuesDOGDefault</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Executes DOG scheduler (RZ).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScheduleAlgoDOGRZ</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Executes DOG scheduler (default).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScheduleAlgoDOGDefault</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
+
 <span class="w">  </span><span class="c1">/// Performs the all-at-once scheduling algorithm.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScheduleAlgoAAO</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
 
@@ -141,6 +156,7 @@
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sign_of_omegax</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sign_of_omegay</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sign_of_omegaz</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">azimuthal_order</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">set_index</span><span class="p">;</span>
 
 <span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">RuleValues</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ref_as</span><span class="p">)</span>
@@ -149,11 +165,15 @@
 <span class="w">        </span><span class="n">sign_of_omegax</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
 <span class="w">        </span><span class="n">sign_of_omegay</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
 <span class="w">        </span><span class="n">sign_of_omegaz</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">        </span><span class="n">azimuthal_order</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
 <span class="w">        </span><span class="n">set_index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">};</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">RuleValues</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rule_values_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Angle set dependencies (preceding sets) used by DOG scheduling.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*&gt;&gt;</span><span class="w"> </span><span class="n">preceding_angle_sets_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

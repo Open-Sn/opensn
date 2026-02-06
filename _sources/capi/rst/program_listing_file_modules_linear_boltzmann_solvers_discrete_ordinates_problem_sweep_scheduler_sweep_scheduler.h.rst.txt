@@ -17,6 +17,9 @@ Program Listing for File sweep_scheduler.h
    
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+   #include <set>
+   #include <unordered_map>
+   #include <unordered_set>
    
    namespace opensn
    {
@@ -51,6 +54,18 @@ Program Listing for File sweep_scheduler.h
      /// Executes the depth-of-graph algorithm.
      void ScheduleAlgoDOG(SweepChunk& sweep_chunk);
    
+     /// Sort rule values for DOG scheduling (RZ).
+     void SortRuleValuesDOGRZ();
+   
+     /// Sort rule values for DOG scheduling (default).
+     void SortRuleValuesDOGDefault();
+   
+     /// Executes DOG scheduler (RZ).
+     void ScheduleAlgoDOGRZ(SweepChunk& sweep_chunk);
+   
+     /// Executes DOG scheduler (default).
+     void ScheduleAlgoDOGDefault(SweepChunk& sweep_chunk);
+   
      /// Performs the all-at-once scheduling algorithm.
      void ScheduleAlgoAAO(SweepChunk& sweep_chunk);
    
@@ -66,6 +81,7 @@ Program Listing for File sweep_scheduler.h
        int sign_of_omegax;
        int sign_of_omegay;
        int sign_of_omegaz;
+       int azimuthal_order;
        size_t set_index;
    
        explicit RuleValues(std::shared_ptr<AngleSet>& ref_as)
@@ -74,11 +90,15 @@ Program Listing for File sweep_scheduler.h
            sign_of_omegax(1),
            sign_of_omegay(1),
            sign_of_omegaz(1),
+           azimuthal_order(0),
            set_index(0)
        {
        }
      };
      std::vector<RuleValues> rule_values_;
+   
+     /// Angle set dependencies (preceding sets) used by DOG scheduling.
+     std::unordered_map<AngleSet*, std::set<AngleSet*>> preceding_angle_sets_;
    };
    
    } // namespace opensn
