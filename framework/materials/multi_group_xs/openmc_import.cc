@@ -15,7 +15,8 @@ namespace opensn
 MultiGroupXS
 MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
                              const std::string& dataset_name,
-                             double temperature)
+                             double temperature,
+                             const std::vector<std::string>& extra_xs_names)
 {
   MultiGroupXS mgxs;
 
@@ -190,6 +191,30 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
     mgxs.nu_delayed_sigma_f_.clear();
     mgxs.production_matrix_.clear();
     mgxs.precursors_.clear();
+  }
+
+  for (const auto& xs_name : extra_xs_names)
+  {
+    if (!H5Has(file, path + xs_name))
+    {
+      std::string msg = "Requested XS \"";
+      msg += xs_name;
+      msg += "\" not found in ";
+      msg += file_name;
+      throw std::runtime_error(msg);
+    }
+    std::vector<double> xs_vals;
+    if (!H5ReadDataset1D<double>(file, path + xs_name, xs_vals))
+    {
+      std::string msg = "Failed to read XS \"";
+      msg += xs_name;
+      msg += "\" from ";
+      msg += file_name;
+      throw std::runtime_error(msg);
+    }
+    if (xs_vals.size() != mgxs.num_groups_)
+      throw std::runtime_error("Requested XS \"" + xs_name + "\" does not have num_groups entries");
+    mgxs.custom_xs_[xs_name] = std::move(xs_vals);
   }
 
   H5Fclose(file);

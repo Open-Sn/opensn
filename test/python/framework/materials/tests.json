@@ -49,5 +49,18 @@
         "abs_tol": 1e-05
       }
     ]
+  },
+  {
+    "file": "xs_custom.py",
+    "comment": "load custom absorption XS from OpenMC and compare to reference values",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS ",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
   }
 ]
