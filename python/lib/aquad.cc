@@ -97,22 +97,6 @@ WrapQuadrature(py::module& aquad)
     "Vector of direction vectors."
   );
   angular_quadrature.def(
-    "SetOperatorConstructionMethod",
-    [](AngularQuadrature& self, const std::string& method)
-    {
-      self.SetOperatorConstructionMethod(op_cons_type_map.at(method));
-    },
-    R"(
-    Set the method used to construct the D2M and M2D operators.
-    
-    Parameters
-    ----------
-    method : {'standard', 'galerkin_one', 'galerkin_three'}
-        Construction method.
-    )",
-    py::arg("method")
-  );
-  angular_quadrature.def(
     "GetDiscreteToMomentOperator",
     [](const AngularQuadrature& self) {
       const auto& op = self.GetDiscreteToMomentOperator();
@@ -174,28 +158,6 @@ WrapQuadrature(py::module& aquad)
     "GetMomentToHarmonicsIndexMap",
     &AngularQuadrature::GetMomentToHarmonicsIndexMap,
     py::return_value_policy::reference_internal
-  );
-  angular_quadrature.def(
-    "SetOperatorConstructionMethod",
-    &AngularQuadrature::SetOperatorConstructionMethod,
-    R"(
-    Set the method used to construct the D2M and M2D operators.
-    
-    Parameters
-    ----------
-    method : str
-        Construction method: "standard", "galerkin_one", "galerkin_three"
-    )",
-    py::arg("method")
-  );
-
-  angular_quadrature.def(
-    "BuildDiscreteToMomentOperator",
-    &AngularQuadrature::BuildDiscreteToMomentOperator
-  );
-  angular_quadrature.def(
-    "BuildMomentToDiscreteOperator",
-    &AngularQuadrature::BuildMomentToDiscreteOperator
   );
   // clang-format on
 }
