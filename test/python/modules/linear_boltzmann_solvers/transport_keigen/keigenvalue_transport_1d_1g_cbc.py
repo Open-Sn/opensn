@@ -40,9 +40,6 @@ if __name__ == "__main__":
     si_max_iterations = 500
     si_tolerance = 1e-8
 
-    # Delayed neutrons
-    use_precursors = True
-
     # Setup mesh
     dx = L / n_cells
     nodes = [i * dx for i in range(n_cells + 1)]
@@ -77,7 +74,6 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_simple_fissile},
         ],
         options={
-            "use_precursors": use_precursors,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True
         },
