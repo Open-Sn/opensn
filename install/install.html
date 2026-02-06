@@ -53,6 +53,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Quick Install Guide</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">OpenSn Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#install-development-tools">Install Development Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#virtual-environments-recommended">Virtual environments (recommended)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#clone-opensn">Clone OpenSn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#install-dependencies">Install dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#configure-and-build-opensn">Configure and build OpenSn</a><ul>
@@ -104,23 +105,23 @@
 <h1>OpenSn Installation<a class="headerlink" href="#opensn-installation" title="Link to this heading"></a></h1>
 <section id="install-development-tools">
 <h2>Install Development Tools<a class="headerlink" href="#install-development-tools" title="Link to this heading"></a></h2>
-<p>The following packages are required for <strong>OpenSn</strong> installation and development:</p>
+<p>Before installing OpenSn, you must have the following packages installed on
+your system:</p>
 <ol class="arabic simple">
 <li><p>A recent version of <code class="docutils literal notranslate"><span class="pre">clang++</span></code>/<code class="docutils literal notranslate"><span class="pre">g++</span></code> that supports C++20</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">flex</span></code> (required by the PTSCOTCH component of PETSc)</p></li>
-<li><p>Python3 v3.9+ and <code class="docutils literal notranslate"><span class="pre">pip</span></code> (required by PETSc and OpenSn)</p></li>
+<li><p>Python 3.9+ with pybind11 and <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
 <li><p>Git version control system</p></li>
-<li><p>CMake v3.20.2+</p></li>
+<li><p>CMake v3.29+</p></li>
 <li><p>MPI (OpenMPI, MPICH, and MVAPICH have been tested)</p></li>
-<li><p>PETSc 3.17.0+, Boost 1.86+, HDF5 1.14+, VTK 9.3.0+, Caliper 2.10+</p></li>
-<li><p>pybind11 installed via <code class="docutils literal notranslate"><span class="pre">pip</span></code></p></li>
-<li><p>Pandoc and Doxygen (required for generating the OpenSn documentation)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flex</span></code> (required by the PTSCOTCH component of PETSc)</p></li>
+<li><p>Pandoc and Doxygen (only if you plan to build documentation)</p></li>
 </ol>
+<p>You can install these packages using your system package manager:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-0">
 Linux (Ubuntu)</label><div class="sd-tab-content docutils">
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>python3-dev<span class="w"> </span>python3-pip<span class="w">  </span><span class="se">\</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential<span class="w"> </span>python3-dev<span class="w"> </span>python3-pip<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>git<span class="w"> </span>cmake<span class="w"> </span>libopenmpi-dev<span class="w"> </span>flex<span class="w"> </span>doxygen<span class="w"> </span>pandoc
 <span class="nb">export</span><span class="w"> </span><span class="nv">NPROC</span><span class="o">=</span><span class="k">$(</span>nproc<span class="k">)</span>
 </pre></div>
@@ -134,6 +135,35 @@ macOS</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
+</div>
+<p>The following additional packages will be installed by the OpenSn dependency
+build (if not found on your system):</p>
+<ol class="arabic simple">
+<li><p>PETSc 3.17.0+</p></li>
+<li><p>Boost 1.86+</p></li>
+<li><p>HDF5 1.14+</p></li>
+<li><p>VTK 9.3.0+</p></li>
+<li><p>Caliper 2.10+</p></li>
+</ol>
+</section>
+<section id="virtual-environments-recommended">
+<h2>Virtual environments (recommended)<a class="headerlink" href="#virtual-environments-recommended" title="Link to this heading"></a></h2>
+<p>Using a virtual environment keeps Python dependencies isolated from your system
+packages and makes it easier to cleanly uninstall or upgrade later.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+</pre></div>
+</div>
+<p>The environment must be activated in each new shell session before running
+<code class="docutils literal notranslate"><span class="pre">pip</span></code> or OpenSn’s Python tools.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pybind11
+</pre></div>
+</div>
+<p>To leave the environment, run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>deactivate
+</pre></div>
 </div>
 </section>
 <section id="clone-opensn">
