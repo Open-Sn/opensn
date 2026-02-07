@@ -171,6 +171,20 @@
     ]
   },
   {
+    "file": "transient_keigen_1d_delayed_fission_prod_count.py",
+    "comment": "1D delayed fission production invariant to precursor count (1p vs 2p)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "K_PRECURSOR_FPROD_PASS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_keigen_2d_delayed_prke_vs_stk_2p.py",
     "comment": "2D delayed homogeneous step: PRKE vs space-time kinetics",
     "num_procs": 4,
