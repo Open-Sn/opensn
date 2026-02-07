@@ -47,9 +47,6 @@ if __name__ == "__main__":
     si_max_iterations = 500
     si_tolerance = 1e-8
 
-    # Delayed neutrons
-    use_precursors = True
-
     # Create and configure the discrete ordinates solver
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -73,7 +70,6 @@ if __name__ == "__main__":
             }
         ],
         options={
-            "use_precursors": use_precursors,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,
         }
