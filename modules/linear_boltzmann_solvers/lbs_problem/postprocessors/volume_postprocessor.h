@@ -33,6 +33,8 @@ public:
 
 private:
   std::shared_ptr<LBSProblem> lbs_problem_;
+  /// Block IDs this postprocessor is restricted to
+  std::vector<int> block_ids_;
   /// Logical volume associated with this PPS (can be null)
   std::shared_ptr<LogicalVolume> logical_volume_;
   /// Local cell IDs

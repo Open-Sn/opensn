@@ -19,6 +19,10 @@ VolumePostprocessor::GetInputParameters()
   InputParameters params;
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "A handle to an existing LBS problem.");
+  params.AddOptionalParameterArray(
+    "block_ids",
+    std::vector<int>{},
+    "Block restriction for the postprocessor. Empty/unspecified means no block restriction.");
   params.AddOptionalParameter<std::shared_ptr<LogicalVolume>>(
     "logical_volume", nullptr, "Logical volume to restrict the computation to.");
   params.AddOptionalParameter<std::string>(
@@ -39,6 +43,7 @@ VolumePostprocessor::Create(const ParameterBlock& params)
 
 VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
   : lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem")),
+    block_ids_(params.GetParamVectorValue<int>("block_ids")),
     logical_volume_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume")),
     selected_group_(params.IsParameterValid("group")
                       ? std::make_optional(params.GetParamValue<unsigned int>("group"))
@@ -77,17 +82,36 @@ VolumePostprocessor::Initialize()
 {
   const auto& grid = lbs_problem_->GetGrid();
 
+  // filter on logical volumes
+  std::vector<std::uint32_t> cell_ids;
   if (logical_volume_ != nullptr)
   {
     for (const auto& cell : grid->local_cells)
       if (logical_volume_->Inside(cell.centroid))
-        cell_local_ids_.push_back(cell.local_id);
+        cell_ids.push_back(cell.local_id);
   }
   else
   {
     for (const auto& cell : grid->local_cells)
-      cell_local_ids_.push_back(cell.local_id);
+      cell_ids.push_back(cell.local_id);
   }
+
+  // apply block restriction
+  if (block_ids_.empty())
+  {
+    cell_local_ids_.assign(cell_ids.begin(), cell_ids.end());
+  }
+  else
+  {
+    for (const auto& id : cell_ids)
+    {
+      auto block_id = grid->local_cells[id].block_id;
+      if (std::find(block_ids_.begin(), block_ids_.end(), block_id) != block_ids_.end())
+        cell_local_ids_.push_back(id);
+    }
+  }
+
+  // TODO: if `cell_local_ids_` is empty, warn or stop
 
   if (selected_group_.has_value())
   {
