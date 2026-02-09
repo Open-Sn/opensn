@@ -20,6 +20,13 @@ enum class AngularQuadratureType
   TriangularQuadrature = 4,
 };
 
+enum class OperatorConstructionMethod
+{
+  STANDARD = 0,
+  GALERKIN_ONE = 1,
+  GALERKIN_THREE = 3
+};
+
 /// Quadrature point in spherical coordinates.
 struct QuadraturePointPhiTheta
 {
@@ -53,10 +60,15 @@ public:
   };
 
 protected:
-  explicit AngularQuadrature(AngularQuadratureType type,
-                             unsigned int dimension,
-                             unsigned int scattering_order)
-    : type_(type), dimension_(dimension), scattering_order_(scattering_order)
+  explicit AngularQuadrature(
+    AngularQuadratureType type,
+    unsigned int dimension,
+    unsigned int scattering_order,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD)
+    : type_(type),
+      dimension_(dimension),
+      scattering_order_(scattering_order),
+      construction_method_(method)
   {
   }
 
@@ -72,6 +84,10 @@ protected:
   unsigned int dimension_;
   /// Maximum scattering order for moment calculations.
   unsigned int scattering_order_;
+  OperatorConstructionMethod construction_method_;
+  unsigned int quadrature_order_ = 0;
+  unsigned int n_polar_ = 0;
+  unsigned int n_azimuthal_ = 0;
 
   /// Populate the map of moment index to spherical harmonic indices.
   void MakeHarmonicIndices();
@@ -84,6 +100,15 @@ public:
 
   /// Compute the moment-to-discrete operator.
   void BuildMomentToDiscreteOperator();
+
+  /// Sets the operator construction method
+  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
+  {
+    construction_method_ = method;
+  }
+
+  /// Gets the current operator construction method
+  OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
 
   /**
    * Return a reference to the precomputed discrete-to-moment operator.
@@ -109,6 +134,23 @@ public:
   size_t GetNumMoments() const { return m_to_ell_em_map_.size(); }
 
   AngularQuadratureType GetType() const { return type_; }
+
+  /**
+   * Sets the quadrature_order_ parameter depending on the quadrature type:
+   * For Lebedev Quadrature: Lebedev Order {3, 5, 7, ...}
+   * For SLDFE-S Quadrature: Uniform Refinement Level
+   */
+  void SetQuadratureOrder(unsigned int order) { quadrature_order_ = order; }
+
+  /**
+   * Sets the n_polar_ parameter for product quadrature types
+   */
+  void SetNumberOfPolar(unsigned int num_polar) { n_polar_ = num_polar; }
+
+  /**
+   * Sets the n_azimuthal_ parameter for product quadrature types
+   */
+  void SetNumberOfAzimuthal(unsigned int num_azimu) { n_azimuthal_ = num_azimu; }
 
   /// Quadrature point abscissae in spherical coordinates.
   std::vector<QuadraturePointPhiTheta> abscissae;
