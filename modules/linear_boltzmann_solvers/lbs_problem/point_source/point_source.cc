@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/math/functions/function.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -24,7 +25,12 @@ PointSource::GetInputParameters()
   params.SetClassName("Point Source");
 
   params.AddRequiredParameterArray("location", "The (x, y, z) coordinate of the point source.");
-  params.AddRequiredParameterArray("strength", "The group-wise point source strength");
+  params.AddOptionalParameterArray(
+    "strength", std::vector<double>(), "The group-wise point source strength");
+  params.AddOptionalParameter<std::shared_ptr<GroupTimeFunction>>(
+    "strength_function",
+    std::shared_ptr<GroupTimeFunction>{},
+    "Function defining group-wise strengths as a function of (group, time).");
   params.AddOptionalParameter("start_time",
                               -std::numeric_limits<double>::infinity(),
                               "Time at which the source becomes active.");
@@ -45,10 +51,23 @@ PointSource::Create(const ParameterBlock& params)
 PointSource::PointSource(const InputParameters& params)
   : location_(params.GetParamVectorValue<double>("location")),
     strength_(params.GetParamVectorValue<double>("strength")),
+    strength_function_(params.GetSharedPtrParam<GroupTimeFunction>("strength_function", false)),
     start_time_(params.GetParamValue<double>("start_time")),
     end_time_(params.GetParamValue<double>("end_time"))
 {
-  if (std::all_of(strength_.begin(), strength_.end(), [](double x) { return x == 0.0; }))
+  const bool has_strength = not strength_.empty();
+  const bool has_strength_func = static_cast<bool>(strength_function_);
+  if ((has_strength ? 1 : 0) + (has_strength_func ? 1 : 0) == 0)
+    throw std::invalid_argument("Either a strength vector or strength_function must be provided.");
+  if ((has_strength ? 1 : 0) + (has_strength_func ? 1 : 0) > 1)
+    throw std::invalid_argument(
+      "Specify only one of strength or strength_function for a point source.");
+  if (has_strength_func && (start_time_ != -std::numeric_limits<double>::infinity() ||
+                            end_time_ != std::numeric_limits<double>::infinity()))
+    throw std::invalid_argument("strength_function cannot be used with start_time/end_time. "
+                                "Define time dependence in the callback or omit the time bounds.");
+  if (not strength_.empty() &&
+      std::all_of(strength_.begin(), strength_.end(), [](double x) { return x == 0.0; }))
     log.Log0Warning() << "Point source at " << location_.PrintStr() << " "
                       << "does not have a non-zero source strength.";
 }
@@ -56,11 +75,14 @@ PointSource::PointSource(const InputParameters& params)
 void
 PointSource::Initialize(const LBSProblem& lbs_problem)
 {
-  OpenSnLogicalErrorIf(strength_.size() != lbs_problem.GetNumGroups(),
-                       "Incompatible point source strength vector at location " +
-                         location_.PrintStr() + ". " + "There are " +
-                         std::to_string(lbs_problem.GetNumGroups()) + " simulation groups, but " +
-                         std::to_string(strength_.size()) + " source strength values.");
+  if (not strength_function_)
+  {
+    OpenSnLogicalErrorIf(strength_.size() != lbs_problem.GetNumGroups(),
+                         "Incompatible point source strength vector at location " +
+                           location_.PrintStr() + ". " + "There are " +
+                           std::to_string(lbs_problem.GetNumGroups()) + " energy groups, but " +
+                           std::to_string(strength_.size()) + " source strength values.");
+  }
 
   // Get info from solver
   const auto& grid = lbs_problem.GetGrid();
@@ -134,6 +156,19 @@ bool
 PointSource::IsActive(double time) const
 {
   return time >= start_time_ && time <= end_time_;
+}
+
+std::vector<double>
+PointSource::GetStrength(const double time, const unsigned int num_groups) const
+{
+  if (strength_function_)
+  {
+    std::vector<double> values(num_groups, 0.0);
+    for (unsigned int g = 0; g < num_groups; ++g)
+      values[g] = (*strength_function_)(g, time);
+    return values;
+  }
+  return strength_;
 }
 
 } // namespace opensn

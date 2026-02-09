@@ -199,7 +199,7 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
       {
         const auto& transport_view = transport_views[subscriber.cell_local_id];
 
-        const auto& strength = point_source->GetStrength();
+        const auto strength = point_source->GetStrength(source_time, lbs_problem_.GetNumGroups());
         const auto& node_weights = subscriber.node_weights;
         const auto volume_weight = subscriber.volume_weight;
 
@@ -250,7 +250,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           // Compute group-wise values for this node
-          const auto src = (*volumetric_source)(cell, nodes[i], num_groups);
+          const auto src = volumetric_source->Evaluate(cell, nodes[i], num_groups, source_time);
 
           // Contribute to the source moments
           const auto dof_map = transport_view.MapDOF(i, 0, 0);

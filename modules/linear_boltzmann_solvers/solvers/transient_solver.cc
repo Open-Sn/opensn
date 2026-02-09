@@ -267,6 +267,12 @@ TransientSolver::Advance()
 
   do_problem_->SetTime(current_time_);
 
+  if (verbose_)
+  {
+    log.Log() << GetName() << " dt = " << std::scientific << std::setprecision(1) << dt
+              << " time = " << std::fixed << std::setprecision(4) << (current_time_ + dt);
+  }
+
   // Zero source moments before recomputing sources for this step
   q_moments_local_->assign(q_moments_local_->size(), 0.0);
   UpdateHasFissionableMaterial();
@@ -297,20 +303,10 @@ TransientSolver::Advance()
       StepPrecursors();
   }
 
-  if (verbose_)
+  if (verbose_ and (has_fissionable_material_ or options.use_precursors))
   {
-    if (has_fissionable_material_ or options.use_precursors)
-    {
-      const double FP_new = ComputeFissionProduction(*do_problem_, *phi_new_local_);
-      log.Log() << GetName() << " dt = " << std::scientific << std::setprecision(1) << dt
-                << " time = " << std::fixed << std::setprecision(4) << (current_time_ + dt)
-                << " FP = " << std::scientific << std::setprecision(6) << FP_new;
-    }
-    else
-    {
-      log.Log() << GetName() << " dt = " << std::scientific << std::setprecision(1) << dt
-                << " time = " << std::fixed << std::setprecision(4) << (current_time_ + dt);
-    }
+    const double FP_new = ComputeFissionProduction(*do_problem_, *phi_new_local_);
+    log.Log() << GetName() << " FP = " << std::scientific << std::setprecision(6) << FP_new;
   }
 
   current_time_ += dt;

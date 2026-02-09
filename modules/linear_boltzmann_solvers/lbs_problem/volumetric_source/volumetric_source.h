@@ -14,6 +14,7 @@ struct Vector3;
 class Cell;
 class LogicalVolume;
 class VectorSpatialFunction;
+class GroupTimeFunction;
 class LBSProblem;
 
 /**
@@ -41,6 +42,8 @@ public:
    */
   std::vector<double>
   operator()(const Cell& cell, const Vector3& xyz, unsigned int num_groups) const;
+  std::vector<double>
+  Evaluate(const Cell& cell, const Vector3& xyz, unsigned int num_groups, double time) const;
 
   size_t GetNumLocalSubscribers() const { return num_local_subsribers_; }
   size_t GetNumGlobalSubsribers() const { return num_global_subscribers_; }
@@ -58,6 +61,7 @@ private:
 
   std::vector<double> strength_;
   const std::shared_ptr<VectorSpatialFunction> function_;
+  const std::shared_ptr<GroupTimeFunction> strength_function_;
 
   double start_time_ = -std::numeric_limits<double>::infinity();
   double end_time_ = std::numeric_limits<double>::infinity();
