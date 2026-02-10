@@ -411,6 +411,8 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_grid_face_histogram`
 
+- :ref:`exhale_class_classopensn_1_1_group_time_function`
+
 - :ref:`exhale_class_classopensn_1_1_input_parameters`
 
 - :ref:`exhale_class_classopensn_1_1_isotropic_boundary`

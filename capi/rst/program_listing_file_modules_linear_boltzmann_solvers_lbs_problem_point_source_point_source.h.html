@@ -100,6 +100,7 @@
 <span class="p">{</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GroupTimeFunction</span><span class="p">;</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * A class for point sources, which is defined by its location and a group-wise strength vector.</span>
@@ -144,7 +145,8 @@
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetLocation</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">location_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetStrength</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">strength_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsActive</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetStrength</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsActive</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="w"> </span><span class="n">location_</span><span class="p">;</span>
@@ -152,6 +154,7 @@
 <span class="w">  </span><span class="c1">// TODO: This could be a map with group indices to avoid</span>
 <span class="w">  </span><span class="c1">//       potentially many zero entries.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">strength_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">GroupTimeFunction</span><span class="o">&gt;</span><span class="w"> </span><span class="n">strength_function_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">start_time_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;::</span><span class="n">infinity</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">end_time_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;::</span><span class="n">infinity</span><span class="p">();</span>

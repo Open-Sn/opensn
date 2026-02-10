@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_group_time_function:
+
+Class GroupTimeFunction
+=======================
+
+- Defined in :ref:`file_framework_math_functions_function.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::function< double(unsigned int, double)>``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::GroupTimeFunction
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

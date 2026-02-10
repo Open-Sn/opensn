@@ -122,6 +122,10 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>location</strong> (<em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Coordinates of the point source.</p></li>
 <li><p><strong>strength</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Group-wise point source strength.</p></li>
+<li><p><strong>strength_function</strong> (<em>Callable</em>) – Callable that returns the source strength for a given group (and optionally time). It must
+accept either <cite>(group, time)</cite> for transient problems or just <cite>(group)</cite> for steady-state.
+If strength_function is provided, do not specify start_time/end_time; implement any time
+dependence inside the callback instead.</p></li>
 </ul>
 </dd>
 </dl>

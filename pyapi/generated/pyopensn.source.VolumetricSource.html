@@ -125,6 +125,10 @@
 <li><p><strong>group_strength</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – An array of multi-group source strength values. Note that this is only used when a function
 is not provided.</p></li>
 <li><p><strong>func</strong> (<a class="reference internal" href="pyopensn.math.VectorSpatialFunction.html#pyopensn.math.VectorSpatialFunction" title="pyopensn.math.VectorSpatialFunction"><em>pyopensn.math.VectorSpatialFunction</em></a>) – Function to be used to define the source.</p></li>
+<li><p><strong>strength_function</strong> (<em>Callable</em>) – Callable that returns the source strength for a given group (and optionally time). It must
+accept either <cite>(group, time)</cite> for transient problems or just <cite>(group)</cite> for steady-state.
+If strength_function is provided, do not specify start_time/end_time; implement any time
+dependence inside the callback instead.</p></li>
 </ul>
 </dd>
 </dl>

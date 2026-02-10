@@ -25,6 +25,7 @@ Program Listing for File point_source.h
    {
    
    class LBSProblem;
+   class GroupTimeFunction;
    
    /**
     * A class for point sources, which is defined by its location and a group-wise strength vector.
@@ -69,6 +70,7 @@ Program Listing for File point_source.h
    
      const Vector3& GetLocation() const { return location_; }
      const std::vector<double>& GetStrength() const { return strength_; }
+     std::vector<double> GetStrength(double time, unsigned int num_groups) const;
      bool IsActive(double time) const;
    
    private:
@@ -77,6 +79,7 @@ Program Listing for File point_source.h
      // TODO: This could be a map with group indices to avoid
      //       potentially many zero entries.
      const std::vector<double> strength_;
+     const std::shared_ptr<GroupTimeFunction> strength_function_;
    
      double start_time_ = -std::numeric_limits<double>::infinity();
      double end_time_ = std::numeric_limits<double>::infinity();

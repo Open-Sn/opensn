@@ -975,6 +975,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_group_time_function.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_input_parameters.rst
 
 .. toctree::
