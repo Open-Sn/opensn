@@ -990,11 +990,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_l_b_s_group.rst
-
-.. toctree::
-   :maxdepth: 1
-
    classopensn_1_1_l_b_s_groupset.rst
 
 .. toctree::
@@ -2503,11 +2498,6 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_group.h.rst
 
 .. toctree::
    :maxdepth: 1

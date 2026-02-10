@@ -107,7 +107,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">FLUDS</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">FLUDS</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">)</span>
+<span class="w">  </span><span class="n">FLUDS</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">)</span>
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">(</span><span class="n">num_groups</span><span class="p">),</span>
 <span class="w">      </span><span class="n">num_angles_</span><span class="p">(</span><span class="n">num_angles</span><span class="p">),</span>
 <span class="w">      </span><span class="n">num_groups_and_angles_</span><span class="p">(</span><span class="n">num_groups_</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num_angles_</span><span class="p">),</span>
@@ -147,7 +147,7 @@
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">FLUDS</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_and_angles_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds_</span><span class="p">;</span>

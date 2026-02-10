@@ -44,8 +44,6 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`)
 
-- ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_group.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_group.h`)
-
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
 
 

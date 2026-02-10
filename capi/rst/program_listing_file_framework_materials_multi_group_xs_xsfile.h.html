@@ -114,7 +114,7 @@
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">file_name_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="w"> </span><span class="n">file_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_precursors_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">MultiGroupXS</span><span class="o">::</span><span class="n">Precursor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">precursors_</span><span class="p">;</span>
@@ -140,7 +140,7 @@
 <span class="w">  </span><span class="c1">/// Reading group structure data.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ReadGroupStructure</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">keyword</span><span class="p">,</span>
 <span class="w">                          </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">destination</span><span class="p">,</span>
-<span class="w">                          </span><span class="kt">size_t</span><span class="w"> </span><span class="n">n_grps</span><span class="p">,</span>
+<span class="w">                          </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n_grps</span><span class="p">,</span>
 <span class="w">                          </span><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file</span><span class="p">,</span>
 <span class="w">                          </span><span class="n">std</span><span class="o">::</span><span class="n">istringstream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line_stream</span><span class="p">,</span>
 <span class="w">                          </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">line_number</span><span class="p">);</span>

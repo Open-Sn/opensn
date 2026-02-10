@@ -52,7 +52,7 @@ Program Listing for File aah_sweep_kernels.h
      bool include_rhs_time_term;
      DiscreteOrdinatesProblem& problem;
      const std::vector<double>* psi_old; // nullptr for steady sweeps
-     size_t group_block_size;            // used by fixed-N/AVX path
+     unsigned int group_block_size;      // used by fixed-N/AVX path
    };
    
    inline size_t
@@ -81,8 +81,8 @@ Program Listing for File aah_sweep_kernels.h
    AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
    {
      const auto& groupset = data.groupset;
-     const size_t gs_size = groupset.groups.size();
-     const auto gs_gi = groupset.groups.front().id;
+     const auto gs_size = groupset.GetNumGroups();
+     const auto gs_gi = groupset.first_group;
    
      int deploc_face_counter = -1;
      int preloc_face_counter = -1;
@@ -345,7 +345,7 @@ Program Listing for File aah_sweep_kernels.h
    }
    
    // Fixed-N kernel (scalar/AVX) is specialized in aah_avx_sweep_chunk.cc.
-   template <int NumNodes, bool time_dependent>
+   template <unsigned int NumNodes, bool time_dependent>
    void AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set);
    
    } // namespace opensn

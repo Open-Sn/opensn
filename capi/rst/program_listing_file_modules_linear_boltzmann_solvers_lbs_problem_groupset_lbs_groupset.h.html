@@ -92,7 +92,6 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_group.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/quadratures/angular/legendre_poly/legendrepoly.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/quadratures/angular/angular_quadrature.h&quot;</span>
@@ -127,8 +126,14 @@
 
 <span class="w">  </span><span class="o">~</span><span class="n">LBSGroupset</span><span class="p">();</span>
 
+<span class="w">  </span><span class="c1">/// Return number of groups in the groupset</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroup</span><span class="o">&gt;</span><span class="w"> </span><span class="n">groups</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// First group number</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">first_group</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Last groups number</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngularQuadrature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngleAggregation</span><span class="o">&gt;</span><span class="w"> </span><span class="n">angle_agg</span><span class="p">;</span>
 <span class="w">  </span><span class="n">UniqueSOGroupings</span><span class="w"> </span><span class="n">unique_so_groupings</span><span class="p">;</span>

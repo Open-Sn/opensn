@@ -16,7 +16,6 @@ Directory groupset
 Files
 -----
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_group.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
 
 

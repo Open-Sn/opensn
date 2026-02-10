@@ -163,7 +163,7 @@ Program Listing for File discrete_ordinates_problem.h
      /// Max angle-set size.
      std::size_t max_angleset_size_ = 0;
      /// Max group-set size.
-     std::size_t max_groupset_size_ = 0;
+     unsigned int max_groupset_size_ = 0;
    
      std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
    
@@ -173,12 +173,12 @@ Program Listing for File discrete_ordinates_problem.h
    
    private:
      void CreateAAHD_FLUDSCommonData();
-     std::shared_ptr<FLUDS> CreateAAHD_FLUDS(std::size_t num_groups,
+     std::shared_ptr<FLUDS> CreateAAHD_FLUDS(unsigned int num_groups,
                                              std::size_t num_angles,
                                              const FLUDSCommonData& common_data);
      std::shared_ptr<AngleSet>
      CreateAAHD_AngleSet(size_t id,
-                         size_t num_groups,
+                         unsigned int num_groups,
                          const SPDS& spds,
                          std::shared_ptr<FLUDS>& fluds,
                          std::vector<size_t>& angle_indices,

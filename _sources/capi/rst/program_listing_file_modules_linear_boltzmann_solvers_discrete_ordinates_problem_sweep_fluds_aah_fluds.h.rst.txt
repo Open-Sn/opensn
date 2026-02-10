@@ -29,7 +29,7 @@ Program Listing for File aah_fluds.h
       * This constructor initializes an auxiliary FLUDS based on a primary FLUDS. The restriction here
       * is that the auxiliary FLUDS has the exact same sweep ordering as the primary FLUDS.
       */
-     AAH_FLUDS(size_t num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data);
+     AAH_FLUDS(unsigned int num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data);
    
      /**
       * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
@@ -49,7 +49,7 @@ Program Listing for File aah_fluds.h
      double* UpwindPsi(std::size_t cell_so_index,
                        int inc_face_counter,
                        std::size_t face_dof,
-                       std::size_t g,
+                       unsigned int g,
                        std::size_t n);
    
      /// Given a outbound face counter this method returns a pointer to the location
@@ -60,7 +60,7 @@ Program Listing for File aah_fluds.h
       * computes the location where to obtain the position's upwind psi.
       */
      double*
-     NLUpwindPsi(int nonl_inc_face_counter, std::size_t face_dof, std::size_t g, std::size_t n);
+     NLUpwindPsi(int nonl_inc_face_counter, std::size_t face_dof, unsigned int g, std::size_t n);
    
      size_t GetPrelocIFaceDOFCount(std::size_t prelocI) const;
      size_t GetDelayedPrelocIFaceDOFCount(std::size_t prelocI) const;

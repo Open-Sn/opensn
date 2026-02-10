@@ -33,7 +33,7 @@ Program Listing for File sweep_boundary.h
    {
    public:
      explicit SweepBoundary(LBSBoundaryType bndry_type,
-                            size_t num_groups,
+                            unsigned int num_groups,
                             CoordinateSystemType coord_type)
        : num_groups_(num_groups), type_(bndry_type), coord_type_(coord_type)
      {
@@ -134,7 +134,7 @@ Program Listing for File sweep_boundary.h
    
    protected:
      std::vector<double> zero_boundary_flux_;
-     size_t num_groups_;
+     unsigned int num_groups_;
    
    private:
      const LBSBoundaryType type_;

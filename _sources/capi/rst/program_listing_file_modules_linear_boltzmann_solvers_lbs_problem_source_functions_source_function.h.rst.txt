@@ -94,13 +94,13 @@ Program Listing for File source_function.h
      bool apply_ags_fission_src_ = false;
      bool suppress_wg_scatter_src_ = false;
    
-     size_t gs_i_ = 0;
-     size_t gs_f_ = 0;
-     size_t first_grp_ = 0;
-     size_t last_grp_ = 0;
+     unsigned int gs_i_ = 0;
+     unsigned int gs_f_ = 0;
+     unsigned int first_grp_ = 0;
+     unsigned int last_grp_ = 0;
    
      double cell_volume_ = 0.0;
-     size_t g_ = 0;
+     unsigned int g_ = 0;
      const double* fixed_src_moments_ = nullptr;
      std::vector<double> default_zero_src_;
    };

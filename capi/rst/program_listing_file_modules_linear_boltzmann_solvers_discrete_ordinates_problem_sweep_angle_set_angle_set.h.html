@@ -107,7 +107,7 @@
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">AngleSet</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
-<span class="w">           </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
+<span class="w">           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
 <span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">,</span>
 <span class="w">           </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FLUDS</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
 <span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">angle_indices</span><span class="p">,</span>
@@ -136,7 +136,7 @@
 <span class="w">  </span><span class="c1">/// Returns the angle indices associated with this angleset.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetBoundaries</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">boundaries_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">GetNumGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">GetNumGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">GetNumAngles</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">angles_</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
@@ -196,7 +196,7 @@
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id_</span><span class="p">;</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FLUDS</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fluds_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">angles_</span><span class="p">;</span>

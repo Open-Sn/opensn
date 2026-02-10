@@ -238,7 +238,7 @@
 <span class="w">  </span><span class="c1">/// Max angle-set size.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_angleset_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Max group-set size.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">max_groupset_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_groupset_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">GridFaceHistogram</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_face_histogram_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 
@@ -248,12 +248,12 @@
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CreateAAHD_FLUDSCommonData</span><span class="p">();</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FLUDS</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateAAHD_FLUDS</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FLUDS</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateAAHD_FLUDS</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
 <span class="w">                                          </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles</span><span class="p">,</span>
 <span class="w">                                          </span><span class="k">const</span><span class="w"> </span><span class="n">FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data</span><span class="p">);</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="n">CreateAAHD_AngleSet</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
-<span class="w">                      </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
+<span class="w">                      </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
 <span class="w">                      </span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">,</span>
 <span class="w">                      </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FLUDS</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
 <span class="w">                      </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">angle_indices</span><span class="p">,</span>

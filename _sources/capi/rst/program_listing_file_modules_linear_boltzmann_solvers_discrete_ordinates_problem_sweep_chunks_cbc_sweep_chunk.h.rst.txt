@@ -65,7 +65,7 @@ Program Listing for File cbc_sweep_chunk.h
      size_t gs_size_;
      unsigned int gs_gi_;
      size_t num_angles_in_as_;
-     size_t group_stride_;       // Stride for consecutive angles
+     unsigned int group_stride_; // Stride for consecutive angles
      size_t group_angle_stride_; // Stride for consecutive spatial DOFs
      bool surface_source_active_;
    
