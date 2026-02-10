@@ -58,9 +58,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a774b8ad8c3d9730030fa2c3095c30bfd`
 
-- :ref:`exhale_function_namespaceopensn_1ad002bcc4c1dcc2738c4d0fd368900b73`
-
 - :ref:`exhale_function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02`
+
+- :ref:`exhale_function_namespaceopensn_1ad002bcc4c1dcc2738c4d0fd368900b73`
 
 - :ref:`exhale_function_namespaceopensn_1af6184d19080033614eaed52625ebfdac`
 
