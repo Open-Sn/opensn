@@ -4,8 +4,8 @@
 """
 Time-dependent source initialization: 1D pure absorber with constant source.
 
-Initialize with a time-dependent source solve, then advance one BE step with
-TransientSolver. The next step should satisfy the analytic update
+Initialize with a transient step from zero state, then advance one BE step with
+TransientSolver using the existing state. The next step should satisfy the analytic update
 phi^{n+1} = (phi^n + dt*Q)/(1 + sigma_t*dt).
 TD_INIT_PASS is 1 if the transient step matches the update within 2%.
 """
@@ -22,7 +22,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesProblem, TimeDependentSourceSolver, TransientSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, TransientSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
@@ -83,7 +83,7 @@ if __name__ == "__main__":
         },
     )
 
-    td_solver = TimeDependentSourceSolver(problem=phys, dt=dt, theta=1.0, stop_time=dt)
+    td_solver = TransientSolver(problem=phys, dt=dt, theta=1.0, stop_time=dt, initial_state="zero")
     td_solver.Initialize()
     td_solver.Execute()
 

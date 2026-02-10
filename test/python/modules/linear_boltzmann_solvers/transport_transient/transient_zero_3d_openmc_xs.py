@@ -22,7 +22,9 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesProblem, TimeDependentSourceSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, TransientSolver
+    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
+    from pyopensn.logvol import RPPLogicalVolume
 
 if __name__ == "__main__":
 
@@ -37,7 +39,9 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     xs_water = MultiGroupXS()
-    xs_water.LoadFromOpenMC("xs_water.h5", "set1", 294)
+    xs_water.LoadFromOpenMC(
+        os.path.join(os.path.dirname(__file__), "xs_water.h5"), "set1", 294
+    )
     num_groups = xs_water.num_groups
 
     strength = [0.0 for _ in range(num_groups)]
@@ -65,7 +69,7 @@ if __name__ == "__main__":
         volumetric_sources=[src1],
     )
 
-    solver = TimeDependentSourceSolver(problem=phys, dt=0.01, theta=0.5, stop_time=0.1)
+    solver = TransientSolver(problem=phys, dt=0.01, theta=0.5, stop_time=0.1, initial_state="zero")
     solver.Initialize()
     solver.Execute()
 
