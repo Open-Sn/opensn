@@ -9,9 +9,11 @@
 #include "framework/parameters/parameter_block.h"
 #include <memory>
 #include <optional>
+#include <tuple>
 
 namespace opensn
 {
+class FieldFunctionGridBased;
 
 /**
  * Base class for Discrete Ordinates solvers. This class mostly establishes utilities related to
@@ -90,6 +92,18 @@ public:
   /// Zeroes all the outflow data-structures required to compute balance.
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
 
+  /**
+   * Create (if needed) and return angular flux field functions for the given groups and angles.
+   *
+   * Angles are indices into the groupset quadrature associated with each group.
+   */
+  std::vector<std::shared_ptr<FieldFunctionGridBased>>
+  GetAngularFluxFieldFunctionList(const std::vector<unsigned int>& groups,
+                                  const std::vector<size_t>& angles);
+
+  /// Update angular flux field functions from psi_new_local_.
+  void UpdateAngularFieldFunctions();
+
   void SetBoundaryOptions(const InputParameters& params) override;
   void ClearBoundaries() override;
 
@@ -158,6 +172,8 @@ protected:
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<std::vector<double>> psi_old_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
+
+  std::map<std::tuple<size_t, size_t, size_t>, size_t> angular_flux_field_functions_local_map_;
 
 private:
   void CreateAAHD_FLUDSCommonData();
