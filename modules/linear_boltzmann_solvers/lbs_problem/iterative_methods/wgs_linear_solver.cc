@@ -226,19 +226,21 @@ WGSLinearSolver::PostSolveCallback()
   {
     KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
     KSPGetConvergedReason(ksp_, &reason);
+    PetscInt its = 0;
+    KSPGetIterationNumber(ksp_, &its);
     if (reason < 0)
       log.Log0Warning() << "Krylov solver diverged. "
                         << "Reason: " << GetPETScConvergedReasonstring(reason);
     else if (reason == KSP_CONVERGED_RTOL)
     {
       auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
-      if (gs_context_ptr && gs_context_ptr->log_info)
+      if (gs_context_ptr && gs_context_ptr->log_info && its == 0)
         log.Log() << program_timer.GetTimeString() << " CONVERGED (relative tolerance)";
     }
     else if (reason == KSP_CONVERGED_ATOL)
     {
       auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
-      if (gs_context_ptr && gs_context_ptr->log_info)
+      if (gs_context_ptr && gs_context_ptr->log_info && its == 0)
         log.Log() << program_timer.GetTimeString() << " CONVERGED (absolute tolerance)";
     }
     else if (reason == KSP_DIVERGED_ITS)
