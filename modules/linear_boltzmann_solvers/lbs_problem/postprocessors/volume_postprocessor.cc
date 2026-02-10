@@ -5,7 +5,9 @@
 #include "framework/object_factory.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/runtime.h"
+#include <cstdint>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 
 namespace opensn
@@ -23,8 +25,9 @@ VolumePostprocessor::GetInputParameters()
     "block_ids",
     std::vector<int>{},
     "Block restriction for the postprocessor. Empty/unspecified means no block restriction.");
-  params.AddOptionalParameter<std::shared_ptr<LogicalVolume>>(
-    "logical_volume", nullptr, "Logical volume to restrict the computation to.");
+  params.AddOptionalParameterArray("logical_volumes",
+                                   std::vector<std::shared_ptr<LogicalVolume>>{},
+                                   "Logical volume to restrict the computation to.");
   params.AddOptionalParameter<std::string>(
     "value_type", "integral", "Type of value to compute: 'integral', 'max', 'min', or 'avg'");
   params.AddOptionalParameter(
@@ -44,7 +47,7 @@ VolumePostprocessor::Create(const ParameterBlock& params)
 VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
   : lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem")),
     block_ids_(params.GetParamVectorValue<int>("block_ids")),
-    logical_volume_(params.GetParamValue<std::shared_ptr<LogicalVolume>>("logical_volume")),
+    logical_volumes_(params.GetParamVectorValue<std::shared_ptr<LogicalVolume>>("logical_volumes")),
     selected_group_(params.IsParameterValid("group")
                       ? std::make_optional(params.GetParamValue<unsigned int>("group"))
                       : std::nullopt),
@@ -78,7 +81,11 @@ VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
 
   CreateSpatialRestriction();
   CreateEnergyRestriction();
-  values_.resize(groups_.size());
+
+  auto n_lvs = std::max(static_cast<std::size_t>(1), logical_volumes_.size());
+  values_.resize(n_lvs);
+  for (auto& vals : values_)
+    vals.resize(groups_.size());
 }
 
 void
@@ -86,24 +93,50 @@ VolumePostprocessor::CreateSpatialRestriction()
 {
   const auto& grid = lbs_problem_->GetGrid();
 
-  // filter on logical volumes
-  std::vector<std::uint32_t> cell_ids;
-  if (logical_volume_ != nullptr)
+  if (logical_volumes_.empty())
   {
-    for (const auto& cell : grid->local_cells)
-      if (logical_volume_->Inside(cell.centroid))
+    std::vector<std::uint32_t> cell_ids;
+    if (block_ids_.empty())
+    {
+      for (const auto& cell : grid->local_cells)
         cell_ids.push_back(cell.local_id);
+    }
+    else
+    {
+      for (const auto& cell : grid->local_cells)
+      {
+        if (std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
+          cell_ids.push_back(cell.local_id);
+      }
+    }
+    cell_local_ids_[0] = cell_ids;
   }
   else
   {
-    for (const auto& cell : grid->local_cells)
-      cell_ids.push_back(cell.local_id);
+    cell_local_ids_.resize(logical_volumes_.size());
+    for (unsigned int i = 0; i < logical_volumes_.size(); ++i)
+      cell_local_ids_[i] = GetLogivalVolumeCellIDs(logical_volumes_[i]);
   }
 
+  // TODO: if `cell_local_ids_` is empty, warn or stop
+}
+
+std::vector<std::uint32_t>
+VolumePostprocessor::GetLogivalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol)
+{
+  const auto& grid = lbs_problem_->GetGrid();
+
+  // filter on logical volumes
+  std::vector<std::uint32_t> cell_ids;
+  for (const auto& cell : grid->local_cells)
+    if (log_vol->Inside(cell.centroid))
+      cell_ids.push_back(cell.local_id);
+
+  std::vector<std::uint32_t> final_cell_ids;
   // apply block restriction
   if (block_ids_.empty())
   {
-    cell_local_ids_.assign(cell_ids.begin(), cell_ids.end());
+    final_cell_ids.assign(cell_ids.begin(), cell_ids.end());
   }
   else
   {
@@ -111,11 +144,11 @@ VolumePostprocessor::CreateSpatialRestriction()
     {
       auto block_id = grid->local_cells[id].block_id;
       if (std::find(block_ids_.begin(), block_ids_.end(), block_id) != block_ids_.end())
-        cell_local_ids_.push_back(id);
+        final_cell_ids.push_back(id);
     }
   }
 
-  // TODO: if `cell_local_ids_` is empty, warn or stop
+  return final_cell_ids;
 }
 
 void
@@ -141,25 +174,28 @@ VolumePostprocessor::CreateEnergyRestriction()
 void
 VolumePostprocessor::Execute()
 {
-  switch (value_type_)
+  for (unsigned int i = 0; i < cell_local_ids_.size(); ++i)
   {
-    case ValueType::INTEGRAL:
-      ComputeIntegral();
-      break;
-    case ValueType::MAX:
-      ComputeMax();
-      break;
-    case ValueType::MIN:
-      ComputeMin();
-      break;
-    case ValueType::AVERAGE:
-      ComputeVolumeWeightedAverage();
-      break;
+    switch (value_type_)
+    {
+      case ValueType::INTEGRAL:
+        values_[i] = ComputeIntegral(cell_local_ids_[i]);
+        break;
+      case ValueType::MAX:
+        values_[i] = ComputeMax(cell_local_ids_[i]);
+        break;
+      case ValueType::MIN:
+        values_[i] = ComputeMin(cell_local_ids_[i]);
+        break;
+      case ValueType::AVERAGE:
+        values_[i] = ComputeVolumeWeightedAverage(cell_local_ids_[i]);
+        break;
+    }
   }
 }
 
-void
-VolumePostprocessor::ComputeIntegral()
+std::vector<double>
+VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
@@ -168,9 +204,9 @@ VolumePostprocessor::ComputeIntegral()
   auto coord = sdm.GetSpatialWeightingFunction();
 
   std::vector<double> local_integral(groups_.size(), 0.0);
-  for (const auto cell_local_id : cell_local_ids_)
+  for (const auto cell_id : cell_local_ids)
   {
-    const auto& cell = grid->local_cells[cell_local_id];
+    const auto& cell = grid->local_cells[cell_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
@@ -199,12 +235,11 @@ VolumePostprocessor::ComputeIntegral()
   for (std::size_t i = 0; i < local_integral.size(); ++i)
     mpi_comm.all_reduce(local_integral[i], global_integral[i], mpi::op::sum<double>());
 
-  for (std::size_t i = 0; i < global_integral.size(); ++i)
-    values_[i] = global_integral[i];
+  return global_integral;
 }
 
-void
-VolumePostprocessor::ComputeMax()
+std::vector<double>
+VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
@@ -212,9 +247,9 @@ VolumePostprocessor::ComputeMax()
   const auto phi = lbs_problem_->GetPhiNewLocal();
 
   std::vector<double> local_max(groups_.size(), -std::numeric_limits<double>::infinity());
-  for (const auto cell_local_id : cell_local_ids_)
+  for (const auto cell_id : cell_local_ids)
   {
-    const auto& cell = grid->local_cells[cell_local_id];
+    const auto& cell = grid->local_cells[cell_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
 
@@ -232,12 +267,11 @@ VolumePostprocessor::ComputeMax()
   for (std::size_t i = 0; i < local_max.size(); ++i)
     mpi_comm.all_reduce(local_max[i], global_max[i], mpi::op::max<double>());
 
-  for (std::size_t i = 0; i < global_max.size(); ++i)
-    values_[i] = global_max[i];
+  return global_max;
 }
 
-void
-VolumePostprocessor::ComputeMin()
+std::vector<double>
+VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
@@ -245,9 +279,9 @@ VolumePostprocessor::ComputeMin()
   const auto phi = lbs_problem_->GetPhiNewLocal();
 
   std::vector<double> local_min(groups_.size(), std::numeric_limits<double>::infinity());
-  for (const auto cell_local_id : cell_local_ids_)
+  for (const auto cell_id : cell_local_ids)
   {
-    const auto& cell = grid->local_cells[cell_local_id];
+    const auto& cell = grid->local_cells[cell_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
 
@@ -265,12 +299,11 @@ VolumePostprocessor::ComputeMin()
   for (std::size_t i = 0; i < local_min.size(); ++i)
     mpi_comm.all_reduce(local_min[i], global_min[i], mpi::op::min<double>());
 
-  for (std::size_t i = 0; i < global_min.size(); ++i)
-    values_[i] = global_min[i];
+  return global_min;
 }
 
-void
-VolumePostprocessor::ComputeVolumeWeightedAverage()
+std::vector<double>
+VolumePostprocessor::ComputeVolumeWeightedAverage(const std::vector<uint32_t>& cell_local_ids)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
@@ -281,9 +314,9 @@ VolumePostprocessor::ComputeVolumeWeightedAverage()
   std::vector<double> local_weighted_integral(groups_.size(), 0.0);
   double local_weighted_volume = 0.0;
 
-  for (const auto cell_local_id : cell_local_ids_)
+  for (const auto cell_id : cell_local_ids)
   {
-    const auto& cell = grid->local_cells[cell_local_id];
+    const auto& cell = grid->local_cells[cell_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
@@ -320,16 +353,18 @@ VolumePostprocessor::ComputeVolumeWeightedAverage()
       local_weighted_integral[i], global_weighted_integral[i], mpi::op::sum<double>());
   mpi_comm.all_reduce(local_weighted_volume, global_weighted_volume, mpi::op::sum<double>());
 
+  std::vector<double> values(groups_.size());
   for (std::size_t i = 0; i < global_weighted_integral.size(); ++i)
   {
     if (global_weighted_volume > 0.0)
-      values_[i] = global_weighted_integral[i] / global_weighted_volume;
+      values[i] = global_weighted_integral[i] / global_weighted_volume;
     else
-      values_[i] = 0.0;
+      values[i] = 0.0;
   }
+  return values;
 }
 
-std::vector<double>
+std::vector<std::vector<double>>
 VolumePostprocessor::GetValue() const
 {
   return values_;
