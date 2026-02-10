@@ -45,6 +45,10 @@ VolumetricSource::GetInputParameters()
     "func",
     std::shared_ptr<VectorSpatialFunction>{},
     "SpatialMaterialFunction object to be used to define the source.");
+  params.AddOptionalParameter<std::shared_ptr<GroupTimeFunction>>(
+    "strength_function",
+    std::shared_ptr<GroupTimeFunction>{},
+    "Function defining group-wise strengths as a function of (group, time).");
   params.AddOptionalParameter("start_time",
                               -std::numeric_limits<double>::infinity(),
                               "Time at which the source becomes active.");
@@ -67,24 +71,35 @@ VolumetricSource::VolumetricSource(const InputParameters& params)
     logvol_(params.GetSharedPtrParam<LogicalVolume>("logical_volume", false)),
     strength_(params.GetParamVectorValue<double>("group_strength")),
     function_(params.GetSharedPtrParam<VectorSpatialFunction>("func", false)),
+    strength_function_(params.GetSharedPtrParam<GroupTimeFunction>("strength_function", false)),
     start_time_(params.GetParamValue<double>("start_time")),
     end_time_(params.GetParamValue<double>("end_time"))
 {
   if (not logvol_ and block_ids_.empty())
     throw std::invalid_argument("A volumetric source must be defined with a logical volume, "
                                 "block IDs, or both. Neither were specified.");
-  if (function_ and not strength_.empty())
+  const bool has_strength = not strength_.empty();
+  const bool has_spatial_func = static_cast<bool>(function_);
+  const bool has_strength_func = static_cast<bool>(strength_function_);
+  if ((has_strength ? 1 : 0) + (has_spatial_func ? 1 : 0) + (has_strength_func ? 1 : 0) == 0)
+    throw std::invalid_argument("Either a function or the source strength must be provided.");
+  if ((has_strength ? 1 : 0) + (has_spatial_func ? 1 : 0) + (has_strength_func ? 1 : 0) > 1)
+    throw std::invalid_argument(
+      "Specify only one of group_strength, func, or strength_function for a volumetric source.");
+  if (function_ and has_strength)
     throw std::invalid_argument(
       "If a function is provided, the source strength should not be set.");
-  if (not function_ and strength_.empty())
-    throw std::invalid_argument("Either a function or the source strength must be provided.");
+  if (has_strength_func && (start_time_ != -std::numeric_limits<double>::infinity() ||
+                            end_time_ != std::numeric_limits<double>::infinity()))
+    throw std::invalid_argument("strength_function cannot be used with start_time/end_time. "
+                                "Define time dependence in the callback or omit the time bounds.");
 }
 
 void
 VolumetricSource::Initialize(const LBSProblem& lbs_problem)
 {
   // Set the source strength vector
-  if (not function_ and not strength_.empty())
+  if (not function_ and not strength_function_ and not strength_.empty())
     if (strength_.size() != lbs_problem.GetNumGroups())
       throw std::invalid_argument("The number of groups in the source strength vector must "
                                   "match the number of groups in the solver the source is "
@@ -130,10 +145,28 @@ VolumetricSource::operator()(const Cell& cell,
                              const Vector3& xyz,
                              const unsigned int num_groups) const
 {
+  return Evaluate(cell, xyz, num_groups, 0.0);
+}
+
+std::vector<double>
+VolumetricSource::Evaluate(const Cell& cell,
+                           const Vector3& xyz,
+                           const unsigned int num_groups,
+                           const double time) const
+{
   if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id) == 0)
     return std::vector<double>(num_groups, 0.0); // NOLINT
   else if (not function_)
+  {
+    if (strength_function_)
+    {
+      std::vector<double> values(num_groups, 0.0);
+      for (unsigned int g = 0; g < num_groups; ++g)
+        values[g] = (*strength_function_)(g, time);
+      return values;
+    }
     return strength_;
+  }
   else
     return (*function_)(xyz, num_groups);
 }

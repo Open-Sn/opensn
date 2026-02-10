@@ -1138,9 +1138,6 @@ void
 LBSProblem::InitializeSolverSchemes()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::InitializeSolverSchemes");
-
-  log.Log() << "Initializing WGS and AGS solvers";
-
   InitializeWGSSolvers();
 
   ags_solver_ = std::make_shared<AGSLinearSolver>(*this, wgs_solvers_);

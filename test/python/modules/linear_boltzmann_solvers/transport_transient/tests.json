@@ -8,7 +8,7 @@
         "type": "FloatCompare",
         "key": "DELAYED_THETA_RATIO",
         "wordnum": 1,
-        "gold": 2.0,
+        "gold": 2,
         "abs_tol": 0.2
       }
     ]
@@ -22,7 +22,7 @@
         "type": "FloatCompare",
         "key": "ZERO_INIT_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -36,7 +36,7 @@
         "type": "FloatCompare",
         "key": "STEADY_INIT_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -50,7 +50,7 @@
         "type": "FloatCompare",
         "key": "TD_INIT_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -64,7 +64,7 @@
         "type": "FloatCompare",
         "key": "PRECURSOR_DECAY_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -78,7 +78,7 @@
         "type": "FloatCompare",
         "key": "LEAKAGE_DECAY_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -92,7 +92,7 @@
         "type": "KeyValuePair",
         "key": "Max phi(3s) = ",
         "goldvalue": 4.979358,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       }
     ]
   },
@@ -105,7 +105,7 @@
         "type": "KeyValuePair",
         "key": "Max phi(1s) = ",
         "goldvalue": 2.330956,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       }
     ]
   },
@@ -118,13 +118,13 @@
         "type": "KeyValuePair",
         "key": "Max phi0(2s) = ",
         "goldvalue": 3.658193,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       },
       {
         "type": "KeyValuePair",
         "key": "Max phi1(2s) = ",
         "goldvalue": 1.027354,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       }
     ]
   },
@@ -137,7 +137,7 @@
         "type": "FloatCompare",
         "key": "ANALYTIC_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -151,7 +151,7 @@
         "type": "FloatCompare",
         "key": "ANALYTIC_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -165,7 +165,7 @@
         "type": "FloatCompare",
         "key": "PRKE_STK_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -179,7 +179,7 @@
         "type": "FloatCompare",
         "key": "K_PRECURSOR_FPROD_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -193,7 +193,7 @@
         "type": "FloatCompare",
         "key": "PRKE_STK_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -207,7 +207,7 @@
         "type": "FloatCompare",
         "key": "PRKE_STK_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -221,7 +221,7 @@
         "type": "FloatCompare",
         "key": "PRKE_STK_PASS",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -236,13 +236,13 @@
         "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 1.2,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       },
       {
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -257,13 +257,13 @@
         "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 1.2,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       },
       {
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -278,13 +278,13 @@
         "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 2.2,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       },
       {
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -298,7 +298,7 @@
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -312,7 +312,7 @@
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -326,7 +326,7 @@
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -341,13 +341,13 @@
         "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 1.2,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       },
       {
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -362,7 +362,7 @@
         "key": "FP_RATIO_ACTUAL",
         "wordnum": 1,
         "gold": 1.2,
-        "abs_tol": 1e-06
+        "abs_tol": 0.000001
       }
     ]
   },
@@ -383,13 +383,13 @@
         "key": "FP_RATIO_AT_SWAP",
         "wordnum": 1,
         "gold": 1.2,
-        "abs_tol": 2e-03
+        "abs_tol": 0.002
       },
       {
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]
@@ -403,7 +403,21 @@
         "type": "FloatCompare",
         "key": "TRANSIENT_OK",
         "wordnum": 1,
-        "gold": 1.0,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_zero_3d_1g_ramp_source_analytic.py",
+    "comment": "Zero-mode transient with ramped source and analytic check",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "RAMP_SOURCE_ANALYTIC_PASS",
+        "wordnum": 1,
+        "gold": 1,
         "abs_tol": 1e-12
       }
     ]

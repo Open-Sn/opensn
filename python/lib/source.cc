@@ -4,10 +4,37 @@
 #include "python/lib/py_wrappers.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
+#include "framework/math/functions/function.h"
 #include <memory>
 
 namespace opensn
 {
+
+namespace
+{
+std::shared_ptr<GroupTimeFunction>
+MakeGroupTimeFunction(const py::function& func)
+{
+  auto wrapper = [func](unsigned int group, double time)
+  {
+    py::gil_scoped_acquire gil;
+    try
+    {
+      return func(group, time).cast<double>();
+    }
+    catch (const py::error_already_set& err)
+    {
+      if (err.matches(PyExc_TypeError))
+      {
+        PyErr_Clear();
+        return func(group).cast<double>();
+      }
+      throw;
+    }
+  };
+  return std::make_shared<GroupTimeFunction>(wrapper);
+}
+} // namespace
 
 // Wrap point source
 void
@@ -28,7 +55,21 @@ WrapPointSource(py::module& src)
     py::init(
       [](py::kwargs& params)
       {
-        return PointSource::Create(kwargs_to_param_block(params));
+        ParameterBlock main;
+        for (auto [key, value] : params)
+        {
+          if (key.cast<std::string>().empty())
+            continue;
+
+          const auto name = key.cast<std::string>();
+          if (name == "strength_function" and py::isinstance<py::function>(value))
+          {
+            main.AddParameter(name, MakeGroupTimeFunction(value.cast<py::function>()));
+            continue;
+          }
+          main.AddParameter(pyobj_to_param_block(name, value.cast<py::object>()));
+        }
+        return PointSource::Create(main);
       }
     ),
     R"(
@@ -40,6 +81,11 @@ WrapPointSource(py::module& src)
         Coordinates of the point source.
     strength: List[float]
         Group-wise point source strength.
+    strength_function: Callable
+        Callable that returns the source strength for a given group (and optionally time). It must
+        accept either `(group, time)` for transient problems or just `(group)` for steady-state.
+        If strength_function is provided, do not specify start_time/end_time; implement any time
+        dependence inside the callback instead.
     )"
   );
   // clang-format on
@@ -64,7 +110,21 @@ WrapVolumetricSource(py::module& src)
     py::init(
       [](py::kwargs& params)
       {
-        return VolumetricSource::Create(kwargs_to_param_block(params));
+        ParameterBlock main;
+        for (auto [key, value] : params)
+        {
+          if (key.cast<std::string>().empty())
+            continue;
+
+          const auto name = key.cast<std::string>();
+          if (name == "strength_function" and py::isinstance<py::function>(value))
+          {
+            main.AddParameter(name, MakeGroupTimeFunction(value.cast<py::function>()));
+            continue;
+          }
+          main.AddParameter(pyobj_to_param_block(name, value.cast<py::object>()));
+        }
+        return VolumetricSource::Create(main);
       }
     ),
     R"(
@@ -81,6 +141,11 @@ WrapVolumetricSource(py::module& src)
         is not provided.
     func: pyopensn.math.VectorSpatialFunction
         Function to be used to define the source.
+    strength_function: Callable
+        Callable that returns the source strength for a given group (and optionally time). It must
+        accept either `(group, time)` for transient problems or just `(group)` for steady-state.
+        If strength_function is provided, do not specify start_time/end_time; implement any time
+        dependence inside the callback instead.
     )"
   );
   // clang-format on

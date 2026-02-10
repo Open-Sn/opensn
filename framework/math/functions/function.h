@@ -36,4 +36,15 @@ public:
   }
 };
 
+/// Base class for evaluating group-wise strengths given group index and time.
+class GroupTimeFunction : public std::function<double(unsigned int, double)>
+{
+public:
+  GroupTimeFunction() = default;
+  GroupTimeFunction(const std::function<double(unsigned int, double)>& src)
+    : std::function<double(unsigned int, double)>(src)
+  {
+  }
+};
+
 } // namespace opensn
