@@ -37,7 +37,7 @@ protected:
   void* level_vector_ = nullptr;
   const std::vector<double>& psi_old_;
   bool use_gpus_;
-  size_t group_block_size_ = 0;
+  unsigned int group_block_size_ = 0;
   bool use_fixed_n_ = false;
   unsigned int fixed_num_nodes_ = 0;
 };

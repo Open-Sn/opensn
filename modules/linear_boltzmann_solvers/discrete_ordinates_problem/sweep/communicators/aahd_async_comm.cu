@@ -24,7 +24,7 @@ ResizeRequestVector(std::vector<mpi::Request>& request_vector,
 }
 
 AAHD_ASynchronousCommunicator::AAHD_ASynchronousCommunicator(FLUDS& fluds,
-                                                             std::size_t num_groups,
+                                                             unsigned int num_groups,
                                                              std::size_t num_angles,
                                                              int max_mpi_message_size,
                                                              const MPICommunicatorSet& comm_set)

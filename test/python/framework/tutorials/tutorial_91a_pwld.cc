@@ -70,7 +70,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "Quadrature created." << std::endl;
 
   // Set/Get params
-  const size_t num_groups = 20;
+  const unsigned int num_groups = 20;
 
   const auto& m2d = quadrature->GetMomentToDiscreteOperator();
   const auto& d2m = quadrature->GetDiscreteToMomentOperator();
@@ -251,7 +251,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
 
             const double mu_Nij = -mu * M_surf(i, j);
             A(i, j) += mu_Nij;
-            for (int g = 0; g < num_groups; ++g)
+            for (unsigned int g = 0; g < num_groups; ++g)
               b[g](i) += upwind_psi[g] * mu_Nij;
           } // for fj
         } // for fi
@@ -259,7 +259,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
     } // for face
 
     const auto& sigma_t = cell_xs.GetSigmaTotal();
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       auto Atemp = A;
       std::vector<double> source(num_nodes, 0.0);
@@ -300,7 +300,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
       for (size_t i = 0; i < num_nodes; ++i)
       {
         const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
-        for (size_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
           phi_new[dof_map + g] += wn_d2m * b[g](i);
       }
     }
@@ -309,7 +309,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dof_map = sdm.MapDOFLocal(cell, i, psi_uk_man, d, 0);
-      for (size_t g = 0; g < num_groups; ++g)
+      for (unsigned int g = 0; g < num_groups; ++g)
         psi_old[dof_map + g] = b[g](i);
     }
   };
@@ -367,7 +367,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
           const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
           const auto ell = m_ell_em_map[m].ell;
 
-          for (size_t g = 0; g < num_groups; ++g)
+          for (unsigned int g = 0; g < num_groups; ++g)
           {
             // Fixed source
             source_moments[dof_map + g] = q_source[dof_map + g];
@@ -413,7 +413,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
           const double* phi_new_m = &in_phi_new[m_map];
           const double* phi_old_m = &in_phi_old[m_map];
 
-          for (size_t g = 0; g < num_groups; ++g)
+          for (unsigned int g = 0; g < num_groups; ++g)
           {
             const double abs_phi_new_g_m0 = std::fabs(phi_new_m0[g]);
             const double abs_phi_old_g_m0 = std::fabs(phi_old_m0[g]);

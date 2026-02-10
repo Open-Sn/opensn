@@ -9,8 +9,8 @@ namespace opensn
 void
 SweepChunk::ZeroDestinationPhi()
 {
-  const auto gsi = groupset_.groups.front().id;
-  const auto gss = groupset_.groups.size();
+  const auto gsi = groupset_.first_group;
+  const auto gss = groupset_.GetNumGroups();
 
   for (const auto& cell : grid_->local_cells)
   {
@@ -21,7 +21,7 @@ SweepChunk::ZeroDestinationPhi()
       for (std::size_t m = 0; m < num_moments_; ++m)
       {
         const auto mapping = transport_view.MapDOF(i, m, gsi);
-        for (size_t g = 0; g < gss; ++g)
+        for (unsigned int g = 0; g < gss; ++g)
         {
           (destination_phi_)[mapping + g] = 0.0;
         } // for g

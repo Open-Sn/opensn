@@ -48,7 +48,7 @@ public:
    */
   void ExportToOpenSnXSFile(const std::string& file_name, double fission_scaling = 1.0) const;
 
-  size_t GetNumGroups() const { return num_groups_; }
+  unsigned int GetNumGroups() const { return num_groups_; }
 
   unsigned int GetScatteringOrder() const { return scattering_order_; }
 
@@ -112,7 +112,7 @@ public:
 
 private:
   /// Total number of groups
-  size_t num_groups_;
+  unsigned int num_groups_;
   /// Legendre scattering order
   unsigned int scattering_order_;
   /// Number of precursors

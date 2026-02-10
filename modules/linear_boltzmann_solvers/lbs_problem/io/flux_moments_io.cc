@@ -80,7 +80,7 @@ LBSSolverIO::WriteFluxMoments(
   for (const auto& cell : grid->local_cells)
     for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
       for (uint64_t m = 0; m < num_moments; ++m)
-        for (uint64_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
         {
           const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, m, g);
           values.push_back(src[dof_map]);
@@ -110,7 +110,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
 
   // Read the macro data
   uint64_t file_num_moments = 0;
-  uint64_t file_num_groups = 0;
+  unsigned int file_num_groups = 0;
   uint64_t file_num_local_cells = 0;
   uint64_t file_num_local_nodes = 0;
 
@@ -206,7 +206,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
     const auto& cell = grid->cells[cell_global_id];
     for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
       for (uint64_t m = 0; m < num_moments; ++m)
-        for (uint64_t g = 0; g < num_groups; ++g)
+        for (unsigned int g = 0; g < num_groups; ++g)
         {
           const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
           const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, m, g);

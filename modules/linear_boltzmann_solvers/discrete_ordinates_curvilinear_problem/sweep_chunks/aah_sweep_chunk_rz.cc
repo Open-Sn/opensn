@@ -43,7 +43,7 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset&
   //  configure unknown manager for quantities that depend on polar level
   const size_t dir_map_size = curvilinear_product_quadrature->GetDirectionMap().size();
   for (size_t m = 0; m < dir_map_size; ++m)
-    unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.groups.size());
+    unknown_manager_.AddUnknown(UnknownType::VECTOR_N, groupset_.GetNumGroups());
 
   //  allocate storage for sweeping dependency
   const auto n_dof = discretization_.GetNumLocalDOFs(unknown_manager_);
@@ -63,8 +63,8 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset&
 void
 AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
 {
-  auto gs_size = groupset_.groups.size();
-  auto gs_gi = groupset_.groups.front().id;
+  auto gs_size = groupset_.GetNumGroups();
+  auto gs_gi = groupset_.first_group;
 
   int deploc_face_counter = -1;
   int preloc_face_counter = -1;
@@ -75,7 +75,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
 
   DenseMatrix<double> Amat(max_num_cell_dofs_, max_num_cell_dofs_);
   DenseMatrix<double> Atemp(max_num_cell_dofs_, max_num_cell_dofs_);
-  std::vector<Vector<double>> b(groupset_.groups.size(), Vector<double>(max_num_cell_dofs_));
+  std::vector<Vector<double>> b(groupset_.GetNumGroups(), Vector<double>(max_num_cell_dofs_));
   std::vector<double> source(max_num_cell_dofs_);
 
   const auto curvilinear_product_quadrature =

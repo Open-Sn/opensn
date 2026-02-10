@@ -13,7 +13,7 @@ namespace opensn
 class ReflectingBoundary : public SweepBoundary
 {
 public:
-  ReflectingBoundary(size_t num_groups,
+  ReflectingBoundary(unsigned int num_groups,
                      const Vector3& normal,
                      CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
     : SweepBoundary(LBSBoundaryType::REFLECTING, num_groups, coord_type), normal_(normal)

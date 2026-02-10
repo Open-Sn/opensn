@@ -93,6 +93,8 @@ void
 LBSGroupset::Init(int aid)
 {
   id = aid;
+  first_group = 0;
+  last_group = 0;
   quadrature = nullptr;
   angle_agg = nullptr;
   master_num_ang_subsets = 1;
@@ -132,29 +134,14 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   Init(id);
 
   // Add groups
-  const auto groups_from_to = params.GetParamVectorValue<size_t>("groups_from_to");
+  const auto groups_from_to = params.GetParamVectorValue<unsigned int>("groups_from_to");
   OpenSnInvalidArgumentIf(groups_from_to.size() != 2,
                           "Parameter \"groups_from_to\" can only have 2 entries");
 
-  const size_t from = groups_from_to[0];
-  const size_t to = groups_from_to[1];
-  OpenSnInvalidArgumentIf(to < from, "\"to\" field is less than the \"from\" field.");
-
-  try
-  {
-    for (size_t g = from; g <= to; ++g)
-    {
-      groups.push_back(lbs_problem.GetGroups().at(g));
-    }
-  }
-  catch (const std::exception& exc)
-  {
-    throw std::invalid_argument(
-      "An error occurred during groupset construction.\n"
-      "Please check your groupsets, cross sections, and solver parameters to ensure\n"
-      "the correct number of groups is specified and cross-section data is available\n"
-      "for all groups.");
-  }
+  first_group = groups_from_to[0];
+  last_group = groups_from_to[1];
+  OpenSnInvalidArgumentIf(last_group < first_group,
+                          "\"to\" field is less than the \"from\" field.");
 
   // Add quadrature
   quadrature = params.GetSharedPtrParam<AngularQuadrature>("angular_quadrature", false);
@@ -218,6 +205,12 @@ LBSGroupset::ResetGPUCarriers()
 LBSGroupset::~LBSGroupset()
 {
   ResetGPUCarriers();
+}
+
+unsigned int
+LBSGroupset::GetNumGroups() const
+{
+  return last_group - first_group + 1;
 }
 
 } // namespace opensn

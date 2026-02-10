@@ -53,7 +53,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns.front().num_components;
+  const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_->local_cells)
@@ -92,7 +92,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_A.Set(0.);
       cell_rhs.Set(0.);
@@ -257,7 +257,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns.front().num_components;
+  const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   VecSet(rhs_, 0.0);
   for (const auto& cell : grid_->local_cells)
@@ -297,7 +297,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
 
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
@@ -407,7 +407,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
-  const size_t num_groups = uk_man_.unknowns.front().num_components;
+  const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   const double* q_vector = nullptr;
   VecGetArrayRead(petsc_q_vector, &q_vector);
@@ -447,7 +447,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
 
-    for (size_t g = 0; g < num_groups; ++g)
+    for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)

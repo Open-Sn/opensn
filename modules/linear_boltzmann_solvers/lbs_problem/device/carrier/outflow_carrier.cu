@@ -23,7 +23,7 @@ OutflowCarrier::OutflowCarrier(LBSProblem& lbs_problem)
 {
   // get information
   MeshContinuum& mesh = *(lbs_problem.GetGrid());
-  num_groups = lbs_problem.GetGroups().size();
+  num_groups = lbs_problem.GetNumGroups();
   // compute the size and offset for the outflux of boundary faces
   std::uint64_t alloc_size = 0;
   for (const Cell& cell : mesh.local_cells)

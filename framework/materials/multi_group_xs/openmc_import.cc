@@ -36,7 +36,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   log.Log() << "Reading OpenMC cross-section file \"" << file_name << "\"\n";
 
   // Number of groups
-  if (not H5ReadAttribute<size_t>(file, "energy_groups", mgxs.num_groups_))
+  if (not H5ReadAttribute<unsigned int>(file, "energy_groups", mgxs.num_groups_))
     throw std::runtime_error("Failure reading \"energy_groups\" from " + file_name);
 
   // Group structure
@@ -101,7 +101,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
     H5ReadDataset1D<int>(file, path + "scatter_data/g_min", g_min);
     H5ReadDataset1D<int>(file, path + "scatter_data/g_max", g_max);
     int fidx = 0;
-    for (size_t gp = 0; gp < mgxs.num_groups_; ++gp)
+    for (unsigned int gp = 0; gp < mgxs.num_groups_; ++gp)
       for (int g = g_min[gp]; g <= g_max[gp]; ++g)
         for (unsigned int n = 0; n < mgxs.scattering_order_ + 1; ++n, ++fidx)
           mgxs.transfer_matrices_.at(n).Insert(g - 1, gp, flat_scatter_matrix[fidx]);
@@ -156,7 +156,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
 
     // Nu (computed)
     auto nu = mgxs.nu_sigma_f_;
-    for (size_t g = 0; g < mgxs.num_groups_; ++g)
+    for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
       if (mgxs.sigma_f_[g] > 0.0)
         nu[g] /= mgxs.sigma_f_[g];
 
@@ -164,8 +164,8 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
     if (mgxs.production_matrix_.empty())
     {
       mgxs.production_matrix_.resize(mgxs.num_groups_, std::vector<double>(mgxs.num_groups_));
-      for (size_t gp = 0; gp < mgxs.num_groups_; ++gp)
-        for (size_t g = 0; g < mgxs.num_groups_; ++g)
+      for (unsigned int gp = 0; gp < mgxs.num_groups_; ++gp)
+        for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
           mgxs.production_matrix_[g][gp] = mgxs.chi_[g] * mgxs.nu_sigma_f_[gp];
 
       OpenSnLogicalErrorIf(

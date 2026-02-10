@@ -40,7 +40,7 @@ public:
    * a vector of zeros are returned.
    */
   std::vector<double>
-  operator()(const Cell& cell, const Vector3& xyz, std::size_t num_groups) const;
+  operator()(const Cell& cell, const Vector3& xyz, unsigned int num_groups) const;
 
   size_t GetNumLocalSubscribers() const { return num_local_subsribers_; }
   size_t GetNumGlobalSubsribers() const { return num_global_subscribers_; }
