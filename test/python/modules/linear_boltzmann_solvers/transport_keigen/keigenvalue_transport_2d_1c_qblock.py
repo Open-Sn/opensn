@@ -48,7 +48,6 @@ if __name__ == "__main__":
             {"name": "ymin", "type": "reflecting"},
         ],
         options={
-            "use_precursors": False,
             "verbose_inner_iterations": True,
             "verbose_outer_iterations": True,
             "save_angular_flux": True,
