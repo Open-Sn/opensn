@@ -75,10 +75,14 @@ VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
     value_type_ = ValueType::AVERAGE;
   else
     throw std::invalid_argument("'value_type' can be only 'min', 'max', 'integral', or 'avg'");
+
+  CreateSpatialRestriction();
+  CreateEnergyRestriction();
+  values_.resize(groups_.size());
 }
 
 void
-VolumePostprocessor::Initialize()
+VolumePostprocessor::CreateSpatialRestriction()
 {
   const auto& grid = lbs_problem_->GetGrid();
 
@@ -112,7 +116,11 @@ VolumePostprocessor::Initialize()
   }
 
   // TODO: if `cell_local_ids_` is empty, warn or stop
+}
 
+void
+VolumePostprocessor::CreateEnergyRestriction()
+{
   if (selected_group_.has_value())
   {
     groups_.push_back(selected_group_.value());
@@ -128,8 +136,6 @@ VolumePostprocessor::Initialize()
     for (unsigned int g = 0; g < lbs_problem_->GetNumGroups(); ++g)
       groups_.push_back(g);
   }
-
-  values_.resize(groups_.size());
 }
 
 void

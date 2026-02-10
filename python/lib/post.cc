@@ -49,15 +49,6 @@ WrapPostprocessors(py::module& post)
     )"
   );
   vp.def(
-    "Initialize",
-    [](VolumePostprocessor& self){
-      self.Initialize();
-    },
-    R"(
-      TODO: finish this
-    )"
-  );
-  vp.def(
     "Execute",
     [](VolumePostprocessor& self){
       self.Execute();

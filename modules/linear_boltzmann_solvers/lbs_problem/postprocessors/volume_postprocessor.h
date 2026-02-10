@@ -25,13 +25,14 @@ public:
   /// Input parameters based construction.
   explicit VolumePostprocessor(const InputParameters& params);
 
-  void Initialize();
-
   void Execute();
 
   std::vector<double> GetValue() const;
 
 private:
+  void CreateSpatialRestriction();
+  void CreateEnergyRestriction();
+
   std::shared_ptr<LBSProblem> lbs_problem_;
   /// Block IDs this postprocessor is restricted to
   std::vector<int> block_ids_;
