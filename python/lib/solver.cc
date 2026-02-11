@@ -800,6 +800,97 @@ WrapLBS(py::module& slv)
     )"
   );
   do_problem.def(
+    "GetAngularFieldFunctionList",
+    [](DiscreteOrdinatesProblem& self, py::list groups, py::list angles)
+    {
+      std::vector<unsigned int> group_ids;
+      std::vector<size_t> angle_ids;
+      group_ids.reserve(groups.size());
+      angle_ids.reserve(angles.size());
+
+      for (py::handle g : groups)
+        group_ids.push_back(g.cast<unsigned int>());
+      for (py::handle a : angles)
+        angle_ids.push_back(a.cast<size_t>());
+
+      try
+      {
+        auto ff_list = self.GetAngularFluxFieldFunctionList(group_ids, angle_ids);
+        py::list out;
+        for (const auto& ff : ff_list)
+          out.append(ff);
+        return out;
+      }
+      catch (const std::exception& err)
+      {
+        const std::string message = err.what();
+        if (message.find("problem not initialized") != std::string::npos)
+          throw std::runtime_error(
+            "GetAngularFieldFunctionList requires Initialize() to be called first. "
+            "Call solver.Initialize() (or problem.Initialize()) before requesting "
+            "angular flux field functions.");
+        throw;
+      }
+    },
+    R"(
+    Return field functions for selected angular flux components.
+
+    This requires `Initialize()` to have completed; it throws if the problem is
+    not yet initialized.
+    Note: You must enable angular flux storage (``save_angular_flux=True``) in
+    the problem options, or use a transient/time-dependent solver that retains
+    angular fluxes, otherwise the field functions will remain zero.
+
+    Example
+    -------
+    ```python
+    solver.Initialize()
+    solver.Execute()
+    ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
+    ```
+
+    For transient/time-dependent runs, call this after each timestep. Two common
+    patterns are:
+
+    1) Use `TransientSolver.Execute()` with a post-advance callback:
+    ```python
+    solver = TransientSolver(problem=phys)
+    solver.Initialize()
+
+    def post_advance():
+        ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
+        FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, "angular_flux_t")
+
+    solver.SetPostAdvanceCallback(post_advance)
+    solver.Execute()
+    ```
+
+    2) Use a custom Python loop with `TransientSolver.Advance()`:
+    ```python
+    solver = TransientSolver(problem=phys)
+    solver.Initialize()
+    for _ in range(num_steps):
+        solver.Advance()
+        ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
+        FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, "angular_flux_t")
+    ```
+
+    Parameters
+    ----------
+    groups : List[int]
+        Global group indices to export.
+    angles : List[int]
+        Angle indices within the groupset quadrature for each group.
+
+    Returns
+    -------
+    List[pyopensn.fieldfunc.FieldFunctionGridBased]
+        Field functions for the requested (group, angle) pairs.
+    )",
+    py::arg("groups"),
+    py::arg("angles")
+  );
+  do_problem.def(
     "ComputeLeakage",
     [](DiscreteOrdinatesProblem& self, py::list bnd_names)
     {
