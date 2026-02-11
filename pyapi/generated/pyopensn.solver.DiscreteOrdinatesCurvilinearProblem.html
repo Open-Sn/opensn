@@ -205,6 +205,62 @@ the corresponding boundary surface.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetAngularFieldFunctionList">
+<span class="sig-name descname"><span class="pre">GetAngularFieldFunctionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetAngularFieldFunctionList" title="Link to this definition"></a></dt>
+<dd><p>Return field functions for selected angular flux components.</p>
+<p>This requires <cite>Initialize()</cite> to have completed; it throws if the problem is
+not yet initialized.
+Note: You must enable angular flux storage (<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>) in
+the problem options, or use a transient/time-dependent solver that retains
+angular fluxes, otherwise the field functions will remain zero.</p>
+<p class="rubric">Example</p>
+<p><code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">solver.Initialize()</span>
+<span class="pre">solver.Execute()</span>
+<span class="pre">ang_ff</span> <span class="pre">=</span> <span class="pre">phys.GetAngularFieldFunctionList(groups=[0],</span> <span class="pre">angles=[0])</span>
+<span class="pre">`</span></code></p>
+<p>For transient/time-dependent runs, call this after each timestep. Two common
+patterns are:</p>
+<p>1) Use <cite>TransientSolver.Execute()</cite> with a post-advance callback:
+<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
+solver = TransientSolver(problem=phys)
+solver.Initialize()</p>
+<dl class="simple">
+<dt>def post_advance():</dt><dd><p>ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
+FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, “angular_flux_t”)</p>
+</dd>
+</dl>
+<p>solver.SetPostAdvanceCallback(post_advance)
+solver.Execute()
+<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<p>2) Use a custom Python loop with <cite>TransientSolver.Advance()</cite>:
+<a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>python
+solver = TransientSolver(problem=phys)
+solver.Initialize()
+for _ in range(num_steps):</p>
+<blockquote>
+<div><p>solver.Advance()
+ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
+FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, “angular_flux_t”)</p>
+</div></blockquote>
+<p><a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>groups</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – Global group indices to export.</p></li>
+<li><p><strong>angles</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – Angle indices within the groupset quadrature for each group.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Field functions for the requested (group, angle) pairs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetFieldFunctions">
 <span class="sig-name descname"><span class="pre">GetFieldFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Problem.html#pyopensn.solver.Problem" title="pyopensn.solver.Problem"><span class="pre">pyopensn.solver.Problem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetFieldFunctions" title="Link to this definition"></a></dt>
 <dd><p>Get the list of field functions.</p>

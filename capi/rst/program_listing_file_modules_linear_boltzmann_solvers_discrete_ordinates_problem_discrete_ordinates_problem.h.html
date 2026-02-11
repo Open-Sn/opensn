@@ -96,9 +96,11 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/parameter_block.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionGridBased</span><span class="p">;</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Base class for Discrete Ordinates solvers. This class mostly establishes utilities related to</span>
@@ -177,6 +179,18 @@
 <span class="w">  </span><span class="c1">/// Zeroes all the outflow data-structures required to compute balance.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroOutflowBalanceVars</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Create (if needed) and return angular flux field functions for the given groups and angles.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Angles are indices into the groupset quadrature associated with each group.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;&gt;</span>
+<span class="w">  </span><span class="n">GetAngularFluxFieldFunctionList</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">groups</span><span class="p">,</span>
+<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">angles</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Update angular flux field functions from psi_new_local_.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateAngularFieldFunctions</span><span class="p">();</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
@@ -245,6 +259,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">psi_new_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">psi_old_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">SweepChunkMode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sweep_chunk_mode_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">angular_flux_field_functions_local_map_</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CreateAAHD_FLUDSCommonData</span><span class="p">();</span>

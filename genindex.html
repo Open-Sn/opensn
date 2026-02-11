@@ -439,6 +439,12 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetAngularFieldFunctionList">GetAngularFieldFunctionList() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
+
+      <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
+</li>
+      </ul></li>
       <li><a href="pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver.GetEigenvalue">GetEigenvalue() (pyopensn.solver.NonLinearKEigenSolver method)</a>
 
       <ul>
@@ -2377,6 +2383,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE">opensn::DiscreteOrdinatesProblem (C++ class)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem39angular_flux_field_functions_local_map_E">opensn::DiscreteOrdinatesProblem::angular_flux_field_functions_local_map_ (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem26boundary_conditions_block_E">opensn::DiscreteOrdinatesProblem::boundary_conditions_block_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem21boundary_definitions_E">opensn::DiscreteOrdinatesProblem::boundary_definitions_ (C++ member)</a>
@@ -2400,6 +2408,8 @@
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERK15InputParameters">opensn::DiscreteOrdinatesProblem::DiscreteOrdinatesProblem (C++ function)</a>, <a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERKNSt6stringENSt10shared_ptrI13MeshContinuumEE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem23EnableTimeDependentModeEv">opensn::DiscreteOrdinatesProblem::EnableTimeDependentMode (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem31GetAngularFluxFieldFunctionListERKNSt6vectorIjEERKNSt6vectorI6size_tEE">opensn::DiscreteOrdinatesProblem::GetAngularFluxFieldFunctionList (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4NK6opensn24DiscreteOrdinatesProblem22GetBoundaryDefinitionsEv">opensn::DiscreteOrdinatesProblem::GetBoundaryDefinitions (C++ function)</a>
 </li>
@@ -2484,6 +2494,8 @@
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem14SweepChunkMode13TimeDependentE">opensn::DiscreteOrdinatesProblem::SweepChunkMode::TimeDependent (C++ enumerator)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem22SweepOrderGroupingInfoE">opensn::DiscreteOrdinatesProblem::SweepOrderGroupingInfo (C++ type)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem27UpdateAngularFieldFunctionsEv">opensn::DiscreteOrdinatesProblem::UpdateAngularFieldFunctions (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem12UpdatePsiOldEv">opensn::DiscreteOrdinatesProblem::UpdatePsiOld (C++ function)</a>
 </li>
@@ -4209,12 +4221,12 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum10GetIJKInfoEv">opensn::MeshContinuum::GetIJKInfo (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum19GetLocalBoundingBoxEv">opensn::MeshContinuum::GetLocalBoundingBox (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum16GetNumPartitionsEv">opensn::MeshContinuum::GetNumPartitions (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum26GetTetrahedralFaceVerticesERK4CellRK8CellFace6size_t">opensn::MeshContinuum::GetTetrahedralFaceVertices (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum7GetTypeEv">opensn::MeshContinuum::GetType (C++ function)</a>
