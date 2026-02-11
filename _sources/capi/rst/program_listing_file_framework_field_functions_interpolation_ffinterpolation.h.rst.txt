@@ -38,9 +38,11 @@ Program Listing for File ffinterpolation.h
      OP_SUM = 10,
      OP_AVG = 11,
      OP_MAX = 12,
-     OP_SUM_FUNC = 13,
-     OP_AVG_FUNC = 14,
-     OP_MAX_FUNC = 15,
+     OP_MIN = 13,
+     OP_SUM_FUNC = 14,
+     OP_AVG_FUNC = 15,
+     OP_MAX_FUNC = 16,
+     OP_MIN_FUNC = 17,
    };
    
    enum class FieldFunctionInterpolationProperty : int
