@@ -92,7 +92,7 @@ FieldFunctionInterpolationVolume::Execute()
 
       double function_value = ff_value;
       if (op_type_ >= FieldFunctionInterpolationOperation::OP_SUM_FUNC and
-          op_type_ <= FieldFunctionInterpolationOperation::OP_MAX_FUNC)
+          op_type_ <= FieldFunctionInterpolationOperation::OP_MIN_FUNC)
         function_value = oper_function_(ff_value, cell.block_id);
 
       local_volume += fe_vol_data.JxW(qp);
@@ -122,6 +122,11 @@ FieldFunctionInterpolationVolume::Execute()
            op_type_ == FieldFunctionInterpolationOperation::OP_MAX_FUNC)
   {
     mpi_comm.all_reduce(local_max, op_value_, mpi::op::max<double>());
+  }
+  else if (op_type_ == FieldFunctionInterpolationOperation::OP_MIN or
+           op_type_ == FieldFunctionInterpolationOperation::OP_MIN_FUNC)
+  {
+    mpi_comm.all_reduce(local_min, op_value_, mpi::op::min<double>());
   }
 }
 

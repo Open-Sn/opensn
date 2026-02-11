@@ -10,8 +10,10 @@
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/field_functions/interpolation/ffinter_volume.h"
 #include <pybind11/functional.h>
+#include <algorithm>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -23,9 +25,29 @@ static std::map<std::string, FieldFunctionInterpolationOperation> ff_op_type_map
   {"sum", FieldFunctionInterpolationOperation::OP_SUM},
   {"avg", FieldFunctionInterpolationOperation::OP_AVG},
   {"max", FieldFunctionInterpolationOperation::OP_MAX},
+  {"min", FieldFunctionInterpolationOperation::OP_MIN},
   {"sum_func", FieldFunctionInterpolationOperation::OP_SUM_FUNC},
   {"avg_func", FieldFunctionInterpolationOperation::OP_AVG_FUNC},
-  {"max_func", FieldFunctionInterpolationOperation::OP_MAX_FUNC}};
+  {"max_func", FieldFunctionInterpolationOperation::OP_MAX_FUNC},
+  {"min_func", FieldFunctionInterpolationOperation::OP_MIN_FUNC}};
+
+static std::string
+OpToString()
+{
+  std::vector<std::string> keys;
+  keys.reserve(ff_op_type_map.size());
+  for (const auto& [key, _] : ff_op_type_map)
+    keys.push_back(key);
+  std::sort(keys.begin(), keys.end());
+  std::ostringstream oss;
+  for (size_t i = 0; i < keys.size(); ++i)
+  {
+    if (i > 0)
+      oss << ", ";
+    oss << keys[i];
+  }
+  return oss.str();
+}
 
 // Wrap field functions
 void
@@ -290,14 +312,18 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "SetOperationType",
     [](FieldFunctionInterpolationVolume& self, const std::string& op_type)
     {
-      self.SetOperationType(ff_op_type_map.at(op_type));
+      const auto it = ff_op_type_map.find(op_type);
+      if (it == ff_op_type_map.end())
+        throw std::runtime_error("Unknown field-function operation '" + op_type +
+                                 "'. Valid options are: " + OpToString());
+      self.SetOperationType(it->second);
     },
     R"(
     Set operation type.
 
     Parameters
     ----------
-    op_type: {'sum', 'avg', 'max', 'sum_func', 'avg_func', 'max_func'}
+    op_type: {'sum', 'avg', 'max', 'min', 'sum_func', 'avg_func', 'max_func', 'min_func'}
         Operation type.
     )",
     py::arg("op_type")

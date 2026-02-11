@@ -10,6 +10,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <fstream>
+#include <limits>
 
 namespace opensn
 {
@@ -76,7 +77,10 @@ FieldFunctionInterpolationLine::Execute()
   const auto cid = ref_component_;
   const auto field_data = ref_ff_->GetGhostedFieldVector();
 
-  double local_max = 0.0, local_sum = 0.0, local_avg = 0.0;
+  double local_max = 0.0;
+  double local_min = std::numeric_limits<double>::max();
+  double local_sum = 0.0;
+  double local_avg = 0.0;
   size_t local_size = local_interpolation_points_.size();
   local_interpolation_values_.resize(local_size);
   for (size_t p = 0; p < local_size; ++p)
@@ -97,6 +101,7 @@ FieldFunctionInterpolationLine::Execute()
     }
     local_interpolation_values_[p] = point_value;
     local_max = std::max(point_value, local_max);
+    local_min = std::min(point_value, local_min);
     local_sum += point_value;
   }
 
@@ -112,6 +117,8 @@ FieldFunctionInterpolationLine::Execute()
   }
   else if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX)
     mpi_comm.all_reduce(local_max, op_value_, mpi::op::max<double>());
+  else if (op_type_ == FieldFunctionInterpolationOperation::OP_MIN)
+    mpi_comm.all_reduce(local_min, op_value_, mpi::op::min<double>());
 }
 
 void
