@@ -2,16 +2,14 @@
 # -*- coding: utf-8 -*-
 
 # 1-group, infinite-medium, transient in a 3.2 cm cube (all reflecting).
-# The cube is a pure absorber with sigma_t = 1.0 cm^-1, sigma_s = 0, v = 1.0 cm/s
+# The cube is a pure absorber with sigma_t = 1.0 cm^-1, sigma_s = 0, v = 0.5 cm/s
 # and a total Q_tot = 122.58 particles/s on for t=[0, 1] s, then 0 for t>1 s.
-# At t = 0.5 s, cross sections are swapped to sigma_t = 2.0 cm^-1.
 # V = 3.2^3 cm^3, so volumetric Q = Q_tot / V ~= 3.7408 cm^-3 s^-1.
 #
-# For 0 <= t <= 1: phi(t) = Q * (1 - e^{-t})
-# For t >= 1:      phi(t) = phi(1) * e^{-2 (t - 1)}
-# With backward Euler,  dt = 0.05:
-# phi(1s) ~= 1.706
-# phi(2s) ~= 0.233
+#   For 0 <= t <= 1: phi(t) = Q * (1 - e^{-t})
+#   For t >= 1:      phi(t) = phi(1) * e^{-(t - 1)}
+#   phi(1s) ~= 1.472
+#   phi(2s) ~= 0.893
 
 import os
 import sys
@@ -25,7 +23,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesProblem, TimeDependentSourceSolver
+    from pyopensn.solver import BackwardEuler, DiscreteOrdinatesProblem, TransientSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
@@ -38,9 +36,7 @@ if __name__ == "__main__":
 
     num_groups = 1
     xs_diag = MultiGroupXS()
-    xs_diag.CreateSimpleOneGroup(1.0, 0.0, 1.0)
-    xs_diag_swap = MultiGroupXS()
-    xs_diag_swap.CreateSimpleOneGroup(2.0, 0.0, 1.0)
+    xs_diag.CreateSimpleOneGroup(1.0, 0.0, 0.5)
 
     strength = [0.0 for _ in range(num_groups)]
     strength[0] = 122.58 / (3.2 * 3.2 * 3.2)
@@ -80,40 +76,15 @@ if __name__ == "__main__":
         ],
     )
 
-    solver = TimeDependentSourceSolver(problem=phys, verbose=False)
+    solver = TransientSolver(
+        problem=phys,
+        dt=0.05,
+        theta=BackwardEuler,
+        stop_time=2.0,
+        initial_state="zero",
+    )
     solver.Initialize()
-
-    dt = 0.05
-    theta = 1.0
-    step = 0
-    stop = 0
-    stop_time = 1.0
-    swap_time = 0.5
-    current_time = 0.0
-    swapped = False
-    solver.SetTheta(theta)
-
-    while current_time < stop_time:
-        target_time = min(current_time + dt, stop_time)
-        step_dt = target_time - current_time
-        solver.SetTimeStep(step_dt)
-
-        if rank == 0:
-            print("")
-            print(
-                f"*************** Time step #{step:d}  t = {target_time:.6f} "
-                f"(from {current_time:.6f}, dt = {step_dt:.6f}, theta = {theta:.3f}) "
-                f"***************"
-            )
-
-        solver.Advance()
-
-        if (not swapped) and target_time >= swap_time:
-            phys.SetXSMap(xs_map=[{"block_ids": [0], "xs": xs_diag_swap}])
-            swapped = True
-
-        current_time = target_time
-        step = step + 1
+    solver.Execute()
 
     fflist = phys.GetScalarFieldFunctionList()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
@@ -126,4 +97,4 @@ if __name__ == "__main__":
     flux_max = field_interp.GetValue()
 
     if rank == 0:
-        print(f"Max phi(1s) = {flux_max:.6f}")
+        print(f"Max phi(2s) = {flux_max:.6f}")

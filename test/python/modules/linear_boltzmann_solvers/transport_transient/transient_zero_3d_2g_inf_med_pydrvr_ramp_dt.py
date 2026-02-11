@@ -29,7 +29,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
-    from pyopensn.solver import DiscreteOrdinatesProblem, TimeDependentSourceSolver
+    from pyopensn.solver import DiscreteOrdinatesProblem, TransientSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
 
@@ -41,7 +41,9 @@ if __name__ == "__main__":
     grid.SetOrthogonalBoundaries()
 
     xs_diag = MultiGroupXS()
-    xs_diag.LoadFromOpenSn("simple_2g_downscatter_td.cxs")
+    xs_diag.LoadFromOpenSn(
+        os.path.join(os.path.dirname(__file__), "simple_2g_downscatter_td.cxs")
+    )
     num_groups = xs_diag.num_groups
 
     # Total source in group 0, converted to volumetric rate
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     )
 
     # Create the time-dependent solver without stop_time, we will loop in Python
-    solver = TimeDependentSourceSolver(problem=phys, verbose=False)
+    solver = TransientSolver(problem=phys, verbose=False, initial_state="zero")
     solver.Initialize()
 
     fflist = phys.GetScalarFieldFunctionList()

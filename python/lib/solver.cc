@@ -10,7 +10,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/solvers/time_dependent_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/transient_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
@@ -1176,114 +1175,6 @@ WrapTransient(py::module& slv)
   // clang-format on
 }
 
-// Wrap time-dependent solver
-void
-WrapTimeDependent(py::module& slv)
-{
-  // clang-format off
-  auto time_dependent_solver =
-    py::class_<TimeDependentSourceSolver, std::shared_ptr<TimeDependentSourceSolver>, Solver>(
-      slv,
-      "TimeDependentSourceSolver",
-      R"(
-      Time dependent solver.
-
-      Wrapper of :cpp:class:`opensn::TimeDependentSourceSolver`.
-      )"
-    );
-  time_dependent_solver.def(
-    py::init(
-      [](py::kwargs& params)
-      {
-        return TimeDependentSourceSolver::Create(kwargs_to_param_block(params));
-      }
-    ),
-    R"(
-    Construct a time dependent solver.
-
-    Parameters
-    ----------
-    pyopensn.solver.LBSProblem : LBSProblem
-        Existing LBSProblem instance.
-    dt : float, optional, default=1.0
-        Time step size used during the simulation.
-    stop_time : float, optional, default=1.0
-        Simulation end time.
-    )"
-  );
-  time_dependent_solver.def(
-    "Advance",
-    &TimeDependentSourceSolver::Advance,
-    R"(
-    Advance the solver by a single timestep.
-
-    This method uses the configured `dt` and `theta` values and will return
-    immediately if the stop time has already been reached. Calling it
-    repeatedly allows users to write custom python time loops.
-    )");
-  time_dependent_solver.def(
-    "SetTimeStep",
-    &TimeDependentSourceSolver::SetTimeStep,
-    R"(
-    Set the timestep size used by :meth:`Advance`.
-
-    Parameters
-    ----------
-    dt : float
-        New timestep size.
-    )");
-  time_dependent_solver.def(
-    "SetTheta",
-    &TimeDependentSourceSolver::SetTheta,
-    R"(
-    Set the theta parameter used by :meth:`Advance`.
-
-    Parameters
-    ----------
-    theta : float
-        Theta value between 0 and 1.
-    )");
-  time_dependent_solver.def(
-    "SetPreAdvanceCallback",
-    static_cast<void (TimeDependentSourceSolver::*)(std::function<void()>)>(
-      &TimeDependentSourceSolver::SetPreAdvanceCallback),
-    R"(
-    Register a callback that runs before each call to :meth:`Advance`.
-
-    Parameters
-    ----------
-    callback : Optional[Callable[[], None]]
-        Function invoked before the solver advances a timestep. Pass None to clear.
-        If the callback modifies the timestep, the new value is used for the
-        upcoming step.
-    )");
-  time_dependent_solver.def(
-    "SetPreAdvanceCallback",
-    static_cast<void (TimeDependentSourceSolver::*)(std::nullptr_t)>(
-      &TimeDependentSourceSolver::SetPreAdvanceCallback),
-    "Clear the PreAdvance callback by passing None.");
-  time_dependent_solver.def(
-    "SetPostAdvanceCallback",
-    static_cast<void (TimeDependentSourceSolver::*)(std::function<void()>)>(
-      &TimeDependentSourceSolver::SetPostAdvanceCallback),
-    R"(
-    Register a callback that runs after each call to :meth:`Advance`.
-
-    Parameters
-    ----------
-    callback : Optional[Callable[[], None]]
-        Function invoked after the solver advances a timestep. Pass None to clear.
-    )");
-  time_dependent_solver.def(
-    "SetPostAdvanceCallback",
-    static_cast<void (TimeDependentSourceSolver::*)(std::nullptr_t)>(
-      &TimeDependentSourceSolver::SetPostAdvanceCallback),
-    "Clear the PostAdvance callback by passing None.");
-  slv.attr("BackwardEuler") = 1.0;
-  slv.attr("CrankNicolson") = 0.5;
-  // clang-format on
-}
-
 // Wrap non-linear k-eigen solver
 void
 WrapNLKEigen(py::module& slv)
@@ -1524,7 +1415,6 @@ py_solver(py::module& pyopensn)
   WrapLBS(slv);
   WrapSteadyState(slv);
   WrapTransient(slv);
-  WrapTimeDependent(slv);
   WrapNLKEigen(slv);
   WrapDiscreteOrdinatesKEigenAcceleration(slv);
   WrapPIteration(slv);
