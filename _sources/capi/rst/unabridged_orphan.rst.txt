@@ -1440,11 +1440,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_time_dependent_source_solver.rst
-
-.. toctree::
-   :maxdepth: 1
-
    classopensn_1_1_timer.rst
 
 .. toctree::
@@ -3088,11 +3083,6 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_tgdsa.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_modules_linear_boltzmann_solvers_solvers_time_dependent_solver.h.rst
 
 .. toctree::
    :maxdepth: 1

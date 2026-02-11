@@ -1,0 +1,9 @@
+﻿pyopensn.solver.TransientSolver
+===============================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: TransientSolver
+   :special-members: __init__
+   :members:
+   :inherited-members:

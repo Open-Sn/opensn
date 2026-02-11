@@ -352,15 +352,15 @@ Steady state source solver
 
    solver.SteadyStateSourceSolver
 
-Time dependent source solver
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Transient solver
+^^^^^^^^^^^^^^^^
 
 .. autosummary::
    :toctree: generated
    :nosignatures:
    :template: python.rst
 
-   solver.TimeDependentSourceSolver
+   solver.TransientSolver
 
 Non-linear k-eigen
 ^^^^^^^^^^^^^^^^^^

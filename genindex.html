@@ -196,7 +196,7 @@
 </li>
         <li><a href="pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver.__init__">(pyopensn.solver.SteadyStateSourceSolver method)</a>
 </li>
-        <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver.__init__">(pyopensn.solver.TimeDependentSourceSolver method)</a>
+        <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.__init__">(pyopensn.solver.TransientSolver method)</a>
 </li>
         <li><a href="pyapi/generated/pyopensn.source.PointSource.html#pyopensn.source.PointSource.__init__">(pyopensn.source.PointSource method)</a>
 </li>
@@ -266,7 +266,7 @@
 </li>
         <li><a href="pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver.Advance">(pyopensn.solver.SteadyStateSourceSolver method)</a>
 </li>
-        <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver.Advance">(pyopensn.solver.TimeDependentSourceSolver method)</a>
+        <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.Advance">(pyopensn.solver.TransientSolver method)</a>
 </li>
       </ul></li>
       <li><a href="pyapi/generated/pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature">AngularQuadrature (class in pyopensn.aquad)</a>
@@ -388,7 +388,7 @@
 </li>
         <li><a href="pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver.Execute">(pyopensn.solver.SteadyStateSourceSolver method)</a>
 </li>
-        <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver.Execute">(pyopensn.solver.TimeDependentSourceSolver method)</a>
+        <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.Execute">(pyopensn.solver.TransientSolver method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -570,7 +570,7 @@
 </li>
         <li><a href="pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver.Initialize">(pyopensn.solver.SteadyStateSourceSolver method)</a>
 </li>
-        <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver.Initialize">(pyopensn.solver.TimeDependentSourceSolver method)</a>
+        <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.Initialize">(pyopensn.solver.TransientSolver method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -4213,6 +4213,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum16GetNumPartitionsEv">opensn::MeshContinuum::GetNumPartitions (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum26GetTetrahedralFaceVerticesERK4CellRK8CellFace6size_t">opensn::MeshContinuum::GetTetrahedralFaceVertices (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum7GetTypeEv">opensn::MeshContinuum::GetType (C++ function)</a>
@@ -4225,8 +4227,6 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum14MakeBoundaryIDERKNSt6stringE">opensn::MeshContinuum::MakeBoundaryID (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum18MakeCellOrthoSizesEv">opensn::MeshContinuum::MakeCellOrthoSizes (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum21MakeGridFaceHistogramEdd">opensn::MeshContinuum::MakeGridFaceHistogram (C++ function)</a>
@@ -6833,32 +6833,6 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_t_g_d_s_a.html#_CPPv4N6opensn5TGDSA4InitER24DiscreteOrdinatesProblemR11LBSGroupset">opensn::TGDSA::Init (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolverE">opensn::TimeDependentSourceSolver (C++ class)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver7AdvanceEv">opensn::TimeDependentSourceSolver::Advance (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver6CreateERK14ParameterBlock">opensn::TimeDependentSourceSolver::Create (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver7ExecuteEv">opensn::TimeDependentSourceSolver::Execute (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4NK6opensn25TimeDependentSourceSolver14GetCurrentTimeEv">opensn::TimeDependentSourceSolver::GetCurrentTime (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver18GetInputParametersEv">opensn::TimeDependentSourceSolver::GetInputParameters (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4NK6opensn25TimeDependentSourceSolver7GetStepEv">opensn::TimeDependentSourceSolver::GetStep (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver10InitializeEv">opensn::TimeDependentSourceSolver::Initialize (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver22SetPostAdvanceCallbackENSt8functionIFvvEEE">opensn::TimeDependentSourceSolver::SetPostAdvanceCallback (C++ function)</a>, <a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver22SetPostAdvanceCallbackENSt9nullptr_tE">[1]</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver21SetPreAdvanceCallbackENSt8functionIFvvEEE">opensn::TimeDependentSourceSolver::SetPreAdvanceCallback (C++ function)</a>, <a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver21SetPreAdvanceCallbackENSt9nullptr_tE">[1]</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver8SetThetaEd">opensn::TimeDependentSourceSolver::SetTheta (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver11SetTimeStepEd">opensn::TimeDependentSourceSolver::SetTimeStep (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_time_dependent_source_solver.html#_CPPv4N6opensn25TimeDependentSourceSolver25TimeDependentSourceSolverERK15InputParameters">opensn::TimeDependentSourceSolver::TimeDependentSourceSolver (C++ function)</a>
-</li>
       <li><a href="capi/rst/classopensn_1_1_timer.html#_CPPv4N6opensn5TimerE">opensn::Timer (C++ class)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_timer.html#_CPPv4N6opensn5Timer22GetLocalDateTimeStringEv">opensn::Timer::GetLocalDateTimeString (C++ function)</a>
@@ -7931,17 +7905,17 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver.SetPostAdvanceCallback">SetPostAdvanceCallback() (pyopensn.solver.TimeDependentSourceSolver method)</a>
+      <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetPostAdvanceCallback">SetPostAdvanceCallback() (pyopensn.solver.TransientSolver method)</a>
 </li>
-      <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver.SetPreAdvanceCallback">SetPreAdvanceCallback() (pyopensn.solver.TimeDependentSourceSolver method)</a>
+      <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetPreAdvanceCallback">SetPreAdvanceCallback() (pyopensn.solver.TransientSolver method)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.SetScalingFactor">SetScalingFactor() (pyopensn.xs.MultiGroupXS method)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.SetSourceOptions">SetSourceOptions() (pyopensn.response.ResponseEvaluator method)</a>
 </li>
-      <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver.SetTheta">SetTheta() (pyopensn.solver.TimeDependentSourceSolver method)</a>
+      <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetTheta">SetTheta() (pyopensn.solver.TransientSolver method)</a>
 </li>
-      <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver.SetTimeStep">SetTimeStep() (pyopensn.solver.TimeDependentSourceSolver method)</a>
+      <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetTimeStep">SetTimeStep() (pyopensn.solver.TransientSolver method)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum.SetUniformBlockID">SetUniformBlockID() (pyopensn.mesh.MeshContinuum method)</a>
 </li>
@@ -8001,7 +7975,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pyapi/generated/pyopensn.solver.TimeDependentSourceSolver.html#pyopensn.solver.TimeDependentSourceSolver">TimeDependentSourceSolver (class in pyopensn.solver)</a>
+      <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver">TransientSolver (class in pyopensn.solver)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.aquad.TriangularQuadrature.html#pyopensn.aquad.TriangularQuadrature">TriangularQuadrature (class in pyopensn.aquad)</a>
 </li>
