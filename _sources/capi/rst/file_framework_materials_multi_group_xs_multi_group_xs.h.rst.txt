@@ -32,6 +32,8 @@ Includes
 
 - ``framework/data_types/sparse_matrix/sparse_matrix.h`` (:ref:`file_framework_data_types_sparse_matrix_sparse_matrix.h`)
 
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
 
 
 Included By
