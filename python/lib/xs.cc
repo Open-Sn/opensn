@@ -137,15 +137,19 @@ WrapMultiGroupXS(py::module& xs)
   );
   multigroup_xs.def(
     "LoadFromOpenMC",
-    [](MultiGroupXS& self, const std::string& file_name, const std::string& dataset_name,
-       double temperature)
+    [](MultiGroupXS& self,
+       const std::string& file_name,
+       const std::string& dataset_name,
+       double temperature,
+       const std::vector<std::string>& extra_xs_names)
     {
-      self = MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature);
+      self = MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature, extra_xs_names);
     },
     "Load multi-group cross sections from an OpenMC cross-section file.",
     py::arg("file_name"),
     py::arg("dataset_name"),
-    py::arg("temperature")
+    py::arg("temperature"),
+    py::arg("extra_xs_names") = std::vector<std::string>()
   );
   multigroup_xs.def(
     "SetScalingFactor",
@@ -219,6 +223,24 @@ WrapMultiGroupXS(py::module& xs)
     XS_GETTER(GetNuDelayedSigmaF),
     "Get delayed neutron production due to fission.",
     py::keep_alive<0, 1>()
+  );
+  multigroup_xs.def(
+    "has_custom_xs",
+    &MultiGroupXS::HasCustomXS,
+    "Check if a custom XS is available.",
+    py::arg("name")
+  );
+  multigroup_xs.def(
+    "get_custom_xs",
+    [](MultiGroupXS& self, const std::string& name)
+    { return convert_vector(self.GetCustomXS(name)); },
+    "Get a custom XS vector.",
+    py::arg("name")
+  );
+  multigroup_xs.def(
+    "custom_xs_names",
+    &MultiGroupXS::GetCustomXSNames,
+    "Get a list of custom XS entries."
   );
   multigroup_xs.def_property_readonly(
     "inv_velocity",
