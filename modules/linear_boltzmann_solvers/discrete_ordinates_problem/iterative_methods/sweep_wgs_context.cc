@@ -161,12 +161,12 @@ SweepWGSContext::PostSolveCallback()
     double avg_sweep_time = tot_sweep_time / num_sweeps;
     size_t num_angles = groupset.quadrature->abscissae.size();
     size_t num_unknowns = do_problem.GetGlobalNodeCount() * num_angles * groupset.GetNumGroups();
+    double max_avg_sweep_time = 0.0;
+    opensn::mpi_comm.all_reduce(&avg_sweep_time, 1, &max_avg_sweep_time, mpi::op::max<double>());
 
-    log.Log() << "\n       Average sweep time (s):        "
-              << tot_sweep_time / static_cast<double>(sweep_times.size())
+    log.Log() << "\n       Average sweep time (s):        " << max_avg_sweep_time
               << "\n       Sweep Time/Unknown (ns):       "
-              << avg_sweep_time * 1.0e9 * opensn::mpi_comm.size() /
-                   static_cast<double>(num_unknowns)
+              << max_avg_sweep_time * 1.0e9 / static_cast<double>(num_unknowns)
               << "\n       Number of unknowns per sweep:  " << num_unknowns << "\n\n";
   }
 }
