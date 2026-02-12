@@ -56,6 +56,10 @@ public:
 
 private:
   static std::shared_ptr<UnpartitionedMesh> FromGmshV41(const UnpartitionedMesh::Options& options);
+  static std::shared_ptr<UnpartitionedMesh>
+  FromGmshV41ASCII(const UnpartitionedMesh::Options& options);
+  static std::shared_ptr<UnpartitionedMesh>
+  FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_size);
   static std::shared_ptr<UnpartitionedMesh> FromGmshV22(const UnpartitionedMesh::Options& options);
 };
 
