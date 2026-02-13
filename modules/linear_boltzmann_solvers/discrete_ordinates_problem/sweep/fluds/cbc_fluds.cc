@@ -14,7 +14,8 @@ CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
                      size_t num_angles,
                      const CBC_FLUDSCommonData& common_data,
                      const UnknownManager& psi_uk_man,
-                     const SpatialDiscretization& sdm)
+                     const SpatialDiscretization& sdm,
+                     bool use_gpus)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()),
     common_data_(common_data),
     psi_uk_man_(psi_uk_man),
@@ -24,8 +25,10 @@ CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
     num_local_spatial_dofs_(num_quadrature_local_dofs_ / num_angles_in_gs_quadrature_ /
                             num_groups_),
     local_psi_data_size_(num_local_spatial_dofs_ * num_groups_and_angles_),
-    local_psi_data_(local_psi_data_size_)
+    local_psi_data_()
 {
+  if (not use_gpus)
+    local_psi_data_.resize(local_psi_data_size_, 0.0);
 }
 
 const FLUDSCommonData&
