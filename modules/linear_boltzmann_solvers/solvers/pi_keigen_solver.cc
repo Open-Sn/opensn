@@ -86,7 +86,10 @@ PowerIterationKEigenSolver::Initialize()
     wgs_context->rhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
   }
 
-  ags_solver_->SetVerbosity(options.verbose_ags_iterations);
+  const bool print_ags_iters = options.verbose_ags_iterations and
+                               do_problem_->GetGroupsets().size() > 1 and
+                               options.max_ags_iterations > 1;
+  ags_solver_->SetVerbosity(print_ags_iters);
 
   front_wgs_solver_ = do_problem_->GetWGSSolvers().at(front_gs_.id);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());

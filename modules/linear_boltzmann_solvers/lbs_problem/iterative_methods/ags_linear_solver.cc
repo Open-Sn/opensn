@@ -18,6 +18,10 @@ AGSLinearSolver::Solve()
 {
   CALI_CXX_MARK_SCOPE("AGSLinearSolver::Solve");
 
+  const bool is_multi_groupset = wgs_solvers_.size() > 1;
+  const bool does_ags_iterations = max_iterations_ > 1;
+  const bool print_ags_stats = verbose_ and is_multi_groupset and does_ags_iterations;
+
   std::fill(phi_old_.begin(), phi_old_.end(), 0.0);
 
   // Save qmoms to be restored after each iteration. This is necessary for multiple ags iterations
@@ -67,7 +71,7 @@ AGSLinearSolver::Solve()
       }
     }
 
-    if (verbose_)
+    if (print_ags_stats)
       log.Log() << iter_stats.str();
 
     // Restore qmoms

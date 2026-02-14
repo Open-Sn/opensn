@@ -51,7 +51,10 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   double F_prev = ComputeFissionProduction(lbs_problem, phi_old_local);
 
   // Start power iterations
-  ags_solver->SetVerbosity(lbs_problem.GetOptions().verbose_ags_iterations);
+  const bool print_ags_iters = lbs_problem.GetOptions().verbose_ags_iterations and
+                               groupsets.size() > 1 and
+                               lbs_problem.GetOptions().max_ags_iterations > 1;
+  ags_solver->SetVerbosity(print_ags_iters);
   unsigned int nit = 0;
   bool converged = false;
   while (nit < max_iterations)
