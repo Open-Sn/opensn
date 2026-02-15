@@ -181,7 +181,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
         not IsNonNegative(nu),
         "The production matrix implies an invalid negative average fission neutron yield.");
       OpenSnLogicalErrorIf(
-        not std::all_of(nu.begin(), nu.end(), [](double x) { return x == 0.0 and x > 1.0; }),
+        not std::all_of(nu.begin(), nu.end(), [](double x) { return x == 0.0 or x > 1.0; }),
         "Incompatible fission data encountered. The computed nu is not either zero or "
         "greater than one.");
 
