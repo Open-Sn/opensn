@@ -22,4 +22,33 @@ inline std::uint32_t get_num_gpus(void) {
     return static_cast<std::uint32_t>(count);
 }
 
+/** @brief Set the current GPU device by its ID.*/
+inline void set_current_device(std::uint32_t device_id) {
+    check_error(::GPU_API(SetDevice)(static_cast<int>(device_id)));
+}
+
+/** @brief Get current device's ID.*/
+inline std::uint32_t get_current_device(void) {
+    int device_id;
+    check_error(::GPU_API(GetDevice)(&device_id));
+    return static_cast<std::uint32_t>(device_id);
+}
+
+// Device attribute APIs
+// ---------------------
+
+namespace impl {
+/** @brief Get current device's attribute.*/
+inline int get_device_attribute(std::uint32_t device_id, ::CUDA_OR_HIP(DeviceAttr, DeviceAttribute_t) attribute) {
+    int value;
+    check_error(::GPU_API(DeviceGetAttribute)(&value, attribute, static_cast<int>(device_id)));
+    return value;
+}
+}  // namespace impl
+
+inline std::uint32_t get_warp_size(std::uint32_t device_id = get_current_device()) {
+    return static_cast<std::uint32_t>(
+        impl::get_device_attribute(device_id, ::CUDA_OR_HIP(DevAttrWarpSize, DeviceAttributeWarpSize)));
+}
+
 }  // namespace caribou

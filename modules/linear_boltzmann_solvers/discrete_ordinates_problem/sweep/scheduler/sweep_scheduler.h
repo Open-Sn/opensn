@@ -5,9 +5,9 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/spmd_threadpool.h"
 #include <set>
 #include <unordered_map>
-#include <unordered_set>
 
 namespace opensn
 {
@@ -87,6 +87,8 @@ private:
 
   /// Angle set dependencies (preceding sets) used by DOG scheduling.
   std::unordered_map<AngleSet*, std::set<AngleSet*>> preceding_angle_sets_;
+
+  SPMD_ThreadPool pool_;
 };
 
 } // namespace opensn

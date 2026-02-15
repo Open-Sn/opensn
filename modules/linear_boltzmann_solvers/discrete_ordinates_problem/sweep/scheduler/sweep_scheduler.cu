@@ -22,9 +22,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
 
   // allocate threads for each angleset
-  std::vector<std::thread> sweep_threads;
   std::size_t num_anglesets = angle_agg_.GetNumAngleSets();
-  sweep_threads.resize(num_anglesets);
 
   // set the latches for all anglesets
   for (auto& angle_set : angle_agg_)
@@ -34,16 +32,12 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   }
 
   // launch threads
-  for (std::size_t i = 0; i < angle_agg_.GetNumAngleSets(); ++i)
-  {
-    auto aahd_angle_set = static_cast<AAHD_AngleSet*>(angle_agg_[i].get());
-    sweep_threads[i] =
-      std::thread([&sweep_chunk, aahd_angle_set]()
-                  { aahd_angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE); });
-  }
-  // wait for all threads to complete
-  for (auto& thread : sweep_threads)
-    thread.join();
+  pool_.run(
+    [this, &sweep_chunk](std::size_t i)
+    {
+      auto* aahd = static_cast<AAHD_AngleSet*>(angle_agg_[i].get());
+      aahd->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+    });
 
   // copy phi and outflow data back to host
   aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
