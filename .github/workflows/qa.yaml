@@ -8,16 +8,25 @@ on:
 jobs:
   check-formatting:
     name: Check formatting
-    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
       - name: clang-format style check
-        uses: jidicula/clang-format-action@v4.15.0
-        with:
-          clang-format-version: '19'
-          check-path: .
-          exclude-regex: '(.\/doc\/|.\/resources\/|.\/tutorials\/|.\/external\/)'
+        run: |
+          module load opensn/clang/19
+          clang-format --version
+
+          git ls-files -z -- \
+            '*.c' '*.cc' '*.cpp' '*.cxx' '*.h' '*.hh' '*.hpp' '*.cu' \
+            ':(exclude)doc/**' \
+            ':(exclude)resources/**' \
+            ':(exclude)tutorials/**' \
+            ':(exclude)external/**' \
+          | xargs -0 -r clang-format --dry-run --Werror
 
   check-spdx-tags:
     name: check spdx tags
