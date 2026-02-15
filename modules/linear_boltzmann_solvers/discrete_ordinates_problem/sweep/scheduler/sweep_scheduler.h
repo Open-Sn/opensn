@@ -5,7 +5,10 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include <condition_variable>
+#include <mutex>
 #include <set>
+#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -27,6 +30,7 @@ public:
   SweepScheduler(SchedulingAlgorithm scheduler_type,
                  AngleAggregation& angle_agg,
                  SweepChunk& sweep_chunk);
+  ~SweepScheduler();
 
   void Sweep();
 
@@ -87,6 +91,17 @@ private:
 
   /// Angle set dependencies (preceding sets) used by DOG scheduling.
   std::unordered_map<AngleSet*, std::set<AngleSet*>> preceding_angle_sets_;
+
+  // Persistent worker threads for AAO GPU scheduling.
+  std::vector<std::thread> aao_worker_threads_;
+  std::mutex aao_mutex_;
+  std::condition_variable aao_cv_start_;
+  std::condition_variable aao_cv_done_;
+  [[maybe_unused]] bool aao_workers_initialized_ = false;
+  bool aao_stop_workers_ = false;
+  [[maybe_unused]] std::size_t aao_workers_remaining_ = 0;
+  std::size_t aao_work_epoch_ = 0;
+  [[maybe_unused]] SweepChunk* aao_active_sweep_chunk_ = nullptr;
 };
 
 } // namespace opensn

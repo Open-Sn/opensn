@@ -93,9 +93,9 @@ struct AAHD_NonLocalBank : public AAHD_Bank
   void UpdateViews(std::vector<std::span<double>>& views);
 
   /// Reference to the sizes of each location.
-  const std::vector<std::size_t>* location_sizes;
+  const std::vector<std::size_t>* location_sizes = nullptr;
   /// Reference to the offsets of each location.
-  const std::vector<std::size_t>* location_offsets;
+  const std::vector<std::size_t>* location_offsets = nullptr;
   /// Stride size.
   std::size_t stride_size;
 };
@@ -220,9 +220,12 @@ public:
   /// Get reference to stream.
   crb::Stream& GetStream() { return stream_; }
   /// Get saved angular flux device pointer.
-  double* GetSavedAngularFluxDevicePointer() { return save_angular_flux_.device_storage.get(); }
+  double* GetSavedAngularFluxDevicePointer()
+  {
+    return save_angular_flux_active_ ? save_angular_flux_.device_storage.get() : nullptr;
+  }
   /// Check if the FLUDS has save angular flux storage.
-  bool HasSaveAngularFlux() const { return not save_angular_flux_.host_storage.empty(); }
+  bool HasSaveAngularFlux() const { return save_angular_flux_active_; }
 
 protected:
   /// Reference to the common data.
@@ -251,6 +254,9 @@ protected:
 
   /// Stream for asynchronous operations.
   crb::Stream stream_;
+
+  /// Whether save-angular-flux is active for the current sweep.
+  bool save_angular_flux_active_ = false;
 };
 
 } // namespace opensn

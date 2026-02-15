@@ -20,6 +20,14 @@ namespace opensn
 namespace gpu_kernel
 {
 
+struct DirectionCacheEntry
+{
+  double omega[3];
+  double weight;
+  const double* m2d;
+  const double* d2m;
+};
+
 /// Kernel performing the sweep
 __global__ void
 UnsaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
@@ -36,15 +44,42 @@ UnsaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
   // skip when cell has no nodes
   if (cell.num_nodes == 0)
     return;
-  // get direction view and number of moments
-  std::uint32_t num_moments;
-  std::uint32_t direction_num = args.directions[angle_idx];
-  DirectionView direction;
+
+  // Cache per-angle direction data once per block row (x==0) so all groups reuse it.
+  extern __shared__ unsigned char shared_memory[];
+  auto* direction_cache = reinterpret_cast<DirectionCacheEntry*>(shared_memory);
+  auto* shared_num_moments = reinterpret_cast<std::uint32_t*>(direction_cache + blockDim.y);
+
+  if (threadIdx.x == 0)
   {
     QuadratureView quadrature(args.quad_data);
-    num_moments = quadrature.num_moments;
-    quadrature.GetDirectionView(direction, direction_num);
+    if (threadIdx.y == 0)
+      *shared_num_moments = quadrature.num_moments;
+
+    const std::uint32_t direction_num = args.directions[angle_idx];
+    DirectionView direction_view;
+    quadrature.GetDirectionView(direction_view, direction_num);
+
+    auto& entry = direction_cache[angle_idx];
+    entry.omega[0] = direction_view.omega[0];
+    entry.omega[1] = direction_view.omega[1];
+    entry.omega[2] = direction_view.omega[2];
+    entry.weight = direction_view.weight;
+    entry.m2d = direction_view.m2d;
+    entry.d2m = direction_view.d2m;
   }
+  __syncthreads();
+
+  const auto& entry = direction_cache[angle_idx];
+  DirectionView direction;
+  direction.omega[0] = entry.omega[0];
+  direction.omega[1] = entry.omega[1];
+  direction.omega[2] = entry.omega[2];
+  direction.weight = entry.weight;
+  direction.m2d = entry.m2d;
+  direction.d2m = entry.d2m;
+  const std::uint32_t num_moments = *shared_num_moments;
+
   // get pointer to the corresponding FLUDS index
   auto [cell_edge_data, _] = GetCellDataIndex(args.flud_index, cell_local_idx);
   // launch the kernel
@@ -67,6 +102,9 @@ SaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
     return;
   // get pointer to the corresponding FLUDS index
   auto [cell_edge_data, _] = GetCellDataIndex(args.flud_index, cell_local_idx);
+
+  QuadratureView quadrature(args.quad_data);
+  const std::uint32_t num_moments = quadrature.num_moments;
   // loop on each group and angle
   for (unsigned int angle_group_idx = threadIdx.x; angle_group_idx < args.flud_data.stride_size;
        angle_group_idx += blockDim.x)
@@ -74,15 +112,11 @@ SaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
     // get group and angle index
     std::uint32_t group_idx = angle_group_idx % args.groupset_size;
     std::uint32_t angle_idx = angle_group_idx / args.groupset_size;
-    // get direction view and number of moments
-    std::uint32_t num_moments;
+
+    // get direction view
     std::uint32_t direction_num = args.directions[angle_idx];
     DirectionView direction;
-    {
-      QuadratureView quadrature(args.quad_data);
-      num_moments = quadrature.num_moments;
-      quadrature.GetDirectionView(direction, direction_num);
-    }
+    quadrature.GetDirectionView(direction, direction_num);
     // launch the kernel
     sweep_spec_map[cell.num_nodes - 1](
       args, cell, direction, cell_edge_data, angle_group_idx, group_idx, num_moments, saved_psi);
@@ -128,13 +162,15 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
                block_size_y = aahd_angle_set.GetNumAngles();
   if (block_size_x * block_size_y <= gpu_kernel::threshold)
   {
+    const std::size_t shared_memory_size =
+      block_size_y * sizeof(gpu_kernel::DirectionCacheEntry) + sizeof(std::uint32_t);
     for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)
     {
       // perform the sweep on device
       std::size_t level_size = levelized_spls[level].size();
       const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
       ::dim3 block_size{block_size_x, block_size_y};
-      gpu_kernel::UnsaturatedKernel<<<level_size, block_size, 0, stream>>>(
+      gpu_kernel::UnsaturatedKernel<<<level_size, block_size, shared_memory_size, stream>>>(
         args, level_data, saved_psi);
     }
   }
