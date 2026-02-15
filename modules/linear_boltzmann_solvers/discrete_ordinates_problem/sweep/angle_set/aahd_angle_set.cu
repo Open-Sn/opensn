@@ -4,9 +4,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
-#include "framework/logging/log.h"
-#include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <algorithm>
 
 namespace opensn
 {
@@ -73,10 +72,13 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
   // stream: allocate memory and asynchronously copy delayed psi to device
   aahd_fluds->AllocateInternalLocalPsi();
   aahd_fluds->AllocateOutgoingPsi();
-  aahd_fluds->CopyDelayedPsiToDevice();
   // mpi: allocate memory and pre-post receive for non-local incoming psi
   aahd_fluds->AllocatePrelocIOutgoingPsi();
   async_comm_.PrepostReceiveUpstreamPsi(static_cast<int>(this->GetID()));
+  // mpi: pre-post delayed receives early so communication can progress during the sweep
+  async_comm_.PrepostReceiveDelayedData(static_cast<int>(this->GetID()));
+  // stream: copy delayed psi to device while upstream receives progress
+  aahd_fluds->CopyDelayedPsiToDevice();
   // thread: wait for reflecting boundary data and copy boundary data to device
   starting_latch_->wait();
   aahd_fluds->CopyBoundaryToDevice(aahd_sweep_chunk.GetGrid(),
@@ -93,39 +95,38 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
                                       aahd_sweep_chunk.GetGroupset());
   sweep_chunk.Sweep(*this);
   aahd_fluds->CopyPsiFromDevice();
+  aahd_fluds->CopySaveAngularFluxFromDevice();
   // thread: wait for all sweep computations and data transfer to finish
   stream_.synchronize();
 
-  // stream: copy save angular flux to contiguous buffer on host, free local + upstream
-  aahd_fluds->CopySaveAngularFluxFromDevice();
-  aahd_fluds->ClearLocalAndReceivePsi();
-  // mpi: send non-local outgoing psi and pre-post receive delayed data
-  async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
-  async_comm_.PrepostReceiveDelayedData(static_cast<int>(this->GetID()));
-  // thread: copy boundary data to angle set to unlock the latches of following angle sets,
-  aahd_fluds->CopyBoundaryPsiToAngleSet(aahd_sweep_chunk.GetGrid(), *this);
-  for (auto& following_as : following_angle_sets_)
+  // thread: copying boundary psi is only needed when this angle-set has dependents
+  if (not following_angle_sets_.empty())
   {
-    following_as->starting_latch_->count_down();
+    aahd_fluds->CopyBoundaryPsiToAngleSet(aahd_sweep_chunk.GetGrid(), *this);
+    for (auto& following_as : following_angle_sets_)
+      following_as->starting_latch_->count_down();
   }
+
+  // stream: free local + upstream
+  aahd_fluds->ClearLocalAndReceivePsi();
+  // mpi: send non-local outgoing psi
+  async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
   // thread: copy save angular flux to destination psi,
   if (aahd_fluds->HasSaveAngularFlux())
   {
-    stream_.synchronize();
     aahd_fluds->CopySaveAngularFluxToDestinationPsi(
       aahd_sweep_chunk.GetProblem(), aahd_sweep_chunk.GetGroupset(), *this);
   }
   // thread: wait for downstream sends
   async_comm_.WaitForDownstreamPsi();
 
-  // stream: deallocate downstream psi memory
+  // stream: clear downstream psi views
   aahd_fluds->ClearSendPsi();
   // thread: wait for delayed incoming messages
   async_comm_.WaitForDelayedIncomingPsi();
-  // thread: wait for all device memory deallocations
-  stream_.synchronize();
 
   executed_ = true;
+
   return AngleSetStatus::FINISHED;
 }
 

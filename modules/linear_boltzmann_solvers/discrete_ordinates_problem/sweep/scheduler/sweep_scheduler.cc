@@ -66,6 +66,20 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
     angset->SetMaxBufferMessages(global_max_num_messages);
 }
 
+SweepScheduler::~SweepScheduler()
+{
+  {
+    std::scoped_lock<std::mutex> lock(aao_mutex_);
+    aao_stop_workers_ = true;
+    ++aao_work_epoch_;
+  }
+  aao_cv_start_.notify_all();
+
+  for (auto& thread : aao_worker_threads_)
+    if (thread.joinable())
+      thread.join();
+}
+
 void
 SweepScheduler::InitializeAlgoDOG()
 {
