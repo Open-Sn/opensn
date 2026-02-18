@@ -6,6 +6,7 @@
 #include "framework/parameters/parameter_block.h"
 #include "framework/data_types/allowable_range.h"
 #include <map>
+#include <cstdint>
 
 namespace opensn
 {
