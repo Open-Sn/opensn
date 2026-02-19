@@ -36,7 +36,7 @@ FieldFunction::FieldFunction(const InputParameters& params)
       : (params.GetParamValue<std::string>("unknown_type") == "Vector2")
         ? Unknown(UnknownType::VECTOR_2)
       : (params.GetParamValue<std::string>("unknown_type") == "Vector3")
-        ? Unknown(UnknownType::VECTOR_2)
+        ? Unknown(UnknownType::VECTOR_3)
       : (params.GetParamValue<std::string>("unknown_type") == "VectorN")
         ? Unknown(UnknownType::VECTOR_N, params.GetParamValue<unsigned int>("num_components"))
         : Unknown(UnknownType::SCALAR)),
