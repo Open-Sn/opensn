@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``cstdint``
+
 - ``framework/data_types/allowable_range.h`` (:ref:`file_framework_data_types_allowable_range.h`)
 
 - ``framework/parameters/parameter_block.h`` (:ref:`file_framework_parameters_parameter_block.h`)
