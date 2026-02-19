@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include <memory>
+#include <cstdint>
 
 namespace opensn
 {
