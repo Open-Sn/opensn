@@ -179,3 +179,49 @@ if __name__ == "__main__":
         print(f"lv1: max = {pps_lv1_max.GetValue()[0][0]}")
         print(f"lv1: avg = {pps_lv1_avg.GetValue()[0][0]}")
         print(f"lv1: int = {pps_lv1_int.GetValue()[0][0]}")
+
+    # PPS over logical volume and mesh blocks
+    lv2 = RPPLogicalVolume(infx=True, infy=True, zmin=6.1, zmax=6.5)
+    lv3 = RPPLogicalVolume(infx=True, infy=True, zmin=6.9, zmax=7.2)
+
+    pps_cmb_min = VolumePostprocessor(
+        problem=phys,
+        value_type="min",
+        logical_volumes=[lv2, lv3],
+        block_ids=[4]
+    )
+    pps_cmb_min.Execute()
+
+    pps_cmb_max = VolumePostprocessor(
+        problem=phys,
+        value_type="max",
+        logical_volumes=[lv2, lv3],
+        block_ids=[4]
+    )
+    pps_cmb_max.Execute()
+
+    pps_cmb_avg = VolumePostprocessor(
+        problem=phys,
+        value_type="avg",
+        logical_volumes=[lv2, lv3],
+        block_ids=[4]
+    )
+    pps_cmb_avg.Execute()
+
+    pps_cmb_int = VolumePostprocessor(
+        problem=phys,
+        value_type="integral",
+        logical_volumes=[lv2, lv3],
+        block_ids=[4]
+    )
+    pps_cmb_int.Execute()
+
+    if rank == 0:
+        print(f"cmb: min[0] = {pps_cmb_min.GetValue()[0][0]}")
+        print(f"cmb: min[1] = {pps_cmb_min.GetValue()[1][0]}")
+        print(f"cmb: max[0] = {pps_cmb_max.GetValue()[0][0]}")
+        print(f"cmb: max[1] = {pps_cmb_max.GetValue()[1][0]}")
+        print(f"cmb: avg[0] = {pps_cmb_avg.GetValue()[0][0]}")
+        print(f"cmb: avg[1] = {pps_cmb_avg.GetValue()[1][0]}")
+        print(f"cmb: int[0] = {pps_cmb_int.GetValue()[0][0]}")
+        print(f"cmb: int[1] = {pps_cmb_int.GetValue()[1][0]}")

@@ -76,6 +76,54 @@
         "key": "lv1: int =",
         "goldvalue": 7.670579967,
         "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: min[0] =",
+        "goldvalue": 1.034539408,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: min[1] =",
+        "goldvalue": 0.602754163,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: max[0] =",
+        "goldvalue": 1.441386822,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: max[1] =",
+        "goldvalue": 0.765556698,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: avg[0] =",
+        "goldvalue": 1.217901652,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: avg[1] =",
+        "goldvalue": 0.682130241,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: int[0] =",
+        "goldvalue": 0.487160661,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: int[1] =",
+        "goldvalue": 0.204639072,
+        "abs_tol": 1e-8
       }
     ]
   }
