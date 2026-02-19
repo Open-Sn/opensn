@@ -108,3 +108,38 @@ if __name__ == "__main__":
         print(f"whole: max = {pps_whole_max.GetValue()[0][0]}")
         print(f"whole: avg = {pps_whole_avg.GetValue()[0][0]}")
         print(f"whole: int = {pps_whole_int.GetValue()[0][0]}")
+
+    # PPS over a mesh block
+    pps_blk4_min = VolumePostprocessor(
+        problem=phys,
+        value_type="min",
+        block_ids=[4]
+    )
+    pps_blk4_min.Execute()
+
+    pps_blk4_max = VolumePostprocessor(
+        problem=phys,
+        value_type="max",
+        block_ids=[4]
+    )
+    pps_blk4_max.Execute()
+
+    pps_blk4_avg = VolumePostprocessor(
+        problem=phys,
+        value_type="avg",
+        block_ids=[4]
+    )
+    pps_blk4_avg.Execute()
+
+    pps_blk4_int = VolumePostprocessor(
+        problem=phys,
+        value_type="integral",
+        block_ids=[4]
+    )
+    pps_blk4_int.Execute()
+
+    if rank == 0:
+        print(f"blk4: min = {pps_blk4_min.GetValue()[0][0]}")
+        print(f"blk4: max = {pps_blk4_max.GetValue()[0][0]}")
+        print(f"blk4: avg = {pps_blk4_avg.GetValue()[0][0]}")
+        print(f"blk4: int = {pps_blk4_int.GetValue()[0][0]}")

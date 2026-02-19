@@ -28,6 +28,30 @@
         "key": "whole: int =",
         "goldvalue": 7.67057997,
         "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "blk4: min =",
+        "goldvalue": 0.222698796,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "blk4: max =",
+        "goldvalue": 1.632885767,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "blk4: avg =",
+        "goldvalue": 0.766828429,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "blk4: int =",
+        "goldvalue": 1.533656858,
+        "abs_tol": 1e-8
       }
     ]
   }
