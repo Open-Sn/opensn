@@ -1,0 +1,34 @@
+[
+  {
+    "file": "reed_balance.py",
+    "comment": "1D Reed problem",
+    "num_procs": 1,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "whole: min =",
+        "goldvalue": 0.028303055,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "whole: max =",
+        "goldvalue": 1.96717796,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "whole: avg =",
+        "goldvalue": 0.958822496,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "whole: int =",
+        "goldvalue": 7.67057997,
+        "abs_tol": 1e-8
+      }
+    ]
+  }
+]
