@@ -34,6 +34,10 @@ VolumePostprocessor::GetInputParameters()
     "group", 0, "Single group to compute (mutually exclusive with groupset).");
   params.AddOptionalParameter(
     "groupset", 0, "Single groupset to compute (mutually exclusive with group).");
+
+  params.ConstrainParameterRange("value_type",
+                                 AllowableRangeList::New({"integral", "max", "min", "avg"}));
+
   return params;
 }
 
@@ -116,7 +120,7 @@ VolumePostprocessor::CreateSpatialRestriction()
   {
     cell_local_ids_.resize(logical_volumes_.size());
     for (unsigned int i = 0; i < logical_volumes_.size(); ++i)
-      cell_local_ids_[i] = GetLogivalVolumeCellIDs(logical_volumes_[i]);
+      cell_local_ids_[i] = GetLogicalVolumeCellIDs(logical_volumes_[i]);
   }
 
   OpenSnLogicalErrorIf(cell_local_ids_.empty(),
@@ -124,7 +128,7 @@ VolumePostprocessor::CreateSpatialRestriction()
 }
 
 std::vector<std::uint32_t>
-VolumePostprocessor::GetLogivalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol)
+VolumePostprocessor::GetLogicalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol)
 {
   const auto& grid = lbs_problem_->GetGrid();
 
