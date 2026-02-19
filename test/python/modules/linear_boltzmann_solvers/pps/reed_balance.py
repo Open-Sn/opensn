@@ -103,7 +103,7 @@ if __name__ == "__main__":
     pps_whole_int = VolumePostprocessor(problem=phys, value_type="integral")
     pps_whole_int.Execute()
 
-    if rank ==0:
+    if rank == 0:
         print(f"whole: min = {pps_whole_min.GetValue()[0][0]}")
         print(f"whole: max = {pps_whole_max.GetValue()[0][0]}")
         print(f"whole: avg = {pps_whole_avg.GetValue()[0][0]}")
