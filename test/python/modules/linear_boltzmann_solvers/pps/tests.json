@@ -52,6 +52,30 @@
         "key": "blk4: int =",
         "goldvalue": 1.533656858,
         "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "lv1: min =",
+        "goldvalue": 0.028303055,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "lv1: max =",
+        "goldvalue": 1.967177957,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "lv1: avg =",
+        "goldvalue": 0.958822496,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "lv1: int =",
+        "goldvalue": 7.670579967,
+        "abs_tol": 1e-8
       }
     ]
   }

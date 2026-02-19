@@ -143,3 +143,39 @@ if __name__ == "__main__":
         print(f"blk4: max = {pps_blk4_max.GetValue()[0][0]}")
         print(f"blk4: avg = {pps_blk4_avg.GetValue()[0][0]}")
         print(f"blk4: int = {pps_blk4_int.GetValue()[0][0]}")
+
+    # PPS over a logical volume
+    lv1 = RPPLogicalVolume(infz=True, infy=True, zmin=4.0, zmax=7.)
+    pps_lv1_min = VolumePostprocessor(
+        problem=phys,
+        value_type="min",
+        logical_volumes=[lv1]
+    )
+    pps_lv1_min.Execute()
+
+    pps_lv1_max = VolumePostprocessor(
+        problem=phys,
+        value_type="max",
+        logical_volumes=[lv1]
+    )
+    pps_lv1_max.Execute()
+
+    pps_lv1_avg = VolumePostprocessor(
+        problem=phys,
+        value_type="avg",
+        logical_volumes=[lv1]
+    )
+    pps_lv1_avg.Execute()
+
+    pps_lv1_int = VolumePostprocessor(
+        problem=phys,
+        value_type="integral",
+        logical_volumes=[lv1]
+    )
+    pps_lv1_int.Execute()
+
+    if rank == 0:
+        print(f"lv1: min = {pps_lv1_min.GetValue()[0][0]}")
+        print(f"lv1: max = {pps_lv1_max.GetValue()[0][0]}")
+        print(f"lv1: avg = {pps_lv1_avg.GetValue()[0][0]}")
+        print(f"lv1: int = {pps_lv1_int.GetValue()[0][0]}")
