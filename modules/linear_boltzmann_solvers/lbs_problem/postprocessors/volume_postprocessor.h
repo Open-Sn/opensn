@@ -32,7 +32,7 @@ public:
 private:
   void CreateSpatialRestriction();
   void CreateEnergyRestriction();
-  std::vector<std::uint32_t> GetLogivalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol);
+  std::vector<std::uint32_t> GetLogicalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol);
 
   std::shared_ptr<LBSProblem> lbs_problem_;
   /// Block IDs this postprocessor is restricted to
