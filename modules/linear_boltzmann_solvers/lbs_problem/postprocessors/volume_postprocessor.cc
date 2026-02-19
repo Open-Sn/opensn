@@ -95,6 +95,7 @@ VolumePostprocessor::CreateSpatialRestriction()
 
   if (logical_volumes_.empty())
   {
+    cell_local_ids_.resize(1);
     std::vector<std::uint32_t> cell_ids;
     if (block_ids_.empty())
     {
