@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/field_functions/field_function.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include "framework/runtime.h"
 
 namespace opensn

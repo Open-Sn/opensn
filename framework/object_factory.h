@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/parameters/input_parameters.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include "framework/utils/utils.h"
 #include <memory>
 

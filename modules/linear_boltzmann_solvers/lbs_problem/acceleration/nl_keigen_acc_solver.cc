@@ -36,13 +36,15 @@ NLKEigenDiffSolver::SetMonitor()
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   if (nl_context_ptr->verbosity_level >= 1)
-    SNESMonitorSet(nl_solver_, &KEigenSNESMonitor, &nl_context_ptr->kresid_func_context, nullptr);
+    OpenSnPETScCall(SNESMonitorSet(
+      nl_solver_, &KEigenSNESMonitor, &nl_context_ptr->kresid_func_context, nullptr));
 
   if (nl_context_ptr->verbosity_level >= 2)
   {
     KSP ksp = nullptr;
-    SNESGetKSP(nl_solver_, &ksp);
-    KSPMonitorSet(ksp, &KEigenKSPMonitor, &nl_context_ptr->kresid_func_context, nullptr);
+    OpenSnPETScCall(SNESGetKSP(nl_solver_, &ksp));
+    OpenSnPETScCall(
+      KSPMonitorSet(ksp, &KEigenKSPMonitor, &nl_context_ptr->kresid_func_context, nullptr));
   }
 }
 
@@ -63,7 +65,7 @@ NLKEigenDiffSolver::SetSystem()
 {
   // Create the vectors
   x_ = CreateVector(num_local_dofs_, num_global_dofs_);
-  VecDuplicate(x_, &r_);
+  OpenSnPETScCall(VecDuplicate(x_, &r_));
 }
 
 void
@@ -71,21 +73,21 @@ NLKEigenDiffSolver::SetFunction()
 {
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
-  SNESSetFunction(
-    nl_solver_, r_, NLKEigenAccResidualFunction, &nl_context_ptr->kresid_func_context);
+  OpenSnPETScCall(SNESSetFunction(
+    nl_solver_, r_, NLKEigenAccResidualFunction, &nl_context_ptr->kresid_func_context));
 }
 
 void
 NLKEigenDiffSolver::SetJacobian()
 {
-  MatCreateSNESMF(nl_solver_, &J_);
-  SNESSetJacobian(nl_solver_, J_, J_, MatMFFDComputeJacobian, nullptr);
+  OpenSnPETScCall(MatCreateSNESMF(nl_solver_, &J_));
+  OpenSnPETScCall(SNESSetJacobian(nl_solver_, J_, J_, MatMFFDComputeJacobian, nullptr));
 }
 
 void
 NLKEigenDiffSolver::SetInitialGuess()
 {
-  VecSet(x_, 0.0);
+  OpenSnPETScCall(VecSet(x_, 0.0));
 }
 
 void
@@ -114,7 +116,7 @@ NLKEigenDiffSolver::PostSolveCallback()
   LBSVecOps::ScalePhiVector(do_problem, PhiSTLOption::PHI_OLD, k_eff / production);
 
   PetscInt number_of_func_evals = 0;
-  SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
+  OpenSnPETScCall(SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals));
 
   // Print summary
   if (nl_context_ptr->verbosity_level >= 1)

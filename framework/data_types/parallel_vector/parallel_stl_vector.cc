@@ -3,7 +3,8 @@
 
 #include "framework/data_types/parallel_vector/parallel_stl_vector.h"
 #include "framework/data_types/byte_array.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
+#include "framework/utils/error.h"
 #include "framework/logging/log.h"
 #include "framework/mpi/mpi_utils.h"
 #include <petsc.h>
@@ -151,15 +152,15 @@ void
 ParallelSTLVector::CopyLocalValues(Vec y)
 {
   PetscInt n = 0;
-  VecGetLocalSize(y, &n);
+  OpenSnPETScCall(VecGetLocalSize(y, &n));
 
   OpenSnInvalidArgumentIf(std::cmp_less(n, local_size_),
                           "Attempted update with a vector of insufficient size.");
 
   const double* x = nullptr;
-  VecGetArrayRead(y, &x);
+  OpenSnPETScCall(VecGetArrayRead(y, &x));
   std::copy(x, x + n, values_.begin());
-  VecRestoreArrayRead(y, &x);
+  OpenSnPETScCall(VecRestoreArrayRead(y, &x));
 }
 
 void
@@ -206,7 +207,7 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
   const auto local_end = local_offset + num_values;
 
   PetscInt y_local_size = 0;
-  VecGetLocalSize(y, &y_local_size);
+  OpenSnPETScCall(VecGetLocalSize(y, &y_local_size));
 
   OpenSnInvalidArgumentIf(y_end > y_local_size,
                           "y_offset + num_values=" + std::to_string(y_end) +
@@ -219,13 +220,13 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
                             std::to_string(local_size_));
 
   const double* y_data = nullptr;
-  VecGetArrayRead(y, &y_data);
+  OpenSnPETScCall(VecGetArrayRead(y, &y_data));
 
   std::copy(y_data + y_offset,
             y_data + y_offset + num_values,
             values_.begin() + static_cast<long>(local_offset));
 
-  VecRestoreArrayRead(y, &y_data);
+  OpenSnPETScCall(VecRestoreArrayRead(y, &y_data));
 }
 
 void

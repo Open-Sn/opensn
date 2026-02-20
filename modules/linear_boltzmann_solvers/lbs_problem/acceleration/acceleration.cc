@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include "framework/runtime.h"
 
 namespace opensn

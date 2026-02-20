@@ -20,7 +20,9 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto& function_context = *static_cast<KResidualFunctionContext*>(ctx);
 
   NLKEigenAGSContext* nl_context_ptr = nullptr;
-  SNESGetApplicationContext(snes, static_cast<void*>(&nl_context_ptr));
+  PetscErrorCode ierr = SNESGetApplicationContext(snes, static_cast<void*>(&nl_context_ptr));
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   auto& lbs_problem = nl_context_ptr->lbs_problem;
   const auto& phi_old_local = lbs_problem->GetPhiOldLocal();
@@ -72,7 +74,9 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(
     *lbs_problem, groupset_ids, r, PhiSTLOption::PHI_NEW);
 
-  VecAXPY(r, -1.0, phi);
+  ierr = VecAXPY(r, -1.0, phi);
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   for (auto& groupset : lbs_problem->GetGroupsets())
   {
@@ -87,7 +91,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   // Assign k to the context so monitors can work
   function_context.k_eff = k_eff;
 
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 } // namespace opensn

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "framework/utils/error.h"
 #include <petscksp.h>
 #include <vector>
 

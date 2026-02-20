@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/data_types/varying.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include <algorithm>
 #include <sstream>
 

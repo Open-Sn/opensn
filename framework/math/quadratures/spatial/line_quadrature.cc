@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/quadratures/spatial/line_quadrature.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 
 namespace opensn
 {

@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "caliper/cali.h"
 
@@ -33,7 +34,7 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   CALI_CXX_MARK_SCOPE("WGSContext::MatrixAction");
 
   WGSContext* gs_context_ptr = nullptr;
-  MatShellGetContext(matrix, static_cast<void*>(&gs_context_ptr));
+  OpenSnPETScCall(MatShellGetContext(matrix, static_cast<void*>(&gs_context_ptr)));
 
   // Copy krylov action_vector into local
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
@@ -64,7 +65,7 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   // A  = [I - DLinvMS]
   // Av = [I - DLinvMS]v
   //    = v - DLinvMSv
-  VecAYPX(action, -1.0, action_vector);
+  OpenSnPETScCall(VecAYPX(action, -1.0, action_vector));
 
   return 0;
 }

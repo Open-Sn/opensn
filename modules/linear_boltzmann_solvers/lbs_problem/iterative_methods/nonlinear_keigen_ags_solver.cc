@@ -47,13 +47,15 @@ NLKEigenvalueAGSSolver::SetMonitor()
 
   auto& lbs_problem = nl_context_ptr->lbs_problem;
   if (lbs_problem->GetOptions().verbose_outer_iterations)
-    SNESMonitorSet(nl_solver_, &KEigenSNESMonitor, &nl_context_ptr->kresid_func_context, nullptr);
+    OpenSnPETScCall(SNESMonitorSet(
+      nl_solver_, &KEigenSNESMonitor, &nl_context_ptr->kresid_func_context, nullptr));
 
   if (lbs_problem->GetOptions().verbose_inner_iterations)
   {
     KSP ksp = nullptr;
-    SNESGetKSP(nl_solver_, &ksp);
-    KSPMonitorSet(ksp, &KEigenKSPMonitor, &nl_context_ptr->kresid_func_context, nullptr);
+    OpenSnPETScCall(SNESGetKSP(nl_solver_, &ksp));
+    OpenSnPETScCall(
+      KSPMonitorSet(ksp, &KEigenKSPMonitor, &nl_context_ptr->kresid_func_context, nullptr));
   }
 }
 
@@ -74,7 +76,7 @@ NLKEigenvalueAGSSolver::SetSystem()
 {
   // Create the vectors
   x_ = CreateVector(num_local_dofs_, num_global_dofs_);
-  VecDuplicate(x_, &r_);
+  OpenSnPETScCall(VecDuplicate(x_, &r_));
 }
 
 void
@@ -82,14 +84,15 @@ NLKEigenvalueAGSSolver::SetFunction()
 {
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
-  SNESSetFunction(nl_solver_, r_, NLKEigenResidualFunction, &nl_context_ptr->kresid_func_context);
+  OpenSnPETScCall(SNESSetFunction(
+    nl_solver_, r_, NLKEigenResidualFunction, &nl_context_ptr->kresid_func_context));
 }
 
 void
 NLKEigenvalueAGSSolver::SetJacobian()
 {
-  MatCreateSNESMF(nl_solver_, &J_);
-  SNESSetJacobian(nl_solver_, J_, J_, MatMFFDComputeJacobian, nullptr);
+  OpenSnPETScCall(MatCreateSNESMF(nl_solver_, &J_));
+  OpenSnPETScCall(SNESSetJacobian(nl_solver_, J_, J_, MatMFFDComputeJacobian, nullptr));
 }
 
 void
@@ -119,7 +122,7 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
 
   PetscInt number_of_func_evals = 0;
-  SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals);
+  OpenSnPETScCall(SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals));
 
   // Print summary
   log.Log() << "\n"

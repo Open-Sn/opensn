@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_shell_operations.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
@@ -68,17 +69,17 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
   auto& ksp = solver;
 
   PC pc = nullptr;
-  KSPGetPC(ksp, &pc);
+  OpenSnPETScCall(KSPGetPC(ksp, &pc));
 
   if (groupset.apply_wgdsa or groupset.apply_tgdsa)
   {
-    PCSetType(pc, PCSHELL);
-    PCShellSetApply(pc, (PCShellPtr)WGDSA_TGDSA_PreConditionerMult);
-    PCShellSetContext(pc, &(*this));
+    OpenSnPETScCall(PCSetType(pc, PCSHELL));
+    OpenSnPETScCall(PCShellSetApply(pc, (PCShellPtr)WGDSA_TGDSA_PreConditionerMult));
+    OpenSnPETScCall(PCShellSetContext(pc, &(*this)));
   }
 
-  KSPSetPCSide(ksp, PC_LEFT);
-  KSPSetUp(ksp);
+  OpenSnPETScCall(KSPSetPCSide(ksp, PC_LEFT));
+  OpenSnPETScCall(KSPSetUp(ksp));
 }
 
 std::pair<int64_t, int64_t>

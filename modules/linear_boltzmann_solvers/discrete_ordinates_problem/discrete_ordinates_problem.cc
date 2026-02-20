@@ -31,7 +31,7 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/logging/log.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
 #include "framework/object_factory.h"

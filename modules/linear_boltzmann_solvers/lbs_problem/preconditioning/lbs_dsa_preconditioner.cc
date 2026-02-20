@@ -17,7 +17,9 @@ PetscErrorCode
 WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
   void* context = nullptr;
-  PCShellGetContext(pc, static_cast<void*>(&context));
+  PetscErrorCode ierr = PCShellGetContext(pc, static_cast<void*>(&context));
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   auto* gs_context_ptr = static_cast<WGSContext*>(context);
 
@@ -57,7 +59,7 @@ WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
     do_problem, groupset, pc_output, PhiSTLOption::PHI_NEW);
 
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 PetscErrorCode
@@ -99,7 +101,7 @@ WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec p
   LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
     do_problem, groupset, pc_output, PhiSTLOption::PHI_NEW);
 
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 } // namespace opensn

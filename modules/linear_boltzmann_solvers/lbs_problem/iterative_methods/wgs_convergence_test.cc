@@ -22,7 +22,9 @@ GSConvergenceTest(
 
   // Get data context
   WGSContext* context = nullptr;
-  KSPGetApplicationContext(ksp, static_cast<void*>(&context));
+  PetscErrorCode ierr = KSPGetApplicationContext(ksp, static_cast<void*>(&context));
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   // Set rhs norm
   double residual_scale = 1.0;
@@ -48,7 +50,9 @@ GSConvergenceTest(
   // Compute test criterion
   double tol = 0.0;
   int64_t maxIts = 0;
-  KSPGetTolerances(ksp, nullptr, &tol, nullptr, &maxIts);
+  ierr = KSPGetTolerances(ksp, nullptr, &tol, nullptr, &maxIts);
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   double scaled_residual = rnorm * residual_scale;
 
@@ -72,7 +76,7 @@ GSConvergenceTest(
   if (context->log_info)
     log.Log() << iter_info.str() << std::endl;
 
-  return KSP_CONVERGED_ITERATING;
+  return PETSC_SUCCESS;
 }
 
 } // namespace opensn

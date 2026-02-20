@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -55,7 +56,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
   const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
-  VecSet(rhs_, 0.0);
+  OpenSnPETScCall(VecSet(rhs_, 0.0));
   for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
@@ -200,20 +201,21 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       } // for face
 
       auto nn = static_cast<PetscInt>(num_nodes);
-      MatSetValues(A_, nn, cell_idxs.data(), nn, cell_idxs.data(), cell_A.data(), ADD_VALUES);
-      VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+      OpenSnPETScCall(
+        MatSetValues(A_, nn, cell_idxs.data(), nn, cell_idxs.data(), cell_A.data(), ADD_VALUES));
+      OpenSnPETScCall(VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES));
     } // for g
   } // for cell
 
-  MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY);
-  MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY);
-  VecAssemblyBegin(rhs_);
-  VecAssemblyEnd(rhs_);
+  OpenSnPETScCall(MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY));
+  OpenSnPETScCall(MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY));
+  OpenSnPETScCall(VecAssemblyBegin(rhs_));
+  OpenSnPETScCall(VecAssemblyEnd(rhs_));
 
   if (options.verbose)
   {
     MatInfo info;
-    MatGetInfo(A_, MAT_GLOBAL_SUM, &info);
+    OpenSnPETScCall(MatGetInfo(A_, MAT_GLOBAL_SUM, &info));
 
     log.Log() << "Number of mallocs used = " << info.mallocs
               << "\nNumber of non-zeros allocated = " << info.nz_allocated
@@ -224,21 +226,21 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (options.perform_symmetry_check)
   {
     PetscBool symmetry = PETSC_FALSE;
-    MatIsSymmetric(A_, 1.0e-6, &symmetry);
+    OpenSnPETScCall(MatIsSymmetric(A_, 1.0e-6, &symmetry));
     if (symmetry == PETSC_FALSE)
       throw std::logic_error(fname + ":Symmetry check failed");
   }
 
-  KSPSetOperators(ksp_, A_, A_);
+  OpenSnPETScCall(KSPSetOperators(ksp_, A_, A_));
 
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Assembly completed";
 
   PC pc = nullptr;
-  KSPGetPC(ksp_, &pc);
-  PCSetUp(pc);
+  OpenSnPETScCall(KSPGetPC(ksp_, &pc));
+  OpenSnPETScCall(PCSetUp(pc));
 
-  KSPSetUp(ksp_);
+  OpenSnPETScCall(KSPSetUp(ksp_));
 }
 
 void
@@ -259,7 +261,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
 
   const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
-  VecSet(rhs_, 0.0);
+  OpenSnPETScCall(VecSet(rhs_, 0.0));
   for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
@@ -385,12 +387,12 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
         } // boundary face
       } // for face
       auto nn = static_cast<PetscInt>(num_nodes);
-      VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+      OpenSnPETScCall(VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES));
     } // for g
   } // for cell
 
-  VecAssemblyBegin(rhs_);
-  VecAssemblyEnd(rhs_);
+  OpenSnPETScCall(VecAssemblyBegin(rhs_));
+  OpenSnPETScCall(VecAssemblyEnd(rhs_));
 
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Assembly completed";
@@ -410,9 +412,9 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   const double* q_vector = nullptr;
-  VecGetArrayRead(petsc_q_vector, &q_vector);
+  OpenSnPETScCall(VecGetArrayRead(petsc_q_vector, &q_vector));
 
-  VecSet(rhs_, 0.0);
+  OpenSnPETScCall(VecSet(rhs_, 0.0));
   for (const auto& cell : grid_->local_cells)
   {
     const size_t num_faces = cell.faces.size();
@@ -520,14 +522,14 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
         } // boundary face
       } // for face
       auto nn = static_cast<PetscInt>(num_nodes);
-      VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES);
+      OpenSnPETScCall(VecSetValues(rhs_, nn, cell_idxs.data(), cell_rhs.data(), ADD_VALUES));
     } // for g
   } // for cell
 
-  VecRestoreArrayRead(petsc_q_vector, &q_vector);
+  OpenSnPETScCall(VecRestoreArrayRead(petsc_q_vector, &q_vector));
 
-  VecAssemblyBegin(rhs_);
-  VecAssemblyEnd(rhs_);
+  OpenSnPETScCall(VecAssemblyBegin(rhs_));
+  OpenSnPETScCall(VecAssemblyEnd(rhs_));
 
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Assembly completed";
