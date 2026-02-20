@@ -121,7 +121,7 @@ if __name__ == "__main__":
         current_time = target_time
         step = step + 1
 
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
 
     # Group 0

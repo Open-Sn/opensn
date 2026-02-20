@@ -36,18 +36,6 @@ Problem::GetName() const
   return name_;
 }
 
-std::vector<std::shared_ptr<FieldFunctionGridBased>>&
-Problem::GetFieldFunctions()
-{
-  return field_functions_;
-}
-
-const std::vector<std::shared_ptr<FieldFunctionGridBased>>&
-Problem::GetFieldFunctions() const
-{
-  return field_functions_;
-}
-
 void
 Problem::Initialize()
 {

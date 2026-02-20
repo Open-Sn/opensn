@@ -105,7 +105,7 @@ if __name__ == "__main__":
     step = 0
     solver.SetTheta(theta)
 
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
 
     while current_time < stop_time:

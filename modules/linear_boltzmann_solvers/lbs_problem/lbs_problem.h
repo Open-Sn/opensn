@@ -220,8 +220,9 @@ public:
    */
   virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
 
-  /// Gets the local handle of a flux-moment based field function.
-  size_t MapPhiFieldFunction(unsigned int g, unsigned int m) const;
+  /// Returns a flux-moment field function for a given group and moment.
+  std::shared_ptr<FieldFunctionGridBased> GetScalarFluxFieldFunction(unsigned int g,
+                                                                     unsigned int m = 0) const;
 
   /// Returns the power generation field function, if enabled.
   std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;

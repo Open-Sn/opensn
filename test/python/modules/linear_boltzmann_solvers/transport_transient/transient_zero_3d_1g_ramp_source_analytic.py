@@ -116,7 +116,7 @@ if __name__ == "__main__":
         solver.Advance()
         current_time = target_time
 
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
     field_interp = FieldFunctionInterpolationVolume()
     field_interp.SetOperationType("max")
