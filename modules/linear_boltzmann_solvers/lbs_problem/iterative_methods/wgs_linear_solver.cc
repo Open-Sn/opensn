@@ -30,7 +30,7 @@ WGSLinearSolver::WGSLinearSolver(const std::shared_ptr<WGSContext>& gs_context_p
 
 WGSLinearSolver::~WGSLinearSolver()
 {
-  MatDestroy(&A_);
+  OpenSnPETScCall(MatDestroy(&A_));
 }
 
 void
@@ -43,7 +43,7 @@ WGSLinearSolver::PreSetupCallback()
 void
 WGSLinearSolver::SetConvergenceTest()
 {
-  KSPSetConvergenceTest(ksp_, &GSConvergenceTest, nullptr, nullptr);
+  OpenSnPETScCall(KSPSetConvergenceTest(ksp_, &GSConvergenceTest, nullptr, nullptr));
 }
 
 void
@@ -63,25 +63,25 @@ WGSLinearSolver::SetSystem()
 
   x_ = CreateVector(num_local_dofs_, num_global_dofs_);
 
-  VecSet(x_, 0.0);
-  VecDuplicate(x_, &b_);
+  OpenSnPETScCall(VecSet(x_, 0.0));
+  OpenSnPETScCall(VecDuplicate(x_, &b_));
 
   // Create the matrix-shell
-  MatCreateShell(opensn::mpi_comm,
-                 num_local_dofs_,
-                 num_local_dofs_,
-                 num_global_dofs_,
-                 num_global_dofs_,
-                 &(*context_ptr_),
-                 &A_);
+  OpenSnPETScCall(MatCreateShell(opensn::mpi_comm,
+                                 num_local_dofs_,
+                                 num_local_dofs_,
+                                 num_global_dofs_,
+                                 num_global_dofs_,
+                                 &(*context_ptr_),
+                                 &A_));
 
   // Set the action-operator
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast,modernize-redundant-void-arg)
-  MatShellSetOperation(A_, MATOP_MULT, (void (*)(void))LinearSolverMatrixAction);
+  OpenSnPETScCall(MatShellSetOperation(A_, MATOP_MULT, (void (*)(void))LinearSolverMatrixAction));
 
   // Set solver operators
-  KSPSetOperators(ksp_, A_, A_);
-  KSPSetUp(ksp_);
+  OpenSnPETScCall(KSPSetOperators(ksp_, A_, A_));
+  OpenSnPETScCall(KSPSetUp(ksp_));
 }
 
 void
@@ -128,11 +128,11 @@ WGSLinearSolver::SetInitialGuess()
   LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
 
   double init_guess_norm = 0.0;
-  VecNorm(x_, NORM_2, &init_guess_norm);
+  OpenSnPETScCall(VecNorm(x_, NORM_2, &init_guess_norm));
 
   if (init_guess_norm > 1.0e-10)
   {
-    KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
+    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE));
     if (gs_context_ptr->log_info)
       log.Log() << "Using phi_old as initial guess.";
   }
@@ -175,16 +175,16 @@ WGSLinearSolver::SetRHS()
     LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, b_, PhiSTLOption::PHI_NEW);
 
     // Compute RHS norm
-    VecNorm(b_, NORM_2, &gs_context_ptr->rhs_norm);
+    OpenSnPETScCall(VecNorm(b_, NORM_2, &gs_context_ptr->rhs_norm));
 
     // Compute precondition RHS norm
     PC pc = nullptr;
-    KSPGetPC(ksp_, &pc);
+    OpenSnPETScCall(KSPGetPC(ksp_, &pc));
     Vec temp_vec = nullptr;
-    VecDuplicate(b_, &temp_vec);
-    PCApply(pc, b_, temp_vec);
-    VecNorm(temp_vec, NORM_2, &gs_context_ptr->rhs_preconditioned_norm);
-    VecDestroy(&temp_vec);
+    OpenSnPETScCall(VecDuplicate(b_, &temp_vec));
+    OpenSnPETScCall(PCApply(pc, b_, temp_vec));
+    OpenSnPETScCall(VecNorm(temp_vec, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
+    OpenSnPETScCall(VecDestroy(&temp_vec));
   }
   // If we have a single richardson iteration then the user probably wants
   // only a single sweep. Therefore, we are going to combine the scattering
@@ -203,16 +203,16 @@ WGSLinearSolver::SetRHS()
     LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, x_, PhiSTLOption::PHI_NEW);
 
     // Compute RHS norm
-    VecNorm(x_, NORM_2, &gs_context_ptr->rhs_norm);
+    OpenSnPETScCall(VecNorm(x_, NORM_2, &gs_context_ptr->rhs_norm));
 
     // Compute precondition RHS norm
     PC pc = nullptr;
-    KSPGetPC(ksp_, &pc);
+    OpenSnPETScCall(KSPGetPC(ksp_, &pc));
     Vec temp_vec = nullptr;
-    VecDuplicate(x_, &temp_vec);
-    PCApply(pc, x_, temp_vec);
-    VecNorm(temp_vec, NORM_2, &gs_context_ptr->rhs_preconditioned_norm);
-    VecDestroy(&temp_vec);
+    OpenSnPETScCall(VecDuplicate(x_, &temp_vec));
+    OpenSnPETScCall(PCApply(pc, x_, temp_vec));
+    OpenSnPETScCall(VecNorm(temp_vec, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
+    OpenSnPETScCall(VecDestroy(&temp_vec));
 
     SetKSPSolveSuppressionFlag(true);
   }
@@ -225,9 +225,9 @@ WGSLinearSolver::PostSolveCallback()
   if (not GetKSPSolveSuppressionFlag())
   {
     KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
-    KSPGetConvergedReason(ksp_, &reason);
+    OpenSnPETScCall(KSPGetConvergedReason(ksp_, &reason));
     PetscInt its = 0;
-    KSPGetIterationNumber(ksp_, &its);
+    OpenSnPETScCall(KSPGetIterationNumber(ksp_, &its));
     if (reason < 0)
       log.Log0Warning() << "Krylov solver diverged. "
                         << "Reason: " << GetPETScConvergedReasonstring(reason);

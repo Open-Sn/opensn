@@ -3,7 +3,7 @@
 
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/mpi/mpi_utils.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include <map>
 #include <optional>
 #include <string>

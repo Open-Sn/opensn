@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/data_types/vector3.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include <cstddef>
 #include <iostream>
 #include <type_traits>

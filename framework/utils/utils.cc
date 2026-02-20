@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/utils/utils.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include <fstream>
 #include <cmath>
 #include <iomanip>

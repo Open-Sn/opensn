@@ -15,7 +15,9 @@ PetscErrorCode
 MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
   void* context = nullptr;
-  PCShellGetContext(pc, static_cast<void*>(&context));
+  PetscErrorCode ierr = PCShellGetContext(pc, static_cast<void*>(&context));
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   auto* gs_context_ptr = static_cast<WGSContext*>(context);
 
@@ -41,7 +43,7 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   // Copy STL vector to PETSc Vec
   LBSVecOps::SetGSPETScVecFromPrimarySTLvector(solver, groupset, pc_output, PhiSTLOption::PHI_NEW);
 
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 } // namespace opensn

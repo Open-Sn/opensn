@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_kernels.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <array>

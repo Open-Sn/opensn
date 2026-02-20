@@ -6,18 +6,37 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <iomanip>
+#include <sstream>
 
 namespace opensn
 {
+
+[[noreturn]] void
+ThrowPETScError(int ierr, const char* expr, const char* file, int line)
+{
+  const char* ierr_desc = nullptr;
+  char* ierr_desc_specific = nullptr;
+  PetscErrorMessage(static_cast<PetscErrorCode>(ierr), &ierr_desc, &ierr_desc_specific);
+
+  std::stringstream ss;
+  ss << "PETSc call failed at " << file << ":" << line << " in expression \"" << expr
+     << "\" with error code " << ierr;
+  if (ierr_desc != nullptr)
+    ss << ". " << ierr_desc;
+  if (ierr_desc_specific != nullptr)
+    ss << " (" << ierr_desc_specific << ")";
+
+  throw std::runtime_error(ss.str());
+}
 
 Vec
 CreateVector(int64_t local_size, int64_t global_size)
 {
   Vec x = nullptr;
-  VecCreate(opensn::mpi_comm, &x);
-  VecSetType(x, VECMPI);
-  VecSetSizes(x, local_size, global_size);
-  VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+  OpenSnPETScCall(VecCreate(opensn::mpi_comm, &x));
+  OpenSnPETScCall(VecSetType(x, VECMPI));
+  OpenSnPETScCall(VecSetSizes(x, local_size, global_size));
+  OpenSnPETScCall(VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 
   return x;
 }
@@ -25,10 +44,10 @@ CreateVector(int64_t local_size, int64_t global_size)
 void
 CreateVector(Vec& x, int64_t local_size, int64_t global_size)
 {
-  VecCreate(opensn::mpi_comm, &x);
-  VecSetType(x, VECMPI);
-  VecSetSizes(x, local_size, global_size);
-  VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+  OpenSnPETScCall(VecCreate(opensn::mpi_comm, &x));
+  OpenSnPETScCall(VecSetType(x, VECMPI));
+  OpenSnPETScCall(VecSetSizes(x, local_size, global_size));
+  OpenSnPETScCall(VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 }
 
 Vec
@@ -38,14 +57,14 @@ CreateVectorWithGhosts(int64_t local_size,
                        const std::vector<PetscInt>& ghost_indices)
 {
   Vec x = nullptr;
-  VecCreateGhost(opensn::mpi_comm,
-                 local_size,
-                 global_size,
-                 nghosts,
-                 (ghost_indices.empty()) ? nullptr : ghost_indices.data(),
-                 &x);
+  OpenSnPETScCall(VecCreateGhost(opensn::mpi_comm,
+                                 local_size,
+                                 global_size,
+                                 nghosts,
+                                 (ghost_indices.empty()) ? nullptr : ghost_indices.data(),
+                                 &x));
 
-  VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+  OpenSnPETScCall(VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 
   return x;
 }
@@ -54,13 +73,13 @@ Mat
 CreateSquareMatrix(int64_t local_size, int64_t global_size)
 {
   Mat A = nullptr;
-  MatCreate(opensn::mpi_comm, &A);
-  MatSetType(A, MATMPIAIJ);
-  MatSetSizes(A, local_size, local_size, global_size, global_size);
+  OpenSnPETScCall(MatCreate(opensn::mpi_comm, &A));
+  OpenSnPETScCall(MatSetType(A, MATMPIAIJ));
+  OpenSnPETScCall(MatSetSizes(A, local_size, local_size, global_size, global_size));
 
-  MatMPIAIJSetPreallocation(A, 1, nullptr, 0, nullptr);
-  MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);
-  MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);
+  OpenSnPETScCall(MatMPIAIJSetPreallocation(A, 1, nullptr, 0, nullptr));
+  OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
+  OpenSnPETScCall(MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE));
 
   return A;
 }
@@ -68,13 +87,13 @@ CreateSquareMatrix(int64_t local_size, int64_t global_size)
 void
 CreateSquareMatrix(Mat& A, int64_t local_size, int64_t global_size)
 {
-  MatCreate(opensn::mpi_comm, &A);
-  MatSetType(A, MATMPIAIJ);
-  MatSetSizes(A, local_size, local_size, global_size, global_size);
+  OpenSnPETScCall(MatCreate(opensn::mpi_comm, &A));
+  OpenSnPETScCall(MatSetType(A, MATMPIAIJ));
+  OpenSnPETScCall(MatSetSizes(A, local_size, local_size, global_size, global_size));
 
-  MatMPIAIJSetPreallocation(A, 1, nullptr, 0, nullptr);
-  MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);
-  MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);
+  OpenSnPETScCall(MatMPIAIJSetPreallocation(A, 1, nullptr, 0, nullptr));
+  OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
+  OpenSnPETScCall(MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE));
 }
 
 void
@@ -82,18 +101,20 @@ InitMatrixSparsity(Mat& A,
                    const std::vector<int64_t>& nodal_nnz_in_diag,
                    const std::vector<int64_t>& nodal_nnz_off_diag)
 {
-  MatMPIAIJSetPreallocation(A, 0, nodal_nnz_in_diag.data(), 0, nodal_nnz_off_diag.data());
-  MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);
-  MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);
-  MatSetUp(A);
+  OpenSnPETScCall(
+    MatMPIAIJSetPreallocation(A, 0, nodal_nnz_in_diag.data(), 0, nodal_nnz_off_diag.data()));
+  OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
+  OpenSnPETScCall(MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE));
+  OpenSnPETScCall(MatSetUp(A));
 }
 
 void
 InitMatrixSparsity(Mat& A, int64_t nodal_nnz_in_diag, int64_t nodal_nnz_off_diag)
 {
-  MatMPIAIJSetPreallocation(A, nodal_nnz_in_diag, nullptr, nodal_nnz_off_diag, nullptr);
-  MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE);
-  MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);
+  OpenSnPETScCall(
+    MatMPIAIJSetPreallocation(A, nodal_nnz_in_diag, nullptr, nodal_nnz_off_diag, nullptr));
+  OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
+  OpenSnPETScCall(MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE));
 }
 
 PETScSolverSetup
@@ -107,21 +128,21 @@ CreateCommonKrylovSolverSetup(Mat matrix,
 {
   PETScSolverSetup setup;
 
-  KSPCreate(opensn::mpi_comm, &setup.ksp);
-  KSPSetOperators(setup.ksp, matrix, matrix);
-  KSPSetType(setup.ksp, solver_type.c_str());
+  OpenSnPETScCall(KSPCreate(opensn::mpi_comm, &setup.ksp));
+  OpenSnPETScCall(KSPSetOperators(setup.ksp, matrix, matrix));
+  OpenSnPETScCall(KSPSetType(setup.ksp, solver_type.c_str()));
 
-  KSPSetOptionsPrefix(setup.ksp, solver_name.c_str());
+  OpenSnPETScCall(KSPSetOptionsPrefix(setup.ksp, solver_name.c_str()));
 
-  KSPGetPC(setup.ksp, &setup.pc);
-  PCSetType(setup.pc, preconditioner_type.c_str());
+  OpenSnPETScCall(KSPGetPC(setup.ksp, &setup.pc));
+  OpenSnPETScCall(PCSetType(setup.pc, preconditioner_type.c_str()));
 
-  KSPSetTolerances(setup.ksp, rel_tol, abs_tol, 1.0e50, maximum_iterations);
-  KSPSetInitialGuessNonzero(setup.ksp, PETSC_TRUE);
+  OpenSnPETScCall(KSPSetTolerances(setup.ksp, rel_tol, abs_tol, 1.0e50, maximum_iterations));
+  OpenSnPETScCall(KSPSetInitialGuessNonzero(setup.ksp, PETSC_TRUE));
 
-  KSPSetFromOptions(setup.ksp);
+  OpenSnPETScCall(KSPSetFromOptions(setup.ksp));
 
-  KSPMonitorSet(setup.ksp, &KSPMonitorRelativeToRHS, nullptr, nullptr);
+  OpenSnPETScCall(KSPMonitorSet(setup.ksp, &KSPMonitorRelativeToRHS, nullptr, nullptr));
 
   return setup;
 }
@@ -130,15 +151,21 @@ PetscErrorCode
 KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* /* context */)
 {
   Vec Rhs = nullptr;
-  KSPGetRhs(ksp, &Rhs);
+  PetscErrorCode ierr = KSPGetRhs(ksp, &Rhs);
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
   double rhs_norm = 0.0;
-  VecNorm(Rhs, NORM_2, &rhs_norm);
+  ierr = VecNorm(Rhs, NORM_2, &rhs_norm);
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
   if (rhs_norm < 1.0e-12)
     rhs_norm = 1.0;
 
   // Get solver name
   const char* ksp_name = nullptr;
-  KSPGetOptionsPrefix(ksp, &ksp_name);
+  ierr = KSPGetOptionsPrefix(ksp, &ksp_name);
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   // Default to this if ksp_name is NULL
   const char NONAME_SOLVER[] = "NoName-Solver\0";
@@ -153,7 +180,7 @@ KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* /* context *
 
   log.Log() << buff.str();
 
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 void
@@ -170,11 +197,11 @@ CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
                            std::to_string(N));
 
   const double* x_ref = nullptr;
-  VecGetArrayRead(x, &x_ref);
+  OpenSnPETScCall(VecGetArrayRead(x, &x_ref));
 
   std::copy(x_ref, x_ref + N, data.begin());
 
-  VecRestoreArrayRead(x, &x_ref);
+  OpenSnPETScCall(VecRestoreArrayRead(x, &x_ref));
 }
 
 void
@@ -202,11 +229,11 @@ void
 CopySTLvectorToVec(const std::vector<double>& data, Vec x, size_t N)
 {
   double* x_ref = nullptr;
-  VecGetArray(x, &x_ref);
+  OpenSnPETScCall(VecGetArray(x, &x_ref));
 
   std::copy(data.begin(), data.end(), x_ref);
 
-  VecRestoreArray(x, &x_ref);
+  OpenSnPETScCall(VecRestoreArray(x, &x_ref));
 }
 
 void
@@ -214,9 +241,9 @@ CopyParallelVectorToVec(const ParallelVector& y, Vec x)
 {
   const double* y_data = y.GetData();
   double* x_data = nullptr;
-  VecGetArray(x, &x_data);
+  OpenSnPETScCall(VecGetArray(x, &x_data));
   std::copy(y_data, y_data + y.GetLocalSize(), x_data);
-  VecRestoreArray(x, &x_data);
+  OpenSnPETScCall(VecRestoreArray(x, &x_data));
 }
 
 void
@@ -232,41 +259,43 @@ CopyGlobalVecToSTLvector(Vec x,
 
   // Creating PETSc vector
   Vec local_vec = nullptr;
-  VecCreateSeq(PETSC_COMM_SELF, N + 1, &local_vec);
-  VecSet(local_vec, 0.0);
+  OpenSnPETScCall(VecCreateSeq(PETSC_COMM_SELF, N + 1, &local_vec));
+  OpenSnPETScCall(VecSet(local_vec, 0.0));
 
   // Create and transfer index sets
   IS global_set = nullptr;
   IS local_set = nullptr;
-  ISCreateGeneral(PETSC_COMM_SELF, N, global_indices.data(), PETSC_COPY_VALUES, &global_set);
-  ISCreateGeneral(PETSC_COMM_SELF, N, local_indices.data(), PETSC_COPY_VALUES, &local_set);
+  OpenSnPETScCall(
+    ISCreateGeneral(PETSC_COMM_SELF, N, global_indices.data(), PETSC_COPY_VALUES, &global_set));
+  OpenSnPETScCall(
+    ISCreateGeneral(PETSC_COMM_SELF, N, local_indices.data(), PETSC_COPY_VALUES, &local_set));
   VecScatter scat = nullptr;
-  VecScatterCreate(x, global_set, local_vec, local_set, &scat);
-  VecScatterBegin(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD);
-  VecScatterEnd(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD);
+  OpenSnPETScCall(VecScatterCreate(x, global_set, local_vec, local_set, &scat));
+  OpenSnPETScCall(VecScatterBegin(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD));
+  OpenSnPETScCall(VecScatterEnd(scat, x, local_vec, INSERT_VALUES, SCATTER_FORWARD));
 
   // Copy to STL
   data.clear();
   data.resize(N, 0.0);
   const double* x_ref = nullptr;
-  VecGetArrayRead(local_vec, &x_ref);
+  OpenSnPETScCall(VecGetArrayRead(local_vec, &x_ref));
 
   std::copy(x_ref, x_ref + N, data.begin());
 
-  VecRestoreArrayRead(x, &x_ref);
+  OpenSnPETScCall(VecRestoreArrayRead(x, &x_ref));
 
   // Cleanup
-  ISDestroy(&global_set);
-  ISDestroy(&local_set);
+  OpenSnPETScCall(ISDestroy(&global_set));
+  OpenSnPETScCall(ISDestroy(&local_set));
 
-  VecDestroy(&local_vec);
+  OpenSnPETScCall(VecDestroy(&local_vec));
 }
 
 void
 CommunicateGhostEntries(Vec x)
 {
-  VecGhostUpdateBegin(x, INSERT_VALUES, SCATTER_FORWARD);
-  VecGhostUpdateEnd(x, INSERT_VALUES, SCATTER_FORWARD);
+  OpenSnPETScCall(VecGhostUpdateBegin(x, INSERT_VALUES, SCATTER_FORWARD));
+  OpenSnPETScCall(VecGhostUpdateEnd(x, INSERT_VALUES, SCATTER_FORWARD));
 }
 
 GhostVecLocalRaw
@@ -274,10 +303,10 @@ GetGhostVectorLocalViewRead(Vec x)
 {
   GhostVecLocalRaw local_data;
 
-  VecGhostGetLocalForm(x, &local_data.x_localized);
+  OpenSnPETScCall(VecGhostGetLocalForm(x, &local_data.x_localized));
 
   local_data.x_localized_raw = nullptr;
-  VecGetArrayRead(local_data.x_localized, &local_data.x_localized_raw);
+  OpenSnPETScCall(VecGetArrayRead(local_data.x_localized, &local_data.x_localized_raw));
 
   return local_data;
 }
@@ -285,8 +314,8 @@ GetGhostVectorLocalViewRead(Vec x)
 void
 RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data)
 {
-  VecRestoreArrayRead(local_data.x_localized, &local_data.x_localized_raw);
-  VecGhostRestoreLocalForm(x, &local_data.x_localized);
+  OpenSnPETScCall(VecRestoreArrayRead(local_data.x_localized, &local_data.x_localized_raw));
+  OpenSnPETScCall(VecGhostRestoreLocalForm(x, &local_data.x_localized));
 }
 
 std::string

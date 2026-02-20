@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/graphs/petsc_graph_partitioner.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -81,8 +82,8 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
     // Copy to raw arrays
     int64_t* i_indices_raw = nullptr;
     int64_t* j_indices_raw = nullptr;
-    PetscMalloc(i_indices.size() * sizeof(int64_t), &i_indices_raw);
-    PetscMalloc(j_indices.size() * sizeof(int64_t), &j_indices_raw);
+    OpenSnPETScCall(PetscMalloc(i_indices.size() * sizeof(int64_t), &i_indices_raw));
+    OpenSnPETScCall(PetscMalloc(j_indices.size() * sizeof(int64_t), &j_indices_raw));
 
     for (size_t j = 0; j < i_indices.size(); ++j)
       i_indices_raw[j] = i_indices[j];
@@ -94,35 +95,38 @@ PETScGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& graph
 
     // Create adjacency matrix
     Mat Adj = nullptr;
-    MatCreateMPIAdj(PETSC_COMM_SELF, // NOLINT(bugprone-casting-through-void)
-                    (int64_t)num_raw_cells,
-                    (int64_t)num_raw_cells,
-                    i_indices_raw,
-                    j_indices_raw,
-                    nullptr,
-                    &Adj);
+    OpenSnPETScCall(MatCreateMPIAdj(PETSC_COMM_SELF, // NOLINT(bugprone-casting-through-void)
+                                    (int64_t)num_raw_cells,
+                                    (int64_t)num_raw_cells,
+                                    i_indices_raw,
+                                    j_indices_raw,
+                                    nullptr,
+                                    &Adj));
 
     log.Log0Verbose1() << "Done creating adjacency matrix.";
 
     // Create partitioning
     MatPartitioning part = nullptr;
     IS is = nullptr, isg = nullptr;
-    MatPartitioningCreate(MPI_COMM_SELF, &part); // NOLINT(bugprone-casting-through-void)
-    MatPartitioningSetAdjacency(part, Adj);
-    MatPartitioningSetType(part, type_.c_str());
-    MatPartitioningSetNParts(part, number_of_parts);
-    MatPartitioningApply(part, &is);
-    MatPartitioningDestroy(&part);
-    MatDestroy(&Adj);
-    ISPartitioningToNumbering(is, &isg);
+    OpenSnPETScCall(
+      MatPartitioningCreate(MPI_COMM_SELF, &part)); // NOLINT(bugprone-casting-through-void)
+    OpenSnPETScCall(MatPartitioningSetAdjacency(part, Adj));
+    OpenSnPETScCall(MatPartitioningSetType(part, type_.c_str()));
+    OpenSnPETScCall(MatPartitioningSetNParts(part, number_of_parts));
+    OpenSnPETScCall(MatPartitioningApply(part, &is));
+    OpenSnPETScCall(MatPartitioningDestroy(&part));
+    OpenSnPETScCall(MatDestroy(&Adj));
+    OpenSnPETScCall(ISPartitioningToNumbering(is, &isg));
     log.Log0Verbose1() << "Done building paritioned index set.";
 
     // Get cell global indices
     const int64_t* cell_pids_raw = nullptr;
-    ISGetIndices(is, &cell_pids_raw);
+    OpenSnPETScCall(ISGetIndices(is, &cell_pids_raw));
     for (size_t i = 0; i < num_raw_cells; ++i)
       cell_pids[i] = static_cast<int>(cell_pids_raw[i]);
-    ISRestoreIndices(is, &cell_pids_raw);
+    OpenSnPETScCall(ISRestoreIndices(is, &cell_pids_raw));
+    OpenSnPETScCall(ISDestroy(&isg));
+    OpenSnPETScCall(ISDestroy(&is));
 
     log.Log0Verbose1() << "Done retrieving cell global indices.";
   } // if more than 1 cell

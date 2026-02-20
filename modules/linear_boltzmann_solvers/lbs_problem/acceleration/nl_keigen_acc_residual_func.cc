@@ -15,7 +15,9 @@ PetscErrorCode
 NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
   NLKEigenDiffContext* nl_context_ptr = nullptr;
-  SNESGetApplicationContext(snes, static_cast<void*>(&nl_context_ptr));
+  PetscErrorCode ierr = SNESGetApplicationContext(snes, static_cast<void*>(&nl_context_ptr));
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   auto& diff_solver = nl_context_ptr->diff_solver;
 
@@ -115,7 +117,7 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   nl_context_ptr->kresid_func_context.k_eff = lambda;
 
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 } // namespace opensn

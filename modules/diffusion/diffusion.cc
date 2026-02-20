@@ -40,9 +40,9 @@ DiffusionSolver::DiffusionSolver(std::string name,
 
 DiffusionSolver::~DiffusionSolver()
 {
-  MatDestroy(&A_);
-  VecDestroy(&rhs_);
-  KSPDestroy(&ksp_);
+  OpenSnPETScCall(MatDestroy(&A_));
+  OpenSnPETScCall(VecDestroy(&rhs_));
+  OpenSnPETScCall(KSPDestroy(&ksp_));
 }
 
 std::string
@@ -83,10 +83,10 @@ DiffusionSolver::AddToRHS(const std::vector<double>& values)
     throw std::invalid_argument("Vector size mismatch.");
 
   PetscScalar* rhs_ptr = nullptr;
-  VecGetArray(rhs_, &rhs_ptr);
+  OpenSnPETScCall(VecGetArray(rhs_, &rhs_ptr));
   for (size_t i = 0; i < num_local_dofs; ++i)
     rhs_ptr[i] += values[i];
-  VecRestoreArray(rhs_, &rhs_ptr);
+  OpenSnPETScCall(VecRestoreArray(rhs_, &rhs_ptr));
 }
 
 void
@@ -98,9 +98,9 @@ DiffusionSolver::AddToMatrix(const std::vector<PetscInt>& rows,
     throw std::invalid_argument("The number of row entries, column entries, and value "
                                 "entries do not agree.");
   for (int i = 0; i < vals.size(); ++i)
-    MatSetValue(A_, rows[i], cols[i], vals[i], ADD_VALUES);
-  MatAssemblyBegin(A_, MAT_FLUSH_ASSEMBLY);
-  MatAssemblyEnd(A_, MAT_FLUSH_ASSEMBLY);
+    OpenSnPETScCall(MatSetValue(A_, rows[i], cols[i], vals[i], ADD_VALUES));
+  OpenSnPETScCall(MatAssemblyBegin(A_, MAT_FLUSH_ASSEMBLY));
+  OpenSnPETScCall(MatAssemblyEnd(A_, MAT_FLUSH_ASSEMBLY));
 }
 
 void
@@ -146,19 +146,20 @@ DiffusionSolver::Initialize()
   opensn::mpi_comm.barrier();
 
   // Create KSP
-  KSPCreate(opensn::mpi_comm, &ksp_);
-  KSPSetOptionsPrefix(ksp_, name_.c_str());
-  KSPSetType(ksp_, KSPCG);
+  OpenSnPETScCall(KSPCreate(opensn::mpi_comm, &ksp_));
+  OpenSnPETScCall(KSPSetOptionsPrefix(ksp_, name_.c_str()));
+  OpenSnPETScCall(KSPSetType(ksp_, KSPCG));
 
-  KSPSetTolerances(ksp_, 1.0e-50, options.residual_tolerance, 1.0e50, options.max_iters);
+  OpenSnPETScCall(
+    KSPSetTolerances(ksp_, 1.0e-50, options.residual_tolerance, 1.0e50, options.max_iters));
 
   // Set Pre-conditioner
   PC pc = nullptr;
-  KSPGetPC(ksp_, &pc);
+  OpenSnPETScCall(KSPGetPC(ksp_, &pc));
   //  PCSetType(pc, PCGAMG);
-  PCSetType(pc, PCHYPRE);
+  OpenSnPETScCall(PCSetType(pc, PCHYPRE));
 
-  PCHYPRESetType(pc, "boomeramg");
+  OpenSnPETScCall(PCHYPRESetType(pc, "boomeramg"));
   std::vector<std::string> pc_options = {"pc_hypre_boomeramg_agg_nl 1",
                                          "pc_hypre_boomeramg_P_max 4",
                                          "pc_hypre_boomeramg_grid_sweeps_coarse 1",
@@ -173,12 +174,12 @@ DiffusionSolver::Initialize()
     pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
 
   for (const auto& option : pc_options)
-    PetscOptionsInsertString(nullptr, ("-" + name_ + option).c_str());
+    OpenSnPETScCall(PetscOptionsInsertString(nullptr, ("-" + name_ + option).c_str()));
 
-  PetscOptionsInsertString(nullptr, options.additional_options_string.c_str());
+  OpenSnPETScCall(PetscOptionsInsertString(nullptr, options.additional_options_string.c_str()));
 
-  PCSetFromOptions(pc);
-  KSPSetFromOptions(ksp_);
+  OpenSnPETScCall(PCSetFromOptions(pc));
+  OpenSnPETScCall(KSPSetFromOptions(ksp_));
 }
 
 void
@@ -186,56 +187,56 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 {
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
   Vec x = nullptr;
-  VecDuplicate(rhs_, &x);
-  VecSet(x, 0.0);
+  OpenSnPETScCall(VecDuplicate(rhs_, &x));
+  OpenSnPETScCall(VecSet(x, 0.0));
 
   if (not use_initial_guess)
-    KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
+    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
   else
-    KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
+    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE));
 
-  KSPSetTolerances(
-    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters);
+  OpenSnPETScCall(KSPSetTolerances(
+    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters));
 
   if (options.perform_symmetry_check)
   {
     PetscBool symmetry = PETSC_FALSE;
-    MatIsSymmetric(A_, 1.0e-6, &symmetry);
+    OpenSnPETScCall(MatIsSymmetric(A_, 1.0e-6, &symmetry));
     if (symmetry == PETSC_FALSE)
       throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   if (options.verbose)
   {
-    KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
+    OpenSnPETScCall(KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr));
 
     double rhs_norm = 0.0;
-    VecNorm(rhs_, NORM_2, &rhs_norm);
+    OpenSnPETScCall(VecNorm(rhs_, NORM_2, &rhs_norm));
     log.Log() << "RHS-norm " << rhs_norm;
   }
 
   if (use_initial_guess)
   {
     double* x_raw = nullptr;
-    VecGetArray(x, &x_raw);
+    OpenSnPETScCall(VecGetArray(x, &x_raw));
     size_t k = 0;
     for (const auto& value : solution)
       x_raw[k++] = value;
-    VecRestoreArray(x, &x_raw);
+    OpenSnPETScCall(VecRestoreArray(x, &x_raw));
   }
 
   // Solve
-  KSPSolve(ksp_, rhs_, x);
+  OpenSnPETScCall(KSPSolve(ksp_, rhs_, x));
 
   // Print convergence info
   if (options.verbose)
   {
     double sol_norm = 0.0;
-    VecNorm(x, NORM_2, &sol_norm);
+    OpenSnPETScCall(VecNorm(x, NORM_2, &sol_norm));
     log.Log() << "Solution-norm " << sol_norm;
 
     KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
-    KSPGetConvergedReason(ksp_, &reason);
+    OpenSnPETScCall(KSPGetConvergedReason(ksp_, &reason));
 
     log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
   }
@@ -250,7 +251,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
     sdm_.LocalizePETScVector(x, solution, uk_man_);
 
   // Cleanup x
-  VecDestroy(&x);
+  OpenSnPETScCall(VecDestroy(&x));
 }
 
 void
@@ -258,60 +259,60 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 {
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
   Vec x = nullptr;
-  VecDuplicate(rhs_, &x);
-  VecSet(x, 0.0);
+  OpenSnPETScCall(VecDuplicate(rhs_, &x));
+  OpenSnPETScCall(VecSet(x, 0.0));
 
   if (not use_initial_guess)
-    KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
+    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
   else
-    KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE);
+    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE));
 
-  KSPSetTolerances(
-    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters);
+  OpenSnPETScCall(KSPSetTolerances(
+    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters));
 
   if (options.perform_symmetry_check)
   {
     PetscBool symmetry = PETSC_FALSE;
-    MatIsSymmetric(A_, 1.0e-6, &symmetry);
+    OpenSnPETScCall(MatIsSymmetric(A_, 1.0e-6, &symmetry));
     if (symmetry == PETSC_FALSE)
       throw std::logic_error(fname + ":Symmetry check failed");
   }
 
   if (options.verbose)
   {
-    KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr);
+    OpenSnPETScCall(KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr));
 
     double rhs_norm = 0.0;
-    VecNorm(rhs_, NORM_2, &rhs_norm);
+    OpenSnPETScCall(VecNorm(rhs_, NORM_2, &rhs_norm));
     log.Log() << "RHS-norm " << rhs_norm;
   }
 
   if (use_initial_guess)
   {
-    VecCopy(petsc_solution, x);
+    OpenSnPETScCall(VecCopy(petsc_solution, x));
   }
 
   // Solve
-  KSPSolve(ksp_, rhs_, x);
+  OpenSnPETScCall(KSPSolve(ksp_, rhs_, x));
 
   // Print convergence info
   if (options.verbose)
   {
     double sol_norm = 0.0;
-    VecNorm(x, NORM_2, &sol_norm);
+    OpenSnPETScCall(VecNorm(x, NORM_2, &sol_norm));
     log.Log() << "Solution-norm " << sol_norm;
 
     KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
-    KSPGetConvergedReason(ksp_, &reason);
+    OpenSnPETScCall(KSPGetConvergedReason(ksp_, &reason));
 
     log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
   }
 
   // Transfer petsc solution to vector
-  VecCopy(x, petsc_solution);
+  OpenSnPETScCall(VecCopy(x, petsc_solution));
 
   // Cleanup x
-  VecDestroy(&x);
+  OpenSnPETScCall(VecDestroy(&x));
 }
 
 } // namespace opensn

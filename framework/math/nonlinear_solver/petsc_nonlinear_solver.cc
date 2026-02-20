@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/nonlinear_solver/petsc_nonlinear_solver.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/logging/stringstream_color.h"
@@ -27,32 +28,32 @@ PETScNonLinearSolver::PETScNonLinearSolver(std::shared_ptr<NonLinearSolverContex
 
 PETScNonLinearSolver::~PETScNonLinearSolver()
 {
-  SNESDestroy(&nl_solver_);
-  VecDestroy(&x_);
-  VecDestroy(&r_);
-  MatDestroy(&J_);
+  OpenSnPETScCall(SNESDestroy(&nl_solver_));
+  OpenSnPETScCall(VecDestroy(&x_));
+  OpenSnPETScCall(VecDestroy(&r_));
+  OpenSnPETScCall(MatDestroy(&J_));
 }
 
 void
 PETScNonLinearSolver::ApplyToleranceOptions()
 {
-  SNESSetTolerances(nl_solver_,
-                    options_.nl_abs_tol,
-                    options_.nl_rel_tol,
-                    options_.nl_sol_tol,
-                    options_.nl_max_its,
-                    options_.nl_max_r_evaluations);
-  SNESSetMaxLinearSolveFailures(nl_solver_, options_.l_max_failed_iterations);
+  OpenSnPETScCall(SNESSetTolerances(nl_solver_,
+                                    options_.nl_abs_tol,
+                                    options_.nl_rel_tol,
+                                    options_.nl_sol_tol,
+                                    options_.nl_max_its,
+                                    options_.nl_max_r_evaluations));
+  OpenSnPETScCall(SNESSetMaxLinearSolveFailures(nl_solver_, options_.l_max_failed_iterations));
   KSP ksp = nullptr;
-  SNESGetKSP(nl_solver_, &ksp);
-  KSPSetTolerances(
-    ksp, options_.l_rel_tol, options_.l_abs_tol, options_.l_div_tol, options_.l_max_its);
+  OpenSnPETScCall(SNESGetKSP(nl_solver_, &ksp));
+  OpenSnPETScCall(KSPSetTolerances(
+    ksp, options_.l_rel_tol, options_.l_abs_tol, options_.l_div_tol, options_.l_max_its));
   if (options_.l_method == "gmres")
   {
-    KSPGMRESSetRestart(ksp, options_.l_gmres_restart_intvl);
-    KSPGMRESSetBreakdownTolerance(ksp, options_.l_gmres_breakdown_tol);
+    OpenSnPETScCall(KSPGMRESSetRestart(ksp, options_.l_gmres_restart_intvl));
+    OpenSnPETScCall(KSPGMRESSetBreakdownTolerance(ksp, options_.l_gmres_breakdown_tol));
   }
-  KSPSetInitialGuessNonzero(ksp, PETSC_FALSE);
+  OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp, PETSC_FALSE));
 }
 
 void
@@ -68,7 +69,7 @@ PETScNonLinearSolver::SetOptions()
 void
 PETScNonLinearSolver::SetSolverContext()
 {
-  SNESSetApplicationContext(nl_solver_, &(*context_ptr_));
+  OpenSnPETScCall(SNESSetApplicationContext(nl_solver_, &(*context_ptr_)));
 }
 
 void
@@ -98,22 +99,22 @@ PETScNonLinearSolver::Setup()
     return;
   this->PreSetupCallback();
 
-  SNESCreate(mpi_comm, &nl_solver_);
+  OpenSnPETScCall(SNESCreate(mpi_comm, &nl_solver_));
 
-  SNESSetOptionsPrefix(nl_solver_, solver_name_.c_str());
+  OpenSnPETScCall(SNESSetOptionsPrefix(nl_solver_, solver_name_.c_str()));
 
-  SNESSetType(nl_solver_, options_.petsc_snes_type.c_str());
+  OpenSnPETScCall(SNESSetType(nl_solver_, options_.petsc_snes_type.c_str()));
   if (options_.nl_method == "LINEAR")
-    SNESSetType(nl_solver_, SNESKSPONLY);
+    OpenSnPETScCall(SNESSetType(nl_solver_, SNESKSPONLY));
   SNESLineSearch linesearch = nullptr;
-  SNESGetLineSearch(nl_solver_, &linesearch);
-  SNESLineSearchSetType(linesearch, SNESLINESEARCHBT);
+  OpenSnPETScCall(SNESGetLineSearch(nl_solver_, &linesearch));
+  OpenSnPETScCall(SNESLineSearchSetType(linesearch, SNESLINESEARCHBT));
 
   KSP ksp = nullptr;
-  SNESGetKSP(nl_solver_, &ksp);
-  KSPSetType(ksp, options_.l_method.c_str());
+  OpenSnPETScCall(SNESGetKSP(nl_solver_, &ksp));
+  OpenSnPETScCall(KSPSetType(ksp, options_.l_method.c_str()));
 
-  KSPSetOptionsPrefix(ksp, solver_name_.c_str());
+  OpenSnPETScCall(KSPSetOptionsPrefix(ksp, solver_name_.c_str()));
 
   ApplyToleranceOptions();
 
@@ -156,17 +157,17 @@ PETScNonLinearSolver::Solve()
   PreSolveCallback();
   SetInitialGuess();
 
-  SNESSolve(nl_solver_, nullptr, x_);
+  OpenSnPETScCall(SNESSolve(nl_solver_, nullptr, x_));
   PostSolveCallback();
 
   SNESConvergedReason conv_reason = SNES_CONVERGED_ITERATING;
-  SNESGetConvergedReason(nl_solver_, &conv_reason);
+  OpenSnPETScCall(SNESGetConvergedReason(nl_solver_, &conv_reason));
 
   if (conv_reason > 0)
     converged_ = true;
 
   const char* strreason = nullptr;
-  SNESGetConvergedReasonString(nl_solver_, &strreason);
+  OpenSnPETScCall(SNESGetConvergedReasonString(nl_solver_, &strreason));
 
   converged_reason_string_ = std::string(strreason);
 }

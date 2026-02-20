@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/logging/log_stream.h"
-#include "framework/logging/log_exceptions.h"
+#include "framework/utils/error.h"
 #include <utility>
 #include <vector>
 #include <memory>

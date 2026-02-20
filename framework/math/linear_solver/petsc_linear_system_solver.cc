@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/linear_solver/petsc_linear_system_solver.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
 
 namespace opensn
@@ -23,20 +24,20 @@ PETScLinearSolver::PETScLinearSolver(IterativeMethod method,
 
 PETScLinearSolver::~PETScLinearSolver()
 {
-  KSPDestroy(&ksp_);
-  MatDestroy(&A_);
-  VecDestroy(&x_);
-  VecDestroy(&b_);
+  OpenSnPETScCall(KSPDestroy(&ksp_));
+  OpenSnPETScCall(MatDestroy(&A_));
+  OpenSnPETScCall(VecDestroy(&x_));
+  OpenSnPETScCall(VecDestroy(&b_));
 }
 
 void
 PETScLinearSolver::ApplyToleranceOptions()
 {
-  KSPSetTolerances(ksp_,
-                   tolerance_options.residual_relative,
-                   tolerance_options.residual_absolute,
-                   tolerance_options.residual_divergence,
-                   tolerance_options.maximum_iterations);
+  OpenSnPETScCall(KSPSetTolerances(ksp_,
+                                   tolerance_options.residual_relative,
+                                   tolerance_options.residual_absolute,
+                                   tolerance_options.residual_divergence,
+                                   tolerance_options.maximum_iterations));
 }
 
 void
@@ -52,13 +53,13 @@ PETScLinearSolver::SetOptions()
 void
 PETScLinearSolver::SetSolverContext()
 {
-  KSPSetApplicationContext(ksp_, &(*context_ptr_));
+  OpenSnPETScCall(KSPSetApplicationContext(ksp_, &(*context_ptr_)));
 }
 
 void
 PETScLinearSolver::SetConvergenceTest()
 {
-  KSPSetConvergenceTest(ksp_, &KSPConvergedDefault, nullptr, nullptr);
+  OpenSnPETScCall(KSPSetConvergenceTest(ksp_, &KSPConvergedDefault, nullptr, nullptr));
 }
 
 void
@@ -83,16 +84,17 @@ PETScLinearSolver::Setup()
     return;
 
   PreSetupCallback();
-  KSPCreate(opensn::mpi_comm, &ksp_);
+  OpenSnPETScCall(KSPCreate(opensn::mpi_comm, &ksp_));
   const auto petsc_iterative_method = PETScIterativeMethodName();
-  KSPSetType(ksp_, petsc_iterative_method.c_str());
+  OpenSnPETScCall(KSPSetType(ksp_, petsc_iterative_method.c_str()));
   ApplyToleranceOptions();
   if (method_ == IterativeMethod::PETSC_GMRES)
   {
-    KSPGMRESSetRestart(ksp_, tolerance_options.gmres_restart_interval);
-    KSPGMRESSetBreakdownTolerance(ksp_, tolerance_options.gmres_breakdown_tolerance);
+    OpenSnPETScCall(KSPGMRESSetRestart(ksp_, tolerance_options.gmres_restart_interval));
+    OpenSnPETScCall(
+      KSPGMRESSetBreakdownTolerance(ksp_, tolerance_options.gmres_breakdown_tolerance));
   }
-  KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE);
+  OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
   SetOptions();
   SetSolverContext();
   SetConvergenceTest();
@@ -122,7 +124,7 @@ PETScLinearSolver::Solve()
   SetInitialGuess();
   SetRHS();
   if (not suppress_kspsolve_)
-    KSPSolve(ksp_, b_, x_);
+    OpenSnPETScCall(KSPSolve(ksp_, b_, x_));
   PostSolveCallback();
 }
 
@@ -148,11 +150,13 @@ PetscErrorCode
 PETScLinearSolver::LinearSolverMatrixAction(Mat matrix, Vec vector, Vec action)
 {
   LinearSystemContext* context = nullptr;
-  MatShellGetContext(matrix, static_cast<void*>(&context));
+  const PetscErrorCode ierr = MatShellGetContext(matrix, static_cast<void*>(&context));
+  if (ierr != PETSC_SUCCESS)
+    return ierr;
 
   context->MatrixAction(matrix, vector, action);
 
-  return 0;
+  return PETSC_SUCCESS;
 }
 
 } // namespace opensn
