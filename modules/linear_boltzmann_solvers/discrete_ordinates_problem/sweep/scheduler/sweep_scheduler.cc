@@ -34,6 +34,9 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
     angle_agg_.SetupAngleSetDependencies();
   }
 
+  if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
+    pool_.Resize(angle_agg_.GetNumAngleSets());
+
   // Initialize delayed upstream data
   for (auto& angset : angle_agg_)
     angset->InitializeDelayedUpstreamData();

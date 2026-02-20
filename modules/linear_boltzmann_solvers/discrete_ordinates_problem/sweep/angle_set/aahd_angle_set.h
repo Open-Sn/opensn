@@ -15,6 +15,8 @@ namespace crb = caribou;
 namespace opensn
 {
 
+class AAHDSweepChunk;
+
 /// AAHD angle set.
 class AAHD_AngleSet : public AngleSet
 {
@@ -31,6 +33,8 @@ public:
   crb::Stream& GetStream() { return stream_; }
 
   std::uint32_t* GetDeviceAngleIndices() { return device_angle_indices_.get(); }
+
+  bool HasReflectingBoundaries() const { return has_reflecting_boundaries_; }
 
   /// Update the starting latch and following angle sets.
   void UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets) override;
@@ -102,6 +106,8 @@ protected:
    * waiting after it to allow them to proceed.
    */
   std::vector<AAHD_AngleSet*> following_angle_sets_;
+  /// Flag indicating if the angleset is attached to any reflecting boundaries..
+  bool has_reflecting_boundaries_ = false;
 };
 
 } // namespace opensn

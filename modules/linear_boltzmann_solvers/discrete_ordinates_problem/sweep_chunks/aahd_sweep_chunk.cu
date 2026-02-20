@@ -17,18 +17,28 @@ namespace crb = caribou;
 namespace opensn
 {
 
+static unsigned int
+RoundUp(unsigned int num, unsigned int divisor = crb::get_warp_size())
+{
+  return (num + divisor - 1) & ~(divisor - 1);
+}
+
 namespace gpu_kernel
 {
 
-/// Kernel performing the sweep
 __global__ void
-UnsaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
+AAH_SweepKernel(Arguments args,
+                const std::uint32_t* level,
+                unsigned int level_size,
+                double* saved_psi)
 {
   // reference to indexes
-  const unsigned int& cell_idx = blockIdx.x;
-  const unsigned int& angle_idx = threadIdx.y;
-  const unsigned int& group_idx = threadIdx.x;
-  unsigned int angle_group_idx = angle_idx * args.groupset_size + group_idx;
+  unsigned int cell_idx = threadIdx.y + blockDim.y * blockIdx.y;
+  unsigned int angle_group_idx = threadIdx.x + blockDim.x * blockIdx.x;
+  if (cell_idx >= level_size || angle_group_idx >= args.flud_data.stride_size)
+    return;
+  unsigned int angle_idx = angle_group_idx / args.groupset_size;
+  unsigned int group_idx = angle_group_idx - angle_idx * args.groupset_size;
   // get cell view
   std::uint32_t cell_local_idx = level[cell_idx];
   CellView cell;
@@ -52,44 +62,11 @@ UnsaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
     args, cell, direction, cell_edge_data, angle_group_idx, group_idx, num_moments, saved_psi);
 }
 
-/// Kernel performing the sweep
-__global__ void
-SaturatedKernel(Arguments args, const std::uint32_t* level, double* saved_psi)
-{
-  // reference to indexes
-  const unsigned int& cell_idx = blockIdx.x;
-  // get cell view
-  std::uint32_t cell_local_idx = level[cell_idx];
-  CellView cell;
-  MeshView(args.mesh_data).GetCellView(cell, cell_local_idx);
-  // skip when cell has no nodes
-  if (cell.num_nodes == 0)
-    return;
-  // get pointer to the corresponding FLUDS index
-  auto [cell_edge_data, _] = GetCellDataIndex(args.flud_index, cell_local_idx);
-  // loop on each group and angle
-  for (unsigned int angle_group_idx = threadIdx.x; angle_group_idx < args.flud_data.stride_size;
-       angle_group_idx += blockDim.x)
-  {
-    // get group and angle index
-    std::uint32_t group_idx = angle_group_idx % args.groupset_size;
-    std::uint32_t angle_idx = angle_group_idx / args.groupset_size;
-    // get direction view and number of moments
-    std::uint32_t num_moments;
-    std::uint32_t direction_num = args.directions[angle_idx];
-    DirectionView direction;
-    {
-      QuadratureView quadrature(args.quad_data);
-      num_moments = quadrature.num_moments;
-      quadrature.GetDirectionView(direction, direction_num);
-    }
-    // launch the kernel
-    sweep_spec_map[cell.num_nodes - 1](
-      args, cell, direction, cell_edge_data, angle_group_idx, group_idx, num_moments, saved_psi);
-  }
-}
-
-constexpr unsigned int threshold = 256;
+#if defined(__NVCC__)
+constexpr unsigned int threshold = 128;
+#elif defined(__HIPCC__)
+constexpr unsigned int threshold = 64;
+#endif
 
 } // namespace gpu_kernel
 
@@ -123,31 +100,22 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
   // retrieve SPDS levels
   const auto& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
   const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
-  // loop over each level based on saturation status
-  unsigned int block_size_x = groupset_.GetNumGroups(),
-               block_size_y = aahd_angle_set.GetNumAngles();
-  if (block_size_x * block_size_y <= gpu_kernel::threshold)
+  // compute block size
+  unsigned int stride_size = RoundUp(static_cast<unsigned int>(args.flud_data.stride_size));
+  unsigned int block_size_x = std::min(stride_size, gpu_kernel::threshold);
+  unsigned int block_size_y = gpu_kernel::threshold / block_size_x;
+  ::dim3 block_size{block_size_x, block_size_y};
+  unsigned int grid_size_x = (stride_size + gpu_kernel::threshold - 1) / gpu_kernel::threshold;
+  for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)
   {
-    for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)
-    {
-      // perform the sweep on device
-      std::size_t level_size = levelized_spls[level].size();
-      const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
-      ::dim3 block_size{block_size_x, block_size_y};
-      gpu_kernel::UnsaturatedKernel<<<level_size, block_size, 0, stream>>>(
-        args, level_data, saved_psi);
-    }
-  }
-  else
-  {
-    for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)
-    {
-      // perform the sweep on device
-      std::size_t level_size = levelized_spls[level].size();
-      const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
-      gpu_kernel::SaturatedKernel<<<level_size, gpu_kernel::threshold, 0, stream>>>(
-        args, level_data, saved_psi);
-    }
+    // compute grid size
+    std::size_t level_size = levelized_spls[level].size();
+    unsigned int grid_size_y = (level_size + block_size_y - 1) / block_size_y;
+    ::dim3 grid_size{grid_size_x, grid_size_y};
+    // perform the sweep on device
+    const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
+    gpu_kernel::AAH_SweepKernel<<<grid_size, block_size, 0, stream>>>(
+      args, level_data, static_cast<unsigned int>(level_size), saved_psi);
   }
 }
 
