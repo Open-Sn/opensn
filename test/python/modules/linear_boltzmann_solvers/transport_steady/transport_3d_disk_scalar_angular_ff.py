@@ -62,7 +62,7 @@ if __name__ == "__main__":
     angular_ff_list = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
     FieldFunctionGridBased.ExportMultipleToPVTU(angular_ff_list, "angular_flux_disk")
 
-    scalar_ff = phys.GetScalarFieldFunctionList()[0]
+    scalar_ff = phys.GetScalarFluxFieldFunction()[0]
     FieldFunctionGridBased.ExportMultipleToPVTU([scalar_ff], "scalar_flux_disk")
 
     if rank == 0:

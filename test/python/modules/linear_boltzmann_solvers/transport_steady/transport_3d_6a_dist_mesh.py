@@ -116,7 +116,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Get field functions
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
 
     ffi1 = FieldFunctionInterpolationVolume()
     ffi1.SetOperationType("max")

@@ -21,10 +21,6 @@ public:
 
   std::string GetName() const;
 
-  std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions();
-
-  const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
-
   /// Initialize function.
   virtual void Initialize();
 

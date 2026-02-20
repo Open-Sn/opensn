@@ -110,7 +110,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Retrieve field functions
-    fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
+    fflist = phys.GetScalarFluxFieldFunction(only_scalar_flux=False)
 
     # Volume integration on the first field function
     ffi1 = FieldFunctionInterpolationVolume()

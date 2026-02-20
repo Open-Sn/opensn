@@ -119,7 +119,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Field functions
-    fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
+    fflist = phys.GetScalarFluxFieldFunction(only_scalar_flux=False)
 
     # Define QoI region and compute forward QoI
     qoi_vol = RPPLogicalVolume(xmin=0.5, xmax=0.8333, ymin=4.16666, ymax=4.33333, infz=True)
