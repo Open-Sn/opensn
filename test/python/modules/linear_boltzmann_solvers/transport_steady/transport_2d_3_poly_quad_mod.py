@@ -107,7 +107,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Get field functions
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
 
     # Volume integrations
     vol0 = RPPLogicalVolume(infx=True, infy=True, infz=True)

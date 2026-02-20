@@ -81,7 +81,7 @@ if __name__ == "__main__":
     ss_solver.Initialize()
     ss_solver.Execute()
 
-    fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
+    fflist = phys.GetScalarFluxFieldFunction(only_scalar_flux=False)
 
     logvol = RPPLogicalVolume(
         xmin=0., xmax=length / 2,

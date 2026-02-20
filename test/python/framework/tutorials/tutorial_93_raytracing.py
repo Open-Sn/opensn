@@ -56,7 +56,7 @@ ss_solver = SteadyStateSourceSolver(problem=phys1)
 ss_solver.Initialize()
 ss_solver.Execute()
 
-ff_m0 = phys1.GetScalarFieldFunctionList()
+ff_m0 = phys1.GetScalarFluxFieldFunction()
 
 # Export the first scalar field function to VTK
 FieldFunctionGridBased.ExportMultipleToPVTU([ff_m0[0]], "SimTest_93_" + solver_name)

@@ -71,7 +71,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     vol0 = SphereLogicalVolume(r=1.1, x=0., y=0., z=0.)
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
 
     ffi1 = FieldFunctionInterpolationVolume()
     ffi1.SetOperationType("sum")

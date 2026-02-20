@@ -71,7 +71,7 @@ if __name__ == "__main__":
     ss_solver.Initialize()
     ss_solver.Execute()
 
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
 
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1

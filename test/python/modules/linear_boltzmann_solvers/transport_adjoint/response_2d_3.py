@@ -118,7 +118,7 @@ if __name__ == "__main__":
     # Compute QoI for each group and sum them
     fwd_qois = []
     fwd_qoi_sum = 0.0
-    fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
+    fflist = phys.GetScalarFluxFieldFunction(only_scalar_flux=False)
     for g in range(num_groups):
         ff = fflist[g][0]
         ffi = FieldFunctionInterpolationVolume()
