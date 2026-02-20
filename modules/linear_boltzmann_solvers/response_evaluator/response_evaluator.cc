@@ -88,14 +88,13 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
     }
   }
 
-  if (params.IsParameterValid("clear_sources"))
-    if (params.GetParamValue<bool>("clear_sources"))
-    {
-      material_sources_.clear();
-      point_sources_.clear();
-      volumetric_sources_.clear();
-      boundary_sources_.clear();
-    }
+  if (params.IsParameterValid("clear_sources") and params.GetParamValue<bool>("clear_sources"))
+  {
+    material_sources_.clear();
+    point_sources_.clear();
+    volumetric_sources_.clear();
+    boundary_sources_.clear();
+  }
 
   if (params.IsParameterValid("sources"))
   {
@@ -291,16 +290,23 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
 
   auto grid = do_problem_->GetGrid();
   const auto bnd_name_map = grid->GetBoundaryNameMap();
+  OpenSnInvalidArgumentIf(not bnd_name_map.count(bndry_name),
+                          "Boundary \"" + bndry_name + "\" does not exist.");
   const auto bid = bnd_name_map.at(bndry_name);
   if (bndry_type == "isotropic")
   {
     OpenSnInvalidArgumentIf(not params.Has("group_strength"),
                             "Parameter \"group_strength\" is required for "
                             "boundaries of type \"isotropic\".");
-    params.RequireParameterBlockTypeIs("values", ParameterBlockType::ARRAY);
+    params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
+    const auto values = params.GetParamVectorValue<double>("group_strength");
+    OpenSnInvalidArgumentIf(values.size() != do_problem_->GetNumGroups(),
+                            "The number of boundary source values does not match the "
+                            "number of groups. Expected " +
+                              std::to_string(do_problem_->GetNumGroups()) + " but got " +
+                              std::to_string(values.size()) + ".");
 
-    boundary_sources_[bid] = {LBSBoundaryType::ISOTROPIC,
-                              params.GetParamVectorValue<double>("group_strength")};
+    boundary_sources_[bid] = {LBSBoundaryType::ISOTROPIC, values};
   }
   else
     log.Log0Warning() << "Unsupported boundary type. Skipping the entry.";
