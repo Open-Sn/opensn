@@ -67,8 +67,8 @@ NLKEigenvalueAGSSolver::SetSystemSize()
   auto& lbs_problem = nl_context_ptr->lbs_problem;
   auto sizes = lbs_problem->GetNumPhiIterativeUnknowns();
 
-  num_local_dofs_ = static_cast<int64_t>(sizes.first);
-  num_global_dofs_ = static_cast<int64_t>(sizes.second);
+  num_local_dofs_ = static_cast<PetscInt>(sizes.first);
+  num_global_dofs_ = static_cast<PetscInt>(sizes.second);
 }
 
 void

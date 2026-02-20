@@ -7,9 +7,21 @@
 #include "framework/logging/log.h"
 #include <iomanip>
 #include <sstream>
+#include <limits>
 
 namespace opensn
 {
+namespace
+{
+PetscInt
+ToPetscInt(const int64_t value, const char* name)
+{
+  OpenSnLogicalErrorIf(value < static_cast<int64_t>(std::numeric_limits<PetscInt>::min()) or
+                         value > static_cast<int64_t>(std::numeric_limits<PetscInt>::max()),
+                       std::string(name) + " is out of PetscInt range");
+  return static_cast<PetscInt>(value);
+}
+} // namespace
 
 [[noreturn]] void
 ThrowPETScError(int ierr, const char* expr, const char* file, int line)
@@ -35,7 +47,8 @@ CreateVector(int64_t local_size, int64_t global_size)
   Vec x = nullptr;
   OpenSnPETScCall(VecCreate(opensn::mpi_comm, &x));
   OpenSnPETScCall(VecSetType(x, VECMPI));
-  OpenSnPETScCall(VecSetSizes(x, local_size, global_size));
+  OpenSnPETScCall(
+    VecSetSizes(x, ToPetscInt(local_size, "local_size"), ToPetscInt(global_size, "global_size")));
   OpenSnPETScCall(VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 
   return x;
@@ -46,7 +59,8 @@ CreateVector(Vec& x, int64_t local_size, int64_t global_size)
 {
   OpenSnPETScCall(VecCreate(opensn::mpi_comm, &x));
   OpenSnPETScCall(VecSetType(x, VECMPI));
-  OpenSnPETScCall(VecSetSizes(x, local_size, global_size));
+  OpenSnPETScCall(
+    VecSetSizes(x, ToPetscInt(local_size, "local_size"), ToPetscInt(global_size, "global_size")));
   OpenSnPETScCall(VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 }
 
@@ -54,15 +68,21 @@ Vec
 CreateVectorWithGhosts(int64_t local_size,
                        int64_t global_size,
                        int64_t nghosts,
-                       const std::vector<PetscInt>& ghost_indices)
+                       const std::vector<int64_t>& ghost_indices)
 {
+  std::vector<PetscInt> ghost_indices_petsc;
+  ghost_indices_petsc.reserve(ghost_indices.size());
+  for (const auto gid : ghost_indices)
+    ghost_indices_petsc.push_back(ToPetscInt(gid, "ghost_index"));
+
   Vec x = nullptr;
-  OpenSnPETScCall(VecCreateGhost(opensn::mpi_comm,
-                                 local_size,
-                                 global_size,
-                                 nghosts,
-                                 (ghost_indices.empty()) ? nullptr : ghost_indices.data(),
-                                 &x));
+  OpenSnPETScCall(
+    VecCreateGhost(opensn::mpi_comm,
+                   ToPetscInt(local_size, "local_size"),
+                   ToPetscInt(global_size, "global_size"),
+                   ToPetscInt(nghosts, "nghosts"),
+                   (ghost_indices_petsc.empty()) ? nullptr : ghost_indices_petsc.data(),
+                   &x));
 
   OpenSnPETScCall(VecSetOption(x, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 
@@ -75,7 +95,9 @@ CreateSquareMatrix(int64_t local_size, int64_t global_size)
   Mat A = nullptr;
   OpenSnPETScCall(MatCreate(opensn::mpi_comm, &A));
   OpenSnPETScCall(MatSetType(A, MATMPIAIJ));
-  OpenSnPETScCall(MatSetSizes(A, local_size, local_size, global_size, global_size));
+  const auto local = ToPetscInt(local_size, "local_size");
+  const auto global = ToPetscInt(global_size, "global_size");
+  OpenSnPETScCall(MatSetSizes(A, local, local, global, global));
 
   OpenSnPETScCall(MatMPIAIJSetPreallocation(A, 1, nullptr, 0, nullptr));
   OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
@@ -89,7 +111,9 @@ CreateSquareMatrix(Mat& A, int64_t local_size, int64_t global_size)
 {
   OpenSnPETScCall(MatCreate(opensn::mpi_comm, &A));
   OpenSnPETScCall(MatSetType(A, MATMPIAIJ));
-  OpenSnPETScCall(MatSetSizes(A, local_size, local_size, global_size, global_size));
+  const auto local = ToPetscInt(local_size, "local_size");
+  const auto global = ToPetscInt(global_size, "global_size");
+  OpenSnPETScCall(MatSetSizes(A, local, local, global, global));
 
   OpenSnPETScCall(MatMPIAIJSetPreallocation(A, 1, nullptr, 0, nullptr));
   OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
@@ -101,8 +125,17 @@ InitMatrixSparsity(Mat& A,
                    const std::vector<int64_t>& nodal_nnz_in_diag,
                    const std::vector<int64_t>& nodal_nnz_off_diag)
 {
-  OpenSnPETScCall(
-    MatMPIAIJSetPreallocation(A, 0, nodal_nnz_in_diag.data(), 0, nodal_nnz_off_diag.data()));
+  std::vector<PetscInt> nodal_nnz_in_diag_petsc;
+  std::vector<PetscInt> nodal_nnz_off_diag_petsc;
+  nodal_nnz_in_diag_petsc.reserve(nodal_nnz_in_diag.size());
+  nodal_nnz_off_diag_petsc.reserve(nodal_nnz_off_diag.size());
+  for (const auto nnz : nodal_nnz_in_diag)
+    nodal_nnz_in_diag_petsc.push_back(ToPetscInt(nnz, "nodal_nnz_in_diag"));
+  for (const auto nnz : nodal_nnz_off_diag)
+    nodal_nnz_off_diag_petsc.push_back(ToPetscInt(nnz, "nodal_nnz_off_diag"));
+
+  OpenSnPETScCall(MatMPIAIJSetPreallocation(
+    A, 0, nodal_nnz_in_diag_petsc.data(), 0, nodal_nnz_off_diag_petsc.data()));
   OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
   OpenSnPETScCall(MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE));
   OpenSnPETScCall(MatSetUp(A));
@@ -111,8 +144,11 @@ InitMatrixSparsity(Mat& A,
 void
 InitMatrixSparsity(Mat& A, int64_t nodal_nnz_in_diag, int64_t nodal_nnz_off_diag)
 {
-  OpenSnPETScCall(
-    MatMPIAIJSetPreallocation(A, nodal_nnz_in_diag, nullptr, nodal_nnz_off_diag, nullptr));
+  OpenSnPETScCall(MatMPIAIJSetPreallocation(A,
+                                            ToPetscInt(nodal_nnz_in_diag, "nodal_nnz_in_diag"),
+                                            nullptr,
+                                            ToPetscInt(nodal_nnz_off_diag, "nodal_nnz_off_diag"),
+                                            nullptr));
   OpenSnPETScCall(MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
   OpenSnPETScCall(MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE));
 }
@@ -137,7 +173,8 @@ CreateCommonKrylovSolverSetup(Mat matrix,
   OpenSnPETScCall(KSPGetPC(setup.ksp, &setup.pc));
   OpenSnPETScCall(PCSetType(setup.pc, preconditioner_type.c_str()));
 
-  OpenSnPETScCall(KSPSetTolerances(setup.ksp, rel_tol, abs_tol, 1.0e50, maximum_iterations));
+  OpenSnPETScCall(KSPSetTolerances(
+    setup.ksp, rel_tol, abs_tol, 1.0e50, ToPetscInt(maximum_iterations, "maximum_iterations")));
   OpenSnPETScCall(KSPSetInitialGuessNonzero(setup.ksp, PETSC_TRUE));
 
   OpenSnPETScCall(KSPSetFromOptions(setup.ksp));
@@ -251,9 +288,14 @@ CopyGlobalVecToSTLvector(Vec x,
                          const std::vector<int64_t>& global_indices,
                          std::vector<double>& data)
 {
+  std::vector<PetscInt> global_indices_petsc;
+  global_indices_petsc.reserve(global_indices.size());
+  for (const auto idx : global_indices)
+    global_indices_petsc.push_back(ToPetscInt(idx, "global_index"));
+
   // Populating local indices
-  auto N = static_cast<PetscInt>(global_indices.size());
-  std::vector<int64_t> local_indices(N, 0);
+  const auto N = static_cast<PetscInt>(global_indices_petsc.size());
+  std::vector<PetscInt> local_indices(N, 0);
   for (PetscInt counter = 0; counter < N; ++counter)
     local_indices[counter] = counter;
 
@@ -265,8 +307,8 @@ CopyGlobalVecToSTLvector(Vec x,
   // Create and transfer index sets
   IS global_set = nullptr;
   IS local_set = nullptr;
-  OpenSnPETScCall(
-    ISCreateGeneral(PETSC_COMM_SELF, N, global_indices.data(), PETSC_COPY_VALUES, &global_set));
+  OpenSnPETScCall(ISCreateGeneral(
+    PETSC_COMM_SELF, N, global_indices_petsc.data(), PETSC_COPY_VALUES, &global_set));
   OpenSnPETScCall(
     ISCreateGeneral(PETSC_COMM_SELF, N, local_indices.data(), PETSC_COPY_VALUES, &local_set));
   VecScatter scat = nullptr;

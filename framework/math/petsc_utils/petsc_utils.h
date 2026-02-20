@@ -76,7 +76,7 @@ void CreateVector(Vec& x, int64_t local_size, int64_t global_size);
 Vec CreateVectorWithGhosts(int64_t local_size,
                            int64_t global_size,
                            int64_t nghosts,
-                           const std::vector<PetscInt>& ghost_indices);
+                           const std::vector<int64_t>& ghost_indices);
 
 /**
  * Creates a general square matrix.
