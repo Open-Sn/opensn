@@ -34,7 +34,7 @@ Includes
 
 - ``cstddef``
 
-- ``exception`` (:ref:`file_framework_logging_log_exceptions.h`)
+- ``exception``
 
 - ``functional``
 

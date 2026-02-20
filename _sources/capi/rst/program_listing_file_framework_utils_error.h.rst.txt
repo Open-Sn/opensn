@@ -1,10 +1,10 @@
 
-.. _program_listing_file_framework_logging_log_exceptions.h:
+.. _program_listing_file_framework_utils_error.h:
 
-Program Listing for File log_exceptions.h
-=========================================
+Program Listing for File error.h
+================================
 
-|exhale_lsh| :ref:`Return to documentation for file <file_framework_logging_log_exceptions.h>` (``framework/logging/log_exceptions.h``)
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_utils_error.h>` (``framework/utils/error.h``)
 
 .. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
 
@@ -17,6 +17,24 @@ Program Listing for File log_exceptions.h
    
    #include <string>
    #include <stdexcept>
+   
+   namespace opensn
+   {
+   [[noreturn]] void ThrowPETScError(int ierr, const char* expr, const char* file, int line);
+   
+   inline void
+   CheckPETScCall(int ierr, const char* expr, const char* file, int line)
+   {
+     const bool failed =
+   #if defined(__GNUC__) || defined(__clang__)
+       __builtin_expect(ierr != 0, 0);
+   #else
+       ierr != 0;
+   #endif
+     if (failed)
+       ThrowPETScError(ierr, expr, file, line);
+   }
+   } // namespace opensn
    
    #define OpenSnInvalidArgumentIf(condition, message)                                                \
      if (condition)                                                                                   \
@@ -46,3 +64,5 @@ Program Listing for File log_exceptions.h
                                            std::string(__PRETTY_FUNCTION__) +                         \
                                          ": " + #message);                                            \
      }
+   
+   #define OpenSnPETScCall(expr) ::opensn::CheckPETScCall((expr), #expr, __FILE__, __LINE__)

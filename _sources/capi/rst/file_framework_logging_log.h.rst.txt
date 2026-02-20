@@ -30,9 +30,9 @@ Includes
 --------
 
 
-- ``framework/logging/log_exceptions.h`` (:ref:`file_framework_logging_log_exceptions.h`)
-
 - ``framework/logging/log_stream.h`` (:ref:`file_framework_logging_log_stream.h`)
+
+- ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
 
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 

@@ -1,9 +1,9 @@
-.. _exhale_define_log__exceptions_8h_1a17168085d44dba33be8c4a04bebd1473:
+.. _exhale_define_error_8h_1a17168085d44dba33be8c4a04bebd1473:
 
 Define OpenSnRecoverableInvalidArgument
 =======================================
 
-- Defined in :ref:`file_framework_logging_log_exceptions.h`
+- Defined in :ref:`file_framework_utils_error.h`
 
 
 Define Documentation

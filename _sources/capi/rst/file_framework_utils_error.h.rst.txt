@@ -1,0 +1,87 @@
+
+.. _file_framework_utils_error.h:
+
+File error.h
+============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_utils>` (``framework/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/utils/error.h``)
+----------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_utils_error.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_data_types_varying.h`
+
+- :ref:`file_framework_logging_log.h`
+
+- :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+- :ref:`file_framework_object_factory.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1acc4adb0df8818e156f2a49d4e7e4b33b`
+
+- :ref:`exhale_function_namespaceopensn_1a8a5a0b764bafcabf550979995200d07b`
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_error_8h_1a335bf90f81abf6db249b2a74ec694e8f`
+
+- :ref:`exhale_define_error_8h_1adb96ca5f101874c95a3eb0bb4c59ad6c`
+
+- :ref:`exhale_define_error_8h_1af157740d9331d6fe490804b90a4bb09f`
+
+- :ref:`exhale_define_error_8h_1af97c0d342fc224ac186140be55f04865`
+
+- :ref:`exhale_define_error_8h_1ab91785918e91cc6304e725a2a1bf9974`
+
+- :ref:`exhale_define_error_8h_1a17168085d44dba33be8c4a04bebd1473`
+
+- :ref:`exhale_define_error_8h_1a3e4d5719a9afedbadff14d98810593af`
+

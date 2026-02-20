@@ -17,7 +17,6 @@ Files
 -----
 
 - :ref:`file_framework_logging_log.h`
-- :ref:`file_framework_logging_log_exceptions.h`
 - :ref:`file_framework_logging_log_stream.h`
 - :ref:`file_framework_logging_stringstream_color.h`
 

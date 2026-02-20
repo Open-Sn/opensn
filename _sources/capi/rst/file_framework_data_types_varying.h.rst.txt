@@ -34,7 +34,7 @@ Includes
 
 - ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
 
-- ``framework/logging/log_exceptions.h`` (:ref:`file_framework_logging_log_exceptions.h`)
+- ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
 
 - ``iostream``
 

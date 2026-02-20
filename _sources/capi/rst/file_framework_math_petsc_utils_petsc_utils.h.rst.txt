@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
+
 - ``petscksp.h``
 
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)

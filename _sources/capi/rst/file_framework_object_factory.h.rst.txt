@@ -30,9 +30,9 @@ Includes
 --------
 
 
-- ``framework/logging/log_exceptions.h`` (:ref:`file_framework_logging_log_exceptions.h`)
-
 - ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
 
 - ``framework/utils/utils.h`` (:ref:`file_framework_utils_utils.h`)
 

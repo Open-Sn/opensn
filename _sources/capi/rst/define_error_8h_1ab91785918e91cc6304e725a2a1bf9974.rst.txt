@@ -1,0 +1,14 @@
+.. _exhale_define_error_8h_1ab91785918e91cc6304e725a2a1bf9974:
+
+Define OpenSnPETScCall
+======================
+
+- Defined in :ref:`file_framework_utils_error.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: OpenSnPETScCall
+   :project: opensn

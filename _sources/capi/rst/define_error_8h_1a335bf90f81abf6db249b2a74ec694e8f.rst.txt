@@ -1,9 +1,9 @@
-.. _exhale_define_log__exceptions_8h_1a335bf90f81abf6db249b2a74ec694e8f:
+.. _exhale_define_error_8h_1a335bf90f81abf6db249b2a74ec694e8f:
 
 Define OpenSnInvalidArgument
 ============================
 
-- Defined in :ref:`file_framework_logging_log_exceptions.h`
+- Defined in :ref:`file_framework_utils_error.h`
 
 
 Define Documentation

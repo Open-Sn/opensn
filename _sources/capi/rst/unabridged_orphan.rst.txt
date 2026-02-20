@@ -2347,6 +2347,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_framework_utils_error.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_framework_mesh_mesh_generator_extruder_mesh_generator.h.rst
 
 .. toctree::
@@ -2588,11 +2593,6 @@ Files
    :maxdepth: 1
 
    file_framework_logging_log.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_framework_logging_log_exceptions.h.rst
 
 .. toctree::
    :maxdepth: 1

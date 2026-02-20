@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1acc4adb0df8818e156f2a49d4e7e4b33b:
+
+Function opensn::CheckPETScCall
+===============================
+
+- Defined in :ref:`file_framework_utils_error.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CheckPETScCall(int, const char *, const char *, int)
+   :project: opensn

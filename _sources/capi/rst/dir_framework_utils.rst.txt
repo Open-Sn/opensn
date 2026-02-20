@@ -16,6 +16,7 @@ Directory utils
 Files
 -----
 
+- :ref:`file_framework_utils_error.h`
 - :ref:`file_framework_utils_hdf_utils.h`
 - :ref:`file_framework_utils_timer.h`
 - :ref:`file_framework_utils_utils.h`

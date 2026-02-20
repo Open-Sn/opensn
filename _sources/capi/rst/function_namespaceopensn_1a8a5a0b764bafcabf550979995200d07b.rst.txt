@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a8a5a0b764bafcabf550979995200d07b:
+
+Function opensn::ThrowPETScError
+================================
+
+- Defined in :ref:`file_framework_utils_error.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ThrowPETScError(int, const char *, const char *, int)
+   :project: opensn
