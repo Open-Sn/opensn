@@ -53,7 +53,7 @@ public:
 
   unsigned int GetScatteringOrder() const { return scattering_order_; }
 
-  size_t GetNumPrecursors() const { return num_precursors_; }
+  unsigned int GetNumPrecursors() const { return num_precursors_; }
 
   bool IsFissionable() const { return is_fissionable_; }
 
@@ -121,7 +121,7 @@ private:
   /// Legendre scattering order
   unsigned int scattering_order_;
   /// Number of precursors
-  size_t num_precursors_;
+  unsigned int num_precursors_;
   /// Is fissionable?
   bool is_fissionable_;
   /// Can be used for adjoint calculations

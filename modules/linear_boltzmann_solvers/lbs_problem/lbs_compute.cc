@@ -118,7 +118,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
 {
   CALI_CXX_MARK_SCOPE("ComputePrecursors");
 
-  const size_t J = lbs_problem.GetMaxPrecursorsPerMaterial();
+  const auto J = lbs_problem.GetMaxPrecursorsPerMaterial();
 
   auto& precursor_new_local = lbs_problem.GetPrecursorsNewLocal();
   precursor_new_local.assign(precursor_new_local.size(), 0.0);
@@ -141,7 +141,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     // Loop over precursors
-    for (uint64_t j = 0; j < xs.GetNumPrecursors(); ++j)
+    for (unsigned int j = 0; j < xs.GetNumPrecursors(); ++j)
     {
       size_t dof = cell.local_id * J + j;
       const auto& precursor = precursors[j];

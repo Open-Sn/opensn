@@ -95,13 +95,13 @@ public:
    * Returns the number of precursors for the solver. This will only be non-zero after
    * initialization.
    */
-  size_t GetNumPrecursors() const;
+  unsigned int GetNumPrecursors() const;
 
   /**
    * Returns the maximum number of precursors defined on any material. This will only be non-zero
    * after initialization.
    */
-  size_t GetMaxPrecursorsPerMaterial() const;
+  unsigned int GetMaxPrecursorsPerMaterial() const;
 
   std::vector<LBSGroupset>& GetGroupsets();
 
@@ -300,8 +300,8 @@ protected:
   unsigned int num_moments_ = 0;
   unsigned int num_groups_ = 0;
   unsigned int scattering_order_ = 0;
-  size_t num_precursors_ = 0;
-  size_t max_precursors_per_material_ = 0;
+  unsigned int num_precursors_ = 0;
+  unsigned int max_precursors_per_material_ = 0;
 
   std::vector<LBSGroupset> groupsets_;
 

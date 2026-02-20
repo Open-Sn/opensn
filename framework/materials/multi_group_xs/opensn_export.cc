@@ -99,7 +99,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
 
       ofile << "\nCHI_DELAYED_BEGIN\n";
       const auto& precursors = GetPrecursors();
-      for (size_t j = 0; j < GetNumPrecursors(); ++j)
+      for (unsigned int j = 0; j < GetNumPrecursors(); ++j)
         for (unsigned int g = 0; g < GetNumGroups(); ++g)
           ofile << "G_PRECURSOR_VAL"
                 << " " << g << " " << j << " " << precursors[j].emission_spectrum[g] << "\n";

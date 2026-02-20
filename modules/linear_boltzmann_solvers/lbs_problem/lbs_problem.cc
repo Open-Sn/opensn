@@ -198,13 +198,13 @@ LBSProblem::GetScatteringOrder() const
   return scattering_order_;
 }
 
-size_t
+unsigned int
 LBSProblem::GetNumPrecursors() const
 {
   return num_precursors_;
 }
 
-size_t
+unsigned int
 LBSProblem::GetMaxPrecursorsPerMaterial() const
 {
   return max_precursors_per_material_;
