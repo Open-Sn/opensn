@@ -21,11 +21,11 @@ class HarmonicSelectionRules
 public:
   struct SelectionParameters
   {
-    AngularQuadratureType quadrature_type;
-    OperatorConstructionMethod construction_method;
-    unsigned int dimension;
-    unsigned int scattering_order;
-    size_t num_angles;
+    AngularQuadratureType quadrature_type{};
+    OperatorConstructionMethod construction_method{};
+    unsigned int dimension = 0;
+    unsigned int scattering_order = 0;
+    size_t num_angles = 0;
 
     // Quadrature-specific order parameter
     // For Lebedev: Lebedev order (3, 5, 7, 9, etc.)

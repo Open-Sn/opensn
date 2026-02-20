@@ -6,9 +6,6 @@
 #include <vector>
 #include <map>
 
-namespace opensn
-{
-
 /**
  * \brief Empirical harmonic selection rules for special quadrature types.
  *
@@ -16,7 +13,7 @@ namespace opensn
  * where mathematical rules are not easily derived or where empirical selection
  * provides better results.
  */
-namespace EmpiricalHarmonicRules
+namespace opensn::EmpiricalHarmonicRules
 {
 
 // Structure to hold harmonic indices for a given order
@@ -4991,5 +4988,4 @@ inline const std::map<int, HarmonicSet> SLDFEHarmonics2D = {
         {39, -35}, {39, -33}, {39, -31}, {39, -29}, {39, -27}, {39, 1},   {39, 3},   {39, 5},
         {39, 7},   {39, 11},  {40, -38}, {40, -36}, {40, -34}, {40, -32}, {40, -30}, {40, -28}}}}};
 
-} // namespace EmpiricalHarmonicRules
-} // namespace opensn
+} // namespace opensn::EmpiricalHarmonicRules

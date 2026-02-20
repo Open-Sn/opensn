@@ -59,7 +59,7 @@ WrapQuadraturePointPhiTheta(py::module& aquad)
 }
 
 // Wrap harmonic indices
-void
+static void
 WrapHarmonicIndices(py::module& aquad)
 {
   py::class_<AngularQuadrature::HarmonicIndices> harmonic_indices(aquad, "HarmonicIndices");
@@ -115,7 +115,7 @@ WrapQuadrature(py::module& aquad)
       );
       
       py::buffer_info buf = result.request();
-      double* ptr = static_cast<double*>(buf.ptr);
+      auto* ptr = static_cast<double*>(buf.ptr);
       
       // Copy data row by row
       for (size_t i = 0; i < num_rows; ++i) {
@@ -144,7 +144,7 @@ WrapQuadrature(py::module& aquad)
       );
       
       py::buffer_info buf = result.request();
-      double* ptr = static_cast<double*>(buf.ptr);
+      auto* ptr = static_cast<double*>(buf.ptr);
       
       // Copy data row by row
       for (size_t i = 0; i < num_rows; ++i) {
@@ -200,7 +200,7 @@ WrapProductQuadrature(py::module& aquad)
         auto method = op_cons_type_map.at(method_str);
         auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        unsigned int scattering_order;
+        unsigned int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
@@ -256,7 +256,7 @@ WrapProductQuadrature(py::module& aquad)
         auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
         auto n_azimuthal = pop_cast(params, "n_azimuthal").cast<unsigned int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        unsigned int scattering_order;
+        unsigned int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
@@ -314,7 +314,7 @@ WrapProductQuadrature(py::module& aquad)
         auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
         auto n_azimuthal = pop_cast(params, "n_azimuthal").cast<unsigned int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        unsigned int scattering_order;
+        unsigned int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
@@ -398,7 +398,7 @@ WrapTriangularQuadrature(py::module& aquad)
         auto method = op_cons_type_map.at(method_str);
         auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        unsigned int scattering_order;
+        unsigned int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
@@ -456,7 +456,7 @@ WrapTriangularQuadrature(py::module& aquad)
         auto method = op_cons_type_map.at(method_str);
         auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        unsigned int scattering_order;
+        unsigned int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
@@ -533,7 +533,7 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
         auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
         auto n_azimuthal = pop_cast(params, "n_azimuthal").cast<unsigned int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        unsigned int scattering_order;
+        unsigned int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
@@ -597,7 +597,7 @@ WrapSLDFEsqQuadrature(py::module& aquad)
         auto method = op_cons_type_map.at(method_str);
         auto level = pop_cast(params, "level").cast<int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        int scattering_order;
+        int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<int>::max())).cast<int>();
@@ -688,7 +688,7 @@ WrapSLDFEsqQuadrature(py::module& aquad)
         auto method = op_cons_type_map.at(method_str);
         auto level = pop_cast(params, "level").cast<int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        int scattering_order;
+        int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<int>::max())).cast<int>();
@@ -787,7 +787,7 @@ WrapLebedevQuadrature(py::module& aquad)
         auto method = op_cons_type_map.at(method_str);
         auto quadrature_order = pop_cast(params, "quadrature_order").cast<unsigned int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        unsigned int scattering_order;
+        unsigned int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
@@ -847,7 +847,7 @@ WrapLebedevQuadrature(py::module& aquad)
         auto method = op_cons_type_map.at(method_str);
         auto quadrature_order = pop_cast(params, "quadrature_order").cast<unsigned int>();
         auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
-        unsigned int scattering_order;
+        unsigned int scattering_order = 0;
         if (method == OperatorConstructionMethod::GALERKIN_ONE)
           scattering_order = pop_cast(params, "scattering_order",
                                       py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();

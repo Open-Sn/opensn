@@ -62,13 +62,13 @@ AngularQuadrature::MakeHarmonicIndices()
 
     if (dimension_ == 1)
     {
-      for (auto ell = 0; ell <= scattering_order_; ++ell)
+      for (auto ell = 0u; ell <= scattering_order_; ++ell)
         m_to_ell_em_map_.emplace_back(ell, 0);
     }
     else if (dimension_ == 2)
     {
       log.Log() << "  2D Harmonic selection (STANDARD):";
-      for (auto ell = 0; ell <= scattering_order_; ++ell)
+      for (auto ell = 0u; ell <= scattering_order_; ++ell)
       {
         std::stringstream ss;
         ss << "    ℓ=" << ell << ": m = [";
@@ -87,7 +87,7 @@ AngularQuadrature::MakeHarmonicIndices()
     }
     else if (dimension_ == 3)
     {
-      for (auto ell = 0; ell <= scattering_order_; ++ell)
+      for (auto ell = 0u; ell <= scattering_order_; ++ell)
         for (auto m = -ell; m <= ell; ++m)
           m_to_ell_em_map_.emplace_back(ell, m);
     }
@@ -287,10 +287,10 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
       // Verbose printout
       std::stringstream outs;
       outs << "\nQuadrature m2d operator (Standard/Galerkin-Quadrature 1 Method):\n";
-      for (auto n = 0; n < num_angles; ++n)
+      for (size_t n = 0; n < num_angles; ++n)
       {
         outs << std::setw(5) << n;
-        for (auto m = 0; m < num_moms; ++m)
+        for (size_t m = 0; m < num_moms; ++m)
         {
           outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[n][m]
                << " ";

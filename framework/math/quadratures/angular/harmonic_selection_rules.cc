@@ -89,7 +89,7 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
       break;
 
     // Determine min_M
-    unsigned int min_M;
+    unsigned int min_M = 0;
     if (L <= L_crit)
       min_M = ind_L;
     else
@@ -179,7 +179,7 @@ HarmonicSelectionRules::Select3DCartesianProduct(const SelectionParameters& para
     if (harmonics.size() >= nb_dir)
       break;
 
-    unsigned int min_M;
+    unsigned int min_M = 0;
     if (L <= L_crit)
     {
       // M = 0 cosine (append (L,0) once for L <= L_crit)
@@ -398,7 +398,7 @@ HarmonicSelectionRules::SelectLebedev(const SelectionParameters& params)
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
 
   // Determine the Lebedev order
-  int lebedev_order = params.quadrature_order;
+  int lebedev_order = static_cast<int>(params.quadrature_order);
   if (lebedev_order == 0)
   {
     // Obtain from Lookup Table
@@ -508,7 +508,7 @@ HarmonicSelectionRules::SelectSLDFESQ(const SelectionParameters& params)
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
 
   // Determine the refinement level
-  int refinement_level = params.quadrature_order;
+  int refinement_level = static_cast<int>(params.quadrature_order);
   if (refinement_level == 0)
   {
     // Try to infer from number of angles
@@ -647,7 +647,7 @@ HarmonicSelectionRules::SelectStandard(const SelectionParameters& params)
       std::stringstream ss;
       ss << "    ℓ=" << ell << ": m = [";
       bool first = true;
-      for (int m = -static_cast<int>(ell); m <= static_cast<int>(ell); m += 2)
+      for (int m = -static_cast<int>(ell); std::cmp_less_equal(m, ell); m += 2)
       {
         harmonics.emplace_back(ell, m);
         if (!first)
@@ -662,7 +662,7 @@ HarmonicSelectionRules::SelectStandard(const SelectionParameters& params)
   else if (params.dimension == 3)
   {
     for (unsigned int ell = 0; ell <= params.scattering_order; ++ell)
-      for (int m = -static_cast<int>(ell); m <= static_cast<int>(ell); ++m)
+      for (int m = -static_cast<int>(ell); std::cmp_less_equal(m, ell); ++m)
         harmonics.emplace_back(ell, m);
   }
 

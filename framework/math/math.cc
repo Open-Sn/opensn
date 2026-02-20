@@ -95,7 +95,7 @@ Transpose(const std::vector<std::vector<double>>& matrix)
 std::vector<std::vector<double>>
 InvertMatrix(const std::vector<std::vector<double>>& matrix)
 {
-  const PetscInt n = static_cast<PetscInt>(matrix.size());
+  const auto n = static_cast<PetscInt>(matrix.size());
 
   // Check if matrix is square
   if (n == 0)
@@ -105,7 +105,7 @@ InvertMatrix(const std::vector<std::vector<double>>& matrix)
 
   for (PetscInt i = 0; i < n; ++i)
   {
-    if (static_cast<PetscInt>(matrix[i].size()) != n)
+    if (std::cmp_not_equal(matrix[i].size(), n))
     {
       throw std::runtime_error("Matrix must be square for inversion");
     }
@@ -135,7 +135,7 @@ InvertMatrix(const std::vector<std::vector<double>>& matrix)
   // jobvt = 'A' means compute all rows of V^T
   char jobu = 'A';
   char jobvt = 'A';
-  PetscBLASInt n_blas = static_cast<PetscBLASInt>(n);
+  auto n_blas = static_cast<PetscBLASInt>(n);
   PetscBLASInt lwork = std::max(PetscBLASInt(1), 5 * n_blas);
   std::vector<double> work(lwork);
   PetscBLASInt info_svd = 0;
@@ -169,7 +169,7 @@ InvertMatrix(const std::vector<std::vector<double>>& matrix)
   // Use machine epsilon scaled by matrix size and largest singular value as tolerance
   // This is a standard approach for pseudo-inverse computation
   const double machine_eps = std::numeric_limits<double>::epsilon();
-  const double tol = n * machine_eps * sigma_max;
+  const double tol = static_cast<double>(n) * machine_eps * sigma_max;
 
   // Log condition number for debugging ill-conditioned matrices
   double condition_number = (sigma_min > tol) ? (sigma_max / sigma_min) : INFINITY;
