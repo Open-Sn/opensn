@@ -27,7 +27,7 @@ namespace gpu_kernel
 {
 
 __global__ void
-AAH_SweepKernel(Arguments args,
+AAH_SweepKernel(AAH_Arguments args,
                 const std::uint32_t* level,
                 unsigned int level_size,
                 double* saved_psi)
@@ -95,7 +95,8 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
   auto& aahd_angle_set = static_cast<AAHD_AngleSet&>(angle_set);
   auto& fluds = static_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
   auto& stream = aahd_angle_set.GetStream();
-  gpu_kernel::Arguments args(problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
+  gpu_kernel::AAH_Arguments args(
+    problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
   double* saved_psi = fluds.GetSavedAngularFluxDevicePointer();
   // retrieve SPDS levels
   const auto& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());

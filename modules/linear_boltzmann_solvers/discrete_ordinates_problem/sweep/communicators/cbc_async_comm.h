@@ -4,7 +4,6 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "framework/data_types/byte_array.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 #include <map>
@@ -19,17 +18,14 @@ namespace opensn
 
 class MPICommunicatorSet;
 class ByteArray;
-class CBC_FLUDS;
 
-class CBC_ASynchronousCommunicator : public AsynchronousCommunicator
+class CBC_AsynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
-  explicit CBC_ASynchronousCommunicator(size_t angle_set_id,
+  explicit CBC_AsynchronousCommunicator(size_t angle_set_id,
                                         FLUDS& fluds,
                                         const MPICommunicatorSet& comm_set)
-    : AsynchronousCommunicator(fluds, comm_set),
-      angle_set_id_(angle_set_id),
-      cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))
+    : AsynchronousCommunicator(fluds, comm_set), angle_set_id_(angle_set_id)
   {
   }
 
@@ -51,7 +47,6 @@ public:
 
 protected:
   const size_t angle_set_id_;
-  CBC_FLUDS& cbc_fluds_;
 
   // location_id, cell_global_id, face_id
   using MessageKey = std::tuple<int, uint64_t, unsigned int>;
