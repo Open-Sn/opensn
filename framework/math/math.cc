@@ -218,8 +218,8 @@ InvertMatrix(const std::vector<std::vector<double>>& matrix)
 }
 
 std::vector<std::vector<double>>
-OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix,
-                         const std::vector<double>& weights)
+OrthogonalizeMatrixSpan(const std::vector<std::vector<double>>& matrix,
+                        const std::vector<double>& weights)
 {
   // Check an empty matrix
   if (matrix.empty())
@@ -239,15 +239,10 @@ OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix,
     }
   }
 
-  // Orthogonalize columns using Modified Gram-Schmidt with weighted inner product
-  // and re-orthogonalization (MGS2) for numerical stability. Single-pass MGS loses
-  // orthogonality for ill-conditioned or square systems; a second pass guarantees
-  // orthogonality to machine precision.
-
   // Create working copy of the matrix - we will orthogonalize its columns in place
   std::vector<std::vector<double>> Q = matrix;
 
-  // Orthogonalize columns using Modified Gram-Schmidt with re-orthogonalization
+  // Orthogonalize columns
   for (size_t j = 0; j < n; ++j)
   {
     // Two passes of orthogonalization for numerical stability

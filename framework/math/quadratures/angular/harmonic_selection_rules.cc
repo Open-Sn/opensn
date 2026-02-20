@@ -21,6 +21,10 @@ HarmonicSelectionRules::SelectHarmonics(const SelectionParameters& params)
     return SelectStandard(params);
   }
 
+  // 1D is the same for all quadrature types: only m=0 harmonics exist
+  if (params.dimension == 1)
+    return Select1D(params);
+
   // Handle different quadrature types for Galerkin methods
   switch (params.quadrature_type)
   {
@@ -145,7 +149,6 @@ HarmonicSelectionRules::Select2DCartesianProduct(const SelectionParameters& para
 }
 
 // 3D Product Quadrature rules
-// Note that (K, L) transcribes to (L, M) in this section
 std::vector<AngularQuadrature::HarmonicIndices>
 HarmonicSelectionRules::Select3DCartesianProduct(const SelectionParameters& params)
 {
@@ -159,61 +162,61 @@ HarmonicSelectionRules::Select3DCartesianProduct(const SelectionParameters& para
   const unsigned int nb_phi_90 = n_azimuthal / 4;
   const unsigned int npolar = n_polar / 2;
 
-  const unsigned int K_crit = 2 * npolar - 1;
-  const unsigned int L_crit = 2 * nb_phi_90;
-  const unsigned int min_L_default = 1;
+  const unsigned int L_crit = 2 * npolar - 1;
+  const unsigned int M_crit = 2 * nb_phi_90;
+  const unsigned int min_M_default = 1;
 
   Logger::GetInstance().Log0Verbose1() << "3D Product Galerkin (General) rules:";
   Logger::GetInstance().Log0Verbose1() << "  npolar       = " << npolar;
   Logger::GetInstance().Log0Verbose1() << "  nb_phi_90    = " << nb_phi_90;
-  Logger::GetInstance().Log0Verbose1() << "  K_crit       = " << K_crit;
   Logger::GetInstance().Log0Verbose1() << "  L_crit       = " << L_crit;
+  Logger::GetInstance().Log0Verbose1() << "  M_crit       = " << M_crit;
 
-  const unsigned int max_K = std::min(2 * (npolar + nb_phi_90) - 1, params.scattering_order);
+  const unsigned int max_L = std::min(2 * (npolar + nb_phi_90) - 1, params.scattering_order);
 
-  for (unsigned int K = 0; K <= max_K; ++K)
+  for (unsigned int L = 0; L <= max_L; ++L)
   {
     if (harmonics.size() >= nb_dir)
       break;
 
-    unsigned int min_L;
-    if (K <= K_crit)
+    unsigned int min_M;
+    if (L <= L_crit)
     {
-      // L = 0 cosine (append (K,0) once for K <= K_crit)
-      harmonics.emplace_back(K, 0);
-      Logger::GetInstance().Log0Verbose2() << "    Accepted: K=" << K << ", L=" << 0;
+      // M = 0 cosine (append (L,0) once for L <= L_crit)
+      harmonics.emplace_back(L, 0);
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: L=" << L << ", M=" << 0;
       if (harmonics.size() == nb_dir)
         break;
-      min_L = min_L_default; // start inner L loop at 1
+      min_M = min_M_default; // start inner M loop at 1
     }
     else
     {
-      // For K > K_crit the min L is K - K_crit
-      min_L = K - K_crit;
+      // For L > L_crit the min M is L - L_crit
+      min_M = L - L_crit;
     }
 
-    // max_L = min(K, L_crit)
-    const unsigned int max_L = std::min(K, L_crit);
+    // max_M = min(L, M_crit)
+    const unsigned int max_M = std::min(L, M_crit);
 
-    // inner loop: L = min_L .. max_L (inclusive)
-    for (unsigned int L = min_L; L <= max_L; ++L)
+    // inner loop: M = min_M .. max_M (inclusive)
+    for (unsigned int M = min_M; M <= max_M; ++M)
     {
       if (harmonics.size() >= nb_dir)
         break;
 
-      // cosine only if L < L_crit
-      if (L < L_crit)
+      // cosine only if M < M_crit
+      if (M < M_crit)
       {
-        harmonics.emplace_back(K, static_cast<int>(L));
-        Logger::GetInstance().Log0Verbose2() << "    Accepted: K=" << K << ", L=" << L;
+        harmonics.emplace_back(L, static_cast<int>(M));
+        Logger::GetInstance().Log0Verbose2() << "    Accepted: L=" << L << ", M=" << M;
         if (harmonics.size() == nb_dir)
           break;
       }
 
-      // sine always: append (K, -L)
-      harmonics.emplace_back(K, -static_cast<int>(L));
+      // sine always: append (L, -M)
+      harmonics.emplace_back(L, -static_cast<int>(M));
       Logger::GetInstance().Log0Verbose2()
-        << "    Accepted: K=" << K << ", L=" << -static_cast<int>(L);
+        << "    Accepted: L=" << L << ", M=" << -static_cast<int>(M);
     }
   }
 
@@ -250,52 +253,52 @@ HarmonicSelectionRules::Select2DTriangular(const SelectionParameters& params)
   std::map<int, size_t> nb_C = {{ee, 0}, {eo, 0}, {oe, 0}, {oo, 0}}; // cosine counts
   std::map<int, size_t> nb_S = {{ee, 0}, {eo, 0}, {oe, 0}, {oo, 0}}; // sine counts
 
-  int ind_K = 2; // 2 for even K, 1 for odd K (toggled each K)
-  int K = -1;
+  int ind_L = 2; // 2 for even L, 1 for odd L (toggled each L)
+  int L = -1;
 
   while (harmonics.size() < nb_dir)
   {
-    K++;
-    // mode = 7 - 3*ind_K -> 1 (ee) when K even, 4 (oo) when K odd
-    int mode = 7 - 3 * ind_K;
+    L++;
+    // mode = 7 - 3*ind_L -> 1 (ee) when L even, 4 (oo) when L odd
+    int mode = 7 - 3 * ind_L;
 
-    // cosine (K,0) only when mode==ee and we still have capacity
+    // cosine (L,0) only when mode==ee and we still have capacity
     if (mode == ee && nb_C[ee] < ndir_oct)
     {
-      harmonics.emplace_back(K, 0);
+      harmonics.emplace_back(L, 0);
       nb_C[ee]++;
-      Logger::GetInstance().Log0Verbose2() << "    Accepted: K=" << K << ", L=0 (cosine)";
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: L=" << L << ", M=0 (cosine)";
       if (harmonics.size() == nb_dir)
         break;
     }
 
-    // Then L with the same parity as K: L = ind_K, ind_K+2, ..., K
-    int Lcur = ind_K;
-    while (Lcur <= K && harmonics.size() < nb_dir)
+    // Then M with the same parity as L: M = ind_L, ind_L+2, ..., L
+    int Mcur = ind_L;
+    while (Mcur <= L && harmonics.size() < nb_dir)
     {
-      // cosine (K, +L)
+      // cosine (L, +M)
       if (nb_C[mode] < ndir_oct)
       {
-        harmonics.emplace_back(K, Lcur);
+        harmonics.emplace_back(L, Mcur);
         nb_C[mode]++;
         Logger::GetInstance().Log0Verbose2()
-          << "    Accepted: K=" << K << ", L=" << Lcur << " (cosine)";
+          << "    Accepted: L=" << L << ", M=" << Mcur << " (cosine)";
         if (harmonics.size() == nb_dir)
           break;
       }
-      // sine (K, -L)
+      // sine (L, -M)
       if (nb_S[mode] < ndir_oct && harmonics.size() < nb_dir)
       {
-        harmonics.emplace_back(K, -Lcur);
+        harmonics.emplace_back(L, -Mcur);
         nb_S[mode]++;
         Logger::GetInstance().Log0Verbose2()
-          << "    Accepted: K=" << K << ", L=" << -Lcur << " (sine)";
+          << "    Accepted: L=" << L << ", M=" << -Mcur << " (sine)";
       }
-      Lcur += 2;
+      Mcur += 2;
     }
 
-    // Toggle K parity
-    ind_K = 3 - ind_K;
+    // Toggle L parity
+    ind_L = 3 - ind_L;
   }
 
   Logger::GetInstance().Log0Verbose1()
@@ -331,55 +334,55 @@ HarmonicSelectionRules::Select3DTriangular(const SelectionParameters& params)
   std::map<int, size_t> nb_C = {{ee, 0}, {eo, 0}, {oe, 0}, {oo, 0}}; // cosine counts
   std::map<int, size_t> nb_S = {{ee, 0}, {eo, 0}, {oe, 0}, {oo, 0}}; // sine counts
 
-  int ind_K = 2; // 2 for even K, 1 for odd K (toggled each K)
-  int K = -1;
+  int ind_L = 2; // 2 for even L, 1 for odd L (toggled each L)
+  int L = -1;
 
   while (harmonics.size() < nb_dir)
   {
-    K++;
-    int ind_L = 1;             // 1=even L, 2=odd L (toggled as L increases)
-    int id_ = 2 * (2 - ind_K); // id=0 for even K, 2 for odd K
+    L++;
+    int ind_M = 1;             // 1=even M, 2=odd M (toggled as M increases)
+    int id_ = 2 * (2 - ind_L); // id=0 for even L, 2 for odd L
 
-    // L=0 cosine first
-    int mode = ind_L + id_; // ee if even K, oe if odd K
+    // M=0 cosine first
+    int mode = ind_M + id_; // ee if even L, oe if odd L
     if (nb_C[mode] < ndir_oct)
     {
-      harmonics.emplace_back(K, 0);
+      harmonics.emplace_back(L, 0);
       nb_C[mode]++;
-      Logger::GetInstance().Log0Verbose2() << "    Accepted: K=" << K << ", L=0 (cosine)";
+      Logger::GetInstance().Log0Verbose2() << "    Accepted: L=" << L << ", M=0 (cosine)";
       if (harmonics.size() == nb_dir)
         break;
     }
 
-    // L = 1..K with toggling L parity
-    for (int L = 1; L <= K; ++L)
+    // M = 1..L with toggling M parity
+    for (int M = 1; M <= L; ++M)
     {
-      ind_L = 3 - ind_L; // toggle L parity
-      mode = ind_L + id_;
+      ind_M = 3 - ind_M; // toggle M parity
+      mode = ind_M + id_;
 
-      // cosine (K, +L)
+      // cosine (L, +M)
       if (nb_C[mode] < ndir_oct)
       {
-        harmonics.emplace_back(K, L);
+        harmonics.emplace_back(L, M);
         nb_C[mode]++;
         Logger::GetInstance().Log0Verbose2()
-          << "    Accepted: K=" << K << ", L=" << L << " (cosine)";
+          << "    Accepted: L=" << L << ", M=" << M << " (cosine)";
         if (harmonics.size() == nb_dir)
           break;
       }
 
-      // sine (K, -L)
+      // sine (L, -M)
       if (nb_S[mode] < ndir_oct && harmonics.size() < nb_dir)
       {
-        harmonics.emplace_back(K, -L);
+        harmonics.emplace_back(L, -M);
         nb_S[mode]++;
         Logger::GetInstance().Log0Verbose2()
-          << "    Accepted: K=" << K << ", L=" << -L << " (sine)";
+          << "    Accepted: L=" << L << ", M=" << -M << " (sine)";
       }
     }
 
-    // Toggle K parity
-    ind_K = 3 - ind_K;
+    // Toggle L parity
+    ind_L = 3 - ind_L;
   }
 
   Logger::GetInstance().Log0Verbose1()
@@ -557,8 +560,9 @@ HarmonicSelectionRules::SelectSLDFESQ(const SelectionParameters& params)
   else
   {
     Logger::GetInstance().Log0Warning()
-      << "No empirical harmonic rules found for " << params.dimension << "D SLDFESQ refinement level "
-      << refinement_level << ". Falling back to standard harmonic selection.";
+      << "No empirical harmonic rules found for " << params.dimension
+      << "D SLDFESQ refinement level " << refinement_level
+      << ". Falling back to standard harmonic selection.";
     return SelectStandard(params);
   }
 
@@ -581,10 +585,10 @@ HarmonicSelectionRules::DetermineSLDFELevel(size_t num_angles, unsigned int dime
   // 2D SLDFESQ sets have fewer points (upper hemisphere only, z > 0)
   // Formula: 48 × (level+1)² directions
   static const std::map<size_t, int> angle_to_level_2d = {
-    {48, 0},   // Level 0: 48 × 1² = 48
-    {192, 1},  // Level 1: 48 × 2² = 192
-    {432, 2},  // Level 2: 48 × 3² = 432
-    {768, 3},  // Level 3: 48 × 4² = 768
+    {48, 0},  // Level 0: 48 × 1² = 48
+    {192, 1}, // Level 1: 48 × 2² = 192
+    {432, 2}, // Level 2: 48 × 3² = 432
+    {768, 3}, // Level 3: 48 × 4² = 768
   };
 
   const auto& angle_to_level = (dimension == 2) ? angle_to_level_2d : angle_to_level_3d;
@@ -595,6 +599,29 @@ HarmonicSelectionRules::DetermineSLDFELevel(size_t num_angles, unsigned int dime
   else
     throw std::runtime_error("Unknown " + std::to_string(dimension) + "D SLDFESQ quadrature with " +
                              std::to_string(num_angles) + " angles");
+}
+
+// 1D Quadrature Rules (all quadrature types)
+std::vector<AngularQuadrature::HarmonicIndices>
+HarmonicSelectionRules::Select1D(const SelectionParameters& params)
+{
+  std::vector<AngularQuadrature::HarmonicIndices> harmonics;
+
+  // In 1D all harmonics have m=0. For GALERKIN_ONE we need exactly num_angles
+  // moments to form a square M2D matrix; for GALERKIN_THREE we use the
+  // user-supplied scattering order (same rule as STANDARD).
+  const unsigned int max_ell =
+    (params.construction_method == OperatorConstructionMethod::GALERKIN_ONE)
+      ? static_cast<unsigned int>(params.num_angles - 1)
+      : params.scattering_order;
+
+  for (unsigned int ell = 0; ell <= max_ell; ++ell)
+    harmonics.emplace_back(ell, 0);
+
+  Logger::GetInstance().Log0Verbose1()
+    << "1D Galerkin: Selected " << harmonics.size() << " harmonics (ell = 0.." << max_ell << ")";
+
+  return harmonics;
 }
 
 // Standard method

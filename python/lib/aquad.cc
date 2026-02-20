@@ -10,6 +10,7 @@
 #include "framework/math/quadratures/angular/lebedev_quadrature.h"
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 
@@ -195,9 +196,25 @@ WrapProductQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLProductQuadrature1DSlab, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
+        auto method = op_cons_type_map.at(method_str);
+        auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        unsigned int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<unsigned int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
+        return std::make_shared<GLProductQuadrature1DSlab>(n_polar, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -209,10 +226,12 @@ WrapProductQuadrature(py::module& aquad)
         Number of polar angles.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Verbosity.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
 
@@ -232,9 +251,26 @@ WrapProductQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature2DXY, unsigned int, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
+        auto method = op_cons_type_map.at(method_str);
+        auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
+        auto n_azimuthal = pop_cast(params, "n_azimuthal").cast<unsigned int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        unsigned int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<unsigned int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
+        return std::make_shared<GLCProductQuadrature2DXY>(n_polar, n_azimuthal, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -248,10 +284,12 @@ WrapProductQuadrature(py::module& aquad)
         Number of azimuthal angles.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Verbosity.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
 
@@ -271,9 +309,26 @@ WrapProductQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature3DXYZ, unsigned int, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
+        auto method = op_cons_type_map.at(method_str);
+        auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
+        auto n_azimuthal = pop_cast(params, "n_azimuthal").cast<unsigned int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        unsigned int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<unsigned int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
+        return std::make_shared<GLCProductQuadrature3DXYZ>(n_polar, n_azimuthal, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -287,10 +342,12 @@ WrapProductQuadrature(py::module& aquad)
         Number of azimuthal angles.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Verbosity.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
   // clang-format on
@@ -337,9 +394,25 @@ WrapTriangularQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCTriangularQuadrature3DXYZ, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
+        auto method = op_cons_type_map.at(method_str);
+        auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        unsigned int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<unsigned int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
+        return std::make_shared<GLCTriangularQuadrature3DXYZ>(n_polar, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -352,10 +425,12 @@ WrapTriangularQuadrature(py::module& aquad)
         is automatically computed as ``2 * n_polar``.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Verbosity.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
 
@@ -377,9 +452,25 @@ WrapTriangularQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCTriangularQuadrature2DXY, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
+        auto method = op_cons_type_map.at(method_str);
+        auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        unsigned int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<unsigned int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
+        return std::make_shared<GLCTriangularQuadrature2DXY>(n_polar, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -392,10 +483,12 @@ WrapTriangularQuadrature(py::module& aquad)
         number of azimuthal angles (at the equator) is automatically computed as 2 * n_polar.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Verbosity.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
   // clang-format on
@@ -435,9 +528,26 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"n_polar", "n_azimuthal", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<GLCProductQuadrature2DRZ, unsigned int, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
+        auto method = op_cons_type_map.at(method_str);
+        auto n_polar = pop_cast(params, "n_polar").cast<unsigned int>();
+        auto n_azimuthal = pop_cast(params, "n_azimuthal").cast<unsigned int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        unsigned int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<unsigned int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
+        return std::make_shared<GLCProductQuadrature2DRZ>(n_polar, n_azimuthal, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -451,10 +561,12 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
         Number of azimuthal angles.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Verbosity.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
   // clang-format on
@@ -481,14 +593,24 @@ WrapSLDFEsqQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"level", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {
-          {"verbose", py::bool_(false)},
-          {"operator_method", py::str("standard")}
-        };
-        auto [level, scattering_order, verbose, method_str] =
-          extract_args_tuple<int, int, bool, std::string>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
         auto method = op_cons_type_map.at(method_str);
+        auto level = pop_cast(params, "level").cast<int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<int>::max())).cast<int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
         return std::make_shared<SLDFEsqQuadrature3DXYZ>(level, scattering_order, verbose, method);
       }
     ),
@@ -501,10 +623,12 @@ WrapSLDFEsqQuadrature(py::module& aquad)
         Number of subdivisions of the inscribed cube.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Verbosity.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
   sldfesq_quadrature_3d_xyz.def(
@@ -560,14 +684,24 @@ WrapSLDFEsqQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"level", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {
-          {"verbose", py::bool_(false)},
-          {"operator_method", py::str("standard")}
-        };
-        auto [level, scattering_order, verbose, method_str] =
-          extract_args_tuple<int, int, bool, std::string>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
         auto method = op_cons_type_map.at(method_str);
+        auto level = pop_cast(params, "level").cast<int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<int>::max())).cast<int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
         return std::make_shared<SLDFEsqQuadrature2DXY>(level, scattering_order, verbose, method);
       }
     ),
@@ -580,10 +714,12 @@ WrapSLDFEsqQuadrature(py::module& aquad)
         Number of subdivisions of the inscribed cube.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Verbosity.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Verbosity.
     )"
   );
   sldfesq_quadrature_2d_xy.def(
@@ -647,9 +783,25 @@ WrapLebedevQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"quadrature_order", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<LebedevQuadrature3DXYZ, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
+        auto method = op_cons_type_map.at(method_str);
+        auto quadrature_order = pop_cast(params, "quadrature_order").cast<unsigned int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        unsigned int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<unsigned int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
+        return std::make_shared<LebedevQuadrature3DXYZ>(quadrature_order, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -661,10 +813,12 @@ WrapLebedevQuadrature(py::module& aquad)
         The order of the quadrature.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Whether to print verbose output during initialization.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Whether to print verbose output during initialization.
     )"
   );
 
@@ -689,9 +843,25 @@ WrapLebedevQuadrature(py::module& aquad)
     py::init(
       [](py::kwargs& params)
       {
-        static const std::vector<std::string> required_keys = {"quadrature_order", "scattering_order"};
-        static const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
-        return construct_from_kwargs<LebedevQuadrature2DXY, unsigned int, unsigned int, bool>(params, required_keys, optional_keys);
+        auto method_str = pop_cast(params, "operator_method", py::str("standard")).cast<std::string>();
+        auto method = op_cons_type_map.at(method_str);
+        auto quadrature_order = pop_cast(params, "quadrature_order").cast<unsigned int>();
+        auto verbose = pop_cast(params, "verbose", py::bool_(false)).cast<bool>();
+        unsigned int scattering_order;
+        if (method == OperatorConstructionMethod::GALERKIN_ONE)
+          scattering_order = pop_cast(params, "scattering_order",
+                                      py::int_(std::numeric_limits<unsigned int>::max())).cast<unsigned int>();
+        else
+          scattering_order = pop_cast(params, "scattering_order").cast<unsigned int>();
+        if (!params.empty())
+        {
+          std::ostringstream err;
+          err << "Unknown argument(s):";
+          for (const auto& item : params)
+            err << " \"" << py::str(item.first).cast<std::string>() << "\"";
+          throw std::runtime_error(err.str());
+        }
+        return std::make_shared<LebedevQuadrature2DXY>(quadrature_order, scattering_order, verbose, method);
       }
     ),
     R"(
@@ -703,10 +873,12 @@ WrapLebedevQuadrature(py::module& aquad)
         The order of the quadrature.
     scattering_order: int
         Maximum scattering order supported by the angular quadrature.
-    verbose: bool, default=False
-        Whether to print verbose output during initialization.
+        Optional when ``operator_method='galerkin_one'``, in which case the scattering order
+        is automatically determined so that the number of moments equals the number of angles.
     operator_method: {'standard', 'galerkin_one', 'galerkin_three'}, default='standard'
         Method used to construct the discrete-to-moment and moment-to-discrete operators.
+    verbose: bool, default=False
+        Whether to print verbose output during initialization.
     )"
   );
   // clang-format on

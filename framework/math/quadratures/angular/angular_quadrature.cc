@@ -11,6 +11,7 @@
 #include <numeric>
 #include <stdexcept>
 #include <cmath>
+#include <limits>
 
 namespace opensn
 {
@@ -29,7 +30,12 @@ AngularQuadrature::MakeHarmonicIndices()
     params.quadrature_type = type_;
     params.construction_method = construction_method_;
     params.dimension = dimension_;
-    params.scattering_order = scattering_order_;
+    // For GALERKIN_ONE, the scattering order is determined by the selection rules
+    // so that the resulting operator is a square matrix (num_angles == num_moms).
+    // The user-provided scattering_order is ignored.
+    params.scattering_order = (construction_method_ == OperatorConstructionMethod::GALERKIN_ONE)
+                                ? std::numeric_limits<unsigned int>::max()
+                                : scattering_order_;
     params.num_angles = abscissae.size();
     params.quadrature_order = quadrature_order_;
     params.n_polar = n_polar_;
@@ -37,6 +43,16 @@ AngularQuadrature::MakeHarmonicIndices()
 
     // Get rule-selected harmonics
     m_to_ell_em_map_ = HarmonicSelectionRules::SelectHarmonics(params);
+
+    // For GALERKIN_ONE, update scattering_order_ to the maximum ℓ in the selected harmonics
+    if (construction_method_ == OperatorConstructionMethod::GALERKIN_ONE &&
+        not m_to_ell_em_map_.empty())
+    {
+      unsigned int max_ell = 0;
+      for (const auto& hi : m_to_ell_em_map_)
+        max_ell = std::max(max_ell, hi.ell);
+      scattering_order_ = max_ell;
+    }
   }
   else
   {
@@ -92,7 +108,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
     case OperatorConstructionMethod::STANDARD:
     {
       d2m_op_.clear();
-      d2m_op_.assign(num_moms, std::vector<double>(num_angles, 0.0));
+      d2m_op_.assign(num_angles, std::vector<double>(num_moms, 0.0));
 
       for (size_t n = 0; n < num_angles; ++n)
       {
@@ -103,19 +119,19 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         {
           const auto& ell_em = m_to_ell_em_map_[m];
           double value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-          d2m_op_[m][n] = value * w;
+          d2m_op_[n][m] = value * w;
         }
       }
 
       // Verbose printout
       std::stringstream outs;
       outs << "\nQuadrature d2m operator (Standard Method):\n";
-      for (size_t m = 0; m < num_moms; ++m)
+      for (size_t n = 0; n < num_angles; ++n)
       {
-        outs << std::setw(5) << m;
-        for (size_t n = 0; n < num_angles; ++n)
+        outs << std::setw(5) << n;
+        for (size_t m = 0; m < num_moms; ++m)
         {
-          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[m][n]
+          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[n][m]
                << " ";
         }
         outs << "\n";
@@ -176,9 +192,9 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         }
       }
 
-      // Orthogonalize using Householder method
+      // Orthogonalize Matrix Span
       std::vector<std::vector<double>> approx_harmonics =
-        OrthogonalizeHouseholder(exact_harmonics, weights);
+        OrthogonalizeMatrixSpan(exact_harmonics, weights);
 
       // Renormalize columns to match standard spherical harmonic normalization
       for (size_t m = 0; m < num_moms; ++m)
@@ -303,9 +319,9 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
         }
       }
 
-      // Orthogonalize using Householder method
+      // Orthogonalize
       std::vector<std::vector<double>> approx_harmonics =
-        OrthogonalizeHouseholder(exact_harmonics, weights);
+        OrthogonalizeMatrixSpan(exact_harmonics, weights);
 
       // Renormalize columns to match standard spherical harmonic normalization
       for (size_t m = 0; m < num_moms; ++m)

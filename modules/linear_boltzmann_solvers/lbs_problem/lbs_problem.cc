@@ -678,62 +678,6 @@ LBSProblem::SetOptions(const InputParameters& input)
 }
 
 void
-LBSProblem::SetBoundaryOptions(const InputParameters& params)
-{
-  const auto boundary_name = params.GetParamValue<std::string>("name");
-  const auto bndry_type = params.GetParamValue<std::string>("type");
-
-  auto grid = GetGrid();
-  const auto bnd_map = grid->GetBoundaryIDMap();
-  const auto bnd_name_map = grid->GetBoundaryNameMap();
-  auto it = bnd_name_map.find(boundary_name);
-  if (it == bnd_name_map.end())
-    throw std::runtime_error(std::format("Could not find the specified boundary '{}' - please "
-                                         "check that the 'name' parameter is spelled correctly.",
-                                         boundary_name));
-  const auto bid = it->second;
-  const std::map<std::string, LBSBoundaryType> type_list = {
-    {"vacuum", LBSBoundaryType::VACUUM},
-    {"isotropic", LBSBoundaryType::ISOTROPIC},
-    {"reflecting", LBSBoundaryType::REFLECTING},
-    {"arbitrary", LBSBoundaryType::ARBITRARY}};
-
-  const auto type = type_list.at(bndry_type);
-  switch (type)
-  {
-    case LBSBoundaryType::VACUUM:
-    case LBSBoundaryType::REFLECTING:
-    {
-      boundary_preferences_[bid] = {type, {}, "", nullptr};
-      break;
-    }
-    case LBSBoundaryType::ISOTROPIC:
-    {
-      if (not params.Has("group_strength"))
-        throw std::runtime_error("Boundary conditions with type=\"isotropic\" require parameter "
-                                 "\"group_strength\"");
-      params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
-      const auto group_strength = params.GetParamVectorValue<double>("group_strength");
-      boundary_preferences_[bid] = {type, group_strength, "", nullptr};
-      break;
-    }
-    case LBSBoundaryType::ARBITRARY:
-    {
-      if (not params.Has("group_strength"))
-        throw std::runtime_error("Boundary conditions with type=\"arbitrary\" require parameter "
-                                 "\"function\"");
-      auto angular_flux_function = params.GetSharedPtrParam<AngularFluxFunction>("function", false);
-      if (not angular_flux_function)
-        throw std::runtime_error(
-          "Boundary conditions with type=\"arbitrary\" require a non-null "
-          "AngularFluxFunction object passed via the \"function\" parameter.");
-      boundary_preferences_[bid] = {type, {}, "", angular_flux_function};
-      break;
-    }
-  }
-}
-
-void
 LBSProblem::Initialize()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::Initialize");

@@ -77,6 +77,10 @@ private:
   static int DetermineLebedevOrder(size_t num_angles, unsigned int dimension = 3);
   static int DetermineSLDFELevel(size_t num_angles, unsigned int dimension = 3);
 
+  // 1D quadrature rules (all quadrature types)
+  static std::vector<AngularQuadrature::HarmonicIndices>
+  Select1D(const SelectionParameters& params);
+
   // Standard fallback for non-Galerkin methods
   static std::vector<AngularQuadrature::HarmonicIndices>
   SelectStandard(const SelectionParameters& params);

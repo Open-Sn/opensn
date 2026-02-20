@@ -101,11 +101,10 @@ std::vector<std::vector<double>> Transpose(const std::vector<std::vector<double>
 std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<double>>& matrix);
 
 /**
- * Orthogonalizes a matrix of column vectors using Householder reflections.
+ * Orthogonalizes a matrix of column vectors.
  *
  * Takes a matrix where each column represents a vector and returns a matrix
- * with orthonormalized columns that span the same space. Uses Householder
- * QR decomposition for numerical stability.
+ * with orthonormalized columns that span the same space.
  *
  * @param matrix Input matrix (m x n) where each column is a vector to orthogonalize.
  *               Matrix is represented as vector<vector<double>> where matrix[i][j]
@@ -114,8 +113,8 @@ std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<doub
  * @throws std::runtime_error if matrix is empty or has inconsistent dimensions
  */
 std::vector<std::vector<double>>
-OrthogonalizeHouseholder(const std::vector<std::vector<double>>& matrix,
-                         const std::vector<double>& weights);
+OrthogonalizeMatrixSpan(const std::vector<std::vector<double>>& matrix,
+                        const std::vector<double>& weights);
 
 /// Computes the factorial of an integer.
 double Factorial(int x);
