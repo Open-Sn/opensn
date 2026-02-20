@@ -65,6 +65,15 @@ LBSProblem::GetInputParameters()
 
   params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
 
+  params.AddOptionalParameter<unsigned int>(
+    "scattering_order",
+    0,
+    "The level of harmonic expansion for the scattering source. "
+    "For Galerkin Method 1, this parameter is ignored and the number of moments is determined "
+    "by the angular quadrature's harmonic selection rules.");
+
+  params.AddOptionalParameter(
+    "time_dependent", false, "Flag indicating whether the problem is time dependent.");
   return params;
 }
 

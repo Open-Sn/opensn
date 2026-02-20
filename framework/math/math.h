@@ -78,6 +78,44 @@ enum class NormType : int
  *  refines the view until the final linear search can be performed.*/
 int SampleCDF(double x, std::vector<double> cdf_bin);
 
+/**
+ * Transposes a matrix.
+ *
+ * Takes a matrix and returns its transpose. For a matrix A with dimensions m x n,
+ * the transpose A^T has dimensions n x m where A^T[j][i] = A[i][j].
+ *
+ * @param matrix Input matrix (m x n) represented as vector<vector<double>> where
+ *               matrix[i][j] represents row i, column j.
+ * @return Transposed matrix (n x m)
+ * @throws std::runtime_error if matrix is empty or has inconsistent row dimensions
+ */
+std::vector<std::vector<double>> Transpose(const std::vector<std::vector<double>>& matrix);
+
+/**
+ * Inverts a square matrix using PETSc LU decomposition.
+ *
+ * @param matrix The square matrix to invert
+ * @return The inverted matrix
+ * @throws std::runtime_error if the matrix is not square or inversion fails
+ */
+std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<double>>& matrix);
+
+/**
+ * Orthogonalizes a matrix of column vectors.
+ *
+ * Takes a matrix where each column represents a vector and returns a matrix
+ * with orthonormalized columns that span the same space.
+ *
+ * @param matrix Input matrix (m x n) where each column is a vector to orthogonalize.
+ *               Matrix is represented as vector<vector<double>> where matrix[i][j]
+ *               represents row i, column j.
+ * @return Orthogonalized matrix (m x n) with orthonormal columns
+ * @throws std::runtime_error if matrix is empty or has inconsistent dimensions
+ */
+std::vector<std::vector<double>>
+OrthogonalizeMatrixSpan(const std::vector<std::vector<double>>& matrix,
+                        const std::vector<double>& weights);
+
 /// Computes the factorial of an integer.
 double Factorial(int x);
 
