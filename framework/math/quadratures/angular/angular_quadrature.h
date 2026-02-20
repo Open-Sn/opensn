@@ -73,11 +73,11 @@ protected:
   }
 
   /// Discrete-to-moment operator matrix.
-  std::vector<std::vector<double>> d2m_op_;
+  std::vector<std::vector<double>> d2m_op_ = {};
   /// Moment-to-discrete operator matrix.
-  std::vector<std::vector<double>> m2d_op_;
+  std::vector<std::vector<double>> m2d_op_ = {};
   /// Mapping from moment index to spherical harmonic indices.
-  std::vector<HarmonicIndices> m_to_ell_em_map_;
+  std::vector<HarmonicIndices> m_to_ell_em_map_ = {};
   /// Quadrature type identifier.
   AngularQuadratureType type_;
   /// Spatial dimension of the quadrature.
@@ -153,11 +153,11 @@ public:
   void SetNumberOfAzimuthal(unsigned int num_azimu) { n_azimuthal_ = num_azimu; }
 
   /// Quadrature point abscissae in spherical coordinates.
-  std::vector<QuadraturePointPhiTheta> abscissae;
+  std::vector<QuadraturePointPhiTheta> abscissae = {};
   /// Quadrature weights.
-  std::vector<double> weights;
+  std::vector<double> weights = {};
   /// Quadrature point direction vectors in Cartesian coordinates.
-  std::vector<Vector3> omegas;
+  std::vector<Vector3> omegas = {};
 };
 
 } // namespace opensn

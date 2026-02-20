@@ -62,13 +62,13 @@ AngularQuadrature::MakeHarmonicIndices()
 
     if (dimension_ == 1)
     {
-      for (auto ell = 0u; ell <= scattering_order_; ++ell)
+      for (auto ell = 0U; ell <= scattering_order_; ++ell)
         m_to_ell_em_map_.emplace_back(ell, 0);
     }
     else if (dimension_ == 2)
     {
       log.Log() << "  2D Harmonic selection (STANDARD):";
-      for (auto ell = 0u; ell <= scattering_order_; ++ell)
+      for (auto ell = 0U; ell <= scattering_order_; ++ell)
       {
         std::stringstream ss;
         ss << "    ℓ=" << ell << ": m = [";
@@ -87,7 +87,7 @@ AngularQuadrature::MakeHarmonicIndices()
     }
     else if (dimension_ == 3)
     {
-      for (auto ell = 0u; ell <= scattering_order_; ++ell)
+      for (auto ell = 0U; ell <= scattering_order_; ++ell)
         for (auto m = -ell; m <= ell; ++m)
           m_to_ell_em_map_.emplace_back(ell, m);
     }
