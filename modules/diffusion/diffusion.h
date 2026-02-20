@@ -117,8 +117,8 @@ protected:
 
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
 
-  const int64_t num_local_dofs_;
-  const int64_t num_global_dofs_;
+  const PetscInt num_local_dofs_;
+  const PetscInt num_global_dofs_;
 
   Mat A_ = nullptr;
   Vec rhs_ = nullptr;

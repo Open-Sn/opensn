@@ -59,8 +59,8 @@ protected:
   Vec x_;
   SNES nl_solver_;
 
-  int64_t num_local_dofs_;
-  int64_t num_global_dofs_;
+  PetscInt num_local_dofs_;
+  PetscInt num_global_dofs_;
 
   PETScNonLinearSolverOptions options_;
 

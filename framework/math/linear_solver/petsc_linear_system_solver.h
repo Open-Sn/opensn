@@ -66,8 +66,8 @@ protected:
   Vec b_;
   Vec x_;
   KSP ksp_;
-  int64_t num_local_dofs_;
-  int64_t num_global_dofs_;
+  PetscInt num_local_dofs_;
+  PetscInt num_global_dofs_;
 
 private:
   bool system_set_;
