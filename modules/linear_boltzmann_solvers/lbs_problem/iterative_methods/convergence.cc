@@ -61,7 +61,7 @@ ComputePointwisePhiChange(
         {
           auto m0g_idx = transport_view.MapDOF(i, 0, gsi + g);
           double max_phi = std::max(fabs(phi_new[m0g_idx]), fabs(phi_old[m0g_idx]));
-          for (size_t m = 0; m < num_moments; ++m)
+          for (unsigned int m = 0; m < num_moments; ++m)
           {
             auto mng_idx = transport_view.MapDOF(i, m, gsi + g);
             double delta_phi = std::fabs(phi_new[mng_idx] - phi_old[mng_idx]);

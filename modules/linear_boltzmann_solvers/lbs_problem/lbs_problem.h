@@ -77,7 +77,7 @@ public:
   GeometryType GetGeometryType() const;
 
   /// Returns the number of moments for the solver. This will only be non-zero after initialization.
-  size_t GetNumMoments() const;
+  unsigned int GetNumMoments() const;
 
   unsigned int GetMaxCellDOFCount() const;
 
@@ -221,7 +221,7 @@ public:
   virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
 
   /// Gets the local handle of a flux-moment based field function.
-  size_t MapPhiFieldFunction(unsigned int g, size_t m) const;
+  size_t MapPhiFieldFunction(unsigned int g, unsigned int m) const;
 
   /// Returns the power generation field function, if enabled.
   std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;
@@ -250,8 +250,8 @@ public:
 
   /// Sets the internal phi vector to the value in the associated field function.
   void SetPhiFromFieldFunctions(PhiSTLOption which_phi,
-                                const std::vector<size_t>& m_indices,
-                                const std::vector<size_t>& g_indices);
+                                const std::vector<unsigned int>& m_indices,
+                                const std::vector<unsigned int>& g_indices);
 
   /**
    * A method for post-processing an adjoint solution.
@@ -297,7 +297,7 @@ protected:
   double theta_ = 1.0;
   double dt_ = 1.0;
   GeometryType geometry_type_ = GeometryType::INVALID;
-  size_t num_moments_ = 0;
+  unsigned int num_moments_ = 0;
   unsigned int num_groups_ = 0;
   unsigned int scattering_order_ = 0;
   size_t num_precursors_ = 0;
@@ -337,7 +337,7 @@ protected:
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
 
-  std::map<std::pair<unsigned int, size_t>, size_t> phi_field_functions_local_map_;
+  std::map<std::pair<unsigned int, unsigned int>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;
 
   /**

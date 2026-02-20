@@ -275,7 +275,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
     std::array<double, matrix_size> Amat{};
     std::vector<std::array<size_t, NumNodes>> moment_dof_map(data.num_moments);
-    for (size_t m = 0; m < data.num_moments; ++m)
+    for (unsigned int m = 0; m < data.num_moments; ++m)
     {
       PRAGMA_UNROLL
       for (int i = 0; i < NumNodes; ++i)
@@ -393,7 +393,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
           sigma_block[rel] = sigma_tg;
 
           double* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
-          for (std::size_t m = 0; m < data.num_moments; ++m)
+          for (unsigned int m = 0; m < data.num_moments; ++m)
           {
             const double w = m2d_row[m];
             std::array<double, NumNodes> nodal_source{};
@@ -492,7 +492,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         for (size_t gsg = g0; gsg < g1; ++gsg)
         {
           const double* __restrict bg = &b[gsg * NumNodes];
-          for (size_t m = 0; m < data.num_moments; ++m)
+          for (unsigned int m = 0; m < data.num_moments; ++m)
           {
             const double w = d2m_row[m];
             PRAGMA_UNROLL

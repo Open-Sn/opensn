@@ -929,7 +929,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
         // of the even/odd nature of the spherical harmonics, i.e.
         // Y_{\ell,m}(-\Omega) = (-1)^\ell Y_{\ell,m}(\Omega), the flux
         // moments must be multiplied by (-1)^\ell.
-        for (size_t imom = 0; imom < num_moments_; ++imom)
+        for (unsigned int imom = 0; imom < num_moments_; ++imom)
         {
           const auto& ell = moment_map[imom].ell;
           const auto dof_map = transport_view.MapDOF(i, imom, 0);

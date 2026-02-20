@@ -131,7 +131,7 @@ WrapLBS(py::module& slv)
         else
         {
           py::list field_function_list_per_moment;
-          for (std::size_t moment = 0; moment < self.GetNumMoments(); moment++)
+          for (unsigned int moment = 0; moment < self.GetNumMoments(); moment++)
           {
             std::size_t ff_index = self.MapPhiFieldFunction(group, moment);
             field_function_list_per_moment.append(self.GetFieldFunctions()[ff_index]);

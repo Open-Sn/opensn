@@ -175,7 +175,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
       for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
         double temp_src = 0.0;
-        for (std::size_t m = 0; m < num_moments_; ++m)
+        for (unsigned int m = 0; m < num_moments_; ++m)
         {
           const auto ir = cell_transport_view_->MapDOF(i, m, gs_gi_ + gsg);
           temp_src += m2d_op[direction_num][m] * source_moments_[ir];
@@ -203,7 +203,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
     } // for gsg
 
     // Update phi
-    for (std::size_t m = 0; m < num_moments_; ++m)
+    for (unsigned int m = 0; m < num_moments_; ++m)
     {
       const double wn_d2m = d2m_op[direction_num][m];
       for (size_t i = 0; i < cell_num_nodes_; ++i)

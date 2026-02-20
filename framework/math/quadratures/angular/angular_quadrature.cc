@@ -35,7 +35,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
   d2m_op_.clear();
 
   const size_t num_angles = abscissae.size();
-  const size_t num_moms = m_to_ell_em_map_.size();
+  const unsigned int num_moms = m_to_ell_em_map_.size();
 
   d2m_op_.assign(num_angles, std::vector<double>(num_moms, 0.0));
 
@@ -45,7 +45,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
     const double w = weights[n];
     auto& row = d2m_op_[n];
 
-    for (size_t m = 0; m < num_moms; ++m)
+    for (unsigned int m = 0; m < num_moms; ++m)
     {
       const auto& ell_em = m_to_ell_em_map_[m];
       const double val = Ylm(ell_em.ell, ell_em.m, ang.phi, ang.theta);
@@ -58,7 +58,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
   for (size_t n = 0; n < num_angles; ++n)
   {
     outs << std::setw(5) << n;
-    for (size_t m = 0; m < num_moms; ++m)
+    for (unsigned int m = 0; m < num_moms; ++m)
     {
       outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[n][m]
            << ' ';
@@ -73,7 +73,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
   m2d_op_.clear();
 
   const size_t num_angles = abscissae.size();
-  const size_t num_moms = m_to_ell_em_map_.size();
+  const unsigned int num_moms = m_to_ell_em_map_.size();
 
   const double normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
 
@@ -84,7 +84,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
     const auto& ang = abscissae[n];
     auto& row = m2d_op_[n];
 
-    for (size_t m = 0; m < num_moms; ++m)
+    for (unsigned int m = 0; m < num_moms; ++m)
     {
       const auto& ell_em = m_to_ell_em_map_[m];
       const double val =
@@ -98,7 +98,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
   for (size_t n = 0; n < num_angles; ++n)
   {
     outs << std::setw(5) << n;
-    for (size_t m = 0; m < num_moms; ++m)
+    for (unsigned int m = 0; m < num_moms; ++m)
     {
       outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[n][m]
            << ' ';

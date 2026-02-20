@@ -30,7 +30,7 @@ public:
              const std::vector<double>& source_moments,
              const LBSGroupset& groupset,
              const BlockID2XSMap& xs,
-             size_t num_moments,
+             unsigned int num_moments,
              unsigned int max_num_cell_dofs,
              unsigned int min_num_cell_dofs)
     : grid_(grid),
@@ -101,7 +101,7 @@ protected:
   const std::vector<double>& source_moments_;
   const LBSGroupset& groupset_;
   const BlockID2XSMap& xs_;
-  const size_t num_moments_;
+  const unsigned int num_moments_;
   const unsigned int max_num_cell_dofs_;
   const unsigned int min_num_cell_dofs_;
   const bool save_angular_flux_;

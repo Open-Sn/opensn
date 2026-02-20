@@ -76,7 +76,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   const auto& d2m = quadrature->GetDiscreteToMomentOperator();
   const auto& m_ell_em_map = quadrature->GetMomentToHarmonicsIndexMap();
 
-  const size_t num_moments = m_ell_em_map.size();
+  const unsigned int num_moments = m_ell_em_map.size();
   const size_t num_dirs = quadrature->omegas.size();
 
   opensn::log.Log() << "End Set/Get params." << std::endl;
@@ -267,7 +267,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
       for (size_t i = 0; i < num_nodes; ++i)
       {
         double temp_src = 0.0;
-        for (size_t m = 0; m < num_moments; ++m)
+        for (unsigned int m = 0; m < num_moments; ++m)
         {
           auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
           temp_src += m2d[d][m] * source_moments[dof_map];
@@ -294,7 +294,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
     } // for g
 
     // Accumulate flux-moments
-    for (size_t m = 0; m < num_moments; ++m)
+    for (unsigned int m = 0; m < num_moments; ++m)
     {
       const double wn_d2m = d2m[d][m];
       for (size_t i = 0; i < num_nodes; ++i)
@@ -362,7 +362,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        for (size_t m = 0; m < num_moments; ++m)
+        for (unsigned int m = 0; m < num_moments; ++m)
         {
           const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
           const auto ell = m_ell_em_map[m].ell;
@@ -406,7 +406,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
 
         const double* phi_new_m0 = &in_phi_new[m0_map];
         const double* phi_old_m0 = &in_phi_old[m0_map];
-        for (size_t m = 0; m < num_moments; ++m)
+        for (unsigned int m = 0; m < num_moments; ++m)
         {
           const auto m_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
 

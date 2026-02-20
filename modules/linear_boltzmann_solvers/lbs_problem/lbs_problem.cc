@@ -162,7 +162,7 @@ LBSProblem::GetGeometryType() const
   return geometry_type_;
 }
 
-size_t
+unsigned int
 LBSProblem::GetNumMoments() const
 {
   return num_moments_;
@@ -448,7 +448,7 @@ LBSProblem::GetNumPhiIterativeUnknowns()
 }
 
 size_t
-LBSProblem::MapPhiFieldFunction(unsigned int g, size_t m) const
+LBSProblem::MapPhiFieldFunction(unsigned int g, unsigned int m) const
 {
   OpenSnLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
                        std::string("Failure to map phi field function g") + std::to_string(g) +
@@ -932,7 +932,7 @@ LBSProblem::InitializeParrays()
   // Initialize unknown
   // structure
   flux_moments_uk_man_.unknowns.clear();
-  for (size_t m = 0; m < num_moments_; ++m)
+  for (unsigned int m = 0; m < num_moments_; ++m)
   {
     flux_moments_uk_man_.AddUnknown(UnknownType::VECTOR_N, num_groups_);
     flux_moments_uk_man_.unknowns.back().name = "m" + std::to_string(m);
@@ -1084,7 +1084,7 @@ LBSProblem::InitializeFieldFunctions()
 
   for (unsigned int g = 0; g < num_groups_; ++g)
   {
-    for (size_t m = 0; m < num_moments_; ++m)
+    for (unsigned int m = 0; m < num_moments_; ++m)
     {
       std::string prefix;
       if (options_.field_function_prefix_option == "prefix")
@@ -1203,7 +1203,7 @@ LBSProblem::UpdateFieldFunctions()
   for (const auto& [g_and_m, ff_index] : phi_field_functions_local_map_)
   {
     const auto g = g_and_m.first;
-    const size_t m = g_and_m.second;
+    const auto m = g_and_m.second;
 
     std::vector<double> data_vector_local(local_node_count_, 0.0);
 
@@ -1295,15 +1295,15 @@ LBSProblem::UpdateFieldFunctions()
 
 void
 LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
-                                     const std::vector<size_t>& m_indices,
-                                     const std::vector<size_t>& g_indices)
+                                     const std::vector<unsigned int>& m_indices,
+                                     const std::vector<unsigned int>& g_indices)
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::SetPhiFromFieldFunctions");
 
-  std::vector<size_t> m_ids_to_copy = m_indices;
-  std::vector<size_t> g_ids_to_copy = g_indices;
+  std::vector<unsigned int> m_ids_to_copy = m_indices;
+  std::vector<unsigned int> g_ids_to_copy = g_indices;
   if (m_indices.empty())
-    for (size_t m = 0; m < num_moments_; ++m)
+    for (unsigned int m = 0; m < num_moments_; ++m)
       m_ids_to_copy.push_back(m);
   if (g_ids_to_copy.empty())
     for (unsigned int g = 0; g < num_groups_; ++g)
@@ -1312,9 +1312,9 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
 
-  for (const size_t m : m_ids_to_copy)
+  for (const auto m : m_ids_to_copy)
   {
-    for (const size_t g : g_ids_to_copy)
+    for (const auto g : g_ids_to_copy)
     {
       const size_t ff_index = phi_field_functions_local_map_.at({g, m});
       const auto& ff_ptr = field_functions_.at(ff_index);

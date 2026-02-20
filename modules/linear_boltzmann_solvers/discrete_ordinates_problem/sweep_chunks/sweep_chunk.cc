@@ -18,7 +18,7 @@ SweepChunk::ZeroDestinationPhi()
 
     for (int i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (std::size_t m = 0; m < num_moments_; ++m)
+      for (unsigned int m = 0; m < num_moments_; ++m)
       {
         const auto mapping = transport_view.MapDOF(i, m, gsi);
         for (unsigned int g = 0; g < gss; ++g)

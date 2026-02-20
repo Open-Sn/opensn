@@ -28,7 +28,7 @@ struct AAHSweepData
   const std::vector<double>& source_moments;
   const LBSGroupset& groupset;
   const BlockID2XSMap& xs;
-  const size_t num_moments;
+  const unsigned int num_moments;
   const unsigned int max_num_cell_dofs;
   const unsigned int min_num_cell_dofs;
   const bool save_angular_flux;
@@ -206,7 +206,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           double temp_src = 0.0;
-          for (size_t m = 0; m < data.num_moments; ++m)
+          for (unsigned int m = 0; m < data.num_moments; ++m)
           {
             const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
             temp_src += m2d_op[direction_num][m] * data.source_moments[ir];
@@ -238,7 +238,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         GaussElimination(Atemp, b[gsg], cell_num_nodes);
       }
 
-      for (size_t m = 0; m < data.num_moments; ++m)
+      for (unsigned int m = 0; m < data.num_moments; ++m)
       {
         const double wn_d2m = d2m_op[direction_num][m];
         for (size_t i = 0; i < cell_num_nodes; ++i)

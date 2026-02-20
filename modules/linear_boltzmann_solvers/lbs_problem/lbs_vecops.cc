@@ -26,7 +26,7 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
     const auto& transport_view = cell_transport_views[cell.local_id];
     for (std::size_t i = 0; i < cell.vertex_ids.size(); ++i)
     {
-      for (size_t m = 0; m < num_moments; ++m)
+      for (unsigned int m = 0; m < num_moments; ++m)
       {
         auto mapped_idx = transport_view.MapDOF(i, m, gsi);
         for (unsigned int g = 0; g < gss; ++g)
