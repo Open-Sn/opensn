@@ -102,6 +102,8 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
+<span class="k">class</span><span class="w"> </span><span class="nc">AAHDSweepChunk</span><span class="p">;</span>
+
 <span class="c1">/// AAHD angle set.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AAHD_AngleSet</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AngleSet</span>
 <span class="p">{</span>
@@ -118,6 +120,8 @@
 <span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetStream</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">stream_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="nf">GetDeviceAngleIndices</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">device_angle_indices_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasReflectingBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">has_reflecting_boundaries_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Update the starting latch and following angle sets.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateSweepDependencies</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*&gt;&amp;</span><span class="w"> </span><span class="n">following_angle_sets</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
@@ -189,6 +193,8 @@
 <span class="cm">   * waiting after it to allow them to proceed.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAHD_AngleSet</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">following_angle_sets_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Flag indicating if the angleset is attached to any reflecting boundaries..</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_reflecting_boundaries_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

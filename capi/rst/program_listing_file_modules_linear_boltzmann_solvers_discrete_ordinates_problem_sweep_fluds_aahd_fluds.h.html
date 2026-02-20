@@ -135,6 +135,9 @@
 <span class="w">  </span><span class="c1">/// Download data from device to host asynchronously.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">DownloadToHost</span><span class="p">(</span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
 
+<span class="w">  </span><span class="c1">/// Check if the bank is not initialized.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsNotInitialized</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">device_storage</span><span class="p">.</span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="w">  </span><span class="c1">/// Host storage for the bank.</span>
 <span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">HostVector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">host_storage</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Device storage for the bank.</span>
@@ -156,10 +159,7 @@
 <span class="p">{</span>
 <span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Member constructor.</span>
-<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">,</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">,</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 <span class="p">};</span>
 
 <span class="c1">/// Non-local bank storage structure.</span>
@@ -180,9 +180,9 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateViews</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">views</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Reference to the sizes of each location.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_sizes</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_sizes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Reference to the offsets of each location.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_offsets</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_offsets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Stride size.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
 <span class="p">};</span>
@@ -223,23 +223,23 @@
 <span class="w">  </span><span class="c1">/// \name Deallocate banks</span>
 <span class="w">  </span><span class="c1">/// \{</span>
 <span class="w">  </span><span class="c1">/// Clear local and non-local incoming banks.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearLocalAndReceivePsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearLocalAndReceivePsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">  </span><span class="c1">/// Clear non-local outgoing banks.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearSendPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearSendPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// \name Allocate memory for banks</span>
 <span class="w">  </span><span class="c1">/// \{</span>
 <span class="w">  </span><span class="c1">/// Allocate internal local psi storage.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateInternalLocalPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateInternalLocalPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">  </span><span class="c1">/// Allocate delayed local psi storage (both old and new).</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateDelayedLocalPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Allocate non-local incoming psi storage.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocatePrelocIOutgoingPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocatePrelocIOutgoingPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">  </span><span class="c1">/// Allocate non-local delayed incoming psi storage.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateDelayedPrelocIOutgoingPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Allocate non-local outgoing psi storage.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateOutgoingPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateOutgoingPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">  </span><span class="c1">/// Allocate memory for save angular flux if needed.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateSaveAngularFlux</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// \}</span>

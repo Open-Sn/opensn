@@ -16,6 +16,7 @@ Directory scheduler
 Files
 -----
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_spmd_threadpool.h`
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_sweep_scheduler.h`
 
 

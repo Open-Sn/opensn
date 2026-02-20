@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_s_p_m_d___thread_pool:
+
+Class SPMD_ThreadPool
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_spmd_threadpool.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SPMD_ThreadPool
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

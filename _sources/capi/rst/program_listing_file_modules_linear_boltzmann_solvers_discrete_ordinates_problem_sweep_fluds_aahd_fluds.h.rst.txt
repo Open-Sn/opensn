@@ -60,6 +60,9 @@ Program Listing for File aahd_fluds.h
      /// Download data from device to host asynchronously.
      void DownloadToHost(crb::Stream& stream);
    
+     /// Check if the bank is not initialized.
+     bool IsNotInitialized() { return device_storage.get() == nullptr; }
+   
      /// Host storage for the bank.
      crb::HostVector<double> host_storage;
      /// Device storage for the bank.
@@ -81,10 +84,7 @@ Program Listing for File aahd_fluds.h
    {
      AAHD_BoundaryBank() = default;
      /// Member constructor.
-     AAHD_BoundaryBank(std::size_t size, std::size_t stride_size, crb::Stream& stream)
-       : AAHD_Bank(size * stride_size, stream)
-     {
-     }
+     AAHD_BoundaryBank(std::size_t size, std::size_t stride_size) : AAHD_Bank(size * stride_size) {}
    };
    
    /// Non-local bank storage structure.
@@ -105,9 +105,9 @@ Program Listing for File aahd_fluds.h
      void UpdateViews(std::vector<std::span<double>>& views);
    
      /// Reference to the sizes of each location.
-     const std::vector<std::size_t>* location_sizes;
+     const std::vector<std::size_t>* location_sizes = nullptr;
      /// Reference to the offsets of each location.
-     const std::vector<std::size_t>* location_offsets;
+     const std::vector<std::size_t>* location_offsets = nullptr;
      /// Stride size.
      std::size_t stride_size;
    };
@@ -148,23 +148,23 @@ Program Listing for File aahd_fluds.h
      /// \name Deallocate banks
      /// \{
      /// Clear local and non-local incoming banks.
-     void ClearLocalAndReceivePsi() override;
+     void ClearLocalAndReceivePsi() override {}
      /// Clear non-local outgoing banks.
-     void ClearSendPsi() override;
+     void ClearSendPsi() override {}
      /// \}
    
      /// \name Allocate memory for banks
      /// \{
      /// Allocate internal local psi storage.
-     void AllocateInternalLocalPsi() override;
+     void AllocateInternalLocalPsi() override {}
      /// Allocate delayed local psi storage (both old and new).
      void AllocateDelayedLocalPsi() override;
      /// Allocate non-local incoming psi storage.
-     void AllocatePrelocIOutgoingPsi() override;
+     void AllocatePrelocIOutgoingPsi() override {}
      /// Allocate non-local delayed incoming psi storage.
      void AllocateDelayedPrelocIOutgoingPsi() override;
      /// Allocate non-local outgoing psi storage.
-     void AllocateOutgoingPsi() override;
+     void AllocateOutgoingPsi() override {}
      /// Allocate memory for save angular flux if needed.
      void AllocateSaveAngularFlux(DiscreteOrdinatesProblem& problem, const LBSGroupset& groupset);
      /// \}

@@ -120,6 +120,11 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13AAHD_AngleSet23HasReflectingBoundariesEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1ab39af06aeb538cefbd5e601edc4fcce0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasReflectingBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13AAHD_AngleSet23HasReflectingBoundariesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet23UpdateSweepDependenciesERNSt3setIP8AngleSetEE">
 <span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a78c7a87d8d2ff294af0966bc1bd12e8a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateSweepDependencies</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">following_angle_sets</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet23UpdateSweepDependenciesERNSt3setIP8AngleSetEE" title="Link to this definition"></a><br /></dt>
 <dd><p>Update the starting latch and following angle sets. </p>
@@ -224,6 +229,12 @@
 <span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1addeab8adbb39260b29961f3d2b0aeede"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn13AAHD_AngleSetE" title="opensn::AAHD_AngleSet"><span class="n"><span class="pre">AAHD_AngleSet</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">following_angle_sets_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet21following_angle_sets_E" title="Link to this definition"></a><br /></dt>
 <dd><p>List of AAHD_AngleSets waiting after this angle set. </p>
 <p>After this angle set completes its sweep chunk, it decrements the latches of the angle sets waiting after it to allow them to proceed. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet26has_reflecting_boundaries_E">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a3ffcf5582701ed43eadefe0eb0dc015f"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_reflecting_boundaries_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet26has_reflecting_boundaries_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Flag indicating if the angleset is attached to any reflecting boundaries.. </p>
 </dd></dl>
 
 </div>
