@@ -120,7 +120,7 @@ if(ENABLE_PETSC)
       URL https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.23.0.tar.gz
       SOURCE_DIR ${CMAKE_BINARY_DIR}/petsc-src
       CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> ./configure --prefix=${CMAKE_INSTALL_PREFIX}
-                        --download-hypre=yes --with-ssl=no --with-debugging=no --with-pic=yes --with-fc=0
+                        --download-cmake=yes --download-hypre=yes --with-ssl=no --with-debugging=no --with-pic=yes --with-fc=0
                         --with-shared-libraries=yes --download-bison=yes --download-f2cblaslapack=yes
                         --download-metis=yes --download-parmetis=yes --download-superlu_dist=yes
                         --download-ptscotch=yes --download-slepc=yes --with-cxx-dialect=C++11
