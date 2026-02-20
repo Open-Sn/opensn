@@ -1118,7 +1118,7 @@ LBSProblem::InitializeFieldFunctions()
 
       phi_field_functions_local_map_[{g, m}] = field_functions_.size() - 1;
     } // for m
-  }   // for g
+  } // for g
 
   // Initialize power generation field function
   if (options_.power_field_function_on)
@@ -1228,7 +1228,7 @@ LBSProblem::UpdateFieldFunctions()
 
         data_vector_local[imapB] = phi_new_local_[imapA];
       } // for node
-    }   // for cell
+    } // for cell
 
     auto& ff_ptr = field_functions_.at(ff_index);
     ff_ptr->UpdateFieldVector(data_vector_local);
@@ -1270,7 +1270,7 @@ LBSProblem::UpdateFieldFunctions()
         data_vector_power_local[imapA] = nodal_power;
         local_total_power += nodal_power * Vi(i);
       } // for node
-    }   // for cell
+    } // for cell
 
     double scale_factor = 1.0;
     if (options_.power_normalization > 0.0)
@@ -1344,9 +1344,9 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
           else if (which_phi == PhiSTLOption::PHI_NEW)
             phi_new_local_[imapB] = ff_data[imapA];
         } // for node
-      }   // for cell
-    }     // for g
-  }       // for m
+      } // for cell
+    } // for g
+  } // for m
 }
 
 LBSProblem::~LBSProblem()

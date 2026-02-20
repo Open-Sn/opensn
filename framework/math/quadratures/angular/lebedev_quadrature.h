@@ -66,15 +66,15 @@ public:
                         OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
 private:
-    /**
-     * Load quadrature points for the specified order from predefined data.
-     *
-     * Keep only upper hemisphere points (z >= 0) and halve weights for z = 0.
-     *
-     * \param quadrature_order Order to load.
-     * \param verbose Flag to enable verbose output.
-     */
-    void LoadFromOrder(unsigned int quadrature_order, bool verbose = false);
+  /**
+   * Load quadrature points for the specified order from predefined data.
+   *
+   * Keep only upper hemisphere points (z >= 0) and halve weights for z = 0.
+   *
+   * \param quadrature_order Order to load.
+   * \param verbose Flag to enable verbose output.
+   */
+  void LoadFromOrder(unsigned int quadrature_order, bool verbose = false);
 };
 
 } // namespace opensn

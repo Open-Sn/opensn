@@ -42,10 +42,8 @@ protected:
   TriangularQuadrature(unsigned int dimension,
                        unsigned int scattering_order,
                        OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD)
-    : AngularQuadrature(AngularQuadratureType::TriangularQuadrature,
-                        dimension,
-                        scattering_order,
-                        method),
+    : AngularQuadrature(
+        AngularQuadratureType::TriangularQuadrature, dimension, scattering_order, method),
       weight_sum_(0.0)
   {
   }

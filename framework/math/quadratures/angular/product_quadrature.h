@@ -39,10 +39,8 @@ protected:
   ProductQuadrature(unsigned int dimension,
                     unsigned int scattering_order,
                     OperatorConstructionMethod method)
-    : AngularQuadrature(AngularQuadratureType::ProductQuadrature,
-                        dimension,
-                        scattering_order,
-                        method),
+    : AngularQuadrature(
+        AngularQuadratureType::ProductQuadrature, dimension, scattering_order, method),
       weight_sum_(0.0)
   {
   }
