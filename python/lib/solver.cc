@@ -203,6 +203,7 @@ WrapLBS(py::module& slv)
         The maximum MPI message size used during sweeps.
     restart_writes_enabled: bool, default=False
         Flag that controls writing of restart dumps.
+        Requires ``write_restart_path`` to be set to a non-empty value.
     write_delayed_psi_to_restart: bool, default=True
         Flag that controls writing of delayed angular fluxes to restarts.
     read_restart_path: str, default=''
@@ -211,6 +212,7 @@ WrapLBS(py::module& slv)
         Full path for writing restart dumps including file basename.
     write_restart_time_interval: int, default=0
         Time interval in seconds at which restart data is to be written.
+        Must be ``0`` (disabled) or at least ``30`` seconds.
     use_precursors: bool, default=False
         Flag for using delayed neutron precursors.
     use_source_moments: bool, default=False
@@ -222,7 +224,7 @@ WrapLBS(py::module& slv)
     verbose_outer_iterations: bool, default=True
         Flag to control verbosity of across-groupset iterations.
     max_ags_iterations: int, default=100
-        Maximum number of across-groupset iterations.
+        Maximum number of across-groupset iterations. ``0`` is allowed.
     ags_tolerance: float, default=1.0e-6
         Across-groupset iterations tolerance.
     ags_convergence_check: {'l2', 'pointwise'}, default='l2'
@@ -244,6 +246,15 @@ WrapLBS(py::module& slv)
     field_function_prefix: str, default=''
         Prefix to use on all field functions. By default, this is empty. If specified, flux moments
         are exported as ``prefix_phi_gXXX_mYYY``.
+
+    Notes
+    -----
+    This call is additive: only options explicitly supplied are updated.
+    Options requirements:
+    - ``restart_writes_enabled=True`` requires non-empty ``write_restart_path``.
+    - ``write_restart_time_interval>0`` requires ``restart_writes_enabled=True``.
+    - ``write_restart_time_interval`` must be ``0`` or ``>=30``.
+    - non-empty ``field_function_prefix`` requires ``field_function_prefix_option='prefix'``.
     )"
   );
   lbs_problem.def(
@@ -699,6 +710,7 @@ WrapLBS(py::module& slv)
           - read_restart_path: str, default=''
           - write_restart_path: str, default=''
           - write_restart_time_interval: int, default=0
+            (must be 0 or >=30)
           - use_precursors: bool, default=False
           - use_source_moments: bool, default=False
           - save_angular_flux: bool, default=False
@@ -713,6 +725,7 @@ WrapLBS(py::module& slv)
           - power_normalization: float, default=-1.0
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
+        Requirements are the same as :meth:`LBSProblem.SetOptions`.
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
     use_gpus : bool, default=False
@@ -733,8 +746,12 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    adjoint: bool, default=False
-        Flag for toggling whether the solver is in adjoint mode.
+    **kwargs
+        Same option keys and semantics as :meth:`LBSProblem.SetOptions`.
+
+    Notes
+    -----
+    This call is additive: only options explicitly supplied are updated.
     )"
   );
   do_problem.def(
