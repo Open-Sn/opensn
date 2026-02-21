@@ -1,0 +1,673 @@
+diff --git a/modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h b/modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h
+index 4e722225..3c061308 100644
+--- a/modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h
++++ b/modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h
+@@ -52,6 +52,8 @@ struct WGSContext : public LinearSystemContext
+   SourceFlags rhs_src_scope;
+   bool log_info = true;
+   size_t counter_applications_of_inv_op = 0;
++  std::vector<double> preconditioner_phi_local;
++  std::vector<double> preconditioner_delta_phi_local;
+ };
+ 
+ } // namespace opensn
+diff --git a/modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.cc b/modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.cc
+index dfd1a21d..aed591ac 100644
+--- a/modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.cc
++++ b/modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.cc
+@@ -148,6 +148,58 @@ LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(LBSProblem& lbs_problem,
+   OpenSnPETScCall(VecRestoreArrayRead(src, &petsc_src));
+ }
+ 
++void
++LBSVecOps::SetGSPETScVecFromSTLvector(LBSProblem& lbs_problem,
++                                      const LBSGroupset& groupset,
++                                      Vec dest,
++                                      const std::vector<double>& src,
++                                      PhiSTLOption delayed_src)
++{
++  double* petsc_dest = nullptr;
++  OpenSnPETScCall(VecGetArray(dest, &petsc_dest));
++  int64_t index = GroupsetScopedCopy(lbs_problem,
++                                     groupset.first_group,
++                                     groupset.GetNumGroups(),
++                                     [&](int64_t idx, size_t mapped_idx)
++                                     { petsc_dest[idx] = src[mapped_idx]; });
++  if (groupset.angle_agg)
++  {
++    if (delayed_src == PhiSTLOption::PHI_NEW)
++      groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, petsc_dest);
++    else if (delayed_src == PhiSTLOption::PHI_OLD)
++      groupset.angle_agg->AppendOldDelayedAngularDOFsToArray(index, petsc_dest);
++  }
++  OpenSnPETScCall(VecRestoreArray(dest, &petsc_dest));
++}
++
++void
++LBSVecOps::SetSTLvectorFromGSPETScVec(LBSProblem& lbs_problem,
++                                      const LBSGroupset& groupset,
++                                      Vec src,
++                                      std::vector<double>& dest,
++                                      PhiSTLOption delayed_dest)
++{
++  const auto dof_count = lbs_problem.GetPhiNewLocal().size();
++  if (dest.size() != dof_count)
++    dest.resize(dof_count, 0.0);
++
++  const double* petsc_src = nullptr;
++  OpenSnPETScCall(VecGetArrayRead(src, &petsc_src));
++  int64_t index = GroupsetScopedCopy(lbs_problem,
++                                     groupset.first_group,
++                                     groupset.GetNumGroups(),
++                                     [&](int64_t idx, size_t mapped_idx)
++                                     { dest[mapped_idx] = petsc_src[idx]; });
++  if (groupset.angle_agg)
++  {
++    if (delayed_dest == PhiSTLOption::PHI_NEW)
++      groupset.angle_agg->SetNewDelayedAngularDOFsFromArray(index, petsc_src);
++    else if (delayed_dest == PhiSTLOption::PHI_OLD)
++      groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, petsc_src);
++  }
++  OpenSnPETScCall(VecRestoreArrayRead(src, &petsc_src));
++}
++
+ void
+ LBSVecOps::SetGroupScopedPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
+                                                       unsigned int first_group_id,
+diff --git a/modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h b/modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h
+index 9384a1c4..20a1b665 100644
+--- a/modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h
++++ b/modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h
+@@ -36,6 +36,20 @@ public:
+                                                 Vec src,
+                                                 PhiSTLOption dest);
+ 
++  /// Assembles a vector for a given groupset from an explicit source vector.
++  static void SetGSPETScVecFromSTLvector(LBSProblem& lbs_problem,
++                                         const LBSGroupset& groupset,
++                                         Vec dest,
++                                         const std::vector<double>& src,
++                                         PhiSTLOption delayed_src = PhiSTLOption::PHI_NEW);
++
++  /// Disassembles a vector for a given groupset into an explicit destination vector.
++  static void SetSTLvectorFromGSPETScVec(LBSProblem& lbs_problem,
++                                         const LBSGroupset& groupset,
++                                         Vec src,
++                                         std::vector<double>& dest,
++                                         PhiSTLOption delayed_dest = PhiSTLOption::PHI_NEW);
++
+   /// Assembles a vector for a given group span from a source vector.
+   static void SetGroupScopedPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
+                                                          unsigned int first_group_id,
+diff --git a/modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_dsa_preconditioner.cc b/modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_dsa_preconditioner.cc
+index 1c650798..1d93ef52 100644
+--- a/modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_dsa_preconditioner.cc
++++ b/modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbs_dsa_preconditioner.cc
+@@ -8,100 +8,77 @@
+ #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
+ #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+ #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+-#include "modules/diffusion/diffusion_mip_solver.h"
+ 
+ namespace opensn
+ {
+-
++namespace
++{
+ PetscErrorCode
+-WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
++ApplyWGDSATGDSA(WGSContext& gs_context, Vec phi_input, Vec pc_output)
+ {
+-  void* context = nullptr;
+-  PetscErrorCode ierr = PCShellGetContext(pc, static_cast<void*>(&context));
+-  if (ierr != PETSC_SUCCESS)
+-    return ierr;
+-
+-  auto* gs_context_ptr = static_cast<WGSContext*>(context);
+-
+   // Shorten some names
+-  DiscreteOrdinatesProblem& do_problem = gs_context_ptr->do_problem;
+-  LBSGroupset& groupset = gs_context_ptr->groupset;
++  DiscreteOrdinatesProblem& do_problem = gs_context.do_problem;
++  LBSGroupset& groupset = gs_context.groupset;
++
++  auto& phi_local = gs_context.preconditioner_phi_local;
++  LBSVecOps::SetSTLvectorFromGSPETScVec(do_problem, groupset, phi_input, phi_local);
+ 
+-  // Copy PETSc vector to STL
+-  auto& phi_new_local = gs_context_ptr->do_problem.GetPhiNewLocal();
+-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+-    do_problem, groupset, phi_input, PhiSTLOption::PHI_NEW);
++  auto& delta_phi_local = gs_context.preconditioner_delta_phi_local;
++  delta_phi_local.reserve(phi_local.size());
+ 
+   // Apply WGDSA
+   if (groupset.apply_wgdsa)
+   {
+-    std::vector<double> delta_phi_local;
+-    WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
++    if (not groupset.wgdsa_solver)
++      return PETSC_ERR_ARG_WRONGSTATE;
++
++    delta_phi_local.clear();
++    WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_local, delta_phi_local);
+ 
+     groupset.wgdsa_solver->Assemble_b(delta_phi_local);
+     groupset.wgdsa_solver->Solve(delta_phi_local);
+ 
+-    WGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
++    WGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_local);
+   }
++
+   // Apply TGDSA
+   if (groupset.apply_tgdsa)
+   {
+-    std::vector<double> delta_phi_local;
+-    TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
++    if (not groupset.tgdsa_solver)
++      return PETSC_ERR_ARG_WRONGSTATE;
++
++    delta_phi_local.clear();
++    TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_local, delta_phi_local);
+ 
+     groupset.tgdsa_solver->Assemble_b(delta_phi_local);
+     groupset.tgdsa_solver->Solve(delta_phi_local);
+ 
+-    TGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
++    TGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_local);
+   }
+ 
+-  // Copy STL vector to PETSc Vec
+-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+-    do_problem, groupset, pc_output, PhiSTLOption::PHI_NEW);
+-
++  LBSVecOps::SetGSPETScVecFromSTLvector(do_problem, groupset, pc_output, phi_local);
+   return PETSC_SUCCESS;
+ }
++} // namespace
+ 
+ PetscErrorCode
+-WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec pc_output)
++WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
+ {
+-  // Shorten some names
+-  DiscreteOrdinatesProblem& do_problem = gs_context_ptr.do_problem;
+-  LBSGroupset& groupset = gs_context_ptr.groupset;
+-
+-  // Copy PETSc vector to STL
+-  auto& phi_new_local = gs_context_ptr.do_problem.GetPhiNewLocal();
+-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+-    do_problem, groupset, phi_input, PhiSTLOption::PHI_NEW);
+-
+-  // Apply WGDSA
+-  if (groupset.apply_wgdsa)
+-  {
+-    std::vector<double> delta_phi_local;
+-    WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
+-
+-    groupset.wgdsa_solver->Assemble_b(delta_phi_local);
+-    groupset.wgdsa_solver->Solve(delta_phi_local);
+-
+-    WGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
+-  }
+-  // Apply TGDSA
+-  if (groupset.apply_tgdsa)
+-  {
+-    std::vector<double> delta_phi_local;
+-    TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
+-
+-    groupset.tgdsa_solver->Assemble_b(delta_phi_local);
+-    groupset.tgdsa_solver->Solve(delta_phi_local);
+-
+-    TGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
+-  }
++  void* context = nullptr;
++  PetscErrorCode ierr = PCShellGetContext(pc, static_cast<void*>(&context));
++  if (ierr != PETSC_SUCCESS)
++    return ierr;
++  if (context == nullptr)
++    return PETSC_ERR_ARG_NULL;
+ 
+-  // Copy STL vector to PETSc Vec
+-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+-    do_problem, groupset, pc_output, PhiSTLOption::PHI_NEW);
++  auto* gs_context_ptr = static_cast<WGSContext*>(context);
++  return ApplyWGDSATGDSA(*gs_context_ptr, phi_input, pc_output);
++}
+ 
+-  return PETSC_SUCCESS;
++PetscErrorCode
++WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec pc_output)
++{
++  return ApplyWGDSATGDSA(gs_context_ptr, phi_input, pc_output);
+ }
+ 
+ } // namespace opensn
+diff --git a/modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbsmip_tgdsa_preconditioner.cc b/modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbsmip_tgdsa_preconditioner.cc
+index 592188d4..04710413 100644
+--- a/modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbsmip_tgdsa_preconditioner.cc
++++ b/modules/linear_boltzmann_solvers/lbs_problem/preconditioning/lbsmip_tgdsa_preconditioner.cc
+@@ -6,7 +6,6 @@
+ #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
+ #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+ #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+-#include "modules/diffusion/diffusion_mip_solver.h"
+ 
+ namespace opensn
+ {
+@@ -18,6 +17,8 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
+   PetscErrorCode ierr = PCShellGetContext(pc, static_cast<void*>(&context));
+   if (ierr != PETSC_SUCCESS)
+     return ierr;
++  if (context == nullptr)
++    return PETSC_ERR_ARG_NULL;
+ 
+   auto* gs_context_ptr = static_cast<WGSContext*>(context);
+ 
+@@ -25,15 +26,19 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
+   DiscreteOrdinatesProblem& solver = gs_context_ptr->do_problem;
+   LBSGroupset& groupset = gs_context_ptr->groupset;
+ 
+-  // Copy PETSc vector to STL
+-  auto& phi_delta = gs_context_ptr->do_problem.GetPhiNewLocal();
+-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(solver, groupset, phi_input, PhiSTLOption::PHI_NEW);
++  // Copy PETSc vector to STL scratch
++  auto& phi_delta = gs_context_ptr->preconditioner_phi_local;
++  LBSVecOps::SetSTLvectorFromGSPETScVec(solver, groupset, phi_input, phi_delta);
++  auto& delta_phi_local = gs_context_ptr->preconditioner_delta_phi_local;
++  delta_phi_local.reserve(phi_delta.size());
+ 
+   // Apply TGDSA
+   if (groupset.apply_tgdsa)
+   {
+-    // DSA dsa(solver);
+-    std::vector<double> delta_phi_local;
++    if (not groupset.tgdsa_solver)
++      return PETSC_ERR_ARG_WRONGSTATE;
++
++    delta_phi_local.clear();
+     TGDSA::AssembleDeltaPhiVector(solver, groupset, phi_delta, delta_phi_local);
+     groupset.tgdsa_solver->Assemble_b(delta_phi_local);
+     groupset.tgdsa_solver->Solve(delta_phi_local);
+@@ -41,7 +46,7 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
+   }
+ 
+   // Copy STL vector to PETSc Vec
+-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(solver, groupset, pc_output, PhiSTLOption::PHI_NEW);
++  LBSVecOps::SetGSPETScVecFromSTLvector(solver, groupset, pc_output, phi_delta);
+ 
+   return PETSC_SUCCESS;
+ }
+diff --git a/modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.cc b/modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.cc
+index 87d68be8..347a9be6 100644
+--- a/modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.cc
++++ b/modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.cc
+@@ -8,10 +8,21 @@
+ #include "framework/object_factory.h"
+ #include "framework/logging/log.h"
+ #include "framework/runtime.h"
++#include <cmath>
+ #include <stdexcept>
+ 
+ namespace opensn
+ {
++namespace
++{
++double
++GuardedDenominator(const double value, const double eps = 1.0e-16)
++{
++  if (std::abs(value) >= eps)
++    return value;
++  return (value < 0.0) ? -eps : eps;
++}
++} // namespace
+ 
+ OpenSnRegisterObjectInNamespace(lbs, NonLinearKEigenSolver);
+ 
+@@ -21,7 +32,7 @@ NonLinearKEigenSolver::GetInputParameters()
+   InputParameters params = Solver::GetInputParameters();
+ 
+   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
+-  params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
++  params.ChangeExistingParamToOptional("name", "NonLinearKEigenSolver");
+   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
+ 
+   // Non-linear solver parameters
+@@ -38,8 +49,8 @@ NonLinearKEigenSolver::GetInputParameters()
+   params.AddOptionalParameter("l_gmres_restart_intvl", 30, "GMRes restart interval");
+   params.AddOptionalParameter("l_gmres_breakdown_tol", 1.0e6, "GMRes breakdown tolerance");
+   params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
+-  params.AddOptionalParameter("num_initial_power_iterations",
+-                              0,
++  params.AddOptionalParameter<unsigned int>("num_initial_power_iterations",
++                              0u,
+                               "The number of initial power iterations to execute before entering "
+                               "the non-linear algorithm");
+ 
+@@ -59,7 +70,7 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
+     nl_context_(std::make_shared<NLKEigenAGSContext>(do_problem_)),
+     nl_solver_(nl_context_),
+     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
+-    num_initial_power_its_(params.GetParamValue<int>("num_initial_power_iterations"))
++    num_initial_power_its_(params.GetParamValue<unsigned int>("num_initial_power_iterations"))
+ {
+   auto& tolerances = nl_solver_.GetToleranceOptions();
+ 
+@@ -103,13 +114,15 @@ NonLinearKEigenSolver::Execute()
+   if (do_problem_->GetOptions().use_precursors)
+   {
+     ComputePrecursors(*do_problem_);
+-    Scale(do_problem_->GetPrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
++    const double keff = nl_context_->kresid_func_context.k_eff;
++    Scale(do_problem_->GetPrecursorsNewLocal(), 1.0 / GuardedDenominator(keff));
+   }
+ 
+   do_problem_->UpdateFieldFunctions();
+   if (IsBalanceEnabled())
+   {
+-    ComputeBalance(*do_problem_, 1.0 / nl_context_->kresid_func_context.k_eff);
++    const double keff = nl_context_->kresid_func_context.k_eff;
++    ComputeBalance(*do_problem_, 1.0 / GuardedDenominator(keff));
+     log.Log() << "Balance table uses k-eigenvalue normalization (production scaled by 1/k_eff)";
+   }
+ 
+diff --git a/modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.cc b/modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.cc
+index 536fd71d..115ae51e 100644
+--- a/modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.cc
++++ b/modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.cc
+@@ -12,12 +12,31 @@
+ #include "framework/runtime.h"
+ #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
+ #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
++#include <cmath>
+ #include <iomanip>
+ #include <stdexcept>
+ #include "sys/stat.h"
+ 
+ namespace opensn
+ {
++namespace
++{
++LBSGroupset&
++GetFirstGroupsetOrThrow(std::vector<LBSGroupset>& groupsets)
++{
++  if (groupsets.empty())
++    throw std::invalid_argument("PowerIterationKEigenSolver requires at least one groupset.");
++  return groupsets.front();
++}
++
++double
++GuardedDenominator(const double value, const double eps = 1.0e-16)
++{
++  if (std::abs(value) >= eps)
++    return value;
++  return (value < 0.0) ? -eps : eps;
++}
++} // namespace
+ 
+ OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSolver);
+ 
+@@ -61,7 +80,7 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
+     phi_old_local_(do_problem_->GetPhiOldLocal()),
+     phi_new_local_(do_problem_->GetPhiNewLocal()),
+     groupsets_(do_problem_->GetGroupsets()),
+-    front_gs_(groupsets_.front())
++    front_gs_(GetFirstGroupsetOrThrow(groupsets_))
+ {
+   do_problem_->SetSweepChunkMode(DiscreteOrdinatesProblem::SweepChunkMode::SteadyState);
+ }
+@@ -74,6 +93,8 @@ PowerIterationKEigenSolver::Initialize()
+   auto& options = do_problem_->GetOptions();
+   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
+   ags_solver_ = do_problem_->GetAGSSolver();
++  if (not ags_solver_)
++    throw std::runtime_error(GetName() + ": AGS solver is not available.");
+ 
+   for (auto& wgs_solver : do_problem_->GetWGSSolvers())
+   {
+@@ -126,7 +147,7 @@ PowerIterationKEigenSolver::Execute()
+   {
+     // Set the fission source
+     SetLBSFissionSource(phi_old_local_, false);
+-    Scale(q_moments_local_, 1.0 / k_eff_);
++    Scale(q_moments_local_, 1.0 / GuardedDenominator(k_eff_));
+ 
+     if (acceleration_)
+       acceleration_->PrePowerIteration();
+@@ -143,14 +164,15 @@ PowerIterationKEigenSolver::Execute()
+     else
+     {
+       const auto F_new = ComputeFissionProduction(*do_problem_, phi_new_local_);
+-      k_eff_ = F_new / F_prev_ * k_eff_;
++      k_eff_ = F_new / GuardedDenominator(F_prev_) * k_eff_;
+       F_prev_ = F_new;
+     }
+ 
+-    const double reactivity = (k_eff_ - 1.0) / k_eff_;
++    const double reactivity = (k_eff_ - 1.0) / GuardedDenominator(k_eff_);
+ 
+     // Check convergence, bookkeeping
+-    k_eff_change = fabs(k_eff_ - k_eff_prev) / k_eff_;
++    const double k_eff_denom = std::max(std::abs(k_eff_), 1.0e-16);
++    k_eff_change = std::abs(k_eff_ - k_eff_prev) / k_eff_denom;
+     k_eff_prev = k_eff_;
+     nit += 1;
+ 
+@@ -188,6 +210,7 @@ PowerIterationKEigenSolver::Execute()
+   {
+     auto context = wgs_solver->GetContext();
+     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
++    OpenSnLogicalErrorIf(not wgs_context, ": Cast failed");
+     total_num_sweeps += wgs_context->counter_applications_of_inv_op;
+   }
+ 
+@@ -200,13 +223,13 @@ PowerIterationKEigenSolver::Execute()
+   if (options.use_precursors)
+   {
+     ComputePrecursors(*do_problem_);
+-    Scale(do_problem_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
++    Scale(do_problem_->GetPrecursorsNewLocal(), 1.0 / GuardedDenominator(k_eff_));
+   }
+ 
+   do_problem_->UpdateFieldFunctions();
+   if (IsBalanceEnabled())
+   {
+-    ComputeBalance(*do_problem_, 1.0 / k_eff_);
++    ComputeBalance(*do_problem_, 1.0 / GuardedDenominator(k_eff_));
+     log.Log() << "Balance table uses k-eigenvalue normalization (production scaled by 1/k_eff)";
+   }
+ 
+diff --git a/modules/linear_boltzmann_solvers/solvers/steady_state_solver.cc b/modules/linear_boltzmann_solvers/solvers/steady_state_solver.cc
+index cf51bb70..f83ab0e2 100644
+--- a/modules/linear_boltzmann_solvers/solvers/steady_state_solver.cc
++++ b/modules/linear_boltzmann_solvers/solvers/steady_state_solver.cc
+@@ -63,7 +63,10 @@ SteadyStateSourceSolver::Execute()
+ 
+   auto& options = lbs_problem_->GetOptions();
+ 
+-  auto& ags_solver = *lbs_problem_->GetAGSSolver();
++  auto ags_solver_ptr = lbs_problem_->GetAGSSolver();
++  if (not ags_solver_ptr)
++    throw std::runtime_error(GetName() + ": AGS solver is not available.");
++  auto& ags_solver = *ags_solver_ptr;
+   ags_solver.Solve();
+ 
+   if (options.restart_writes_enabled)
+diff --git a/modules/linear_boltzmann_solvers/solvers/transient_solver.cc b/modules/linear_boltzmann_solvers/solvers/transient_solver.cc
+index 26d13d32..23ff535b 100644
+--- a/modules/linear_boltzmann_solvers/solvers/transient_solver.cc
++++ b/modules/linear_boltzmann_solvers/solvers/transient_solver.cc
+@@ -12,10 +12,24 @@
+ #include "framework/runtime.h"
+ #include <iomanip>
+ #include <limits>
++#include <stdexcept>
+ #include <utility>
+ 
+ namespace opensn
+ {
++namespace
++{
++TransientSolver::InitialState
++ParseInitialStateOrThrow(const std::string& value)
++{
++  if (value == "existing")
++    return TransientSolver::InitialState::EXISTING;
++  if (value == "zero")
++    return TransientSolver::InitialState::ZERO;
++  throw std::invalid_argument("TransientSolver: invalid initial_state '" + value + "'");
++}
++} // namespace
++
+ OpenSnRegisterObjectInNamespace(lbs, TransientSolver);
+ 
+ InputParameters
+@@ -44,12 +58,14 @@ TransientSolver::GetInputParameters()
+ void
+ TransientSolver::SetTimeStep(double dt)
+ {
++  OpenSnInvalidArgumentIf(dt <= 0.0, GetName() + ": dt must be positive.");
+   do_problem_->SetTimeStep(dt);
+ }
+ 
+ void
+ TransientSolver::SetTheta(double theta)
+ {
++  OpenSnInvalidArgumentIf(theta <= 0.0 or theta > 1.0, GetName() + ": theta must be in (0, 1].");
+   do_problem_->SetTheta(theta);
+ }
+ 
+@@ -66,7 +82,7 @@ TransientSolver::TransientSolver(const InputParameters& params)
+ {
+   stop_time_ = params.GetParamValue<double>("stop_time");
+   verbose_ = params.GetParamValue<bool>("verbose");
+-  initial_state_ = params.GetParamValue<std::string>("initial_state");
++  initial_state_ = ParseInitialStateOrThrow(params.GetParamValue<std::string>("initial_state"));
+   do_problem_->SetTimeStep(params.GetParamValue<double>("dt"));
+   do_problem_->SetTheta(params.GetParamValue<double>("theta"));
+ }
+@@ -74,11 +90,18 @@ TransientSolver::TransientSolver(const InputParameters& params)
+ void
+ TransientSolver::RefreshLocalViews()
+ {
++  if (not do_problem_)
++    throw std::runtime_error(GetName() + ": Problem is not set.");
++
+   q_moments_local_ = &do_problem_->GetQMomentsLocal();
+   phi_old_local_ = &do_problem_->GetPhiOldLocal();
+   phi_new_local_ = &do_problem_->GetPhiNewLocal();
+   precursor_new_local_ = &do_problem_->GetPrecursorsNewLocal();
+   psi_new_local_ = &do_problem_->GetPsiNewLocal();
++
++  if (not q_moments_local_ or not phi_old_local_ or not phi_new_local_ or not precursor_new_local_ or
++      not psi_new_local_)
++    throw std::runtime_error(GetName() + ": Failed to refresh local data views.");
+ }
+ 
+ void
+@@ -100,19 +123,20 @@ TransientSolver::Initialize()
+   options.save_angular_flux = true;
+   do_problem_->SetTime(current_time_);
+ 
+-  const std::string& init_state = initial_state_;
+   RefreshLocalViews();
+   if (not phi_new_local_ or phi_new_local_->empty())
+   {
+-    if (init_state != "zero")
++    if (initial_state_ != InitialState::ZERO)
+       throw std::runtime_error(GetName() + ": Problem must be initialized before TransientSolver.");
+     do_problem_->Initialize();
+     RefreshLocalViews();
+   }
+   if (not phi_new_local_ or phi_new_local_->empty())
+     throw std::runtime_error(GetName() + ": Problem initialization failed.");
++  if (phi_old_local_->size() != phi_new_local_->size())
++    throw std::runtime_error(GetName() + ": phi_old and phi_new vectors are inconsistent.");
+ 
+-  if (init_state == "zero")
++  if (initial_state_ == InitialState::ZERO)
+   {
+     std::fill(phi_new_local_->begin(), phi_new_local_->end(), 0.0);
+     std::fill(phi_old_local_->begin(), phi_old_local_->end(), 0.0);
+@@ -138,6 +162,8 @@ TransientSolver::Initialize()
+   do_problem_->ReinitializeSolverSchemes();
+   RefreshLocalViews();
+   ags_solver_ = do_problem_->GetAGSSolver();
++  if (not ags_solver_)
++    throw std::runtime_error(GetName() + ": AGS solver not available.");
+   UpdateHasFissionableMaterial();
+   if (options.use_precursors and not has_fissionable_material_)
+     log.Log0Warning() << GetName()
+@@ -171,7 +197,6 @@ TransientSolver::Initialize()
+   // Sync with the current solution
+   phi_prev_local_ = *phi_new_local_;
+   precursor_prev_local_ = *precursor_new_local_;
+-  psi_prev_local_ = *psi_new_local_;
+ 
+   initialized_ = true;
+ }
+@@ -279,13 +304,6 @@ TransientSolver::Advance()
+ 
+   // Solve
+   *phi_old_local_ = phi_prev_local_;
+-  {
+-    auto current_solver = do_problem_->GetAGSSolver();
+-    if (current_solver.get() != ags_solver_.get())
+-      ags_solver_ = std::move(current_solver);
+-  }
+-  if (not ags_solver_)
+-    throw std::runtime_error(GetName() + ": AGS solver not available.");
+   ags_solver_->Solve();
+ 
+   // For non-fission source-only problems, match TimeDependentSourceSolver behavior.
+@@ -312,7 +330,6 @@ TransientSolver::Advance()
+   current_time_ += dt;
+   do_problem_->SetTime(current_time_);
+   phi_prev_local_ = *phi_new_local_;
+-  psi_prev_local_ = *psi_new_local_;
+   do_problem_->UpdateFieldFunctions();
+   do_problem_->UpdatePsiOld();
+   if (options.use_precursors)
+@@ -333,6 +350,8 @@ TransientSolver::StepPrecursors()
+   {
+     const auto& fe_values = do_problem_->GetUnitCellMatrices()[cell.local_id];
+     const double cell_volume = transport_views[cell.local_id].GetVolume();
++    if (cell_volume <= 0.0)
++      throw std::runtime_error(GetName() + ": Non-positive cell volume encountered.");
+     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
+     const auto& precursors = xs->GetPrecursors();
+     const auto& nu_delayed_sigma_f = xs->GetNuDelayedSigmaF();
+diff --git a/modules/linear_boltzmann_solvers/solvers/transient_solver.h b/modules/linear_boltzmann_solvers/solvers/transient_solver.h
+index 4eccf722..d40a13d9 100644
+--- a/modules/linear_boltzmann_solvers/solvers/transient_solver.h
++++ b/modules/linear_boltzmann_solvers/solvers/transient_solver.h
+@@ -19,6 +19,12 @@ class AGSLinearSolver;
+ class TransientSolver : public Solver
+ {
+ public:
++  enum class InitialState
++  {
++    EXISTING,
++    ZERO
++  };
++
+   explicit TransientSolver(const InputParameters& params);
+ 
+   ~TransientSolver() override = default;
+@@ -53,7 +59,6 @@ private:
+   /// Previous time step vectors
+   std::vector<double> phi_prev_local_;
+   std::vector<double> precursor_prev_local_;
+-  std::vector<std::vector<double>> psi_prev_local_;
+ 
+   /// Time discretization values and methods
+   double stop_time_ = 0.1;
+@@ -63,7 +68,7 @@ private:
+   bool initialized_ = false;
+   bool enforce_stop_time_ = false;
+   bool has_fissionable_material_ = false;
+-  std::string initial_state_;
++  InitialState initial_state_ = InitialState::EXISTING;
+   std::function<void()> pre_advance_callback_;
+   std::function<void()> post_advance_callback_;
+ 

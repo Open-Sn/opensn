@@ -145,6 +145,7 @@ protected:
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
   void ZeroSolutions() override;
+  void ValidateAdjointModeChange(bool adjoint) const override;
 
   BoundaryDefinition CreateBoundaryFromParams(const InputParameters& params) const;
   std::shared_ptr<SweepBoundary> CreateSweepBoundary(uint64_t boundary_id) const;

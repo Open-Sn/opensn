@@ -581,6 +581,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
                                    ? params_at_assignment
                                    : static_cast<const ParameterBlock&>(input);
 
+  bool set_adjoint_mode = false;
+  bool adjoint_mode_value = options_.adjoint;
+
   // Apply only options explicitly specified by the caller.
   for (const auto& spec : specified_params.GetParameters())
   {
@@ -658,7 +661,10 @@ LBSProblem::ParseOptions(const InputParameters& input)
       options_.field_function_prefix = spec.GetValue<std::string>();
 
     else if (spec.GetName() == "adjoint")
-      options_.adjoint = spec.GetValue<bool>();
+    {
+      set_adjoint_mode = true;
+      adjoint_mode_value = spec.GetValue<bool>();
+    }
 
   } // for specified options
 
@@ -702,6 +708,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
     opensn::mpi_comm.barrier();
     UpdateRestartWriteTime();
   }
+
+  if (set_adjoint_mode)
+    SetAdjoint(adjoint_mode_value);
 }
 
 void
@@ -1403,8 +1412,15 @@ LBSProblem::SetSaveAngularFlux(bool save)
 }
 
 void
+LBSProblem::ValidateAdjointModeChange(bool /*adjoint*/) const
+{
+}
+
+void
 LBSProblem::SetAdjoint(bool adjoint)
 {
+  ValidateAdjointModeChange(adjoint);
+
   options_.adjoint = adjoint;
 
   if (not discretization_)

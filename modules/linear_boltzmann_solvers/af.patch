@@ -1,0 +1,195 @@
+diff --git a/modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.cc b/modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.cc
+index 6af1b65f..78d7b47a 100644
+--- a/modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.cc
++++ b/modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.cc
+@@ -494,22 +494,7 @@ DiscreteOrdinatesProblem::Initialize()
+   // Make face histogram
+   grid_face_histogram_ = grid_->MakeGridFaceHistogram();
+ 
+-  psi_new_local_.clear();
+-  psi_old_local_.clear();
+-  for (auto& groupset : groupsets_)
+-  {
+-    psi_new_local_.emplace_back();
+-    psi_old_local_.emplace_back();
+-    const bool save_old =
+-      (sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent);
+-    if (options_.save_angular_flux || save_old)
+-    {
+-      size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
+-      psi_new_local_.back().assign(num_ang_unknowns, 0.0);
+-      if (save_old)
+-        psi_old_local_.back().assign(num_ang_unknowns, 0.0);
+-    }
+-  }
++  RefreshAngularFluxStorage();
+ 
+   const auto grid_dim = grid_->GetDimension();
+   for (auto& groupset : groupsets_)
+@@ -541,24 +526,67 @@ DiscreteOrdinatesProblem::Initialize()
+ }
+ 
+ void
+-DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
++DiscreteOrdinatesProblem::SetOptions(const InputParameters& input)
+ {
+-  sweep_chunk_mode_ = mode;
+-  if (mode == SweepChunkMode::TimeDependent && discretization_)
++  LBSProblem::SetOptions(input);
++  RefreshAngularFluxStorage();
++}
++
++void
++DiscreteOrdinatesProblem::RefreshAngularFluxStorage()
++{
++  if (not discretization_)
++    return;
++
++  const bool is_time_dependent =
++    (sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent);
++  const bool need_psi_new = options_.save_angular_flux or is_time_dependent;
++  const bool need_psi_old = is_time_dependent;
++
++  psi_new_local_.resize(groupsets_.size());
++  psi_old_local_.resize(groupsets_.size());
++
++  for (const auto& groupset : groupsets_)
+   {
+-    if (psi_old_local_.empty())
+-      return;
+-    if (psi_old_local_.front().empty())
++    const size_t gid = groupset.id;
++    const size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
++
++    auto& psi_new = psi_new_local_.at(gid);
++    if (need_psi_new)
++      psi_new.assign(num_ang_unknowns, 0.0);
++    else
+     {
+-      for (auto& groupset : groupsets_)
+-      {
+-        size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
+-        psi_old_local_.at(groupset.id).assign(num_ang_unknowns, 0.0);
+-      }
++      psi_new.clear();
++      psi_new.shrink_to_fit();
++    }
++
++    auto& psi_old = psi_old_local_.at(gid);
++    if (need_psi_old)
++      psi_old.assign(num_ang_unknowns, 0.0);
++    else
++    {
++      psi_old.clear();
++      psi_old.shrink_to_fit();
+     }
+   }
+ }
+ 
++void
++DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
++{
++  sweep_chunk_mode_ = mode;
++  RefreshAngularFluxStorage();
++  AdvanceStateEpoch();
++}
++
++void
++DiscreteOrdinatesProblem::ResetSweepChunkMode()
++{
++  sweep_chunk_mode_.reset();
++  RefreshAngularFluxStorage();
++  AdvanceStateEpoch();
++}
++
+ void
+ DiscreteOrdinatesProblem::EnableTimeDependentMode()
+ {
+diff --git a/modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h b/modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h
+index fd494e9b..85e2d64e 100644
+--- a/modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h
++++ b/modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h
+@@ -33,7 +33,7 @@ public:
+   };
+ 
+   void SetSweepChunkMode(SweepChunkMode mode);
+-  void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }
++  void ResetSweepChunkMode();
+   bool IsTimeDependent() const
+   {
+     return sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent;
+@@ -80,6 +80,7 @@ public:
+   void PrintSimHeader() override;
+ 
+   void Initialize() override;
++  void SetOptions(const InputParameters& input) override;
+ 
+   /// Returns the sweep boundaries as a read only reference
+   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
+@@ -176,6 +177,8 @@ protected:
+   std::map<std::tuple<size_t, size_t, size_t>, size_t> angular_flux_field_functions_local_map_;
+ 
+ private:
++  void RefreshAngularFluxStorage();
++
+   void CreateAAHD_FLUDSCommonData();
+   std::shared_ptr<FLUDS> CreateAAHD_FLUDS(unsigned int num_groups,
+                                           std::size_t num_angles,
+diff --git a/modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.cc b/modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.cc
+index 3833c961..a0220ea0 100644
+--- a/modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.cc
++++ b/modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.cc
+@@ -413,6 +413,7 @@ void
+ LBSProblem::SetActiveSetSourceFunction(SetSourceFunction source_function)
+ {
+   active_set_source_function_ = std::move(source_function);
++  AdvanceStateEpoch();
+ }
+ 
+ std::shared_ptr<AGSLinearSolver>
+@@ -666,6 +667,14 @@ LBSProblem::SetOptions(const InputParameters& input)
+     opensn::mpi_comm.barrier();
+     UpdateRestartWriteTime();
+   }
++
++  AdvanceStateEpoch();
++}
++
++void
++LBSProblem::AdvanceStateEpoch()
++{
++  ++state_epoch_;
+ }
+ 
+ void
+diff --git a/modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h b/modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h
+index b0b56029..5049929c 100644
+--- a/modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h
++++ b/modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h
+@@ -18,6 +18,7 @@
+ #include "framework/math/geometry.h"
+ #include <petscksp.h>
+ #include <any>
++#include <cstdint>
+ #include <chrono>
+ 
+ namespace opensn
+@@ -50,7 +51,9 @@ public:
+   /// Returns a constant reference to the solver options.
+   const LBSOptions& GetOptions() const;
+ 
+-  void SetOptions(const InputParameters& input);
++  virtual void SetOptions(const InputParameters& input);
++  uint64_t GetStateEpoch() const { return state_epoch_; }
++  void AdvanceStateEpoch();
+ 
+   /// Returns simulation time in seconds for time dependent problems
+   double GetTime() const;
+@@ -293,6 +296,7 @@ protected:
+   virtual void ZeroSolutions() = 0;
+ 
+   LBSOptions options_;
++  uint64_t state_epoch_ = 0;
+   double time_ = 0.0;
+   double theta_ = 1.0;
+   double dt_ = 1.0;

@@ -297,6 +297,33 @@ Cross section
 Problem
 -------
 
+.. note::
+
+   **Forward/adjoint mode transitions are destructive by design.**
+   In Python there are three valid ways to set mode:
+
+   1. Set ``options={'adjoint': ...}`` in the problem constructor.
+   2. Call ``problem.SetOptions(adjoint=...)``.
+   3. Call ``problem.SetAdjoint(...)`` (low-level equivalent).
+
+   A mode transition triggers:
+
+   - reinitializes material mode (forward vs adjoint),
+   - clears point and volumetric sources,
+   - clears boundary conditions,
+   - zeros scalar and angular flux state.
+
+   The block-id to cross-section map is preserved. After switching mode, reapply
+   the desired driving terms (sources and boundaries) before solving.
+
+   ``SetOptions`` applies a full options block: any option not supplied in a call
+   is reset to its default value. Therefore, if you use ``SetOptions`` and want to
+   preserve the current mode, include ``adjoint=...`` explicitly. 
+
+   Adjoint mode is applied to the mapped ``MultiGroupXS`` objects themselves.
+   If the same cross-section object is shared across multiple problems, toggling
+   adjoint mode in one problem affects all problems using that object.
+
 Base class
 ^^^^^^^^^^
 

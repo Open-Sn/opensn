@@ -221,6 +221,8 @@ WrapLBS(py::module& slv)
         Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.
     save_angular_flux: bool, default=False
         Flag indicating whether angular fluxes are to be stored or not.
+    adjoint: bool, default=False
+        Toggle adjoint transport mode.
     verbose_inner_iterations: bool, default=True
         Flag to control verbosity of inner iterations.
     verbose_outer_iterations: bool, default=True
@@ -252,6 +254,16 @@ WrapLBS(py::module& slv)
     Notes
     -----
     This call is additive: only options explicitly supplied are updated.
+
+    This is one of three supported mode-setting paths in Python:
+      1. ``options={'adjoint': ...}`` in the problem constructor.
+      2. ``SetOptions(adjoint=...)`` (this method).
+      3. ``SetAdjoint(...)``.
+
+    If ``adjoint`` is explicitly supplied in this call and differs from the current mode, OpenSn
+    performs the same mode-transition behavior as :meth:`LBSProblem.SetAdjoint`. If ``adjoint``
+    is omitted, the existing mode is unchanged.
+
     Options requirements:
     - ``restart_writes_enabled=True`` requires non-empty ``write_restart_path``.
     - ``write_restart_time_interval>0`` requires ``restart_writes_enabled=True``.
@@ -600,6 +612,14 @@ WrapLBS(py::module& slv)
               Mesh block ids to associate with the cross section.
           - xs: pyopensn.xs.MultiGroupXS (required)
               Cross section object.
+
+    Notes
+    -----
+    Forward/adjoint mode toggles via ``SetOptions(adjoint=...)`` (or the low-level
+    :meth:`LBSProblem.SetAdjoint`) do not change this map.
+    The ``MultiGroupXS`` objects themselves are mutable and shared by pointer. If the same
+    ``MultiGroupXS`` handle is shared across multiple problems, toggling adjoint mode in one
+    problem also changes the transport mode seen by the others.
     )"
   );
   lbs_problem.def(
@@ -615,7 +635,43 @@ WrapLBS(py::module& slv)
     [](LBSProblem& self, bool adjoint)
     {
       self.SetAdjoint(adjoint);
-    }
+    },
+    R"(
+    Set forward/adjoint transport mode.
+
+    Parameters
+    ----------
+    adjoint: bool
+        ``True`` enables adjoint mode and ``False`` enables forward mode.
+
+    Notes
+    -----
+    This is one of three supported mode-setting paths in Python:
+      1. ``options={'adjoint': ...}`` in the problem constructor.
+      2. ``SetOptions(adjoint=...)``.
+      3. ``SetAdjoint(...)`` (this method).
+
+    In typical Python workflows, use constructor options or ``SetOptions``.
+
+    When this changes mode after the problem has been initialized, OpenSn performs a
+    full mode-transition reset:
+      - Materials are reinitialized in the selected mode.
+      - Point and volumetric sources are cleared.
+      - Boundary conditions are cleared.
+      - Scalar and angular flux vectors are zeroed.
+
+    The block-id to cross-section map is preserved across the transition.
+    However, the mode change is applied to the mapped ``MultiGroupXS`` objects themselves.
+    If those objects are shared with other problems, they observe the same mode toggle.
+
+    After a mode change, reapply the desired driving terms before solving, typically:
+      - :meth:`LBSProblem.SetPointSources`
+      - :meth:`LBSProblem.SetVolumetricSources`
+      - :meth:`DiscreteOrdinatesProblem.SetBoundaryOptions`
+
+    This routine is intentionally destructive with respect to source/boundary/flux state
+    to avoid hidden coupling between forward and adjoint setups.
+    )"
   );
 
   // discrete ordinate solver
@@ -724,6 +780,7 @@ WrapLBS(py::module& slv)
           - use_precursors: bool, default=False
           - use_source_moments: bool, default=False
           - save_angular_flux: bool, default=False
+          - adjoint: bool, default=False
           - verbose_inner_iterations: bool, default=True
           - verbose_outer_iterations: bool, default=True
           - max_ags_iterations: int, default=100
@@ -762,6 +819,9 @@ WrapLBS(py::module& slv)
     Notes
     -----
     This call is additive: only options explicitly supplied are updated.
+
+    As with :meth:`LBSProblem.SetOptions`, if ``adjoint`` is explicitly supplied and differs from
+    the current mode, the same mode-transition behavior as :meth:`LBSProblem.SetAdjoint` is used.
     )"
   );
   do_problem.def(
@@ -804,6 +864,12 @@ WrapLBS(py::module& slv)
               Required when ``type='isotropic'``. Isotropic strength per group.
           - function: AngularFluxFunction, optional
               Required when ``type='arbitrary'``. Callable that returns incoming angular flux.
+
+    Notes
+    -----
+    Mode transitions via ``SetOptions(adjoint=...)`` (or the low-level
+    :meth:`LBSProblem.SetAdjoint`) clear all boundary conditions.
+    Reapply boundaries with this method before solving in the new mode.
     )"
   );
   do_problem.def(
