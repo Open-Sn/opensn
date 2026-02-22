@@ -75,7 +75,7 @@ public:
    *
    * If called after initialization, this performs a mode-transition reset:
    * materials are reinitialized in the selected mode, sources and boundaries
-   * are cleared, and scalar/angular solution state is zeroed.
+   * are cleared, and solution vectors are zeroed.
    */
   void SetAdjoint(bool adjoint);
   virtual void SetSaveAngularFlux(bool save);
@@ -298,7 +298,6 @@ protected:
   void ResetGPUCarriers();
 
   virtual void ZeroSolutions() = 0;
-  virtual void ValidateAdjointModeChange(bool adjoint) const;
 
   LBSOptions options_;
   double time_ = 0.0;

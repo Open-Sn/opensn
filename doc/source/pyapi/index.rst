@@ -316,9 +316,8 @@ Problem
    The block-id to cross-section map is preserved. After switching mode, reapply
    the desired driving terms (sources and boundaries) before solving.
 
-   ``SetOptions`` applies a full options block: any option not supplied in a call
-   is reset to its default value. Therefore, if you use ``SetOptions`` and want to
-   preserve the current mode, include ``adjoint=...`` explicitly. 
+   ``SetOptions`` is additive: only explicitly supplied options are updated.
+   If ``adjoint`` is omitted in a ``SetOptions`` call, the current mode is unchanged.
 
    Adjoint mode is applied to the mapped ``MultiGroupXS`` objects themselves.
    If the same cross-section object is shared across multiple problems, toggling
