@@ -543,6 +543,11 @@ LBSProblem::GetOptionsBlock()
                                  AllowableRangeList::New({"l2", "pointwise"}));
   params.ConstrainParameterRange("field_function_prefix_option",
                                  AllowableRangeList::New({"prefix", "solver_name"}));
+  params.ConstrainParameterRange("max_mpi_message_size", AllowableRangeLowLimit::New(1024));
+  params.ConstrainParameterRange("write_restart_time_interval", AllowableRangeLowLimit::New(0));
+  params.ConstrainParameterRange("max_ags_iterations", AllowableRangeLowLimit::New(0));
+  params.ConstrainParameterRange("ags_tolerance", AllowableRangeLowLimit::New(1.0e-18));
+  params.ConstrainParameterRange("power_default_kappa", AllowableRangeLowLimit::New(0.0, false));
 
   return params;
 }
@@ -562,12 +567,14 @@ LBSProblem::SetOptions(const InputParameters& input)
 {
   auto params = LBSProblem::GetOptionsBlock();
   params.AssignParameters(input);
+  const auto& params_at_assignment = input.GetParametersAtAssignment();
+  const auto& specified_params = params_at_assignment.GetNumParameters() > 0
+                                   ? params_at_assignment
+                                   : static_cast<const ParameterBlock&>(input);
 
-  // Handle order insensitive options
-  for (size_t p = 0; p < params.GetNumParameters(); ++p)
+  // Apply only options explicitly specified by the caller.
+  for (const auto& spec : specified_params.GetParameters())
   {
-    const auto& spec = params.GetParam(p);
-
     if (spec.GetName() == "max_mpi_message_size")
       options_.max_mpi_message_size = spec.GetValue<int>();
 
@@ -615,8 +622,7 @@ LBSProblem::SetOptions(const InputParameters& input)
     else if (spec.GetName() == "ags_convergence_check")
     {
       auto check = spec.GetValue<std::string>();
-      if (check == "pointwise")
-        options_.ags_pointwise_convergence = true;
+      options_.ags_pointwise_convergence = (check == "pointwise");
     }
 
     else if (spec.GetName() == "verbose_ags_iterations")
@@ -645,13 +651,34 @@ LBSProblem::SetOptions(const InputParameters& input)
     else if (spec.GetName() == "adjoint")
       options_.adjoint = spec.GetValue<bool>();
 
-  } // for p
+  } // for specified options
+
+  OpenSnInvalidArgumentIf(options_.write_restart_time_interval > std::chrono::seconds(0) and
+                            not options_.restart_writes_enabled,
+                          GetName() + ": `write_restart_time_interval>0` requires "
+                                      "`restart_writes_enabled=true`.");
+
+  OpenSnInvalidArgumentIf(options_.write_restart_time_interval > std::chrono::seconds(0) and
+                            options_.write_restart_time_interval < std::chrono::seconds(30),
+                          GetName() + ": `write_restart_time_interval` must be 0 (disabled) "
+                                      "or at least 30 seconds.");
+
+  OpenSnInvalidArgumentIf(options_.restart_writes_enabled and options_.write_restart_path.empty(),
+                          GetName() + ": `restart_writes_enabled=true` requires a non-empty "
+                                      "`write_restart_path`.");
+
+  OpenSnInvalidArgumentIf(not options_.field_function_prefix.empty() and
+                            options_.field_function_prefix_option != "prefix",
+                          GetName() + ": non-empty `field_function_prefix` requires "
+                                      "`field_function_prefix_option=\"prefix\"`.");
 
   if (options_.restart_writes_enabled)
   {
-    // Create restart directory if necessary
-    auto dir = options_.write_restart_path.parent_path();
-    if (opensn::mpi_comm.rank() == 0)
+    const auto dir = options_.write_restart_path.parent_path();
+
+    // Create restart directory if necessary.
+    // If dir is empty, write path resolves relative to the working directory.
+    if ((not dir.empty()) and opensn::mpi_comm.rank() == 0)
     {
       if (not std::filesystem::exists(dir))
       {
