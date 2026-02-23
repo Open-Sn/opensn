@@ -73,6 +73,8 @@ public:
   /// Is the problem time dependent
 
   void SetAdjoint(bool adjoint);
+  virtual void SetSaveAngularFlux(bool save);
+  void ApplyOptions();
 
   GeometryType GetGeometryType() const;
 
@@ -354,6 +356,8 @@ protected:
 
   /// Flag indicating if GPU acceleration is enabled.
   bool use_gpus_;
+  bool applied_adjoint_ = false;
+  bool applied_save_angular_flux_ = false;
 
 private:
   /// Initialize groupsets
@@ -366,8 +370,8 @@ private:
   /// Initialize sources
   void InitializeSources(const InputParameters& params);
 
-  /// Initialize boundary conditions
-  void InitializeBoundaryConditions(const InputParameters& params);
+  /// Parse and validate options without applying runtime side-effects.
+  void ParseOptions(const InputParameters& input);
 
 public:
   /// Max number of DOFs per cell that the sweep kernel on GPU can handle.

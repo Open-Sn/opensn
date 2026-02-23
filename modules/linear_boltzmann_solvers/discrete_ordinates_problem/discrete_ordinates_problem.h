@@ -101,6 +101,8 @@ public:
   GetAngularFluxFieldFunctionList(const std::vector<unsigned int>& groups,
                                   const std::vector<size_t>& angles);
 
+  void SetSaveAngularFlux(bool save) override;
+
   /// Update angular flux field functions from psi_new_local_.
   void UpdateAngularFieldFunctions();
 
@@ -200,6 +202,8 @@ private:
                             const AngularQuadrature& quadrature,
                             AngleAggregationType agg_type,
                             GeometryType lbs_geo_type);
+
+  void UpdateAngularFluxStorage();
 
 public:
   static InputParameters GetInputParameters();

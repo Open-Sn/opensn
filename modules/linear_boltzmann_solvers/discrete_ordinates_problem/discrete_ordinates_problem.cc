@@ -494,22 +494,7 @@ DiscreteOrdinatesProblem::Initialize()
   // Make face histogram
   grid_face_histogram_ = grid_->MakeGridFaceHistogram();
 
-  psi_new_local_.clear();
-  psi_old_local_.clear();
-  for (auto& groupset : groupsets_)
-  {
-    psi_new_local_.emplace_back();
-    psi_old_local_.emplace_back();
-    const bool save_old =
-      (sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent);
-    if (options_.save_angular_flux || save_old)
-    {
-      size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
-      psi_new_local_.back().assign(num_ang_unknowns, 0.0);
-      if (save_old)
-        psi_old_local_.back().assign(num_ang_unknowns, 0.0);
-    }
-  }
+  UpdateAngularFluxStorage();
 
   const auto grid_dim = grid_->GetDimension();
   for (auto& groupset : groupsets_)
@@ -544,19 +529,8 @@ void
 DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
 {
   sweep_chunk_mode_ = mode;
-  if (mode == SweepChunkMode::TimeDependent && discretization_)
-  {
-    if (psi_old_local_.empty())
-      return;
-    if (psi_old_local_.front().empty())
-    {
-      for (auto& groupset : groupsets_)
-      {
-        size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
-        psi_old_local_.at(groupset.id).assign(num_ang_unknowns, 0.0);
-      }
-    }
-  }
+  if (discretization_)
+    UpdateAngularFluxStorage();
 }
 
 void
@@ -573,9 +547,52 @@ DiscreteOrdinatesProblem::EnableTimeDependentMode()
 }
 
 void
+DiscreteOrdinatesProblem::SetSaveAngularFlux(bool save)
+{
+  LBSProblem::SetSaveAngularFlux(save);
+
+  if (discretization_)
+    UpdateAngularFluxStorage();
+}
+
+void
 DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
 {
   InitializeSolverSchemes();
+}
+
+void
+DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
+{
+  psi_new_local_.resize(groupsets_.size());
+  psi_old_local_.resize(groupsets_.size());
+
+  const bool save_old =
+    (sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent);
+
+  for (auto& groupset : groupsets_)
+  {
+    const size_t num_ang_unknowns = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_);
+
+    auto& psi_new = psi_new_local_.at(groupset.id);
+    auto& psi_old = psi_old_local_.at(groupset.id);
+
+    if (options_.save_angular_flux || save_old)
+    {
+      if (psi_new.size() != num_ang_unknowns)
+        psi_new.assign(num_ang_unknowns, 0.0);
+    }
+    else
+      std::vector<double>().swap(psi_new);
+
+    if (save_old)
+    {
+      if (psi_old.size() != num_ang_unknowns)
+        psi_old.assign(num_ang_unknowns, 0.0);
+    }
+    else
+      std::vector<double>().swap(psi_old);
+  }
 }
 
 std::vector<std::shared_ptr<FieldFunctionGridBased>>
@@ -1594,7 +1611,10 @@ void
 DiscreteOrdinatesProblem::UpdatePsiOld()
 {
   for (size_t gs = 0; gs < psi_new_local_.size(); ++gs)
-    psi_old_local_[gs] = psi_new_local_[gs];
+  {
+    assert(psi_old_local_[gs].size() == psi_new_local_[gs].size());
+    std::copy(psi_new_local_[gs].begin(), psi_new_local_[gs].end(), psi_old_local_[gs].begin());
+  }
 }
 
 } // namespace opensn
