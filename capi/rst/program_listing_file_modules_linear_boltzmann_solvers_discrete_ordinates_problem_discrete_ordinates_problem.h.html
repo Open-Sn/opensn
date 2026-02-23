@@ -188,6 +188,8 @@
 <span class="w">  </span><span class="n">GetAngularFluxFieldFunctionList</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">groups</span><span class="p">,</span>
 <span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">angles</span><span class="p">);</span>
 
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSaveAngularFlux</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">save</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// Update angular flux field functions from psi_new_local_.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateAngularFieldFunctions</span><span class="p">();</span>
 
@@ -287,6 +289,8 @@
 <span class="w">                            </span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
 <span class="w">                            </span><span class="n">AngleAggregationType</span><span class="w"> </span><span class="n">agg_type</span><span class="p">,</span>
 <span class="w">                            </span><span class="n">GeometryType</span><span class="w"> </span><span class="n">lbs_geo_type</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateAngularFluxStorage</span><span class="p">();</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>

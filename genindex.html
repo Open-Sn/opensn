@@ -2496,6 +2496,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetBoundaryOptionsERK15InputParameters">opensn::DiscreteOrdinatesProblem::SetBoundaryOptions (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSaveAngularFluxEb">opensn::DiscreteOrdinatesProblem::SetSaveAngularFlux (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem13SetSweepChunkER11LBSGroupset">opensn::DiscreteOrdinatesProblem::SetSweepChunk (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem17SetSweepChunkModeE14SweepChunkMode">opensn::DiscreteOrdinatesProblem::SetSweepChunkMode (C++ function)</a>
@@ -3618,6 +3620,12 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem11ags_solver_E">opensn::LBSProblem::ags_solver_ (C++ member)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem16applied_adjoint_E">opensn::LBSProblem::applied_adjoint_ (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem26applied_save_angular_flux_E">opensn::LBSProblem::applied_save_angular_flux_ (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem12ApplyOptionsEv">opensn::LBSProblem::ApplyOptions (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem19block_id_to_xs_map_E">opensn::LBSProblem::block_id_to_xs_map_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem9carriers_E">opensn::LBSProblem::carriers_ (C++ member)</a>
@@ -3817,6 +3825,8 @@
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem10SetOptionsERK15InputParameters">opensn::LBSProblem::SetOptions (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem24SetPhiFromFieldFunctionsE12PhiSTLOptionRKNSt6vectorIjEERKNSt6vectorIjEE">opensn::LBSProblem::SetPhiFromFieldFunctions (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem18SetSaveAngularFluxEb">opensn::LBSProblem::SetSaveAngularFlux (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem8SetThetaEd">opensn::LBSProblem::SetTheta (C++ function)</a>
 </li>
@@ -4250,12 +4260,12 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum16GetNumPartitionsEv">opensn::MeshContinuum::GetNumPartitions (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum26GetTetrahedralFaceVerticesERK4CellRK8CellFace6size_t">opensn::MeshContinuum::GetTetrahedralFaceVertices (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum7GetTypeEv">opensn::MeshContinuum::GetType (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum20GetUniqueBoundaryIDsEv">opensn::MeshContinuum::GetUniqueBoundaryIDs (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum11IsCellLocalE8uint64_t">opensn::MeshContinuum::IsCellLocal (C++ function)</a>
@@ -7968,12 +7978,20 @@
         <li><a href="pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetPointSources">(pyopensn.solver.LBSProblem method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetPostAdvanceCallback">SetPostAdvanceCallback() (pyopensn.solver.TransientSolver method)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetPreAdvanceCallback">SetPreAdvanceCallback() (pyopensn.solver.TransientSolver method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetSaveAngularFlux">SetSaveAngularFlux() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
+
+      <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.SetSaveAngularFlux">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
+</li>
+        <li><a href="pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetSaveAngularFlux">(pyopensn.solver.LBSProblem method)</a>
+</li>
+      </ul></li>
       <li><a href="pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.SetScalingFactor">SetScalingFactor() (pyopensn.xs.MultiGroupXS method)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.SetSourceOptions">SetSourceOptions() (pyopensn.response.ResponseEvaluator method)</a>
