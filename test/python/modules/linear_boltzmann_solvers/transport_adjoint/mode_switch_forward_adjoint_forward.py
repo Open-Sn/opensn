@@ -100,7 +100,7 @@ if __name__ == "__main__":
     )
 
     def scalar_sum_over(problem, logical_volume):
-        ff = problem.GetScalarFieldFunctionList(only_scalar_flux=False)[0][0]
+        ff = problem.GetScalarFluxFieldFunction(only_scalar_flux=False)[0][0]
         ffi = FieldFunctionInterpolationVolume()
         ffi.SetOperationType("sum")
         ffi.SetLogicalVolume(logical_volume)
