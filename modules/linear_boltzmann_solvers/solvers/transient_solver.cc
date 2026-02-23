@@ -97,7 +97,7 @@ TransientSolver::Initialize()
 
   // Ensure angular fluxes are available from the initial condition.
   auto& options = do_problem_->GetOptions();
-  options.save_angular_flux = true;
+  do_problem_->SetSaveAngularFlux(true);
   do_problem_->SetTime(current_time_);
 
   const std::string& init_state = initial_state_;

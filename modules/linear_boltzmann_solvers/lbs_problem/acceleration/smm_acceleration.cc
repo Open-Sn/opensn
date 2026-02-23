@@ -49,7 +49,7 @@ SMMAcceleration::SMMAcceleration(const InputParameters& params)
 {
   if (do_problem_.GetScatteringOrder() != 0)
     throw std::runtime_error("SMM acceleration is only supported with P0 scattering");
-  do_problem_.GetOptions().save_angular_flux = true;
+  do_problem_.SetSaveAngularFlux(true);
 }
 
 void

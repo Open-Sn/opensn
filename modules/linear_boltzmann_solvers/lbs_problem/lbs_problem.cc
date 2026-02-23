@@ -90,8 +90,10 @@ LBSProblem::LBSProblem(const InputParameters& params)
   {
     auto options_params = LBSProblem::GetOptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
-    SetOptions(options_params);
+    ParseOptions(options_params);
   }
+  applied_adjoint_ = options_.adjoint;
+  applied_save_angular_flux_ = options_.save_angular_flux;
 
   // Set geometry type
   geometry_type_ = grid_->GetGeometryType();
@@ -565,6 +567,13 @@ LBSProblem::GetXSMapEntryBlock()
 void
 LBSProblem::SetOptions(const InputParameters& input)
 {
+  ParseOptions(input);
+  ApplyOptions();
+}
+
+void
+LBSProblem::ParseOptions(const InputParameters& input)
+{
   auto params = LBSProblem::GetOptionsBlock();
   params.AssignParameters(input);
   const auto& params_at_assignment = input.GetParametersAtAssignment();
@@ -693,6 +702,19 @@ LBSProblem::SetOptions(const InputParameters& input)
     opensn::mpi_comm.barrier();
     UpdateRestartWriteTime();
   }
+}
+
+void
+LBSProblem::ApplyOptions()
+{
+  if (not discretization_)
+    return;
+
+  if (options_.adjoint != applied_adjoint_)
+    SetAdjoint(options_.adjoint);
+
+  if (options_.save_angular_flux != applied_save_angular_flux_)
+    SetSaveAngularFlux(options_.save_angular_flux);
 }
 
 void
@@ -1373,34 +1395,44 @@ LBSProblem::~LBSProblem()
 }
 
 void
+LBSProblem::SetSaveAngularFlux(bool save)
+{
+  options_.save_angular_flux = save;
+  if (discretization_)
+    applied_save_angular_flux_ = save;
+}
+
+void
 LBSProblem::SetAdjoint(bool adjoint)
 {
-  if (adjoint != options_.adjoint)
-  {
-    options_.adjoint = adjoint;
+  options_.adjoint = adjoint;
 
+  if (not discretization_)
+    return;
+
+  if (adjoint != applied_adjoint_)
+  {
     // If a discretization exists, the solver has already been initialized.
     // Reinitialize the materials to obtain the appropriate xs and clear the
     // sources to prepare for defining the adjoint problem
-    if (discretization_)
-    {
-      // The materials are reinitialized here to ensure that the proper cross sections
-      // are available to the solver. Because an adjoint solve requires volumetric or
-      // point sources, the material-based sources are not set within the initialize routine.
-      InitializeMaterials();
+    // The materials are reinitialized here to ensure that the proper cross sections
+    // are available to the solver. Because an adjoint solve requires volumetric or
+    // point sources, the material-based sources are not set within the initialize routine.
+    InitializeMaterials();
 
-      // Forward and adjoint sources are fundamentally different, so any existing sources
-      // should be cleared and reset through options upon changing modes.
-      point_sources_.clear();
-      volumetric_sources_.clear();
-      ClearBoundaries();
+    // Forward and adjoint sources are fundamentally different, so any existing sources
+    // should be cleared and reset through options upon changing modes.
+    point_sources_.clear();
+    volumetric_sources_.clear();
+    ClearBoundaries();
 
-      // Set all solutions to zero.
-      phi_old_local_.assign(phi_old_local_.size(), 0.0);
-      phi_new_local_.assign(phi_new_local_.size(), 0.0);
-      ZeroSolutions();
-      precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
-    }
+    // Set all solutions to zero.
+    phi_old_local_.assign(phi_old_local_.size(), 0.0);
+    phi_new_local_.assign(phi_new_local_.size(), 0.0);
+    ZeroSolutions();
+    precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
+
+    applied_adjoint_ = adjoint;
   }
 }
 

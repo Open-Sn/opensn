@@ -601,6 +601,14 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
+    "SetSaveAngularFlux",
+    [](LBSProblem& self, bool save)
+    {
+      self.SetSaveAngularFlux(save);
+    },
+    py::arg("save")
+  );
+  lbs_problem.def(
     "SetAdjoint",
     [](LBSProblem& self, bool adjoint)
     {
