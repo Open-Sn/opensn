@@ -78,6 +78,7 @@ public:
    * are cleared, and solution vectors are zeroed.
    */
   void SetAdjoint(bool adjoint);
+  bool IsAdjoint() const;
   virtual void SetSaveAngularFlux(bool save);
   void ApplyOptions();
 

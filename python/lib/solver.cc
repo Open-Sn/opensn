@@ -673,6 +673,13 @@ WrapLBS(py::module& slv)
     to avoid hidden coupling between forward and adjoint setups.
     )"
   );
+  lbs_problem.def(
+    "IsAdjoint",
+    &LBSProblem::IsAdjoint,
+    R"(
+    Return ``True`` if the problem is in adjoint mode, otherwise ``False``.
+    )"
+  );
 
   // discrete ordinate solver
   auto do_problem = py::class_<DiscreteOrdinatesProblem, std::shared_ptr<DiscreteOrdinatesProblem>,

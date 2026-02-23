@@ -1413,14 +1413,12 @@ LBSProblem::SetSaveAngularFlux(bool save)
 }
 
 void
-LBSProblem::ValidateAdjointModeChange(bool /*adjoint*/) const
-{
-}
-
-void
 LBSProblem::SetAdjoint(bool adjoint)
 {
-  ValidateAdjointModeChange(adjoint);
+  if (adjoint and discretization_)
+    if (const auto* do_problem = dynamic_cast<const DiscreteOrdinatesProblem*>(this);
+        do_problem and do_problem->IsTimeDependent())
+      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
 
   options_.adjoint = adjoint;
 
@@ -1451,6 +1449,12 @@ LBSProblem::SetAdjoint(bool adjoint)
 
     applied_adjoint_ = adjoint;
   }
+}
+
+bool
+LBSProblem::IsAdjoint() const
+{
+  return options_.adjoint;
 }
 
 } // namespace opensn
