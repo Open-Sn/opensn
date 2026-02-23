@@ -454,9 +454,11 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 <dd><p>Set problem options from a large list of parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for toggling whether the solver is in adjoint mode.</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Same option keys and semantics as <a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetOptions" title="pyopensn.solver.LBSProblem.SetOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetOptions()</span></code></a>.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This call is additive: only options explicitly supplied are updated.</p>
 </dd></dl>
 
 <dl class="py method">

@@ -330,17 +330,19 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>max_mpi_message_size</strong> (<em>int default=32768</em>) – The maximum MPI message size used during sweeps.</p></li>
-<li><p><strong>restart_writes_enabled</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag that controls writing of restart dumps.</p></li>
+<li><p><strong>restart_writes_enabled</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag that controls writing of restart dumps.
+Requires <code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code> to be set to a non-empty value.</p></li>
 <li><p><strong>write_delayed_psi_to_restart</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag that controls writing of delayed angular fluxes to restarts.</p></li>
 <li><p><strong>read_restart_path</strong> (<em>str</em><em>, </em><em>default=''</em>) – Full path for reading restart dumps including file basename.</p></li>
 <li><p><strong>write_restart_path</strong> (<em>str</em><em>, </em><em>default=''</em>) – Full path for writing restart dumps including file basename.</p></li>
-<li><p><strong>write_restart_time_interval</strong> (<em>int</em><em>, </em><em>default=0</em>) – Time interval in seconds at which restart data is to be written.</p></li>
+<li><p><strong>write_restart_time_interval</strong> (<em>int</em><em>, </em><em>default=0</em>) – Time interval in seconds at which restart data is to be written.
+Must be <code class="docutils literal notranslate"><span class="pre">0</span></code> (disabled) or at least <code class="docutils literal notranslate"><span class="pre">30</span></code> seconds.</p></li>
 <li><p><strong>use_precursors</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for using delayed neutron precursors.</p></li>
 <li><p><strong>use_source_moments</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.</p></li>
 <li><p><strong>save_angular_flux</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag indicating whether angular fluxes are to be stored or not.</p></li>
 <li><p><strong>verbose_inner_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of inner iterations.</p></li>
 <li><p><strong>verbose_outer_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
-<li><p><strong>max_ags_iterations</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum number of across-groupset iterations.</p></li>
+<li><p><strong>max_ags_iterations</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum number of across-groupset iterations. <code class="docutils literal notranslate"><span class="pre">0</span></code> is allowed.</p></li>
 <li><p><strong>ags_tolerance</strong> (<em>float</em><em>, </em><em>default=1.0e-6</em>) – Across-groupset iterations tolerance.</p></li>
 <li><p><strong>ags_convergence_check</strong> (<em>{'l2'</em><em>, </em><em>'pointwise'}</em><em>, </em><em>default='l2'</em>) – Type of convergence check for AGS iterations.</p></li>
 <li><p><strong>verbose_ags_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
@@ -357,6 +359,13 @@ are exported as <code class="docutils literal notranslate"><span class="pre">pre
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This call is additive: only options explicitly supplied are updated.
+Options requirements:
+- <code class="docutils literal notranslate"><span class="pre">restart_writes_enabled=True</span></code> requires non-empty <code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code>.
+- <code class="docutils literal notranslate"><span class="pre">write_restart_time_interval&gt;0</span></code> requires <code class="docutils literal notranslate"><span class="pre">restart_writes_enabled=True</span></code>.
+- <code class="docutils literal notranslate"><span class="pre">write_restart_time_interval</span></code> must be <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">&gt;=30</span></code>.
+- non-empty <code class="docutils literal notranslate"><span class="pre">field_function_prefix</span></code> requires <code class="docutils literal notranslate"><span class="pre">field_function_prefix_option='prefix'</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">

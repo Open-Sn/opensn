@@ -457,9 +457,11 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 <dd><p>Set problem options from a large list of parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for toggling whether the solver is in adjoint mode.</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Same option keys and semantics as <a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetOptions" title="pyopensn.solver.LBSProblem.SetOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetOptions()</span></code></a>.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This call is additive: only options explicitly supplied are updated.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -703,7 +705,8 @@ groupset. Each dictionary supports:</p>
 <li><p>write_delayed_psi_to_restart: bool, default=True</p></li>
 <li><p>read_restart_path: str, default=’’</p></li>
 <li><p>write_restart_path: str, default=’’</p></li>
-<li><p>write_restart_time_interval: int, default=0</p></li>
+<li><p>write_restart_time_interval: int, default=0
+(must be 0 or &gt;=30)</p></li>
 <li><p>use_precursors: bool, default=False</p></li>
 <li><p>use_source_moments: bool, default=False</p></li>
 <li><p>save_angular_flux: bool, default=False</p></li>
@@ -720,6 +723,7 @@ groupset. Each dictionary supports:</p>
 <li><p>field_function_prefix: str, default=’’</p></li>
 </ul>
 </div></blockquote>
+<p>Requirements are the same as <a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetOptions" title="pyopensn.solver.LBSProblem.SetOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetOptions()</span></code></a>.</p>
 </p></li>
 <li><p><strong>sweep_type</strong> (<em>str</em><em>, </em><em>default=&quot;AAH&quot;</em>) – The sweep type to use. Must be one of <cite>AAH</cite> or <cite>CBC</cite>. Defaults to <cite>AAH</cite>.</p></li>
 <li><p><strong>use_gpus</strong> (<em>bool</em><em>, </em><em>default=False</em>) – A flag specifying whether GPU acceleration is used for the sweep. Currently, only <code class="docutils literal notranslate"><span class="pre">AAH</span></code> is
