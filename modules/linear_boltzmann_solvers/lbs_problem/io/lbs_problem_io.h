@@ -12,37 +12,10 @@ namespace opensn
 {
 
 class LBSProblem;
-class DiscreteOrdinatesProblem;
 
 class LBSSolverIO
 {
 public:
-  /**
-   * Write an angular flux vector to a file.
-   *
-   * \param lbs_problem LBS problem
-   * \param file_base File name base
-   * \param per_material Optional angular flux source vector
-   */
-  static void WriteAngularFluxes(
-    DiscreteOrdinatesProblem& do_problem,
-    const std::string& file_base,
-    std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src =
-      std::nullopt);
-
-  /**
-   * Read an angular flux vector from a file.
-   *
-   * \param lbs_problem LBS problem
-   * \param file_base File name base
-   * \param per_material Optional angular flux destination vector
-   */
-  static void ReadAngularFluxes(
-    DiscreteOrdinatesProblem& do_problem,
-    const std::string& file_base,
-    std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest =
-      std::nullopt);
-
   /**
    * Write a flux moments vector to a file.
    *

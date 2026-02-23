@@ -10,6 +10,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/solvers/transient_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
 #include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
@@ -468,7 +470,7 @@ WrapLBS(py::module& slv)
     "WriteAngularFluxes",
     [](DiscreteOrdinatesProblem& self, const std::string& file_base)
     {
-      LBSSolverIO::WriteAngularFluxes(self, file_base);
+      DiscreteOrdinatesProblemIO::WriteAngularFluxes(self, file_base);
     },
     R"(
     Write angular flux data to file.
@@ -484,7 +486,7 @@ WrapLBS(py::module& slv)
     "ReadAngularFluxes",
     [](DiscreteOrdinatesProblem& self, const std::string& file_base)
     {
-      LBSSolverIO::ReadAngularFluxes(self, file_base);
+      DiscreteOrdinatesProblemIO::ReadAngularFluxes(self, file_base);
     },
     R"(
     Read angular fluxes from file.
