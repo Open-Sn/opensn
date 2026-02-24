@@ -115,6 +115,8 @@ if __name__ == "__main__":
 
     phys.SetVolumetricSources(clear_volumetric_sources=True)
 
+    phys.SetTimeDependentMode()
+
     solver = TransientSolver(problem=phys, dt=dt, theta=1.0, stop_time=dt, initial_state="existing")
     solver.Initialize()
     solver.Execute()

@@ -53,6 +53,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
+        time_dependent=True,
         groupsets=[
             {
                 "groups_from_to": [0, num_groups - 1],

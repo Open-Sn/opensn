@@ -631,6 +631,26 @@ WrapLBS(py::module& slv)
     py::arg("save")
   );
   lbs_problem.def(
+    "ZeroPhi",
+    [](LBSProblem& self)
+    {
+      self.ZeroPhi();
+    },
+    R"(
+    Zero the scalar-flux vectors (``phi_old`` and ``phi_new``) in-place.
+    )"
+  );
+  lbs_problem.def(
+    "ZeroPsi",
+    [](LBSProblem& self)
+    {
+      self.ZeroPsi();
+    },
+    R"(
+    Zero the angular-flux storage (if present for this problem type).
+    )"
+  );
+  lbs_problem.def(
     "SetAdjoint",
     [](LBSProblem& self, bool adjoint)
     {
@@ -802,9 +822,63 @@ WrapLBS(py::module& slv)
         Requirements are the same as :meth:`LBSProblem.SetOptions`.
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
+    time_dependent : bool, default=False
+        If true, the problem is constructed in time-dependent mode. Otherwise it starts in
+        steady-state mode.
     use_gpus : bool, default=False
         A flag specifying whether GPU acceleration is used for the sweep. Currently, only ``AAH`` is
         supported.
+    )"
+  );
+  do_problem.def(
+    "SetTimeDependentMode",
+    &DiscreteOrdinatesProblem::SetTimeDependentMode,
+    R"(
+    Set the problem to time-dependent mode.
+
+    Notes
+    -----
+    You only need to call this if the problem was constructed in steady-state mode
+    (the default) and you want to switch to time-dependent mode.
+
+    If called before initialization, this only sets the mode flag used at
+    initialization time; no reset is performed because runtime state does not yet exist.
+    It may also force ``save_angular_flux=True`` because transient mode requires angular-flux
+    storage. Runtime state will be set when Initialize is called.
+
+    If called after initialization, this updates problem internals (sweep chunk mode and
+    source-function) while preserving user boundary conditions and fixed sources.
+    If ``save_angular_flux`` is currently false, this transition enables it while in
+    time-dependent mode.
+    )"
+  );
+  do_problem.def(
+    "SetSteadyStateMode",
+    &DiscreteOrdinatesProblem::SetSteadyStateMode,
+    R"(
+    Set the problem to steady-state mode.
+
+    Notes
+    -----
+    You only need to call this if the problem was constructed in time-dependent mode
+    (``time_dependent=True``) and you want to switch to steady-state mode.
+
+    If called before initialization, this only sets the mode flag used at
+    initialization time; no reset is performed because runtime state does not yet exist.
+    Runtime state will be set when Initialize is called. This does not force
+    ``save_angular_flux`` in the pre-initialize path.
+
+    If called after initialization, this updates problem internals (sweep chunk mode and
+    source-function) while preserving user boundary conditions and fixed sources.
+    If ``save_angular_flux`` was auto-enabled when entering time-dependent mode, this call
+    restores the previous value.
+    )"
+  );
+  do_problem.def(
+    "IsTimeDependent",
+    &DiscreteOrdinatesProblem::IsTimeDependent,
+    R"(
+    Return ``True`` if the problem is currently in time-dependent mode.
     )"
   );
   do_problem.def(

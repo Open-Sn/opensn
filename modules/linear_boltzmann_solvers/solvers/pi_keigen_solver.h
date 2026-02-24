@@ -53,6 +53,7 @@ protected:
   LBSGroupset& front_gs_;
   std::shared_ptr<LinearSolver> front_wgs_solver_;
   std::shared_ptr<WGSContext> front_wgs_context_;
+  bool initialized_ = false;
 
 private:
   bool WriteRestartData();

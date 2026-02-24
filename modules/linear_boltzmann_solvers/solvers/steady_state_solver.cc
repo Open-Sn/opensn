@@ -42,8 +42,6 @@ SteadyStateSourceSolver::Create(const ParameterBlock& params)
 SteadyStateSourceSolver::SteadyStateSourceSolver(const InputParameters& params)
   : Solver(params), lbs_problem_(params.GetSharedPtrParam<Problem, LBSProblem>("problem"))
 {
-  if (auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(lbs_problem_))
-    do_problem->SetSweepChunkMode(DiscreteOrdinatesProblem::SweepChunkMode::SteadyState);
 }
 
 void
@@ -52,6 +50,11 @@ SteadyStateSourceSolver::Initialize()
   CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Initialize");
 
   lbs_problem_->Initialize();
+  if (auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(lbs_problem_))
+    if (do_problem->IsTimeDependent())
+      throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."
+                                           "SetSteadyStateMode() before initializing this solver.");
+  initialized_ = true;
 
   if (not lbs_problem_->GetOptions().read_restart_path.empty())
     ReadRestartData();
@@ -61,6 +64,9 @@ void
 SteadyStateSourceSolver::Execute()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Execute");
+
+  if (not initialized_)
+    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
 
   auto& options = lbs_problem_->GetOptions();
 

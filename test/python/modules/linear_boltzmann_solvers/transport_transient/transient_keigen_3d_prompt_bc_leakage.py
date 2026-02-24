@@ -76,6 +76,8 @@ def run_case(bc_type, xs_crit, xs_super):
     keigen.Initialize()
     keigen.Execute()
 
+    phys.SetTimeDependentMode()
+
     solver = TransientSolver(problem=phys, initial_state="existing")
     solver.Initialize()
 
