@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/response_evaluator/response_evaluator.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
@@ -140,7 +141,7 @@ ResponseEvaluator::SetBufferOptions(const InputParameters& input)
 
   std::vector<std::vector<double>> psi;
   if (prefixes.Has("angular_fluxes"))
-    LBSSolverIO::ReadAngularFluxes(
+    DiscreteOrdinatesProblemIO::ReadAngularFluxes(
       *do_problem_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
 
   adjoint_buffers_[name] = {phi, psi};

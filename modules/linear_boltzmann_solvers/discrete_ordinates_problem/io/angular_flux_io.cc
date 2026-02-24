@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/runtime.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -11,7 +11,7 @@ namespace opensn
 {
 
 void
-LBSSolverIO::WriteAngularFluxes(
+DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   DiscreteOrdinatesProblem& do_problem,
   const std::string& file_base,
   std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src)
@@ -104,7 +104,7 @@ LBSSolverIO::WriteAngularFluxes(
 }
 
 void
-LBSSolverIO::ReadAngularFluxes(
+DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   DiscreteOrdinatesProblem& do_problem,
   const std::string& file_base,
   std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest)
