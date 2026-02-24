@@ -265,6 +265,12 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.IsAdjoint">
+<span class="sig-name descname"><span class="pre">IsAdjoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.IsAdjoint" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the problem is in adjoint mode, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.ReadAngularFluxes">
 <span class="sig-name descname"><span class="pre">ReadAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ReadAngularFluxes" title="Link to this definition"></a></dt>
 <dd><p>Read angular fluxes from file.</p>
@@ -320,7 +326,46 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetAdjoint">
 <span class="sig-name descname"><span class="pre">SetAdjoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set forward/adjoint transport mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> enables adjoint mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> enables forward mode.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>This is one of three supported mode-setting paths in Python:</dt><dd><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">options={'adjoint':</span> <span class="pre">...}</span></code> in the problem constructor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SetOptions(adjoint=...)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SetAdjoint(...)</span></code> (this method).</p></li>
+</ol>
+</dd>
+</dl>
+<p>In typical Python workflows, use constructor options or <code class="docutils literal notranslate"><span class="pre">SetOptions</span></code>.</p>
+<p>When this changes mode after the problem has been initialized, OpenSn performs a
+full mode-transition reset:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Materials are reinitialized in the selected mode.</p></li>
+<li><p>Point and volumetric sources are cleared.</p></li>
+<li><p>Boundary conditions are cleared.</p></li>
+<li><p>Scalar and angular flux vectors are zeroed.</p></li>
+</ul>
+</div></blockquote>
+<p>The block-id to cross-section map is preserved across the transition.
+However, the mode change is applied to the mapped <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves.
+If those objects are shared with other problems, they observe the same mode toggle.</p>
+<dl class="simple">
+<dt>After a mode change, reapply the desired driving terms before solving, typically:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pyopensn.solver.LBSProblem.SetPointSources" title="pyopensn.solver.LBSProblem.SetPointSources"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetPointSources()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pyopensn.solver.LBSProblem.SetVolumetricSources" title="pyopensn.solver.LBSProblem.SetVolumetricSources"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetVolumetricSources()</span></code></a></p></li>
+<li><p><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.SetBoundaryOptions" title="pyopensn.solver.DiscreteOrdinatesProblem.SetBoundaryOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem.SetBoundaryOptions()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<p>This routine is intentionally destructive with respect to source/boundary/flux state
+to avoid hidden coupling between forward and adjoint setups.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetOptions">
@@ -340,6 +385,7 @@ Must be <code class="docutils literal notranslate"><span class="pre">0</span></c
 <li><p><strong>use_precursors</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for using delayed neutron precursors.</p></li>
 <li><p><strong>use_source_moments</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.</p></li>
 <li><p><strong>save_angular_flux</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag indicating whether angular fluxes are to be stored or not.</p></li>
+<li><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Toggle adjoint transport mode.</p></li>
 <li><p><strong>verbose_inner_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of inner iterations.</p></li>
 <li><p><strong>verbose_outer_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
 <li><p><strong>max_ags_iterations</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum number of across-groupset iterations. <code class="docutils literal notranslate"><span class="pre">0</span></code> is allowed.</p></li>
@@ -360,8 +406,19 @@ are exported as <code class="docutils literal notranslate"><span class="pre">pre
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This call is additive: only options explicitly supplied are updated.
-Options requirements:
+<p>This call is additive: only options explicitly supplied are updated.</p>
+<dl class="simple">
+<dt>This is one of three supported mode-setting paths in Python:</dt><dd><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">options={'adjoint':</span> <span class="pre">...}</span></code> in the problem constructor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SetOptions(adjoint=...)</span></code> (this method).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SetAdjoint(...)</span></code>.</p></li>
+</ol>
+</dd>
+</dl>
+<p>If <code class="docutils literal notranslate"><span class="pre">adjoint</span></code> is explicitly supplied in this call and differs from the current mode, OpenSn
+performs the same mode-transition behavior as <a class="reference internal" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">adjoint</span></code>
+is omitted, the existing mode is unchanged.</p>
+<p>Options requirements:
 - <code class="docutils literal notranslate"><span class="pre">restart_writes_enabled=True</span></code> requires non-empty <code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code>.
 - <code class="docutils literal notranslate"><span class="pre">write_restart_time_interval&gt;0</span></code> requires <code class="docutils literal notranslate"><span class="pre">restart_writes_enabled=True</span></code>.
 - <code class="docutils literal notranslate"><span class="pre">write_restart_time_interval</span></code> must be <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">&gt;=30</span></code>.
@@ -425,6 +482,12 @@ Options requirements:
 </p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Forward/adjoint mode toggles via <code class="docutils literal notranslate"><span class="pre">SetOptions(adjoint=...)</span></code> (or the low-level
+<a class="reference internal" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code></a>) do not change this map.
+The <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves are mutable and shared by pointer. If the same
+<code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> handle is shared across multiple problems, toggling adjoint mode in one
+problem also changes the transport mode seen by the others.</p>
 </dd></dl>
 
 <dl class="py method">

@@ -103,7 +103,6 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/spatial_discretization/finite_element/unit_cell_matrices.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/geometry.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscksp.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;any&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -158,7 +157,15 @@
 
 <span class="w">  </span><span class="c1">/// Is the problem time dependent</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Toggle forward/adjoint transport mode.</span>
+<span class="cm">   *</span>
+<span class="cm">   * If called after initialization, this performs a mode-transition reset:</span>
+<span class="cm">   * materials are reinitialized in the selected mode, sources and boundaries</span>
+<span class="cm">   * are cleared, and solution vectors are zeroed.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetAdjoint</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjoint</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSaveAngularFlux</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">save</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ApplyOptions</span><span class="p">();</span>
 

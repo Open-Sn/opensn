@@ -606,6 +606,30 @@
 </section>
 <section id="problem">
 <h2>Problem<a class="headerlink" href="#problem" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Forward/adjoint mode transitions are destructive by design.</strong>
+In Python there are three valid ways to set mode:</p>
+<ol class="arabic simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">options={'adjoint':</span> <span class="pre">...}</span></code> in the problem constructor.</p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">problem.SetOptions(adjoint=...)</span></code>.</p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">problem.SetAdjoint(...)</span></code> (low-level equivalent).</p></li>
+</ol>
+<p>A mode transition triggers:</p>
+<ul class="simple">
+<li><p>reinitializes material mode (forward vs adjoint),</p></li>
+<li><p>clears point and volumetric sources,</p></li>
+<li><p>clears boundary conditions,</p></li>
+<li><p>zeros scalar and angular flux state.</p></li>
+</ul>
+<p>The block-id to cross-section map is preserved. After switching mode, reapply
+the desired driving terms (sources and boundaries) before solving.</p>
+<p><code class="docutils literal notranslate"><span class="pre">SetOptions</span></code> is additive: only explicitly supplied options are updated.
+If <code class="docutils literal notranslate"><span class="pre">adjoint</span></code> is omitted in a <code class="docutils literal notranslate"><span class="pre">SetOptions</span></code> call, the current mode is unchanged.</p>
+<p>Adjoint mode is applied to the mapped <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves.
+If the same cross-section object is shared across multiple problems, toggling
+adjoint mode in one problem affects all problems using that object.</p>
+</div>
 <section id="id4">
 <h3>Base class<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">

@@ -30,8 +30,6 @@ Includes
 --------
 
 
-- ``any``
-
 - ``chrono``
 
 - ``framework/math/geometry.h`` (:ref:`file_framework_math_geometry.h`)

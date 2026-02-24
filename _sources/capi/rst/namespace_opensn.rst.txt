@@ -809,9 +809,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a6fba4337d1fd96234b6edbe19504b575`
 
-- :ref:`exhale_function_namespaceopensn_1a83267a6e1df77a97b0010a4d12450360`
-
 - :ref:`exhale_function_namespaceopensn_1a7ceed89aee4a14a696ee2ffe7a165221`
+
+- :ref:`exhale_function_namespaceopensn_1a83267a6e1df77a97b0010a4d12450360`
 
 - :ref:`exhale_function_namespaceopensn_1af44db9c1ce3bab159ed7d936f147e4f3`
 
@@ -1029,11 +1029,11 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a8a5a0b764bafcabf550979995200d07b`
 
-- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
-
 - :ref:`exhale_function_namespaceopensn_1af5d0740a6b08cd24f6f67db3c5eeb06c`
 
 - :ref:`exhale_function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610`
+
+- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
 
 - :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
 
