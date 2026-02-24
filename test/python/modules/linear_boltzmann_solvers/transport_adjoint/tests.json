@@ -122,5 +122,18 @@
         "abs_tol": 1e-8
       }
     ]
+  },
+  {
+    "file": "mode_switch_forward_adjoint_forward.py",
+    "comment": "Forward -> adjoint -> forward mode switching with source and boundary reset",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "FORWARD_MATCH=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
   }
 ]

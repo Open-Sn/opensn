@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
@@ -581,6 +582,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
                                    ? params_at_assignment
                                    : static_cast<const ParameterBlock&>(input);
 
+  bool set_adjoint_mode = false;
+  bool adjoint_mode_value = options_.adjoint;
+
   // Apply only options explicitly specified by the caller.
   for (const auto& spec : specified_params.GetParameters())
   {
@@ -658,7 +662,10 @@ LBSProblem::ParseOptions(const InputParameters& input)
       options_.field_function_prefix = spec.GetValue<std::string>();
 
     else if (spec.GetName() == "adjoint")
-      options_.adjoint = spec.GetValue<bool>();
+    {
+      set_adjoint_mode = true;
+      adjoint_mode_value = spec.GetValue<bool>();
+    }
 
   } // for specified options
 
@@ -702,6 +709,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
     opensn::mpi_comm.barrier();
     UpdateRestartWriteTime();
   }
+
+  if (set_adjoint_mode)
+    SetAdjoint(adjoint_mode_value);
 }
 
 void
@@ -1405,6 +1415,11 @@ LBSProblem::SetSaveAngularFlux(bool save)
 void
 LBSProblem::SetAdjoint(bool adjoint)
 {
+  if (adjoint and discretization_)
+    if (const auto* do_problem = dynamic_cast<const DiscreteOrdinatesProblem*>(this);
+        do_problem and do_problem->IsTimeDependent())
+      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
+
   options_.adjoint = adjoint;
 
   if (not discretization_)
@@ -1434,6 +1449,12 @@ LBSProblem::SetAdjoint(bool adjoint)
 
     applied_adjoint_ = adjoint;
   }
+}
+
+bool
+LBSProblem::IsAdjoint() const
+{
+  return options_.adjoint;
 }
 
 } // namespace opensn
