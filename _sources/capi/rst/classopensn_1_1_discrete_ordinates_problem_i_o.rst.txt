@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_discrete_ordinates_problem_i_o:
+
+Class DiscreteOrdinatesProblemIO
+================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_io_discrete_ordinates_problem_io.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::DiscreteOrdinatesProblemIO
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

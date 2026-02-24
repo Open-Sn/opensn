@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Program Listing for File lbs_compute.h &mdash; OpenSn 0.0.1 documentation</title>
+  <title>Program Listing for File discrete_ordinates_compute.h &mdash; OpenSn 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -73,7 +73,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Program Listing for File lbs_compute.h</li>
+      <li class="breadcrumb-item active">Program Listing for File discrete_ordinates_compute.h</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -82,35 +82,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="program-listing-for-file-lbs-compute-h">
-<span id="program-listing-file-modules-linear-boltzmann-solvers-lbs-problem-lbs-compute-h"></span><h1>Program Listing for File lbs_compute.h<a class="headerlink" href="#program-listing-for-file-lbs-compute-h" title="Link to this heading"></a></h1>
-<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-lbs-compute-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h</span></code>)</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2025 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+  <section id="program-listing-for-file-discrete-ordinates-compute-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-discrete-ordinates-compute-h"></span><h1>Program Listing for File discrete_ordinates_compute.h<a class="headerlink" href="#program-listing-for-file-discrete-ordinates-compute-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_compute.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-discrete-ordinates-compute-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_compute.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2026 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
 <span class="c1">// SPDX-License-Identifier: MIT</span>
 
 <span class="cp">#pragma once</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
+
+<span class="c1">/// Compute balance</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ComputeBalance</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scaling_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Compute the total fission production in the problem.</span>
+<span class="cm"> * Computes the angular flux based leakage from boundary surfaces.</span>
+<span class="cm"> * \param groupset_id The groupset for which to compute the leakage.</span>
+<span class="cm"> * \param boundary_id The boundary id for which to perform the integration.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \return The leakage as a value.</span>
 <span class="cm"> */</span>
-<span class="kt">double</span><span class="w"> </span><span class="nf">ComputeFissionProduction</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeLeakage</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
+<span class="w">                                   </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                                   </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">boundary_id</span><span class="p">);</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Computes the total fission rate in the problem.</span>
+<span class="cm"> * Computes the group-wise angular flux-based leakage from the specified boundaries.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param boundary_ids The boundary ids to compute leakages on.</span>
+<span class="cm"> * \return A map of boundary ids to group-wise leakages.</span>
 <span class="cm"> */</span>
-<span class="kt">double</span><span class="w"> </span><span class="nf">ComputeFissionRate</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi</span><span class="p">);</span>
-
-<span class="c1">/// Compute the steady state delayed neutron precursor concentrations.</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">ComputePrecursors</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">ComputeLeakage</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
+<span class="w">                                                       </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">boundary_ids</span><span class="p">);</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>

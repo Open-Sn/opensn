@@ -3,7 +3,7 @@
 Function opensn::ComputeLeakage(DiscreteOrdinatesProblem&, const std::vector<uint64_t>&)
 ========================================================================================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_compute.h`
 
 
 Function Documentation

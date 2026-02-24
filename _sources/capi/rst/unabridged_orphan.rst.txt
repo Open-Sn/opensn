@@ -815,6 +815,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_discrete_ordinates_problem_i_o.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_distributed_mesh_generator.rst
 
 .. toctree::
@@ -1973,6 +1978,11 @@ Directories
 .. toctree::
    :maxdepth: 1
 
+   dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_io.rst
+
+.. toctree::
+   :maxdepth: 1
+
    dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods.rst
 
 .. toctree::
@@ -2327,6 +2337,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_compute.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_discrete_ordinates_curvilinear_problem.h.rst
 
 .. toctree::
@@ -2338,6 +2353,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_io_discrete_ordinates_problem_io.h.rst
 
 .. toctree::
    :maxdepth: 1
