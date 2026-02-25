@@ -42,7 +42,7 @@ std::operator<<(std::ostream& out, const opensn::AAHD_NodeIndex& e)
   else
   {
     out << "index=" << std::setw(6) << e.GetIndex() << ", ";
-    if (e.IsOutGoing())
+    if (e.IsOutgoing())
       out << "outgoing, ";
     else
       out << "incoming, ";

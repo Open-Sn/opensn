@@ -6,6 +6,10 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbcd_angle_set.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h"
 
@@ -53,6 +57,57 @@ std::shared_ptr<SweepChunk>
 DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
 {
   return std::make_shared<AAHDSweepChunk>(*this, groupset);
+}
+
+void
+DiscreteOrdinatesProblem::CreateCBCD_FLUDSCommonData()
+{
+  for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
+  {
+    for (const auto& spds : spds_list)
+    {
+      quadrature_fluds_commondata_map_[quadrature].push_back(
+        std::make_unique<CBCD_FLUDSCommonData>(*spds, grid_nodal_mappings_, *discretization_));
+    }
+  }
+}
+
+std::shared_ptr<FLUDS>
+DiscreteOrdinatesProblem::CreateCBCD_FLUDS(std::size_t num_groups,
+                                           std::size_t num_angles,
+                                           std::size_t num_local_cells,
+                                           const FLUDSCommonData& common_data,
+                                           const UnknownManager& psi_uk_man,
+                                           const SpatialDiscretization& sdm,
+                                           bool save_angular_flux)
+{
+  return std::make_shared<CBCD_FLUDS>(num_groups,
+                                      num_angles,
+                                      num_local_cells,
+                                      dynamic_cast<const CBCD_FLUDSCommonData&>(common_data),
+                                      psi_uk_man,
+                                      sdm,
+                                      save_angular_flux);
+}
+
+std::shared_ptr<AngleSet>
+DiscreteOrdinatesProblem::CreateCBCD_AngleSet(
+  size_t id,
+  size_t num_groups,
+  const SPDS& spds,
+  std::shared_ptr<FLUDS>& fluds,
+  std::vector<size_t>& angle_indices,
+  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+  const MPICommunicatorSet& in_comm_set)
+{
+  return std::make_shared<CBCD_AngleSet>(
+    id, num_groups, spds, fluds, angle_indices, boundaries, in_comm_set);
+}
+
+std::shared_ptr<SweepChunk>
+DiscreteOrdinatesProblem::CreateCBCDSweepChunk(LBSGroupset& groupset)
+{
+  return std::make_shared<CBCDSweepChunk>(*this, groupset);
 }
 
 void

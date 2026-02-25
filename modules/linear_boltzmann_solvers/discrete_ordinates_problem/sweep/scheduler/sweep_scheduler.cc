@@ -336,6 +336,13 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
                            "available for builds with GPU support.");
 }
 
+void
+SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
+{
+  throw std::runtime_error("SweepScheduler::ScheduleAlgoAsyncFIFO: ASYNC_FIFO scheduling is only "
+                           "available for builds with GPU support.");
+}
+
 #endif // __OPENSN_WITH_GPU__
 
 void
@@ -343,7 +350,9 @@ SweepScheduler::Sweep()
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::Sweep");
 
-  if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
+  if (scheduler_type_ == SchedulingAlgorithm::ASYNC_FIFO)
+    ScheduleAlgoAsyncFIFO(sweep_chunk_);
+  else if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
     ScheduleAlgoFIFO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
     ScheduleAlgoAAO(sweep_chunk_);

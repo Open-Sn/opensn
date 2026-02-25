@@ -52,7 +52,7 @@ using MemoryImpl = std::unique_ptr<T, impl::SynchronousDeviceDeleter<T>>;
 template <typename T>
 class DeviceMemory : public impl::MemoryImpl<T> {
   public:
-    /// @name Contructors
+    /// @name Constructors
     /// @{
     /** @brief Default constructor.*/
     DeviceMemory(void) = default;
