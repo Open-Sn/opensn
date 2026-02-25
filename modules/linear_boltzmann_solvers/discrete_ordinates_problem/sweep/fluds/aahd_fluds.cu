@@ -2,14 +2,24 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/device/dof_limits.h"
 #include <cstring>
+#include <format>
 #include <numeric>
 
 namespace opensn
 {
+
+static unsigned int
+RoundUp(unsigned int num, unsigned int divisor = crb::get_warp_size())
+{
+  return (num + divisor - 1) & ~(divisor - 1);
+}
+
 AAHD_Bank::AAHD_Bank(const AAHD_Bank& other)
   : host_storage(other.host_storage), device_storage(other.device_storage.size())
 {
@@ -150,8 +160,83 @@ AAHD_FLUDS::AAHD_FLUDS(unsigned int num_groups,
                                 num_groups_and_angles_),
     boundary_psi_(common_data_.GetNumBoundaryNodes(), num_groups_and_angles_)
 {
+  // update views
   nonlocal_outgoing_psi_bank_.UpdateViews(deplocI_outgoing_psi_view_);
   nonlocal_incoming_psi_bank_.UpdateViews(prelocI_outgoing_psi_view_);
+  // compute block and grid sizes for GPU kernels
+  constexpr unsigned int threshold = crb::num_cores_per_sm;
+  unsigned int stride_size = RoundUp(static_cast<unsigned int>(num_groups_and_angles_));
+  unsigned int block_size_x = std::min(stride_size, threshold);
+  unsigned int block_size_y = threshold / block_size_x;
+  block_size_ = ::dim3{block_size_x, block_size_y};
+  grid_size_x_ = (num_groups_and_angles_ + threshold - 1) / threshold;
+  // compute offset into buffer memory for warp data for each level
+  crb::HostVector<WarpData> host_warp_data;
+  const auto& spds = common_data_.GetSPDS();
+  const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
+  unsigned int num_warps_per_blockx = block_size_x / crb::get_warp_size();
+  const auto& sdm = common_data_.GetSDM();
+  std::uint64_t level_offset = 0;
+  std::uint64_t global_cache_size = 0;
+  for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)
+  {
+    warp_data_level_offsets_.push_back(level_offset);
+    std::uint64_t global_offset = 0;
+    const auto& level_cells = levelized_spls[level];
+    // compute grid size
+    std::size_t level_size = level_cells.size();
+    unsigned int grid_size_y = (level_size + block_size_y - 1) / block_size_y;
+    // loop for each block in grid
+    for (unsigned int blk_id_y = 0; blk_id_y < grid_size_y; ++blk_id_y)
+    {
+      for (unsigned int blk_id_x = 0; blk_id_x < grid_size_x_; ++blk_id_x)
+      {
+        // within each block
+        std::uint64_t block_offset = 0;
+        for (unsigned int thd_id_y = 0; thd_id_y < block_size_y; ++thd_id_y)
+        {
+          unsigned int cell_idx_in_level = thd_id_y + blk_id_y * block_size_y;
+          if (cell_idx_in_level < level_size)
+          {
+            const auto& cell_local_idx = level_cells[cell_idx_in_level];
+            const auto& cell = spds.GetGrid()->local_cells[cell_local_idx];
+            const auto& cell_num_nodes = sdm.GetCellMapping(cell).GetNumNodes();
+            for (unsigned int warp_idx = 0; warp_idx < num_warps_per_blockx; ++warp_idx)
+            {
+              if (cell_num_nodes <= max_dof_gpu_register)
+              {
+                host_warp_data.push_back(WarpData());
+              }
+              else if (cell_num_nodes <= max_dof_gpu_shared_mem)
+              {
+                host_warp_data.push_back(WarpData(block_offset));
+                block_offset += crb::get_warp_size() * cell_num_nodes * cell_num_nodes;
+              }
+              else if (cell_num_nodes <= max_dof_gpu)
+              {
+                host_warp_data.push_back(WarpData(global_offset));
+                global_offset += crb::get_warp_size() * cell_num_nodes * cell_num_nodes;
+              }
+              else
+              {
+                throw std::runtime_error(std::format(
+                  "GPU acceleration error: Cell local ID {} has {} DOFs which exceeds the "
+                  "maximum supported DOFs per cell on GPU: {}.",
+                  cell_local_idx,
+                  cell_num_nodes,
+                  max_dof_gpu));
+              }
+            }
+            level_offset += num_warps_per_blockx;
+          }
+        }
+      }
+    }
+    global_cache_size = std::max(global_cache_size, global_offset);
+  }
+  warp_data_ = crb::DeviceMemory<WarpData>(host_warp_data.size());
+  crb::copy(warp_data_, host_warp_data, host_warp_data.size());
+  global_cache_ = crb::DeviceMemory<double>(global_cache_size);
 }
 
 void

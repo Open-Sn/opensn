@@ -51,4 +51,15 @@ inline std::uint32_t get_warp_size(std::uint32_t device_id = get_current_device(
         impl::get_device_attribute(device_id, ::CUDA_OR_HIP(DevAttrWarpSize, DeviceAttributeWarpSize)));
 }
 
+inline std::uint32_t get_max_shared_memory_per_block(std::uint32_t device_id = get_current_device()) {
+    return static_cast<std::uint32_t>(impl::get_device_attribute(
+        device_id, ::CUDA_OR_HIP(DevAttrMaxSharedMemoryPerBlock, DeviceAttributeMaxSharedMemoryPerBlock)));
+}
+
+#if defined(__NVCC__) || defined(__HIP_PLATFORM_NVIDIA__)
+inline constexpr std::uint32_t num_cores_per_sm = 128;    // lazy evaluation, assuming compiled for Ampere or later.
+#elif defined(__HIP_PLATFORM_AMD__)
+inline constexpr std::uint32_t num_cores_per_sm = 64;
+#endif
+
 }  // namespace caribou

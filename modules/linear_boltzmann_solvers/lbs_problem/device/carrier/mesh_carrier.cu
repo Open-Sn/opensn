@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/device/dof_limits.h"
 #include <format>
 
 namespace opensn
@@ -97,14 +98,14 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     const CellMapping& cell_mapping = discretization.GetCellMapping(cell);
     std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
     // check for cell num nodes compatibility with sweep kernel
-    if (cell_num_nodes > LBSProblem::max_dofs_gpu)
+    if (cell_num_nodes > max_dof_gpu)
     {
       throw std::runtime_error(
         std::format("GPU acceleration error: Cell local ID {} has {} DOFs which exceeds the "
                     "maximum supported DOFs per cell on GPU: {}.",
                     cell.local_id,
                     cell_num_nodes,
-                    LBSProblem::max_dofs_gpu));
+                    max_dof_gpu));
     }
     // record current pointer offset
     *(offset_cell_data++) = cell_data - data;
