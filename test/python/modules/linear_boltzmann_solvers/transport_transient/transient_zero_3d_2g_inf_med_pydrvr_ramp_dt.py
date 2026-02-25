@@ -97,7 +97,7 @@ if __name__ == "__main__":
     solver = TransientSolver(problem=phys, verbose=False, initial_state="zero")
     solver.Initialize()
 
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
 
     # Time stepping parameters

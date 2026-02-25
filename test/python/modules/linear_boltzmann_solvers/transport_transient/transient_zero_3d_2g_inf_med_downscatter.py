@@ -105,7 +105,7 @@ if __name__ == "__main__":
     solver.Initialize()
     solver.Execute()
 
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
 
     # Group 0

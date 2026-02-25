@@ -116,7 +116,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     vol2 = RPPLogicalVolume(infx=True, infy=True, infz=True)
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
 
     ffi1 = FieldFunctionInterpolationVolume()
     curffi = ffi1

@@ -47,26 +47,6 @@ WrapProblem(py::module& slv)
     Wrapper of :cpp:class:`opensn::Problem`.
     )"
   );
-  problem.def(
-    "GetFieldFunctions",
-    [](Problem& self)
-    {
-      py::list ff_list;
-      std::vector<std::shared_ptr<FieldFunctionGridBased>>& cpp_ff_list = self.GetFieldFunctions();
-      for (std::shared_ptr<FieldFunctionGridBased>& ff : cpp_ff_list) {
-        ff_list.append(ff);
-      }
-      return ff_list;
-    },
-    R"(
-    Get the list of field functions.
-
-    Returns
-    -------
-    List[pyopensn.fieldfunc.FieldFunctionGridBased]
-        List of grid-based field functions representing solution data such as scalar fluxes.
-    )"
-  );
   // clang-format on
 }
 
@@ -119,7 +99,7 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
-    "GetScalarFieldFunctionList",
+    "GetScalarFluxFieldFunction",
     [](LBSProblem& self, bool only_scalar_flux)
     {
       py::list field_function_list_per_group;
@@ -127,16 +107,14 @@ WrapLBS(py::module& slv)
       {
         if (only_scalar_flux)
         {
-          std::size_t ff_index = self.MapPhiFieldFunction(group, 0);
-          field_function_list_per_group.append(self.GetFieldFunctions()[ff_index]);
+          field_function_list_per_group.append(self.GetScalarFluxFieldFunction(group, 0));
         }
         else
         {
           py::list field_function_list_per_moment;
           for (unsigned int moment = 0; moment < self.GetNumMoments(); moment++)
           {
-            std::size_t ff_index = self.MapPhiFieldFunction(group, moment);
-            field_function_list_per_moment.append(self.GetFieldFunctions()[ff_index]);
+            field_function_list_per_moment.append(self.GetScalarFluxFieldFunction(group, moment));
           }
           field_function_list_per_group.append(field_function_list_per_moment);
         }
@@ -144,26 +122,27 @@ WrapLBS(py::module& slv)
       return field_function_list_per_group;
     },
     R"(
-    Return field functions grouped by energy group and, optionally, by moment.
+    Return scalar-flux or flux-moment field functions grouped by energy group.
 
     Parameters
     ----------
     only_scalar_flux : bool, default=True
         If True, returns only the zeroth moment (scalar flux) field function for each group.
-        The result is a flat list of field functions, one per group.
-
         If False, returns all moment field functions for each group.
-        The result is a nested list where each entry corresponds to a group and contains
-        a list of field functions for all moments (e.g., scalar flux, higher-order moments).
 
     Returns
     -------
     Union[List[pyopensn.fieldfunc.FieldFunctionGridBased], List[List[pyopensn.fieldfunc.FieldFunctionGridBased]]]
-        The structure of the returned list depends on the `only_scalar_flux` flag.
+        If ``only_scalar_flux=True``:
+        ``result[g]`` is the scalar-flux field function for group ``g``.
+
+        If ``only_scalar_flux=False``:
+        ``result[g][m]`` is the field function for group ``g`` and moment ``m``.
 
     Notes
     -----
-    The moment index varies more rapidly than the group index when `only_scalar_flux` is False.
+    In the nested form (``only_scalar_flux=False``), the moment index varies fastest
+    within each group (inner index = moment, outer index = group).
     )",
     py::arg("only_scalar_flux") = true
   );

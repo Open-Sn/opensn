@@ -285,5 +285,18 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_scalar_power_ff.py",
+    "comment": "1D 1G k-eigenvalue writes scalar flux and power field functions to the same PVTU output",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ScalarPowerSamePVTU=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]

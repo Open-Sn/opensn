@@ -450,14 +450,18 @@ LBSProblem::GetNumPhiIterativeUnknowns()
   return {num_local_phi_dofs, num_global_phi_dofs};
 }
 
-size_t
-LBSProblem::MapPhiFieldFunction(unsigned int g, unsigned int m) const
+std::shared_ptr<FieldFunctionGridBased>
+LBSProblem::GetScalarFluxFieldFunction(unsigned int g, unsigned int m) const
 {
-  OpenSnLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
+  OpenSnLogicalErrorIf(g >= num_groups_, "Group index out of range.");
+  OpenSnLogicalErrorIf(m >= num_moments_, "Moment index out of range.");
+
+  const auto map_it = phi_field_functions_local_map_.find({g, m});
+  OpenSnLogicalErrorIf(map_it == phi_field_functions_local_map_.end(),
                        std::string("Failure to map phi field function g") + std::to_string(g) +
                          " m" + std::to_string(m));
 
-  return phi_field_functions_local_map_.at({g, m});
+  return field_functions_.at(map_it->second);
 }
 
 std::shared_ptr<FieldFunctionGridBased>

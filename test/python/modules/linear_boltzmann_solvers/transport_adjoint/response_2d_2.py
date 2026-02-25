@@ -99,7 +99,7 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # Get field functions
-    fflist = phys.GetScalarFieldFunctionList(only_scalar_flux=False)
+    fflist = phys.GetScalarFluxFieldFunction(only_scalar_flux=False)
     ff_m0 = fflist[0][0]
 
     # Define QoI region and compute forward QoI
