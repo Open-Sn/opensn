@@ -4,12 +4,26 @@
 #include "framework/mesh/io/mesh_io.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/utils/utils.h"
 #include <fstream>
 #include <algorithm>
 #include <optional>
 
 namespace opensn
 {
+
+namespace
+{
+
+/// extract first part from the `vertex description`
+std::string
+ExtractFirstPart(std::string_view input)
+{
+  const auto pos = input.find('/');
+  return std::string(input.substr(0, pos));
+};
+
+} // namespace
 
 std::shared_ptr<UnpartitionedMesh>
 MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
@@ -112,7 +126,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     // Keyword "f" for face
     if (first_word == "f")
     {
-      size_t number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
+      auto parts = StringSplit(file_line, " ");
+      auto number_of_verts = parts.size() - 1;
 
       CellType sub_type = CellType::POLYGON;
       if (number_of_verts == 3)
@@ -126,16 +141,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       // Populate vertex-ids
       for (size_t k = 1; k <= number_of_verts; ++k)
       {
-        // Extract sub word
-        beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
-        end_of_word = file_line.find(delimiter, beg_of_word);
-        sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
-
-        // Extract locations of hyphens
-        size_t first_dash = sub_word.find('/');
-
-        // Extract the words ass. vertex and normal
-        std::string vert_word = sub_word.substr(0, first_dash - 0);
+        // Extract the vertex ID
+        auto vert_word = ExtractFirstPart(parts[k]);
 
         // Convert word to number (Vertex)
         try
