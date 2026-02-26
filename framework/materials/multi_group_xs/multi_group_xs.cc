@@ -93,6 +93,8 @@ MultiGroupXS::Combine(
   // Init mandatory cross sections
   mgxs.sigma_t_.assign(n_grps, 0.0);
   mgxs.sigma_a_.assign(n_grps, 0.0);
+  mgxs.energy_deposition_.assign(n_grps, 0.0);
+  bool has_energy_deposition = false;
 
   // Init transfer matrices only if at least one exists
   if (std::any_of(xsecs.begin(),
@@ -142,6 +144,11 @@ MultiGroupXS::Combine(
     {
       mgxs.sigma_t_[g] += sig_t[g];
       mgxs.sigma_a_[g] += sig_a[g];
+      if (not xsecs[x]->GetEnergyDeposition().empty())
+      {
+        has_energy_deposition = true;
+        mgxs.energy_deposition_[g] += xsecs[x]->GetEnergyDeposition()[g];
+      }
 
       if (xsecs[x]->IsFissionable())
       {
@@ -215,6 +222,9 @@ MultiGroupXS::Combine(
     }
   } // for cross sections
 
+  if (not has_energy_deposition)
+    mgxs.energy_deposition_.clear();
+
   mgxs.ComputeDiffusionParameters();
 
   return mgxs;
@@ -230,6 +240,7 @@ MultiGroupXS::Reset()
 
   sigma_t_.clear();
   sigma_a_.clear();
+  energy_deposition_.clear();
   transfer_matrices_.clear();
 
   sigma_f_.clear();
@@ -405,6 +416,8 @@ MultiGroupXS::SetScalingFactor(const double factor)
   {
     sigma_t_[g] *= m;
     sigma_a_[g] *= m;
+    if (not energy_deposition_.empty())
+      energy_deposition_[g] *= m;
 
     if (is_fissionable_)
     {
