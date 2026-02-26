@@ -185,6 +185,8 @@ LBSProblem::GetFieldFunctionCoefficients(const MultiGroupXS& xs, const std::stri
     return xs.GetSigmaFission().empty() ? nullptr : &xs.GetSigmaFission();
   if (xs_name == "nu_sigma_f")
     return xs.GetNuSigmaF().empty() ? nullptr : &xs.GetNuSigmaF();
+  if (xs_name == "energy_deposition")
+    return xs.GetEnergyDeposition().empty() ? nullptr : &xs.GetEnergyDeposition();
   if (xs_name == "chi")
     return xs.GetChi().empty() ? nullptr : &xs.GetChi();
   if (xs_name == "inv_velocity")
