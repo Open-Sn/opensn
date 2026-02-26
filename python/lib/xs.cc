@@ -153,12 +153,13 @@ WrapMultiGroupXS(py::module& xs)
   );
   multigroup_xs.def(
     "LoadFromCEPXS",
-    [](MultiGroupXS& self, const std::string& file_name)
+    [](MultiGroupXS& self, const std::string& file_name, int material_id)
     {
-      self = MultiGroupXS::LoadFromCEPXS(file_name);
+      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id);
     },
     "Load multi-group cross sections from a CEPXS cross-section file.",
-    py::arg("file_name")
+    py::arg("file_name"),
+    py::arg("material_id") = 0
   );
   multigroup_xs.def(
     "SetScalingFactor",
