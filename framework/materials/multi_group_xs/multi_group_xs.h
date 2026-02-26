@@ -185,7 +185,7 @@ public:
   /// Makes a simple material with a 1-group cross-section set.
   static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c, double velocity = 0.0);
   static MultiGroupXS LoadFromOpenSn(const std::string& filename);
-  static MultiGroupXS LoadFromCEPXS(const std::string& filename);
+  static MultiGroupXS LoadFromCEPXS(const std::string& filename, int material_id = 0);
   /// This method populates transport cross sections from an OpenMC cross-section file.
   static MultiGroupXS LoadFromOpenMC(const std::string& file_name,
                                      const std::string& dataset_name,
