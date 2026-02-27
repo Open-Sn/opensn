@@ -243,8 +243,8 @@ PieceWiseLinearSlabMapping::MakeSurfaceFiniteElementData(size_t face_index) cons
   for (size_t qp = 0; qp < num_srf_qpoints; ++qp)
   {
     F_JxW.push_back(JxW);
-
-    F_qpoints_xyz.emplace_back(0.0, 0.0, f);
+    const auto face_xyz = (f == 0) ? grid_->vertices[v0i_] : grid_->vertices[v1i_];
+    F_qpoints_xyz.push_back(face_xyz);
   }
 
   F_num_nodes = 1;

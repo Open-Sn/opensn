@@ -10,6 +10,7 @@
 #include <array>
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <vector>
@@ -58,6 +59,8 @@ struct ParsedCEPXSData
 
   std::vector<double> e_bounds;
   std::vector<double> sigma_t;
+  std::vector<double> charge_deposition;
+  std::vector<double> secondary_production;
   std::vector<double> energy_deposition;
   std::vector<SparseMatrix> transfer_matrices;
 };
@@ -80,6 +83,51 @@ BytesToDouble(const std::vector<char>& bytes)
   std::vector<double> vals(bytes.size() / sizeof(double), 0.0);
   std::memcpy(vals.data(), bytes.data(), bytes.size());
   return vals;
+}
+
+std::vector<double>
+ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary, const int n_groups)
+{
+  OpenSnLogicalErrorIf(n_groups <= 0, "Invalid group count for CEPXS ancillary parsing.");
+  OpenSnLogicalErrorIf(ancillary.size() % sizeof(double) != 0,
+                       "CEPXS ancillary record is not an integer multiple of 8 bytes.");
+
+  const auto vals = BytesToDouble(ancillary);
+  const size_t n_bounds = static_cast<size_t>(n_groups + 1);
+  OpenSnLogicalErrorIf(vals.size() < n_bounds,
+                       "CEPXS ancillary record is too short to contain group boundaries.");
+
+  const auto is_valid_bounds = [&](const size_t start_idx)
+  {
+    const double e0 = vals[start_idx];
+    const double eN = vals[start_idx + n_bounds - 1];
+    if (not std::isfinite(e0) or not std::isfinite(eN) or e0 <= 0.0 or eN <= 0.0 or e0 <= eN)
+      return false;
+
+    for (size_t i = 1; i < n_bounds; ++i)
+    {
+      const double e_prev = vals[start_idx + i - 1];
+      const double e_curr = vals[start_idx + i];
+      if (not std::isfinite(e_curr) or e_curr <= 0.0 or e_prev <= e_curr)
+        return false;
+    }
+    return true;
+  };
+
+  // CEPXS BFP ancillary records commonly place group boundaries near index 96.
+  const size_t canonical_start = 96;
+  if (canonical_start + n_bounds <= vals.size() and is_valid_bounds(canonical_start))
+    return std::vector<double>(vals.begin() + static_cast<std::ptrdiff_t>(canonical_start),
+                               vals.begin() +
+                                 static_cast<std::ptrdiff_t>(canonical_start + n_bounds));
+
+  // Fallback: search the entire ancillary vector for a strictly decreasing positive window.
+  for (size_t start = 0; start + n_bounds <= vals.size(); ++start)
+    if (is_valid_bounds(start))
+      return std::vector<double>(vals.begin() + static_cast<std::ptrdiff_t>(start),
+                                 vals.begin() + static_cast<std::ptrdiff_t>(start + n_bounds));
+
+  throw std::logic_error("Failed to locate CEPXS group boundaries in binary ancillary record.");
 }
 
 bool
@@ -135,6 +183,8 @@ ParseCEPXSText(const std::string& filename, int material_id)
     xs.e_bounds[b] = static_cast<double>(xs.num_groups - b);
 
   xs.sigma_t.assign(xs.num_groups, 0.0);
+  xs.charge_deposition.clear();
+  xs.secondary_production.clear();
   xs.energy_deposition.assign(xs.num_groups, 0.0);
   xs.transfer_matrices.assign(xs.scattering_order + 1, SparseMatrix(xs.num_groups, xs.num_groups));
 
@@ -229,11 +279,11 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id)
   OpenSnLogicalErrorIf(not rdr.ReadRecord(rec), "Failed reading CEPXS binary ancillary record.");
 
   xs.num_groups = static_cast<unsigned int>(n_groups);
-  xs.e_bounds.resize(xs.num_groups + 1, 0.0);
-  for (unsigned int b = 0; b <= xs.num_groups; ++b)
-    xs.e_bounds[b] = static_cast<double>(xs.num_groups - b);
+  xs.e_bounds = ExtractEnergyBoundsFromAncillary(rec, n_groups);
 
   xs.sigma_t.assign(xs.num_groups, 0.0);
+  xs.charge_deposition.assign(xs.num_groups, 0.0);
+  xs.secondary_production.assign(xs.num_groups, 0.0);
   xs.energy_deposition.assign(xs.num_groups, 0.0);
 
   std::vector<std::vector<double>> moment_tables;
@@ -254,6 +304,8 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id)
 
   xs.scattering_order = static_cast<unsigned int>(n_moments - 1);
   xs.transfer_matrices.assign(xs.scattering_order + 1, SparseMatrix(xs.num_groups, xs.num_groups));
+  constexpr int charge_deposition_row = 0; // 1-based row 1
+  constexpr int secondary_production_row = 1; // 1-based row 2
   constexpr int energy_deposition_row = 2; // 1-based row 3
   const int first_transfer_row = std::min(self_scatter_row, total_xs_row + 1);
 
@@ -274,10 +326,14 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id)
 
         if (mom == 0)
         {
-          if (row == total_xs_row)
-            xs.sigma_t[g_to] = value;
+          if (row == charge_deposition_row)
+            xs.charge_deposition[g_to] = value;
+          else if (row == secondary_production_row)
+            xs.secondary_production[g_to] = value;
           else if (row == energy_deposition_row)
             xs.energy_deposition[g_to] = value;
+          else if (row == total_xs_row)
+            xs.sigma_t[g_to] = value;
         }
 
         if (row < first_transfer_row || value == 0.0)
@@ -329,8 +385,15 @@ MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id)
 
   mgxs.e_bounds_ = parsed.e_bounds;
   mgxs.sigma_t_ = parsed.sigma_t;
+  // Derive absorption from total and transfer matrices for consistency with
+  // the rest of OpenSn's XS handling.
+  mgxs.sigma_a_.clear();
   mgxs.energy_deposition_ = parsed.energy_deposition;
   mgxs.transfer_matrices_ = parsed.transfer_matrices;
+  if (not parsed.charge_deposition.empty())
+    mgxs.custom_xs_["cepxs_charge_deposition"] = parsed.charge_deposition;
+  if (not parsed.secondary_production.empty())
+    mgxs.custom_xs_["cepxs_secondary_production"] = parsed.secondary_production;
 
   mgxs.ComputeAbsorption();
   mgxs.ComputeDiffusionParameters();

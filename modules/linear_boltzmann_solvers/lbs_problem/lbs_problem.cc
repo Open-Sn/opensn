@@ -469,6 +469,15 @@ LBSProblem::GetPowerFieldFunction() const
   return field_functions_[power_gen_fieldfunc_local_handle_];
 }
 
+std::shared_ptr<FieldFunctionGridBased>
+LBSProblem::GetEnergyDepositionFieldFunction() const
+{
+  OpenSnLogicalErrorIf(not options_.energy_deposition_field_function_on,
+                       "Called when options_.energy_deposition_field_function_on == false");
+
+  return field_functions_[energy_dep_fieldfunc_local_handle_];
+}
+
 InputParameters
 LBSProblem::GetOptionsBlock()
 {
@@ -518,6 +527,11 @@ LBSProblem::GetOptionsBlock()
                               "Flag to control the creation of the power generation field "
                               "function. If set to `true` then a field function will be created "
                               "with the general name <solver_name>_power_generation`.");
+  params.AddOptionalParameter("energy_deposition_field_function_on",
+                              false,
+                              "Flag to control the creation of an energy-deposition field "
+                              "function. If set to `true` then a field function will be created "
+                              "with the general name <solver_name>_energy_deposition`.");
   params.AddOptionalParameter("power_default_kappa",
                               3.20435e-11,
                               "Default `kappa` value (Energy released per fission) to use for "
@@ -643,6 +657,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
 
     else if (spec.GetName() == "power_field_function_on")
       options_.power_field_function_on = spec.GetValue<bool>();
+
+    else if (spec.GetName() == "energy_deposition_field_function_on")
+      options_.energy_deposition_field_function_on = spec.GetValue<bool>();
 
     else if (spec.GetName() == "power_default_kappa")
       options_.power_default_kappa = spec.GetValue<double>();
@@ -1182,6 +1199,27 @@ LBSProblem::InitializeFieldFunctions()
 
     power_gen_fieldfunc_local_handle_ = field_functions_.size() - 1;
   }
+
+  if (options_.energy_deposition_field_function_on)
+  {
+    std::string prefix;
+    if (options_.field_function_prefix_option == "prefix")
+    {
+      prefix = options_.field_function_prefix;
+      if (not prefix.empty())
+        prefix += "_";
+    }
+    if (options_.field_function_prefix_option == "solver_name")
+      prefix = GetName() + "_";
+
+    auto edep_ff = std::make_shared<FieldFunctionGridBased>(
+      prefix + "energy_deposition", discretization_, Unknown(UnknownType::SCALAR));
+
+    field_function_stack.push_back(edep_ff);
+    field_functions_.push_back(edep_ff);
+
+    energy_dep_fieldfunc_local_handle_ = field_functions_.size() - 1;
+  }
 }
 
 void
@@ -1273,6 +1311,39 @@ LBSProblem::UpdateFieldFunctions()
 
     auto& ff_ptr = field_functions_.at(ff_index);
     ff_ptr->UpdateFieldVector(data_vector_local);
+  }
+
+  // Update energy deposition
+  if (options_.energy_deposition_field_function_on)
+  {
+    std::vector<double> data_vector_edep_local(local_node_count_, 0.0);
+
+    for (const auto& cell : grid_->local_cells)
+    {
+      const auto& cell_mapping = sdm.GetCellMapping(cell);
+      const size_t num_nodes = cell_mapping.GetNumNodes();
+      const auto& xs = block_id_to_xs_map_.at(cell.block_id);
+      const auto& sigma_edep = xs->GetEnergyDeposition();
+
+      if (sigma_edep.empty())
+        continue;
+
+      for (size_t i = 0; i < num_nodes; ++i)
+      {
+        const auto imapA = sdm.MapDOFLocal(cell, i);
+        const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+
+        double nodal_edep = 0.0;
+        for (unsigned int g = 0; g < num_groups_; ++g)
+          nodal_edep += sigma_edep[g] * phi_new_local_[imapB + g];
+
+        data_vector_edep_local[imapA] = nodal_edep;
+      } // for node
+    } // for cell
+
+    const size_t ff_index = energy_dep_fieldfunc_local_handle_;
+    auto& ff_ptr = field_functions_.at(ff_index);
+    ff_ptr->UpdateFieldVector(data_vector_edep_local);
   }
 
   // Update power generation and scalar flux
