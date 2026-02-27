@@ -286,6 +286,19 @@
     ]
   },
   {
+    "file": "transport_1d_cepxs_electron_beam.inp",
+    "comment": "SAND79-0414 II.3.C1 CEPXS 1D electron beam in aluminum slab",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "II3C1 FIT_PASS_FAIL",
+        "wordnum": 2,
+        "gold": "PASS"
+      }
+    ]
+  },
+  {
     "file": "transport_1d_3a_dsa_ortho.py",
     "comment": "1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
