@@ -136,7 +136,7 @@ public:
   const std::vector<std::shared_ptr<VolumetricSource>>& GetVolumetricSources() const;
 
   /// Clears all the boundary conditions from the solver.
-  virtual void ClearBoundaries() = 0;
+  virtual void ClearBoundaries() {}
 
   size_t& GetLastRestartTime();
 
@@ -365,6 +365,7 @@ protected:
 
   /// Flag indicating if GPU acceleration is enabled.
   bool use_gpus_;
+  bool is_initialized_ = false;
   bool applied_adjoint_ = false;
   bool applied_save_angular_flux_ = false;
 

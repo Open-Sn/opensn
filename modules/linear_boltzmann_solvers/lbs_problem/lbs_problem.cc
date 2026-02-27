@@ -756,6 +756,8 @@ LBSProblem::Initialize()
   // Initialize volumetric sources
   for (auto& volumetric_source : volumetric_sources_)
     volumetric_source->Initialize(*this);
+
+  is_initialized_ = true;
 }
 
 void
