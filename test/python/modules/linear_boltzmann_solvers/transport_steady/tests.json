@@ -286,13 +286,26 @@
     ]
   },
   {
-    "file": "transport_1d_cepxs_electron_beam.inp",
+    "file": "transport_1d_cepxs_electron_ii3c2.py",
     "comment": "SAND79-0414 II.3.C1 CEPXS 1D electron beam in aluminum slab",
     "num_procs": 4,
     "checks": [
       {
         "type": "StrCompare",
         "key": "II3C1 FIT_PASS_FAIL",
+        "wordnum": 2,
+        "gold": "PASS"
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_cepxs_coupled_electron_photon_ii3d.py",
+    "comment": "SAND89-2211 II.3.D CEPXS 1D coupled electron-photon beam in copper slab",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "II3D FIT_PASS_FAIL",
         "wordnum": 2,
         "gold": "PASS"
       }

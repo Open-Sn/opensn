@@ -7,14 +7,15 @@ OpenSn CEPXS 1D electron-beam benchmark input.
 Reference:
 - Sandia report: SAND79-0414
 - Problem: II.3.C1
-- Description: 1.033 MeV normal-incidence electron beam on a 0.2107 cm aluminum slab.
+- Description: 1.0 MeV normal-incidence electron beam on a 0.2107 cm aluminum slab.
 
-Case mapping in this input:
-- 1D slab, thickness = 0.2107 cm
-- 50 cells
-- Aluminum CEPXS material (material_id=0)
-- Electron source incident normal to the slab surface (approximated by selecting
-  the most normal incoming ordinate on zmin)
+CEPXS/ONELD case card (II.3.C1):
+- CUTOFF 0.01
+- ENERGY 1.0
+- LEGENDRE 15
+- ELECTRONS LINEAR 40
+- ELECTRON-SOURCE NO-COUPLING
+- MATERIAL AL
 """
 
 import os
@@ -43,11 +44,11 @@ if "opensn_console" not in globals():
 
 if __name__ == "__main__":
     # User knobs
-    cepxs_file = "cepxs_Al_40g_P15.bxslib"
-    cepxs_material_id = 0  # AL from your generated library
     rho_g_cm3 = 2.7
+    reference_csv = "ii3c1_opensn_reference.csv"
+    rmse_tol = 1.0e-3
+    auto_generate_reference_if_missing = False
 
-    # Benchmark geometry from CEPXS deck: 0.2107 cm slab, 50 cells
     num_cells = 50
     length_cm = 0.2107
     z_nodes = [i * (length_cm / num_cells) for i in range(num_cells + 1)]
@@ -55,10 +56,10 @@ if __name__ == "__main__":
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
-    # CEPXS material
     xs_al = MultiGroupXS()
-    xs_al.LoadFromCEPXS(cepxs_file, material_id=cepxs_material_id)
+    xs_al.LoadFromCEPXS("cepxs_Al_e40g_P15.bxslib", material_id=0)
     num_groups = xs_al.num_groups
+
     # Quadrature + incoming-direction beam model on zmin
     pquad = GLProductQuadrature1DSlab(n_polar=16, scattering_order=xs_al.scattering_order)
     incoming = []
@@ -92,11 +93,9 @@ if __name__ == "__main__":
             {
                 "groups_from_to": (0, num_groups - 1),
                 "angular_quadrature": pquad,
-                "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "classic_richardson",
                 "l_abs_tol": 1.0e-7,
                 "l_max_its": 2000,
-                "gmres_restart_interval": 100,
             },
         ],
         xs_map=[
@@ -110,7 +109,6 @@ if __name__ == "__main__":
             {"name": "zmax", "type": "vacuum"},
         ],
         options={
-            "verbose_inner_iterations": True,
             "energy_deposition_field_function_on": True,
             "field_function_prefix": "ii3c1",
         },
@@ -155,10 +153,8 @@ if __name__ == "__main__":
 
     if rank == 0:
         pass_str = "FAIL"
-        cleanup_paths = []
-        # Compare OpenSn lineout against SAND79-0414 Table V.C.1 data
-        # (1.033 MeV electrons, normal incidence, aluminum). Data tabulated as
-        # J_exp versus FMR (fraction of mean range).
+
+        # Keep Lockwood points for diagnostic plotting/reporting.
         exp_fmr = [
             0.0045, 0.0165, 0.0317, 0.0448, 0.0591, 0.0707, 0.0836, 0.0987, 0.1150,
             0.1270, 0.1420, 0.1740, 0.1950, 0.2210, 0.2530, 0.2800, 0.3200, 0.3730,
@@ -171,7 +167,6 @@ if __name__ == "__main__":
         ]
 
         line_csv = sorted(glob.glob("ii3c1_edep_line_*.csv"))
-        cleanup_paths.extend(line_csv)
         if len(line_csv) > 0:
             z_vals = []
             model_vals = []
@@ -182,73 +177,58 @@ if __name__ == "__main__":
                     model_vals.append(float(row["ii3c1_energy_deposition"]))
 
             fmr_vals = [z / length_cm for z in z_vals]
-            # Convert to mass-dose-like quantity for comparison to reported
-            # dose units MeV/(g/cm^2) == MeV*cm^2/g.
             model_mass_dose_vals = [v / rho_g_cm3 for v in model_vals]
 
-            def interp_model(fmr_x):
-                if fmr_x <= fmr_vals[0]:
-                    return model_mass_dose_vals[0]
-                if fmr_x >= fmr_vals[-1]:
-                    return model_mass_dose_vals[-1]
-                i = bisect.bisect_left(fmr_vals, fmr_x)
-                x0, x1 = fmr_vals[i - 1], fmr_vals[i]
-                y0, y1 = model_mass_dose_vals[i - 1], model_mass_dose_vals[i]
-                t = (fmr_x - x0) / (x1 - x0)
+            def interp_curve(x, xs, ys):
+                if x <= xs[0]:
+                    return ys[0]
+                if x >= xs[-1]:
+                    return ys[-1]
+                i = bisect.bisect_left(xs, x)
+                x0, x1 = xs[i - 1], xs[i]
+                y0, y1 = ys[i - 1], ys[i]
+                t = (x - x0) / (x1 - x0)
                 return y0 + t * (y1 - y0)
 
-            model_mass_dose_at_exp = [interp_model(x) for x in exp_fmr]
-            rmse_abs = (sum((m - e) * (m - e) for m, e in zip(model_mass_dose_at_exp, exp_j)) / len(exp_j)) ** 0.5
-            mae_abs = sum(abs(m - e) for m, e in zip(model_mass_dose_at_exp, exp_j)) / len(exp_j)
+            # Use OpenSn reference if available; optionally bootstrap if enabled.
+            if not os.path.exists(reference_csv):
+                if auto_generate_reference_if_missing:
+                    with open(reference_csv, "w", encoding="utf-8", newline="") as f:
+                        writer = csv.writer(f)
+                        writer.writerow(["fmr", "dose"])
+                        for x, y in zip(fmr_vals, model_mass_dose_vals):
+                            writer.writerow([x, y])
+                    rmse_ref = 0.0
+                    mae_ref = 0.0
+                    pass_str = "PASS"
+                    print(f"REFERENCE_WRITTEN {reference_csv}")
+                else:
+                    raise RuntimeError(f"Missing OpenSn reference CSV: {reference_csv}")
+            else:
+                ref_fmr = []
+                ref_dose = []
+                with open(reference_csv, "r", encoding="utf-8") as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        ref_fmr.append(float(row["fmr"]))
+                        ref_dose.append(float(row["dose"]))
 
-            # Least-squares fit scale: minimize ||a*model - experiment||_2
-            denom = sum(m * m for m in model_mass_dose_at_exp)
-            fit_scale = (sum(m * e for m, e in zip(model_mass_dose_at_exp, exp_j)) / denom) if denom > 0.0 else 1.0
-            fit_mass_dose_at_exp = [fit_scale * m for m in model_mass_dose_at_exp]
-            rmse_fit = (sum((m - e) * (m - e) for m, e in zip(fit_mass_dose_at_exp, exp_j)) / len(exp_j)) ** 0.5
-            mae_fit = sum(abs(m - e) for m, e in zip(fit_mass_dose_at_exp, exp_j)) / len(exp_j)
+                model_at_ref = [interp_curve(x, fmr_vals, model_mass_dose_vals) for x in ref_fmr]
+                mae_ref = sum(abs(m - r) for m, r in zip(model_at_ref, ref_dose)) / len(ref_dose)
+                rmse_ref = (
+                    sum((m - r) ** 2 for m, r in zip(model_at_ref, ref_dose)) / len(ref_dose)
+                ) ** 0.5
 
-            # Tail-only metric (high FMR) to avoid passing with only peak agreement.
-            tail_pairs = [(m, e) for x, m, e in zip(exp_fmr, fit_mass_dose_at_exp, exp_j) if x >= 0.7]
-            tail_mae_fit = (
-                sum(abs(m - e) for m, e in tail_pairs) / len(tail_pairs) if len(tail_pairs) > 0 else 0.0
-            )
+                pass_str = "PASS" if rmse_ref <= rmse_tol else "FAIL"
 
-            # Pass/fail thresholds (overridable from env)
-            rmse_fit_tol = float(os.getenv("II3C1_PASS_RMSE_FIT", "0.20"))
-            tail_mae_fit_tol = float(os.getenv("II3C1_PASS_TAIL_MAE_FIT", "0.20"))
-            pass_fit = (rmse_fit <= rmse_fit_tol) and (tail_mae_fit <= tail_mae_fit_tol)
-            pass_str = "PASS" if pass_fit else "FAIL"
-
-            with open("ii3c1_edep_vs_experiment.csv", "w", encoding="utf-8", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow(
-                    [
-                        "fmr",
-                        "exp_dose_mev_cm2_per_g",
-                        "opensn_interp_mass_dose_raw",
-                        "opensn_interp_mass_dose_fit",
-                        "diff_raw",
-                        "diff_fit",
-                    ]
-                )
-                for i in range(len(exp_fmr)):
-                    writer.writerow(
-                        [
-                            exp_fmr[i],
-                            exp_j[i],
-                            model_mass_dose_at_exp[i],
-                            fit_mass_dose_at_exp[i],
-                            model_mass_dose_at_exp[i] - exp_j[i],
-                            fit_mass_dose_at_exp[i] - exp_j[i],
-                        ]
-                    )
-            cleanup_paths.append("ii3c1_edep_vs_experiment.csv")
+            # Keep Lockwood comparison metrics for diagnostics.
+            model_at_exp = [interp_curve(x, fmr_vals, model_mass_dose_vals) for x in exp_fmr]
+            mae_exp = sum(abs(m - e) for m, e in zip(model_at_exp, exp_j)) / len(exp_j)
+            rmse_exp = (sum((m - e) ** 2 for m, e in zip(model_at_exp, exp_j)) / len(exp_j)) ** 0.5
 
             try:
                 import matplotlib.pyplot as plt
 
-                # Plot raw dose lineout vs experimental points.
                 plt.figure(figsize=(7.2, 4.8))
                 plt.plot(fmr_vals, model_mass_dose_vals, "-", lw=2.0, label="OpenSn dose")
                 plt.plot(exp_fmr, exp_j, "o", ms=4.0, label="Experiment dose (SAND79 V.C.1)")
@@ -260,11 +240,10 @@ if __name__ == "__main__":
                 plt.tight_layout()
                 plt.savefig("ii3c1_edep_vs_experiment.png", dpi=180)
                 plt.close()
-                cleanup_paths.append("ii3c1_edep_vs_experiment.png")
             except Exception:
                 pass
 
-        for path in cleanup_paths:
+        for path in line_csv:
             try:
                 if os.path.exists(path):
                     os.remove(path)

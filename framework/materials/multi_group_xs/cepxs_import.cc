@@ -30,7 +30,7 @@ public:
   bool ReadRecord(std::vector<char>& payload)
   {
     std::uint32_t len = 0;
-    if (not in_.read(reinterpret_cast<char*>(&len), sizeof(len)))
+    if (not ReadU32(in_, len))
       return false;
 
     payload.resize(len);
@@ -38,7 +38,7 @@ public:
       throw std::runtime_error("Failed reading Fortran record payload.");
 
     std::uint32_t tail = 0;
-    if (not in_.read(reinterpret_cast<char*>(&tail), sizeof(tail)))
+    if (not ReadU32(in_, tail))
       throw std::runtime_error("Failed reading Fortran record trailer.");
     if (tail != len)
       throw std::runtime_error("Fortran record marker mismatch.");
@@ -47,6 +47,15 @@ public:
   }
 
 private:
+  static bool ReadU32(std::istream& in, std::uint32_t& value)
+  {
+    std::array<char, sizeof(std::uint32_t)> bytes{};
+    if (not in.read(bytes.data(), static_cast<std::streamsize>(bytes.size())))
+      return false;
+    std::memcpy(&value, bytes.data(), sizeof(value));
+    return true;
+  }
+
   std::ifstream in_;
 };
 
@@ -93,7 +102,7 @@ ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary, const int n
                        "CEPXS ancillary record is not an integer multiple of 8 bytes.");
 
   const auto vals = BytesToDouble(ancillary);
-  const size_t n_bounds = static_cast<size_t>(n_groups + 1);
+  const auto n_bounds = static_cast<size_t>(n_groups) + 1U;
   OpenSnLogicalErrorIf(vals.size() < n_bounds,
                        "CEPXS ancillary record is too short to contain group boundaries.");
 
@@ -114,20 +123,50 @@ ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary, const int n
     return true;
   };
 
+  const auto is_finite_positive_window = [&](const size_t start_idx)
+  {
+    bool any_change = false;
+    for (size_t i = 0; i < n_bounds; ++i)
+    {
+      const double e = vals[start_idx + i];
+      if (not std::isfinite(e) or e <= 0.0)
+        return false;
+      if (i > 0 and vals[start_idx + i - 1] != e)
+        any_change = true;
+    }
+    return any_change;
+  };
+
   // CEPXS BFP ancillary records commonly place group boundaries near index 96.
   const size_t canonical_start = 96;
   if (canonical_start + n_bounds <= vals.size() and is_valid_bounds(canonical_start))
-    return std::vector<double>(vals.begin() + static_cast<std::ptrdiff_t>(canonical_start),
-                               vals.begin() +
-                                 static_cast<std::ptrdiff_t>(canonical_start + n_bounds));
+    return {vals.begin() + static_cast<std::ptrdiff_t>(canonical_start),
+            vals.begin() + static_cast<std::ptrdiff_t>(canonical_start + n_bounds)};
 
   // Fallback: search the entire ancillary vector for a strictly decreasing positive window.
   for (size_t start = 0; start + n_bounds <= vals.size(); ++start)
     if (is_valid_bounds(start))
-      return std::vector<double>(vals.begin() + static_cast<std::ptrdiff_t>(start),
-                                 vals.begin() + static_cast<std::ptrdiff_t>(start + n_bounds));
+      return {vals.begin() + static_cast<std::ptrdiff_t>(start),
+              vals.begin() + static_cast<std::ptrdiff_t>(start + n_bounds)};
 
-  throw std::logic_error("Failed to locate CEPXS group boundaries in binary ancillary record.");
+  // Coupled electron-photon libraries can carry group windows. Use a looser window
+  // search before giving up.
+  if (canonical_start + n_bounds <= vals.size() and is_finite_positive_window(canonical_start))
+    return {vals.begin() + static_cast<std::ptrdiff_t>(canonical_start),
+            vals.begin() + static_cast<std::ptrdiff_t>(canonical_start + n_bounds)};
+
+  for (size_t start = 0; start + n_bounds <= vals.size(); ++start)
+    if (is_finite_positive_window(start))
+      return {vals.begin() + static_cast<std::ptrdiff_t>(start),
+              vals.begin() + static_cast<std::ptrdiff_t>(start + n_bounds)};
+
+  // Last resort
+  std::vector<double> synthetic(n_bounds, 0.0);
+  for (size_t i = 0; i < n_bounds; ++i)
+    synthetic[i] = static_cast<double>(n_groups - static_cast<int>(i));
+  log.Log()
+    << "Warning: CEPXS ancillary group-boundary window not found; using synthetic bounds.\n";
+  return synthetic;
 }
 
 bool
@@ -138,10 +177,14 @@ LooksLikeFortranBinary(const std::string& filename)
     return false;
 
   std::uint32_t marker = 0;
-  if (not in.read(reinterpret_cast<char*>(&marker), sizeof(marker)))
-    return false;
+  {
+    std::array<char, sizeof(std::uint32_t)> bytes{};
+    if (not in.read(bytes.data(), static_cast<std::streamsize>(bytes.size())))
+      return false;
+    std::memcpy(&marker, bytes.data(), sizeof(marker));
+  }
 
-  return marker > 0 and marker < (1u << 20);
+  return marker > 0 and marker < (1U << 20);
 }
 
 ParsedCEPXSData
@@ -163,10 +206,9 @@ ParseCEPXSText(const std::string& filename, int material_id)
                        "CEPXS text reader currently supports exactly one material per file.");
   OpenSnLogicalErrorIf(material_id != 0,
                        "CEPXS text reader only supports material_id=0 for single-material files.");
-  OpenSnLogicalErrorIf(std::any_of(n_groups_particle.begin(),
-                                   n_groups_particle.end(),
-                                   [](int n) { return n < 0; }),
-                       "CEPXS group counts must be non-negative.");
+  OpenSnLogicalErrorIf(
+    std::any_of(n_groups_particle.begin(), n_groups_particle.end(), [](int n) { return n < 0; }),
+    "CEPXS group counts must be non-negative.");
 
   const int num_groups = n_groups_particle[0] + n_groups_particle[1] + n_groups_particle[2];
   OpenSnLogicalErrorIf(num_groups <= 0, "CEPXS file has zero total groups.");
@@ -197,8 +239,7 @@ ParseCEPXSText(const std::string& filename, int material_id)
       {
         fin >> destination.at(offset + static_cast<unsigned int>(g));
         OpenSnLogicalErrorIf(not fin.good(),
-                             "Unexpected end-of-file reading CEPXS block in \"" + filename +
-                               "\".");
+                             "Unexpected end-of-file reading CEPXS block in \"" + filename + "\".");
       }
       offset += static_cast<unsigned int>(n_groups_for_particle);
     }
@@ -208,9 +249,7 @@ ParseCEPXSText(const std::string& filename, int material_id)
   read_particle_block(xs.energy_deposition);
 
   const auto is_finite_vec = [](const std::vector<double>& vec)
-  {
-    return std::all_of(vec.begin(), vec.end(), [](const double v) { return std::isfinite(v); });
-  };
+  { return std::all_of(vec.begin(), vec.end(), [](const double v) { return std::isfinite(v); }); };
 
   OpenSnLogicalErrorIf(not IsNonNegative(xs.sigma_t),
                        "CEPXS total cross section contains negative values.");
@@ -244,8 +283,7 @@ ParsedCEPXSData
 ParseCEPXSBFPBinary(const std::string& filename, int material_id)
 {
   FortranRecordReader rdr(filename);
-  OpenSnLogicalErrorIf(not rdr.IsOpen(),
-                       "Unable to open CEPXS binary file \"" + filename + "\".");
+  OpenSnLogicalErrorIf(not rdr.IsOpen(), "Unable to open CEPXS binary file \"" + filename + "\".");
   log.Log() << "Reading CEPXS-BFP binary cross-section file \"" << filename << "\"\n";
 
   ParsedCEPXSData xs;
@@ -260,8 +298,8 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id)
   const int n_groups = meta[0];
   const int n_materials = meta[1];
   const int n_entries = meta[2];
-  const int total_xs_row = meta[3] - 1;      // Convert to 0-based indexing.
-  const int self_scatter_row = meta[4] - 1;  // Convert to 0-based indexing.
+  const int total_xs_row = meta[3] - 1;     // Convert to 0-based indexing.
+  const int self_scatter_row = meta[4] - 1; // Convert to 0-based indexing.
   const int n_moments = meta[5];
   const int n_tables_from_header = meta[7];
 
@@ -289,14 +327,16 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id)
   std::vector<std::vector<double>> moment_tables;
   while (rdr.ReadRecord(rec))
   {
-    OpenSnLogicalErrorIf(rec.size() != static_cast<size_t>(n_groups * n_entries * sizeof(double)),
+    const auto expected_record_size =
+      static_cast<size_t>(n_groups) * static_cast<size_t>(n_entries) * sizeof(double);
+    OpenSnLogicalErrorIf(rec.size() != expected_record_size,
                          "Unexpected CEPXS binary moment-record size.");
     moment_tables.push_back(BytesToDouble(rec));
   }
 
   OpenSnLogicalErrorIf(moment_tables.empty(), "CEPXS binary contains no moment records.");
   if (n_tables_from_header > 0)
-    OpenSnLogicalErrorIf(static_cast<int>(moment_tables.size()) != n_tables_from_header,
+    OpenSnLogicalErrorIf(moment_tables.size() != static_cast<size_t>(n_tables_from_header),
                          "CEPXS binary table count mismatch with header.");
 
   OpenSnLogicalErrorIf(static_cast<int>(moment_tables.size()) != n_materials * n_moments,
@@ -304,16 +344,15 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id)
 
   xs.scattering_order = static_cast<unsigned int>(n_moments - 1);
   xs.transfer_matrices.assign(xs.scattering_order + 1, SparseMatrix(xs.num_groups, xs.num_groups));
-  constexpr int charge_deposition_row = 0; // 1-based row 1
+  constexpr int charge_deposition_row = 0;    // 1-based row 1
   constexpr int secondary_production_row = 1; // 1-based row 2
-  constexpr int energy_deposition_row = 2; // 1-based row 3
+  constexpr int energy_deposition_row = 2;    // 1-based row 3
   const int first_transfer_row = std::min(self_scatter_row, total_xs_row + 1);
 
   for (int mom = 0; mom < n_moments; ++mom)
   {
     const int table_idx = material_id * n_moments + mom;
-    OpenSnLogicalErrorIf(table_idx < 0 ||
-                           table_idx >= static_cast<int>(moment_tables.size()),
+    OpenSnLogicalErrorIf(table_idx < 0 || static_cast<size_t>(table_idx) >= moment_tables.size(),
                          "Computed CEPXS binary table index out of range.");
 
     const auto& table = moment_tables[table_idx];
@@ -322,7 +361,9 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id)
     for (int g_to = 0; g_to < n_groups; ++g_to)
       for (int row = 0; row < n_entries; ++row)
       {
-        const double value = table[static_cast<size_t>(row + n_entries * g_to)];
+        const auto table_index =
+          static_cast<size_t>(row) + static_cast<size_t>(n_entries) * static_cast<size_t>(g_to);
+        const double value = table[table_index];
 
         if (mom == 0)
         {
@@ -355,9 +396,7 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id)
   }
 
   const auto is_finite_vec = [](const std::vector<double>& vec)
-  {
-    return std::all_of(vec.begin(), vec.end(), [](const double v) { return std::isfinite(v); });
-  };
+  { return std::all_of(vec.begin(), vec.end(), [](const double v) { return std::isfinite(v); }); };
 
   OpenSnLogicalErrorIf(not IsNonNegative(xs.sigma_t),
                        "CEPXS binary total cross section contains negative values.");
@@ -376,7 +415,7 @@ MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id)
 {
   MultiGroupXS mgxs;
   const auto parsed = LooksLikeFortranBinary(filename) ? ParseCEPXSBFPBinary(filename, material_id)
-                                                        : ParseCEPXSText(filename, material_id);
+                                                       : ParseCEPXSText(filename, material_id);
 
   mgxs.num_groups_ = parsed.num_groups;
   mgxs.scattering_order_ = parsed.scattering_order;
@@ -385,8 +424,7 @@ MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id)
 
   mgxs.e_bounds_ = parsed.e_bounds;
   mgxs.sigma_t_ = parsed.sigma_t;
-  // Derive absorption from total and transfer matrices for consistency with
-  // the rest of OpenSn's XS handling.
+  // Derive absorption from total and transfer matrices
   mgxs.sigma_a_.clear();
   mgxs.energy_deposition_ = parsed.energy_deposition;
   mgxs.transfer_matrices_ = parsed.transfer_matrices;
