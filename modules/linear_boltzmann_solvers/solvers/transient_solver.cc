@@ -3,10 +3,8 @@
 
 #include "modules/linear_boltzmann_solvers/solvers/transient_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/transient_source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -97,7 +95,6 @@ TransientSolver::Initialize()
 
   // Ensure angular fluxes are available from the initial condition.
   auto& options = do_problem_->GetOptions();
-  do_problem_->SetSaveAngularFlux(true);
   do_problem_->SetTime(current_time_);
 
   const std::string& init_state = initial_state_;
@@ -121,21 +118,10 @@ TransientSolver::Initialize()
       std::fill(psi.begin(), psi.end(), 0.0);
   }
 
-  // Set time-dependent mode and rebuild WGS/AGS solvers for time-dependent sweep chunks
-  do_problem_->EnableTimeDependentMode();
+  if (not do_problem_->IsTimeDependent())
+    throw std::runtime_error(GetName() + ": Problem is in steady-state mode. Call problem."
+                                         "SetTimeDependentMode() before initializing this solver.");
   do_problem_->SetTime(current_time_);
-  {
-    auto src_function = std::make_shared<TransientSourceFunction>(*do_problem_);
-    do_problem_->SetActiveSetSourceFunction(
-      [src_function](auto&& p1, auto&& p2, auto&& p3, auto&& p4)
-      {
-        (*src_function)(std::forward<decltype(p1)>(p1),
-                        std::forward<decltype(p2)>(p2),
-                        std::forward<decltype(p3)>(p3),
-                        std::forward<decltype(p4)>(p4));
-      });
-  }
-  do_problem_->ReinitializeSolverSchemes();
   RefreshLocalViews();
   ags_solver_ = do_problem_->GetAGSSolver();
   UpdateHasFissionableMaterial();
@@ -146,20 +132,6 @@ TransientSolver::Initialize()
     log.Log0Warning() << GetName()
                       << ": fissionable material is present but use_precursors is disabled. "
                          "Running prompt-only transient.";
-
-  // Configure fission sources for transient solve. For transients
-  // we treat fission as an explicit source (RHS), not on the LHS.
-  for (auto& wgs_solver : do_problem_->GetWGSSolvers())
-  {
-    auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
-    if (not wgs_context)
-      throw std::logic_error(GetName() + ": Cast to WGSContext failed.");
-
-    wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
-    wgs_context->rhs_src_scope |= APPLY_WGS_FISSION_SOURCES;
-    wgs_context->rhs_src_scope |= APPLY_AGS_FISSION_SOURCES;
-  }
 
   // Sync psi_old with the steady-state angular flux before enabling RHS time term
   do_problem_->UpdatePsiOld();

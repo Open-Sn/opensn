@@ -64,13 +64,15 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
     groupsets_(do_problem_->GetGroupsets()),
     front_gs_(groupsets_.front())
 {
-  do_problem_->SetSweepChunkMode(DiscreteOrdinatesProblem::SweepChunkMode::SteadyState);
 }
 
 void
 PowerIterationKEigenSolver::Initialize()
 {
   do_problem_->Initialize();
+  if (do_problem_->IsTimeDependent())
+    throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."
+                                         "SetSteadyStateMode() before initializing this solver.");
 
   auto& options = do_problem_->GetOptions();
   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
@@ -108,11 +110,15 @@ PowerIterationKEigenSolver::Initialize()
 
   if (acceleration_)
     acceleration_->Initialize(*this);
+  initialized_ = true;
 }
 
 void
 PowerIterationKEigenSolver::Execute()
 {
+  if (not initialized_)
+    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
+
   if (acceleration_)
     acceleration_->PreExecute();
 

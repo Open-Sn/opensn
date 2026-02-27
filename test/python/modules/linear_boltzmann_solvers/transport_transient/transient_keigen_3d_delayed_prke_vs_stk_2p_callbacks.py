@@ -162,6 +162,8 @@ if __name__ == "__main__":
     keigen.Initialize()
     keigen.Execute()
 
+    phys.SetTimeDependentMode()
+
     solver = TransientSolver(
         problem=phys,
         stop_time=t_end,

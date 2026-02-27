@@ -582,9 +582,6 @@ LBSProblem::ParseOptions(const InputParameters& input)
                                    ? params_at_assignment
                                    : static_cast<const ParameterBlock&>(input);
 
-  bool set_adjoint_mode = false;
-  bool adjoint_mode_value = options_.adjoint;
-
   // Apply only options explicitly specified by the caller.
   for (const auto& spec : specified_params.GetParameters())
   {
@@ -662,10 +659,7 @@ LBSProblem::ParseOptions(const InputParameters& input)
       options_.field_function_prefix = spec.GetValue<std::string>();
 
     else if (spec.GetName() == "adjoint")
-    {
-      set_adjoint_mode = true;
-      adjoint_mode_value = spec.GetValue<bool>();
-    }
+      options_.adjoint = spec.GetValue<bool>();
 
   } // for specified options
 
@@ -709,9 +703,6 @@ LBSProblem::ParseOptions(const InputParameters& input)
     opensn::mpi_comm.barrier();
     UpdateRestartWriteTime();
   }
-
-  if (set_adjoint_mode)
-    SetAdjoint(adjoint_mode_value);
 }
 
 void
@@ -1413,6 +1404,13 @@ LBSProblem::SetSaveAngularFlux(bool save)
 }
 
 void
+LBSProblem::ZeroPhi()
+{
+  phi_old_local_.assign(phi_old_local_.size(), 0.0);
+  phi_new_local_.assign(phi_new_local_.size(), 0.0);
+}
+
+void
 LBSProblem::SetAdjoint(bool adjoint)
 {
   if (adjoint and discretization_)
@@ -1444,7 +1442,7 @@ LBSProblem::SetAdjoint(bool adjoint)
     // Set all solutions to zero.
     phi_old_local_.assign(phi_old_local_.size(), 0.0);
     phi_new_local_.assign(phi_new_local_.size(), 0.0);
-    ZeroSolutions();
+    ZeroPsi();
     precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
 
     applied_adjoint_ = adjoint;

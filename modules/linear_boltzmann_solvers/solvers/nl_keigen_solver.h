@@ -25,6 +25,7 @@ private:
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   std::shared_ptr<NLKEigenAGSContext> nl_context_;
   NLKEigenvalueAGSSolver nl_solver_;
+  bool initialized_ = false;
 
   bool reset_phi0_;
   unsigned int num_initial_power_its_;

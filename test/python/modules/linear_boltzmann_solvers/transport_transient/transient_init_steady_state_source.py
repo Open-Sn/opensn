@@ -86,6 +86,8 @@ if __name__ == "__main__":
     steady.Initialize()
     steady.Execute()
 
+    phys.SetTimeDependentMode()
+
     solver = TransientSolver(problem=phys, dt=dt, theta=1.0, stop_time=dt, initial_state="existing")
     solver.Initialize()
     solver.Execute()

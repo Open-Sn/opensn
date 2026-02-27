@@ -85,6 +85,8 @@ if __name__ == "__main__":
     keigen.Initialize()
     keigen.Execute()
 
+    phys.SetTimeDependentMode()
+
     solver = TransientSolver(problem=phys, verbose=False, initial_state="existing")
     solver.Initialize()
     phi_old = phys.GetPhiOldLocal()

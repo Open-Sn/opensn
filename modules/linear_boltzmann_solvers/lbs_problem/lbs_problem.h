@@ -81,6 +81,8 @@ public:
   bool IsAdjoint() const;
   virtual void SetSaveAngularFlux(bool save);
   void ApplyOptions();
+  void ZeroPhi();
+  virtual void ZeroPsi() = 0;
 
   GeometryType GetGeometryType() const;
 
@@ -297,8 +299,6 @@ protected:
 
   /// Reset data carriers to null and unpin memory.
   void ResetGPUCarriers();
-
-  virtual void ZeroSolutions() = 0;
 
   LBSOptions options_;
   double time_ = 0.0;

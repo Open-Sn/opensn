@@ -66,6 +66,8 @@ def run_case(theta, use_precursors, xs):
     keigen.Initialize()
     keigen.Execute()
 
+    phys.SetTimeDependentMode()
+
     solver = TransientSolver(problem=phys, initial_state="existing")
     solver.Initialize()
     solver.SetTheta(theta)

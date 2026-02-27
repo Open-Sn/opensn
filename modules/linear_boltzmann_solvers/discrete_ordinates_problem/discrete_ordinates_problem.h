@@ -38,11 +38,14 @@ public:
   {
     return sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent;
   }
+  void SetTimeDependentMode();
+  void SetSteadyStateMode();
   std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset)
   {
     return SetSweepChunk(groupset);
   }
   void EnableTimeDependentMode();
+  void ResetMode(SweepChunkMode target_mode);
   /// Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode).
   void ReinitializeSolverSchemes();
 
@@ -144,7 +147,7 @@ protected:
   /// Sets up the sweek chunk for the given discretization method.
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
-  void ZeroSolutions() override;
+  void ZeroPsi() override;
 
   BoundaryDefinition CreateBoundaryFromParams(const InputParameters& params) const;
   std::shared_ptr<SweepBoundary> CreateSweepBoundary(uint64_t boundary_id) const;
@@ -174,6 +177,8 @@ protected:
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<std::vector<double>> psi_old_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
+  bool forced_save_angular_flux_for_transient_ = false;
+  bool save_angular_flux_before_transient_ = false;
 
   std::map<std::tuple<size_t, size_t, size_t>, size_t> angular_flux_field_functions_local_map_;
 

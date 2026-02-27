@@ -60,6 +60,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=1,
+        time_dependent=True,
         groupsets=[
             {
                 "groups_from_to": (0, 0),

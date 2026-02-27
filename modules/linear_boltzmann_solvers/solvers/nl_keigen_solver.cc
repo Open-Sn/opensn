@@ -64,8 +64,6 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
 {
   auto& tolerances = nl_solver_.GetToleranceOptions();
 
-  do_problem_->SetSweepChunkMode(DiscreteOrdinatesProblem::SweepChunkMode::SteadyState);
-
   tolerances.nl_abs_tol = params.GetParamValue<double>("nl_abs_tol");
   tolerances.nl_rel_tol = params.GetParamValue<double>("nl_rel_tol");
   tolerances.nl_sol_tol = params.GetParamValue<double>("nl_sol_tol");
@@ -83,11 +81,18 @@ void
 NonLinearKEigenSolver::Initialize()
 {
   do_problem_->Initialize();
+  if (do_problem_->IsTimeDependent())
+    throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."
+                                         "SetSteadyStateMode() before initializing this solver.");
+  initialized_ = true;
 }
 
 void
 NonLinearKEigenSolver::Execute()
 {
+  if (not initialized_)
+    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
+
   if (reset_phi0_)
     LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
