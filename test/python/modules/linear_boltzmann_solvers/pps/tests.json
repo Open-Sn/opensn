@@ -1,0 +1,130 @@
+[
+  {
+    "file": "reed_balance.py",
+    "comment": "1D Reed problem",
+    "num_procs": 1,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "whole: min =",
+        "goldvalue": 0.028303055,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "whole: max =",
+        "goldvalue": 1.96717796,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "whole: avg =",
+        "goldvalue": 0.958822496,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "whole: int =",
+        "goldvalue": 7.67057997,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "blk4: min =",
+        "goldvalue": 0.222698796,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "blk4: max =",
+        "goldvalue": 1.632885767,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "blk4: avg =",
+        "goldvalue": 0.766828429,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "blk4: int =",
+        "goldvalue": 1.533656858,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "lv1: min =",
+        "goldvalue": 0.028303055,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "lv1: max =",
+        "goldvalue": 1.967177957,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "lv1: avg =",
+        "goldvalue": 0.958822496,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "lv1: int =",
+        "goldvalue": 7.670579967,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: min[0] =",
+        "goldvalue": 1.034539408,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: min[1] =",
+        "goldvalue": 0.602754163,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: max[0] =",
+        "goldvalue": 1.441386822,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: max[1] =",
+        "goldvalue": 0.765556698,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: avg[0] =",
+        "goldvalue": 1.217901652,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: avg[1] =",
+        "goldvalue": 0.682130241,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: int[0] =",
+        "goldvalue": 0.487160661,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "cmb: int[1] =",
+        "goldvalue": 0.204639072,
+        "abs_tol": 1e-8
+      }
+    ]
+  }
+]
