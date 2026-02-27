@@ -346,6 +346,37 @@
     ]
   },
   {
+    "file": "transport_1d_cepxs_synthetic_3g.py",
+    "comment": "Synthetic CEPXS 3-group reader test with analytic infinite-medium solution and energy deposition",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Phi0=",
+        "goldvalue": 0.950124,
+        "abs_tol": 0.001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Phi1=",
+        "goldvalue": 0.933380,
+        "abs_tol": 0.001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Phi2=",
+        "goldvalue": 0.562868,
+        "abs_tol": 0.001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Edep=",
+        "goldvalue": 0.867650,
+        "abs_tol": 0.001
+      }
+    ]
+  },
+  {
     "file": "transport_1d_3a_dsa_ortho.py",
     "comment": "1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
