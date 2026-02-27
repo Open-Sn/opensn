@@ -592,10 +592,10 @@
         <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.Initialize">(pyopensn.solver.TransientSolver method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyapi/generated/pyopensn.context.InitializeWithArgv.html#pyopensn.context.InitializeWithArgv">InitializeWithArgv() (in module pyopensn.context)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyapi/generated/pyopensn.logvol.BooleanLogicalVolume.html#pyopensn.logvol.BooleanLogicalVolume.Inside">Inside() (pyopensn.logvol.BooleanLogicalVolume method)</a>
 
       <ul>
@@ -620,6 +620,12 @@
         <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.IsAdjoint">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
 </li>
         <li><a href="pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.IsAdjoint">(pyopensn.solver.LBSProblem method)</a>
+</li>
+      </ul></li>
+      <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.IsTimeDependent">IsTimeDependent() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
+
+      <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.IsTimeDependent">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2438,6 +2444,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem23EnableTimeDependentModeEv">opensn::DiscreteOrdinatesProblem::EnableTimeDependentMode (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem39forced_save_angular_flux_for_transient_E">opensn::DiscreteOrdinatesProblem::forced_save_angular_flux_for_transient_ (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem31GetAngularFluxFieldFunctionListERKNSt6vectorIjEERKNSt6vectorI6size_tEE">opensn::DiscreteOrdinatesProblem::GetAngularFluxFieldFunctionList (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4NK6opensn24DiscreteOrdinatesProblem22GetBoundaryDefinitionsEv">opensn::DiscreteOrdinatesProblem::GetBoundaryDefinitions (C++ function)</a>
@@ -2498,17 +2506,25 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem23ReorientAdjointSolutionEv">opensn::DiscreteOrdinatesProblem::ReorientAdjointSolution (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem9ResetModeE14SweepChunkMode">opensn::DiscreteOrdinatesProblem::ResetMode (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem19ResetSweepChunkModeEv">opensn::DiscreteOrdinatesProblem::ResetSweepChunkMode (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem19ResetSweepOrderingsER11LBSGroupset">opensn::DiscreteOrdinatesProblem::ResetSweepOrderings (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem35save_angular_flux_before_transient_E">opensn::DiscreteOrdinatesProblem::save_angular_flux_before_transient_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetBoundaryOptionsERK15InputParameters">opensn::DiscreteOrdinatesProblem::SetBoundaryOptions (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSaveAngularFluxEb">opensn::DiscreteOrdinatesProblem::SetSaveAngularFlux (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSteadyStateModeEv">opensn::DiscreteOrdinatesProblem::SetSteadyStateMode (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem13SetSweepChunkER11LBSGroupset">opensn::DiscreteOrdinatesProblem::SetSweepChunk (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem17SetSweepChunkModeE14SweepChunkMode">opensn::DiscreteOrdinatesProblem::SetSweepChunkMode (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem20SetTimeDependentModeEv">opensn::DiscreteOrdinatesProblem::SetTimeDependentMode (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem17sweep_boundaries_E">opensn::DiscreteOrdinatesProblem::sweep_boundaries_ (C++ member)</a>
 </li>
@@ -2534,7 +2550,7 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem22ZeroOutflowBalanceVarsER11LBSGroupset">opensn::DiscreteOrdinatesProblem::ZeroOutflowBalanceVars (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem13ZeroSolutionsEv">opensn::DiscreteOrdinatesProblem::ZeroSolutions (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem7ZeroPsiEv">opensn::DiscreteOrdinatesProblem::ZeroPsi (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemD0Ev">opensn::DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem (C++ function)</a>
 </li>
@@ -3874,7 +3890,9 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem12wgs_solvers_E">opensn::LBSProblem::wgs_solvers_ (C++ member)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem13ZeroSolutionsEv">opensn::LBSProblem::ZeroSolutions (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem7ZeroPhiEv">opensn::LBSProblem::ZeroPhi (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem7ZeroPsiEv">opensn::LBSProblem::ZeroPsi (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemD0Ev">opensn::LBSProblem::~LBSProblem (C++ function)</a>
 </li>
@@ -4266,12 +4284,12 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum20GetGlobalVertexCountEv">opensn::MeshContinuum::GetGlobalVertexCount (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum10GetIJKInfoEv">opensn::MeshContinuum::GetIJKInfo (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum19GetLocalBoundingBoxEv">opensn::MeshContinuum::GetLocalBoundingBox (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum16GetNumPartitionsEv">opensn::MeshContinuum::GetNumPartitions (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_mesh_continuum.html#_CPPv4NK6opensn13MeshContinuum26GetTetrahedralFaceVerticesERK4CellRK8CellFace6size_t">opensn::MeshContinuum::GetTetrahedralFaceVertices (C++ function)</a>
@@ -5510,6 +5528,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver10InitializeEv">opensn::PowerIterationKEigenSolver::Initialize (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver12initialized_E">opensn::PowerIterationKEigenSolver::initialized_ (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver6k_eff_E">opensn::PowerIterationKEigenSolver::k_eff_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver12k_tolerance_E">opensn::PowerIterationKEigenSolver::k_tolerance_ (C++ member)</a>
@@ -6559,6 +6579,8 @@
       <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4N6opensn23SteadyStateSourceSolver18GetInputParametersEv">opensn::SteadyStateSourceSolver::GetInputParameters (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4N6opensn23SteadyStateSourceSolver10InitializeEv">opensn::SteadyStateSourceSolver::Initialize (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4N6opensn23SteadyStateSourceSolver12initialized_E">opensn::SteadyStateSourceSolver::initialized_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4N6opensn23SteadyStateSourceSolver12lbs_problem_E">opensn::SteadyStateSourceSolver::lbs_problem_ (C++ member)</a>
 </li>
@@ -7994,8 +8016,6 @@
 </li>
       <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetPreAdvanceCallback">SetPreAdvanceCallback() (pyopensn.solver.TransientSolver method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetSaveAngularFlux">SetSaveAngularFlux() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
 
       <ul>
@@ -8004,12 +8024,26 @@
         <li><a href="pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetSaveAngularFlux">(pyopensn.solver.LBSProblem method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.SetScalingFactor">SetScalingFactor() (pyopensn.xs.MultiGroupXS method)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.SetSourceOptions">SetSourceOptions() (pyopensn.response.ResponseEvaluator method)</a>
 </li>
+      <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetSteadyStateMode">SetSteadyStateMode() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
+
+      <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.SetSteadyStateMode">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
+</li>
+      </ul></li>
       <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetTheta">SetTheta() (pyopensn.solver.TransientSolver method)</a>
 </li>
+      <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.SetTimeDependentMode">SetTimeDependentMode() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
+
+      <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.SetTimeDependentMode">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
+</li>
+      </ul></li>
       <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.SetTimeStep">SetTimeStep() (pyopensn.solver.TransientSolver method)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum.SetUniformBlockID">SetUniformBlockID() (pyopensn.mesh.MeshContinuum method)</a>
@@ -8182,6 +8216,24 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyapi/generated/pyopensn.math.Vector3.html#pyopensn.math.Vector3.z">z (pyopensn.math.Vector3 property)</a>
 </li>
+      <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ZeroPhi">ZeroPhi() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
+
+      <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.ZeroPhi">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
+</li>
+        <li><a href="pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.ZeroPhi">(pyopensn.solver.LBSProblem method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ZeroPsi">ZeroPsi() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
+
+      <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.ZeroPsi">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
+</li>
+        <li><a href="pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.ZeroPsi">(pyopensn.solver.LBSProblem method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
