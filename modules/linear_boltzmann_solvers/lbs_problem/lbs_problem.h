@@ -136,7 +136,7 @@ public:
   const std::vector<std::shared_ptr<VolumetricSource>>& GetVolumetricSources() const;
 
   /// Clears all the boundary conditions from the solver.
-  virtual void ClearBoundaries() = 0;
+  virtual void ClearBoundaries() {}
 
   size_t& GetLastRestartTime();
 
@@ -235,6 +235,8 @@ public:
 
   /// Returns the power generation field function, if enabled.
   std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;
+  /// Returns the deposited-energy field function, if enabled.
+  std::shared_ptr<FieldFunctionGridBased> GetEnergyDepositionFieldFunction() const;
 
   void Initialize() override;
 
@@ -347,6 +349,7 @@ protected:
 
   std::map<std::pair<unsigned int, unsigned int>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;
+  size_t energy_dep_fieldfunc_local_handle_ = 0;
 
   /**
    * \brief Data carriers for necessary data to run the sweep on GPU.
@@ -362,6 +365,7 @@ protected:
 
   /// Flag indicating if GPU acceleration is enabled.
   bool use_gpus_;
+  bool is_initialized_ = false;
   bool applied_adjoint_ = false;
   bool applied_save_angular_flux_ = false;
 

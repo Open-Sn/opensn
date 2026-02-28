@@ -56,6 +56,7 @@ struct LBSOptions
   double ags_tolerance = 1.0e-6;
 
   bool power_field_function_on = false;
+  bool energy_deposition_field_function_on = false;
   double power_default_kappa = 3.20435e-11; // 200MeV to Joule
   double power_normalization = -1.0;
 
