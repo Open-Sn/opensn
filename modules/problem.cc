@@ -48,12 +48,6 @@ Problem::GetFieldFunctions() const
   return field_functions_;
 }
 
-void
-Problem::Initialize()
-{
-  log.Log() << "\"Initialize()\" method not defined for " << GetName();
-}
-
 ParameterBlock
 Problem::GetInfo(const ParameterBlock& params) const
 {

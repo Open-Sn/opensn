@@ -673,12 +673,13 @@ WrapLBS(py::module& slv)
 
     In typical Python workflows, use constructor options or ``SetOptions``.
 
-    When this changes mode after the problem has been initialized, OpenSn performs a
-    full mode-transition reset:
+    If this changes mode, OpenSn performs a full mode-transition reset:
       - Materials are reinitialized in the selected mode.
       - Point and volumetric sources are cleared.
       - Boundary conditions are cleared.
       - Scalar and angular flux vectors are zeroed.
+
+    If this is called with the same mode as the current setting, no reset is performed.
 
     The block-id to cross-section map is preserved across the transition.
     However, the mode change is applied to the mapped ``MultiGroupXS`` objects themselves.
@@ -698,6 +699,13 @@ WrapLBS(py::module& slv)
     &LBSProblem::IsAdjoint,
     R"(
     Return ``True`` if the problem is in adjoint mode, otherwise ``False``.
+    )"
+  );
+  lbs_problem.def(
+    "IsTimeDependent",
+    &LBSProblem::IsTimeDependent,
+    R"(
+    Return ``True`` if the problem is in time-dependent mode, otherwise ``False``.
     )"
   );
 
@@ -838,18 +846,10 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
-    You only need to call this if the problem was constructed in steady-state mode
-    (the default) and you want to switch to time-dependent mode.
-
-    If called before initialization, this only sets the mode flag used at
-    initialization time; no reset is performed because runtime state does not yet exist.
-    It may also force ``save_angular_flux=True`` because transient mode requires angular-flux
-    storage. Runtime state will be set when Initialize is called.
-
-    If called after initialization, this updates problem internals (sweep chunk mode and
-    source-function) while preserving user boundary conditions and fixed sources.
-    If ``save_angular_flux`` is currently false, this transition enables it while in
-    time-dependent mode.
+    Switch problem from steady-state to time-dependent mode. This updates problem
+    internals (sweep chunk mode and source-function) while preserving user boundary
+    conditions and fixed sources.  If ``save_angular_flux`` is false, this transition
+    enables it.
     )"
   );
   do_problem.def(
@@ -860,18 +860,10 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
-    You only need to call this if the problem was constructed in time-dependent mode
-    (``time_dependent=True``) and you want to switch to steady-state mode.
-
-    If called before initialization, this only sets the mode flag used at
-    initialization time; no reset is performed because runtime state does not yet exist.
-    Runtime state will be set when Initialize is called. This does not force
-    ``save_angular_flux`` in the pre-initialize path.
-
-    If called after initialization, this updates problem internals (sweep chunk mode and
-    source-function) while preserving user boundary conditions and fixed sources.
-    If ``save_angular_flux`` was auto-enabled when entering time-dependent mode, this call
-    restores the previous value.
+    Switch problem from time-dependent to steady-state mode. This updates problem
+    internals (sweep chunk mode and source-function) while preserving user boundary
+    conditions and fixed sources. If ``save_angular_flux`` was auto-enabled when
+    entering time-dependent mode, this call restores the previous value.
     )"
   );
   do_problem.def(
@@ -987,30 +979,15 @@ WrapLBS(py::module& slv)
       for (py::handle a : angles)
         angle_ids.push_back(a.cast<size_t>());
 
-      try
-      {
-        auto ff_list = self.GetAngularFluxFieldFunctionList(group_ids, angle_ids);
-        py::list out;
-        for (const auto& ff : ff_list)
-          out.append(ff);
-        return out;
-      }
-      catch (const std::exception& err)
-      {
-        const std::string message = err.what();
-        if (message.find("problem not initialized") != std::string::npos)
-          throw std::runtime_error(
-            "GetAngularFieldFunctionList requires Initialize() to be called first. "
-            "Call solver.Initialize() (or problem.Initialize()) before requesting "
-            "angular flux field functions.");
-        throw;
-      }
+      auto ff_list = self.GetAngularFluxFieldFunctionList(group_ids, angle_ids);
+      py::list out;
+      for (const auto& ff : ff_list)
+        out.append(ff);
+      return out;
     },
     R"(
     Return field functions for selected angular flux components.
 
-    This requires `Initialize()` to have completed; it throws if the problem is
-    not yet initialized.
     Note: You must enable angular flux storage (``save_angular_flux=True``) in
     the problem options, or use a transient/time-dependent solver that retains
     angular fluxes, otherwise the field functions will remain zero.
@@ -1361,7 +1338,7 @@ WrapTransient(py::module& slv)
         Time differencing scheme parameter.
     initial_state : str, optional, default="existing"
         Initial state for the transient solve. Allowed values: existing, zero.
-        In "zero" mode, the solver may initialize the problem internally if needed.
+        In "zero" mode, scalar flux vectors are reset to zero.
     verbose : bool, optional, default=True
         Enable verbose logging.
     )"

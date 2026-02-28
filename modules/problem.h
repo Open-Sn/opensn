@@ -25,9 +25,6 @@ public:
 
   const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
 
-  /// Initialize function.
-  virtual void Initialize();
-
   /// Generalized query for information supporting varying returns.
   virtual ParameterBlock GetInfo(const ParameterBlock& params) const;
 

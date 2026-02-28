@@ -7,7 +7,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -28,11 +27,6 @@
 
 namespace opensn
 {
-
-LBSProblem::LBSProblem(std::string name, std::shared_ptr<MeshContinuum> grid)
-  : Problem(std::move(name)), grid_(std::move(grid)), use_gpus_(false)
-{
-}
 
 InputParameters
 LBSProblem::GetInputParameters()
@@ -159,6 +153,25 @@ LBSProblem::GetTheta() const
   return theta_;
 }
 
+bool
+LBSProblem::IsTimeDependent() const
+{
+  return false;
+}
+
+void
+LBSProblem::SetTimeDependentMode()
+{
+  throw std::logic_error(GetName() +
+                         ": Time-dependent mode is not supported for this problem type.");
+}
+
+void
+LBSProblem::SetSteadyStateMode()
+{
+  // Steady-state is the default for problem types without time-dependent support.
+}
+
 GeometryType
 LBSProblem::GetGeometryType() const
 {
@@ -229,7 +242,7 @@ void
 LBSProblem::AddPointSource(std::shared_ptr<PointSource> point_source)
 {
   point_sources_.push_back(point_source);
-  if (discretization_)
+  if (initialized_)
     point_sources_.back()->Initialize(*this);
 }
 
@@ -249,7 +262,7 @@ void
 LBSProblem::AddVolumetricSource(std::shared_ptr<VolumetricSource> volumetric_source)
 {
   volumetric_sources_.push_back(volumetric_source);
-  if (discretization_)
+  if (initialized_)
     volumetric_sources_.back()->Initialize(*this);
 }
 
@@ -708,7 +721,7 @@ LBSProblem::ParseOptions(const InputParameters& input)
 void
 LBSProblem::ApplyOptions()
 {
-  if (not discretization_)
+  if (not initialized_)
     return;
 
   if (options_.adjoint != applied_adjoint_)
@@ -719,9 +732,11 @@ LBSProblem::ApplyOptions()
 }
 
 void
-LBSProblem::Initialize()
+LBSProblem::BuildRuntime()
 {
-  CALI_CXX_MARK_SCOPE("LBSProblem::Initialize");
+  CALI_CXX_MARK_SCOPE("LBSProblem::BuildRuntime");
+  if (initialized_)
+    return;
 
   PrintSimHeader();
   mpi_comm.barrier();
@@ -730,7 +745,10 @@ LBSProblem::Initialize()
   InitializeParrays();
   InitializeBoundaries();
   InitializeGPUExtras();
-  SetAdjoint(options_.adjoint);
+  if (options_.adjoint)
+    if (const auto* do_problem = dynamic_cast<const DiscreteOrdinatesProblem*>(this);
+        do_problem and do_problem->IsTimeDependent())
+      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
 
   // Initialize point sources
   for (auto& point_source : point_sources_)
@@ -739,6 +757,8 @@ LBSProblem::Initialize()
   // Initialize volumetric sources
   for (auto& volumetric_source : volumetric_sources_)
     volumetric_source->Initialize(*this);
+
+  initialized_ = true;
 }
 
 void
@@ -932,8 +952,10 @@ LBSProblem::InitializeSpatialDiscretization()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::InitializeSpatialDiscretization");
 
-  log.Log() << "Initializing spatial discretization.\n";
-  discretization_ = PieceWiseLinearDiscontinuous::New(grid_);
+  OpenSnLogicalErrorIf(not discretization_,
+                       GetName() + ": Missing spatial discretization. Construct the problem "
+                                   "through its factory Create(...) entry point.");
+  log.Log() << "Initializing spatial discretization metadata.\n";
 
   ComputeUnitIntegrals();
 }
@@ -1399,7 +1421,7 @@ void
 LBSProblem::SetSaveAngularFlux(bool save)
 {
   options_.save_angular_flux = save;
-  if (discretization_)
+  if (initialized_)
     applied_save_angular_flux_ = save;
 }
 
@@ -1413,33 +1435,27 @@ LBSProblem::ZeroPhi()
 void
 LBSProblem::SetAdjoint(bool adjoint)
 {
-  if (adjoint and discretization_)
+  OpenSnLogicalErrorIf(
+    not initialized_, GetName() + ": Problem must be fully constructed before calling SetAdjoint.");
+
+  if (adjoint)
     if (const auto* do_problem = dynamic_cast<const DiscreteOrdinatesProblem*>(this);
         do_problem and do_problem->IsTimeDependent())
       throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
 
   options_.adjoint = adjoint;
 
-  if (not discretization_)
-    return;
-
   if (adjoint != applied_adjoint_)
   {
-    // If a discretization exists, the solver has already been initialized.
-    // Reinitialize the materials to obtain the appropriate xs and clear the
-    // sources to prepare for defining the adjoint problem
-    // The materials are reinitialized here to ensure that the proper cross sections
-    // are available to the solver. Because an adjoint solve requires volumetric or
-    // point sources, the material-based sources are not set within the initialize routine.
+    // Reinitialize materials to obtain the proper forward/adjoint cross sections.
     InitializeMaterials();
 
-    // Forward and adjoint sources are fundamentally different, so any existing sources
-    // should be cleared and reset through options upon changing modes.
+    // Forward and adjoint sources are fundamentally different.
     point_sources_.clear();
     volumetric_sources_.clear();
     ClearBoundaries();
 
-    // Set all solutions to zero.
+    // Reset all solution vectors.
     phi_old_local_.assign(phi_old_local_.size(), 0.0);
     phi_new_local_.assign(phi_new_local_.size(), 0.0);
     ZeroPsi();
