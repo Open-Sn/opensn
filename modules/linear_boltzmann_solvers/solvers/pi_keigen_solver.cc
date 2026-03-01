@@ -73,12 +73,13 @@ PowerIterationKEigenSolver::Initialize()
     throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."
                                          "SetSteadyStateMode() before initializing this solver.");
 
-  auto& options = do_problem_->GetOptions();
+  const auto& options = do_problem_->GetOptions();
   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
   ags_solver_ = do_problem_->GetAGSSolver();
 
-  for (auto& wgs_solver : do_problem_->GetWGSSolvers())
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
   {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
 
@@ -89,11 +90,11 @@ PowerIterationKEigenSolver::Initialize()
   }
 
   const bool print_ags_iters = options.verbose_ags_iterations and
-                               do_problem_->GetGroupsets().size() > 1 and
+                               do_problem_->GetNumGroupsets() > 1 and
                                options.max_ags_iterations > 1;
   ags_solver_->SetVerbosity(print_ags_iters);
 
-  front_wgs_solver_ = do_problem_->GetWGSSolvers().at(front_gs_.id);
+  front_wgs_solver_ = do_problem_->GetWGSSolver(front_gs_.id);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
 
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
@@ -121,7 +122,7 @@ PowerIterationKEigenSolver::Execute()
   if (acceleration_)
     acceleration_->PreExecute();
 
-  auto& options = do_problem_->GetOptions();
+  const auto& options = do_problem_->GetOptions();
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
 
@@ -190,8 +191,9 @@ PowerIterationKEigenSolver::Execute()
 
   // Print summary
   std::size_t total_num_sweeps = 0;
-  for (auto& wgs_solver : do_problem_->GetWGSSolvers())
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
   {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
     total_num_sweeps += wgs_context->counter_applications_of_inv_op;
@@ -226,7 +228,7 @@ PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input
   if (not additive)
     Set(q_moments_local_, 0.0);
 
-  for (auto& groupset : groupsets_)
+  for (const auto& groupset : groupsets_)
   {
     active_set_source_function_(
       groupset, q_moments_local_, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
@@ -245,7 +247,7 @@ PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<double>& input
   if (suppress_wg_scat)
     source_flags |= SUPPRESS_WG_SCATTER;
 
-  for (auto& groupset : groupsets_)
+  for (const auto& groupset : groupsets_)
   {
     active_set_source_function_(groupset, q_moments_local_, input, source_flags);
   }
@@ -254,9 +256,9 @@ PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<double>& input
 bool
 PowerIterationKEigenSolver::ReadRestartData()
 {
-  auto& fname = do_problem_->GetOptions().read_restart_path;
+  const auto& fname = do_problem_->GetOptions().read_restart_path;
   auto& phi_old_local = do_problem_->GetPhiOldLocal();
-  auto& groupsets = do_problem_->GetGroupsets();
+  const auto& groupsets = do_problem_->GetGroupsets();
 
   auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   bool success = (file >= 0);
@@ -300,10 +302,10 @@ PowerIterationKEigenSolver::ReadRestartData()
 bool
 PowerIterationKEigenSolver::WriteRestartData()
 {
-  auto& options = do_problem_->GetOptions();
+  const auto& options = do_problem_->GetOptions();
   auto fname = options.write_restart_path;
   auto& phi_old_local = do_problem_->GetPhiOldLocal();
-  auto& groupsets = do_problem_->GetGroupsets();
+  const auto& groupsets = do_problem_->GetGroupsets();
 
   auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   bool success = (file >= 0);

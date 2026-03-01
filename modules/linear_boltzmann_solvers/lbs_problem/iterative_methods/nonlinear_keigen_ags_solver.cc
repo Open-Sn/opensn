@@ -36,7 +36,7 @@ NLKEigenvalueAGSSolver::PreSetupCallback()
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& lbs_problem = nl_context_ptr->lbs_problem;
-  for (auto& groupset : lbs_problem->GetGroupsets())
+  for (const auto& groupset : lbs_problem->GetGroupsets())
     nl_context_ptr->groupset_ids.push_back(groupset.id);
 }
 

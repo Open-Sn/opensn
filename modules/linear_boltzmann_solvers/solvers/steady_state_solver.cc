@@ -67,7 +67,7 @@ SteadyStateSourceSolver::Execute()
   if (not initialized_)
     throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
 
-  auto& options = lbs_problem_->GetOptions();
+  const auto& options = lbs_problem_->GetOptions();
 
   auto& ags_solver = *lbs_problem_->GetAGSSolver();
   ags_solver.Solve();
@@ -90,9 +90,9 @@ SteadyStateSourceSolver::Execute()
 bool
 SteadyStateSourceSolver::ReadRestartData()
 {
-  auto& fname = lbs_problem_->GetOptions().read_restart_path;
+  const auto& fname = lbs_problem_->GetOptions().read_restart_path;
   auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
-  auto& groupsets = lbs_problem_->GetGroupsets();
+  const auto& groupsets = lbs_problem_->GetGroupsets();
 
   auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
   bool success = (file >= 0);
@@ -132,10 +132,10 @@ SteadyStateSourceSolver::ReadRestartData()
 bool
 SteadyStateSourceSolver::WriteRestartData()
 {
-  auto& options = lbs_problem_->GetOptions();
+  const auto& options = lbs_problem_->GetOptions();
   auto fname = options.write_restart_path;
   auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
-  auto& groupsets = lbs_problem_->GetGroupsets();
+  const auto& groupsets = lbs_problem_->GetGroupsets();
 
   auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   bool success = (file >= 0);

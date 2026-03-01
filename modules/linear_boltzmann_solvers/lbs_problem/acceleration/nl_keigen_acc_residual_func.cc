@@ -22,9 +22,9 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto& diff_solver = nl_context_ptr->diff_solver;
 
   auto& do_problem = nl_context_ptr->do_problem;
-  auto& groupsets = do_problem.GetGroupsets();
+  const auto& groupsets = do_problem.GetGroupsets();
   auto active_set_source_function = do_problem.GetActiveSetSourceFunction();
-  auto& front_gs = groupsets.front();
+  const auto& front_gs = groupsets.front();
 
   auto& q_moments_local = do_problem.GetQMomentsLocal();
   auto& phi_old_local = do_problem.GetPhiOldLocal();

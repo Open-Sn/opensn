@@ -48,14 +48,14 @@ DiscreteOrdinatesKEigenAcceleration::DiscreteOrdinatesKEigenAcceleration(
     pi_max_its_(params.GetParamValue<int>("pi_max_its")),
     pi_k_tol_(params.GetParamValue<double>("pi_k_tol")),
     groupsets_(do_problem_.GetGroupsets()),
-    front_gs_(groupsets_.front()),
+    front_gs_(do_problem_.GetGroupset(0)),
     q_moments_local_(do_problem_.GetQMomentsLocal()),
     phi_old_local_(do_problem_.GetPhiOldLocal()),
     phi_new_local_(do_problem_.GetPhiNewLocal()),
     solver_(nullptr),
     name_(params.GetParamValue<std::string>("name"))
 {
-  if (do_problem_.GetGroupsets().size() != 1)
+  if (do_problem_.GetNumGroupsets() != 1)
     throw std::logic_error(
       "LBS acceleration schemes are only implemented for problems with a single groupset.");
 

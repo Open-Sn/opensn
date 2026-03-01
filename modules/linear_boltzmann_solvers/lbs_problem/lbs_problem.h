@@ -37,9 +37,6 @@ public:
 
   ~LBSProblem() override;
 
-  /// Returns a reference to the solver options.
-  LBSOptions& GetOptions();
-
   /// Returns a constant reference to the solver options.
   const LBSOptions& GetOptions() const;
 
@@ -115,9 +112,10 @@ public:
   /// Returns the maximum number of precursors defined on any material.
   unsigned int GetMaxPrecursorsPerMaterial() const;
 
-  std::vector<LBSGroupset>& GetGroupsets();
-
   const std::vector<LBSGroupset>& GetGroupsets() const;
+  LBSGroupset& GetGroupset(size_t groupset_id);
+  const LBSGroupset& GetGroupset(size_t groupset_id) const;
+  size_t GetNumGroupsets() const;
 
   /// Adds a point source to the solver.
   void AddPointSource(std::shared_ptr<PointSource> point_source);
@@ -139,8 +137,6 @@ public:
 
   /// Clears all the boundary conditions from the solver.
   virtual void ClearBoundaries() = 0;
-
-  size_t& GetLastRestartTime();
 
   /// Returns a reference to the map of material ids to XSs.
   const BlockID2XSMap& GetBlockID2XSMap() const;
@@ -218,11 +214,11 @@ public:
   const std::vector<double>& GetDensitiesLocal() const;
 
   SetSourceFunction GetActiveSetSourceFunction() const;
-  void SetActiveSetSourceFunction(SetSourceFunction source_function);
 
-  std::shared_ptr<AGSLinearSolver> GetAGSSolver();
+  std::shared_ptr<AGSLinearSolver> GetAGSSolver() const;
 
-  std::vector<std::shared_ptr<LinearSolver>>& GetWGSSolvers();
+  std::shared_ptr<LinearSolver> GetWGSSolver(size_t groupset_id) const;
+  size_t GetNumWGSSolvers() const;
 
   WGSContext& GetWGSContext(int groupset_id);
 
@@ -285,11 +281,6 @@ protected:
 
   virtual void InitializeSpatialDiscretization();
 
-  /// Initializes parallel arrays.
-  void InitializeParrays();
-
-  void InitializeFieldFunctions();
-
   /// Initializes boundaries.
   virtual void InitializeBoundaries() {}
 
@@ -300,11 +291,7 @@ protected:
 
   virtual void InitializeWGSSolvers() {};
 
-  /// Initializes data carriers to GPUs and memory pinner.
-  void InitializeGPUExtras();
-
-  /// Reset data carriers to null and unpin memory.
-  void ResetGPUCarriers();
+  void SetActiveSetSourceFunction(SetSourceFunction source_function);
 
   LBSOptions options_;
   double time_ = 0.0;
@@ -373,6 +360,17 @@ protected:
   bool applied_save_angular_flux_ = false;
 
 private:
+  void InitializeRuntimeCore();
+  void ValidateRuntimeModeConfiguration() const;
+  void InitializeSources();
+  /// Initializes parallel arrays.
+  void InitializeParrays();
+  void InitializeFieldFunctions();
+  /// Initializes data carriers to GPUs and memory pinner.
+  void InitializeGPUExtras();
+  /// Reset data carriers to null and unpin memory.
+  void ResetGPUCarriers();
+
   /// Initialize groupsets
   void InitializeGroupsets(const InputParameters& params);
 
@@ -385,6 +383,8 @@ private:
 
   /// Parse and validate options without applying runtime side-effects.
   void ParseOptions(const InputParameters& input);
+  /// Checks if the current CPU is associated with any GPU.
+  static void CheckCapableDevices();
 
 public:
   /// Max number of DOFs per cell that the sweep kernel on GPU can handle.
@@ -396,10 +396,6 @@ public:
   static InputParameters GetOptionsBlock();
 
   static InputParameters GetXSMapEntryBlock();
-
-protected:
-  /// Checks if the current CPU is associated with any GPU.
-  static void CheckCapableDevices();
 };
 
 } // namespace opensn

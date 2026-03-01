@@ -35,7 +35,7 @@ ComputePointwisePhiChange(
 {
   if (groupset_ids.empty())
   {
-    groupset_ids.resize(lbs_problem.GetGroupsets().size());
+    groupset_ids.resize(lbs_problem.GetNumGroupsets());
     std::iota(groupset_ids.begin(), groupset_ids.end(), 0);
   }
 
@@ -55,7 +55,7 @@ ComputePointwisePhiChange(
     {
       for (auto id : groupset_ids)
       {
-        auto& groupset = lbs_problem.GetGroupsets()[id];
+        const auto& groupset = lbs_problem.GetGroupset(id);
         auto gsi = groupset.first_group;
         for (unsigned int g = 0; g < groupset.GetNumGroups(); ++g)
         {

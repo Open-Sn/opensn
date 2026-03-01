@@ -292,7 +292,7 @@ SMMAcceleration::ComputeBoundaryFactors()
 {
   const auto& grid = do_problem_.GetGrid();
   const auto& pwld = do_problem_.GetSpatialDiscretization();
-  const auto num_groupsets = do_problem_.GetGroupsets().size();
+  const auto num_groupsets = do_problem_.GetNumGroupsets();
 
   // Loop over groupsets
   int gs = 0;

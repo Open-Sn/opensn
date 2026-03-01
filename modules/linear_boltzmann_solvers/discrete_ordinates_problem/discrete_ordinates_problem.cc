@@ -670,8 +670,9 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
   }
 
   if (switching_to_transient)
-    for (auto& wgs_solver : GetWGSSolvers())
+    for (size_t gsid = 0; gsid < GetNumWGSSolvers(); ++gsid)
     {
+      auto wgs_solver = GetWGSSolver(gsid);
       auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
       OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
       wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
