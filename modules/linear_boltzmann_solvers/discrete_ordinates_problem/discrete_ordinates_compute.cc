@@ -24,7 +24,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   const auto& grid_ = do_problem.GetGrid();
   const auto& discretization_ = do_problem.GetSpatialDiscretization();
   auto& phi_new_local_ = do_problem.GetPhiNewLocal();
-  auto& groupsets_ = do_problem.GetGroupsets();
+  const auto& groupsets_ = do_problem.GetGroupsets();
   auto& q_moments_local_ = do_problem.GetQMomentsLocal();
   auto active_set_source_fn = do_problem.GetActiveSetSourceFunction();
   const auto& cell_transport_views_ = do_problem.GetCellTransportViews();
@@ -40,7 +40,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   // This is done using the SetSource routine because it allows a lot of flexibility.
   auto mat_src = phi_new_local_;
   mat_src.assign(mat_src.size(), 0.0);
-  for (auto& groupset : groupsets_)
+  for (const auto& groupset : groupsets_)
   {
     q_moments_local_.assign(q_moments_local_.size(), 0.0);
     active_set_source_fn(groupset,
@@ -299,11 +299,11 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
 {
   CALI_CXX_MARK_SCOPE("ComputeLeakage");
 
-  OpenSnInvalidArgumentIf(groupset_id >= do_problem.GetGroupsets().size(), "Invalid groupset id.");
+  OpenSnInvalidArgumentIf(groupset_id >= do_problem.GetNumGroupsets(), "Invalid groupset id.");
 
   const auto& grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& groupset = do_problem.GetGroupsets().at(groupset_id);
+  const auto& groupset = do_problem.GetGroupset(groupset_id);
   const auto& cell_transport_views = do_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
   const auto& sweep_boundaries = do_problem.GetSweepBoundaries();

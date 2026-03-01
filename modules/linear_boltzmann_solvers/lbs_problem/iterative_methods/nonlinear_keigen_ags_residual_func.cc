@@ -40,7 +40,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   // Compute 1/k F phi
   Set(q_moments_local, 0.0);
-  for (auto& groupset : lbs_problem->GetGroupsets())
+  for (const auto& groupset : lbs_problem->GetGroupsets())
     active_set_source_function(groupset,
                                q_moments_local,
                                phi_old_local,
@@ -50,7 +50,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   Scale(q_moments_local, 1.0 / k_eff);
 
   // Now add MS phi
-  for (auto& groupset : lbs_problem->GetGroupsets())
+  for (const auto& groupset : lbs_problem->GetGroupsets())
   {
     auto& wgs_context = lbs_problem->GetWGSContext(groupset.id);
     const bool supress_wgs = wgs_context.lhs_src_scope & SUPPRESS_WG_SCATTER;
@@ -62,7 +62,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   // Sweep all the groupsets
   // After this phi_new = DLinv(MSD phi + 1/k FD phi)
-  for (auto& groupset : lbs_problem->GetGroupsets())
+  for (const auto& groupset : lbs_problem->GetGroupsets())
   {
     auto& wgs_context = lbs_problem->GetWGSContext(groupset.id);
     wgs_context.ApplyInverseTransportOperator(SourceFlags());
@@ -78,9 +78,9 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   if (ierr != PETSC_SUCCESS)
     return ierr;
 
-  for (auto& groupset : lbs_problem->GetGroupsets())
+  for (const auto& groupset : lbs_problem->GetGroupsets())
   {
-    if ((groupset.apply_wgdsa or groupset.apply_tgdsa) and lbs_problem->GetGroupsets().size() > 1)
+    if ((groupset.apply_wgdsa or groupset.apply_tgdsa) and lbs_problem->GetNumGroupsets() > 1)
       throw std::logic_error(fname + ": Preconditioning currently only supports"
                                      "single groupset simulations.");
 

@@ -96,8 +96,8 @@ NLKEigenDiffSolver::PostSolveCallback()
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& do_problem = nl_context_ptr->do_problem;
-  auto& groupsets = do_problem.GetGroupsets();
-  auto& front_gs = groupsets.front();
+  const auto& groupsets = do_problem.GetGroupsets();
+  const auto& front_gs = groupsets.front();
 
   auto& phi_old_local = do_problem.GetPhiOldLocal();
   auto& phi_new_local = do_problem.GetPhiNewLocal();

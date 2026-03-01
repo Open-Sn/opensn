@@ -46,11 +46,11 @@ protected:
   std::vector<double>& phi_old_local_;
   std::vector<double>& phi_new_local_;
 
-  std::vector<LBSGroupset>& groupsets_;
+  const std::vector<LBSGroupset>& groupsets_;
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   SetSourceFunction active_set_source_function_;
 
-  LBSGroupset& front_gs_;
+  const LBSGroupset& front_gs_;
   std::shared_ptr<LinearSolver> front_wgs_solver_;
   std::shared_ptr<WGSContext> front_wgs_context_;
   bool initialized_ = false;

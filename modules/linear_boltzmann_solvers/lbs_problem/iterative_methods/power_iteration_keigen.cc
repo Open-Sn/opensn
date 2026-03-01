@@ -22,8 +22,9 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
 {
   const std::string fname = "PowerIterationKEigenSolver";
 
-  for (auto& wgs_solver : lbs_problem.GetWGSSolvers())
+  for (size_t gsid = 0; gsid < lbs_problem.GetNumWGSSolvers(); ++gsid)
   {
+    auto wgs_solver = lbs_problem.GetWGSSolver(gsid);
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
 
@@ -38,11 +39,11 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   auto& phi_old_local = lbs_problem.GetPhiOldLocal();
   auto& phi_new_local = lbs_problem.GetPhiNewLocal();
   auto ags_solver = lbs_problem.GetAGSSolver();
-  auto& groupsets = lbs_problem.GetGroupsets();
+  const auto& groupsets = lbs_problem.GetGroupsets();
   auto active_set_source_function = lbs_problem.GetActiveSetSourceFunction();
 
-  auto& front_gs = groupsets.front();
-  auto& front_wgs_solver = lbs_problem.GetWGSSolvers()[front_gs.id];
+  const auto& front_gs = groupsets.front();
+  auto front_wgs_solver = lbs_problem.GetWGSSolver(front_gs.id);
   auto frons_wgs_context = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver->GetContext());
 
   k_eff = 1.0;
@@ -60,7 +61,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   while (nit < max_iterations)
   {
     Set(q_moments_local, 0.0);
-    for (auto& groupset : groupsets)
+    for (const auto& groupset : groupsets)
       active_set_source_function(groupset,
                                  q_moments_local,
                                  phi_old_local,

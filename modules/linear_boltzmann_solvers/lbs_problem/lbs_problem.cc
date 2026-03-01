@@ -15,6 +15,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/data_types/allowable_range.h"
+#include "framework/utils/error.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <iomanip>
@@ -75,7 +76,7 @@ LBSProblem::LBSProblem(const InputParameters& params)
 #ifdef __OPENSN_WITH_GPU__
     CheckCapableDevices();
 #else
-    throw std::invalid_argument(
+    OpenSnInvalidArgument(
       GetName() + ": GPU support was requested, but OpenSn was built without CUDA enabled.");
 #endif // __OPENSN_WITH_GPU__
   }
@@ -92,19 +93,13 @@ LBSProblem::LBSProblem(const InputParameters& params)
 
   // Set geometry type
   geometry_type_ = grid_->GetGeometryType();
-  if (geometry_type_ == GeometryType::INVALID)
-    throw std::runtime_error(GetName() + ": Invalid geometry type.");
+  OpenSnInvalidArgumentIf(geometry_type_ == GeometryType::INVALID,
+                          GetName() + ": Invalid geometry type.");
 
   InitializeGroupsets(params);
   InitializeSources(params);
   InitializeXSmapAndDensities(params);
   InitializeMaterials();
-}
-
-LBSOptions&
-LBSProblem::GetOptions()
-{
-  return options_;
 }
 
 const LBSOptions&
@@ -128,8 +123,7 @@ LBSProblem::SetTime(double time)
 void
 LBSProblem::SetTimeStep(double dt)
 {
-  if (dt <= 0.0)
-    throw std::runtime_error(GetName() + " dt must be greater than zero.");
+  OpenSnInvalidArgumentIf(dt <= 0.0, GetName() + ": dt must be greater than zero.");
   dt_ = dt;
 }
 
@@ -142,8 +136,8 @@ LBSProblem::GetTimeStep() const
 void
 LBSProblem::SetTheta(double theta)
 {
-  if (theta <= 0.0 or theta > 1.0)
-    throw std::runtime_error(GetName() + " theta must be in (0.0, 1.0].");
+  OpenSnInvalidArgumentIf(theta <= 0.0 or theta > 1.0,
+                          GetName() + ": theta must be in (0.0, 1.0].");
   theta_ = theta;
 }
 
@@ -162,8 +156,7 @@ LBSProblem::IsTimeDependent() const
 void
 LBSProblem::SetTimeDependentMode()
 {
-  throw std::logic_error(GetName() +
-                         ": Time-dependent mode is not supported for this problem type.");
+  OpenSnLogicalError(GetName() + ": Time-dependent mode is not supported for this problem type.");
 }
 
 void
@@ -226,16 +219,28 @@ LBSProblem::GetMaxPrecursorsPerMaterial() const
   return max_precursors_per_material_;
 }
 
-std::vector<LBSGroupset>&
-LBSProblem::GetGroupsets()
-{
-  return groupsets_;
-}
-
 const std::vector<LBSGroupset>&
 LBSProblem::GetGroupsets() const
 {
   return groupsets_;
+}
+
+LBSGroupset&
+LBSProblem::GetGroupset(size_t groupset_id)
+{
+  return groupsets_.at(groupset_id);
+}
+
+const LBSGroupset&
+LBSProblem::GetGroupset(size_t groupset_id) const
+{
+  return groupsets_.at(groupset_id);
+}
+
+size_t
+LBSProblem::GetNumGroupsets() const
+{
+  return groupsets_.size();
 }
 
 void
@@ -432,15 +437,21 @@ LBSProblem::SetActiveSetSourceFunction(SetSourceFunction source_function)
 }
 
 std::shared_ptr<AGSLinearSolver>
-LBSProblem::GetAGSSolver()
+LBSProblem::GetAGSSolver() const
 {
   return ags_solver_;
 }
 
-std::vector<std::shared_ptr<LinearSolver>>&
-LBSProblem::GetWGSSolvers()
+std::shared_ptr<LinearSolver>
+LBSProblem::GetWGSSolver(size_t groupset_id) const
 {
-  return wgs_solvers_;
+  return wgs_solvers_.at(groupset_id);
+}
+
+size_t
+LBSProblem::GetNumWGSSolvers() const
+{
+  return wgs_solvers_.size();
 }
 
 WGSContext&
@@ -449,7 +460,8 @@ LBSProblem::GetWGSContext(int groupset_id)
   auto& wgs_solver = wgs_solvers_[groupset_id];
   auto raw_context = wgs_solver->GetContext();
   auto wgs_context_ptr = std::dynamic_pointer_cast<WGSContext>(raw_context);
-  OpenSnLogicalErrorIf(not wgs_context_ptr, "Failed to cast WGSContext");
+  OpenSnLogicalErrorIf(not wgs_context_ptr,
+                       GetName() + ": Failed to cast solver context to WGSContext.");
   return *wgs_context_ptr;
 }
 
@@ -467,8 +479,8 @@ size_t
 LBSProblem::MapPhiFieldFunction(unsigned int g, unsigned int m) const
 {
   OpenSnLogicalErrorIf(phi_field_functions_local_map_.count({g, m}) == 0,
-                       std::string("Failure to map phi field function g") + std::to_string(g) +
-                         " m" + std::to_string(m));
+                       GetName() + ": Failed to map phi field function for g=" + std::to_string(g) +
+                         ", m=" + std::to_string(m) + ".");
 
   return phi_field_functions_local_map_.at({g, m});
 }
@@ -477,7 +489,8 @@ std::shared_ptr<FieldFunctionGridBased>
 LBSProblem::GetPowerFieldFunction() const
 {
   OpenSnLogicalErrorIf(not options_.power_field_function_on,
-                       "Called when options_.power_field_function_on == false");
+                       GetName() + ": GetPowerFieldFunction called with "
+                                   "options_.power_field_function_on=false.");
 
   return field_functions_[power_gen_fieldfunc_local_handle_];
 }
@@ -705,13 +718,13 @@ LBSProblem::ParseOptions(const InputParameters& input)
     {
       if (not std::filesystem::exists(dir))
       {
-        if (not std::filesystem::create_directories(dir))
-          throw std::runtime_error(GetName() + ": Failed to create restart directory " +
-                                   dir.string());
+        OpenSnLogicalErrorIf(not std::filesystem::create_directories(dir),
+                             GetName() + ": Failed to create restart directory " + dir.string());
       }
-      else if (not std::filesystem::is_directory(dir))
-        throw std::runtime_error(GetName() + ": Restart path exists but is not a directory " +
-                                 dir.string());
+      else
+        OpenSnLogicalErrorIf(not std::filesystem::is_directory(dir),
+                             GetName() + ": Restart path exists but is not a directory " +
+                               dir.string());
     }
     opensn::mpi_comm.barrier();
     UpdateRestartWriteTime();
@@ -741,15 +754,34 @@ LBSProblem::BuildRuntime()
   PrintSimHeader();
   mpi_comm.barrier();
 
+  InitializeRuntimeCore();
+  ValidateRuntimeModeConfiguration();
+  InitializeSources();
+
+  initialized_ = true;
+}
+
+void
+LBSProblem::InitializeRuntimeCore()
+{
   InitializeSpatialDiscretization();
   InitializeParrays();
   InitializeBoundaries();
   InitializeGPUExtras();
+}
+
+void
+LBSProblem::ValidateRuntimeModeConfiguration() const
+{
   if (options_.adjoint)
     if (const auto* do_problem = dynamic_cast<const DiscreteOrdinatesProblem*>(this);
         do_problem and do_problem->IsTimeDependent())
-      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
+      OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
+}
 
+void
+LBSProblem::InitializeSources()
+{
   // Initialize point sources
   for (auto& point_source : point_sources_)
     point_source->Initialize(*this);
@@ -757,8 +789,6 @@ LBSProblem::BuildRuntime()
   // Initialize volumetric sources
   for (auto& volumetric_source : volumetric_sources_)
     volumetric_source->Initialize(*this);
-
-  initialized_ = true;
 }
 
 void
@@ -818,14 +848,12 @@ void
 LBSProblem::InitializeGroupsets(const InputParameters& params)
 {
   // Initialize groups
-  if (num_groups_ == 0)
-    throw std::invalid_argument(GetName() + ": Number of groups must be > 0");
+  OpenSnInvalidArgumentIf(num_groups_ == 0, GetName() + ": Number of groups must be > 0.");
 
   // Initialize groupsets
   const auto& groupsets_array = params.GetParam("groupsets");
   const size_t num_gs = groupsets_array.GetNumParameters();
-  if (num_gs == 0)
-    throw std::invalid_argument(GetName() + ": At least one groupset must be specified");
+  OpenSnInvalidArgumentIf(num_gs == 0, GetName() + ": At least one groupset must be specified.");
   for (size_t gs = 0; gs < num_gs; ++gs)
   {
     const auto& groupset_params = groupsets_array.GetParam(gs);
@@ -837,7 +865,7 @@ LBSProblem::InitializeGroupsets(const InputParameters& params)
     {
       std::stringstream oss;
       oss << GetName() << ": No groups added to groupset " << groupsets_.back().id;
-      throw std::runtime_error(oss.str());
+      OpenSnInvalidArgument(oss.str());
     }
   }
 }
@@ -1441,7 +1469,7 @@ LBSProblem::SetAdjoint(bool adjoint)
   if (adjoint)
     if (const auto* do_problem = dynamic_cast<const DiscreteOrdinatesProblem*>(this);
         do_problem and do_problem->IsTimeDependent())
-      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
+      OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
 
   options_.adjoint = adjoint;
 
