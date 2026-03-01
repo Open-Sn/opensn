@@ -69,7 +69,7 @@ DiffusionSolver::GetSpatialDiscretization() const
   return sdm_;
 }
 
-std::pair<size_t, size_t>
+std::pair<std::uint64_t, std::uint64_t>
 DiffusionSolver::GetNumPhiIterativeUnknowns()
 {
   return {sdm_.GetNumLocalDOFs(uk_man_), sdm_.GetNumGlobalDOFs(uk_man_)};
@@ -84,7 +84,7 @@ DiffusionSolver::AddToRHS(const std::vector<double>& values)
 
   PetscScalar* rhs_ptr = nullptr;
   OpenSnPETScCall(VecGetArray(rhs_, &rhs_ptr));
-  for (size_t i = 0; i < num_local_dofs; ++i)
+  for (std::uint64_t i = 0; i < num_local_dofs; ++i)
     rhs_ptr[i] += values[i];
   OpenSnPETScCall(VecRestoreArray(rhs_, &rhs_ptr));
 }
@@ -137,7 +137,7 @@ DiffusionSolver::Initialize()
     std::vector<int64_t> ghids(ghost_ids.begin(), ghost_ids.end());
     rhs_ = CreateVectorWithGhosts(num_local_dofs_,
                                   num_global_dofs_,
-                                  static_cast<int64_t>(sdm_.GetNumGhostDOFs(uk_man_)),
+                                  static_cast<PetscInt>(sdm_.GetNumGhostDOFs(uk_man_)),
                                   ghids);
   }
 

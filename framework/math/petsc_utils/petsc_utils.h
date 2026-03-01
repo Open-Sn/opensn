@@ -40,7 +40,7 @@ struct PETScSolverSetup
  * return x;
  * \endcode
  */
-Vec CreateVector(int64_t local_size, int64_t global_size);
+Vec CreateVector(PetscInt local_size, PetscInt global_size);
 
 /**
  * Creates a general vector.
@@ -53,7 +53,7 @@ Vec CreateVector(int64_t local_size, int64_t global_size);
  * VecSetOption(x,VEC_IGNORE_NEGATIVE_INDICES,PETSC_TRUE);
  * \endcode
  */
-void CreateVector(Vec& x, int64_t local_size, int64_t global_size);
+void CreateVector(Vec& x, PetscInt local_size, PetscInt global_size);
 
 /**
  * Creates a general vector with ghost value support.
@@ -73,9 +73,9 @@ void CreateVector(Vec& x, int64_t local_size, int64_t global_size);
  * return x;
  * \endcode
  */
-Vec CreateVectorWithGhosts(int64_t local_size,
-                           int64_t global_size,
-                           int64_t nghosts,
+Vec CreateVectorWithGhosts(PetscInt local_size,
+                           PetscInt global_size,
+                           PetscInt nghosts,
                            const std::vector<int64_t>& ghost_indices);
 
 /**
@@ -97,7 +97,7 @@ Vec CreateVectorWithGhosts(int64_t local_size,
  * return A;
  * \endcode
  */
-Mat CreateSquareMatrix(int64_t local_size, int64_t global_size);
+Mat CreateSquareMatrix(PetscInt local_size, PetscInt global_size);
 
 /**
  * Creates a general square matrix.
@@ -115,7 +115,7 @@ Mat CreateSquareMatrix(int64_t local_size, int64_t global_size);
  * MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);
  * \endcode
  */
-void CreateSquareMatrix(Mat& A, int64_t local_size, int64_t global_size);
+void CreateSquareMatrix(Mat& A, PetscInt local_size, PetscInt global_size);
 
 /**
  * Initializes the sparsity pattern of a matrix.

@@ -63,8 +63,8 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
 
   const auto& OneDofPerNode = sdm.UNITARY_UNKNOWN_MANAGER;
 
-  const size_t num_local_nodes = sdm.GetNumLocalDOFs(OneDofPerNode);
-  const size_t num_global_nodes = sdm.GetNumGlobalDOFs(OneDofPerNode);
+  const auto num_local_nodes = sdm.GetNumLocalDOFs(OneDofPerNode);
+  const auto num_global_nodes = sdm.GetNumGlobalDOFs(OneDofPerNode);
 
   opensn::log.Log() << "Num local nodes: " << num_local_nodes;
   opensn::log.Log() << "Num globl nodes: " << num_global_nodes;
@@ -106,8 +106,8 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
   const UnknownManager phi_uk_man(phi_uks);
   const UnknownManager psi_uk_man(psi_uks);
 
-  const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
-  const size_t num_local_psi_dofs = sdm.GetNumLocalDOFs(psi_uk_man);
+  const auto num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
+  const auto num_local_psi_dofs = sdm.GetNumLocalDOFs(psi_uk_man);
 
   opensn::log.Log() << "End ukmanagers." << std::endl;
 
@@ -305,7 +305,7 @@ SimTest06_WDD(std::shared_ptr<MeshContinuum> grid)
   // This routine extracts a single moment vector
   // from the vector that contains multiple moments
   const UnknownManager m0_uk_man({Unknown(UnknownType::VECTOR_N, num_groups)});
-  const size_t num_m0_dofs = sdm.GetNumLocalDOFs(m0_uk_man);
+  const auto num_m0_dofs = sdm.GetNumLocalDOFs(m0_uk_man);
 
   std::vector<double> m0_phi(num_m0_dofs, 0.0);
 
@@ -380,7 +380,7 @@ SetSource(const std::shared_ptr<MeshContinuum> grid,
           const MultiGroupXS& xs,
           const std::vector<AngularQuadrature::HarmonicIndices>& m_ell_em_map)
 {
-  const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
+  const auto num_local_phi_dofs = sdm.GetNumLocalDOFs(phi_uk_man);
   std::vector<double> source_moments(num_local_phi_dofs, 0.0);
 
   const unsigned int num_moments = phi_uk_man.unknowns.size();

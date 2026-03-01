@@ -54,10 +54,7 @@ NLKEigenDiffSolver::SetSystemSize()
   auto nl_context_ptr = GetNLKDiffContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& diff_solver = nl_context_ptr->diff_solver;
-  auto sizes = diff_solver.GetNumPhiIterativeUnknowns();
-
-  num_local_dofs_ = static_cast<PetscInt>(sizes.first);
-  num_global_dofs_ = static_cast<PetscInt>(sizes.second);
+  std::tie(num_local_dofs_, num_global_dofs_) = diff_solver.GetNumPhiIterativeUnknowns();
 }
 
 void

@@ -341,7 +341,7 @@ LBSProblem::GetLocalNodeCount() const
   return local_node_count_;
 }
 
-size_t
+std::uint64_t
 LBSProblem::GetGlobalNodeCount() const
 {
   return global_node_count_;
@@ -453,12 +453,12 @@ LBSProblem::GetWGSContext(int groupset_id)
   return *wgs_context_ptr;
 }
 
-std::pair<size_t, size_t>
+std::pair<std::uint64_t, std::uint64_t>
 LBSProblem::GetNumPhiIterativeUnknowns()
 {
   const auto& sdm = *discretization_;
-  const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
-  const size_t num_global_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
+  const auto num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
+  const auto num_global_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
 
   return {num_local_phi_dofs, num_global_phi_dofs};
 }
@@ -1248,7 +1248,7 @@ LBSProblem::MakeSourceMomentsFromPhi()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::MakeSourceMomentsFromPhi");
 
-  size_t num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
+  auto num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
 
   std::vector<double> source_moments(num_local_dofs, 0.0);
   for (auto& groupset : groupsets_)

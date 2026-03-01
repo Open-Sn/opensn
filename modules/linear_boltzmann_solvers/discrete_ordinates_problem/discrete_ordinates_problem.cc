@@ -223,16 +223,16 @@ DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem()
   }
 }
 
-std::pair<size_t, size_t>
+std::pair<std::uint64_t, std::uint64_t>
 DiscreteOrdinatesProblem::GetNumPhiIterativeUnknowns()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::GetNumPhiIterativeUnknowns");
   const auto& sdm = *discretization_;
-  const size_t num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
-  const size_t num_global_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
+  const auto num_local_phi_dofs = sdm.GetNumLocalDOFs(flux_moments_uk_man_);
+  const auto num_global_phi_dofs = sdm.GetNumGlobalDOFs(flux_moments_uk_man_);
 
-  size_t num_local_psi_dofs = 0;
-  size_t num_global_psi_dofs = 0;
+  std::uint64_t num_local_psi_dofs = 0;
+  std::uint64_t num_global_psi_dofs = 0;
   for (auto& groupset : groupsets_)
   {
     const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
@@ -240,8 +240,8 @@ DiscreteOrdinatesProblem::GetNumPhiIterativeUnknowns()
     num_global_psi_dofs += num_delayed_psi_info.second;
   }
 
-  const size_t num_local_dofs = num_local_phi_dofs + num_local_psi_dofs;
-  const size_t num_global_dofs = num_global_phi_dofs + num_global_psi_dofs;
+  const auto num_local_dofs = num_local_phi_dofs + num_local_psi_dofs;
+  const auto num_global_dofs = num_global_phi_dofs + num_global_psi_dofs;
 
   return {num_local_dofs, num_global_dofs};
 }

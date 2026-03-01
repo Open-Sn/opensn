@@ -179,7 +179,7 @@ public:
   size_t GetLocalNodeCount() const;
 
   /// Returns the global node count for the flux-moments data structures.
-  size_t GetGlobalNodeCount() const;
+  std::uint64_t GetGlobalNodeCount() const;
 
   /// Read/write access to source moments vector.
   std::vector<double>& GetQMomentsLocal();
@@ -230,7 +230,7 @@ public:
    * Gets the local and global number of iterative unknowns. This normally is only the flux moments,
    * however, the sweep based solvers might include delayed angular fluxes in this number.
    */
-  virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
+  virtual std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns();
 
   /// Gets the local handle of a flux-moment based field function.
   size_t MapPhiFieldFunction(unsigned int g, unsigned int m) const;
@@ -339,7 +339,7 @@ protected:
   unsigned int max_cell_dof_count_ = 0;
   unsigned int min_cell_dof_count_ = 0;
   uint64_t local_node_count_ = 0;
-  uint64_t global_node_count_ = 0;
+  std::uint64_t global_node_count_ = 0;
 
   std::vector<double> q_moments_local_, ext_src_moments_local_;
   std::vector<double> phi_new_local_, phi_old_local_;
