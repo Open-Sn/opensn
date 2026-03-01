@@ -100,14 +100,8 @@ TransientSolver::Initialize()
   const std::string& init_state = initial_state_;
   RefreshLocalViews();
   if (not phi_new_local_ or phi_new_local_->empty())
-  {
-    if (init_state != "zero")
-      throw std::runtime_error(GetName() + ": Problem must be initialized before TransientSolver.");
-    do_problem_->Initialize();
-    RefreshLocalViews();
-  }
-  if (not phi_new_local_ or phi_new_local_->empty())
-    throw std::runtime_error(GetName() + ": Problem initialization failed.");
+    throw std::runtime_error(GetName() + ": Problem must be fully constructed before "
+                                         "TransientSolver initialization.");
 
   if (init_state == "zero")
   {

@@ -49,7 +49,6 @@ SteadyStateSourceSolver::Initialize()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Initialize");
 
-  lbs_problem_->Initialize();
   if (auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(lbs_problem_))
     if (do_problem->IsTimeDependent())
       throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."

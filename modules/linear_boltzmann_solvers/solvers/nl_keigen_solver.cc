@@ -80,7 +80,6 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
 void
 NonLinearKEigenSolver::Initialize()
 {
-  do_problem_->Initialize();
   if (do_problem_->IsTimeDependent())
     throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."
                                          "SetSteadyStateMode() before initializing this solver.");

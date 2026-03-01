@@ -31,11 +31,6 @@ struct WGSContext;
 class LBSProblem : public Problem
 {
 public:
-  explicit LBSProblem(std::string name, std::shared_ptr<MeshContinuum> grid);
-
-  /// Input parameters based construction.
-  explicit LBSProblem(const InputParameters& params);
-
   LBSProblem(const LBSProblem&) = delete;
 
   LBSProblem& operator=(const LBSProblem&) = delete;
@@ -50,43 +45,56 @@ public:
 
   void SetOptions(const InputParameters& input);
 
-  /// Returns simulation time in seconds for time dependent problems
+  /// Returns simulation time in seconds for time dependent problems.
   double GetTime() const;
 
-  /// Sets simulation time in seconds for time dependent problems
+  /// Sets simulation time in seconds for time dependent problems.
   void SetTime(double time);
 
-  /// Sets dt
+  /// Sets dt.
   void SetTimeStep(double dt);
 
-  /// Returns dt
+  /// Returns dt.
   double GetTimeStep() const;
 
-  /// Sets theta for time discretization
+  /// Sets theta for time discretization.
   void SetTheta(double theta);
 
-  /// Sets theta for time discretization
+  /// Returns theta for time discretization.
   double GetTheta() const;
 
-  /// Is the problem time dependent
+  /// Returns true if the problem is currently in time-dependent mode.
+  virtual bool IsTimeDependent() const;
+
+  /// Set the problem to time-dependent mode.
+  virtual void SetTimeDependentMode();
+
+  /// Set the problem to steady-state mode.
+  virtual void SetSteadyStateMode();
 
   /**
    * Toggle forward/adjoint transport mode.
    *
-   * If called after initialization, this performs a mode-transition reset:
-   * materials are reinitialized in the selected mode, sources and boundaries
-   * are cleared, and solution vectors are zeroed.
+   * If the requested mode differs from the current mode, this performs a
+   * mode-transition reset. Materials are reinitialized in the selected mode,
+   * sources and boundaries are cleared, and solution vectors are zeroed.
    */
   void SetAdjoint(bool adjoint);
+
+  /// Returns true if the problem is in adjoint mode.
   bool IsAdjoint() const;
+
   virtual void SetSaveAngularFlux(bool save);
+
   void ApplyOptions();
+
   void ZeroPhi();
+
   virtual void ZeroPsi() = 0;
 
   GeometryType GetGeometryType() const;
 
-  /// Returns the number of moments for the solver. This will only be non-zero after initialization.
+  /// Returns the number of moments for the solver.
   unsigned int GetNumMoments() const;
 
   unsigned int GetMaxCellDOFCount() const;
@@ -95,22 +103,16 @@ public:
 
   bool UseGPUs() const;
 
-  /// Returns the number of groups for the solver. This will only be non-zero after initialization.
+  /// Returns the number of groups for the solver.
   unsigned int GetNumGroups() const;
 
-  /// Returns the scattering order for the solver. This will only be non-zero after initialization.
+  /// Returns the scattering order for the solver.
   unsigned int GetScatteringOrder() const;
 
-  /**
-   * Returns the number of precursors for the solver. This will only be non-zero after
-   * initialization.
-   */
+  /// Returns the number of precursors for the solver.
   unsigned int GetNumPrecursors() const;
 
-  /**
-   * Returns the maximum number of precursors defined on any material. This will only be non-zero
-   * after initialization.
-   */
+  /// Returns the maximum number of precursors defined on any material.
   unsigned int GetMaxPrecursorsPerMaterial() const;
 
   std::vector<LBSGroupset>& GetGroupsets();
@@ -236,8 +238,6 @@ public:
   /// Returns the power generation field function, if enabled.
   std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;
 
-  void Initialize() override;
-
   bool TriggerRestartDump() const
   {
     if (options_.write_restart_time_interval <= std::chrono::seconds(0))
@@ -273,6 +273,12 @@ public:
   virtual void UpdatePsiOld() {};
 
 protected:
+  /// Input parameters based construction.
+  explicit LBSProblem(const InputParameters& params);
+
+  /// Build runtime data structures once all constructor-time configuration is complete.
+  void BuildRuntime();
+
   virtual void PrintSimHeader();
 
   void ComputeUnitIntegrals();
@@ -344,6 +350,7 @@ protected:
 
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
+  bool initialized_ = false;
 
   std::map<std::pair<unsigned int, unsigned int>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;

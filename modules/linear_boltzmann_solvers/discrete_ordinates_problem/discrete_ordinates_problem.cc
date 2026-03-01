@@ -31,11 +31,11 @@
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
+#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
-#include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
@@ -46,13 +46,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesProblem);
-
-DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const std::string& name,
-                                                   std::shared_ptr<MeshContinuum> grid_ptr)
-  : LBSProblem(name, grid_ptr)
-{
-}
+OpenSnRegisterObjectParametersOnlyInNamespace(lbs, DiscreteOrdinatesProblem);
 
 InputParameters
 DiscreteOrdinatesProblem::GetInputParameters()
@@ -108,8 +102,19 @@ DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
 std::shared_ptr<DiscreteOrdinatesProblem>
 DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<DiscreteOrdinatesProblem>("lbs::DiscreteOrdinatesProblem", params);
+  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
+  std::shared_ptr<SpatialDiscretization> discretization = PieceWiseLinearDiscontinuous::New(grid);
+
+  auto input_params = GetInputParameters();
+  input_params.SetObjectType("lbs::DiscreteOrdinatesProblem");
+  input_params.SetErrorOriginScope("lbs::DiscreteOrdinatesProblem");
+  input_params.AssignParameters(params);
+
+  auto problem =
+    std::shared_ptr<DiscreteOrdinatesProblem>(new DiscreteOrdinatesProblem(input_params));
+  problem->discretization_ = discretization;
+  problem->BuildRuntime();
+  return problem;
 }
 
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
@@ -118,9 +123,20 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
   if (params.GetParamValue<bool>("time_dependent"))
-    SetTimeDependentMode();
+  {
+    if (UseGPUs())
+      throw std::runtime_error(GetName() + ": Time dependent problems are not supported on GPUs.");
+    if (options_.adjoint)
+      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
+    if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
+      throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
+
+    SetSweepChunkMode(SweepChunkMode::TimeDependent);
+    if (not options_.save_angular_flux)
+      LBSProblem::SetSaveAngularFlux(true);
+  }
   else
-    SetSteadyStateMode();
+    SetSweepChunkMode(SweepChunkMode::SteadyState);
 
   if (params.Has("boundary_conditions"))
   {
@@ -482,9 +498,11 @@ DiscreteOrdinatesProblem::PrintSimHeader()
 }
 
 void
-DiscreteOrdinatesProblem::Initialize()
+DiscreteOrdinatesProblem::BuildRuntime()
 {
-  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::Initialize");
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::BuildRuntime");
+  if (initialized_)
+    return;
 
   if (boundary_conditions_block_)
   {
@@ -497,7 +515,7 @@ DiscreteOrdinatesProblem::Initialize()
     }
   }
 
-  LBSProblem::Initialize();
+  LBSProblem::BuildRuntime();
 
   // Make face histogram
   grid_face_histogram_ = grid_->MakeGridFaceHistogram();
@@ -550,33 +568,16 @@ DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
     return;
 
   sweep_chunk_mode_ = mode;
-  if (discretization_)
+  if (initialized_)
     UpdateAngularFluxStorage();
-}
-
-void
-DiscreteOrdinatesProblem::EnableTimeDependentMode()
-{
-  if (UseGPUs())
-    throw std::runtime_error(GetName() + ": Time dependent problems are not supported on GPUs.");
-  if (options_.adjoint)
-    throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
-  if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
-    throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
-
-  SetSweepChunkMode(SweepChunkMode::TimeDependent);
 }
 
 void
 DiscreteOrdinatesProblem::SetTimeDependentMode()
 {
-  if (not discretization_)
-  {
-    SetSweepChunkMode(SweepChunkMode::TimeDependent);
-    if (not options_.save_angular_flux)
-      LBSProblem::SetSaveAngularFlux(true);
-    return;
-  }
+  OpenSnLogicalErrorIf(
+    not initialized_,
+    GetName() + ": Problem must be fully constructed before calling SetTimeDependentMode.");
 
   ResetMode(SweepChunkMode::TimeDependent);
 }
@@ -584,11 +585,9 @@ DiscreteOrdinatesProblem::SetTimeDependentMode()
 void
 DiscreteOrdinatesProblem::SetSteadyStateMode()
 {
-  if (not discretization_)
-  {
-    SetSweepChunkMode(SweepChunkMode::SteadyState);
-    return;
-  }
+  OpenSnLogicalErrorIf(not initialized_,
+                       GetName() +
+                         ": Problem must be fully constructed before calling SetSteadyStateMode.");
 
   ResetMode(SweepChunkMode::SteadyState);
 }
@@ -598,7 +597,8 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 {
   OpenSnInvalidArgumentIf(target_mode == SweepChunkMode::Default,
                           GetName() + ": target mode cannot be SweepChunkMode::Default.");
-  OpenSnLogicalErrorIf(not discretization_, GetName() + ": Problem must be initialized first.");
+  OpenSnLogicalErrorIf(not initialized_,
+                       GetName() + ": Problem must be fully constructed before mode changes.");
 
   // Current configured sweep mode (or Default if no explicit mode has been selected yet).
   const auto active_mode = sweep_chunk_mode_.value_or(SweepChunkMode::Default);
@@ -610,6 +610,16 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
   const bool has_no_active_mode = (active_mode == SweepChunkMode::Default);
   // True when the requested target mode is time-dependent.
   const bool switching_to_transient = target_mode == SweepChunkMode::TimeDependent;
+
+  if (switching_to_transient)
+  {
+    if (UseGPUs())
+      throw std::runtime_error(GetName() + ": Time dependent problems are not supported on GPUs.");
+    if (options_.adjoint)
+      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
+    if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
+      throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
+  }
 
   if (has_no_active_mode)
   {
@@ -630,8 +640,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
       forced_save_angular_flux_for_transient_ = not options_.save_angular_flux;
       if (forced_save_angular_flux_for_transient_)
         DiscreteOrdinatesProblem::SetSaveAngularFlux(true);
-
-      EnableTimeDependentMode();
+      SetSweepChunkMode(SweepChunkMode::TimeDependent);
     }
     else
     {
@@ -676,7 +685,7 @@ DiscreteOrdinatesProblem::SetSaveAngularFlux(bool save)
 {
   LBSProblem::SetSaveAngularFlux(save);
 
-  if (discretization_)
+  if (initialized_)
     UpdateAngularFluxStorage();
 }
 
@@ -725,7 +734,7 @@ DiscreteOrdinatesProblem::GetAngularFluxFieldFunctionList(const std::vector<unsi
                                                           const std::vector<size_t>& angles)
 {
   OpenSnLogicalErrorIf(discretization_ == nullptr || grid_ == nullptr || groupsets_.empty(),
-                       "GetAngularFluxFieldFunctionList: problem not initialized.");
+                       "GetAngularFluxFieldFunctionList: problem not fully constructed.");
 
   OpenSnLogicalErrorIf(groups.empty(), "GetAngularFluxFieldFunctionList: groups cannot be empty.");
   OpenSnLogicalErrorIf(angles.empty(), "GetAngularFluxFieldFunctionList: angles cannot be empty.");

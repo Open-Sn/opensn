@@ -17,8 +17,6 @@ namespace opensn
 class DiscreteOrdinatesCurvilinearProblem : public DiscreteOrdinatesProblem
 {
 public:
-  explicit DiscreteOrdinatesCurvilinearProblem(const InputParameters& params);
-
   DiscreteOrdinatesCurvilinearProblem(const DiscreteOrdinatesCurvilinearProblem&) = delete;
   DiscreteOrdinatesCurvilinearProblem&
   operator=(const DiscreteOrdinatesCurvilinearProblem&) = delete;
@@ -43,6 +41,10 @@ public:
   static std::shared_ptr<DiscreteOrdinatesCurvilinearProblem> Create(const ParameterBlock& params);
 
   const std::vector<UnitCellMatrices>& GetSecondaryUnitCellMatrices() const;
+
+private:
+  /// Factory-only constructor.
+  explicit DiscreteOrdinatesCurvilinearProblem(const InputParameters& params);
 };
 
 } // namespace opensn

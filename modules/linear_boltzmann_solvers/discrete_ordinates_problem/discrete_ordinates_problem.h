@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/parameters/parameter_block.h"
 #include <memory>
 #include <optional>
@@ -16,8 +16,7 @@ namespace opensn
 class FieldFunctionGridBased;
 
 /**
- * Base class for Discrete Ordinates solvers. This class mostly establishes utilities related to
- * sweeping. From here we can derive a steady-state, transient, adjoint, and k-eigenvalue solver.
+ * Base class for discrete ordinates solvers.
  */
 class DiscreteOrdinatesProblem : public LBSProblem
 {
@@ -33,24 +32,28 @@ public:
   };
 
   void SetSweepChunkMode(SweepChunkMode mode);
+
   void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }
-  bool IsTimeDependent() const
+
+  bool IsTimeDependent() const override
   {
     return sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent;
   }
-  void SetTimeDependentMode();
-  void SetSteadyStateMode();
+
+  void SetTimeDependentMode() override;
+
+  void SetSteadyStateMode() override;
+
   std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset)
   {
     return SetSweepChunk(groupset);
   }
-  void EnableTimeDependentMode();
+
   void ResetMode(SweepChunkMode target_mode);
+
   /// Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode).
   void ReinitializeSolverSchemes();
 
-  /// Static registration based constructor.
-  explicit DiscreteOrdinatesProblem(const InputParameters& params);
   ~DiscreteOrdinatesProblem() override;
 
   using BoundaryDefinition = std::pair<LBSBoundaryType, std::shared_ptr<SweepBoundary>>;
@@ -81,8 +84,6 @@ public:
   void UpdatePsiOld() override;
 
   void PrintSimHeader() override;
-
-  void Initialize() override;
 
   /// Returns the sweep boundaries as a read only reference
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
@@ -116,8 +117,11 @@ public:
   void CopyPhiAndOutflowBackToHost();
 
 protected:
-  explicit DiscreteOrdinatesProblem(const std::string& name,
-                                    std::shared_ptr<MeshContinuum> grid_ptr);
+  /// Factory-only constructor.
+  explicit DiscreteOrdinatesProblem(const InputParameters& params);
+
+  /// Build sweep/runtime data structures once base runtime is available.
+  void BuildRuntime();
 
   void InitializeBoundaries() override;
 

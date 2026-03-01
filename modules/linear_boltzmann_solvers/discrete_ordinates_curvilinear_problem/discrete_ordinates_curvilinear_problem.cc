@@ -7,7 +7,6 @@
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include <cmath>
 #include <iomanip>
@@ -16,7 +15,7 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, DiscreteOrdinatesCurvilinearProblem);
+OpenSnRegisterObjectParametersOnlyInNamespace(lbs, DiscreteOrdinatesCurvilinearProblem);
 
 InputParameters
 DiscreteOrdinatesCurvilinearProblem::GetInputParameters()
@@ -39,9 +38,42 @@ DiscreteOrdinatesCurvilinearProblem::Create(const ParameterBlock& params)
   log.Log0Warning()
     << "The curvilinear discrete-ordinates problem type is experimental. USE WITH CAUTION!"
     << std::endl;
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<DiscreteOrdinatesCurvilinearProblem>(
-    "lbs::DiscreteOrdinatesCurvilinearProblem", params);
+
+  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
+  const auto geometry_type = grid->GetGeometryType();
+
+  const auto primary_quadrature_order = [](GeometryType g) -> QuadratureOrder
+  {
+    switch (g)
+    {
+      case GeometryType::ONED_SPHERICAL:
+        return QuadratureOrder::FOURTH;
+      case GeometryType::ONED_CYLINDRICAL:
+      case GeometryType::TWOD_CYLINDRICAL:
+        return QuadratureOrder::THIRD;
+      default:
+        return QuadratureOrder::INVALID_ORDER;
+    }
+  };
+
+  const auto quadrature_order = primary_quadrature_order(geometry_type);
+  OpenSnInvalidArgumentIf(
+    quadrature_order == QuadratureOrder::INVALID_ORDER,
+    "DiscreteOrdinatesCurvilinearProblem::Create: Unsupported geometry type " +
+      std::string(ToString(geometry_type)) + " for curvilinear discretization.");
+
+  std::shared_ptr<SpatialDiscretization> discretization =
+    PieceWiseLinearDiscontinuous::New(grid, quadrature_order);
+  auto input_params = GetInputParameters();
+  input_params.SetObjectType("lbs::DiscreteOrdinatesCurvilinearProblem");
+  input_params.SetErrorOriginScope("lbs::DiscreteOrdinatesCurvilinearProblem");
+  input_params.AssignParameters(params);
+
+  auto problem = std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>(
+    new DiscreteOrdinatesCurvilinearProblem(input_params));
+  problem->discretization_ = discretization;
+  problem->BuildRuntime();
+  return problem;
 }
 
 DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
@@ -205,24 +237,27 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
 {
   log.Log() << "Initializing spatial discretization.\n";
 
-  const auto quadrature_orders = [](GeometryType g) -> std::pair<QuadratureOrder, QuadratureOrder>
+  const auto secondary_quadrature_order = [](GeometryType g) -> QuadratureOrder
   {
     switch (g)
     {
       case GeometryType::ONED_SPHERICAL:
-        return {QuadratureOrder::FOURTH, QuadratureOrder::THIRD};
+        return QuadratureOrder::THIRD;
 
       case GeometryType::ONED_CYLINDRICAL:
       case GeometryType::TWOD_CYLINDRICAL:
-        return {QuadratureOrder::THIRD, QuadratureOrder::SECOND};
+        return QuadratureOrder::SECOND;
 
       default:
-        return {QuadratureOrder::INVALID_ORDER, QuadratureOrder::INVALID_ORDER};
+        return QuadratureOrder::INVALID_ORDER;
     }
   };
 
-  const auto [quad_primary, quad_secondary] = quadrature_orders(geometry_type_);
-  if (quad_primary == QuadratureOrder::INVALID_ORDER)
+  OpenSnLogicalErrorIf(not discretization_,
+                       GetName() + ": Missing primary spatial discretization.");
+
+  const auto quad_secondary = secondary_quadrature_order(geometry_type_);
+  if (quad_secondary == QuadratureOrder::INVALID_ORDER)
   {
     std::ostringstream oss;
     oss << GetName() << "::InitializeSpatialDiscretization:\n"
@@ -231,8 +266,7 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
     throw std::runtime_error(oss.str());
   }
 
-  // Primary
-  discretization_ = PieceWiseLinearDiscontinuous::New(grid_, quad_primary);
+  // Primary is provided by the factory; compute integrals for it.
   ComputeUnitIntegrals();
 
   // Secondary

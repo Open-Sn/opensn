@@ -20,7 +20,7 @@ namespace opensn
 class TotalXSCarrier : public Carrier
 {
 public:
-  /// Constructor from a fully initialized LBS problem.
+  /// Constructor from a fully constructed LBS problem.
   TotalXSCarrier(LBSProblem& lbs_problem);
 
   /// Retrive the pointer to the total cross section data on GPU for a given block ID.
