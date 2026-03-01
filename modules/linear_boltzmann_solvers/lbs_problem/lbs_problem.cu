@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/device/dof_limits.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h"
@@ -30,6 +31,8 @@ LBSProblem::InitializeGPUExtras()
   MemoryPinner<double>* phi = new MemoryPinner<double>(phi_new_local_);
   pinners_[0] = src;
   pinners_[1] = phi;
+  // compute shared emmory DOF limits
+  max_dof_gpu_shared_mem = ComputeMaxDofSharedMem();
 }
 
 void

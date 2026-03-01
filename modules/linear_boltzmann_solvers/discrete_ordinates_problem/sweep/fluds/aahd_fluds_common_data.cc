@@ -18,7 +18,7 @@ AAHD_FLUDSCommonData::AAHD_FLUDSCommonData(
   const SPDS& spds,
   const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
   const SpatialDiscretization& sdm)
-  : FLUDSCommonData(spds, grid_nodal_mappings)
+  : FLUDSCommonData(spds, grid_nodal_mappings), sdm_(sdm)
 {
   ComputeNodeIndexForNonDelayedLocalFaces(sdm);
   ComputeNodeIndexForDelayedLocalFaces(sdm);

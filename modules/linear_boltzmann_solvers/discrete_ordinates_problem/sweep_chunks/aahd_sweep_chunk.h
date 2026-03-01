@@ -28,6 +28,7 @@ public:
 
 protected:
   DiscreteOrdinatesProblem& problem_;
+  std::size_t shared_mem_size_;
 };
 
 } // namespace opensn

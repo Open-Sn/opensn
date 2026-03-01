@@ -18,6 +18,14 @@ namespace opensn
 
 class DiscreteOrdinatesProblem;
 
+struct WarpData
+{
+  WarpData() = default;
+  WarpData(std::uint64_t off) : offset(off) {}
+
+  std::uint64_t offset = std::numeric_limits<std::uint64_t>::max();
+};
+
 /// Host-device bank storage structure for device-transportable FLUDS.
 struct AAHD_Bank
 {
@@ -223,6 +231,17 @@ public:
   double* GetSavedAngularFluxDevicePointer() { return save_angular_flux_.device_storage.get(); }
   /// Check if the FLUDS has save angular flux storage.
   bool HasSaveAngularFlux() const { return not save_angular_flux_.host_storage.empty(); }
+  /// Get block size for GPU kernels.
+  ::dim3 GetBlockSize() const { return block_size_; }
+  /// Get grid size X for GPU kernels.
+  unsigned int GetGridSizeX() const { return grid_size_x_; }
+  /// Get warp data device pointer.
+  WarpData* GetWarpDataDevicePointer(std::uint32_t level)
+  {
+    return warp_data_.get() + warp_data_level_offsets_[level];
+  }
+  /// Get global cache device pointer.
+  crb::DeviceMemory<double>& GetGlobalCache() { return global_cache_; }
 
 protected:
   /// Reference to the common data.
@@ -251,6 +270,17 @@ protected:
 
   /// Stream for asynchronous operations.
   crb::Stream stream_;
+
+  /// Block size for GPU kernels ``(num_groups_and_angles, num_cells_per_block)``.
+  ::dim3 block_size_;
+  /// Grid size X for GPU kernels (num blocks targetting the same cell).
+  unsigned int grid_size_x_;
+  /// Warp data.
+  crb::DeviceMemory<WarpData> warp_data_;
+  /// Offset to warp data for each level.
+  std::vector<std::uint64_t> warp_data_level_offsets_;
+  /// Cache on the global memory.
+  crb::DeviceMemory<double> global_cache_;
 };
 
 } // namespace opensn

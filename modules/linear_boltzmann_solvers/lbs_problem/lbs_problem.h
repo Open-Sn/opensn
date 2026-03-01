@@ -387,9 +387,6 @@ private:
   void ParseOptions(const InputParameters& input);
 
 public:
-  /// Max number of DOFs per cell that the sweep kernel on GPU can handle.
-  static constexpr std::uint32_t max_dofs_gpu = 10;
-
   /// Returns the input parameters for this object.
   static InputParameters GetInputParameters();
 

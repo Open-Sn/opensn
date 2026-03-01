@@ -92,6 +92,8 @@ public:
 
   /// Get pointer to indexes on device.
   const std::uint64_t* GetDeviceIndex() const { return device_node_indexes_; }
+  /// Get reference to the spatial discretization.
+  const SpatialDiscretization& GetSDM() const { return sdm_; }
 
   /// Destructor.
   ~AAHD_FLUDSCommonData() override;
@@ -99,6 +101,8 @@ public:
 protected:
   /// Map face node to its associated index in the corresponding bank.
   std::map<AAHD_FaceNode, AAHD_NodeIndex> node_tracker_;
+
+  const SpatialDiscretization& sdm_;
 
   /// \name Allocation sizes
   /// \{

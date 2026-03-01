@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/buffer.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/view/mesh_view.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/view/quadrature_view.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/device/dof_limits.h"
 #include "caribou/main.hpp"
 
 namespace crb = caribou;
@@ -17,7 +18,7 @@ namespace opensn::gpu_kernel
 /// Compute the sweep matrix from gradient, mass and the source term
 template <std::size_t ndofs>
 __device__ void
-ComputeGMS(double* sweep_matrix,
+ComputeGMS(MatBuffer<ndofs>& sweep_matrix,
            double* psi,
            double* s,
            CellView& cell,
@@ -41,7 +42,7 @@ ComputeGMS(double* sweep_matrix,
     s[i] = src_per_moment;
   }
   // add source, transfer and mass contribution
-  double* A = sweep_matrix;
+  auto A = sweep_matrix.element();
   const std::array<double, 4>* GM_data =
     reinterpret_cast<const std::array<double, 4>*>(cell.GM_data);
   _Pragma("unroll") for (std::uint32_t i = 0; i < ndofs; ++i)
@@ -50,19 +51,19 @@ ComputeGMS(double* sweep_matrix,
     {
       std::array<double, 4> GM = *(GM_data++);
       // compute A += G * Omega + M * sigma_t
-      A[j] += direction.omega[0] * GM[0] + direction.omega[1] * GM[1] + direction.omega[2] * GM[2] +
-              sigma_t * GM[3];
+      *A += direction.omega[0] * GM[0] + direction.omega[1] * GM[1] + direction.omega[2] * GM[2] +
+            sigma_t * GM[3];
+      ++A;
       // compute psi += M @ s
       psi[i] += GM[3] * s[j];
     }
-    A += ndofs;
   }
 }
 
 /// Compute the sweep matrix from surface integral
 template <std::size_t ndofs>
 __device__ void
-ComputeSurfaceIntegral(double* sweep_matrix,
+ComputeSurfaceIntegral(MatBuffer<ndofs>& sweep_matrix,
                        double* psi,
                        CellView& cell,
                        DirectionView& direction,
@@ -90,7 +91,7 @@ ComputeSurfaceIntegral(double* sweep_matrix,
     for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
     {
       std::uint32_t i = face.cell_mapping_data[fi];
-      double* Ai = sweep_matrix + i * ndofs;
+      auto Ai = sweep_matrix.row(i);
       for (std::uint32_t fj = 0; fj < face.num_face_nodes; ++fj)
       {
         std::uint32_t j = face.cell_mapping_data[fj];
@@ -109,39 +110,55 @@ ComputeSurfaceIntegral(double* sweep_matrix,
 /// Gaussian elimination
 template <std::size_t ndofs>
 __device__ void
-GaussianElimination(double* sweep_matrix, double* psi)
+GaussianElimination(MatBuffer<ndofs>& sweep_matrix, double* psi, double* s)
 {
   // forward elimination
-  double* A_i = sweep_matrix;
+  auto A_i = sweep_matrix.row(0);
   _Pragma("unroll") for (std::uint32_t i = 0; i < ndofs; ++i)
   {
     double inv_diag = 1.0 / A_i[i];
     // normalize the pivot row
     _Pragma("unroll") for (std::uint32_t j = i; j < ndofs; ++j)
     {
-      A_i[j] *= inv_diag;
+      if constexpr (ndofs <= max_dof_gpu_register)
+      {
+        A_i[j] *= inv_diag;
+      }
+      else
+      {
+        s[j] = A_i[j];
+        s[j] *= inv_diag;
+        A_i[j] = s[j];
+      }
     }
     psi[i] *= inv_diag;
     // eliminate rows below
-    double* A_k = A_i + ndofs;
+    auto A_k = A_i + 1;
     _Pragma("unroll") for (std::uint32_t k = i + 1; k < ndofs; ++k)
     {
       double factor = -A_k[i];
       _Pragma("unroll") for (std::uint32_t j = i; j < ndofs; ++j)
       {
-        A_k[j] += factor * A_i[j];
+        if constexpr (ndofs <= max_dof_gpu_register)
+        {
+          A_k[j] += factor * A_i[j];
+        }
+        else
+        {
+          A_k[j] += factor * s[j];
+        }
       }
       psi[k] += factor * psi[i];
-      A_k += ndofs;
+      ++A_k;
     }
-    A_i += ndofs;
+    ++A_i;
   }
   // back substitution — row-wise access
   if constexpr (ndofs >= 2)
   {
     _Pragma("unroll") for (std::int32_t j = ndofs - 2; j >= 0; --j)
     {
-      double* A_j = sweep_matrix + j * ndofs;
+      auto A_j = sweep_matrix.row(j);
       _Pragma("unroll") for (std::int32_t i = j + 1; i < ndofs; ++i)
       {
         psi[j] -= A_j[i] * psi[i];
@@ -243,25 +260,32 @@ Sweep(const Arguments& args,
       const unsigned int& angle_group_idx,
       const unsigned int& group_idx,
       const std::uint32_t& num_moments,
-      double* saved_psi)
+      double* saved_psi,
+      double* cache)
 {
-  // initialize buffer
-  Buffer<ndofs> buffer;
+  // initialize buffers
+  std::array<double, ndofs> psi;
+  psi.fill(0.0);
+  std::array<double, ndofs> row;
+  row.fill(0.0);
   // prepare linear system to solve
-  ComputeGMS<ndofs>(
-    buffer.A(), buffer.b(), buffer.s(), cell, direction, group_idx, num_moments, args);
-  ComputeSurfaceIntegral<ndofs>(
-    buffer.A(), buffer.b(), cell, direction, cell_edge_data, angle_group_idx, args);
-  // solve for the angular flux
-  GaussianElimination<ndofs>(buffer.A(), buffer.b());
+  {
+    MatBuffer<ndofs> matrix(cache);
+    ComputeGMS<ndofs>(
+      matrix, psi.data(), row.data(), cell, direction, group_idx, num_moments, args);
+    ComputeSurfaceIntegral<ndofs>(
+      matrix, psi.data(), cell, direction, cell_edge_data, angle_group_idx, args);
+    // solve for the angular flux
+    GaussianElimination<ndofs>(matrix, psi.data(), row.data());
+  }
   // save the result
   WritePsiToFludsAndOutflow(
-    buffer.b(), cell, direction, cell_edge_data, angle_group_idx, group_idx, args);
-  ComputePhi<ndofs>(buffer.b(), cell, direction, group_idx, num_moments, args);
+    psi.data(), cell, direction, cell_edge_data, angle_group_idx, group_idx, args);
+  ComputePhi<ndofs>(psi.data(), cell, direction, group_idx, num_moments, args);
   if (saved_psi != nullptr)
   {
     SaveAngularFlux<ndofs>(
-      buffer.b(), saved_psi, cell, angle_group_idx, args.flud_data.stride_size);
+      psi.data(), saved_psi, cell, angle_group_idx, args.flud_data.stride_size);
   }
 }
 
