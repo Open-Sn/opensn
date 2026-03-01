@@ -75,10 +75,10 @@ LBSVecOps::ScalePhiVector(LBSProblem& lbs_problem, PhiSTLOption phi_opt, double 
 
   auto& phi = (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
                                                  : lbs_problem.GetPhiOldLocal();
-  auto& groupsets = lbs_problem.GetGroupsets();
+  const auto& groupsets = lbs_problem.GetGroupsets();
 
   Scale(phi, value);
-  for (auto& groupset : groupsets)
+  for (const auto& groupset : groupsets)
   {
     if (groupset.angle_agg)
     {
@@ -227,7 +227,7 @@ LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
 {
   auto& y = (which_phi == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
                                                  : lbs_problem.GetPhiOldLocal();
-  auto& groupsets = lbs_problem.GetGroupsets();
+  const auto& groupsets = lbs_problem.GetGroupsets();
   double* x_ref = nullptr;
   OpenSnPETScCall(VecGetArray(x, &x_ref));
 
@@ -260,7 +260,7 @@ LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(LBSProblem& lbs_problem,
 {
   auto& y = (which_phi == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
                                                  : lbs_problem.GetPhiOldLocal();
-  auto& groupsets = lbs_problem.GetGroupsets();
+  const auto& groupsets = lbs_problem.GetGroupsets();
   const double* x_ref = nullptr;
   OpenSnPETScCall(VecGetArrayRead(x, &x_ref));
 

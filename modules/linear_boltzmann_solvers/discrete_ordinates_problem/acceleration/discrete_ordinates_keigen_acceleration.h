@@ -104,7 +104,7 @@ protected:
   const double pi_k_tol_;
 
   /// Groupsets from the LBSProblem
-  std::vector<LBSGroupset>& groupsets_;
+  const std::vector<LBSGroupset>& groupsets_;
   /// Front groupset from the LBSProblem
   LBSGroupset& front_gs_;
   /// Source moments vector from the LBSProblem
