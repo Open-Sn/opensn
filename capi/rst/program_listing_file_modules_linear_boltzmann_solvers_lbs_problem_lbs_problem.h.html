@@ -118,11 +118,6 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Problem</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Input parameters based construction.</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-
 <span class="w">  </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
@@ -137,43 +132,56 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Returns simulation time in seconds for time dependent problems</span>
+<span class="w">  </span><span class="c1">/// Returns simulation time in seconds for time dependent problems.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetTime</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Sets simulation time in seconds for time dependent problems</span>
+<span class="w">  </span><span class="c1">/// Sets simulation time in seconds for time dependent problems.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTime</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Sets dt</span>
+<span class="w">  </span><span class="c1">/// Sets dt.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTimeStep</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">dt</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Returns dt</span>
+<span class="w">  </span><span class="c1">/// Returns dt.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetTimeStep</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Sets theta for time discretization</span>
+<span class="w">  </span><span class="c1">/// Sets theta for time discretization.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTheta</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">theta</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Sets theta for time discretization</span>
+<span class="w">  </span><span class="c1">/// Returns theta for time discretization.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetTheta</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Is the problem time dependent</span>
+<span class="w">  </span><span class="c1">/// Returns true if the problem is currently in time-dependent mode.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsTimeDependent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Set the problem to time-dependent mode.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTimeDependentMode</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Set the problem to steady-state mode.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSteadyStateMode</span><span class="p">();</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Toggle forward/adjoint transport mode.</span>
 <span class="cm">   *</span>
-<span class="cm">   * If called after initialization, this performs a mode-transition reset:</span>
-<span class="cm">   * materials are reinitialized in the selected mode, sources and boundaries</span>
-<span class="cm">   * are cleared, and solution vectors are zeroed.</span>
+<span class="cm">   * If the requested mode differs from the current mode, this performs a</span>
+<span class="cm">   * mode-transition reset. Materials are reinitialized in the selected mode,</span>
+<span class="cm">   * sources and boundaries are cleared, and solution vectors are zeroed.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetAdjoint</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Returns true if the problem is in adjoint mode.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjoint</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSaveAngularFlux</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">save</span><span class="p">);</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ApplyOptions</span><span class="p">();</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPhi</span><span class="p">();</span>
+
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPsi</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">GeometryType</span><span class="w"> </span><span class="nf">GetGeometryType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Returns the number of moments for the solver. This will only be non-zero after initialization.</span>
+<span class="w">  </span><span class="c1">/// Returns the number of moments for the solver.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumMoments</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetMaxCellDOFCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -182,22 +190,16 @@
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">UseGPUs</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Returns the number of groups for the solver. This will only be non-zero after initialization.</span>
+<span class="w">  </span><span class="c1">/// Returns the number of groups for the solver.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Returns the scattering order for the solver. This will only be non-zero after initialization.</span>
+<span class="w">  </span><span class="c1">/// Returns the scattering order for the solver.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetScatteringOrder</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Returns the number of precursors for the solver. This will only be non-zero after</span>
-<span class="cm">   * initialization.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Returns the number of precursors for the solver.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumPrecursors</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Returns the maximum number of precursors defined on any material. This will only be non-zero</span>
-<span class="cm">   * after initialization.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Returns the maximum number of precursors defined on any material.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetMaxPrecursorsPerMaterial</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroupset</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetGroupsets</span><span class="p">();</span>
@@ -323,8 +325,6 @@
 <span class="w">  </span><span class="c1">/// Returns the power generation field function, if enabled.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetPowerFieldFunction</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">TriggerRestartDump</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">options_</span><span class="p">.</span><span class="n">write_restart_time_interval</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -360,7 +360,13 @@
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdatePsiOld</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">PrintSimHeader</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Input parameters based construction.</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Build runtime data structures once all constructor-time configuration is complete.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntime</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeUnitIntegrals</span><span class="p">();</span>
 
@@ -431,6 +437,7 @@
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AGSLinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ags_solver_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_solvers_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">initialized_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">phi_field_functions_local_map_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">power_gen_fieldfunc_local_handle_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>

@@ -90,9 +90,9 @@
 
 <span class="cp">#pragma once</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/parameter_block.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
@@ -103,8 +103,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionGridBased</span><span class="p">;</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Base class for Discrete Ordinates solvers. This class mostly establishes utilities related to</span>
-<span class="cm"> * sweeping. From here we can derive a steady-state, transient, adjoint, and k-eigenvalue solver.</span>
+<span class="cm"> * Base class for discrete ordinates solvers.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">LBSProblem</span>
 <span class="p">{</span>
@@ -120,24 +119,28 @@
 <span class="w">  </span><span class="p">};</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSweepChunkMode</span><span class="p">(</span><span class="n">SweepChunkMode</span><span class="w"> </span><span class="n">mode</span><span class="p">);</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetSweepChunkMode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sweep_chunk_mode_</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsTimeDependent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsTimeDependent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sweep_chunk_mode_</span><span class="p">.</span><span class="n">value_or</span><span class="p">(</span><span class="n">SweepChunkMode</span><span class="o">::</span><span class="n">Default</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">SweepChunkMode</span><span class="o">::</span><span class="n">TimeDependent</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTimeDependentMode</span><span class="p">();</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSteadyStateMode</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTimeDependentMode</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSteadyStateMode</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepChunk</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateSweepChunk</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">SetSweepChunk</span><span class="p">(</span><span class="n">groupset</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">EnableTimeDependentMode</span><span class="p">();</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetMode</span><span class="p">(</span><span class="n">SweepChunkMode</span><span class="w"> </span><span class="n">target_mode</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ResetMode</span><span class="p">(</span><span class="n">SweepChunkMode</span><span class="w"> </span><span class="n">target_mode</span><span class="p">);</span>
+
 <span class="w">  </span><span class="c1">/// Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode).</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReinitializeSolverSchemes</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Static registration based constructor.</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 <span class="w">  </span><span class="o">~</span><span class="n">DiscreteOrdinatesProblem</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">BoundaryDefinition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">LBSBoundaryType</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;</span><span class="p">;</span>
@@ -168,8 +171,6 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdatePsiOld</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns the sweep boundaries as a read only reference</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetSweepBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -203,8 +204,11 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyPhiAndOutflowBackToHost</span><span class="p">();</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
-<span class="w">                                    </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_ptr</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Factory-only constructor.</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Build sweep/runtime data structures once base runtime is available.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntime</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 

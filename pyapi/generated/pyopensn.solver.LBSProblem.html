@@ -271,6 +271,12 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.IsTimeDependent">
+<span class="sig-name descname"><span class="pre">IsTimeDependent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.IsTimeDependent" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the problem is in time-dependent mode, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.ReadAngularFluxes">
 <span class="sig-name descname"><span class="pre">ReadAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.ReadAngularFluxes" title="Link to this definition"></a></dt>
 <dd><p>Read angular fluxes from file.</p>
@@ -342,16 +348,16 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 </dd>
 </dl>
 <p>In typical Python workflows, use constructor options or <code class="docutils literal notranslate"><span class="pre">SetOptions</span></code>.</p>
-<p>When this changes mode after the problem has been initialized, OpenSn performs a
-full mode-transition reset:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="simple">
+<dt>If this changes mode, OpenSn performs a full mode-transition reset:</dt><dd><ul class="simple">
 <li><p>Materials are reinitialized in the selected mode.</p></li>
 <li><p>Point and volumetric sources are cleared.</p></li>
 <li><p>Boundary conditions are cleared.</p></li>
 <li><p>Scalar and angular flux vectors are zeroed.</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
+<p>If this is called with the same mode as the current setting, no reset is performed.</p>
 <p>The block-id to cross-section map is preserved across the transition.
 However, the mode change is applied to the mapped <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves.
 If those objects are shared with other problems, they observe the same mode toggle.</p>

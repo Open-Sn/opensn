@@ -107,8 +107,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblemE">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="Link to this definition"></a><br /></dt>
-<dd><p>Base class for Discrete Ordinates solvers. </p>
-<p>This class mostly establishes utilities related to sweeping. From here we can derive a steady-state, transient, adjoint, and k-eigenvalue solver. </p>
+<dd><p>Base class for discrete ordinates solvers. </p>
 <p>Subclassed by <a class="reference internal" href="classopensn_1_1_discrete_ordinates_curvilinear_problem.html#classopensn_1_1_discrete_ordinates_curvilinear_problem"><span class="std std-ref">opensn::DiscreteOrdinatesCurvilinearProblem</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -153,27 +152,25 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem15IsTimeDependentEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a7e3cf624a809e9b81e7bc5d365d241d4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsTimeDependent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem15IsTimeDependentEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a8fc373eb8c0b1974682ed1f835e98098"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsTimeDependent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem15IsTimeDependentEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns true if the problem is currently in time-dependent mode. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem20SetTimeDependentModeEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a7dbfe45de5868aa5366ef279da3e55e7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTimeDependentMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem20SetTimeDependentModeEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ac588f4fe20dd1a83bedbf3d1d2764c39"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTimeDependentMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem20SetTimeDependentModeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the problem to time-dependent mode. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSteadyStateModeEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a4deac44e4f07d4a962faf4ac7835aa3e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSteadyStateMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSteadyStateModeEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a1aad0704cfd1d03aeed1b3d5cd5e2b33"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSteadyStateMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSteadyStateModeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the problem to steady-state mode. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem16CreateSweepChunkER11LBSGroupset">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a80c68cf335a41663b7a77f2b4f66f63f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunkE" title="opensn::SweepChunk"><span class="n"><span class="pre">SweepChunk</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateSweepChunk</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem16CreateSweepChunkER11LBSGroupset" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem23EnableTimeDependentModeEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ab80d4fff291dc4efff6294b2f4ee974a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EnableTimeDependentMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem23EnableTimeDependentModeEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -185,12 +182,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem25ReinitializeSolverSchemesEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a0bfbea2d740e958ba8c42b19ba58004b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReinitializeSolverSchemes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem25ReinitializeSolverSchemesEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode). </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERK15InputParameters">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aa150662ee7e5f06bc3ec3cb95c2c17f5"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERK15InputParameters" title="Link to this definition"></a><br /></dt>
-<dd><p>Static registration based constructor. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -259,12 +250,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem14PrintSimHeaderEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a80f1001996795dd563b911b18ecffb2f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintSimHeader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem14PrintSimHeaderEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem10InitializeEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aa4b46fadcfcf88ca60095efac1a2e371"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem10InitializeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initialize function. </p>
-</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem18GetSweepBoundariesEv">
@@ -359,9 +344,16 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERKNSt6stringENSt10shared_ptrI13MeshContinuumEE">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1adf14af548fb2e78f0ef28e76833c8b52"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh_continuum.html#_CPPv4N6opensn13MeshContinuumE" title="opensn::MeshContinuum"><span class="n"><span class="pre">MeshContinuum</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">grid_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERKNSt6stringENSt10shared_ptrI13MeshContinuumEE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERK15InputParameters">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aa150662ee7e5f06bc3ec3cb95c2c17f5"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem24DiscreteOrdinatesProblemERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd><p>Factory-only constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem12BuildRuntimeEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a3cbf0bda054b47ed2a192fa533a0464d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildRuntime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem12BuildRuntimeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Build sweep/runtime data structures once base runtime is available. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem20InitializeBoundariesEv">

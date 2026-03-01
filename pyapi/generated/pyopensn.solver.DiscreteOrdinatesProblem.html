@@ -211,9 +211,7 @@ the corresponding boundary surface.</p>
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList">
 <span class="sig-name descname"><span class="pre">GetAngularFieldFunctionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList" title="Link to this definition"></a></dt>
 <dd><p>Return field functions for selected angular flux components.</p>
-<p>This requires <cite>Initialize()</cite> to have completed; it throws if the problem is
-not yet initialized.
-Note: You must enable angular flux storage (<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>) in
+<p>Note: You must enable angular flux storage (<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>) in
 the problem options, or use a transient/time-dependent solver that retains
 angular fluxes, otherwise the field functions will remain zero.</p>
 <p class="rubric">Example</p>
@@ -438,16 +436,16 @@ a list of field functions for all moments (e.g., scalar flux, higher-order momen
 </dd>
 </dl>
 <p>In typical Python workflows, use constructor options or <code class="docutils literal notranslate"><span class="pre">SetOptions</span></code>.</p>
-<p>When this changes mode after the problem has been initialized, OpenSn performs a
-full mode-transition reset:</p>
-<blockquote>
-<div><ul class="simple">
+<dl class="simple">
+<dt>If this changes mode, OpenSn performs a full mode-transition reset:</dt><dd><ul class="simple">
 <li><p>Materials are reinitialized in the selected mode.</p></li>
 <li><p>Point and volumetric sources are cleared.</p></li>
 <li><p>Boundary conditions are cleared.</p></li>
 <li><p>Scalar and angular flux vectors are zeroed.</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
+<p>If this is called with the same mode as the current setting, no reset is performed.</p>
 <p>The block-id to cross-section map is preserved across the transition.
 However, the mode change is applied to the mapped <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves.
 If those objects are shared with other problems, they observe the same mode toggle.</p>
@@ -545,16 +543,10 @@ the current mode, the same mode-transition behavior as <a class="reference inter
 <span class="sig-name descname"><span class="pre">SetSteadyStateMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.SetSteadyStateMode" title="Link to this definition"></a></dt>
 <dd><p>Set the problem to steady-state mode.</p>
 <p class="rubric">Notes</p>
-<p>You only need to call this if the problem was constructed in time-dependent mode
-(<code class="docutils literal notranslate"><span class="pre">time_dependent=True</span></code>) and you want to switch to steady-state mode.</p>
-<p>If called before initialization, this only sets the mode flag used at
-initialization time; no reset is performed because runtime state does not yet exist.
-Runtime state will be set when Initialize is called. This does not force
-<code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> in the pre-initialize path.</p>
-<p>If called after initialization, this updates problem internals (sweep chunk mode and
-source-function) while preserving user boundary conditions and fixed sources.
-If <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> was auto-enabled when entering time-dependent mode, this call
-restores the previous value.</p>
+<p>Switch problem from time-dependent to steady-state mode. This updates problem
+internals (sweep chunk mode and source-function) while preserving user boundary
+conditions and fixed sources. If <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> was auto-enabled when
+entering time-dependent mode, this call restores the previous value.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -562,16 +554,10 @@ restores the previous value.</p>
 <span class="sig-name descname"><span class="pre">SetTimeDependentMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.SetTimeDependentMode" title="Link to this definition"></a></dt>
 <dd><p>Set the problem to time-dependent mode.</p>
 <p class="rubric">Notes</p>
-<p>You only need to call this if the problem was constructed in steady-state mode
-(the default) and you want to switch to time-dependent mode.</p>
-<p>If called before initialization, this only sets the mode flag used at
-initialization time; no reset is performed because runtime state does not yet exist.
-It may also force <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> because transient mode requires angular-flux
-storage. Runtime state will be set when Initialize is called.</p>
-<p>If called after initialization, this updates problem internals (sweep chunk mode and
-source-function) while preserving user boundary conditions and fixed sources.
-If <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> is currently false, this transition enables it while in
-time-dependent mode.</p>
+<p>Switch problem from steady-state to time-dependent mode. This updates problem
+internals (sweep chunk mode and source-function) while preserving user boundary
+conditions and fixed sources.  If <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> is false, this transition
+enables it.</p>
 </dd></dl>
 
 <dl class="py method">
