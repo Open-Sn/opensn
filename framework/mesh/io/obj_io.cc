@@ -4,12 +4,60 @@
 #include "framework/mesh/io/mesh_io.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/utils/error.h"
+#include "framework/utils/utils.h"
 #include <fstream>
 #include <algorithm>
 #include <optional>
+#include <stdexcept>
 
 namespace opensn
 {
+
+namespace
+{
+
+/// extract first part from the `vertex description`
+std::string
+ExtractFirstPart(std::string_view input)
+{
+  const auto pos = input.find('/');
+  return std::string(input.substr(0, pos));
+};
+
+int
+ConvertToInt(const std::string& str, const std::string_view file_name, int line_no)
+{
+  try
+  {
+    return std::stoi(str);
+  }
+  catch (const std::invalid_argument& ia)
+  {
+    std::ostringstream oss;
+    oss << "Failed to convert string to a number in " << file_name << ", line " << line_no
+        << std::endl;
+    throw std::runtime_error(oss.str());
+  }
+}
+
+double
+ConvertToDouble(const std::string& str, const std::string_view file_name, int line_no)
+{
+  try
+  {
+    return std::stod(str);
+  }
+  catch (const std::invalid_argument& ia)
+  {
+    std::ostringstream oss;
+    oss << "Failed to convert string to a floating-point number in " << file_name << ", line "
+        << line_no << std::endl;
+    throw std::runtime_error(oss.str());
+  }
+}
+
+} // namespace
 
 std::shared_ptr<UnpartitionedMesh>
 MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
@@ -41,28 +89,26 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   std::vector<Vector3> file_vertices;
 
   // Reading every line
+  int line_no = 0;
   std::string file_line;
-  std::string delimiter = " ";
   std::optional<unsigned int> material_id;
   while (std::getline(file, file_line))
   {
-    // Get the first word
-    size_t beg_of_word = file_line.find_first_not_of(delimiter);
-    size_t end_of_word = file_line.find(delimiter, 0);
-    std::string first_word = file_line.substr(beg_of_word, end_of_word);
-    std::string sub_word;
+    file_line = StringTrim(file_line);
+    line_no++;
+    auto parts = StringSplit(file_line, " ");
+    if (parts.empty())
+      continue;
 
+    const auto& first_word = parts[0];
     if (first_word == "o")
     {
-      beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
-      end_of_word = file_line.find(delimiter, beg_of_word);
-      sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
-
-      std::string block_name = sub_word;
+      if (parts.size() < 2)
+        throw std::runtime_error("Expected block name, but got malformed line");
+      auto block_name = parts[1];
       block_data.push_back({block_name, {}});
     }
-
-    if (first_word == "usemtl")
+    else if (first_word == "usemtl")
     {
       log.Log0Verbose1() << "New material at cell count: " << block_data.back().cells.size();
 
@@ -71,48 +117,28 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       else
         ++material_id.value();
     }
-
-    // Keyword "v" for Vertex
-    if (first_word == "v")
+    else if (first_word == "v")
     {
-      Vector3 newVertex;
+      // Keyword "v" for Vertex
+      if (parts.size() < 4)
+        throw std::runtime_error("Expected line with vertex, but got malformed line");
+      Vector3 new_vertex;
       for (int k = 1; k <= 3; ++k)
       {
-        // Extract sub word
-        beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
-        end_of_word = file_line.find(delimiter, beg_of_word);
-        sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
-
-        // Convert word to number
-        try
-        {
-          double numValue = std::stod(sub_word);
-
-          if (k == 1)
-            newVertex.x = numValue;
-          else if (k == 2)
-            newVertex.y = numValue;
-          else if (k == 3)
-            newVertex.z = numValue;
-        }
-
-        // Catch conversion error
-        catch (const std::invalid_argument& ia)
-        {
-          log.Log0Warning() << "Failed to convert vertex in line " << file_line << std::endl;
-        }
-
-        // Stop word extraction on line-end
-        if (end_of_word == std::string::npos)
-          break;
+        auto num_value = ConvertToDouble(parts[k], options.file_name, line_no);
+        if (k == 1)
+          new_vertex.x = num_value;
+        else if (k == 2)
+          new_vertex.y = num_value;
+        else if (k == 3)
+          new_vertex.z = num_value;
       }
-      file_vertices.push_back(newVertex);
+      file_vertices.push_back(new_vertex);
     } // if (first_word == "v")
-
-    // Keyword "f" for face
-    if (first_word == "f")
+    else if (first_word == "f")
     {
-      size_t number_of_verts = std::count(file_line.begin(), file_line.end(), '/') / 2;
+      // Keyword "f" for face
+      auto number_of_verts = parts.size() - 1;
 
       CellType sub_type = CellType::POLYGON;
       if (number_of_verts == 3)
@@ -126,34 +152,10 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       // Populate vertex-ids
       for (size_t k = 1; k <= number_of_verts; ++k)
       {
-        // Extract sub word
-        beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
-        end_of_word = file_line.find(delimiter, beg_of_word);
-        sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
-
-        // Extract locations of hyphens
-        size_t first_dash = sub_word.find('/');
-
-        // Extract the words ass. vertex and normal
-        std::string vert_word = sub_word.substr(0, first_dash - 0);
-
-        // Convert word to number (Vertex)
-        try
-        {
-          int numValue = std::stoi(vert_word);
-          cell->vertex_ids.push_back(numValue - 1);
-        }
-        catch (const std::invalid_argument& ia)
-        {
-          log.Log0Warning() << "Failed converting word to number in line " << file_line
-                            << std::endl;
-        }
-
-        // Stop word extraction on line-end
-        if (end_of_word == std::string::npos)
-        {
-          break;
-        }
+        // Extract the vertex ID
+        auto vert_word = ExtractFirstPart(parts[k]);
+        auto num_value = ConvertToInt(vert_word, options.file_name, line_no);
+        cell->vertex_ids.push_back(num_value - 1);
       }
 
       // Build faces
@@ -176,34 +178,19 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
       block_data.back().cells.push_back(cell);
     } // if (first_word == "f")
-
-    // Keyword "l" for edge
-    if (first_word == "l")
+    else if (first_word == "l")
     {
+      // Keyword "l" for edge
+      if (parts.size() < 3)
+        throw std::runtime_error("Expected line with vertex, but got malformed line");
       std::pair<uint64_t, uint64_t> edge;
       for (int k = 1; k <= 2; ++k)
       {
-        // Extract sub word
-        beg_of_word = file_line.find_first_not_of(delimiter, end_of_word);
-        end_of_word = file_line.find(delimiter, beg_of_word);
-        sub_word = file_line.substr(beg_of_word, end_of_word - beg_of_word);
-
-        // Convert word to number
-        try
-        {
-          int vertex_id = std::stoi(sub_word);
-          if (k == 1)
-            edge.first = vertex_id - 1;
-          if (k == 2)
-            edge.second = vertex_id - 1;
-        }
-
-        // Catch conversion error
-        catch (const std::invalid_argument& ia)
-        {
-          log.Log0Warning() << "Failed to convert text to integer in line " << file_line
-                            << std::endl;
-        }
+        auto vertex_id = ConvertToInt(parts[k], options.file_name, line_no);
+        if (k == 1)
+          edge.first = vertex_id - 1;
+        if (k == 2)
+          edge.second = vertex_id - 1;
       } // for k
 
       if (block_data.empty())
