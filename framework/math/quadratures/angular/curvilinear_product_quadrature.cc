@@ -14,8 +14,9 @@ namespace opensn
 
 GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(unsigned int Npolar,
                                                                unsigned int scattering_order,
-                                                               bool verbose)
-  : CurvilinearProductQuadrature(1, scattering_order)
+                                                               bool verbose,
+                                                               OperatorConstructionMethod method)
+  : CurvilinearProductQuadrature(1, scattering_order, method)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLProductQuadrature1DSpherical: Npolar must be even.");
@@ -186,8 +187,9 @@ GLProductQuadrature1DSpherical::MakeHarmonicIndices()
 GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(unsigned int Npolar,
                                                    unsigned int Nazimuthal,
                                                    unsigned int scattering_order,
-                                                   bool verbose)
-  : CurvilinearProductQuadrature(2, scattering_order)
+                                                   bool verbose,
+                                                   OperatorConstructionMethod method)
+  : CurvilinearProductQuadrature(2, scattering_order, method)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCProductQuadraturee2DRZ: Npolar must be even.");

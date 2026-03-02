@@ -30,7 +30,8 @@ public:
    */
   LebedevQuadrature3DXYZ(unsigned int quadrature_order,
                          unsigned int scattering_order,
-                         bool verbose = false);
+                         bool verbose = false,
+                         OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
 private:
   /**
@@ -61,7 +62,8 @@ public:
    */
   LebedevQuadrature2DXY(unsigned int quadrature_order,
                         unsigned int scattering_order,
-                        bool verbose = false);
+                        bool verbose = false,
+                        OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
 private:
   /**

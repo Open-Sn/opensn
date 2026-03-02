@@ -18,7 +18,10 @@ namespace opensn
 class SLDFEsqQuadrature : public AngularQuadrature
 {
 public:
-  SLDFEsqQuadrature(int level, unsigned int dimension, unsigned int scattering_order);
+  SLDFEsqQuadrature(int level,
+                    unsigned int dimension,
+                    unsigned int scattering_order,
+                    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~SLDFEsqQuadrature() override = default;
 
@@ -176,7 +179,10 @@ private:
 class SLDFEsqQuadrature3DXYZ : public SLDFEsqQuadrature
 {
 public:
-  SLDFEsqQuadrature3DXYZ(int level, unsigned int scattering_order);
+  SLDFEsqQuadrature3DXYZ(int level,
+                         unsigned int scattering_order,
+                         bool verbose = false,
+                         OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~SLDFEsqQuadrature3DXYZ() override = default;
 };
@@ -184,7 +190,10 @@ public:
 class SLDFEsqQuadrature2DXY : public SLDFEsqQuadrature
 {
 public:
-  SLDFEsqQuadrature2DXY(int level, unsigned int scattering_order);
+  SLDFEsqQuadrature2DXY(int level,
+                        unsigned int scattering_order,
+                        bool verbose = false,
+                        OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~SLDFEsqQuadrature2DXY() override = default;
 

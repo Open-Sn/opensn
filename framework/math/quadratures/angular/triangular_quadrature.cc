@@ -93,8 +93,9 @@ GLCTriangularQuadrature3DXYZ::AssembleTriangularCosines(
 
 GLCTriangularQuadrature3DXYZ::GLCTriangularQuadrature3DXYZ(unsigned int Npolar,
                                                            unsigned int scattering_order,
-                                                           bool verbose)
-  : TriangularQuadrature(3, scattering_order)
+                                                           bool verbose,
+                                                           OperatorConstructionMethod method)
+  : TriangularQuadrature(3, scattering_order, method)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCTriangularQuadrature3DXYZ: Npolar must be even.");
@@ -103,6 +104,10 @@ GLCTriangularQuadrature3DXYZ::GLCTriangularQuadrature3DXYZ(unsigned int Npolar,
   // For the triangular reduction pattern with 4 fewer azimuthal angles per level from equator,
   // this ensures exactly 4 azimuthal angles at the poles (1 per octant)
   const unsigned int Nazimuthal = 2 * Npolar;
+
+  // Set parameters for Galerkin quadrature methods
+  SetNumberOfPolar(Npolar);
+  SetNumberOfAzimuthal(Nazimuthal);
 
   GaussLegendreQuadrature gl_polar(Npolar);
 
@@ -266,8 +271,9 @@ GLCTriangularQuadrature2DXY::AssembleTriangularCosines(
 
 GLCTriangularQuadrature2DXY::GLCTriangularQuadrature2DXY(unsigned int Npolar,
                                                          unsigned int scattering_order,
-                                                         bool verbose)
-  : TriangularQuadrature(2, scattering_order)
+                                                         bool verbose,
+                                                         OperatorConstructionMethod method)
+  : TriangularQuadrature(2, scattering_order, method)
 {
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLCTriangularQuadrature2DXY: Npolar must be even.");
@@ -279,6 +285,10 @@ GLCTriangularQuadrature2DXY::GLCTriangularQuadrature2DXY(unsigned int Npolar,
   // For the triangular reduction pattern with 4 fewer azimuthal angles per level from equator,
   // this ensures exactly 4 azimuthal angles at the pole (1 per quadrant)
   const unsigned int Nazimuthal = 2 * Npolar;
+
+  // Set parameters for Galerkin quadrature methods
+  SetNumberOfPolar(Npolar);
+  SetNumberOfAzimuthal(Nazimuthal);
 
   GaussLegendreQuadrature gl_polar(Npolar);
 

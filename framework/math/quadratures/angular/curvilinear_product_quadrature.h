@@ -23,8 +23,10 @@ public:
   ~CurvilinearProductQuadrature() override = default;
 
 protected:
-  CurvilinearProductQuadrature(unsigned int dimension, unsigned int scattering_order)
-    : ProductQuadrature(dimension, scattering_order)
+  CurvilinearProductQuadrature(unsigned int dimension,
+                               unsigned int scattering_order,
+                               OperatorConstructionMethod method)
+    : ProductQuadrature(dimension, scattering_order, method)
   {
   }
 
@@ -41,10 +43,12 @@ protected:
 class GLCProductQuadrature2DRZ : public CurvilinearProductQuadrature
 {
 public:
-  GLCProductQuadrature2DRZ(unsigned int Npolar,
-                           unsigned int Nazimuthal,
-                           unsigned int scattering_order,
-                           bool verbose = false);
+  GLCProductQuadrature2DRZ(
+    unsigned int Npolar,
+    unsigned int Nazimuthal,
+    unsigned int scattering_order,
+    bool verbose = false,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~GLCProductQuadrature2DRZ() override = default;
 
@@ -69,9 +73,11 @@ private:
 class GLProductQuadrature1DSpherical : public CurvilinearProductQuadrature
 {
 public:
-  GLProductQuadrature1DSpherical(unsigned int Npolar,
-                                 unsigned int scattering_order,
-                                 bool verbose = false);
+  GLProductQuadrature1DSpherical(
+    unsigned int Npolar,
+    unsigned int scattering_order,
+    bool verbose = false,
+    OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~GLProductQuadrature1DSpherical() override = default;
 

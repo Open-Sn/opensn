@@ -16,11 +16,18 @@ namespace opensn
 
 SLDFEsqQuadrature::SLDFEsqQuadrature(int level,
                                      unsigned int dimension,
-                                     unsigned int scattering_order)
-  : AngularQuadrature(AngularQuadratureType::SLDFEsq, dimension, scattering_order), level_(level)
+                                     unsigned int scattering_order,
+                                     OperatorConstructionMethod method)
+  : AngularQuadrature(AngularQuadratureType::SLDFEsq, dimension, scattering_order, method),
+    level_(level)
 {
   if (level < 0)
     throw std::invalid_argument("SLDFEsqQuadrature: level must be non-negative");
+
+  // Set quadrature_order_ to the refinement level so harmonic selection
+  // can directly look up the correct empirical rules without needing
+  // to reverse-map from the number of angles.
+  quadrature_order_ = static_cast<unsigned int>(level);
 }
 
 std::array<std::array<Vector3, 4>, 4>
@@ -513,16 +520,34 @@ SLDFEsqQuadrature::FilterQuadraturePoint(const Vector3& omega) const
   return true;
 }
 
-SLDFEsqQuadrature3DXYZ::SLDFEsqQuadrature3DXYZ(int level, unsigned int scattering_order)
-  : SLDFEsqQuadrature(level, 3, scattering_order)
+SLDFEsqQuadrature3DXYZ::SLDFEsqQuadrature3DXYZ(int level,
+                                               unsigned int scattering_order,
+                                               bool verbose,
+                                               OperatorConstructionMethod method)
+  : SLDFEsqQuadrature(level, 3, scattering_order, method)
 {
   GenerateRefinement();
+
+  if (verbose)
+  {
+    log.Log() << "SLDFEsqQuadrature3DXYZ created with " << omegas.size() << " directions"
+              << " at refinement level " << level;
+  }
 }
 
-SLDFEsqQuadrature2DXY::SLDFEsqQuadrature2DXY(int level, unsigned int scattering_order)
-  : SLDFEsqQuadrature(level, 2, scattering_order)
+SLDFEsqQuadrature2DXY::SLDFEsqQuadrature2DXY(int level,
+                                             unsigned int scattering_order,
+                                             bool verbose,
+                                             OperatorConstructionMethod method)
+  : SLDFEsqQuadrature(level, 2, scattering_order, method)
 {
   GenerateRefinement();
+
+  if (verbose)
+  {
+    log.Log() << "SLDFEsqQuadrature2DXY created with " << omegas.size() << " directions"
+              << " at refinement level " << level << " (upper hemisphere only)";
+  }
 }
 
 bool
