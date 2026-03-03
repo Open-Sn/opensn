@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/math/spatial_discretization/finite_volume/finite_volume.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
@@ -26,7 +25,8 @@ FieldFunctionGridBased::GetInputParameters()
 {
   InputParameters params = FieldFunction::GetInputParameters();
 
-  params.AddOptionalParameter("discretization", "FV", "The spatial discretization type to be used");
+  params.AddOptionalParameter(
+    "discretization", "PWLC", "The spatial discretization type to be used");
   params.AddOptionalParameter(
     "coord_sys", "cartesian", "Coordinate system to apply to element mappings");
   params.AddOptionalParameter("quadrature_order",
@@ -37,7 +37,7 @@ FieldFunctionGridBased::GetInputParameters()
   params.AddOptionalParameter(
     "initial_value", 0.0, "The initial value to assign to the field function");
 
-  params.ConstrainParameterRange("discretization", AllowableRangeList::New({"FV", "PWLC", "PWLD"}));
+  params.ConstrainParameterRange("discretization", AllowableRangeList::New({"PWLC", "PWLD"}));
   params.ConstrainParameterRange(
     "coord_sys", AllowableRangeList::New({"cartesian", "cylindrical", "spherical"}));
 
@@ -316,9 +316,6 @@ FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
   const auto grid = params.GetSharedPtrParam<MeshContinuum>("mesh");
   const auto sdm_type = params.GetParamValue<std::string>("discretization");
-
-  if (sdm_type == "FV")
-    return FiniteVolume::New(grid);
 
   std::string cs = "cartesian";
   if (params.IsParameterValid("coord_sys"))

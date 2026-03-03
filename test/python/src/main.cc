@@ -31,19 +31,10 @@ register_bindings()
     m.def("math_SDM_Test02_Discontinuous", &unit_tests::math_SDM_Test02_Discontinuous); });
 
   opensnpy::Console::BindModule([](py::module& m) {
-    m.def("SimTest01_FV", &unit_tests::SimTest01_FV); });
-
-  opensnpy::Console::BindModule([](py::module& m) {
-    m.def("SimTest02_FV", &unit_tests::SimTest02_FV); });
-
-  opensnpy::Console::BindModule([](py::module& m) {
     m.def("SimTest03_PWLC", &unit_tests::SimTest03_PWLC); });
 
   opensnpy::Console::BindModule([](py::module& m) {
     m.def("SimTest04_PWLC", &unit_tests::SimTest04_PWLC); });
-
-  opensnpy::Console::BindModule([](py::module& m) {
-    m.def("SimTest06_WDD", &unit_tests::SimTest06_WDD); });
 
   opensnpy::Console::BindModule([](py::module& m) {
     m.def("SimTest91_PWLD", &unit_tests::SimTest91_PWLD); });
