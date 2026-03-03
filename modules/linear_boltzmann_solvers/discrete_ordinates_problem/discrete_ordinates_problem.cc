@@ -39,7 +39,9 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <cmath>
 #include <iomanip>
+#include <numeric>
 #include <sstream>
 #include <stdexcept>
 
@@ -602,14 +604,72 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 
   // Current configured sweep mode (or Default if no explicit mode has been selected yet).
   const auto active_mode = sweep_chunk_mode_.value_or(SweepChunkMode::Default);
+
   // True only when changing between steady-state and time-dependent (in either direction).
   const bool switching_modes =
     (active_mode == SweepChunkMode::SteadyState and target_mode == SweepChunkMode::TimeDependent) or
     (active_mode == SweepChunkMode::TimeDependent and target_mode == SweepChunkMode::SteadyState);
+
   // True when no explicit mode has been adopted yet.
   const bool has_no_active_mode = (active_mode == SweepChunkMode::Default);
+
   // True when the requested target mode is time-dependent.
   const bool switching_to_transient = target_mode == SweepChunkMode::TimeDependent;
+
+  const auto prepare_for_transient = [&]()
+  {
+    save_angular_flux_before_transient_ = options_.save_angular_flux;
+    forced_save_angular_flux_for_transient_ = not options_.save_angular_flux;
+    if (not forced_save_angular_flux_for_transient_)
+      return;
+
+    // Cache converged steady-state flux moments
+    const auto phi_new_ref = GetPhiNewLocal();
+    const auto phi_old_ref = GetPhiOldLocal();
+
+    // Enable save_angular_fluxes and reconstruct psi from the converged steady-state
+    // phi before enabling transient RHS time terms.
+    DiscreteOrdinatesProblem::SetSaveAngularFlux(true);
+    ReinitializeSolverSchemes();
+    // Use a small fixed number of WGS passes to reconstruct psi from phi. A single
+    // sweep won't work here if we have lagged angular fluxes, opposing reflecting
+    // boundaries, etc.
+    constexpr int reconstruction_passes = 3;
+    GetPhiOldLocal() = phi_new_ref;
+    for (int pass = 0; pass < reconstruction_passes; ++pass)
+      for (auto& wgs_solver : GetWGSSolvers())
+      {
+        OpenSnLogicalErrorIf(not wgs_solver,
+                             GetName() +
+                               ": Null WGS solver while reconstruction angular flux solution.");
+        wgs_solver->Setup();
+        wgs_solver->Solve();
+      }
+
+    // Scale psi to match the norm of the cached steady-state phi, then restore cached phi.
+    auto& phi_new = GetPhiNewLocal();
+    auto& phi_old = GetPhiOldLocal();
+    const auto& phi_new_rebuilt = phi_new;
+    const double phi_ref_local_sum_sq =
+      std::inner_product(phi_new_ref.begin(), phi_new_ref.end(), phi_new_ref.begin(), 0.0);
+    const double phi_rebuilt_local_sum_sq = std::inner_product(
+      phi_new_rebuilt.begin(), phi_new_rebuilt.end(), phi_new_rebuilt.begin(), 0.0);
+    double phi_ref_sum_sq = 0.0;
+    double phi_rebuilt_sum_sq = 0.0;
+    mpi_comm.all_reduce(phi_ref_local_sum_sq, phi_ref_sum_sq, mpi::op::sum<double>());
+    mpi_comm.all_reduce(phi_rebuilt_local_sum_sq, phi_rebuilt_sum_sq, mpi::op::sum<double>());
+    const double phi_ref_norm = std::sqrt(phi_ref_sum_sq);
+    const double phi_rebuilt_norm = std::sqrt(phi_rebuilt_sum_sq);
+    const double scale =
+      (phi_ref_norm > 0.0 and phi_rebuilt_norm > 0.0) ? phi_ref_norm / phi_rebuilt_norm : 1.0;
+
+    phi_new = phi_new_ref;
+    phi_old = phi_old_ref;
+
+    for (auto& psi_gs : psi_new_local_)
+      for (double& v : psi_gs)
+        v *= scale;
+  };
 
   if (switching_to_transient)
   {
@@ -621,25 +681,24 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
       throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
   }
 
+  const bool default_to_transient = has_no_active_mode and switching_to_transient;
+
   if (has_no_active_mode)
   {
+    if (switching_to_transient)
+      prepare_for_transient();
+
     SetSweepChunkMode(target_mode);
 
-    if (switching_to_transient)
-      if (not options_.save_angular_flux)
-        DiscreteOrdinatesProblem::SetSaveAngularFlux(true);
-
-    return;
+    if (not switching_to_transient)
+      return;
   }
 
   if (switching_modes)
   {
     if (switching_to_transient)
     {
-      save_angular_flux_before_transient_ = options_.save_angular_flux;
-      forced_save_angular_flux_for_transient_ = not options_.save_angular_flux;
-      if (forced_save_angular_flux_for_transient_)
-        DiscreteOrdinatesProblem::SetSaveAngularFlux(true);
+      prepare_for_transient();
       SetSweepChunkMode(SweepChunkMode::TimeDependent);
     }
     else
@@ -649,9 +708,11 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
         DiscreteOrdinatesProblem::SetSaveAngularFlux(save_angular_flux_before_transient_);
       forced_save_angular_flux_for_transient_ = false;
     }
+  }
 
+  if (switching_modes or default_to_transient)
+  {
     // Preserve user boundary/source setup and only reset mode-dependent internals.
-
     using namespace std::placeholders;
     if (switching_to_transient)
     {
@@ -673,6 +734,8 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
     for (size_t gsid = 0; gsid < GetNumWGSSolvers(); ++gsid)
     {
       auto wgs_solver = GetWGSSolver(gsid);
+      OpenSnLogicalErrorIf(not wgs_solver,
+                           GetName() + ": Null WGS solver while enabling transient source scopes.");
       auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
       OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
       wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
