@@ -631,20 +631,75 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
     // phi before enabling transient RHS time terms.
     DiscreteOrdinatesProblem::SetSaveAngularFlux(true);
     ReinitializeSolverSchemes();
-    // Use a small fixed number of WGS passes to reconstruct psi from phi. A single
-    // sweep won't work here if we have lagged angular fluxes, opposing reflecting
-    // boundaries, etc.
-    constexpr int reconstruction_passes = 3;
-    GetPhiOldLocal() = phi_new_ref;
-    for (int pass = 0; pass < reconstruction_passes; ++pass)
-      for (auto& wgs_solver : GetWGSSolvers())
+    // A single call to RebuildAngularFluxFromConvergedPhi is insufficient with
+    // lagged angular fluxes. Instead, we perform a fixed-point iteration on the
+    // lagged fluxes with phi/q held at the converged steady-state value. This is
+    // a sweep-only reconstruction of psi.
+    constexpr int max_reconstruction_passes = 50;
+    constexpr double lagged_psi_rel_tol = 1.0e-3;
+    const auto q_moments_ref = GetQMomentsLocal();
+    bool lagged_psi_converged = false;
+    for (int pass = 0; pass < max_reconstruction_passes; ++pass)
+    {
+      double dpsi_local_sum_sq = 0.0;
+      double psi_local_sum_sq = 0.0;
+
+      for (size_t gsid = 0; gsid < GetNumWGSSolvers(); ++gsid)
       {
+        auto wgs_solver = GetWGSSolver(gsid);
         OpenSnLogicalErrorIf(not wgs_solver,
                              GetName() +
-                               ": Null WGS solver while reconstruction angular flux solution.");
-        wgs_solver->Setup();
-        wgs_solver->Solve();
+                               ": Null WGS solver while reconstructing angular flux solution.");
+        auto wgs_context = std::dynamic_pointer_cast<SweepWGSContext>(wgs_solver->GetContext());
+        OpenSnLogicalErrorIf(
+          not wgs_context,
+          GetName() +
+            ": Cast to SweepWGSContext failed while reconstructing angular flux solution.");
+
+        const auto delayed_psi_old =
+          wgs_context->groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
+
+        // Keep source moments and scalar flux fixed at converged steady-state values.
+        GetQMomentsLocal() = q_moments_ref;
+        GetPhiOldLocal() = phi_new_ref;
+        wgs_context->RebuildAngularFluxFromConvergedPhi(false);
+
+        const auto delayed_psi_new =
+          wgs_context->groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
+        OpenSnLogicalErrorIf(delayed_psi_new.size() != delayed_psi_old.size(),
+                             GetName() +
+                               ": Lagged angular DOF size mismatch during reconstruction.");
+
+        for (size_t i = 0; i < delayed_psi_new.size(); ++i)
+        {
+          const double dpsi = delayed_psi_new[i] - delayed_psi_old[i];
+          dpsi_local_sum_sq += dpsi * dpsi;
+          psi_local_sum_sq += delayed_psi_new[i] * delayed_psi_new[i];
+        }
+
+        // psi_old <- psi_new
+        wgs_context->groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(delayed_psi_new);
       }
+
+      double dpsi_sum_sq = 0.0;
+      double psi_sum_sq = 0.0;
+      mpi_comm.all_reduce(dpsi_local_sum_sq, dpsi_sum_sq, mpi::op::sum<double>());
+      mpi_comm.all_reduce(psi_local_sum_sq, psi_sum_sq, mpi::op::sum<double>());
+      const double dpsi_norm = std::sqrt(dpsi_sum_sq);
+      const double psi_norm = std::sqrt(psi_sum_sq);
+      const double rel_change = (psi_norm > 0.0) ? dpsi_norm / psi_norm : dpsi_norm;
+      if (rel_change < lagged_psi_rel_tol)
+      {
+        lagged_psi_converged = true;
+        break;
+      }
+    }
+    if (not lagged_psi_converged)
+      log.Log0Warning() << GetName()
+                        << ": Lagged angular-flux reconstruction reached iteration limit ("
+                        << max_reconstruction_passes << ") without converging "
+                        << lagged_psi_rel_tol << ".";
+    GetQMomentsLocal() = q_moments_ref;
 
     // Scale psi to match the norm of the cached steady-state phi, then restore cached phi.
     auto& phi_new = GetPhiNewLocal();

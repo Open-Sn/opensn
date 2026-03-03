@@ -348,7 +348,7 @@ Discrete ordinates problem
    - scalar flux moments (``phi_new``/``phi_old`` state).
 
    For ``SetTimeDependentMode()``, OpenSn needs angular fluxes
-   (``psi``) for the transient RHS time term. Transition behavior is:
+   (``psi``) for the transient RHS time term. Mode transition behavior is as follows:
 
    - If ``save_angular_flux`` is already enabled:
      - the mode switch performs internal transient mode configuration only.
@@ -364,7 +364,9 @@ Discrete ordinates problem
 
    Practical implication:
    - ``save_angular_flux=False`` is valid for steady-state solves that later
-     transition to transient; OpenSn will reconstruct transient ``psi`` as needed.
+     transition to transient; OpenSn will reconstruct ``psi`` needed by the
+     transient solver by performing a fixed-point iteration on the lagged angular
+     fluxes with phi/q held at the converged steady-state value.
 
 .. warning::
 
