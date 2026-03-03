@@ -188,98 +188,6 @@ LooksLikeFortranBinary(const std::string& filename)
 }
 
 ParsedCEPXSData
-ParseCEPXSText(const std::string& filename, int material_id)
-{
-  std::ifstream fin(filename);
-  OpenSnLogicalErrorIf(not fin.is_open(), "Unable to open CEPXS file \"" + filename + "\".");
-  log.Log() << "Reading CEPXS cross-section file \"" << filename << "\"\n";
-
-  ParsedCEPXSData xs;
-
-  int n_materials = 0;
-  std::array<int, 3> n_groups_particle{0, 0, 0}; // gamma, electron, positron
-  fin >> n_groups_particle[0] >> n_groups_particle[1] >> n_groups_particle[2] >> n_materials;
-  OpenSnLogicalErrorIf(not fin.good(),
-                       "Failed to parse CEPXS header in file \"" + filename + "\".");
-
-  OpenSnLogicalErrorIf(n_materials != 1,
-                       "CEPXS text reader currently supports exactly one material per file.");
-  OpenSnLogicalErrorIf(material_id != 0,
-                       "CEPXS text reader only supports material_id=0 for single-material files.");
-  OpenSnLogicalErrorIf(
-    std::any_of(n_groups_particle.begin(), n_groups_particle.end(), [](int n) { return n < 0; }),
-    "CEPXS group counts must be non-negative.");
-
-  const int num_groups = n_groups_particle[0] + n_groups_particle[1] + n_groups_particle[2];
-  OpenSnLogicalErrorIf(num_groups <= 0, "CEPXS file has zero total groups.");
-  xs.num_groups = static_cast<unsigned int>(num_groups);
-
-  int L_max = 0;
-  fin >> L_max;
-  OpenSnLogicalErrorIf(not fin.good(), "Failed parsing CEPXS scattering order.");
-  OpenSnLogicalErrorIf(L_max < 0, "CEPXS scattering order must be non-negative.");
-  xs.scattering_order = static_cast<unsigned int>(L_max);
-
-  xs.e_bounds.resize(xs.num_groups + 1, 0.0);
-  for (unsigned int b = 0; b <= xs.num_groups; ++b)
-    xs.e_bounds[b] = static_cast<double>(xs.num_groups - b);
-
-  xs.sigma_t.assign(xs.num_groups, 0.0);
-  xs.charge_deposition.clear();
-  xs.secondary_production.clear();
-  xs.energy_deposition.assign(xs.num_groups, 0.0);
-  xs.transfer_matrices.assign(xs.scattering_order + 1, SparseMatrix(xs.num_groups, xs.num_groups));
-
-  auto read_particle_block = [&](std::vector<double>& destination)
-  {
-    unsigned int offset = 0;
-    for (const int n_groups_for_particle : n_groups_particle)
-    {
-      for (int g = 0; g < n_groups_for_particle; ++g)
-      {
-        fin >> destination.at(offset + static_cast<unsigned int>(g));
-        OpenSnLogicalErrorIf(not fin.good(),
-                             "Unexpected end-of-file reading CEPXS block in \"" + filename + "\".");
-      }
-      offset += static_cast<unsigned int>(n_groups_for_particle);
-    }
-  };
-
-  read_particle_block(xs.sigma_t);
-  read_particle_block(xs.energy_deposition);
-
-  const auto is_finite_vec = [](const std::vector<double>& vec)
-  { return std::all_of(vec.begin(), vec.end(), [](const double v) { return std::isfinite(v); }); };
-
-  OpenSnLogicalErrorIf(not IsNonNegative(xs.sigma_t),
-                       "CEPXS total cross section contains negative values.");
-  OpenSnLogicalErrorIf(not is_finite_vec(xs.sigma_t),
-                       "CEPXS total cross section contains non-finite values.");
-  OpenSnLogicalErrorIf(not is_finite_vec(xs.energy_deposition),
-                       "CEPXS energy deposition contains non-finite values.");
-
-  for (unsigned int ell = 0; ell <= xs.scattering_order; ++ell)
-  {
-    auto& Sm = xs.transfer_matrices[ell];
-    for (unsigned int g = 0; g < xs.num_groups; ++g)
-      for (unsigned int gp = 0; gp < xs.num_groups; ++gp)
-      {
-        double val = 0.0;
-        fin >> val;
-        OpenSnLogicalErrorIf(not fin.good(),
-                             "Unexpected end-of-file reading CEPXS transfer matrices in \"" +
-                               filename + "\".");
-        OpenSnLogicalErrorIf(not std::isfinite(val),
-                             "CEPXS transfer matrix contains non-finite values.");
-        if (val != 0.0)
-          Sm.Insert(g, gp, val);
-      }
-  }
-
-  return xs;
-}
-
-ParsedCEPXSData
 ParseCEPXSBFPBinary(const std::string& filename, int material_id)
 {
   FortranRecordReader rdr(filename);
@@ -414,8 +322,10 @@ MultiGroupXS
 MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id)
 {
   MultiGroupXS mgxs;
-  const auto parsed = LooksLikeFortranBinary(filename) ? ParseCEPXSBFPBinary(filename, material_id)
-                                                       : ParseCEPXSText(filename, material_id);
+  OpenSnLogicalErrorIf(not LooksLikeFortranBinary(filename),
+                       "LoadFromCEPXS supports Fortran-record binary CEPXS only. File: \"" +
+                         filename + "\".");
+  const auto parsed = ParseCEPXSBFPBinary(filename, material_id);
 
   mgxs.num_groups_ = parsed.num_groups;
   mgxs.scattering_order_ = parsed.scattering_order;
