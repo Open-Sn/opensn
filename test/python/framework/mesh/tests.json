@@ -9,6 +9,15 @@
     ]
   },
   {
+    "file" : "read_wavefront_obj2.py", "num_procs" : 1, "checks" :
+    [
+      {
+        "type" : "StrCompare",
+        "key" : "Global cell count             : 39"
+      }
+    ]
+  },
+  {
     "file" : "read_openfoam_hex.py", "num_procs" : 1, "checks" :
     [
       {
