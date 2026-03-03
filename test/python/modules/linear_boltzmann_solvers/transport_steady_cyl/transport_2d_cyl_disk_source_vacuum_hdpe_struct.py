@@ -73,7 +73,7 @@ if __name__ == "__main__":
     solver.Initialize()
     solver.Execute()
 
-    fflist = problem.GetScalarFieldFunctionList(only_scalar_flux=False)
+    fflist = problem.GetScalarFluxFieldFunction(only_scalar_flux=False)
     ffi = FieldFunctionInterpolationVolume()
     ffi.SetOperationType("max")
     ffi.SetLogicalVolume(vol)

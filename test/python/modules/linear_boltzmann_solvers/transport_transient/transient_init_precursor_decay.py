@@ -51,7 +51,7 @@ def read_precursor_value(path, block_name):
 
 
 def max_phi(phys):
-    fflist = phys.GetScalarFieldFunctionList()
+    fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
     field_interp = FieldFunctionInterpolationVolume()
     field_interp.SetOperationType("max")

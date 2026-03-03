@@ -67,7 +67,7 @@ if __name__ == "__main__":
     solver.Execute()
 
     vol = RPPLogicalVolume(xmin=0.0, xmax=1.0, ymin=0.0, ymax=2.0, infz=True)
-    fflist = problem.GetScalarFieldFunctionList(only_scalar_flux=False)
+    fflist = problem.GetScalarFluxFieldFunction(only_scalar_flux=False)
 
     ffi_max = FieldFunctionInterpolationVolume()
     ffi_max.SetOperationType("max")
