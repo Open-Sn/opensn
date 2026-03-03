@@ -219,7 +219,7 @@ OpenSn version 0.0.1
 <section id="Geometry">
 <h2><span class="section-number">5.3.2.2. </span><strong>Geometry</strong><a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 1D multi-group, source-driven detector response problem using the WIMS69 energy group structure. The neutron source is modeled as a 0.4 cm slab of Cf-252 encased in 0.1 cm slabs of stainless steel (SS-316). The detector is modeled as a 2.4 cm region of He-3 enclosed in a 0.07 cm SS-316 sleeve and surrounded by high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="abc3bfb9456a4ad984c26b9b0e021e07" src="../../../../_images/detector_geom1.png" /></p>
+<p><img alt="b851de1c61054859ac2118be7a27a1ff" src="../../../../_images/detector_geom1.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -651,12 +651,12 @@ OpenSn version 0.0.1
 <p>With the solver executed, we now create a <code class="docutils literal notranslate"><span class="pre">FieldFunction</span></code>. In OpenSn we define a <code class="docutils literal notranslate"><span class="pre">FieldFunction</span></code> for the response we will like to calculate. In this case we are looking to compute the total <span class="math notranslate nohighlight">\(He^3\)</span> absorption reaction rate in our detector:</p>
 <div class="math notranslate nohighlight">
 \[\text{QoI} = \sum^G_g \, \text{RR}^g = \sum^G_g \, \int_\mathcal{D} d^3r \, \int_{(4\pi)} d\Omega \, \sigma^g_{det}(\vec{r}) \psi^g(\vec{r},\vec\Omega)  = \sum^G_g \, \int_\mathcal{D} d^3r \, \sigma^g_{det}(\vec{r}) \phi^g(\vec{r})\]</div>
-<p>Thus, in OpenSn we will generate a scalar field function using <code class="docutils literal notranslate"><span class="pre">GetScalarFieldFunctionList</span></code> with a <code class="docutils literal notranslate"><span class="pre">sum</span></code> over the RoI. At each group the solution <span class="math notranslate nohighlight">\(\phi^g(\vec{r})\)</span> is multiplied by the detector response at that group <span class="math notranslate nohighlight">\(\sigma^{He3,g}_{a}\)</span>.</p>
+<p>Thus, in OpenSn we will generate a scalar field function using <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction</span></code> with a <code class="docutils literal notranslate"><span class="pre">sum</span></code> over the RoI. At each group the solution <span class="math notranslate nohighlight">\(\phi^g(\vec{r})\)</span> is multiplied by the detector response at that group <span class="math notranslate nohighlight">\(\sigma^{He3,g}_{a}\)</span>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="n">fields</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">flux</span> <span class="o">=</span> <span class="p">[]</span>

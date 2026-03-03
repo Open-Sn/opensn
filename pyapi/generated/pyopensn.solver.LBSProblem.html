@@ -181,20 +181,6 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.GetFieldFunctions">
-<span class="sig-name descname"><span class="pre">GetFieldFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Problem.html#pyopensn.solver.Problem" title="pyopensn.solver.Problem"><span class="pre">pyopensn.solver.Problem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.GetFieldFunctions" title="Link to this definition"></a></dt>
-<dd><p>Get the list of field functions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of grid-based field functions representing solution data such as scalar fluxes.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.GetPhiNewLocal">
 <span class="sig-name descname"><span class="pre">GetPhiNewLocal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">memoryview</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.GetPhiNewLocal" title="Link to this definition"></a></dt>
 <dd><p>Get the current scalar flux iterate (local vector).</p>
@@ -229,27 +215,28 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.GetScalarFieldFunctionList">
-<span class="sig-name descname"><span class="pre">GetScalarFieldFunctionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_scalar_flux</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.GetScalarFieldFunctionList" title="Link to this definition"></a></dt>
-<dd><p>Return field functions grouped by energy group and, optionally, by moment.</p>
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction">
+<span class="sig-name descname"><span class="pre">GetScalarFluxFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_scalar_flux</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction" title="Link to this definition"></a></dt>
+<dd><p>Return scalar-flux or flux-moment field functions grouped by energy group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>only_scalar_flux</strong> (<em>bool</em><em>, </em><em>default=True</em>) – <p>If True, returns only the zeroth moment (scalar flux) field function for each group.
-The result is a flat list of field functions, one per group.</p>
-<p>If False, returns all moment field functions for each group.
-The result is a nested list where each entry corresponds to a group and contains
-a list of field functions for all moments (e.g., scalar flux, higher-order moments).</p>
-</p>
+<dd class="field-odd"><p><strong>only_scalar_flux</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, returns only the zeroth moment (scalar flux) field function for each group.
+If False, returns all moment field functions for each group.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The structure of the returned list depends on the <cite>only_scalar_flux</cite> flag.</p>
+<dd class="field-even"><p><p>If <code class="docutils literal notranslate"><span class="pre">only_scalar_flux=True</span></code>:
+<code class="docutils literal notranslate"><span class="pre">result[g]</span></code> is the scalar-flux field function for group <code class="docutils literal notranslate"><span class="pre">g</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>:
+<code class="docutils literal notranslate"><span class="pre">result[g][m]</span></code> is the field function for group <code class="docutils literal notranslate"><span class="pre">g</span></code> and moment <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Union[List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>], List[List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>]]]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The moment index varies more rapidly than the group index when <cite>only_scalar_flux</cite> is False.</p>
+<p>In the nested form (<code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>), the moment index varies fastest
+within each group (inner index = moment, outer index = group).</p>
 </dd></dl>
 
 <dl class="py method">

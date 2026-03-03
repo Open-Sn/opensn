@@ -348,7 +348,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFieldFunctionList</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">vtk_basename</span> <span class="o">=</span> <span class="s2">&quot;forward_example&quot;</span>
 <span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
     <span class="p">[</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span>  <span class="c1"># export only the flux of group 0 (first []), moment 0 (second [])</span>
