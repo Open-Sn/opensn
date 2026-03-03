@@ -1,0 +1,18 @@
+[
+  {
+    "file": "keigen_to_transient.py",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KEIGEN_TO_TRANSIENT_OK",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  }
+]
