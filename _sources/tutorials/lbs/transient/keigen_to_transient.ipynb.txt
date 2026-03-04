@@ -1,0 +1,612 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "b983df7b",
+   "metadata": {},
+   "source": [
+    "# Switching From Steady-State Mode to Transient Mode in OpenSn\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c1891c91-eb08-46e6-b858-676f2ead12d7",
+   "metadata": {},
+   "source": [
+    "## Using this Notebook\n",
+    "Before running this example, make sure the **Python module of OpenSn** is available in your environment.\n",
+    "\n",
+    "### Converting and Running this Notebook from the Terminal\n",
+    "To run this notebook from the terminal, use:\n",
+    "\n",
+    "`jupyter nbconvert --to python --execute keigen_to_transient_tutorial.ipynb`\n",
+    "\n",
+    "To run in parallel (for example, 4 ranks):\n",
+    "\n",
+    "`mpiexec -n 4 jupyter nbconvert --to python --execute keigen_to_transient_tutorial.ipynb`\n",
+    "\n",
+    "## Import Requirements\n",
+    "Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python's PATH.\n",
+    "\n",
+    "### Disable colorized output\n",
+    "For notebook rendering, plain (non-colorized) output is typically easier to read.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "id": "57c48689",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import math\n",
+    "import os\n",
+    "import sys\n",
+    "import ctypes\n",
+    "from pathlib import Path\n",
+    "from mpi4py import MPI\n",
+    "\n",
+    "size = MPI.COMM_WORLD.size\n",
+    "rank = MPI.COMM_WORLD.rank\n",
+    "\n",
+    "# In notebooks, __file__ is typically undefined. Prefer cwd as the tutorial dir.\n",
+    "tutorial_dir = Path(__file__).resolve().parent if \"__file__\" in globals() else Path.cwd()\n",
+    "\n",
+    "# If launched from repo root (or another directory), recover the tutorial directory.\n",
+    "if not (tutorial_dir / \"xs1g_prompt_crit.cxs\").exists():\n",
+    "    candidate = Path.cwd() / \"doc/source/tutorials/lbs/transient\"\n",
+    "    if candidate.exists():\n",
+    "        tutorial_dir = candidate\n",
+    "\n",
+    "repo_root = None\n",
+    "build_dir = None\n",
+    "\n",
+    "# Prefer normal environment import (e.g., site-packages), then fall back to local build.\n",
+    "try:\n",
+    "    import pyopensn\n",
+    "except ImportError:\n",
+    "    # Find repo root robustly by walking upward.\n",
+    "    for p in [tutorial_dir, *tutorial_dir.parents]:\n",
+    "        has_src_pyopensn = (p / \"pyopensn\").exists() and (p / \"CMakeLists.txt\").exists()\n",
+    "        has_bld_pyopensn = (p / \"build\" / \"pyopensn\").exists()\n",
+    "        if has_bld_pyopensn or has_src_pyopensn:\n",
+    "            repo_root = p\n",
+    "            break\n",
+    "    if repo_root is None:\n",
+    "        repo_root = tutorial_dir\n",
+    "\n",
+    "    build_dir = repo_root / \"build\"\n",
+    "\n",
+    "    if (build_dir / \"pyopensn\").exists():\n",
+    "        # Avoid stale module path order issues.\n",
+    "        sys.path = [p for p in sys.path if p not in (str(build_dir), str(repo_root))]\n",
+    "        sys.path.insert(0, str(build_dir))\n",
+    "\n",
+    "    # Preload local libopensn if available (Linux/macOS).\n",
+    "    lib_candidates = (\n",
+    "        build_dir / \"libopensn.so\",\n",
+    "        build_dir / \"libopensn.dylib\",\n",
+    "        build_dir / \"lib\" / \"libopensn.so\",\n",
+    "        build_dir / \"lib\" / \"libopensn.dylib\",\n",
+    "    )\n",
+    "    for lib_path in lib_candidates:\n",
+    "        if lib_path.exists():\n",
+    "            ctypes.CDLL(str(lib_path), mode=ctypes.RTLD_GLOBAL)\n",
+    "            break\n",
+    "\n",
+    "    import pyopensn\n",
+    "\n",
+    "    # If we used fallback import, ensure we loaded from local build.\n",
+    "    pyopensn_path = Path(pyopensn.__file__).resolve()\n",
+    "    expected_parent = (build_dir / \"pyopensn\").resolve()\n",
+    "    if expected_parent.exists() and expected_parent not in pyopensn_path.parents:\n",
+    "        raise RuntimeError(\n",
+    "            f\"Imported pyopensn from unexpected location: {pyopensn_path}. \"\n",
+    "            f\"Expected under {expected_parent}\"\n",
+    "        )\n",
+    "\n",
+    "from pyopensn.mesh import OrthogonalMeshGenerator\n",
+    "from pyopensn.xs import MultiGroupXS\n",
+    "from pyopensn.aquad import GLCProductQuadrature3DXYZ\n",
+    "from pyopensn.solver import (DiscreteOrdinatesProblem,\n",
+    "    PowerIterationKEigenSolver,\n",
+    "    TransientSolver,\n",
+    ")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a7c059c5-4811-4a4a-8527-0e75e6424b2e",
+   "metadata": {},
+   "source": [
+    "## Mesh\n",
+    "\n",
+    "We construct a simple 3D Cartesian mesh with 64 cells using the built-in orthogonal mesh generator.\n",
+    "The dimensions of the mesh are 8cm in each dimension."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "id": "ed099059-02b8-4d7b-92b8-cfe479265376",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0]  Done checking cell-center-to-face orientations\n",
+      "[0]  07:25:15.7 Establishing cell connectivity.\n",
+      "[0]  07:25:15.7 Vertex cell subscriptions complete.\n",
+      "[0]  07:25:15.7 Surpassing cell 7 of 64 (10%)\n",
+      "[0]  07:25:15.7 Surpassing cell 13 of 64 (20%)\n",
+      "[0]  07:25:15.7 Surpassing cell 20 of 64 (30%)\n",
+      "[0]  07:25:15.7 Surpassing cell 26 of 64 (40%)\n",
+      "[0]  07:25:15.7 Surpassing cell 32 of 64 (50%)\n",
+      "[0]  07:25:15.7 Surpassing cell 39 of 64 (60%)\n",
+      "[0]  07:25:15.7 Surpassing cell 45 of 64 (70%)\n",
+      "[0]  07:25:15.7 Surpassing cell 52 of 64 (80%)\n",
+      "[0]  07:25:15.7 Surpassing cell 58 of 64 (90%)\n",
+      "[0]  07:25:15.7 Surpassing cell 64 of 64 (100%)\n",
+      "[0]  07:25:15.7 Establishing cell boundary connectivity.\n",
+      "[0]  07:25:15.7 Done establishing cell connectivity.\n",
+      "[0]  Number of cells per partition (max,min,avg) = 64,64,64\n",
+      "[0]  \n",
+      "[0]  Mesh statistics:\n",
+      "[0]    Global cell count             : 64\n",
+      "[0]    Local cell count (avg,max,min): 64,64,64\n",
+      "[0]    Ghost-to-local ratio (avg)    : 0\n",
+      "[0]  \n"
+     ]
+    }
+   ],
+   "source": [
+    "num_cells_1d = 4\n",
+    "L = 8.0\n",
+    "dx = L / num_cells_1d\n",
+    "nodes = [i * dx for i in range(num_cells_1d + 1)]\n",
+    "\n",
+    "meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes])\n",
+    "grid = meshgen.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "69fe1d9b-ee26-43f1-b6ab-30c19d27f4ce",
+   "metadata": {},
+   "source": [
+    "## Material IDs\n",
+    "\n",
+    "When using the built-in mesh generator, no material IDs are assigned. We assign a material ID with\n",
+    "value 0 for each cell in the spatial domain."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "id": "2e9d628f-d801-49cf-90b1-508cd24f6bc3",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0]  07:25:15.7 Done setting block id 0 to all cells\n"
+     ]
+    }
+   ],
+   "source": [
+    "grid.SetUniformBlockID(0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2d558b13",
+   "metadata": {},
+   "source": [
+    "## Cross Sections\n",
+    "Load two one-group cross-section sets:\n",
+    "\n",
+    "- `xs_crit` for the steady-state k-eigen solve\n",
+    "- `xs_super` for the transient reactivity insertion\n",
+    "\n",
+    "This gives a clean steady-state-to-transient transition with a controlled cross section swap.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 41,
+   "id": "eb7ab044",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0]  Reading OpenSn cross-section file \"/Users/dhawkins/opensn_dev/opensn/doc/source/tutorials/lbs/transient/xs1g_prompt_crit.cxs\"\n",
+      "[0]  *** WARNING ***  Estimating absorption from the transfer matrices.\n",
+      "[0]  Reading OpenSn cross-section file \"/Users/dhawkins/opensn_dev/opensn/doc/source/tutorials/lbs/transient/xs1g_prompt_super.cxs\"\n",
+      "[0]  *** WARNING ***  Estimating absorption from the transfer matrices.\n"
+     ]
+    }
+   ],
+   "source": [
+    "xs_crit = MultiGroupXS()\n",
+    "xs_crit.LoadFromOpenSn(str(tutorial_dir / \"xs1g_prompt_crit.cxs\"))\n",
+    "\n",
+    "xs_super = MultiGroupXS()\n",
+    "xs_super.LoadFromOpenSn(str(tutorial_dir / \"xs1g_prompt_super.cxs\"))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "839cc1bd-b38b-4338-b601-7675ea0d86ce",
+   "metadata": {},
+   "source": [
+    "## Angular Quadrature\n",
+    "We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the **total** number of polar cosines\n",
+    "(here `n_polar = 2`) and the number of azimuthal subdivisions in **four quadrants** (`n_azimuthal = 4`).\n",
+    "This creates a 3D angular quadrature for XYZ geometry."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "id": "963454ce",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0]  Using 3D XYZ Gauss–Legendre/Chebyshev product quadrature with 8 angles and weight sum of 1.00\n"
+     ]
+    }
+   ],
+   "source": [
+    "pquad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "32986f03",
+   "metadata": {},
+   "source": [
+    "## Linear Boltzmann Solver\n",
+    "Create a single `DiscreteOrdinatesProblem` with reflecting boundaries, a single groupset, reasonable iterative options, and an initial `xs_map` that assigns our `xs_crit` material to all cells. This problem object will be reused across both the\n",
+    "steady-state and transient solves.\n",
+    "\n",
+    "Two options are key here:\n",
+    "- `save_angular_flux=True` for storing angular fluxes during the steady-state solve.\n",
+    "- `use_precursors=False` for prompt-only transient behavior in this tutorial.\n",
+    "\n",
+    "**Note:** It is not necessary to set `save_angular_flux=True` for the steady-state problem. If this option is not enabled,\n",
+    "OpenSn will attempt to reconstruct the angular flux from the converged steady-state flux moments."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "id": "e848cb4f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0]  \n",
+      "[0]  Initializing DiscreteOrdinatesProblem\n",
+      "[0]  \n",
+      "[0]  Scattering order    : 0\n",
+      "[0]  Number of moments   : 1\n",
+      "[0]  Number of groups    : 1\n",
+      "[0]  Number of groupsets : 1\n",
+      "[0]  \n",
+      "[0]  ***** Groupset 0 *****\n",
+      "[0]  Number of angles: 8\n",
+      "[0]  Groups:\n",
+      "[0]      0 \n",
+      "[0]  \n",
+      "[0]  Initializing spatial discretization metadata.\n",
+      "[0]  Computing unit integrals.\n",
+      "[0]  Ghost cell unit cell-matrix ratio: 0%\n",
+      "[0]  Cell matrices computed.\n",
+      "[0]  Initializing parallel arrays. G=1 M=1\n",
+      "[0]  Done with parallel arrays.\n",
+      "[0]  07:25:15.7 Initializing sweep datastructures.\n",
+      "[0]  07:25:15.7 Done initializing sweep datastructures.\n"
+     ]
+    }
+   ],
+   "source": [
+    "phys = DiscreteOrdinatesProblem(\n",
+    "    mesh=grid,\n",
+    "    num_groups=1,\n",
+    "    groupsets=[\n",
+    "        {\n",
+    "            \"groups_from_to\": (0, 0),\n",
+    "            \"angular_quadrature\": pquad,\n",
+    "            \"inner_linear_method\": \"classic_richardson\",\n",
+    "            \"l_abs_tol\": 1.0e-8,\n",
+    "            \"l_max_its\": 200,\n",
+    "        },\n",
+    "    ],\n",
+    "    xs_map=[{\"block_ids\": [0], \"xs\": xs_crit}],\n",
+    "    boundary_conditions=[\n",
+    "        {\"name\": \"xmin\", \"type\": \"reflecting\"},\n",
+    "        {\"name\": \"xmax\", \"type\": \"reflecting\"},\n",
+    "        {\"name\": \"ymin\", \"type\": \"reflecting\"},\n",
+    "        {\"name\": \"ymax\", \"type\": \"reflecting\"},\n",
+    "        {\"name\": \"zmin\", \"type\": \"reflecting\"},\n",
+    "        {\"name\": \"zmax\", \"type\": \"reflecting\"},\n",
+    "    ],\n",
+    "    options={\n",
+    "        \"save_angular_flux\": True,\n",
+    "        \"use_precursors\": False,\n",
+    "        \"verbose_inner_iterations\": False,\n",
+    "        \"verbose_outer_iterations\": True,\n",
+    "        \"verbose_ags_iterations\": False,\n",
+    "    },\n",
+    ")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5581346f",
+   "metadata": {},
+   "source": [
+    "## Steady-State Solve\n",
+    "Run a power-iteration k-eigenvalue solve to convergence. This converged state becomes the initial condition for the transient solve."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "id": "24ffda2a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0]  07:25:15.8   Iteration     1  k_eff           1  k_eff change 2.436051e-11  reactivity -2.436051e-06 CONVERGED\n",
+      "[0]  \n",
+      "[0]          Final k-eigenvalue    :        1\n",
+      "[0]          Final change          :        2.43605e-11 (Total number of sweeps:200)\n",
+      "[0]  \n",
+      "[0]  LinearBoltzmann::KEigenvalueSolver execution completed\n",
+      "[0]  \n"
+     ]
+    }
+   ],
+   "source": [
+    "keigen = PowerIterationKEigenSolver(problem=phys, max_iters=200, k_tol=1.0e-10)\n",
+    "keigen.Initialize()\n",
+    "keigen.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b8e97809",
+   "metadata": {},
+   "source": [
+    "## Transition to Transient Mode\n",
+    "Now, let's switch the problem object to time-dependent mode and initialize the transient solver. We'll\n",
+    "pass the `initial_state=\"existing\"`option to the transient solver so that it uses the converged\n",
+    "steady-state solution as its initial condition.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 45,
+   "id": "c8c77b7e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0]  Initializing TransientSolver.\n",
+      "[0]  *** WARNING ***  TransientSolver: fissionable material is present but use_precursors is disabled. Running prompt-only transient.\n"
+     ]
+    }
+   ],
+   "source": [
+    "phys.SetTimeDependentMode()\n",
+    "transient_solver = TransientSolver(problem=phys, verbose=False, initial_state=\"existing\")\n",
+    "transient_solver.Initialize()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0e28200f",
+   "metadata": {},
+   "source": [
+    "## Update Cross Sections and Advance in Time (Transient Solve)\n",
+    "Swap from `xs_crit` to `xs_super`, then march with backward Euler (`theta=1.0`) using a Python time stepping loop.\n",
+    "\n",
+    "Diagnostic printouts show per-step time advancement and fission production.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "id": "23dbec11",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Transient start time t0 = 0.000000\n",
+      "Initial fission production fp0 (post-swap) = 1.84320000e+02\n",
+      "Time step = 000, start time = 0.000000, end time = 0.010000, fission production @end = 1.84422441e+02\n",
+      "Time step = 001, start time = 0.010000, end time = 0.020000, fission production @end = 1.84533161e+02\n",
+      "Time step = 002, start time = 0.020000, end time = 0.030000, fission production @end = 1.84643948e+02\n",
+      "Time step = 003, start time = 0.030000, end time = 0.040000, fission production @end = 1.84754801e+02\n",
+      "Time step = 004, start time = 0.040000, end time = 0.050000, fission production @end = 1.84865720e+02\n",
+      "Time step = 005, start time = 0.050000, end time = 0.060000, fission production @end = 1.84976706e+02\n",
+      "Time step = 006, start time = 0.060000, end time = 0.070000, fission production @end = 1.85087759e+02\n",
+      "Time step = 007, start time = 0.070000, end time = 0.080000, fission production @end = 1.85198878e+02\n",
+      "Time step = 008, start time = 0.080000, end time = 0.090000, fission production @end = 1.85310064e+02\n",
+      "Time step = 009, start time = 0.090000, end time = 0.100000, fission production @end = 1.85421317e+02\n",
+      "Time step = 010, start time = 0.100000, end time = 0.110000, fission production @end = 1.85532636e+02\n"
+     ]
+    }
+   ],
+   "source": [
+    "phys.SetXSMap(xs_map=[{\"block_ids\": [0], \"xs\": xs_super}])\n",
+    "\n",
+    "# Baseline fission production at transient start (post-swap, t=0+)\n",
+    "t0 = phys.GetTime()\n",
+    "fp0 = phys.ComputeFissionProduction(\"new\")\n",
+    "if rank == 0:\n",
+    "    print(f\"Transient start time t0 = {t0:.6f}\")\n",
+    "    print(f\"Initial fission production fp0 (post-swap) = {fp0:.8e}\")\n",
+    "\n",
+    "transient_solver.SetTimeStep(1.0e-2)\n",
+    "transient_solver.SetTheta(1.0)\n",
+    "\n",
+    "t_end = 0.1\n",
+    "step = 0\n",
+    "while phys.GetTime() < t_end:\n",
+    "    t_before = phys.GetTime()\n",
+    "    transient_solver.Advance()\n",
+    "    t_after = phys.GetTime()\n",
+    "    fp = phys.ComputeFissionProduction(\"new\")\n",
+    "    if rank == 0:\n",
+    "        print(\n",
+    "            f\"Time step = {step:03d}, \"\n",
+    "            f\"start time = {t_before:.6f}, \"\n",
+    "            f\"end time = {t_after:.6f}, \"\n",
+    "            f\"fission production @end = {fp:.8e}\"\n",
+    "        )\n",
+    "    step += 1\n",
+    "\n",
+    "if step == 0:\n",
+    "    raise RuntimeError(\"No transient steps executed. Reinitialize solver state or increase t_end.\")\n",
+    "\n",
+    "fp_end = phys.ComputeFissionProduction(\"new\")\n",
+    "t1 = phys.GetTime()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "41fb67bc",
+   "metadata": {},
+   "source": [
+    "## Post-processing: Prompt-Only Growth Check\n",
+    "For this simple one-group setup we compare the fission-production fraction to:\n",
+    "\n",
+    "$$\\frac{P(t)}{P(0)} = e^{\\alpha t}, \\quad \\alpha = \\nu\\Sigma_f - \\Sigma_a$$\n",
+    "\n",
+    "In the notebook, we evaluate this over the transient interval $$\\Delta t = t_1 - t_0$$:\n",
+    "\n",
+    "$$\\text{ratio}_{\\mathrm{analytic}} = e^{\\alpha\\Delta t}$$\n",
+    "\n",
+    "Code equivalent:\n",
+    "\n",
+    "```python\n",
+    "ratio_analytic = math.exp(alpha * delta_t)\n",
+    "```\n",
+    "\n",
+    "The numerical fraction is computed directly from fission production:\n",
+    "\n",
+    "$$\\text{ratio}_{\\mathrm{numeric}} = \\frac{\\text{fp\\_end}}{\\text{fp0}}$$\n",
+    "\n",
+    "Code equivalent:\n",
+    "\n",
+    "```python\n",
+    "ratio_numeric = fp_end / fp0 if fp0 > 0.0 else 0.0\n",
+    "```\n",
+    "\n",
+    "Then we compare\n",
+    "$$\\text{ratio}_{\\mathrm{numeric}}\\text{ vs. }\\text{ratio}_{\\mathrm{analytic}}$$.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "id": "934484e6",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Elapsed transient time = 0.110000 s\n",
+      "FP ratio numeric      = 1.00657897e+00\n",
+      "FP ratio analytic     = 1.00662183e+00\n",
+      "Relative error        = 4.257e-05\n"
+     ]
+    }
+   ],
+   "source": [
+    "sigma_t = 1.0\n",
+    "sigma_s = 0.7\n",
+    "sigma_a = sigma_t - sigma_s\n",
+    "nu = 2.0\n",
+    "sigma_f = 0.180000\n",
+    "alpha = nu * sigma_f - sigma_a\n",
+    "\n",
+    "delta_t = t1 - t0\n",
+    "ratio_analytic = math.exp(alpha * delta_t)\n",
+    "ratio_numeric = fp_end / fp0 if fp0 > 0.0 else 0.0\n",
+    "\n",
+    "rel_err = abs(ratio_numeric - ratio_analytic) / max(abs(ratio_analytic), 1.0e-16)\n",
+    "tol = 5.0e-3  # matches prompt-analytic regression tolerance\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"Elapsed transient time = {delta_t:.6f} s\")\n",
+    "    print(f\"FP ratio numeric      = {ratio_numeric:.8e}\")\n",
+    "    print(f\"FP ratio analytic     = {ratio_analytic:.8e}\")\n",
+    "    print(f\"Relative error        = {rel_err:.3e}\")\n",
+    "\n",
+    "assert rel_err < tol, (\n",
+    "    f\"FP ratio check failed: rel_err={rel_err:.3e} >= tol={tol:.3e} \"\n",
+    "    f\"(numeric={ratio_numeric:.8e}, analytic={ratio_analytic:.8e}, delta_t={delta_t:.6e})\"\n",
+    ")\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(\"KEIGEN_TO_TRANSIENT_OK 1\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b3bfe025",
+   "metadata": {},
+   "source": [
+    "## Finalize (for Jupyter Notebook only)\n",
+    "In script/console mode, PyOpenSn finalization is handled automatically. In notebook mode, finalize explicitly only if your runtime requires it.\n",
+    "\n",
+    "### Summary\n",
+    "- Reused the same `DiscreteOrdinatesProblem` object for both steady-state and transient solves,\n",
+    "- solved steady-state k-eigen to convergence,\n",
+    "- switched mode with `SetTimeDependentMode()`,\n",
+    "- initialized transient with `initial_state=\"existing\"`,\n",
+    "- applied cross section change and advanced from the converged steady state.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
