@@ -25,8 +25,6 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     return ierr;
 
   auto& lbs_problem = nl_context_ptr->lbs_problem;
-  const auto& phi_old_local = lbs_problem->GetPhiOldLocal();
-  auto& q_moments_local = lbs_problem->GetQMomentsLocal();
 
   auto active_set_source_function = lbs_problem->GetActiveSetSourceFunction();
 
@@ -39,15 +37,15 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     *lbs_problem, groupset_ids, phi, PhiSTLOption::PHI_OLD);
 
   // Compute 1/k F phi
-  Set(q_moments_local, 0.0);
+  lbs_problem->ZeroQMoments();
   for (const auto& groupset : lbs_problem->GetGroupsets())
     active_set_source_function(groupset,
-                               q_moments_local,
-                               phi_old_local,
+                               lbs_problem->GetQMomentsLocal(),
+                               lbs_problem->GetPhiOldLocal(),
                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 
-  const double k_eff = ComputeFissionProduction(*lbs_problem, phi_old_local);
-  Scale(q_moments_local, 1.0 / k_eff);
+  const double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
+  lbs_problem->ScaleQMoments(1.0 / k_eff);
 
   // Now add MS phi
   for (const auto& groupset : lbs_problem->GetGroupsets())
@@ -57,7 +55,8 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (supress_wgs)
       source_flags |= SUPPRESS_WG_SCATTER;
-    active_set_source_function(groupset, q_moments_local, phi_old_local, source_flags);
+    active_set_source_function(
+      groupset, lbs_problem->GetQMomentsLocal(), lbs_problem->GetPhiOldLocal(), source_flags);
   }
 
   // Sweep all the groupsets

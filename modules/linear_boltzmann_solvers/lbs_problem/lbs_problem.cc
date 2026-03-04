@@ -376,6 +376,14 @@ LBSProblem::GetExtSrcMomentsLocal() const
   return ext_src_moments_local_;
 }
 
+void
+LBSProblem::SetExtSrcMomentsFrom(const std::vector<double>& ext_src_moments)
+{
+  assert(ext_src_moments.size() == ext_src_moments_local_.size() &&
+         "SetExtSrcMomentsFrom size mismatch.");
+  ext_src_moments_local_ = ext_src_moments;
+}
+
 std::vector<double>&
 LBSProblem::GetPhiOldLocal()
 {
@@ -959,10 +967,10 @@ LBSProblem::InitializeMaterials()
   {
     for (const auto& [mat_id, xs] : block_id_to_xs_map_)
     {
-      OpenSnLogicalErrorIf(xs->IsFissionable() and num_precursors_ == 0,
+      OpenSnLogicalErrorIf(xs->IsFissionable() and xs->GetNumPrecursors() == 0,
                            "Incompatible cross-section data encountered for material id " +
                              std::to_string(mat_id) + ". When delayed neutron data is present " +
-                             "for one fissionable matrial, it must be present for all fissionable "
+                             "for one fissionable material, it must be present for all fissionable "
                              "materials.");
     }
   }
@@ -1372,6 +1380,9 @@ LBSProblem::UpdateFieldFunctions()
     {
       double global_total_power = 0.0;
       mpi_comm.all_reduce(local_total_power, global_total_power, mpi::op::sum<double>());
+      OpenSnLogicalErrorIf(
+        global_total_power <= 0.0,
+        GetName() + ": Power normalization requested, but global total power is non-positive.");
       scale_factor = options_.power_normalization / global_total_power;
       Scale(data_vector_power_local, scale_factor);
     }
@@ -1460,8 +1471,112 @@ LBSProblem::SetSaveAngularFlux(bool save)
 void
 LBSProblem::ZeroPhi()
 {
-  phi_old_local_.assign(phi_old_local_.size(), 0.0);
-  phi_new_local_.assign(phi_new_local_.size(), 0.0);
+  std::fill(phi_old_local_.begin(), phi_old_local_.end(), 0.0);
+  std::fill(phi_new_local_.begin(), phi_new_local_.end(), 0.0);
+}
+
+void
+LBSProblem::CopyPhiNewToOld()
+{
+  assert(phi_old_local_.size() == phi_new_local_.size() && "Phi vectors size mismatch.");
+  phi_old_local_ = phi_new_local_;
+}
+
+void
+LBSProblem::SetPhiOldFrom(const std::vector<double>& phi_old)
+{
+  assert(phi_old.size() == phi_old_local_.size() && "SetPhiOldFrom size mismatch.");
+  phi_old_local_ = phi_old;
+}
+
+void
+LBSProblem::SetPhiNewFrom(const std::vector<double>& phi_new)
+{
+  assert(phi_new.size() == phi_new_local_.size() && "SetPhiNewFrom size mismatch.");
+  phi_new_local_ = phi_new;
+}
+
+void
+LBSProblem::ScalePhiOld(double factor)
+{
+  for (auto& value : phi_old_local_)
+    value *= factor;
+}
+
+void
+LBSProblem::ScalePhiNew(double factor)
+{
+  for (auto& value : phi_new_local_)
+    value *= factor;
+}
+
+void
+LBSProblem::ZeroQMoments()
+{
+  assert(q_moments_local_.size() == phi_old_local_.size() && "Q moments/Phi size mismatch.");
+  std::fill(q_moments_local_.begin(), q_moments_local_.end(), 0.0);
+}
+
+void
+LBSProblem::ScaleQMoments(double factor)
+{
+  for (auto& value : q_moments_local_)
+    value *= factor;
+}
+
+void
+LBSProblem::SetQMomentsFrom(const std::vector<double>& q_moments)
+{
+  assert(q_moments.size() == q_moments_local_.size() && "SetQMomentsFrom size mismatch.");
+  q_moments_local_ = q_moments;
+}
+
+void
+LBSProblem::ScalePrecursors(double factor)
+{
+  for (auto& value : precursor_new_local_)
+    value *= factor;
+}
+
+void
+LBSProblem::ZeroPrecursors()
+{
+  std::fill(precursor_new_local_.begin(), precursor_new_local_.end(), 0.0);
+}
+
+void
+LBSProblem::ZeroExtSrcMoments()
+{
+  std::fill(ext_src_moments_local_.begin(), ext_src_moments_local_.end(), 0.0);
+}
+
+void
+LBSProblem::ScaleExtSrcMoments(double factor)
+{
+  for (auto& value : ext_src_moments_local_)
+    value *= factor;
+}
+
+void
+LBSProblem::SetUniformDensities(double density)
+{
+  assert(densities_local_.size() == grid_->local_cells.size() &&
+         "Densities/local-cells size mismatch.");
+  std::fill(densities_local_.begin(), densities_local_.end(), density);
+}
+
+void
+LBSProblem::SetDensity(size_t cell_local_id, double density)
+{
+  assert(cell_local_id < densities_local_.size() && "SetDensity cell index out of range.");
+  densities_local_[cell_local_id] = density;
+}
+
+void
+LBSProblem::SetDensitiesFrom(const std::vector<double>& densities)
+{
+  assert(densities.size() == densities_local_.size() && "SetDensitiesFrom size mismatch.");
+  densities_local_ = densities;
 }
 
 void
@@ -1488,10 +1603,9 @@ LBSProblem::SetAdjoint(bool adjoint)
     ClearBoundaries();
 
     // Reset all solution vectors.
-    phi_old_local_.assign(phi_old_local_.size(), 0.0);
-    phi_new_local_.assign(phi_new_local_.size(), 0.0);
+    ZeroPhi();
     ZeroPsi();
-    precursor_new_local_.assign(precursor_new_local_.size(), 0.0);
+    ZeroPrecursors();
 
     applied_adjoint_ = adjoint;
   }

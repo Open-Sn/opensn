@@ -86,6 +86,21 @@ public:
   void ApplyOptions();
 
   void ZeroPhi();
+  void CopyPhiNewToOld();
+  void SetPhiOldFrom(const std::vector<double>& phi_old);
+  void SetPhiNewFrom(const std::vector<double>& phi_new);
+  void ScalePhiOld(double factor);
+  void ScalePhiNew(double factor);
+  void ZeroQMoments();
+  void ScaleQMoments(double factor);
+  void SetQMomentsFrom(const std::vector<double>& q_moments);
+  void ScalePrecursors(double factor);
+  void ZeroPrecursors();
+  void ZeroExtSrcMoments();
+  void ScaleExtSrcMoments(double factor);
+  void SetUniformDensities(double density);
+  void SetDensity(size_t cell_local_id, double density);
+  void SetDensitiesFrom(const std::vector<double>& densities);
 
   virtual void ZeroPsi() = 0;
 
@@ -188,6 +203,9 @@ public:
 
   /// Read access to exterior src moments vector.
   const std::vector<double>& GetExtSrcMomentsLocal() const;
+
+  /// Replaces exterior source moments vector.
+  void SetExtSrcMomentsFrom(const std::vector<double>& ext_src_moments);
 
   /// Read/write access to last updated flux vector.
   std::vector<double>& GetPhiOldLocal();

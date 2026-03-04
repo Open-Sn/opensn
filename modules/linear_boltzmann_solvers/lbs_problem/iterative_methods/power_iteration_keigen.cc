@@ -35,9 +35,8 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
     wgs_context->rhs_src_scope = APPLY_AGS_SCATTER_SOURCES | APPLY_FIXED_SOURCES;
   }
 
-  auto& q_moments_local = lbs_problem.GetQMomentsLocal();
-  auto& phi_old_local = lbs_problem.GetPhiOldLocal();
-  auto& phi_new_local = lbs_problem.GetPhiNewLocal();
+  const auto& phi_old_local = lbs_problem.GetPhiOldLocal();
+  const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
   auto ags_solver = lbs_problem.GetAGSSolver();
   const auto& groupsets = lbs_problem.GetGroupsets();
   auto active_set_source_function = lbs_problem.GetActiveSetSourceFunction();
@@ -60,14 +59,14 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   bool converged = false;
   while (nit < max_iterations)
   {
-    Set(q_moments_local, 0.0);
+    lbs_problem.ZeroQMoments();
     for (const auto& groupset : groupsets)
       active_set_source_function(groupset,
-                                 q_moments_local,
+                                 lbs_problem.GetQMomentsLocal(),
                                  phi_old_local,
                                  APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 
-    Scale(q_moments_local, 1.0 / k_eff);
+    lbs_problem.ScaleQMoments(1.0 / k_eff);
 
     // This solves the inners for transport
     ags_solver->Solve();

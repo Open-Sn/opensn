@@ -73,11 +73,13 @@ LBSVecOps::ScalePhiVector(LBSProblem& lbs_problem, PhiSTLOption phi_opt, double 
 {
   CALI_CXX_MARK_SCOPE("LBSVecOps::ScalePhiVector");
 
-  auto& phi = (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
-                                                 : lbs_problem.GetPhiOldLocal();
   const auto& groupsets = lbs_problem.GetGroupsets();
 
-  Scale(phi, value);
+  if (phi_opt == PhiSTLOption::PHI_NEW)
+    lbs_problem.ScalePhiNew(value);
+  else
+    lbs_problem.ScalePhiOld(value);
+
   for (const auto& groupset : groupsets)
   {
     if (groupset.angle_agg)

@@ -42,7 +42,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   mat_src.assign(mat_src.size(), 0.0);
   for (const auto& groupset : groupsets_)
   {
-    q_moments_local_.assign(q_moments_local_.size(), 0.0);
+    do_problem.ZeroQMoments();
     active_set_source_fn(groupset,
                          q_moments_local_,
                          phi_new_local_,

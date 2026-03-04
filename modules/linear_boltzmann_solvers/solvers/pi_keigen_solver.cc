@@ -133,7 +133,7 @@ PowerIterationKEigenSolver::Execute()
   {
     // Set the fission source
     SetLBSFissionSource(phi_old_local_, false);
-    Scale(q_moments_local_, 1.0 / k_eff_);
+    do_problem_->ScaleQMoments(1.0 / k_eff_);
 
     if (acceleration_)
       acceleration_->PrePowerIteration();
@@ -208,7 +208,7 @@ PowerIterationKEigenSolver::Execute()
   if (options.use_precursors)
   {
     ComputePrecursors(*do_problem_);
-    Scale(do_problem_->GetPrecursorsNewLocal(), 1.0 / k_eff_);
+    do_problem_->ScalePrecursors(1.0 / k_eff_);
   }
 
   do_problem_->UpdateFieldFunctions();
@@ -226,7 +226,7 @@ PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input
                                                 const bool additive)
 {
   if (not additive)
-    Set(q_moments_local_, 0.0);
+    do_problem_->ZeroQMoments();
 
   for (const auto& groupset : groupsets_)
   {
@@ -241,7 +241,7 @@ PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<double>& input
                                                 const bool suppress_wg_scat)
 {
   if (not additive)
-    Set(q_moments_local_, 0.0);
+    do_problem_->ZeroQMoments();
 
   SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
   if (suppress_wg_scat)

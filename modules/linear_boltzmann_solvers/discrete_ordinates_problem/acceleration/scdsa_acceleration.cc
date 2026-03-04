@@ -184,7 +184,7 @@ SCDSAAcceleration::PostPowerIteration()
   {
     ProjectBackPhi0(epsilon_k_ + phi0_star_, phi_temp_);
     solver_->SetLBSFissionSource(phi_temp_, false);
-    Scale(q_moments_local_, 1.0 / lambda_k);
+    do_problem_.ScaleQMoments(1.0 / lambda_k);
 
     CopyOnlyPhi0(q_moments_local_, Sf0_aux_);
 

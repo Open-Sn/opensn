@@ -108,7 +108,7 @@ NonLinearKEigenSolver::Execute()
   if (do_problem_->GetOptions().use_precursors)
   {
     ComputePrecursors(*do_problem_);
-    Scale(do_problem_->GetPrecursorsNewLocal(), 1.0 / nl_context_->kresid_func_context.k_eff);
+    do_problem_->ScalePrecursors(1.0 / nl_context_->kresid_func_context.k_eff);
   }
 
   do_problem_->UpdateFieldFunctions();

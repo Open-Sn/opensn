@@ -39,8 +39,8 @@ ComputePointwisePhiChange(
     std::iota(groupset_ids.begin(), groupset_ids.end(), 0);
   }
 
-  auto& phi_new = lbs_problem.GetPhiNewLocal();
-  std::vector<double>& phi_old =
+  const auto& phi_new = lbs_problem.GetPhiNewLocal();
+  const std::vector<double>& phi_old =
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
 
   auto grid_ptr = lbs_problem.GetGrid();
@@ -86,8 +86,8 @@ ComputeL2PhiChange(LBSProblem& lbs_problem,
                    std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old)
 {
   double norm = 0.0;
-  auto& phi_new = lbs_problem.GetPhiNewLocal();
-  std::vector<double>& phi_old =
+  const auto& phi_new = lbs_problem.GetPhiNewLocal();
+  const std::vector<double>& phi_old =
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
 
   for (auto i = 0; i < phi_new.size(); ++i)

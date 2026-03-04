@@ -399,12 +399,14 @@ WrapLBS(py::module& slv)
     "ReadFluxMomentsAndMakeSourceMoments",
     [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
-      LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, self.GetExtSrcMomentsLocal());
+      auto ext_src_moments = self.GetExtSrcMomentsLocal();
+      LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, ext_src_moments);
+      self.SetExtSrcMomentsFrom(ext_src_moments);
       log.Log() << "Making source moments from flux file.";
-      std::vector<double>& temp_phi = self.GetPhiOldLocal();
-      self.GetPhiOldLocal() = self.GetExtSrcMomentsLocal();
-      self.GetExtSrcMomentsLocal() = self.MakeSourceMomentsFromPhi();
-      self.GetPhiOldLocal() = temp_phi;
+      const auto temp_phi = self.GetPhiOldLocal();
+      self.SetPhiOldFrom(self.GetExtSrcMomentsLocal());
+      self.SetExtSrcMomentsFrom(self.MakeSourceMomentsFromPhi());
+      self.SetPhiOldFrom(temp_phi);
     },
     R"(
     Read flux moments and compute corresponding source moments.
@@ -423,7 +425,9 @@ WrapLBS(py::module& slv)
     "ReadSourceMoments",
     [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
-      LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, self.GetExtSrcMomentsLocal());
+      auto ext_src_moments = self.GetExtSrcMomentsLocal();
+      LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, ext_src_moments);
+      self.SetExtSrcMomentsFrom(ext_src_moments);
     },
     R"(
     Read source moments from file.
