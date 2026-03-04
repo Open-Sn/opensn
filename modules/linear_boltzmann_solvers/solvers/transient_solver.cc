@@ -94,7 +94,7 @@ TransientSolver::Initialize()
   enforce_stop_time_ = false;
 
   // Ensure angular fluxes are available from the initial condition.
-  auto& options = do_problem_->GetOptions();
+  const auto& options = do_problem_->GetOptions();
   do_problem_->SetTime(current_time_);
 
   const std::string& init_state = initial_state_;
@@ -210,7 +210,7 @@ TransientSolver::Execute()
 void
 TransientSolver::Advance()
 {
-  auto& options = do_problem_->GetOptions();
+  const auto& options = do_problem_->GetOptions();
   if (not initialized_)
     throw std::runtime_error(GetName() + ": Initialize must be called before Advance.");
   if (enforce_stop_time_ and stop_time_ <= current_time_)
@@ -223,8 +223,9 @@ TransientSolver::Advance()
   const double theta = do_problem_->GetTheta();
 
   // Ensure RHS time term is enabled for transient sweeps
-  for (auto& wgs_solver : do_problem_->GetWGSSolvers())
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
   {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
     auto context = wgs_solver->GetContext();
     auto sweep_context = std::dynamic_pointer_cast<SweepWGSContext>(context);
     if (sweep_context)

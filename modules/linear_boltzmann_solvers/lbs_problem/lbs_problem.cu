@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/total_xs_carrier.h"
+#include "framework/utils/error.h"
 
 namespace opensn
 {
@@ -78,10 +79,7 @@ void
 LBSProblem::CheckCapableDevices()
 {
   std::uint32_t num_gpus = crb::get_num_gpus();
-  if (num_gpus == 0)
-  {
-    throw std::runtime_error("No GPU detected.\n");
-  }
+  OpenSnLogicalErrorIf(num_gpus == 0, "LBSProblem::CheckCapableDevices: No GPU detected.");
 }
 
 } // namespace opensn
