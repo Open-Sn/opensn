@@ -9,11 +9,10 @@ Class SpatialDiscretization
 Inheritance Relationships
 -------------------------
 
-Derived Types
-*************
+Derived Type
+************
 
 - ``public opensn::FiniteElementBase`` (:ref:`exhale_class_classopensn_1_1_finite_element_base`)
-- ``public opensn::FiniteVolume`` (:ref:`exhale_class_classopensn_1_1_finite_volume`)
 
 
 Class Documentation

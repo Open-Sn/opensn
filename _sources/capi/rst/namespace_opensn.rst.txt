@@ -371,10 +371,6 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_finite_element_base`
 
-- :ref:`exhale_class_classopensn_1_1_finite_volume`
-
-- :ref:`exhale_class_classopensn_1_1_finite_volume_mapping`
-
 - :ref:`exhale_class_classopensn_1_1_f_l_u_d_s`
 
 - :ref:`exhale_class_classopensn_1_1_f_l_u_d_s_common_data`

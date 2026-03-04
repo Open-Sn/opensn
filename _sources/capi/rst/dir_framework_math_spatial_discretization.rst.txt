@@ -17,7 +17,6 @@ Subdirectories
 
 - :ref:`dir_framework_math_spatial_discretization_cell_mappings`
 - :ref:`dir_framework_math_spatial_discretization_finite_element`
-- :ref:`dir_framework_math_spatial_discretization_finite_volume`
 
 
 Files
