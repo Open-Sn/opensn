@@ -20,17 +20,12 @@ LBSProblem::InitializeGPUExtras()
     return;
   }
   // initialize carriers
-  TotalXSCarrier* xs_ptr = new TotalXSCarrier(*this);
-  OutflowCarrier* of_ptr = new OutflowCarrier(*this);
-  MeshCarrier* msh_ptr = new MeshCarrier(*this, *xs_ptr, *of_ptr);
-  carriers_[0] = xs_ptr;
-  carriers_[1] = of_ptr;
-  carriers_[2] = msh_ptr;
+  total_xs_carrier_ = std::make_shared<TotalXSCarrier>(*this);
+  outflow_carrier_ = std::make_shared<OutflowCarrier>(*this);
+  mesh_carrier_ = std::make_shared<MeshCarrier>(*this, *total_xs_carrier_, *outflow_carrier_);
   // initialize pinners
-  MemoryPinner<double>* src = new MemoryPinner<double>(q_moments_local_);
-  MemoryPinner<double>* phi = new MemoryPinner<double>(phi_new_local_);
-  pinners_[0] = src;
-  pinners_[1] = phi;
+  source_pinner_ = std::make_shared<MemoryPinner<double>>(q_moments_local_);
+  phi_pinner_ = std::make_shared<MemoryPinner<double>>(phi_new_local_);
 }
 
 void
@@ -42,37 +37,12 @@ LBSProblem::ResetGPUCarriers()
     return;
   }
   // delete carriers
-  if (carriers_[0])
-  {
-    auto* xs_ptr = reinterpret_cast<TotalXSCarrier*>(carriers_[0]);
-    delete xs_ptr;
-    carriers_[0] = nullptr;
-  }
-  if (carriers_[1])
-  {
-    auto* of_ptr = reinterpret_cast<OutflowCarrier*>(carriers_[1]);
-    delete of_ptr;
-    carriers_[1] = nullptr;
-  }
-  if (carriers_[2])
-  {
-    auto* msh_ptr = reinterpret_cast<MeshCarrier*>(carriers_[2]);
-    delete msh_ptr;
-    carriers_[2] = nullptr;
-  }
+  total_xs_carrier_.reset();
+  outflow_carrier_.reset();
+  mesh_carrier_.reset();
   // delete pinners
-  if (pinners_[0])
-  {
-    auto* src = reinterpret_cast<MemoryPinner<double>*>(pinners_[0]);
-    delete src;
-    pinners_[0] = nullptr;
-  }
-  if (pinners_[1])
-  {
-    auto* phi = reinterpret_cast<MemoryPinner<double>*>(pinners_[1]);
-    delete phi;
-    pinners_[1] = nullptr;
-  }
+  source_pinner_.reset();
+  phi_pinner_.reset();
 }
 
 void

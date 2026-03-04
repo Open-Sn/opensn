@@ -60,9 +60,9 @@ DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
 {
   if (!use_gpus_)
     return;
-  auto* src = reinterpret_cast<MemoryPinner<double>*>(GetPinner(0));
+  auto* src = GetSourceMomentsPinner();
   src->CopyToDevice();
-  MemoryPinner<double>* phi = reinterpret_cast<MemoryPinner<double>*>(GetPinner(1));
+  MemoryPinner<double>* phi = GetPhiPinner();
   phi->CopyToDevice();
 }
 
@@ -71,9 +71,9 @@ DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
 {
   if (!use_gpus_)
     return;
-  auto* phi = reinterpret_cast<MemoryPinner<double>*>(GetPinner(1));
+  auto* phi = GetPhiPinner();
   phi->CopyFromDevice();
-  auto* outflow = reinterpret_cast<OutflowCarrier*>(GetCarrier(1));
+  auto* outflow = GetOutflowCarrier();
   outflow->AccumulateBack(GetCellTransportViews());
   outflow->Reset();
 }
