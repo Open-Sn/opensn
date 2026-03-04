@@ -116,7 +116,7 @@ Program Listing for File discrete_ordinates_keigen_acceleration.h
      const double pi_k_tol_;
    
      /// Groupsets from the LBSProblem
-     std::vector<LBSGroupset>& groupsets_;
+     const std::vector<LBSGroupset>& groupsets_;
      /// Front groupset from the LBSProblem
      LBSGroupset& front_gs_;
      /// Source moments vector from the LBSProblem
