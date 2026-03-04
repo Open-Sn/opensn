@@ -25,11 +25,8 @@ void math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
 void math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
                                    std::string sdm_type,
                                    bool export_vtk);
-void SimTest01_FV(std::shared_ptr<MeshContinuum> grid);
-void SimTest02_FV(std::shared_ptr<MeshContinuum> grid);
 void SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid);
 void SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid);
-void SimTest06_WDD(std::shared_ptr<MeshContinuum> grid);
 void SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid);
 void SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid);
 void acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid);
