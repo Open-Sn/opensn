@@ -21,14 +21,14 @@ gpu_kernel::Arguments::Arguments(DiscreteOrdinatesProblem& problem,
                                  bool is_surface_source_active)
 {
   // get mesh and quadrature data
-  auto* mesh = reinterpret_cast<MeshCarrier*>(problem.GetCarrier(2));
+  auto* mesh = problem.GetMeshCarrier();
   mesh_data = mesh->GetDevicePtr();
   auto* quadrature = reinterpret_cast<QuadratureCarrier*>(groupset.quad_carrier);
   quad_data = quadrature->GetDevicePtr();
   // copy source moment and destination phi data to GPU
-  auto* src = reinterpret_cast<MemoryPinner<double>*>(problem.GetPinner(0));
+  auto* src = problem.GetSourceMomentsPinner();
   src_moment = src->GetDevicePtr();
-  MemoryPinner<double>* scalar_flux = reinterpret_cast<MemoryPinner<double>*>(problem.GetPinner(1));
+  MemoryPinner<double>* scalar_flux = problem.GetPhiPinner();
   phi = scalar_flux->GetDevicePtr();
   // copy angleset data to GPU
   directions = angle_set.GetDeviceAngleIndices();

@@ -181,7 +181,7 @@ AAHD_FLUDS::AllocateSaveAngularFlux(DiscreteOrdinatesProblem& problem, const LBS
 {
   if (not problem.GetPsiNewLocal()[groupset.id].empty() && save_angular_flux_.IsNotInitialized())
   {
-    auto* mesh_carrier_ptr = reinterpret_cast<MeshCarrier*>(problem.GetCarrier(2));
+    auto* mesh_carrier_ptr = problem.GetMeshCarrier();
     save_angular_flux_ =
       AAHD_Bank(mesh_carrier_ptr->num_nodes_total * num_groups_and_angles_, stream_);
   }
@@ -355,7 +355,7 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
     return;
 
   // loop for each cell in the mesh
-  auto* mesh_carrier = reinterpret_cast<MeshCarrier*>(problem.GetCarrier(2));
+  auto* mesh_carrier = problem.GetMeshCarrier();
   auto grid = problem.GetGrid();
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();
