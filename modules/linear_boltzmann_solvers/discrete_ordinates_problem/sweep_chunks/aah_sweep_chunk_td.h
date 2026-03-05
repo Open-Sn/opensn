@@ -33,10 +33,7 @@ protected:
   void Sweep_FixedN(AngleSet& angle_set);
 
   DiscreteOrdinatesProblem& problem_;
-  size_t max_level_size_;
-  void* level_vector_ = nullptr;
   const std::vector<double>& psi_old_;
-  bool use_gpus_;
   unsigned int group_block_size_ = 0;
   bool use_fixed_n_ = false;
   unsigned int fixed_num_nodes_ = 0;

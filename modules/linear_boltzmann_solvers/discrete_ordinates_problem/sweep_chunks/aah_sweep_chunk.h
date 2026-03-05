@@ -34,7 +34,6 @@ public:
 
 protected:
   DiscreteOrdinatesProblem& problem_;
-  size_t max_level_size_;
   unsigned int group_block_size_;
 
 private:

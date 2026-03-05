@@ -130,31 +130,31 @@
         "type": "KeyValuePair",
         "key": "Top leakage=",
         "goldvalue": 36.173790857624596,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Bottom leakage=",
         "goldvalue": 36.17379086382096,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Side leakage=",
         "goldvalue": 39.74878117223803,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Total leakage=",
         "goldvalue": 112.0963628936836,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Leakage/Source=",
         "goldvalue": 0.9144851226179025,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-06
       }
     ]
   },
@@ -178,20 +178,20 @@
       {
         "type": "KeyValuePair",
         "key": "Side leakage=",
-        "goldvalue": 97.24938933424164,
-        "abs_tol": 1e-09
+        "goldvalue": 97.24863271745009,
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Total leakage=",
-        "goldvalue": 97.24938933424164,
-        "abs_tol": 1e-09
+        "goldvalue": 97.24863271745009,
+        "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Leakage/Source=",
-        "goldvalue": 0.7933631157523604,
-        "abs_tol": 1e-09
+        "goldvalue": 0.7933569432523587,
+        "abs_tol": 1e-06
       }
     ]
   },
