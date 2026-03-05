@@ -1,0 +1,17 @@
+.. _exhale_class_structopensn_1_1_memory_pinner:
+
+Template Class MemoryPinner
+===========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::MemoryPinner
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

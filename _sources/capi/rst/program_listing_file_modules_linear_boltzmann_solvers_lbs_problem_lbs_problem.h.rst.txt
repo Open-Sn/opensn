@@ -27,6 +27,7 @@ Program Listing for File lbs_problem.h
    #include "framework/math/linear_solver/linear_solver.h"
    #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
    #include "framework/math/geometry.h"
+   #include <memory>
    #include <petscksp.h>
    #include <chrono>
    
@@ -38,6 +39,11 @@ Program Listing for File lbs_problem.h
    class AGSLinearSolver;
    class WGSLinearSolver;
    struct WGSContext;
+   class TotalXSCarrier;
+   class OutflowCarrier;
+   class MeshCarrier;
+   template <typename T>
+   class MemoryPinner;
    
    /// Base class for all Linear Boltzmann Solvers.
    class LBSProblem : public Problem
@@ -159,11 +165,20 @@ Program Listing for File lbs_problem.h
      /// Obtains a reference to the grid.
      std::shared_ptr<MeshContinuum> GetGrid() const;
    
-     /// Get pointer to carriers.
-     void* GetCarrier(std::uint32_t idx) { return carriers_.at(idx); }
+     TotalXSCarrier* GetTotalXSCarrier() { return total_xs_carrier_.get(); }
+     const TotalXSCarrier* GetTotalXSCarrier() const { return total_xs_carrier_.get(); }
    
-     /// Get pointer to pinners.
-     void* GetPinner(std::uint32_t idx) { return pinners_.at(idx); }
+     OutflowCarrier* GetOutflowCarrier() { return outflow_carrier_.get(); }
+     const OutflowCarrier* GetOutflowCarrier() const { return outflow_carrier_.get(); }
+   
+     MeshCarrier* GetMeshCarrier() { return mesh_carrier_.get(); }
+     const MeshCarrier* GetMeshCarrier() const { return mesh_carrier_.get(); }
+   
+     MemoryPinner<double>* GetSourceMomentsPinner() { return source_pinner_.get(); }
+     const MemoryPinner<double>* GetSourceMomentsPinner() const { return source_pinner_.get(); }
+   
+     MemoryPinner<double>* GetPhiPinner() { return phi_pinner_.get(); }
+     const MemoryPinner<double>* GetPhiPinner() const { return phi_pinner_.get(); }
    
      /// Obtains a reference to the spatial discretization.
      const SpatialDiscretization& GetSpatialDiscretization() const;
@@ -355,17 +370,14 @@ Program Listing for File lbs_problem.h
      std::map<std::pair<unsigned int, unsigned int>, size_t> phi_field_functions_local_map_;
      size_t power_gen_fieldfunc_local_handle_ = 0;
    
-     /**
-      * \brief Data carriers for necessary data to run the sweep on GPU.
-      * \details These objects manage GPU memory allocation automatically, organize cross-section,
-      * outflow, and mesh data into contiguous memory on the CPU, and handle copying it to the GPU.
-      *
-      * There are 3 carriers, respectively for cross sections, outflow and mesh.
-      */
-     std::array<void*, 3> carriers_ = {nullptr, nullptr, nullptr};
+     /// Data carriers needed to run the sweep on GPU.
+     std::shared_ptr<TotalXSCarrier> total_xs_carrier_ = nullptr;
+     std::shared_ptr<OutflowCarrier> outflow_carrier_ = nullptr;
+     std::shared_ptr<MeshCarrier> mesh_carrier_ = nullptr;
    
-     /// Memory pinner for source moments and destination phi.
-     std::array<void*, 2> pinners_ = {nullptr, nullptr};
+     /// Memory pinners for source moments and destination phi.
+     std::shared_ptr<MemoryPinner<double>> source_pinner_ = nullptr;
+     std::shared_ptr<MemoryPinner<double>> phi_pinner_ = nullptr;
    
      /// Flag indicating if GPU acceleration is enabled.
      bool use_gpus_;

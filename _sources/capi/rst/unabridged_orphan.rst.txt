@@ -235,11 +235,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_memory_pinner.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_mesh_mapping_1_1_coarse_mapping.rst
 
 .. toctree::
@@ -1081,6 +1076,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_log_stream.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   class_structopensn_1_1_memory_pinner.rst
 
 .. toctree::
    :maxdepth: 1
