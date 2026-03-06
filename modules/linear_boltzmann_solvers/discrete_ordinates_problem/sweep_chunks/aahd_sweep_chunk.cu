@@ -17,17 +17,11 @@ namespace crb = caribou;
 namespace opensn
 {
 
-static unsigned int
-RoundUp(unsigned int num, unsigned int divisor = crb::get_warp_size())
-{
-  return (num + divisor - 1) & ~(divisor - 1);
-}
-
 namespace gpu_kernel
 {
 
 __global__ void
-AAH_SweepKernel(Arguments args,
+AAH_SweepKernel(AAH_Arguments args,
                 const std::uint32_t* level,
                 unsigned int level_size,
                 double* saved_psi)
@@ -62,12 +56,6 @@ AAH_SweepKernel(Arguments args,
     args, cell, direction, cell_edge_data, angle_group_idx, group_idx, num_moments, saved_psi);
 }
 
-#if defined(__NVCC__)
-constexpr unsigned int threshold = 128;
-#elif defined(__HIPCC__)
-constexpr unsigned int threshold = 64;
-#endif
-
 } // namespace gpu_kernel
 
 AAHDSweepChunk::AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
@@ -95,13 +83,15 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
   auto& aahd_angle_set = static_cast<AAHD_AngleSet&>(angle_set);
   auto& fluds = static_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
   auto& stream = aahd_angle_set.GetStream();
-  gpu_kernel::Arguments args(problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
+  gpu_kernel::AAH_Arguments args(
+    problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
   double* saved_psi = fluds.GetSavedAngularFluxDevicePointer();
   // retrieve SPDS levels
   const auto& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
   const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
   // compute block size
-  unsigned int stride_size = RoundUp(static_cast<unsigned int>(args.flud_data.stride_size));
+  unsigned int stride_size =
+    gpu_kernel::RoundUp(static_cast<unsigned int>(args.flud_data.stride_size));
   unsigned int block_size_x = std::min(stride_size, gpu_kernel::threshold);
   unsigned int block_size_y = gpu_kernel::threshold / block_size_x;
   ::dim3 block_size{block_size_x, block_size_y};
