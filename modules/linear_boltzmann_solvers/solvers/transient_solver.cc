@@ -105,9 +105,8 @@ TransientSolver::Initialize()
 
   if (init_state == "zero")
   {
-    std::fill(phi_new_local_->begin(), phi_new_local_->end(), 0.0);
-    std::fill(phi_old_local_->begin(), phi_old_local_->end(), 0.0);
-    std::fill(precursor_new_local_->begin(), precursor_new_local_->end(), 0.0);
+    do_problem_->ZeroPhi();
+    do_problem_->ZeroPrecursors();
     for (auto& psi : *psi_new_local_)
       std::fill(psi.begin(), psi.end(), 0.0);
   }
@@ -132,7 +131,7 @@ TransientSolver::Initialize()
 
   // Keep initialization side-effect free: zero/existing differ only by
   // initial-condition setup, not by additional sweeps.
-  *phi_old_local_ = *phi_new_local_;
+  do_problem_->CopyPhiNewToOld();
 
   // Sync with the current solution
   phi_prev_local_ = *phi_new_local_;
@@ -241,11 +240,11 @@ TransientSolver::Advance()
   }
 
   // Zero source moments before recomputing sources for this step
-  q_moments_local_->assign(q_moments_local_->size(), 0.0);
+  do_problem_->ZeroQMoments();
   UpdateHasFissionableMaterial();
 
   // Solve
-  *phi_old_local_ = phi_prev_local_;
+  do_problem_->SetPhiOldFrom(phi_prev_local_);
   {
     auto current_solver = do_problem_->GetAGSSolver();
     if (current_solver.get() != ags_solver_.get())
@@ -292,7 +291,7 @@ TransientSolver::StepPrecursors()
 {
   const double theta = do_problem_->GetTheta();
   const double eff_dt = theta * do_problem_->GetTimeStep();
-  precursor_new_local_->assign(precursor_new_local_->size(), 0.0);
+  do_problem_->ZeroPrecursors();
 
   // Uses phi_new and precursor_prev_local to compute precursor_new_local (theta-flavor)
   auto& transport_views = do_problem_->GetCellTransportViews();

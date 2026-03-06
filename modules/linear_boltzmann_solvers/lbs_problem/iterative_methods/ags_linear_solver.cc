@@ -75,7 +75,7 @@ AGSLinearSolver::Solve()
       log.Log() << iter_stats.str();
 
     // Restore qmoms
-    lbs_problem_.GetQMomentsLocal() = saved_qmoms;
+    lbs_problem_.SetQMomentsFrom(saved_qmoms);
 
     if (converged)
       break;
