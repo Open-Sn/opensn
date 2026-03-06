@@ -197,22 +197,14 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
                 (cell_face.normal.Dot(normal_vector_boundary_) < -0.999999);
               if (!incident_on_symmetric_boundary)
               {
-                for (size_t fi = 0; fi < num_face_nodes; ++fi)
-                {
-                  for (size_t fj = 0; fj < num_face_nodes; ++fj)
-                  {
-                    psi = angle_set.PsiBoundary(cell_face.neighbor_id,
-                                                direction_num,
-                                                cell_local_id,
-                                                f,
-                                                fj,
-                                                gs_gi,
-                                                IsSurfaceSourceActive());
-                  }
-                }
+                psi = angle_set.PsiBoundary(cell_face.neighbor_id,
+                                            direction_num,
+                                            cell_local_id,
+                                            f,
+                                            fj,
+                                            gs_gi,
+                                            IsSurfaceSourceActive());
               }
-              else
-                psi = nullptr;
             }
 
             if (not psi)

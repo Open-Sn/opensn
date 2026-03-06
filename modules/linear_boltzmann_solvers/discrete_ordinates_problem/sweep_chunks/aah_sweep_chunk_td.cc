@@ -27,11 +27,9 @@ AAHSweepChunkTD::AAHSweepChunkTD(DiscreteOrdinatesProblem& problem, LBSGroupset&
                problem.GetMaxCellDOFCount(),
                problem.GetMinCellDOFCount()),
     problem_(problem),
-    max_level_size_(problem.GetMaxLevelSize()),
-    psi_old_(problem.GetPsiOldLocal()[groupset.id]),
-    use_gpus_(problem.UseGPUs())
+    psi_old_(problem.GetPsiOldLocal()[groupset.id])
 {
-  if (use_gpus_)
+  if (problem.UseGPUs())
     throw std::runtime_error("Time-dependent calculations do not yet support GPUs.\n");
 
   if (min_num_cell_dofs_ == max_num_cell_dofs_ and min_num_cell_dofs_ >= 2 and

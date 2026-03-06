@@ -29,7 +29,6 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetMaxCellDOFCount(),
                problem.GetMinCellDOFCount()),
     problem_(problem),
-    max_level_size_(problem.GetMaxLevelSize()),
     sweep_impl_(&AAHSweepChunk::Sweep_Generic)
 {
   if (min_num_cell_dofs_ == max_num_cell_dofs_ and min_num_cell_dofs_ >= 2 and

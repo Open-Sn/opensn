@@ -84,8 +84,14 @@ struct AVX2Ops
     return _mm256_fnmadd_pd(a, b, c);
   }
 #else
-  static inline Vec Fmadd(const Vec& a, const Vec& b, const Vec& c) { return Add(a, Mul(b, c)); }
-  static inline Vec Fnmadd(const Vec& a, const Vec& b, const Vec& c) { return Sub(c, Mul(a, b)); }
+  static inline avx_vec Fmadd(const avx_vec& a, const avx_vec& b, const avx_vec& c)
+  {
+    return Add(a, Mul(b, c));
+  }
+  static inline avx_vec Fnmadd(const avx_vec& a, const avx_vec& b, const avx_vec& c)
+  {
+    return Sub(c, Mul(a, b));
+  }
 #endif
 
   static inline avx_vec Reciprocal(const avx_vec& v) { return Div(Set1(1.0), v); }

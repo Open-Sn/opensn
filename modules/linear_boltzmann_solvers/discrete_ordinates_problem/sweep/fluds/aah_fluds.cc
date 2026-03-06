@@ -6,6 +6,7 @@
 #include "framework/math/math.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <utility>
 
 namespace opensn
 {
@@ -67,7 +68,9 @@ AAH_FLUDS::OutgoingPsi(std::size_t cell_so_index,
 double*
 AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, std::size_t face_dof, std::size_t n)
 {
-  if (outb_face_counter > common_data_.nonlocal_outb_face_deplocI_slot_.size())
+  if (outb_face_counter < 0 ||
+      std::cmp_greater_equal(outb_face_counter,
+                             common_data_.nonlocal_outb_face_deplocI_slot_.size()))
   {
     std::ostringstream oss;
     oss << "AAH_FLUDS: Invalid value for outb_face_counter " << outb_face_counter << " (max "
@@ -82,7 +85,7 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, std::size_t face_dof, std::size_
   std::size_t index = nonlocal_psi_Gn_blockstride * num_groups_ * n +
                       static_cast<std::size_t>(slot) * num_groups_ + face_dof * num_groups_;
 
-  if ((index < 0) or (index > deplocI_outgoing_psi_[depLocI].size()))
+  if (index >= deplocI_outgoing_psi_[depLocI].size())
   {
     std::stringstream oss;
     oss << "AAH_FLUDS: Invalid index " << index

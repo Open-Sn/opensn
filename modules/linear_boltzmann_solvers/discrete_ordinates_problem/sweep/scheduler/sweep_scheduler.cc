@@ -154,8 +154,6 @@ SweepScheduler::SortRuleValuesDOGRZ()
                        return a.sign_of_omegax > b.sign_of_omegax;
                      if (a.depth_of_graph != b.depth_of_graph)
                        return a.depth_of_graph > b.depth_of_graph;
-                     if (a.sign_of_omegax != b.sign_of_omegax)
-                       return a.sign_of_omegax > b.sign_of_omegax;
                      if (a.sign_of_omegay != b.sign_of_omegay)
                        return a.sign_of_omegay > b.sign_of_omegay;
                      if (a.sign_of_omegaz != b.sign_of_omegaz)
