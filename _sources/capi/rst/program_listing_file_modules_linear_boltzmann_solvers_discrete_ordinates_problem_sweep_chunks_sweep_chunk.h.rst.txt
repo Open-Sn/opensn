@@ -66,13 +66,13 @@ Program Listing for File sweep_chunk.h
      }
    
      /// Sweep chunks should override this.
-     virtual void Sweep(AngleSet& angle_set) {}
+     virtual void Sweep(AngleSet& angle_set);
    
      /// Sets the currently active angleset.
-     virtual void SetAngleSet(AngleSet& angle_set) {}
+     virtual void SetAngleSet(AngleSet& angle_set);
    
      /// For cell-by-cell methods or computing the residual on a single cell.
-     virtual void SetCell(Cell const* cell_ptr, AngleSet& angle_set) {}
+     virtual void SetCell(Cell const* cell_ptr, AngleSet& angle_set);
    
      /**
       * Zero the portion of the output flux moments vector corresponding to the groupset for this

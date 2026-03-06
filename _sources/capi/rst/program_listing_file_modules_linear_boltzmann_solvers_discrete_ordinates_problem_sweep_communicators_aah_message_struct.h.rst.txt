@@ -16,6 +16,7 @@ Program Listing for File aah_message_struct.h
    #pragma once
    
    #include "framework/mpi/mpi_comm_set.h"
+   #include "framework/utils/error.h"
    #include <concepts>
    #include <cstddef>
    #include <limits>
@@ -71,18 +72,21 @@ Program Listing for File aah_message_struct.h
      for (std::size_t i = 0; i < num_locations; ++i)
      {
        auto num_unknowns_64 = get_unknown_count(i);
-       if (num_unknowns_64 > static_cast<std::size_t>(std::numeric_limits<int>::max()))
-         throw std::overflow_error("Number of unknowns is too large for int");
+       OpenSnLogicalErrorIf(num_unknowns_64 >
+                              static_cast<std::size_t>(std::numeric_limits<int>::max()),
+                            "Number of unknowns is too large for int");
        auto num_unknowns = static_cast<int>(num_unknowns_64);
        // compute message count and size
        int message_count = 0, message_size = 0;
        if (num_unknowns != 0)
        {
-         int total_bytes = num_unknowns * static_cast<int>(sizeof(double));
+         const std::size_t total_bytes =
+           static_cast<std::size_t>(num_unknowns) * static_cast<std::size_t>(sizeof(double));
+         const auto max_message_bytes = static_cast<std::size_t>(max_mpi_message_size);
          message_count = 1;
-         if (total_bytes > max_mpi_message_size)
+         if (total_bytes > max_message_bytes)
          {
-           message_count = (total_bytes + (max_mpi_message_size - 1)) / max_mpi_message_size;
+           message_count = static_cast<int>((total_bytes + max_message_bytes - 1) / max_message_bytes);
          }
          message_count = std::min(message_count, num_unknowns);
          message_size = ((num_unknowns + (message_count - 1)) / message_count);

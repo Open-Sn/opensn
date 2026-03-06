@@ -36,6 +36,8 @@ Includes
 
 - ``framework/mpi/mpi_comm_set.h`` (:ref:`file_framework_mpi_mpi_comm_set.h`)
 
+- ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
+
 - ``limits``
 
 - ``type_traits``
