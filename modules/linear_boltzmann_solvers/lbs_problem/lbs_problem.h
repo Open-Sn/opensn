@@ -89,8 +89,6 @@ public:
 
   virtual void SetSaveAngularFlux(bool save);
 
-  void ApplyOptions();
-
   void ZeroPhi();
   void CopyPhiNewToOld();
   void SetPhiOldFrom(const std::vector<double>& phi_old);
@@ -412,8 +410,12 @@ private:
   /// Initialize sources
   void InitializeSources(const InputParameters& params);
 
-  /// Parse and validate options without applying runtime side-effects.
-  void ParseOptions(const InputParameters& input);
+  void ReadOptions(const InputParameters& input);
+  void ValidateOptions() const;
+  void ApplyOptions();
+
+  static std::filesystem::path BuildRestartPath(const std::string& path_stem);
+
   /// Checks if the current CPU is associated with any GPU.
   static void CheckCapableDevices();
 
