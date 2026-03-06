@@ -72,6 +72,8 @@ public:
 
   const std::vector<double>& GetSigmaAbsorption() const { return sigma_a_; }
 
+  const std::vector<double>& GetEnergyDeposition() const { return energy_deposition_; }
+
   const std::vector<SparseMatrix>& GetTransferMatrices() const
   {
     return adjoint_ ? transposed_transfer_matrices_ : transfer_matrices_;
@@ -136,6 +138,8 @@ private:
   std::vector<double> sigma_t_;
   /// Absorption cross section
   std::vector<double> sigma_a_;
+  /// Energy deposition cross section
+  std::vector<double> energy_deposition_;
   /// Fission cross section
   std::vector<double> sigma_f_;
   /// Neutron production due to fission
@@ -181,6 +185,7 @@ public:
   /// Makes a simple material with a 1-group cross-section set.
   static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c, double velocity = 0.0);
   static MultiGroupXS LoadFromOpenSn(const std::string& filename);
+  static MultiGroupXS LoadFromCEPXS(const std::string& filename, int material_id = 0);
   /// This method populates transport cross sections from an OpenMC cross-section file.
   static MultiGroupXS LoadFromOpenMC(const std::string& file_name,
                                      const std::string& dataset_name,
