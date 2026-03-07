@@ -25,6 +25,8 @@ struct SweepWGSContext : public WGSContext
 
   std::pair<int64_t, int64_t> GetSystemSize() override;
 
+  void PreSolveCallback() override;
+
   void ApplyInverseTransportOperator(SourceFlags scope) override;
 
   void PostSolveCallback() override;
