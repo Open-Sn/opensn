@@ -30,6 +30,7 @@ ClassicRichardson::Solve()
 {
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   gs_context_ptr->PreSetupCallback();
+  gs_context_ptr->PreSolveCallback();
 
   auto& groupset = gs_context_ptr->groupset;
   auto& do_problem = gs_context_ptr->do_problem;
@@ -110,9 +111,10 @@ ClassicRichardson::Solve()
     }
   }
 
-  do_problem.SetQMomentsFrom(saved_q_moments_local_);
-
   gs_context_ptr->PostSolveCallback();
+
+  // Restore saved q_moms after all post-solve callbacks.
+  do_problem.SetQMomentsFrom(saved_q_moments_local_);
 }
 
 } // namespace opensn
