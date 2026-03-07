@@ -88,14 +88,14 @@ SweepWGSContext::GetSystemSize()
   CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
 
   const size_t local_node_count = do_problem.GetLocalNodeCount();
-  const size_t global_node_count = do_problem.GetGlobalNodeCount();
+  const auto global_node_count = do_problem.GetGlobalNodeCount();
   const auto num_moments = do_problem.GetNumMoments();
 
   const auto groupset_numgrps = groupset.GetNumGroups();
   const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();
   const size_t local_size =
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
-  const size_t global_size =
+  const auto global_size =
     global_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
   const size_t num_angles = groupset.quadrature->abscissae.size();
   const size_t num_psi_global = global_node_count * num_angles * groupset.GetNumGroups();
@@ -161,7 +161,7 @@ SweepWGSContext::PostSolveCallback()
       tot_sweep_time += time;
     double avg_sweep_time = tot_sweep_time / num_sweeps;
     size_t num_angles = groupset.quadrature->abscissae.size();
-    size_t num_unknowns = do_problem.GetGlobalNodeCount() * num_angles * groupset.GetNumGroups();
+    auto num_unknowns = do_problem.GetGlobalNodeCount() * num_angles * groupset.GetNumGroups();
     double max_avg_sweep_time = 0.0;
     opensn::mpi_comm.all_reduce(&avg_sweep_time, 1, &max_avg_sweep_time, mpi::op::max<double>());
 
