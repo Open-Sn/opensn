@@ -3,16 +3,36 @@
 
 #pragma once
 
+#include <atomic>
 #include <condition_variable>
-#include <functional>
 #include <cstddef>
-#include <exception>
+#include <functional>
+#include <memory>
 #include <mutex>
+#include <semaphore>
 #include <thread>
 #include <vector>
 
 namespace opensn
 {
+
+template <typename... Bases>
+struct alignas(std::hardware_destructive_interference_size) CacheLineAligned : public Bases...
+{
+  template <typename... Args>
+    requires(sizeof...(Args) == sizeof...(Bases)) &&
+            (std::is_constructible_v<Bases, const Args&> && ...)
+  constexpr explicit CacheLineAligned(const Args&... args) : Bases(args)...
+  {
+  }
+
+  template <typename... Args>
+    requires(sizeof...(Args) == sizeof...(Bases)) &&
+            (std::is_constructible_v<Bases, Args &&> && ...)
+  constexpr explicit CacheLineAligned(Args&&... args) : Bases(std::forward<Args>(args))...
+  {
+  }
+};
 
 /**
  * Single-Program Multiple-Data (SPMD) thread pool.
@@ -39,7 +59,6 @@ public:
   ~SPMD_ThreadPool();
 
   std::size_t GetSize() const noexcept { return worker_threads_.size(); }
-  bool IsInitialized() const noexcept { return workers_initialized_; }
 
   /// Resize the numnber of worker threads.
   void Resize(std::size_t n);
@@ -50,30 +69,32 @@ public:
    */
   void Stop();
 
-  /// Run one SPMD epoch, then wait for all tasks to finish.
+  /**
+   * Assign task to be run by all worker threads in the next epoch.
+   * \warning Do not call this method while another thread is running. This method does not
+   * guarantee thread safety.
+   */
   template <class F>
-  void run(F&& task)
+  void AssignTask(F&& task)
   {
-    if (!workers_initialized_)
-      Start(0);
-    if (worker_threads_.empty())
-      throw std::runtime_error("SPMD_ThreadPool has size 0");
+    std::scoped_lock<std::mutex> lock(mutex_);
+    task_ = std::function<void(std::size_t)>(std::forward<F>(task));
+  }
+  /// Run the currently assigned task for the worker with the given index.
+  void Run(std::size_t thread_idx);
+  /// Wait until all workers have completed the current epoch.
+  void WaitAll();
 
-    // ensure that task stay alive after all workers have finished
-    {
-      std::scoped_lock<std::mutex> lock(mutex_);
-      task_fn_ = std::function<void(std::size_t)>(std::forward<F>(task));
-      workers_remaining_ = worker_threads_.size();
-      ++work_epoch_;
-    }
-    cv_start_.notify_all();
-
-    // wait for all workers to complete this epoch
-    {
-      std::unique_lock<std::mutex> lock(mutex_);
-      cv_done_.wait(lock, [this] { return workers_remaining_ == 0; });
-      task_fn_ = nullptr;
-    }
+  /// Execute the currently assigned task in a new epoch.
+  template <class F>
+  void ExecuteBatch(F&& task)
+  {
+    AssignTask(std::forward<F>(task));
+    const std::size_t n = worker_threads_.size();
+    outstanding_.fetch_add((long long)n, std::memory_order_relaxed);
+    for (std::size_t i = 0; i < n; ++i)
+      signals_to_worker_[i]->release();
+    WaitAll();
   }
 
 private:
@@ -85,27 +106,23 @@ private:
 
   /// Persistent worker threads owned by the pool.
   std::vector<std::thread> worker_threads_;
+  /// Per-worker semaphores for waking up workers to start an epoch.
+  std::vector<std::unique_ptr<CacheLineAligned<std::binary_semaphore>>> signals_to_worker_;
   /// Mutex protecting shared state for task publication and epoch completion.
   std::mutex mutex_;
-  /// Notifier that a new epoch has started or that shutdown is requested.
-  std::condition_variable cv_start_;
   /// Notifier that the current epoch has completed (i.e., all workers have finished).
   std::condition_variable cv_done_;
 
-  /// Flag indicating whether workers have been started at least once.
-  bool workers_initialized_ = false;
-  /// Flag indicating whether workers should stop.
-  bool stop_workers_ = false;
-  /// Number of workers remaining to finish the current epoch.
-  std::size_t workers_remaining_ = 0;
-  /// Monotonic epoch counter used to distinguish work submissions and to avoid missed wakeups.
-  std::size_t work_epoch_ = 0;
+  /// Counter for the number of workers that have not yet completed the current epoch.
+  std::atomic<long long> outstanding_{0};
+  /// Flag indicating whether the thread pool is stopping.
+  std::atomic<bool> stopped_{false};
 
   /**
    * Published per-epoch task.
    * \note This callable is valid only while an epoch is in progress.
    */
-  std::function<void(std::size_t)> task_fn_;
+  std::function<void(std::size_t)> task_;
 };
 
 } // namespace opensn
