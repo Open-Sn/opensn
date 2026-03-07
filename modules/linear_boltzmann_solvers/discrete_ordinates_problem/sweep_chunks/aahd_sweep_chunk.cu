@@ -58,8 +58,15 @@ AAH_SweepKernel(Arguments args,
   // get pointer to the corresponding FLUDS index
   auto [cell_edge_data, _] = GetCellDataIndex(args.flud_index, cell_local_idx);
   // launch the kernel
-  sweep_spec_map[cell.num_nodes - 1](
-    args, cell, direction, cell_edge_data, angle_group_idx, group_idx, num_moments, saved_psi);
+  SweepDispatch(cell.num_nodes,
+                args,
+                cell,
+                direction,
+                cell_edge_data,
+                angle_group_idx,
+                group_idx,
+                num_moments,
+                saved_psi);
 }
 
 #if defined(__NVCC__)
