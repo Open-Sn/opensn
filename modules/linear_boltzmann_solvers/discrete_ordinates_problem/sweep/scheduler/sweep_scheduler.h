@@ -89,6 +89,7 @@ private:
   std::unordered_map<AngleSet*, std::set<AngleSet*>> preceding_angle_sets_;
 
   SPMD_ThreadPool pool_;
+  std::vector<std::size_t> execution_order_;
 };
 
 } // namespace opensn
