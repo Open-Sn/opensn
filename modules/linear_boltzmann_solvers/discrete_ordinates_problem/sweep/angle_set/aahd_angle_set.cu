@@ -10,6 +10,8 @@
 namespace opensn
 {
 
+std::mutex AAHD_AngleSet::m;
+
 AAHD_AngleSet::AAHD_AngleSet(size_t id,
                              unsigned int num_groups,
                              const SPDS& spds,
@@ -46,9 +48,9 @@ AAHD_AngleSet::UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets
 }
 
 void
-AAHD_AngleSet::SetStartingLatch()
+AAHD_AngleSet::ResetDependencyCounter()
 {
-  starting_latch_ = std::make_unique<std::latch>(num_dependencies_);
+  dependency_counter_ = num_dependencies_;
 }
 
 void
@@ -57,6 +59,28 @@ AAHD_AngleSet::InitializeDelayedUpstreamData()
   auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
   aahd_fluds->AllocateDelayedPrelocIOutgoingPsi();
   aahd_fluds->AllocateDelayedLocalPsi();
+}
+
+void
+AAHD_AngleSet::PrepostReceives()
+{
+  async_comm_.PrepostReceiveUpstreamPsi(static_cast<int>(this->GetID()));
+  async_comm_.PrepostReceiveDelayedData(static_cast<int>(this->GetID()));
+  auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
+  aahd_fluds->CopyDelayedPsiToDevice();
+}
+
+void
+AAHD_AngleSet::WaitForDownstreamAndDelayed()
+{
+  async_comm_.WaitForDownstreamPsi();
+  async_comm_.WaitForDelayedIncomingPsi();
+}
+
+bool
+AAHD_AngleSet::IsReady()
+{
+  return (async_comm_.TestReceiveUpstreamPsi()) && (dependency_counter_ == 0);
 }
 
 AngleSetStatus
@@ -70,16 +94,10 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
   auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
   auto& aahd_sweep_chunk = static_cast<AAHDSweepChunk&>(sweep_chunk);
 
-  async_comm_.PrepostReceiveUpstreamPsi(static_cast<int>(this->GetID()));
-  async_comm_.PrepostReceiveDelayedData(static_cast<int>(this->GetID()));
-  aahd_fluds->CopyDelayedPsiToDevice();
-  starting_latch_->wait();
-
   aahd_fluds->CopyBoundaryToDevice(aahd_sweep_chunk.GetGrid(),
                                    *this,
                                    aahd_sweep_chunk.GetGroupset(),
                                    aahd_sweep_chunk.IsSurfaceSourceActive());
-  async_comm_.WaitForUpstreamPsi();
 
   aahd_fluds->CopyNonLocalIncomingPsiToDevice();
   aahd_fluds->AllocateSaveAngularFlux(aahd_sweep_chunk.GetProblem(),
@@ -92,14 +110,15 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
   async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
   if (has_reflecting_boundaries_)
     aahd_fluds->CopyBoundaryPsiToAngleSet(aahd_sweep_chunk.GetGrid(), *this);
-  for (auto& following_as : following_angle_sets_)
-    following_as->starting_latch_->count_down();
+  if (!following_angle_sets_.empty())
+  {
+    std::scoped_lock lk(m);
+    for (auto& following_as : following_angle_sets_)
+      --(following_as->dependency_counter_);
+  }
 
   aahd_fluds->CopySaveAngularFluxToDestinationPsi(
     aahd_sweep_chunk.GetProblem(), aahd_sweep_chunk.GetGroupset(), *this);
-  async_comm_.WaitForDownstreamPsi();
-
-  async_comm_.WaitForDelayedIncomingPsi();
 
   executed_ = true;
   return AngleSetStatus::FINISHED;

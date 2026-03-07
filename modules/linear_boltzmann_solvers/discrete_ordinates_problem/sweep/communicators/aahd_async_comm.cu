@@ -100,6 +100,12 @@ AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi(int angle_set_num)
   }
 }
 
+bool
+AAHD_ASynchronousCommunicator::TestReceiveUpstreamPsi()
+{
+  return mpi::test_all(preloc_msg_request_);
+}
+
 void
 AAHD_ASynchronousCommunicator::WaitForUpstreamPsi()
 {
