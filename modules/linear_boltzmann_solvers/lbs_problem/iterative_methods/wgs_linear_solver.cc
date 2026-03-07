@@ -254,11 +254,11 @@ WGSLinearSolver::PostSolveCallback()
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_NEW);
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
 
-  // Restore saved q_moms
-  do_problem.SetQMomentsFrom(saved_q_moments_local_);
-
   // Context specific callback
   gs_context_ptr->PostSolveCallback();
+
+  // Restore saved q_moms after all post-solve callbacks.
+  do_problem.SetQMomentsFrom(saved_q_moments_local_);
 }
 
 } // namespace opensn
