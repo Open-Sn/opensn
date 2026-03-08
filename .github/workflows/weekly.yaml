@@ -19,9 +19,19 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          test/run_tests -d test/python -j 32 -v 1 -w 4
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d test/python -j 32 -v 1 -w 4 \
+            --run-log "$RUNNER_TEMP/logs/weekly_test_log.txt"
       - name: test unit
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
           build/test/opensn-unit
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-logs
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7

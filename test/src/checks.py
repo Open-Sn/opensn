@@ -12,6 +12,7 @@ class Check:
 
     def __init__(self):
         self.annotations = []
+        self.last_result_summary = ""
 
     def __str__(self):
         return "Check base class"
@@ -22,6 +23,12 @@ class Check:
 
     def GetAnnotations(self):
         return self.annotations
+
+    def SetLastResultSummary(self, summary: str):
+        self.last_result_summary = summary
+
+    def GetLastResultSummary(self):
+        return self.last_result_summary
 
 
 class KeyValuePairCheck(Check):
@@ -69,6 +76,7 @@ class KeyValuePairCheck(Check):
             f'rel_tol={self.rel_tol}, ' + f'abs_tol={self.abs_tol}'
 
     def PerformCheck(self, filename, errorcode, verbose: bool):
+        self.SetLastResultSummary(f'KeyValuePair key="{self.key}" result=FAILED reason=unknown')
         try:
             with open(filename, "r", encoding='utf-8') as file:
                 skip_lines = False
@@ -97,6 +105,9 @@ class KeyValuePairCheck(Check):
                             value = float(words[0])
                         except Exception:
                             self.annotations.append("Python error")
+                            self.SetLastResultSummary(
+                                f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
+                                f'result=FAILED reason=parse_error')
                             if verbose:
                                 warnings.warn('Failed to convert word "' + words[0] + '" to float\n'
                                               + 'post key: ' + postkey + "\n"
@@ -106,16 +117,32 @@ class KeyValuePairCheck(Check):
 
                         if abs(value - self.goldvalue) <= self.abs_tol + self.rel_tol * \
                            self.goldvalue:
+                            self.SetLastResultSummary(
+                                f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
+                                f'actual={value:.9g} result=PASSED')
                             return True
                         elif verbose:
                             print("Check failed : " + self.__str__() + "\n" + line)
+                        self.SetLastResultSummary(
+                            f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
+                            f'actual={value:.9g} abs_tol={self.abs_tol:.3g} '
+                            f'rel_tol={self.rel_tol:.3g} result=FAILED')
 
                 if verbose:
                     print('Check failed : key, "' + self.key + '", not found ')
+                self.SetLastResultSummary(
+                    f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
+                    f'result=FAILED reason=key_not_found')
         except FileNotFoundError as e:
             warnings.warn(str(e))
+            self.SetLastResultSummary(
+                f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
+                f'result=FAILED reason=file_not_found')
         except Exception as e:
             self.annotations.append("Python error")
+            self.SetLastResultSummary(
+                f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
+                f'result=FAILED reason=python_error')
             if verbose:
                 warnings.warn(str(e))
 
@@ -159,6 +186,7 @@ class StrCompareCheck(Check):
             f'gold={self.gold} '
 
     def PerformCheck(self, filename, errorcode, verbose: bool):
+        self.SetLastResultSummary(f'StrCompare key="{self.key}" result=FAILED reason=unknown')
         try:
             with open(filename, "r", encoding='utf-8') as file:
                 skip_lines = False
@@ -178,6 +206,8 @@ class StrCompareCheck(Check):
                     key_pos = line.find(self.key)
                     if key_pos >= 0:
                         if self.wordnum < 0:
+                            self.SetLastResultSummary(
+                                f'StrCompare key="{self.key}" result=PASSED found=true')
                             return True
                         words = re.split(r'\s+|,+|=+', line.rstrip())
 
@@ -190,19 +220,34 @@ class StrCompareCheck(Check):
                         value = words[self.wordnum]
 
                         if value == self.gold:
+                            self.SetLastResultSummary(
+                                f'StrCompare key="{self.key}" expected="{self.gold}" '
+                                f'actual="{value}" result=PASSED')
                             return True
                         elif verbose:
                             warnings.warn("Check failed : " + self.__str__() + "\n"
                                           + line + "\n"
                                           + str(words))
+                        self.SetLastResultSummary(
+                            f'StrCompare key="{self.key}" expected="{self.gold}" '
+                            f'actual="{value}" result=FAILED')
 
                 if verbose:
                     warnings.warn('Check failed : key, "' + self.key + '", not found '
                                   + str(self.wordnum))
+                self.SetLastResultSummary(
+                    f'StrCompare key="{self.key}" expected="{self.gold}" '
+                    f'result=FAILED reason=key_not_found')
         except FileNotFoundError as e:
             print(str(e))
+            self.SetLastResultSummary(
+                f'StrCompare key="{self.key}" expected="{self.gold}" '
+                f'result=FAILED reason=file_not_found')
         except Exception as e:
             self.annotations.append("Python error")
+            self.SetLastResultSummary(
+                f'StrCompare key="{self.key}" expected="{self.gold}" '
+                f'result=FAILED reason=python_error')
             if verbose:
                 print(str(e))
 
@@ -260,6 +305,7 @@ class FloatCompareCheck(Check):
             f'rel_tol={self.rel_tol}, ' + f'abs_tol={self.abs_tol}'
 
     def PerformCheck(self, filename, errorcode, verbose: bool):
+        self.SetLastResultSummary(f'FloatCompare key="{self.key}" result=FAILED reason=unknown')
         try:
             with open(filename, "r", encoding='utf-8') as file:
                 skip_lines = False
@@ -297,6 +343,9 @@ class FloatCompareCheck(Check):
                             value = float(words[self.wordnum])
                         except Exception:
                             self.annotations.append("Python error")
+                            self.SetLastResultSummary(
+                                f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
+                                f'result=FAILED reason=parse_error')
                             warnings.warn("    Check failed :\n"
                                           + "    Check = " + self.__str__() + "\n"
                                           + "    line = " + line
@@ -306,19 +355,35 @@ class FloatCompareCheck(Check):
                             return False
 
                         if abs(value - self.gold) <= self.abs_tol + self.rel_tol * self.gold:
+                            self.SetLastResultSummary(
+                                f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
+                                f'actual={value:.9g} result=PASSED')
                             return True
                         elif verbose:
                             warnings.warn("Check failed : " + self.__str__() + "\n"
                                           + line + "\n"
                                           + str(words))
+                        self.SetLastResultSummary(
+                            f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
+                            f'actual={value:.9g} abs_tol={self.abs_tol:.3g} '
+                            f'rel_tol={self.rel_tol:.3g} result=FAILED')
 
                 if verbose:
                     warnings.warn('Check failed : key, "' + self.key + '", not found '
                                   + str(self.wordnum))
+                self.SetLastResultSummary(
+                    f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
+                    f'result=FAILED reason=key_not_found')
         except FileNotFoundError as e:
             print(str(e))
+            self.SetLastResultSummary(
+                f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
+                f'result=FAILED reason=file_not_found')
         except Exception as e:
             self.annotations.append("Python error")
+            self.SetLastResultSummary(
+                f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
+                f'result=FAILED reason=python_error')
             if verbose:
                 print(str(e))
 
@@ -362,6 +427,7 @@ class IntCompareCheck(Check):
             f'gold={self.gold} '
 
     def PerformCheck(self, filename, errorcode, verbose: bool):
+        self.SetLastResultSummary(f'IntCompare key="{self.key}" result=FAILED reason=unknown')
         try:
             with open(filename, "r", encoding='utf-8') as file:
                 skip_lines = False
@@ -394,6 +460,9 @@ class IntCompareCheck(Check):
                             value = int(words[self.wordnum])
                         except Exception:
                             self.annotations.append("Python error")
+                            self.SetLastResultSummary(
+                                f'IntCompare key="{self.key}" expected={self.gold} '
+                                f'result=FAILED reason=parse_error')
                             warnings.warn("    Check failed :\n"
                                           + "    Check = " + self.__str__() + "\n"
                                           + "    line = " + line
@@ -403,20 +472,35 @@ class IntCompareCheck(Check):
                             return False
 
                         if value == self.gold:
+                            self.SetLastResultSummary(
+                                f'IntCompare key="{self.key}" expected={self.gold} '
+                                f'actual={value} result=PASSED')
                             return True
                         elif verbose:
                             warnings.warn("Check failed : " + self.__str__() + "\n"
                                           + line + "\n"
                                           + str(words))
+                        self.SetLastResultSummary(
+                            f'IntCompare key="{self.key}" expected={self.gold} '
+                            f'actual={value} result=FAILED')
 
                 if verbose:
                     warnings.warn('Check failed : key, "' + self.key + '", not found, wordnum = '
                                   + str(self.wordnum))
+                self.SetLastResultSummary(
+                    f'IntCompare key="{self.key}" expected={self.gold} '
+                    f'result=FAILED reason=key_not_found')
 
         except FileNotFoundError as e:
             print(str(e))
+            self.SetLastResultSummary(
+                f'IntCompare key="{self.key}" expected={self.gold} '
+                f'result=FAILED reason=file_not_found')
         except Exception as e:
             self.annotations.append("Python error")
+            self.SetLastResultSummary(
+                f'IntCompare key="{self.key}" expected={self.gold} '
+                f'result=FAILED reason=python_error')
             if verbose:
                 print(str(e))
 
@@ -444,13 +528,20 @@ class ErrorCodeCheck(Check):
     def PerformCheck(self, filename, errorcode, verbose: bool):
         try:
             if errorcode == self.error_code:
+                self.SetLastResultSummary(
+                    f'ErrorCode expected={self.error_code} actual={errorcode} result=PASSED')
                 return True
 
             if verbose:
                 warnings.warn(f'Check failed: error_code, {self.error_code} vs {errorcode}')
+            self.SetLastResultSummary(
+                f'ErrorCode expected={self.error_code} actual={errorcode} result=FAILED')
 
         except Exception as e:
             self.annotations.append("Python error")
+            self.SetLastResultSummary(
+                f'ErrorCode expected={self.error_code} actual={errorcode} '
+                f'result=FAILED reason=python_error')
             if verbose:
                 warnings.warn(str(e))
 
@@ -484,6 +575,7 @@ class GoldFileCheck(Check):
         return "pure_diff"
 
     def PerformCheck(self, filename, errorcode, verbose: bool):
+        self.SetLastResultSummary('GoldFile result=FAILED reason=unknown')
         try:
             outfiledir = pathlib.Path(os.path.dirname(filename) + "/")
             if self.candidate_filename != "":
@@ -499,6 +591,8 @@ class GoldFileCheck(Check):
                     warnings.warn(f'Gold file {goldfilename} does not exist at \n'
                                   + f'{golddir + goldfilename}')
                 self.annotations.append("Gold file missing")
+                self.SetLastResultSummary(
+                    f'GoldFile file="{goldfilename}" result=FAILED reason=gold_missing')
                 return False
 
             lines_a, lines_b = self.GetFileLines(filename, golddir + goldfilename)
@@ -507,12 +601,16 @@ class GoldFileCheck(Check):
                 if verbose:
                     print(f"no lines to compare in {filename}. "
                           + f"Maybe {self.scope_keyword}_BEGIN/_END was not found?")
+                self.SetLastResultSummary(
+                    f'GoldFile file="{goldfilename}" result=FAILED reason=no_candidate_lines')
                 return False
 
             if len(lines_b) == 0:
                 if verbose:
                     print(f"no lines to compare in {golddir + goldfilename}. "
                           + f"Maybe {self.scope_keyword}_BEGIN/_END was not found?")
+                self.SetLastResultSummary(
+                    f'GoldFile file="{goldfilename}" result=FAILED reason=no_gold_lines')
                 return False
 
             if self.check_numlines == 0:
@@ -532,15 +630,21 @@ class GoldFileCheck(Check):
                 ))
 
             if len(diff) == 0:
+                self.SetLastResultSummary(
+                    f'GoldFile file="{goldfilename}" diff_lines=0 result=PASSED')
                 return True
             elif verbose:
                 print("diff-begin")
                 for line in diff:
                     print(line, end='')
                 print("diff-end")
+            self.SetLastResultSummary(
+                f'GoldFile file="{goldfilename}" diff_lines={len(diff)} result=FAILED')
 
         except Exception as e:
             self.annotations.append("Python error")
+            self.SetLastResultSummary(
+                f'GoldFile file="{filename}" result=FAILED reason=python_error')
             if verbose:
                 warnings.warn(str(e))
 
