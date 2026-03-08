@@ -379,6 +379,18 @@ LBSProblem::GetExtSrcMomentsLocal() const
 void
 LBSProblem::SetExtSrcMomentsFrom(const std::vector<double>& ext_src_moments)
 {
+  if (not phi_old_local_.empty())
+    OpenSnLogicalErrorIf(ext_src_moments.size() != phi_old_local_.size(),
+                         "SetExtSrcMomentsFrom size mismatch. Provided size=" +
+                           std::to_string(ext_src_moments.size()) +
+                           ", expected local DOFs=" + std::to_string(phi_old_local_.size()) + ".");
+
+  if (ext_src_moments_local_.empty())
+  {
+    ext_src_moments_local_ = ext_src_moments;
+    return;
+  }
+
   assert(ext_src_moments.size() == ext_src_moments_local_.size() &&
          "SetExtSrcMomentsFrom size mismatch.");
   ext_src_moments_local_ = ext_src_moments;
