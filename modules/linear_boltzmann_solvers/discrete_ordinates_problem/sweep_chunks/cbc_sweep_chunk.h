@@ -41,7 +41,7 @@ public:
    *   (via MPI data managed by CBC_FLUDS), or boundaries
    * - Solves the local system for the outgoing angular fluxes at the cell nodes
    * - Updates the global scalar flux moments
-   * - If save_angular_flux_ is true, stores the computed angular fluxes into
+   * - If save_angular_flux is true, stores the computed angular fluxes into
    *   the global angular flux vector
    * - Propagates outgoing angular fluxes to local downwind neighbors or stages
    *   them for MPI transmission to remote downwind neighbors

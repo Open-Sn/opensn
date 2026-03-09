@@ -46,8 +46,6 @@ public:
   /// Returns a constant reference to the solver options.
   const LBSOptions& GetOptions() const;
 
-  void SetOptions(const InputParameters& input);
-
   /// Returns simulation time in seconds for time dependent problems.
   double GetTime() const;
 
@@ -82,7 +80,10 @@ public:
    * mode-transition reset. Materials are reinitialized in the selected mode,
    * sources and boundaries are cleared, and solution vectors are zeroed.
    */
-  void SetAdjoint(bool adjoint);
+  void SetAdjoint(bool adjoint = true);
+
+  /// Set the problem to forward mode.
+  void SetForward();
 
   /// Returns true if the problem is in adjoint mode.
   bool IsAdjoint() const;
@@ -385,8 +386,6 @@ protected:
 
   /// Flag indicating if GPU acceleration is enabled.
   bool use_gpus_;
-  bool applied_adjoint_ = false;
-  bool applied_save_angular_flux_ = false;
 
 private:
   void InitializeRuntimeCore();
@@ -410,9 +409,7 @@ private:
   /// Initialize sources
   void InitializeSources(const InputParameters& params);
 
-  void ReadOptions(const InputParameters& input);
-  void ValidateOptions() const;
-  void ApplyOptions();
+  void ParseOptions(const InputParameters& input);
 
   static std::filesystem::path BuildRestartPath(const std::string& path_stem);
 

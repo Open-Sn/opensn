@@ -88,11 +88,9 @@ LBSProblem::LBSProblem(const InputParameters& params)
   {
     auto options_params = LBSProblem::GetOptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
-    ReadOptions(options_params);
-    ValidateOptions();
+    ParseOptions(options_params);
+
   }
-  applied_adjoint_ = options_.adjoint;
-  applied_save_angular_flux_ = options_.save_angular_flux;
 
   // Set geometry type
   geometry_type_ = grid_->GetGeometryType();
@@ -618,16 +616,9 @@ LBSProblem::GetXSMapEntryBlock()
   return params;
 }
 
-void
-LBSProblem::SetOptions(const InputParameters& input)
-{
-  ReadOptions(input);
-  ValidateOptions();
-  ApplyOptions();
-}
 
 void
-LBSProblem::ReadOptions(const InputParameters& input)
+LBSProblem::ParseOptions(const InputParameters& input)
 {
   auto params = LBSProblem::GetOptionsBlock();
   params.AssignParameters(input);
@@ -701,11 +692,7 @@ LBSProblem::ReadOptions(const InputParameters& input)
     if (setter_it != option_setters.end())
       setter_it->second(spec);
   }
-}
 
-void
-LBSProblem::ValidateOptions() const
-{
   OpenSnInvalidArgumentIf(options_.write_restart_time_interval > std::chrono::seconds(0) and
                             not options_.restart_writes_enabled,
                           GetName() + ": `write_restart_time_interval>0` requires "
@@ -724,22 +711,7 @@ LBSProblem::ValidateOptions() const
                             options_.field_function_prefix_option != "prefix",
                           GetName() + ": non-empty `field_function_prefix` requires "
                                       "`field_function_prefix_option=\"prefix\"`.");
-}
 
-std::filesystem::path
-LBSProblem::BuildRestartPath(const std::string& path_stem)
-{
-  if (path_stem.empty())
-    return {};
-
-  auto path = std::filesystem::path(path_stem);
-  path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
-  return path;
-}
-
-void
-LBSProblem::ApplyOptions()
-{
   if (options_.restart_writes_enabled)
   {
     const auto dir = options_.write_restart_path.parent_path();
@@ -761,15 +733,17 @@ LBSProblem::ApplyOptions()
     opensn::mpi_comm.barrier();
     UpdateRestartWriteTime();
   }
+}
 
-  if (not initialized_)
-    return;
+std::filesystem::path
+LBSProblem::BuildRestartPath(const std::string& path_stem)
+{
+  if (path_stem.empty())
+    return {};
 
-  if (options_.adjoint != applied_adjoint_)
-    SetAdjoint(options_.adjoint);
-
-  if (options_.save_angular_flux != applied_save_angular_flux_)
-    SetSaveAngularFlux(options_.save_angular_flux);
+  auto path = std::filesystem::path(path_stem);
+  path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
+  return path;
 }
 
 void
@@ -787,7 +761,7 @@ LBSProblem::BuildRuntime()
   InitializeSources();
 
   initialized_ = true;
-  ApplyOptions();
+
 }
 
 void
@@ -1481,8 +1455,6 @@ void
 LBSProblem::SetSaveAngularFlux(bool save)
 {
   options_.save_angular_flux = save;
-  if (initialized_)
-    applied_save_angular_flux_ = save;
 }
 
 void
@@ -1607,25 +1579,30 @@ LBSProblem::SetAdjoint(bool adjoint)
         do_problem and do_problem->IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
 
+  const bool mode_changed = (adjoint != options_.adjoint);
+  if (not mode_changed)
+    return;
+
   options_.adjoint = adjoint;
 
-  if (adjoint != applied_adjoint_)
-  {
-    // Reinitialize materials to obtain the proper forward/adjoint cross sections.
-    InitializeMaterials();
+  // Reinitialize materials to obtain the proper forward/adjoint cross sections.
+  InitializeMaterials();
 
-    // Forward and adjoint sources are fundamentally different.
-    point_sources_.clear();
-    volumetric_sources_.clear();
-    ClearBoundaries();
+  // Forward and adjoint sources are fundamentally different.
+  point_sources_.clear();
+  volumetric_sources_.clear();
+  ClearBoundaries();
 
-    // Reset all solution vectors.
-    ZeroPhi();
-    ZeroPsi();
-    ZeroPrecursors();
+  // Reset all solution vectors.
+  ZeroPhi();
+  ZeroPsi();
+  ZeroPrecursors();
+}
 
-    applied_adjoint_ = adjoint;
-  }
+void
+LBSProblem::SetForward()
+{
+  SetAdjoint(false);
 }
 
 bool

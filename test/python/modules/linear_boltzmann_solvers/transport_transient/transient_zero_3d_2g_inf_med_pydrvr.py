@@ -90,6 +90,7 @@ if __name__ == "__main__":
             {"name": "zmax", "type": "reflecting"},
         ],
         options={
+            "save_angular_flux": True,
             "verbose_inner_iterations": False,
         },
     )

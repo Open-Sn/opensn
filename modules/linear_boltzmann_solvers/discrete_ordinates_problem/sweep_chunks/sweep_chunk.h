@@ -44,7 +44,6 @@ public:
       num_moments_(num_moments),
       max_num_cell_dofs_(max_num_cell_dofs),
       min_num_cell_dofs_(min_num_cell_dofs),
-      save_angular_flux_(not destination_psi.empty()),
       groupset_angle_group_stride_(groupset_.psi_uk_man_.GetNumberOfUnknowns() *
                                    groupset_.GetNumGroups()),
       groupset_group_stride_(groupset_.GetNumGroups()),
@@ -70,6 +69,9 @@ public:
 
   /// Sets all elements of the output angular flux vector to zero.
   void ZeroDestinationPsi() { (destination_psi_).assign((destination_psi_).size(), 0.0); }
+
+  /// Returns true if angular flux storage is allocated.
+  bool SaveAngularFluxEnabled() const { return not destination_psi_.empty(); }
 
   /// Activates or deactives the surface src flag.
   void SetBoundarySourceActiveFlag(bool flag_value) { surface_source_active_ = flag_value; }
@@ -104,7 +106,6 @@ protected:
   const unsigned int num_moments_;
   const unsigned int max_num_cell_dofs_;
   const unsigned int min_num_cell_dofs_;
-  const bool save_angular_flux_;
   const size_t groupset_angle_group_stride_;
   const size_t groupset_group_stride_;
   std::vector<double>& destination_phi_;

@@ -181,8 +181,6 @@ protected:
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<std::vector<double>> psi_old_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
-  bool forced_save_angular_flux_for_transient_ = false;
-  bool save_angular_flux_before_transient_ = false;
 
   std::map<std::tuple<size_t, size_t, size_t>, size_t> angular_flux_field_functions_local_map_;
 

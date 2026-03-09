@@ -265,7 +265,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       }
 
       // Save angular flux during sweep
-      if (save_angular_flux_)
+      if (SaveAngularFluxEnabled())
       {
         double* cell_psi_data =
           &destination_psi_[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];

@@ -215,7 +215,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
     }
 
     // If requested, save angular fluxes during sweep
-    if (save_angular_flux_)
+    if (SaveAngularFluxEnabled())
     {
       double* cell_psi =
         &destination_psi_[discretization_.MapDOFLocal(*cell_, 0, groupset_.psi_uk_man_, 0, 0)];
