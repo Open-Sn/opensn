@@ -89,7 +89,6 @@ LBSProblem::LBSProblem(const InputParameters& params)
     auto options_params = LBSProblem::GetOptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
     ParseOptions(options_params);
-
   }
 
   // Set geometry type
@@ -616,7 +615,6 @@ LBSProblem::GetXSMapEntryBlock()
   return params;
 }
 
-
 void
 LBSProblem::ParseOptions(const InputParameters& input)
 {
@@ -761,7 +759,6 @@ LBSProblem::BuildRuntime()
   InitializeSources();
 
   initialized_ = true;
-
 }
 
 void

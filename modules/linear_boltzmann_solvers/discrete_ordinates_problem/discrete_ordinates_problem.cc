@@ -136,9 +136,8 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
       throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
 
     OpenSnInvalidArgumentIf(not options_.save_angular_flux,
-                            GetName() +
-                              ": `time_dependent=true` requires "
-                              "`options.save_angular_flux=true`.");
+                            GetName() + ": `time_dependent=true` requires "
+                                        "`options.save_angular_flux=true`.");
 
     SetSweepChunkMode(SweepChunkMode::TimeDependent);
   }

@@ -42,20 +42,6 @@
     ]
   },
   {
-    "file": "transient_init_steady_state_source_nosaveaf.py",
-    "comment": "Steady-state source init: 1D absorber consistency (save_angular_flux=false)",
-    "num_procs": 4,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "STEADY_INIT_PASS",
-        "wordnum": 1,
-        "gold": 1,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
     "file": "transient_init_time_dependent_source.py",
     "comment": "Time-dependent source init: 1D absorber step consistency",
     "num_procs": 4,
@@ -72,20 +58,6 @@
   {
     "file": "transient_init_precursor_decay.py",
     "comment": "Delayed precursor decay check with source removal",
-    "num_procs": 4,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "PRECURSOR_DECAY_PASS",
-        "wordnum": 1,
-        "gold": 1,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
-    "file": "transient_init_precursor_decay_nosaveaf.py",
-    "comment": "Delayed precursor decay check with source removal (save_angular_flux=false)",
     "num_procs": 4,
     "checks": [
       {
@@ -294,20 +266,6 @@
     ]
   },
   {
-    "file": "transient_keigen_3d_delayed_analytic_nosaveaf.py",
-    "comment": "3D delayed analytic point-kinetics check (save_angular_flux=false)",
-    "num_procs": 4,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "ANALYTIC_PASS",
-        "wordnum": 1,
-        "gold": 1,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
     "file": "transient_keigen_1d_delayed_prke_vs_stk.py",
     "comment": "1D delayed homogeneous step: PRKE vs space-time kinetics",
     "num_procs": 4,
@@ -380,27 +338,6 @@
   {
     "file": "transient_keigen_3d_6g_delayed_step_nu_sigma_f.py",
     "comment": "3D 6g, 2-precursor delayed step nu_sigma_f",
-    "num_procs": 4,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "FP_RATIO_ACTUAL",
-        "wordnum": 1,
-        "gold": 1.2,
-        "abs_tol": 0.000001
-      },
-      {
-        "type": "FloatCompare",
-        "key": "TRANSIENT_OK",
-        "wordnum": 1,
-        "gold": 1,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
-    "file": "transient_keigen_3d_6g_delayed_step_nu_sigma_f_nosaveaf.py",
-    "comment": "3D 6g, 2-precursor delayed step nu_sigma_f (save_angular_flux=false)",
     "num_procs": 4,
     "checks": [
       {
@@ -525,27 +462,6 @@
     ]
   },
   {
-    "file": "transient_keigen_2d_2g_delayed_step_nosaveaf.py",
-    "comment": "2D 2g delayed xs step (ratio, save_angular_flux=false)",
-    "num_procs": 4,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "FP_RATIO_ACTUAL",
-        "wordnum": 1,
-        "gold": 1.2,
-        "abs_tol": 0.000001
-      },
-      {
-        "type": "FloatCompare",
-        "key": "TRANSIENT_OK",
-        "wordnum": 1,
-        "gold": 1,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
     "file": "transient_keigen_1d_prompt_step.py",
     "comment": "1D prompt-only xs step",
     "num_procs": 4,
@@ -588,50 +504,8 @@
     ]
   },
   {
-    "file": "transient_keigen_3d_prompt_mid_step_swap_nosaveaf.py",
-    "comment": "3D prompt mid-step XS swap (save_angular_flux=false)",
-    "num_procs": 4,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "TIME_AT_SWAP",
-        "wordnum": 1,
-        "gold": 0.07,
-        "abs_tol": 1e-10
-      },
-      {
-        "type": "FloatCompare",
-        "key": "FP_RATIO_AT_SWAP",
-        "wordnum": 1,
-        "gold": 1.2,
-        "abs_tol": 0.0001
-      },
-      {
-        "type": "FloatCompare",
-        "key": "TRANSIENT_OK",
-        "wordnum": 1,
-        "gold": 1,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
     "file": "transient_keigen_3d_prompt_bc_leakage.py",
     "comment": "3D prompt leakage vs reflecting boundary",
-    "num_procs": 4,
-    "checks": [
-      {
-        "type": "FloatCompare",
-        "key": "TRANSIENT_OK",
-        "wordnum": 1,
-        "gold": 1,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
-    "file": "transient_keigen_3d_prompt_bc_leakage_nosaveaf.py",
-    "comment": "3D prompt leakage vs reflecting boundary (save_angular_flux=false)",
     "num_procs": 4,
     "checks": [
       {
