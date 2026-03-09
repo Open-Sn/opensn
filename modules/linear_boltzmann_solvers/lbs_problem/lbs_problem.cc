@@ -25,6 +25,8 @@
 #include <memory>
 #include <stdexcept>
 #include <sys/stat.h>
+#include <unordered_map>
+#include <functional>
 
 namespace opensn
 {
@@ -86,7 +88,8 @@ LBSProblem::LBSProblem(const InputParameters& params)
   {
     auto options_params = LBSProblem::GetOptionsBlock();
     options_params.AssignParameters(params.GetParam("options"));
-    ParseOptions(options_params);
+    ReadOptions(options_params);
+    ValidateOptions();
   }
   applied_adjoint_ = options_.adjoint;
   applied_save_angular_flux_ = options_.save_angular_flux;
@@ -618,12 +621,13 @@ LBSProblem::GetXSMapEntryBlock()
 void
 LBSProblem::SetOptions(const InputParameters& input)
 {
-  ParseOptions(input);
+  ReadOptions(input);
+  ValidateOptions();
   ApplyOptions();
 }
 
 void
-LBSProblem::ParseOptions(const InputParameters& input)
+LBSProblem::ReadOptions(const InputParameters& input)
 {
   auto params = LBSProblem::GetOptionsBlock();
   params.AssignParameters(input);
@@ -632,87 +636,76 @@ LBSProblem::ParseOptions(const InputParameters& input)
                                    ? params_at_assignment
                                    : static_cast<const ParameterBlock&>(input);
 
-  // Apply only options explicitly specified by the caller.
+  using OptionSetter = std::function<void(const ParameterBlock&)>;
+  const std::unordered_map<std::string, OptionSetter> option_setters = {
+    {"max_mpi_message_size",
+     [this](const ParameterBlock& spec) { options_.max_mpi_message_size = spec.GetValue<int>(); }},
+    {"restart_writes_enabled",
+     [this](const ParameterBlock& spec)
+     { options_.restart_writes_enabled = spec.GetValue<bool>(); }},
+    {"write_delayed_psi_to_restart",
+     [this](const ParameterBlock& spec)
+     { options_.write_delayed_psi_to_restart = spec.GetValue<bool>(); }},
+    {"read_restart_path",
+     [this](const ParameterBlock& spec)
+     { options_.read_restart_path = BuildRestartPath(spec.GetValue<std::string>()); }},
+    {"write_restart_path",
+     [this](const ParameterBlock& spec)
+     { options_.write_restart_path = BuildRestartPath(spec.GetValue<std::string>()); }},
+    {"write_restart_time_interval",
+     [this](const ParameterBlock& spec)
+     { options_.write_restart_time_interval = std::chrono::seconds(spec.GetValue<int>()); }},
+    {"use_precursors",
+     [this](const ParameterBlock& spec) { options_.use_precursors = spec.GetValue<bool>(); }},
+    {"use_source_moments",
+     [this](const ParameterBlock& spec) { options_.use_src_moments = spec.GetValue<bool>(); }},
+    {"save_angular_flux",
+     [this](const ParameterBlock& spec) { options_.save_angular_flux = spec.GetValue<bool>(); }},
+    {"verbose_inner_iterations",
+     [this](const ParameterBlock& spec)
+     { options_.verbose_inner_iterations = spec.GetValue<bool>(); }},
+    {"max_ags_iterations",
+     [this](const ParameterBlock& spec) { options_.max_ags_iterations = spec.GetValue<int>(); }},
+    {"ags_tolerance",
+     [this](const ParameterBlock& spec) { options_.ags_tolerance = spec.GetValue<double>(); }},
+    {"ags_convergence_check",
+     [this](const ParameterBlock& spec)
+     { options_.ags_pointwise_convergence = (spec.GetValue<std::string>() == "pointwise"); }},
+    {"verbose_ags_iterations",
+     [this](const ParameterBlock& spec)
+     { options_.verbose_ags_iterations = spec.GetValue<bool>(); }},
+    {"verbose_outer_iterations",
+     [this](const ParameterBlock& spec)
+     { options_.verbose_outer_iterations = spec.GetValue<bool>(); }},
+    {"power_field_function_on",
+     [this](const ParameterBlock& spec)
+     { options_.power_field_function_on = spec.GetValue<bool>(); }},
+    {"power_default_kappa",
+     [this](const ParameterBlock& spec)
+     { options_.power_default_kappa = spec.GetValue<double>(); }},
+    {"power_normalization",
+     [this](const ParameterBlock& spec)
+     { options_.power_normalization = spec.GetValue<double>(); }},
+    {"field_function_prefix_option",
+     [this](const ParameterBlock& spec)
+     { options_.field_function_prefix_option = spec.GetValue<std::string>(); }},
+    {"field_function_prefix",
+     [this](const ParameterBlock& spec)
+     { options_.field_function_prefix = spec.GetValue<std::string>(); }},
+    {"adjoint", [this](const ParameterBlock& spec) { options_.adjoint = spec.GetValue<bool>(); }},
+  };
+
   for (const auto& spec : specified_params.GetParameters())
   {
-    if (spec.GetName() == "max_mpi_message_size")
-      options_.max_mpi_message_size = spec.GetValue<int>();
+    const auto setter_it = option_setters.find(spec.GetName());
+    if (setter_it != option_setters.end())
+      setter_it->second(spec);
+  }
+}
 
-    else if (spec.GetName() == "restart_writes_enabled")
-      options_.restart_writes_enabled = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "write_delayed_psi_to_restart")
-      options_.write_delayed_psi_to_restart = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "read_restart_path")
-    {
-      options_.read_restart_path = spec.GetValue<std::string>();
-      if (not options_.read_restart_path.empty())
-        options_.read_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
-    }
-
-    else if (spec.GetName() == "write_restart_path")
-    {
-      options_.write_restart_path = spec.GetValue<std::string>();
-      if (not options_.write_restart_path.empty())
-        options_.write_restart_path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
-    }
-
-    else if (spec.GetName() == "write_restart_time_interval")
-      options_.write_restart_time_interval = std::chrono::seconds(spec.GetValue<int>());
-
-    else if (spec.GetName() == "use_precursors")
-      options_.use_precursors = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "use_source_moments")
-      options_.use_src_moments = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "save_angular_flux")
-      options_.save_angular_flux = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "verbose_inner_iterations")
-      options_.verbose_inner_iterations = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "max_ags_iterations")
-      options_.max_ags_iterations = spec.GetValue<int>();
-
-    else if (spec.GetName() == "ags_tolerance")
-      options_.ags_tolerance = spec.GetValue<double>();
-
-    else if (spec.GetName() == "ags_convergence_check")
-    {
-      auto check = spec.GetValue<std::string>();
-      options_.ags_pointwise_convergence = (check == "pointwise");
-    }
-
-    else if (spec.GetName() == "verbose_ags_iterations")
-      options_.verbose_ags_iterations = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "verbose_outer_iterations")
-      options_.verbose_outer_iterations = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "power_field_function_on")
-      options_.power_field_function_on = spec.GetValue<bool>();
-
-    else if (spec.GetName() == "power_default_kappa")
-      options_.power_default_kappa = spec.GetValue<double>();
-
-    else if (spec.GetName() == "power_normalization")
-      options_.power_normalization = spec.GetValue<double>();
-
-    else if (spec.GetName() == "field_function_prefix_option")
-    {
-      options_.field_function_prefix_option = spec.GetValue<std::string>();
-    }
-
-    else if (spec.GetName() == "field_function_prefix")
-      options_.field_function_prefix = spec.GetValue<std::string>();
-
-    else if (spec.GetName() == "adjoint")
-      options_.adjoint = spec.GetValue<bool>();
-
-  } // for specified options
-
+void
+LBSProblem::ValidateOptions() const
+{
   OpenSnInvalidArgumentIf(options_.write_restart_time_interval > std::chrono::seconds(0) and
                             not options_.restart_writes_enabled,
                           GetName() + ": `write_restart_time_interval>0` requires "
@@ -731,7 +724,22 @@ LBSProblem::ParseOptions(const InputParameters& input)
                             options_.field_function_prefix_option != "prefix",
                           GetName() + ": non-empty `field_function_prefix` requires "
                                       "`field_function_prefix_option=\"prefix\"`.");
+}
 
+std::filesystem::path
+LBSProblem::BuildRestartPath(const std::string& path_stem)
+{
+  if (path_stem.empty())
+    return {};
+
+  auto path = std::filesystem::path(path_stem);
+  path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
+  return path;
+}
+
+void
+LBSProblem::ApplyOptions()
+{
   if (options_.restart_writes_enabled)
   {
     const auto dir = options_.write_restart_path.parent_path();
@@ -753,11 +761,7 @@ LBSProblem::ParseOptions(const InputParameters& input)
     opensn::mpi_comm.barrier();
     UpdateRestartWriteTime();
   }
-}
 
-void
-LBSProblem::ApplyOptions()
-{
   if (not initialized_)
     return;
 
@@ -783,6 +787,7 @@ LBSProblem::BuildRuntime()
   InitializeSources();
 
   initialized_ = true;
+  ApplyOptions();
 }
 
 void
