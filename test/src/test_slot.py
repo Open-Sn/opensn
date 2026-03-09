@@ -125,6 +125,10 @@ class TestSlot:
                 verbose = self.argv.verbose
                 check_passed = check.PerformCheck(output_filename, error_code, verbose)
                 passed = passed and check_passed
+                if not hasattr(test, "check_results"):
+                    test.check_results = []
+                test.check_results.append(
+                    {"passed": check_passed, "summary": check.GetLastResultSummary()})
 
                 check_annotations = check.GetAnnotations()
                 for ann in check_annotations:

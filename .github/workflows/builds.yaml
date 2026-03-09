@@ -12,13 +12,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler:
-          - gcc/13
-          - gcc/14
-          - clang/17
-          - clang/18
-          - clang/19
-          - intel/oneapi
+        include:
+          - compiler: gcc/13
+            tag: gcc-13
+          - compiler: gcc/14
+            tag: gcc-14
+          - compiler: clang/17
+            tag: clang-17
+          - compiler: clang/18
+            tag: clang-18
+          - compiler: clang/19
+            tag: clang-19
+          - compiler: intel/oneapi
+            tag: intel-oneapi
     steps:
       - uses: actions/checkout@v4
       - name: build
@@ -30,18 +36,30 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          test/run_tests -d test/python -j 32 -v 1 -w 3
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d test/python -j 32 -v 1 -w 3 \
+            --run-log "$RUNNER_TEMP/logs/nightly_test_${{ matrix.tag }}_log.txt"
       - name: test tutorials
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
           export PYTHONPATH=$PWD/build
-          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --engine=jupyter
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --engine=jupyter \
+            --run-log "$RUNNER_TEMP/logs/nightly_tutorials_${{ matrix.tag }}_log.txt"
       - name: test unit
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
           build/test/opensn-unit
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-logs-build-${{ matrix.tag }}
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
 
   native:
     name: "${{ matrix.compiler }}"
@@ -49,9 +67,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler:
-          - gcc/14
-          - clang/19
+        include:
+          - compiler: gcc/14
+            tag: gcc-14
+          - compiler: clang/19
+            tag: clang-19
     steps:
       - uses: actions/checkout@v4
       - name: build
@@ -63,7 +83,17 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          test/run_tests -d test/python -j 32 -v 1
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d test/python -j 32 -v 1 \
+            --run-log "$RUNNER_TEMP/logs/nightly_native_${{ matrix.tag }}_log.txt"
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-logs-native-${{ matrix.tag }}
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
 
   cuda:
     name: "${{ matrix.compiler }}"
@@ -71,9 +101,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler:
-          - gcc/14
-          - clang/19
+        include:
+          - compiler: gcc/14
+            tag: gcc-14
+          - compiler: clang/19
+            tag: clang-19
     steps:
       - uses: actions/checkout@v4
       - name: build
@@ -85,7 +117,17 @@ jobs:
         shell: bash
         run: |
           module load cuda/12.9 python3/3.12.3 opensn/${{ matrix.compiler }}
-          test/run_tests --gpu -d test/python -j 32 -v 1
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests --gpu -d test/python -j 32 -v 1 \
+            --run-log "$RUNNER_TEMP/logs/nightly_cuda_${{ matrix.tag }}_log.txt"
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-logs-cuda-${{ matrix.tag }}
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
 
   sanitize:
     runs-on: [self-hosted]
@@ -102,7 +144,17 @@ jobs:
         run: |
           module load python3/3.12.3 opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
-          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/python/opensn-test
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/python/opensn-test \
+            --run-log "$RUNNER_TEMP/logs/nightly_sanitize_log.txt"
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-logs-sanitize
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
 
   coverage:
     runs-on: [self-hosted]
@@ -118,7 +170,9 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test \
+            --run-log "$RUNNER_TEMP/logs/nightly_coverage_log.txt"
       - name: unit tests
         shell: bash
         run: |
@@ -129,10 +183,20 @@ jobs:
         run: |
           module load python3/3.12.3 opensn/gcc/14
           export PYTHONPATH=$PWD/build-coverage
-          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test --engine=jupyter
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test --engine=jupyter \
+            --run-log "$RUNNER_TEMP/logs/nightly_coverage_tutorials_log.txt"
       - name: coveralls
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
           gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|python|modules)/' --coveralls coverage.json
           /opt/local/opensn/coveralls/bin/coveralls -c /opt/local/opensn/coveralls/.coveralls.yml -f coverage.json
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-logs-coverage
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7

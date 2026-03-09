@@ -19,6 +19,7 @@ import sys
 import argparse
 import textwrap
 import warnings
+from datetime import datetime
 
 from src import job_manager
 
@@ -97,6 +98,15 @@ parser.add_argument(
          "uns the short and intermediate tests."
 )
 
+parser.add_argument(
+    "--run-log",
+    type=str,
+    required=False,
+    default=None,
+    help="Write concatenated per-test output to file. "
+         "Default: run_tests_YYYYmmdd_HHMMSS.log"
+)
+
 argv = parser.parse_args()
 
 # --test should provide the full path to a test file. Break that up and set
@@ -109,6 +119,57 @@ if argv.test is not None:
 # Check the test directory exists
 if not os.path.isdir(argv.directory):
     raise NotADirectoryError(argv.directory)
+
+# Setup run log capture
+if argv.run_log is None:
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    argv.run_log = os.path.join(argv.directory, f"run_tests_{timestamp}.log")
+
+
+def WriteAggregatedRunLog(tests, run_log_path: str, base_directory: str):
+    """Write a single file with concatenated contents of each test *.out."""
+    run_log_abs = os.path.abspath(run_log_path)
+    run_log_dir = os.path.dirname(run_log_abs)
+    if run_log_dir != "":
+        os.makedirs(run_log_dir, exist_ok=True)
+
+    with open(run_log_abs, "w", encoding="utf-8") as log_file:
+        log_file.write("# OpenSn aggregated per-test outputs\n")
+        log_file.write(f"# Generated: {datetime.now().isoformat(timespec='seconds')}\n")
+        log_file.write(f"# Base directory: {os.path.abspath(base_directory)}\n\n")
+
+        for test in tests:
+            test_path = os.path.join(test.file_dir, test.filename)
+            rel_test_path = os.path.relpath(test_path, base_directory)
+            test_out = os.path.join(test.file_dir, "out", f"{test.GetOutFilenamePrefix()}.out")
+
+            log_file.write("=" * 120 + "\n")
+            log_file.write(f"TEST: {rel_test_path}\n")
+            log_file.write(f"MPI_PROCS: {test.num_procs}\n")
+            if test.args:
+                log_file.write("ARGS: " + " ".join(test.args) + "\n")
+            if test.annotations:
+                log_file.write("ANNOTATIONS:\n")
+                for ann in test.annotations:
+                    log_file.write(f"  - {ann}\n")
+            if hasattr(test, "check_results") and test.check_results:
+                log_file.write("CHECK_RESULTS:\n")
+                for result in test.check_results:
+                    status = "PASSED" if result["passed"] else "FAILED"
+                    summary = result["summary"] if result["summary"] else "<no summary>"
+                    log_file.write(f"  - {status}: {summary}\n")
+            log_file.write("-" * 120 + "\n")
+
+            if os.path.exists(test_out):
+                with open(test_out, "r", encoding="utf-8") as test_file:
+                    content = test_file.read()
+                log_file.write(content)
+                if not content.endswith("\n"):
+                    log_file.write("\n")
+            else:
+                log_file.write(f"[No output file found at {test_out}]\n")
+
+            log_file.write("\n")
 
 # Check the exe exists
 if argv.exe is None:
@@ -172,5 +233,6 @@ with warnings.catch_warnings(record=True) as warning_manager2:
     retval = job_manager.RunTests(tests, argv)
 
 job_manager.PrintCaughtWarnings(warning_manager2, "Warnings during test execution")
+WriteAggregatedRunLog(tests, argv.run_log, argv.directory)
 
 sys.exit(retval)

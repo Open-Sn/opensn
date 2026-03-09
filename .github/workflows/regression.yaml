@@ -25,18 +25,30 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          test/run_tests -d test/python -j 32 -v 1 -w 3
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d test/python -j 32 -v 1 -w 3 \
+            --run-log "$RUNNER_TEMP/logs/regression_test_log.txt"
       - name: test tutorials
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
           export PYTHONPATH=$PWD/build
-          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --engine=jupyter
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --engine=jupyter \
+            --run-log "$RUNNER_TEMP/logs/regression_tutorials_log.txt"
       - name: test unit
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
           build/test/opensn-unit
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-logs-cpu
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
   cuda:
     runs-on: [self-hosted, cuda]
     timeout-minutes: 60
@@ -51,7 +63,17 @@ jobs:
         shell: bash
         run: |
           module load cuda/12.9 python3/3.12.3 opensn/gcc/14
-          test/run_tests --gpu -d test/python -j 32 -v 1
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests --gpu -d test/python -j 32 -v 1 \
+            --run-log "$RUNNER_TEMP/logs/regression_cuda_log.txt"
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-logs-cuda
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
   hip:
     runs-on: [self-hosted, cuda]
     timeout-minutes: 60
@@ -68,4 +90,14 @@ jobs:
         shell: bash
         run: |
           module load cuda/12.9 python3/3.12.3 rocm/7.1.1 opensn/clang/19
-          test/run_tests --gpu -d test/python -j 32 -v 1
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests --gpu -d test/python -j 32 -v 1 \
+            --run-log "$RUNNER_TEMP/logs/regression_hip_log.txt"
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-logs-hip
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
