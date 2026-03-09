@@ -37,6 +37,8 @@ Program Listing for File sweep_wgs_context.h
    
      std::pair<int64_t, int64_t> GetSystemSize() override;
    
+     void PreSolveCallback() override;
+   
      void ApplyInverseTransportOperator(SourceFlags scope) override;
    
      void PostSolveCallback() override;
