@@ -18,6 +18,9 @@ include(CheckCXXCompilerFlag)
 include(CheckLinkerFlag)
 include(FetchContent)
 
+# Avoid prepending external build-time dependency paths that shadow installed libs
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O3 -g -DNDEBUG" CACHE STRING "" FORCE)
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g -DNDEBUG" CACHE STRING "" FORCE)
@@ -312,6 +315,16 @@ set_target_properties(
         SOVERSION ${PROJECT_VERSION_MAJOR}
         OUTPUT_NAME opensn
 )
+if (APPLE)
+  set(_opensn_install_rpath_lib "@loader_path")
+  set(_opensn_install_rpath_bin "@loader_path/../${CMAKE_INSTALL_LIBDIR}")
+elseif(UNIX)
+  set(_opensn_install_rpath_lib "$ORIGIN")
+  set(_opensn_install_rpath_bin "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+endif()
+if (UNIX)
+  set_target_properties(libopensn PROPERTIES INSTALL_RPATH "${_opensn_install_rpath_lib}")
+endif()
 
 set_target_properties(libopensn PROPERTIES EXPORT_NAME opensn)
 if (OPENSN_WITH_CUDA)
@@ -356,9 +369,19 @@ write_basic_package_version_file(
 install(
     TARGETS libopensn
     EXPORT openSnTargets
+    RUNTIME_DEPENDENCIES
+    PRE_EXCLUDE_REGEXES
+      "^api-ms-"
+      "^ext-ms-"
+      "^/System/Library/.*"
+      "^/usr/lib/.*"
+    POST_EXCLUDE_REGEXES
+      ".*[Ww]indows[\\\\/](System32|WinSxS)[\\\\/].*"
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
@@ -408,8 +431,22 @@ install(
 )
 
 if(OPENSN_WITH_PYTHON)
+  if (UNIX)
+    set_target_properties(opensn PROPERTIES INSTALL_RPATH "${_opensn_install_rpath_bin}")
+  endif()
   install(
         TARGETS opensn
+        RUNTIME_DEPENDENCIES
+        PRE_EXCLUDE_REGEXES
+          "^api-ms-"
+          "^ext-ms-"
+          "^/System/Library/.*"
+          "^/usr/lib/.*"
+        POST_EXCLUDE_REGEXES
+          ".*[Ww]indows[\\\\/](System32|WinSxS)[\\\\/].*"
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
   install(
@@ -424,4 +461,34 @@ if(OPENSN_WITH_PYTHON)
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
         FILES_MATCHING PATTERN "*.h"
     )
+
+  if(OPENSN_WITH_PYTHON_MODULE)
+    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+    set(_opensn_python_module_install_dir "${Python3_SITEARCH}")
+    if(NOT _opensn_python_module_install_dir)
+      set(_opensn_python_module_install_dir "${Python3_SITELIB}")
+    endif()
+    if(NOT _opensn_python_module_install_dir)
+      set(_opensn_python_module_install_dir "${CMAKE_INSTALL_LIBDIR}")
+    endif()
+    set(_opensn_python_package_dir "${_opensn_python_module_install_dir}/pyopensn")
+    if (UNIX)
+      set_target_properties(__init__ PROPERTIES INSTALL_RPATH "${_opensn_install_rpath_lib}")
+    endif()
+    install(
+          TARGETS __init__
+          RUNTIME_DEPENDENCIES
+          PRE_EXCLUDE_REGEXES
+            "^api-ms-"
+            "^ext-ms-"
+            "^/System/Library/.*"
+            "^/usr/lib/.*"
+          POST_EXCLUDE_REGEXES
+            ".*[Ww]indows[\\\\/](System32|WinSxS)[\\\\/].*"
+          LIBRARY DESTINATION ${_opensn_python_package_dir}
+          FRAMEWORK DESTINATION ${_opensn_python_package_dir}
+          BUNDLE DESTINATION ${_opensn_python_package_dir}
+          RUNTIME DESTINATION ${_opensn_python_package_dir}
+      )
+  endif()
 endif()
