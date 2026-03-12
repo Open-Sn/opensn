@@ -26,9 +26,9 @@ protected:
 public:
   enum class SweepChunkMode
   {
-    Default = 0,
-    SteadyState = 1,
-    TimeDependent = 2
+    DEFAULT = 0,
+    STEADY_STATE = 1,
+    TIME_DEPENDENT = 2
   };
 
   void SetSweepChunkMode(SweepChunkMode mode);
@@ -37,7 +37,7 @@ public:
 
   bool IsTimeDependent() const override
   {
-    return sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent;
+    return sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT) == SweepChunkMode::TIME_DEPENDENT;
   }
 
   void SetTimeDependentMode() override;
