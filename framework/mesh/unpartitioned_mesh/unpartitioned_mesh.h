@@ -20,7 +20,7 @@ public:
   {
     std::vector<uint64_t> vertex_ids;
     bool has_neighbor = false;
-    uint64_t neighbor = 0;
+    uint64_t neighbor = std::numeric_limits<uint64_t>::max();
 
     LightWeightFace() = default;
     explicit LightWeightFace(std::vector<uint64_t> vertex_ids) : vertex_ids(std::move(vertex_ids))
