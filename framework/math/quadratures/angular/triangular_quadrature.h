@@ -40,7 +40,7 @@ public:
 
 protected:
   TriangularQuadrature(unsigned int dimension, unsigned int scattering_order)
-    : AngularQuadrature(AngularQuadratureType::TriangularQuadrature, dimension, scattering_order),
+    : AngularQuadrature(AngularQuadratureType::TRIANGULAR_QUADRATURE, dimension, scattering_order),
       weight_sum_(0.0)
   {
   }

@@ -1586,7 +1586,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
 
       // Check quadrature type
       const auto quad_type = quadrature.GetType();
-      if (quad_type != AngularQuadratureType::ProductQuadrature)
+      if (quad_type != AngularQuadratureType::PRODUCT_QUADRATURE)
         throw std::logic_error(GetName() + ": The simulation is using polar angle aggregation for "
                                            "which only Product-type quadratures are supported");
 
@@ -1651,7 +1651,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
 
       // Check quadrature type
       const auto quad_type = quadrature.GetType();
-      if (quad_type != AngularQuadratureType::ProductQuadrature)
+      if (quad_type != AngularQuadratureType::PRODUCT_QUADRATURE)
         throw std::logic_error(
           GetName() + ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL geometry.");
 

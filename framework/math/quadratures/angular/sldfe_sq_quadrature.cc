@@ -17,7 +17,7 @@ namespace opensn
 SLDFEsqQuadrature::SLDFEsqQuadrature(int level,
                                      unsigned int dimension,
                                      unsigned int scattering_order)
-  : AngularQuadrature(AngularQuadratureType::SLDFEsq, dimension, scattering_order), level_(level)
+  : AngularQuadrature(AngularQuadratureType::SLDFE_SQ, dimension, scattering_order), level_(level)
 {
   if (level < 0)
     throw std::invalid_argument("SLDFEsqQuadrature: level must be non-negative");
