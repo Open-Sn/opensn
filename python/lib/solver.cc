@@ -168,89 +168,6 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
-    "SetOptions",
-    [](LBSProblem& self, py::kwargs& params)
-    {
-      InputParameters input = LBSProblem::GetOptionsBlock();
-      input.AssignParameters(kwargs_to_param_block(params));
-      self.SetOptions(input);
-    },
-    R"(
-    Set problem options from a large list of parameters.
-
-    Parameters
-    ----------
-    max_mpi_message_size: int default=32768
-        The maximum MPI message size used during sweeps.
-    restart_writes_enabled: bool, default=False
-        Flag that controls writing of restart dumps.
-        Requires ``write_restart_path`` to be set to a non-empty value.
-    write_delayed_psi_to_restart: bool, default=True
-        Flag that controls writing of delayed angular fluxes to restarts.
-    read_restart_path: str, default=''
-        Full path for reading restart dumps including file basename.
-    write_restart_path: str, default=''
-        Full path for writing restart dumps including file basename.
-    write_restart_time_interval: int, default=0
-        Time interval in seconds at which restart data is to be written.
-        Must be ``0`` (disabled) or at least ``30`` seconds.
-    use_precursors: bool, default=False
-        Flag for using delayed neutron precursors.
-    use_source_moments: bool, default=False
-        Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.
-    save_angular_flux: bool, default=False
-        Flag indicating whether angular fluxes are to be stored or not.
-    adjoint: bool, default=False
-        Toggle adjoint transport mode.
-    verbose_inner_iterations: bool, default=True
-        Flag to control verbosity of inner iterations.
-    verbose_outer_iterations: bool, default=True
-        Flag to control verbosity of across-groupset iterations.
-    max_ags_iterations: int, default=100
-        Maximum number of across-groupset iterations. ``0`` is allowed.
-    ags_tolerance: float, default=1.0e-6
-        Across-groupset iterations tolerance.
-    ags_convergence_check: {'l2', 'pointwise'}, default='l2'
-        Type of convergence check for AGS iterations.
-    verbose_ags_iterations: bool, default=True
-        Flag to control verbosity of across-groupset iterations.
-    power_field_function_on: bool, default=False
-        Flag to control the creation of the power generation field function. If set to ``True``, a
-        field function will be created with the general name ``<solver_name>_power_generation``.
-    power_default_kappa: float, default=3.20435e-11
-        Default ``kappa`` value (Energy released per fission) to use for power generation when cross
-        sections do not have ``kappa`` values. Default corresponds to 200 MeV per fission.
-    power_normalization: float, default=-1.0
-        Power normalization factor to use. Supply a negative or zero number to turn this off.
-    field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
-        Prefix option on field function names. If unset, flux field functions will be exported as
-        ``phi_gXXX_mYYY``, where ``XXX`` is the zero-padded 3-digit group number and ``YYY`` is the
-        zero-padded 3-digit moment.
-    field_function_prefix: str, default=''
-        Prefix to use on all field functions. By default, this is empty. If specified, flux moments
-        are exported as ``prefix_phi_gXXX_mYYY``.
-
-    Notes
-    -----
-    This call is additive: only options explicitly supplied are updated.
-
-    This is one of three supported mode-setting paths in Python:
-      1. ``options={'adjoint': ...}`` in the problem constructor.
-      2. ``SetOptions(adjoint=...)`` (this method).
-      3. ``SetAdjoint(...)``.
-
-    If ``adjoint`` is explicitly supplied in this call and differs from the current mode, OpenSn
-    performs the same mode-transition behavior as :meth:`LBSProblem.SetAdjoint`. If ``adjoint``
-    is omitted, the existing mode is unchanged.
-
-    Options requirements:
-    - ``restart_writes_enabled=True`` requires non-empty ``write_restart_path``.
-    - ``write_restart_time_interval>0`` requires ``restart_writes_enabled=True``.
-    - ``write_restart_time_interval`` must be ``0`` or ``>=30``.
-    - non-empty ``field_function_prefix`` requires ``field_function_prefix_option='prefix'``.
-    )"
-  );
-  lbs_problem.def(
     "ComputeFissionRate",
     [](LBSProblem& self, const std::string& scalar_flux_iterate)
     {
@@ -598,20 +515,11 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
-    Forward/adjoint mode toggles via ``SetOptions(adjoint=...)`` (or the low-level
-    :meth:`LBSProblem.SetAdjoint`) do not change this map.
+    Forward/adjoint mode toggles via :meth:`LBSProblem.SetAdjoint` do not change this map.
     The ``MultiGroupXS`` objects themselves are mutable and shared by pointer. If the same
     ``MultiGroupXS`` handle is shared across multiple problems, toggling adjoint mode in one
     problem also changes the transport mode seen by the others.
     )"
-  );
-  lbs_problem.def(
-    "SetSaveAngularFlux",
-    [](LBSProblem& self, bool save)
-    {
-      self.SetSaveAngularFlux(save);
-    },
-    py::arg("save")
   );
   lbs_problem.def(
     "ZeroPhi",
@@ -639,22 +547,20 @@ WrapLBS(py::module& slv)
     {
       self.SetAdjoint(adjoint);
     },
+    py::arg("adjoint") = true,
     R"(
     Set forward/adjoint transport mode.
 
     Parameters
     ----------
-    adjoint: bool
+    adjoint: bool, default=True
         ``True`` enables adjoint mode and ``False`` enables forward mode.
 
     Notes
     -----
-    This is one of three supported mode-setting paths in Python:
+    This is one of two supported mode-setting paths in Python:
       1. ``options={'adjoint': ...}`` in the problem constructor.
-      2. ``SetOptions(adjoint=...)``.
-      3. ``SetAdjoint(...)`` (this method).
-
-    In typical Python workflows, use constructor options or ``SetOptions``.
+      2. ``SetAdjoint(...)`` (this method).
 
     If this changes mode, OpenSn performs a full mode-transition reset:
       - Materials are reinitialized in the selected mode.
@@ -675,6 +581,15 @@ WrapLBS(py::module& slv)
 
     This routine is intentionally destructive with respect to source/boundary/flux state
     to avoid hidden coupling between forward and adjoint setups.
+    )"
+  );
+  lbs_problem.def(
+    "SetForward",
+    &LBSProblem::SetForward,
+    R"(
+    Set forward transport mode.
+
+    Equivalent to ``SetAdjoint(False)``.
     )"
   );
   lbs_problem.def(
@@ -786,8 +701,7 @@ WrapLBS(py::module& slv)
     volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
         A list of volumetric sources.
     options : Dict, default={}
-        A block of optional configuration parameters. Each dictionary supports the same keys as
-        :meth:`LBSProblem.SetOptions`, including:
+        A block of optional configuration parameters, including:
           - max_mpi_message_size: int, default=32768
           - restart_writes_enabled: bool, default=False
           - write_delayed_psi_to_restart: bool, default=True
@@ -810,12 +724,12 @@ WrapLBS(py::module& slv)
           - power_normalization: float, default=-1.0
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
-        Requirements are the same as :meth:`LBSProblem.SetOptions`.
+        These options are applied at problem creation.
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
     time_dependent : bool, default=False
-        If true, the problem is constructed in time-dependent mode. Otherwise it starts in
-        steady-state mode.
+        If true, the problem starts in time-dependent mode. Otherwise it starts in
+        steady-state mode. Requires ``options.save_angular_flux=True``.
     use_gpus : bool, default=False
         A flag specifying whether GPU acceleration is used for the sweep. Currently, only ``AAH`` is
         supported.
@@ -831,8 +745,9 @@ WrapLBS(py::module& slv)
     -----
     Switch problem from steady-state to time-dependent mode. This updates problem
     internals (sweep chunk mode and source-function) while preserving user boundary
-    conditions and fixed sources.  If ``save_angular_flux`` is false, this transition
-    enables it.
+    conditions and fixed sources.
+
+    Requires ``options.save_angular_flux=True`` at problem creation.
     )"
   );
   do_problem.def(
@@ -845,8 +760,7 @@ WrapLBS(py::module& slv)
     -----
     Switch problem from time-dependent to steady-state mode. This updates problem
     internals (sweep chunk mode and source-function) while preserving user boundary
-    conditions and fixed sources. If ``save_angular_flux`` was auto-enabled when
-    entering time-dependent mode, this call restores the previous value.
+    conditions and fixed sources.
     )"
   );
   do_problem.def(
@@ -854,30 +768,6 @@ WrapLBS(py::module& slv)
     &DiscreteOrdinatesProblem::IsTimeDependent,
     R"(
     Return ``True`` if the problem is currently in time-dependent mode.
-    )"
-  );
-  do_problem.def(
-    "SetOptions",
-    [](DiscreteOrdinatesProblem& self, py::kwargs& params)
-    {
-      InputParameters input = DiscreteOrdinatesProblem::GetOptionsBlock();
-      input.AssignParameters(kwargs_to_param_block(params));
-      self.SetOptions(input);
-    },
-    R"(
-    Set problem options from a large list of parameters.
-
-    Parameters
-    ----------
-    **kwargs
-        Same option keys and semantics as :meth:`LBSProblem.SetOptions`.
-
-    Notes
-    -----
-    This call is additive: only options explicitly supplied are updated.
-
-    As with :meth:`LBSProblem.SetOptions`, if ``adjoint`` is explicitly supplied and differs from
-    the current mode, the same mode-transition behavior as :meth:`LBSProblem.SetAdjoint` is used.
     )"
   );
   do_problem.def(
@@ -923,8 +813,7 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
-    Mode transitions via ``SetOptions(adjoint=...)`` (or the low-level
-    :meth:`LBSProblem.SetAdjoint`) clear all boundary conditions.
+    Mode transitions via :meth:`LBSProblem.SetAdjoint` clear all boundary conditions.
     Reapply boundaries with this method before solving in the new mode.
     )"
   );
@@ -972,8 +861,7 @@ WrapLBS(py::module& slv)
     Return field functions for selected angular flux components.
 
     Note: You must enable angular flux storage (``save_angular_flux=True``) in
-    the problem options, or use a transient/time-dependent solver that retains
-    angular fluxes, otherwise the field functions will remain zero.
+    the problem options, otherwise the field functions will remain zero.
 
     Example
     -------
@@ -1221,8 +1109,7 @@ WrapLBS(py::module& slv)
     volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
         A list of volumetric sources.
     options : dict, optional
-        A block of optional configuration parameters. Each dictionary supports the same keys as
-        :meth:`LBSProblem.SetOptions`, including:
+        A block of optional configuration parameters applied at problem creation, including:
           - max_mpi_message_size: int, default=32768
           - restart_writes_enabled: bool, default=False
           - write_delayed_psi_to_restart: bool, default=True
@@ -1245,6 +1132,7 @@ WrapLBS(py::module& slv)
           - field_function_prefix: str, default=''
     sweep_type : str, optional
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
+        If ``time_dependent=True``, ``options.save_angular_flux=True`` is required.
     )"
   );
 }

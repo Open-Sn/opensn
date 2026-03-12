@@ -68,6 +68,7 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_water},
         ],
         volumetric_sources=[src1],
+        options={"save_angular_flux": True},
     )
 
     solver = TransientSolver(problem=phys, dt=0.01, theta=0.5, stop_time=0.1, initial_state="zero")

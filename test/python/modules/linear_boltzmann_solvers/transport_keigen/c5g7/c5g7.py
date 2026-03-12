@@ -97,6 +97,7 @@ if __name__ == "__main__":
         options={
             "verbose_outer_iterations": True,
             "verbose_inner_iterations": True,
+            "save_angular_flux": "smm" in k_method,
             "power_field_function_on": True,
             "power_default_kappa": 1.0,
             "power_normalization": 1.0,

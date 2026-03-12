@@ -71,8 +71,10 @@ DiscreteOrdinatesProblem::GetInputParameters()
   params.AddOptionalParameter(
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
   params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
-  params.AddOptionalParameter(
-    "time_dependent", false, "If true, initializes the problem in time-dependent mode.");
+  params.AddOptionalParameter("time_dependent",
+                              false,
+                              "If true, initializes the problem in time-dependent mode. "
+                              "Requires `options.save_angular_flux=true`.");
 
   return params;
 }
@@ -133,9 +135,11 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
       throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
 
+    OpenSnInvalidArgumentIf(not options_.save_angular_flux,
+                            GetName() + ": `time_dependent=true` requires "
+                                        "`options.save_angular_flux=true`.");
+
     SetSweepChunkMode(SweepChunkMode::TimeDependent);
-    if (not options_.save_angular_flux)
-      LBSProblem::SetSaveAngularFlux(true);
   }
   else
     SetSweepChunkMode(SweepChunkMode::SteadyState);
@@ -618,18 +622,11 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 
   const auto prepare_for_transient = [&]()
   {
-    save_angular_flux_before_transient_ = options_.save_angular_flux;
-    forced_save_angular_flux_for_transient_ = not options_.save_angular_flux;
-    if (not forced_save_angular_flux_for_transient_)
-      return;
-
     // Cache converged steady-state flux moments
     const auto phi_new_ref = GetPhiNewLocal();
     const auto phi_old_ref = GetPhiOldLocal();
 
-    // Enable save_angular_fluxes and reconstruct psi from the converged steady-state
-    // phi before enabling transient RHS time terms.
-    DiscreteOrdinatesProblem::SetSaveAngularFlux(true);
+    // Reconstruct psi from the converged steady-state phi before enabling transient RHS time terms.
     ReinitializeSolverSchemes();
     // A single call to RebuildAngularFluxFromConvergedPhi is insufficient with
     // lagged angular fluxes. Instead, we perform a fixed-point iteration on the
@@ -734,6 +731,9 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
       throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
     if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
       throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
+    OpenSnInvalidArgumentIf(not options_.save_angular_flux,
+                            GetName() +
+                              ": Time-dependent mode requires `options.save_angular_flux=true`.");
   }
 
   const bool default_to_transient = has_no_active_mode and switching_to_transient;
@@ -757,12 +757,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
       SetSweepChunkMode(SweepChunkMode::TimeDependent);
     }
     else
-    {
       SetSweepChunkMode(SweepChunkMode::SteadyState);
-      if (forced_save_angular_flux_for_transient_)
-        DiscreteOrdinatesProblem::SetSaveAngularFlux(save_angular_flux_before_transient_);
-      forced_save_angular_flux_for_transient_ = false;
-    }
   }
 
   if (switching_modes or default_to_transient)

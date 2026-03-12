@@ -604,7 +604,7 @@ AAHSweepChunk::Sweep_FixedN(AngleSet& angle_set)
                     num_moments_,
                     max_num_cell_dofs_,
                     min_num_cell_dofs_,
-                    save_angular_flux_,
+                    SaveAngularFluxEnabled(),
                     groupset_angle_group_stride_,
                     groupset_group_stride_,
                     destination_phi_,

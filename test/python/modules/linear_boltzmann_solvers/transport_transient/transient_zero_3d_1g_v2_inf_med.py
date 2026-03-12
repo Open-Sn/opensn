@@ -75,6 +75,7 @@ if __name__ == "__main__":
             {"name": "zmin", "type": "reflecting"},
             {"name": "zmax", "type": "reflecting"},
         ],
+        options={"save_angular_flux": True},
     )
 
     solver = TransientSolver(problem=phys, dt=0.05, theta=1.0, stop_time=1.0, initial_state="zero")
