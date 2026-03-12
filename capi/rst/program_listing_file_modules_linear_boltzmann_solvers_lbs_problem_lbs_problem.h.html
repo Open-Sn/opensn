@@ -133,8 +133,6 @@
 <span class="w">  </span><span class="c1">/// Returns a constant reference to the solver options.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">LBSOptions</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetOptions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
-
 <span class="w">  </span><span class="c1">/// Returns simulation time in seconds for time dependent problems.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetTime</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
@@ -169,7 +167,10 @@
 <span class="cm">   * mode-transition reset. Materials are reinitialized in the selected mode,</span>
 <span class="cm">   * sources and boundaries are cleared, and solution vectors are zeroed.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetAdjoint</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetAdjoint</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Set the problem to forward mode.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetForward</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Returns true if the problem is in adjoint mode.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjoint</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -472,8 +473,6 @@
 
 <span class="w">  </span><span class="c1">/// Flag indicating if GPU acceleration is enabled.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpus_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">applied_adjoint_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">applied_save_angular_flux_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeRuntimeCore</span><span class="p">();</span>
@@ -497,9 +496,7 @@
 <span class="w">  </span><span class="c1">/// Initialize sources</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSources</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReadOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateOptions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ApplyOptions</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ParseOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="nf">BuildRestartPath</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path_stem</span><span class="p">);</span>
 

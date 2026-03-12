@@ -318,24 +318,20 @@ within each group (inner index = moment, outer index = group).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetAdjoint">
-<span class="sig-name descname"><span class="pre">SetAdjoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SetAdjoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="Link to this definition"></a></dt>
 <dd><p>Set forward/adjoint transport mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> enables adjoint mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> enables forward mode.</p>
+<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=True</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> enables adjoint mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> enables forward mode.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <dl class="simple">
-<dt>This is one of three supported mode-setting paths in Python:</dt><dd><ol class="arabic simple">
+<dt>This is one of two supported mode-setting paths in Python:</dt><dd><ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">options={'adjoint':</span> <span class="pre">...}</span></code> in the problem constructor.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SetOptions(adjoint=...)</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SetAdjoint(...)</span></code> (this method).</p></li>
 </ol>
 </dd>
-</dl>
-<p>In typical Python workflows, use constructor options or <code class="docutils literal notranslate"><span class="pre">SetOptions</span></code>.</p>
-<dl class="simple">
 <dt>If this changes mode, OpenSn performs a full mode-transition reset:</dt><dd><ul class="simple">
 <li><p>Materials are reinitialized in the selected mode.</p></li>
 <li><p>Point and volumetric sources are cleared.</p></li>
@@ -361,61 +357,10 @@ to avoid hidden coupling between forward and adjoint setups.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetOptions">
-<span class="sig-name descname"><span class="pre">SetOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.SetOptions" title="Link to this definition"></a></dt>
-<dd><p>Set problem options from a large list of parameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>max_mpi_message_size</strong> (<em>int default=32768</em>) – The maximum MPI message size used during sweeps.</p></li>
-<li><p><strong>restart_writes_enabled</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag that controls writing of restart dumps.
-Requires <code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code> to be set to a non-empty value.</p></li>
-<li><p><strong>write_delayed_psi_to_restart</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag that controls writing of delayed angular fluxes to restarts.</p></li>
-<li><p><strong>read_restart_path</strong> (<em>str</em><em>, </em><em>default=''</em>) – Full path for reading restart dumps including file basename.</p></li>
-<li><p><strong>write_restart_path</strong> (<em>str</em><em>, </em><em>default=''</em>) – Full path for writing restart dumps including file basename.</p></li>
-<li><p><strong>write_restart_time_interval</strong> (<em>int</em><em>, </em><em>default=0</em>) – Time interval in seconds at which restart data is to be written.
-Must be <code class="docutils literal notranslate"><span class="pre">0</span></code> (disabled) or at least <code class="docutils literal notranslate"><span class="pre">30</span></code> seconds.</p></li>
-<li><p><strong>use_precursors</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for using delayed neutron precursors.</p></li>
-<li><p><strong>use_source_moments</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag for ignoring fixed sources and selectively using source moments obtained elsewhere.</p></li>
-<li><p><strong>save_angular_flux</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag indicating whether angular fluxes are to be stored or not.</p></li>
-<li><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Toggle adjoint transport mode.</p></li>
-<li><p><strong>verbose_inner_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of inner iterations.</p></li>
-<li><p><strong>verbose_outer_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
-<li><p><strong>max_ags_iterations</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum number of across-groupset iterations. <code class="docutils literal notranslate"><span class="pre">0</span></code> is allowed.</p></li>
-<li><p><strong>ags_tolerance</strong> (<em>float</em><em>, </em><em>default=1.0e-6</em>) – Across-groupset iterations tolerance.</p></li>
-<li><p><strong>ags_convergence_check</strong> (<em>{'l2'</em><em>, </em><em>'pointwise'}</em><em>, </em><em>default='l2'</em>) – Type of convergence check for AGS iterations.</p></li>
-<li><p><strong>verbose_ags_iterations</strong> (<em>bool</em><em>, </em><em>default=True</em>) – Flag to control verbosity of across-groupset iterations.</p></li>
-<li><p><strong>power_field_function_on</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Flag to control the creation of the power generation field function. If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, a
-field function will be created with the general name <code class="docutils literal notranslate"><span class="pre">&lt;solver_name&gt;_power_generation</span></code>.</p></li>
-<li><p><strong>power_default_kappa</strong> (<em>float</em><em>, </em><em>default=3.20435e-11</em>) – Default <code class="docutils literal notranslate"><span class="pre">kappa</span></code> value (Energy released per fission) to use for power generation when cross
-sections do not have <code class="docutils literal notranslate"><span class="pre">kappa</span></code> values. Default corresponds to 200 MeV per fission.</p></li>
-<li><p><strong>power_normalization</strong> (<em>float</em><em>, </em><em>default=-1.0</em>) – Power normalization factor to use. Supply a negative or zero number to turn this off.</p></li>
-<li><p><strong>field_function_prefix_option</strong> (<em>{'prefix'</em><em>, </em><em>'solver_name'}</em><em>, </em><em>default='prefix'</em>) – Prefix option on field function names. If unset, flux field functions will be exported as
-<code class="docutils literal notranslate"><span class="pre">phi_gXXX_mYYY</span></code>, where <code class="docutils literal notranslate"><span class="pre">XXX</span></code> is the zero-padded 3-digit group number and <code class="docutils literal notranslate"><span class="pre">YYY</span></code> is the
-zero-padded 3-digit moment.</p></li>
-<li><p><strong>field_function_prefix</strong> (<em>str</em><em>, </em><em>default=''</em>) – Prefix to use on all field functions. By default, this is empty. If specified, flux moments
-are exported as <code class="docutils literal notranslate"><span class="pre">prefix_phi_gXXX_mYYY</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This call is additive: only options explicitly supplied are updated.</p>
-<dl class="simple">
-<dt>This is one of three supported mode-setting paths in Python:</dt><dd><ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">options={'adjoint':</span> <span class="pre">...}</span></code> in the problem constructor.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SetOptions(adjoint=...)</span></code> (this method).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SetAdjoint(...)</span></code>.</p></li>
-</ol>
-</dd>
-</dl>
-<p>If <code class="docutils literal notranslate"><span class="pre">adjoint</span></code> is explicitly supplied in this call and differs from the current mode, OpenSn
-performs the same mode-transition behavior as <a class="reference internal" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">adjoint</span></code>
-is omitted, the existing mode is unchanged.</p>
-<p>Options requirements:
-- <code class="docutils literal notranslate"><span class="pre">restart_writes_enabled=True</span></code> requires non-empty <code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code>.
-- <code class="docutils literal notranslate"><span class="pre">write_restart_time_interval&gt;0</span></code> requires <code class="docutils literal notranslate"><span class="pre">restart_writes_enabled=True</span></code>.
-- <code class="docutils literal notranslate"><span class="pre">write_restart_time_interval</span></code> must be <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">&gt;=30</span></code>.
-- non-empty <code class="docutils literal notranslate"><span class="pre">field_function_prefix</span></code> requires <code class="docutils literal notranslate"><span class="pre">field_function_prefix_option='prefix'</span></code>.</p>
+<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetForward">
+<span class="sig-name descname"><span class="pre">SetForward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.SetForward" title="Link to this definition"></a></dt>
+<dd><p>Set forward transport mode.</p>
+<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">SetAdjoint(False)</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -431,11 +376,6 @@ is omitted, the existing mode is unchanged.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetSaveAngularFlux">
-<span class="sig-name descname"><span class="pre">SetSaveAngularFlux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.LBSProblem.SetSaveAngularFlux" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.LBSProblem.SetVolumetricSources">
@@ -476,8 +416,7 @@ is omitted, the existing mode is unchanged.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Forward/adjoint mode toggles via <code class="docutils literal notranslate"><span class="pre">SetOptions(adjoint=...)</span></code> (or the low-level
-<a class="reference internal" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code></a>) do not change this map.
+<p>Forward/adjoint mode toggles via <a class="reference internal" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code></a> do not change this map.
 The <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves are mutable and shared by pointer. If the same
 <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> handle is shared across multiple problems, toggling adjoint mode in one
 problem also changes the transport mode seen by the others.</p>

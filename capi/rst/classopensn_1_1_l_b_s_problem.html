@@ -133,11 +133,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem10SetOptionsERK15InputParameters">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a4c259154c7d4de3961df5ed2e21a0844"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetOptions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">input</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem10SetOptionsERK15InputParameters" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem7GetTimeEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a759fb9ce8d649278e29a0009aea091a4"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetTime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem7GetTimeEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns simulation time in seconds for time dependent problems. </p>
@@ -193,9 +188,15 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem10SetAdjointEb">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a323a600e07330180da692a0042843923"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetAdjoint</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adjoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem10SetAdjointEb" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a48dd135e54c0215cd159dea54b81e765"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetAdjoint</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adjoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem10SetAdjointEb" title="Link to this definition"></a><br /></dt>
 <dd><p>Toggle forward/adjoint transport mode. </p>
 <p>If the requested mode differs from the current mode, this performs a mode-transition reset. Materials are reinitialized in the selected mode, sources and boundaries are cleared, and solution vectors are zeroed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem10SetForwardEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a8b1a17b113d5b416773a7f4aae3f5a2d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetForward</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem10SetForwardEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the problem to forward mode. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -997,16 +998,6 @@
 <span class="target" id="classopensn_1_1_l_b_s_problem_1aeef65ee41c90d9af29ff3926a5ea2079"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_gpus_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem9use_gpus_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Flag indicating if GPU acceleration is enabled. </p>
 </dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem16applied_adjoint_E">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a6dc8d2290a0319fcb3cfcde2232dd98c"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">applied_adjoint_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem16applied_adjoint_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem26applied_save_angular_flux_E">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1acc8591269a9cfa464a7fe9f4c715b761"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">applied_save_angular_flux_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem26applied_save_angular_flux_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
 
 </div>
 </dd></dl>

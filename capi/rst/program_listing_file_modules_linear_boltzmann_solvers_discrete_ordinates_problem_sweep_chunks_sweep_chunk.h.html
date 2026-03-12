@@ -131,7 +131,6 @@
 <span class="w">      </span><span class="n">num_moments_</span><span class="p">(</span><span class="n">num_moments</span><span class="p">),</span>
 <span class="w">      </span><span class="n">max_num_cell_dofs_</span><span class="p">(</span><span class="n">max_num_cell_dofs</span><span class="p">),</span>
 <span class="w">      </span><span class="n">min_num_cell_dofs_</span><span class="p">(</span><span class="n">min_num_cell_dofs</span><span class="p">),</span>
-<span class="w">      </span><span class="n">save_angular_flux_</span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">destination_psi</span><span class="p">.</span><span class="n">empty</span><span class="p">()),</span>
 <span class="w">      </span><span class="n">groupset_angle_group_stride_</span><span class="p">(</span><span class="n">groupset_</span><span class="p">.</span><span class="n">psi_uk_man_</span><span class="p">.</span><span class="n">GetNumberOfUnknowns</span><span class="p">()</span><span class="w"> </span><span class="o">*</span>
 <span class="w">                                   </span><span class="n">groupset_</span><span class="p">.</span><span class="n">GetNumGroups</span><span class="p">()),</span>
 <span class="w">      </span><span class="n">groupset_group_stride_</span><span class="p">(</span><span class="n">groupset_</span><span class="p">.</span><span class="n">GetNumGroups</span><span class="p">()),</span>
@@ -157,6 +156,9 @@
 
 <span class="w">  </span><span class="c1">/// Sets all elements of the output angular flux vector to zero.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroDestinationPsi</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">(</span><span class="n">destination_psi_</span><span class="p">).</span><span class="n">assign</span><span class="p">((</span><span class="n">destination_psi_</span><span class="p">).</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns true if angular flux storage is allocated.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">SaveAngularFluxEnabled</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">destination_psi_</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Activates or deactives the surface src flag.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundarySourceActiveFlag</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">flag_value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">surface_source_active_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flag_value</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -191,7 +193,6 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_moments_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_num_cell_dofs_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">min_num_cell_dofs_</span><span class="p">;</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">save_angular_flux_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_angle_group_stride_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_group_stride_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">destination_phi_</span><span class="p">;</span>

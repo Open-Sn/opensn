@@ -270,15 +270,20 @@
     <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]}</span>
 <span class="p">]</span>
 
-<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span> <span class="n">groupsets</span><span class="o">=</span><span class="n">group_sets</span><span class="p">,</span> <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_mapping</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">bound_conditions</span><span class="p">)</span>
-
-<span class="n">phys</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span>
-    <span class="n">verbose_inner_iterations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">verbose_outer_iterations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">use_precursors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">power_default_kappa</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">power_normalization</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">save_angular_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">group_sets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_mapping</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">bound_conditions</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_outer_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;use_precursors&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;power_default_kappa&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">&quot;power_normalization&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>
 </div>
