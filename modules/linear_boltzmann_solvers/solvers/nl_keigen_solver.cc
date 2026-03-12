@@ -8,8 +8,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
+#include "framework/utils/error.h"
 #include "framework/runtime.h"
-#include <stdexcept>
 
 namespace opensn
 {
@@ -22,7 +22,7 @@ NonLinearKEigenSolver::GetInputParameters()
   InputParameters params = Solver::GetInputParameters();
 
   params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
-  params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
+  params.ChangeExistingParamToOptional("name", "NonLinearKEigenSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 
   // Non-linear solver parameters
@@ -43,6 +43,7 @@ NonLinearKEigenSolver::GetInputParameters()
                               0,
                               "The number of initial power iterations to execute before entering "
                               "the non-linear algorithm");
+  params.ConstrainParameterRange("num_initial_power_iterations", AllowableRangeLowLimit::New(0));
 
   return params;
 }
@@ -60,7 +61,7 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
     nl_context_(std::make_shared<NLKEigenAGSContext>(do_problem_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
-    num_initial_power_its_(params.GetParamValue<int>("num_initial_power_iterations"))
+    num_initial_power_its_(params.GetParamValue<unsigned int>("num_initial_power_iterations"))
 {
   auto& tolerances = nl_solver_.GetToleranceOptions();
 
@@ -80,17 +81,16 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
 void
 NonLinearKEigenSolver::Initialize()
 {
-  if (do_problem_->IsTimeDependent())
-    throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."
-                                         "SetSteadyStateMode() before initializing this solver.");
+  OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
+                          GetName() + ": Problem is in time-dependent mode. Call problem."
+                                      "SetSteadyStateMode() before initializing this solver.");
   initialized_ = true;
 }
 
 void
 NonLinearKEigenSolver::Execute()
 {
-  if (not initialized_)
-    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
+  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   if (reset_phi0_)
     LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);

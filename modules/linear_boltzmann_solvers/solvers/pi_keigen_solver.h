@@ -12,7 +12,6 @@ namespace opensn
 class DiscreteOrdinatesProblem;
 class DiscreteOrdinatesKEigenAcceleration;
 class AGSLinearSolver;
-class LinearSolver;
 
 class PowerIterationKEigenSolver : public Solver
 {
@@ -50,9 +49,6 @@ protected:
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   SetSourceFunction active_set_source_function_;
 
-  const LBSGroupset& front_gs_;
-  std::shared_ptr<LinearSolver> front_wgs_solver_;
-  std::shared_ptr<WGSContext> front_wgs_context_;
   bool initialized_ = false;
 
 private:

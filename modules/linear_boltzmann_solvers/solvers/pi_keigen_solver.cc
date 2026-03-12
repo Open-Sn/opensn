@@ -9,13 +9,13 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/hdf_utils.h"
+#include "framework/utils/error.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
+#include <cmath>
 #include <iomanip>
-#include <stdexcept>
-#include "sys/stat.h"
 
 namespace opensn
 {
@@ -35,8 +35,6 @@ PowerIterationKEigenSolver::GetInputParameters()
     "acceleration", {}, "The acceleration method");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
   params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
-  params.AddOptionalParameter(
-    "reset_solution", true, "If set to true will initialize the flux moments to 1.0");
   params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
   return params;
 }
@@ -61,17 +59,16 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
     q_moments_local_(do_problem_->GetQMomentsLocal()),
     phi_old_local_(do_problem_->GetPhiOldLocal()),
     phi_new_local_(do_problem_->GetPhiNewLocal()),
-    groupsets_(do_problem_->GetGroupsets()),
-    front_gs_(groupsets_.front())
+    groupsets_(do_problem_->GetGroupsets())
 {
 }
 
 void
 PowerIterationKEigenSolver::Initialize()
 {
-  if (do_problem_->IsTimeDependent())
-    throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."
-                                         "SetSteadyStateMode() before initializing this solver.");
+  OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
+                          GetName() + ": Problem is in time-dependent mode. Call problem."
+                                      "SetSteadyStateMode() before initializing this solver.");
 
   const auto& options = do_problem_->GetOptions();
   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
@@ -94,11 +91,6 @@ PowerIterationKEigenSolver::Initialize()
                                options.max_ags_iterations > 1;
   ags_solver_->SetVerbosity(print_ags_iters);
 
-  front_wgs_solver_ = do_problem_->GetWGSSolver(front_gs_.id);
-  front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
-
-  OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
-
   bool restart_successful = false;
   if (not options.read_restart_path.empty())
     restart_successful = ReadRestartData();
@@ -116,8 +108,7 @@ PowerIterationKEigenSolver::Initialize()
 void
 PowerIterationKEigenSolver::Execute()
 {
-  if (not initialized_)
-    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
+  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   if (acceleration_)
     acceleration_->PreExecute();
@@ -131,6 +122,9 @@ PowerIterationKEigenSolver::Execute()
   bool converged = false;
   while (nit < max_iters_)
   {
+    OpenSnLogicalErrorIf(k_eff_ <= 0.0 or not std::isfinite(k_eff_),
+                         GetName() + ": invalid k_eff encountered: " + std::to_string(k_eff_));
+
     // Set the fission source
     SetLBSFissionSource(phi_old_local_, false);
     do_problem_->ScaleQMoments(1.0 / k_eff_);
@@ -150,14 +144,19 @@ PowerIterationKEigenSolver::Execute()
     else
     {
       const auto F_new = ComputeFissionProduction(*do_problem_, phi_new_local_);
+      OpenSnLogicalErrorIf(
+        F_prev_ == 0.0, GetName() + ": previous fission production is zero. Cannot update k_eff.");
       k_eff_ = F_new / F_prev_ * k_eff_;
       F_prev_ = F_new;
     }
 
+    OpenSnLogicalErrorIf(k_eff_ <= 0.0 or not std::isfinite(k_eff_),
+                         GetName() + ": invalid k_eff computed: " + std::to_string(k_eff_));
+
     const double reactivity = (k_eff_ - 1.0) / k_eff_;
 
     // Check convergence, bookkeeping
-    k_eff_change = fabs(k_eff_ - k_eff_prev) / k_eff_;
+    k_eff_change = std::fabs(k_eff_ - k_eff_prev) / k_eff_;
     k_eff_prev = k_eff_;
     nit += 1;
 
@@ -196,6 +195,7 @@ PowerIterationKEigenSolver::Execute()
     auto wgs_solver = do_problem_->GetWGSSolver(gsid);
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
+    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
     total_num_sweeps += wgs_context->counter_applications_of_inv_op;
   }
 
