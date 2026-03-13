@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # Material
     num_groups = 64
     xs_diag = MultiGroupXS()
-    xs_diag.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
+    xs_diag.LoadFromOpenSn("../../../../assets/xs/diag_XS_64g_1mom_c0.99.xs")
 
     bsrc = []
     for g in range(num_groups):
