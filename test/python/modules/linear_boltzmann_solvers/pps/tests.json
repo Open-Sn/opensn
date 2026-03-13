@@ -126,5 +126,17 @@
         "abs_tol": 1e-8
       }
     ]
+  },
+  {
+    "file": "transport_3d.py",
+    "comment": "Computing volumetric post-processors on 3D domain",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
   }
 ]
