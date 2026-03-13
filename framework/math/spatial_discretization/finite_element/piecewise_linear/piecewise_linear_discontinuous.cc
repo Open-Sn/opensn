@@ -396,7 +396,7 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
   return -1;
 }
 
-size_t
+std::uint64_t
 PieceWiseLinearDiscontinuous::GetNumGhostDOFs(const UnknownManager& unknown_manager) const
 {
   return 0;

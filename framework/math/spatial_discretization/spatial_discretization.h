@@ -81,28 +81,28 @@ public:
   virtual uint64_t MapDOFLocal(const Cell& cell, unsigned int node) const = 0;
 
   /// Returns the number of local nodes used in this discretization.
-  size_t GetNumLocalNodes() const;
+  std::uint64_t GetNumLocalNodes() const;
 
   /// Returns the number of global nodes used in this discretization.
-  size_t GetNumGlobalNodes() const;
+  std::uint64_t GetNumGlobalNodes() const;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of local
    * degrees-of-freedom.
    */
-  size_t GetNumLocalDOFs(const UnknownManager& unknown_manager) const;
+  std::uint64_t GetNumLocalDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of global
    * degrees-of-freedom.
    */
-  size_t GetNumGlobalDOFs(const UnknownManager& unknown_manager) const;
+  std::uint64_t GetNumGlobalDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the unknown structure in the unknown manager, returns the number of ghost
    * degrees-of-freedom.
    */
-  virtual size_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const = 0;
+  virtual std::uint64_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const = 0;
 
   /**
    *For the unknown structure in the unknown manager, returns the global IDs of all the ghost
@@ -114,7 +114,7 @@ public:
    * For the unknown structure in the unknown manager, returns the number of local- and ghost
    * degrees-of-freedom.
    */
-  size_t GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const;
+  std::uint64_t GetNumLocalAndGhostDOFs(const UnknownManager& unknown_manager) const;
 
   /**
    * For the given cell, returns the number of relevant nodes. The same can be achieved by
