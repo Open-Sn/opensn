@@ -43,9 +43,6 @@ private:
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   std::shared_ptr<AGSLinearSolver> ags_solver_;
 
-  std::vector<double>* q_moments_local_ = nullptr;
-  std::vector<double>* phi_old_local_ = nullptr;
-
   std::vector<double>* phi_new_local_ = nullptr;
   std::vector<double>* precursor_new_local_ = nullptr;
   std::vector<std::vector<double>>* psi_new_local_ = nullptr;
@@ -53,7 +50,6 @@ private:
   /// Previous time step vectors
   std::vector<double> phi_prev_local_;
   std::vector<double> precursor_prev_local_;
-  std::vector<std::vector<double>> psi_prev_local_;
 
   /// Time discretization values and methods
   double stop_time_ = 0.1;

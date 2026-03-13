@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log.h"
+#include "framework/utils/error.h"
 #include "framework/runtime.h"
 #include <iomanip>
 #include <limits>
@@ -72,8 +73,6 @@ TransientSolver::TransientSolver(const InputParameters& params)
 void
 TransientSolver::RefreshLocalViews()
 {
-  q_moments_local_ = &do_problem_->GetQMomentsLocal();
-  phi_old_local_ = &do_problem_->GetPhiOldLocal();
   phi_new_local_ = &do_problem_->GetPhiNewLocal();
   precursor_new_local_ = &do_problem_->GetPrecursorsNewLocal();
   psi_new_local_ = &do_problem_->GetPsiNewLocal();
@@ -99,9 +98,9 @@ TransientSolver::Initialize()
 
   const std::string& init_state = initial_state_;
   RefreshLocalViews();
-  if (not phi_new_local_ or phi_new_local_->empty())
-    throw std::runtime_error(GetName() + ": Problem must be fully constructed before "
-                                         "TransientSolver initialization.");
+  OpenSnLogicalErrorIf(not phi_new_local_ or phi_new_local_->empty(),
+                       GetName() + ": Problem must be fully constructed before "
+                                   "TransientSolver initialization.");
 
   if (init_state == "zero")
   {
@@ -111,9 +110,9 @@ TransientSolver::Initialize()
       std::fill(psi.begin(), psi.end(), 0.0);
   }
 
-  if (not do_problem_->IsTimeDependent())
-    throw std::runtime_error(GetName() + ": Problem is in steady-state mode. Call problem."
-                                         "SetTimeDependentMode() before initializing this solver.");
+  OpenSnInvalidArgumentIf(not do_problem_->IsTimeDependent(),
+                          GetName() + ": Problem is in steady-state mode. Call problem."
+                                      "SetTimeDependentMode() before initializing this solver.");
   do_problem_->SetTime(current_time_);
   RefreshLocalViews();
   ags_solver_ = do_problem_->GetAGSSolver();
@@ -136,7 +135,6 @@ TransientSolver::Initialize()
   // Sync with the current solution
   phi_prev_local_ = *phi_new_local_;
   precursor_prev_local_ = *precursor_new_local_;
-  psi_prev_local_ = *psi_new_local_;
 
   initialized_ = true;
 }
@@ -145,15 +143,13 @@ void
 TransientSolver::Execute()
 {
   log.Log() << "Executing " << GetName() << ".";
-  if (not initialized_)
-    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
+  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   const double t0 = current_time_;
   const double tf = stop_time_;
   const double dt_nominal = do_problem_->GetTimeStep();
 
-  if (tf < t0)
-    throw std::runtime_error(GetName() + ": stop_time must be >= current_time");
+  OpenSnInvalidArgumentIf(tf < t0, GetName() + ": stop_time must be >= current_time");
 
   const double tol =
     64.0 * std::numeric_limits<double>::epsilon() * std::max({1.0, std::abs(tf), std::abs(t0)});
@@ -176,8 +172,7 @@ TransientSolver::Execute()
         pre_advance_callback_();
 
       const double dt = do_problem_->GetTimeStep();
-      if (dt <= 0.0)
-        throw std::runtime_error(GetName() + ": dt must be positive");
+      OpenSnLogicalErrorIf(dt <= 0.0, GetName() + ": dt must be positive");
       const double step_dt = (remaining < dt) ? remaining : dt;
       do_problem_->SetTimeStep(step_dt);
       do_problem_->SetTime(current_time_);
@@ -210,8 +205,7 @@ void
 TransientSolver::Advance()
 {
   const auto& options = do_problem_->GetOptions();
-  if (not initialized_)
-    throw std::runtime_error(GetName() + ": Initialize must be called before Advance.");
+  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Advance.");
   if (enforce_stop_time_ and stop_time_ <= current_time_)
   {
     if (verbose_)
@@ -222,13 +216,18 @@ TransientSolver::Advance()
   const double theta = do_problem_->GetTheta();
 
   // Ensure RHS time term is enabled for transient sweeps
+  std::vector<std::shared_ptr<SweepWGSContext>> transient_sweep_contexts;
+  transient_sweep_contexts.reserve(do_problem_->GetNumWGSSolvers());
   for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
   {
     auto wgs_solver = do_problem_->GetWGSSolver(gsid);
     auto context = wgs_solver->GetContext();
     auto sweep_context = std::dynamic_pointer_cast<SweepWGSContext>(context);
     if (sweep_context)
+    {
+      transient_sweep_contexts.push_back(sweep_context);
       sweep_context->sweep_chunk->IncludeRHSTimeTerm(true);
+    }
   }
 
   do_problem_->SetTime(current_time_);
@@ -241,7 +240,6 @@ TransientSolver::Advance()
 
   // Zero source moments before recomputing sources for this step
   do_problem_->ZeroQMoments();
-  UpdateHasFissionableMaterial();
 
   // Solve
   do_problem_->SetPhiOldFrom(phi_prev_local_);
@@ -250,9 +248,20 @@ TransientSolver::Advance()
     if (current_solver.get() != ags_solver_.get())
       ags_solver_ = std::move(current_solver);
   }
-  if (not ags_solver_)
-    throw std::runtime_error(GetName() + ": AGS solver not available.");
-  ags_solver_->Solve();
+  OpenSnLogicalErrorIf(not ags_solver_, GetName() + ": AGS solver not available.");
+  try
+  {
+    ags_solver_->Solve();
+  }
+  catch (...)
+  {
+    for (const auto& sweep_context : transient_sweep_contexts)
+      sweep_context->sweep_chunk->IncludeRHSTimeTerm(false);
+    throw;
+  }
+
+  for (const auto& sweep_context : transient_sweep_contexts)
+    sweep_context->sweep_chunk->IncludeRHSTimeTerm(false);
 
   // For non-fission source-only problems, match TimeDependentSourceSolver behavior.
   // For fissioning problems (and any precursor case), apply the transient
@@ -278,7 +287,6 @@ TransientSolver::Advance()
   current_time_ += dt;
   do_problem_->SetTime(current_time_);
   phi_prev_local_ = *phi_new_local_;
-  psi_prev_local_ = *psi_new_local_;
   do_problem_->UpdateFieldFunctions();
   do_problem_->UpdatePsiOld();
   if (options.use_precursors)

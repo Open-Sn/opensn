@@ -9,9 +9,9 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/object_factory.h"
 #include "framework/utils/hdf_utils.h"
+#include "framework/utils/error.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
-#include <stdexcept>
 #include <memory>
 
 namespace opensn
@@ -50,9 +50,9 @@ SteadyStateSourceSolver::Initialize()
   CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Initialize");
 
   if (auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(lbs_problem_))
-    if (do_problem->IsTimeDependent())
-      throw std::runtime_error(GetName() + ": Problem is in time-dependent mode. Call problem."
-                                           "SetSteadyStateMode() before initializing this solver.");
+    OpenSnInvalidArgumentIf(do_problem->IsTimeDependent(),
+                            GetName() + ": Problem is in time-dependent mode. Call problem."
+                                        "SetSteadyStateMode() before initializing this solver.");
   initialized_ = true;
 
   if (not lbs_problem_->GetOptions().read_restart_path.empty())
@@ -64,8 +64,7 @@ SteadyStateSourceSolver::Execute()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Execute");
 
-  if (not initialized_)
-    throw std::runtime_error(GetName() + ": Initialize must be called before Execute.");
+  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   const auto& options = lbs_problem_->GetOptions();
 
