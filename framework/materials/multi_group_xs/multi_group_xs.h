@@ -92,6 +92,10 @@ public:
 
   const std::vector<double>& GetNuDelayedSigmaF() const { return nu_delayed_sigma_f_; }
 
+  // NOTE: The LBS source and fission-production routies assume this matrix represents
+  // prompt production when delayed-neutron modeling is enabled, and add delayed
+  // production from nu_delayed_sigma_f separately. If production_matrix ever includes
+  // delayed contributions, those routines must be updated to avoid double counting.
   const std::vector<std::vector<double>>& GetProductionMatrix() const
   {
     return adjoint_ ? transposed_production_matrix_ : production_matrix_;
@@ -152,7 +156,8 @@ private:
   /// Sparse scattering matrix
   std::vector<SparseMatrix> transfer_matrices_;
   std::vector<SparseMatrix> transposed_transfer_matrices_;
-  /// Total neutron production matrix
+  /// Neutron production matrix used by transport source assembly.
+  /// See GetProductionMatrix note regarding prompt-vs-delayed semantics.
   std::vector<std::vector<double>> production_matrix_;
   std::vector<std::vector<double>> transposed_production_matrix_;
 
