@@ -6,8 +6,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aahd_async_comm.h"
 #include "caribou/main.hpp"
-#include <latch>
 #include <memory>
+#include <mutex>
 #include <set>
 
 namespace crb = caribou;
@@ -40,13 +40,19 @@ public:
   void UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets) override;
 
   /// Set the latch value to wait on before starting the sweep.
-  void SetStartingLatch();
+  void ResetDependencyCounter();
 
   void InitializeDelayedUpstreamData() override;
 
   int GetMaxBufferMessages() const override { return async_comm_.GetMaxNumMessages(); }
 
   void SetMaxBufferMessages(int count) override { async_comm_.SetMaxNumMessages(count); }
+
+  void PrepostReceives();
+
+  bool IsReady();
+
+  void WaitForDownstreamAndDelayed();
 
   AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission) override;
 
@@ -82,6 +88,8 @@ public:
     return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num);
   }
 
+  static std::mutex m;
+
 protected:
   /// Associated CUDA stream.
   crb::Stream stream_;
@@ -94,12 +102,8 @@ protected:
 
   /// Number of anglesets the current angle set depends on.
   std::size_t num_dependencies_ = 0;
-  /**
-   * Starting latch.
-   * Sweep operations wait on this latch to be fully released before starting. The OS puts the
-   * thread to sleep while waiting, avoiding taking up CPU resources for spinning wait.
-   */
-  std::unique_ptr<std::latch> starting_latch_;
+  /// Counter for un-resolved dependencies.
+  std::size_t dependency_counter_ = 0;
   /**
    * List of AAHD_AngleSets waiting after this angle set.
    * After this angle set completes its sweep chunk, it decrements the latches of the angle sets

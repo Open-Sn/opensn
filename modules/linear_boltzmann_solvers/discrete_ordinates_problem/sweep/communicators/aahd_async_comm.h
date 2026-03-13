@@ -29,6 +29,8 @@ public:
   /// Pre-post receiving upstream dependencies have been met.
   void PrepostReceiveUpstreamPsi(int angle_set_num);
 
+  bool TestReceiveUpstreamPsi();
+
   /// Block until all upstream messages have been received.
   void WaitForUpstreamPsi();
 
