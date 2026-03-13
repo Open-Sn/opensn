@@ -5,12 +5,13 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <cassert>
 
 namespace opensn
 {
 
 double
-ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi)
+ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("ComputeFissionProduction");
 
@@ -18,6 +19,7 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& options = lbs_problem.GetOptions();
+  assert(phi.size() == lbs_problem.GetPhiNewLocal().size() && "ComputeFissionProduction size mismatch.");
 
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
@@ -51,6 +53,10 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
         for (unsigned int gp = 0; gp <= last_grp; ++gp)
           local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
 
+        // When delayed-neutrons are enabled, this utility assumes production matrix
+        // contributions are prompt-only and adds delayed production separately via
+        // nu_delayed_sigma_f. If the production matrix changes to include delayed
+        // production, adjust this sum to prevent double counting.
         if (options.use_precursors)
           local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
@@ -65,13 +71,14 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
 }
 
 double
-ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
+ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("ComputeFissionRate");
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
+  assert(phi.size() == lbs_problem.GetPhiNewLocal().size() && "ComputeFissionRate size mismatch.");
 
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
@@ -124,7 +131,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
   const auto& grid = lbs_problem.GetGrid();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
-  auto& phi_new_local = lbs_problem.GetPhiNewLocal();
+  const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
 
   // Loop over cells
   for (const auto& cell : grid->local_cells)
@@ -132,6 +139,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
     const auto& fe_values = unit_cell_matrices[cell.local_id];
     const auto& transport_view = cell_transport_views[cell.local_id];
     const double cell_volume = transport_view.GetVolume();
+    assert(cell_volume > 0.0 && "ComputePrecursors encountered non-positive cell volume.");
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -143,6 +151,8 @@ ComputePrecursors(LBSProblem& lbs_problem)
     {
       size_t dof = cell.local_id * J + j;
       const auto& precursor = precursors[j];
+      assert(precursor.decay_constant > 0.0 &&
+             "ComputePrecursors encountered non-positive precursor decay constant.");
       const double coeff = precursor.fractional_yield / precursor.decay_constant;
 
       // Loop over nodes
