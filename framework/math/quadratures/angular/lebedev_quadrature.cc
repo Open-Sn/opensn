@@ -18,7 +18,7 @@ namespace opensn
 LebedevQuadrature3DXYZ::LebedevQuadrature3DXYZ(unsigned int quadrature_order,
                                                unsigned int scattering_order,
                                                bool verbose)
-  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 3, scattering_order)
+  : AngularQuadrature(AngularQuadratureType::LEBEDEV_QUADRATURE, 3, scattering_order)
 {
   LoadFromOrder(quadrature_order, verbose);
   MakeHarmonicIndices();
@@ -104,7 +104,7 @@ LebedevQuadrature3DXYZ::LoadFromOrder(unsigned int quadrature_order, bool verbos
 LebedevQuadrature2DXY::LebedevQuadrature2DXY(unsigned int quadrature_order,
                                              unsigned int scattering_order,
                                              bool verbose)
-  : AngularQuadrature(AngularQuadratureType::LebedevQuadrature, 2, scattering_order)
+  : AngularQuadrature(AngularQuadratureType::LEBEDEV_QUADRATURE, 2, scattering_order)
 {
   LoadFromOrder(quadrature_order, verbose);
   MakeHarmonicIndices();

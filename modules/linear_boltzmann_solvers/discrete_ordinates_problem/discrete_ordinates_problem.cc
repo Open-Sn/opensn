@@ -139,10 +139,10 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
                             GetName() + ": `time_dependent=true` requires "
                                         "`options.save_angular_flux=true`.");
 
-    SetSweepChunkMode(SweepChunkMode::TimeDependent);
+    SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
   }
   else
-    SetSweepChunkMode(SweepChunkMode::SteadyState);
+    SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
   if (params.Has("boundary_conditions"))
   {
@@ -569,7 +569,7 @@ DiscreteOrdinatesProblem::BuildRuntime()
 void
 DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
 {
-  const auto current_mode = sweep_chunk_mode_.value_or(SweepChunkMode::Default);
+  const auto current_mode = sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT);
   if (current_mode == mode)
     return;
 
@@ -585,7 +585,7 @@ DiscreteOrdinatesProblem::SetTimeDependentMode()
     not initialized_,
     GetName() + ": Problem must be fully constructed before calling SetTimeDependentMode.");
 
-  ResetMode(SweepChunkMode::TimeDependent);
+  ResetMode(SweepChunkMode::TIME_DEPENDENT);
 }
 
 void
@@ -595,30 +595,31 @@ DiscreteOrdinatesProblem::SetSteadyStateMode()
                        GetName() +
                          ": Problem must be fully constructed before calling SetSteadyStateMode.");
 
-  ResetMode(SweepChunkMode::SteadyState);
+  ResetMode(SweepChunkMode::STEADY_STATE);
 }
 
 void
 DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 {
-  OpenSnInvalidArgumentIf(target_mode == SweepChunkMode::Default,
+  OpenSnInvalidArgumentIf(target_mode == SweepChunkMode::DEFAULT,
                           GetName() + ": target mode cannot be SweepChunkMode::Default.");
   OpenSnLogicalErrorIf(not initialized_,
                        GetName() + ": Problem must be fully constructed before mode changes.");
 
   // Current configured sweep mode (or Default if no explicit mode has been selected yet).
-  const auto active_mode = sweep_chunk_mode_.value_or(SweepChunkMode::Default);
+  const auto active_mode = sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT);
 
   // True only when changing between steady-state and time-dependent (in either direction).
   const bool switching_modes =
-    (active_mode == SweepChunkMode::SteadyState and target_mode == SweepChunkMode::TimeDependent) or
-    (active_mode == SweepChunkMode::TimeDependent and target_mode == SweepChunkMode::SteadyState);
+    (active_mode == SweepChunkMode::STEADY_STATE and
+     target_mode == SweepChunkMode::TIME_DEPENDENT) or
+    (active_mode == SweepChunkMode::TIME_DEPENDENT and target_mode == SweepChunkMode::STEADY_STATE);
 
   // True when no explicit mode has been adopted yet.
-  const bool has_no_active_mode = (active_mode == SweepChunkMode::Default);
+  const bool has_no_active_mode = (active_mode == SweepChunkMode::DEFAULT);
 
   // True when the requested target mode is time-dependent.
-  const bool switching_to_transient = target_mode == SweepChunkMode::TimeDependent;
+  const bool switching_to_transient = target_mode == SweepChunkMode::TIME_DEPENDENT;
 
   const auto prepare_for_transient = [&]()
   {
@@ -754,10 +755,10 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
     if (switching_to_transient)
     {
       prepare_for_transient();
-      SetSweepChunkMode(SweepChunkMode::TimeDependent);
+      SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
     }
     else
-      SetSweepChunkMode(SweepChunkMode::SteadyState);
+      SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
   }
 
   if (switching_modes or default_to_transient)
@@ -816,7 +817,7 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
   psi_old_local_.resize(groupsets_.size());
 
   const bool save_old =
-    (sweep_chunk_mode_.value_or(SweepChunkMode::Default) == SweepChunkMode::TimeDependent);
+    (sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT) == SweepChunkMode::TIME_DEPENDENT);
 
   for (auto& groupset : groupsets_)
   {
@@ -1586,7 +1587,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
 
       // Check quadrature type
       const auto quad_type = quadrature.GetType();
-      if (quad_type != AngularQuadratureType::ProductQuadrature)
+      if (quad_type != AngularQuadratureType::PRODUCT_QUADRATURE)
         throw std::logic_error(GetName() + ": The simulation is using polar angle aggregation for "
                                            "which only Product-type quadratures are supported");
 
@@ -1651,7 +1652,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
 
       // Check quadrature type
       const auto quad_type = quadrature.GetType();
-      if (quad_type != AngularQuadratureType::ProductQuadrature)
+      if (quad_type != AngularQuadratureType::PRODUCT_QUADRATURE)
         throw std::logic_error(
           GetName() + ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL geometry.");
 
@@ -1821,9 +1822,9 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::SetSweepChunk");
 
-  const auto mode = sweep_chunk_mode_.value_or(SweepChunkMode::Default);
+  const auto mode = sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT);
 
-  const bool use_time_dependent_chunk = (mode == SweepChunkMode::TimeDependent);
+  const bool use_time_dependent_chunk = (mode == SweepChunkMode::TIME_DEPENDENT);
 
   if (use_time_dependent_chunk && sweep_type_ != "AAH")
     throw std::invalid_argument(GetName() +

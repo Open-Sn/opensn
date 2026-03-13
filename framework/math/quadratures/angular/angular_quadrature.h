@@ -14,10 +14,10 @@ struct QuadraturePointPhiTheta;
 /// Angular quadrature type identifier.
 enum class AngularQuadratureType
 {
-  ProductQuadrature = 1,
-  SLDFEsq = 2,
-  LebedevQuadrature = 3,
-  TriangularQuadrature = 4,
+  PRODUCT_QUADRATURE = 1,
+  SLDFE_SQ = 2,
+  LEBEDEV_QUADRATURE = 3,
+  TRIANGULAR_QUADRATURE = 4,
 };
 
 /// Quadrature point in spherical coordinates.
