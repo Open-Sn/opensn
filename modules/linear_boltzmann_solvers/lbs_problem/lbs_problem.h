@@ -266,6 +266,8 @@ public:
 
   /// Returns the power generation field function, if enabled.
   std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;
+  /// Returns the deposited-energy field function, if enabled.
+  std::shared_ptr<FieldFunctionGridBased> GetEnergyDepositionFieldFunction() const;
 
   bool TriggerRestartDump() const
   {
@@ -374,6 +376,7 @@ protected:
 
   std::map<std::pair<unsigned int, unsigned int>, size_t> phi_field_functions_local_map_;
   size_t power_gen_fieldfunc_local_handle_ = 0;
+  size_t energy_dep_fieldfunc_local_handle_ = 0;
 
   /// Data carriers needed to run the sweep on GPU.
   std::shared_ptr<TotalXSCarrier> total_xs_carrier_ = nullptr;
