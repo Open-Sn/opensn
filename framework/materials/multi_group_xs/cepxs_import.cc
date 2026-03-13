@@ -1,6 +1,24 @@
 // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+/*
+ * CEPXS uses the BXSLIB binary cross-section file format. A description of the
+ * BXSLIB format can be found in:
+ *
+ *   Shapiro, A., and Huria, H.
+ *   "Standard Interface File Format"
+ *   University of Cincinnati Nuclear Engineering Program, 1992
+ *   https://www.osti.gov/servlets/purl/10115350
+ *
+ * CEPXS format blocks for various materials can be found in:
+ *
+ *   McConn, R. J., Gesh, C. J., Pagh, R. T., et al.
+ *   "Compendium of Material Composition Data for Radiation Transport Modeling"
+ *   Pacific Northwest National Laboratory, PNNL-15870 Rev. 1, 2006
+ *   https://www.pnnl.gov/main/publications/external/technical_reports/
+ *   pnnl-15870rev1.pdf
+ */
+
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
