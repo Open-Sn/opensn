@@ -3,6 +3,7 @@
 
 #pragma once
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -38,7 +39,12 @@ public:
       neighbor_cell_ptrs_(neighbor_cell_ptrs)
   {
     if (cell_on_boundary)
+    {
       outflow_.resize(num_faces);
+      for (int f = 0; f < num_faces; ++f)
+        if (face_locality_[f] < 0)
+          outflow_[f].assign(num_groups_, 0.0);
+    }
   }
 
   size_t MapDOF(uint64_t node, uint64_t moment, unsigned int grp) const
@@ -48,11 +54,23 @@ public:
 
   const MultiGroupXS& GetXS() const { return *xs_; }
 
-  bool IsFaceLocal(std::size_t f) const { return face_local_flags_[f]; }
+  bool IsFaceLocal(std::size_t f) const
+  {
+    assert(f < face_local_flags_.size() && "CellLBSView::IsFaceLocal face index out of range.");
+    return face_local_flags_[f];
+  }
 
-  int FaceLocality(std::size_t f) const { return face_locality_[f]; }
+  int FaceLocality(std::size_t f) const
+  {
+    assert(f < face_locality_.size() && "CellLBSView::FaceLocality face index out of range.");
+    return face_locality_[f];
+  }
 
-  const Cell* FaceNeighbor(std::size_t f) const { return neighbor_cell_ptrs_[f]; }
+  const Cell* FaceNeighbor(std::size_t f) const
+  {
+    assert(f < neighbor_cell_ptrs_.size() && "CellLBSView::FaceNeighbor face index out of range.");
+    return neighbor_cell_ptrs_[f];
+  }
 
   int GetNumNodes() const { return num_nodes_; }
 
@@ -60,16 +78,18 @@ public:
 
   void ZeroOutflow(std::size_t f, unsigned int g)
   {
+    assert(f < face_local_flags_.size() && "CellLBSView::ZeroOutflow face index out of range.");
+    assert(g < num_groups_ && "CellLBSView::ZeroOutflow group index out of range.");
     if (f < outflow_.size() and g < outflow_[f].size())
       outflow_[f][g] = 0.0;
   }
 
   void AddOutflow(std::size_t f, unsigned int g, double intS_mu_psi)
   {
+    assert(f < face_local_flags_.size() && "CellLBSView::AddOutflow face index out of range.");
+    assert(g < num_groups_ && "CellLBSView::AddOutflow group index out of range.");
     if (f < outflow_.size())
     {
-      if (outflow_[f].empty())
-        outflow_[f].resize(num_groups_, 0.0);
       if (g < outflow_[f].size())
         outflow_[f][g] += intS_mu_psi;
     }
@@ -77,6 +97,8 @@ public:
 
   double GetOutflow(std::size_t f, unsigned int g) const
   {
+    assert(f < face_local_flags_.size() && "CellLBSView::GetOutflow face index out of range.");
+    assert(g < num_groups_ && "CellLBSView::GetOutflow group index out of range.");
     if (f < outflow_.size() and g < outflow_[f].size())
       return outflow_[f][g];
     return 0.0;

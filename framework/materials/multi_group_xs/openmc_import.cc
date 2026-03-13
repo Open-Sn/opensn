@@ -163,6 +163,9 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
         nu[g] /= mgxs.sigma_f_[g];
 
     // Production matrix (computed)
+    // TODO: This path uses chi * nu_sigma_f (total production). If delayed-neutron data is
+    // introduced here in the future, ensure LBS source/fission-production routines remain
+    // consistent with prompt-vs-total production to avoid double counting.
     if (mgxs.production_matrix_.empty())
     {
       mgxs.production_matrix_.resize(mgxs.num_groups_, std::vector<double>(mgxs.num_groups_));
