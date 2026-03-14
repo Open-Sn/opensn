@@ -6,7 +6,7 @@
 # steady state and compared with the OpenSn steady state solution and the OpenMC
 # steady state solution.
 #
-# OpenSn time-dependent solution: 50.7940
+# OpenSn time-dependent solution: 51.057722
 # OpenSn steady-state solution: 51.057722
 # OpenMC steady-state solution: 50.96678
 
@@ -71,19 +71,36 @@ if __name__ == "__main__":
         options={"save_angular_flux": True},
     )
 
-    solver = TransientSolver(problem=phys, dt=0.01, theta=0.5, stop_time=0.1, initial_state="zero")
-    solver.Initialize()
-    solver.Execute()
-
     fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
-    field_interp = FieldFunctionInterpolationVolume()
-    field_interp.SetOperationType("max")
-    field_interp.SetLogicalVolume(monitor_volume)
-    field_interp.AddFieldFunction(fflist[3])
-    field_interp.Initialize()
-    field_interp.Execute()
-    flux_max = field_interp.GetValue()
+    dt = 0.01
+    theta_cn = 0.5
+    theta_be = 1.0
+    be_startup_steps = 2
+    stop_time = 0.1
+
+    solver = TransientSolver(problem=phys, dt=dt, theta=theta_be, initial_state="zero")
+    solver.Initialize()
+
+    current_time = 0.0
+    flux_max = 0.0
+    step = 0
+    while current_time < stop_time - 1.0e-14:
+        target_time = min(current_time + dt, stop_time)
+        solver.SetTimeStep(target_time - current_time)
+        theta_step = theta_be if step < be_startup_steps else theta_cn
+        solver.SetTheta(theta_step)
+        solver.Advance()
+        current_time = target_time
+
+        field_interp = FieldFunctionInterpolationVolume()
+        field_interp.SetOperationType("max")
+        field_interp.SetLogicalVolume(monitor_volume)
+        field_interp.AddFieldFunction(fflist[3])
+        field_interp.Initialize()
+        field_interp.Execute()
+        flux_max = field_interp.GetValue()
+        step += 1
 
     if rank == 0:
         print(f"Max phi(0.1s) = {flux_max:.6f}")
