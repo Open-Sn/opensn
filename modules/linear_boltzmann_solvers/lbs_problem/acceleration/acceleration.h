@@ -8,11 +8,13 @@
 #include <map>
 #include <memory>
 #include <array>
+#include <string>
 
 namespace opensn
 {
 class SweepBoundary;
 class MultiGroupXS;
+class LBSProblem;
 
 /**
  * Boundary condition type. We essentially only support two
@@ -79,5 +81,9 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
 std::map<unsigned int, Multigroup_D_and_sigR> PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
                                                              unsigned int first_grp_index,
                                                              unsigned int last_group_index);
+
+/// Ensures densities are uniform per block ID for DSA.
+void CheckBlockwiseUniformDensities(const LBSProblem& lbs_problem,
+                                    const std::string& acceleration_name);
 
 } // namespace opensn

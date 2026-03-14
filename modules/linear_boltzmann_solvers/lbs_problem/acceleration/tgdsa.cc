@@ -16,6 +16,8 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 
   if (groupset.apply_tgdsa)
   {
+    CheckBlockwiseUniformDensities(do_problem, "TGDSA");
+
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& uk_man = sdm.UNITARY_UNKNOWN_MANAGER;
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
@@ -87,6 +89,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
+  const auto& densities = do_problem.GetDensitiesLocal();
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
@@ -100,6 +103,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& S = block_id_to_xs_map.at(cell.block_id)->GetTransferMatrix(0);
+    const auto rho = densities[cell.local_id];
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -114,7 +118,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
         double R_g = 0.0;
         for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
           if (gprime >= gsi and gprime != (gsi + g))
-            R_g += sigma_sm * phi_in_mapped[gprime];
+            R_g += rho * sigma_sm * phi_in_mapped[gprime];
 
         delta_phi_mapped += R_g;
       }

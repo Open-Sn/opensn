@@ -298,5 +298,19 @@
         "abs_tol": 1e-12
       }
     ]
+  },
+  {
+    "file": "keigen_density_uniform_scaling_invariance.py",
+    "comment": "k-eigenvalue is invariant to uniform density scaling in homogeneous reflected system",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_KEIGEN_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]

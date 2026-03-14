@@ -30,6 +30,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   const auto& cell_transport_views_ = do_problem.GetCellTransportViews();
   const auto& unit_cell_matrices_ = do_problem.GetUnitCellMatrices();
   const auto& sweep_boundaries_ = do_problem.GetSweepBoundaries();
+  const auto& densities_ = do_problem.GetDensitiesLocal();
   const auto num_groups_ = do_problem.GetNumGroups();
   const auto time_dependent = do_problem.IsTimeDependent();
   const auto dt = time_dependent ? do_problem.GetTimeStep() : 0.0;
@@ -127,6 +128,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     const auto& xs = transport_view.GetXS();
     const auto& sigma_a = xs.GetSigmaAbsorption();
     const auto& inv_vel = xs.GetInverseVelocity();
+    const auto rho = densities_[cell.local_id];
     for (size_t i = 0; i < num_nodes; ++i)
     {
       for (unsigned int g = 0; g < num_groups_; ++g)
@@ -135,7 +137,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
         double phi_0g = phi_new_local_[imap];
         double q_0g = mat_src[imap];
 
-        local_absorption += sigma_a[g] * phi_0g * IntV_shapeI(i);
+        local_absorption += rho * sigma_a[g] * phi_0g * IntV_shapeI(i);
         local_production += q_0g * IntV_shapeI(i);
       } // for g
     } // for i

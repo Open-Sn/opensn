@@ -27,7 +27,7 @@ ComputeGMS(double* sweep_matrix,
            const Arguments& args)
 {
   // get sigmaT
-  double sigma_t = cell.total_xs[args.groupset_start + group_idx];
+  double sigma_t = cell.density * cell.total_xs[args.groupset_start + group_idx];
   // compute source term
   const double* src_moment = args.src_moment + cell.phi_address + args.groupset_start + group_idx;
   _Pragma("unroll") for (std::uint32_t i = 0; i < ndofs; ++i)

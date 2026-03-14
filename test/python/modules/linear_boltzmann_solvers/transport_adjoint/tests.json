@@ -135,5 +135,19 @@
         "abs_tol": 0.0
       }
     ]
+  },
+  {
+    "file": "density_adjoint_mode_switch_ratio.py",
+    "comment": "Forward-adjoint-forward mode switch remains repeatable with expected density scaling",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_ADJOINT_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]

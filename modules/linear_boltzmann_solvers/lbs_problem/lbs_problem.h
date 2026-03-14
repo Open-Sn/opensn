@@ -104,8 +104,7 @@ public:
   void ZeroExtSrcMoments();
   void ScaleExtSrcMoments(double factor);
   void SetUniformDensities(double density);
-  void SetDensity(size_t cell_local_id, double density);
-  void SetDensitiesFrom(const std::vector<double>& densities);
+  void SetDensities(const ParameterBlock& density_block);
 
   virtual void ZeroPsi() = 0;
 
@@ -405,6 +404,9 @@ private:
   /// Initializes materials
   void InitializeXSmapAndDensities(const InputParameters& params);
   void InitializeMaterials();
+  std::vector<double> BuildDensitiesFromInput(const InputParameters& density_params) const;
+  /// Set densities from a vector
+  void SetDensitiesFrom(const std::vector<double>& densities);
 
   /// Initialize sources
   void InitializeSources(const InputParameters& params);
@@ -426,6 +428,9 @@ public:
   static InputParameters GetOptionsBlock();
 
   static InputParameters GetXSMapEntryBlock();
+
+  static InputParameters GetDensityInputBlock();
+  static InputParameters GetDensityAssignmentBlock();
 };
 
 } // namespace opensn

@@ -24,9 +24,12 @@
 #include <cassert>
 #include <memory>
 #include <stdexcept>
+#include <cmath>
 #include <sys/stat.h>
 #include <unordered_map>
+#include <unordered_set>
 #include <functional>
+#include <array>
 
 namespace opensn
 {
@@ -60,6 +63,11 @@ LBSProblem::GetInputParameters()
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
   params.LinkParameterToBlock("options", "OptionsBlock");
+
+  params.AddOptionalParameterBlock(
+    "density",
+    ParameterBlock(),
+    "Optional density specification block. See <TT>DensityBlock</TT>.");
 
   params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
 
@@ -615,6 +623,30 @@ LBSProblem::GetXSMapEntryBlock()
   return params;
 }
 
+InputParameters
+LBSProblem::GetDensityAssignmentBlock()
+{
+  InputParameters params;
+  params.SetGeneralDescription("Assign a density to one or more block IDs.");
+  params.AddRequiredParameterArray("block_ids", "Mesh block IDs to assign.");
+  params.AddRequiredParameter<double>("density", "Density value.");
+  params.ConstrainParameterRange("density", AllowableRangeLowLimit::New(0.0));
+  return params;
+}
+
+InputParameters
+LBSProblem::GetDensityInputBlock()
+{
+  InputParameters params;
+  params.SetGeneralDescription(
+    "Uniform default density assignment with optional block-wise overrides.");
+  params.AddOptionalParameter(
+    "default_density", 1.0, "Default density assigned to all local cells.");
+  params.ConstrainParameterRange("default_density", AllowableRangeLowLimit::New(0.0));
+  params.AddOptionalParameterArray("by_block", {}, "Array of block-wise density assignments.");
+  return params;
+}
+
 void
 LBSProblem::ParseOptions(const InputParameters& input)
 {
@@ -890,8 +922,49 @@ LBSProblem::InitializeXSmapAndDensities(const InputParameters& params)
       block_id_to_xs_map_[block_id] = xs;
   }
 
-  // Assign placeholder unit densities
+  // Initialize densities
   densities_local_.assign(grid_->local_cells.size(), 1.0);
+
+  if (params.IsParameterValid("density"))
+  {
+    InputParameters density_params = GetDensityInputBlock();
+    density_params.AssignParameters(params.GetParam("density"));
+    densities_local_ = BuildDensitiesFromInput(density_params);
+  }
+}
+
+std::vector<double>
+LBSProblem::BuildDensitiesFromInput(const InputParameters& density_params) const
+{
+  const auto default_density = density_params.GetParamValue<double>("default_density");
+  OpenSnInvalidArgumentIf(not std::isfinite(default_density),
+                          GetName() + ": `density.default_density` must be finite.");
+
+  std::vector<double> densities(grid_->local_cells.size(), default_density);
+
+  if (density_params.Has("by_block"))
+  {
+    const auto& by_block_param = density_params.GetParam("by_block");
+    by_block_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    for (const auto& assignment_param : by_block_param)
+    {
+      InputParameters assignment = GetDensityAssignmentBlock();
+      assignment.AssignParameters(assignment_param);
+      const auto density = assignment.GetParamValue<double>("density");
+      OpenSnInvalidArgumentIf(not std::isfinite(density),
+                              GetName() + ": `density.by_block[].density` must be finite.");
+
+      std::unordered_set<unsigned int> block_ids;
+      for (const auto block_id : assignment.GetParam("block_ids").GetVectorValue<unsigned int>())
+        block_ids.insert(block_id);
+
+      for (const auto& cell : grid_->local_cells)
+        if (block_ids.count(cell.block_id) > 0)
+          densities[cell.local_id] = density;
+    }
+  }
+
+  return densities;
 }
 
 void
@@ -1337,6 +1410,7 @@ LBSProblem::UpdateFieldFunctions()
       const size_t num_nodes = cell_mapping.GetNumNodes();
 
       const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
+      const auto rho = densities_local_[cell.local_id];
 
       const auto& xs = block_id_to_xs_map_.at(cell.block_id);
 
@@ -1355,7 +1429,7 @@ LBSProblem::UpdateFieldFunctions()
           // const double kappa_g = xs->Kappa()[g];
           const double kappa_g = options_.power_default_kappa;
 
-          nodal_power += kappa_g * sigma_fg * phi_new_local_[imapB + g];
+          nodal_power += kappa_g * rho * sigma_fg * phi_new_local_[imapB + g];
         } // for g
 
         data_vector_power_local[imapA] = nodal_power;
@@ -1546,23 +1620,60 @@ LBSProblem::ScaleExtSrcMoments(double factor)
 void
 LBSProblem::SetUniformDensities(double density)
 {
-  assert(densities_local_.size() == grid_->local_cells.size() &&
-         "Densities/local-cells size mismatch.");
-  std::fill(densities_local_.begin(), densities_local_.end(), density);
-}
+  const std::array<int, 3> local_checks = {densities_local_.size() != grid_->local_cells.size() ? 1
+                                                                                                : 0,
+                                           not std::isfinite(density) ? 1 : 0,
+                                           density < 0.0 ? 1 : 0};
+  std::array<int, 3> global_checks = {0, 0, 0};
+  mpi_comm.all_reduce(local_checks.data(), 3, global_checks.data(), mpi::op::sum<int>());
 
-void
-LBSProblem::SetDensity(size_t cell_local_id, double density)
-{
-  assert(cell_local_id < densities_local_.size() && "SetDensity cell index out of range.");
-  densities_local_[cell_local_id] = density;
+  OpenSnInvalidArgumentIf(global_checks[0] > 0,
+                          GetName() +
+                            ": Densities/local-cells size mismatch on one or more ranks.");
+  OpenSnInvalidArgumentIf(global_checks[1] > 0, GetName() + ": Density must be finite.");
+  OpenSnInvalidArgumentIf(global_checks[2] > 0, GetName() + ": Density must be >= 0.");
+  std::fill(densities_local_.begin(), densities_local_.end(), density);
+
+  ResetGPUCarriers();
+  InitializeGPUExtras();
 }
 
 void
 LBSProblem::SetDensitiesFrom(const std::vector<double>& densities)
 {
-  assert(densities.size() == densities_local_.size() && "SetDensitiesFrom size mismatch.");
+  size_t bad_cell = densities.size();
+  for (size_t c = 0; c < densities.size(); ++c)
+  {
+    if ((not std::isfinite(densities[c])) or (densities[c] < 0.0))
+    {
+      bad_cell = c;
+      break;
+    }
+  }
+
+  const std::array<int, 2> local_checks = {densities.size() != densities_local_.size() ? 1 : 0,
+                                           bad_cell < densities.size() ? 1 : 0};
+  std::array<int, 2> global_checks = {0, 0};
+  mpi_comm.all_reduce(local_checks.data(), 2, global_checks.data(), mpi::op::sum<int>());
+
+  OpenSnInvalidArgumentIf(global_checks[0] > 0,
+                          GetName() + ": SetDensitiesFrom size mismatch on one or more ranks.");
+  OpenSnInvalidArgumentIf(global_checks[1] > 0,
+                          GetName() +
+                            ": Invalid density encountered on one or more ranks. Densities must be "
+                            "finite and >= 0.");
   densities_local_ = densities;
+
+  ResetGPUCarriers();
+  InitializeGPUExtras();
+}
+
+void
+LBSProblem::SetDensities(const ParameterBlock& density_block)
+{
+  InputParameters density_params = GetDensityInputBlock();
+  density_params.AssignParameters(density_block);
+  SetDensitiesFrom(BuildDensitiesFromInput(density_params));
 }
 
 void
@@ -1582,8 +1693,10 @@ LBSProblem::SetAdjoint(bool adjoint)
 
   options_.adjoint = adjoint;
 
-  // Reinitialize materials to obtain the proper forward/adjoint cross sections.
+  // Reinitialize materials and rebuild device-side carriers from the updated material state.
   InitializeMaterials();
+  ResetGPUCarriers();
+  InitializeGPUExtras();
 
   // Forward and adjoint sources are fundamentally different.
   point_sources_.clear();

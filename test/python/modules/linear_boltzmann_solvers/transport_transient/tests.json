@@ -91,7 +91,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi(3s) = ",
-        "goldvalue": 5.104477,
+        "goldvalue": 4.979358,
         "abs_tol": 0.000001
       }
     ]
@@ -194,13 +194,13 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi0 = ",
-        "goldvalue": 3.672537,
+        "goldvalue": 3.668943,
         "abs_tol": 0.000001
       },
       {
         "type": "KeyValuePair",
         "key": "Max phi1 = ",
-        "goldvalue": 1.035548,
+        "goldvalue": 1.022845,
         "abs_tol": 0.000001
       }
     ]
@@ -213,13 +213,13 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi0 = ",
-        "goldvalue": 3.674989,
+        "goldvalue": 3.663371,
         "abs_tol": 0.000001
       },
       {
         "type": "KeyValuePair",
         "key": "Max phi1 = ",
-        "goldvalue": 1.035541,
+        "goldvalue": 0.996756,
         "abs_tol": 0.000001
       }
     ]
@@ -232,7 +232,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi(0.1s) = ",
-        "goldvalue": 51.057722,
+        "goldvalue": 51.057746,
         "abs_tol": 0.0001
       }
     ]
@@ -525,6 +525,20 @@
       {
         "type": "FloatCompare",
         "key": "RAMP_SOURCE_ANALYTIC_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_density_zero_absorber_ratio.py",
+    "comment": "Transient zero-init absorber/source follows density-scaled analytic trend",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_TRANSIENT_PASS",
         "wordnum": 1,
         "gold": 1,
         "abs_tol": 1e-12

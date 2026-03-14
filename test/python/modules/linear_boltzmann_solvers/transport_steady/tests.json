@@ -1351,5 +1351,224 @@
         "abs_tol": 1e-8
       }
     ]
+  },
+  {
+    "file": "transport_1d_gpu_xsmap_update.py",
+    "comment": "GPU steady-state runtime XS map update",
+    "num_procs": 3,
+    "requires_gpu": "True",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "GPU_XSMAP_SWAP_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_gpu_density_update.py",
+    "comment": "GPU steady-state runtime density update",
+    "num_procs": 3,
+    "requires_gpu": "True",
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "GPU_DENSITY_UPDATE_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_reflective_absorber_ratio.py",
+    "comment": "Reflective 1D absorber/source: doubling density halves steady flux",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_REFLECT_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_multimat_by_block_vs_scaled_xs.py",
+    "comment": "Multimaterial by_block density API matches explicitly scaled XS",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_MULTIMAT_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_combine_vs_density_api.py",
+    "comment": "XS.Combine scalar scaling matches density API",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_COMBINE_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_leakage_scaling.py",
+    "comment": "Leakage behavior: reflective near-zero leakage and reduced vacuum leakage at higher density",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_LEAKAGE_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_unstructured_absorber_analytic_value.py",
+    "comment": "2D unstructured reflected pure absorber/source absolute analytic q/(rho sigma_a) check",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_UNSTRUCT_ABS_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_unstructured_multimat_balance.py",
+    "comment": "2D unstructured two-material reflected absorber/source global balance check",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_MM_BAL_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Absorption rate",
+        "wordnum": 5,
+        "gold": 4.000000e+00,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Production rate",
+        "wordnum": 5,
+        "gold": 4.000000e+00,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "In-flow rate",
+        "wordnum": 5,
+        "gold": 2.009640e+00,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Out-flow rate",
+        "wordnum": 5,
+        "gold": 2.009640e+00,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Gain (In-flow + Production)",
+        "wordnum": 7,
+        "gold": 6.009640e+00,
+        "abs_tol": 1e-6
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Balance (Gain - Loss)",
+        "wordnum": 7,
+        "gold": 1.124323e-12,
+        "abs_tol": 1e-11
+      },
+      {
+        "type": "FloatCompare",
+        "key": "Conservation error",
+        "wordnum": 5,
+        "gold": 1.870866e-13,
+        "abs_tol": 1e-11
+      }
+    ]
+  },
+  {
+    "file": "transport_density_1d_boundary_attenuation_e2.py",
+    "comment": "1D slab semi-analytic boundary attenuation ratio versus E2",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_ATT_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_dsa_tgdsa_homogeneous_analytic.py",
+    "comment": "2-group reflected homogeneous analytic check with WGDSA and TGDSA enabled",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_DSA_ANALYTIC_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_disk_reflective_absorber_analytic_value.py",
+    "comment": "Disk mesh reflected pure absorber/source absolute analytic q/(rho sigma_a) check",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_DISK_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_density_3d_unstructured_absorber_analytic_value.py",
+    "comment": "3D unstructured reflected pure absorber/source absolute analytic q/(rho sigma_a) check",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DENSITY_3D_ABS_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]

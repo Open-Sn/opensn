@@ -18,6 +18,7 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& options = lbs_problem.GetOptions();
+  const auto& densities = lbs_problem.GetDensitiesLocal();
 
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
@@ -28,6 +29,7 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
   {
     const auto& transport_view = cell_transport_views[cell.local_id];
     const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+    const auto rho = densities[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -49,10 +51,10 @@ ComputeFissionProduction(LBSProblem& lbs_problem, const std::vector<double>& phi
       {
         const auto& prod = F[g];
         for (unsigned int gp = 0; gp <= last_grp; ++gp)
-          local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
+          local_production += rho * prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
 
         if (options.use_precursors)
-          local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+          local_production += rho * nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
     } // for node
   } // for cell
@@ -72,6 +74,7 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
+  const auto& densities = lbs_problem.GetDensitiesLocal();
 
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
@@ -82,6 +85,7 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
   {
     const auto& transport_view = cell_transport_views[cell.local_id];
     const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+    const auto rho = densities[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -100,7 +104,7 @@ ComputeFissionRate(LBSProblem& lbs_problem, const std::vector<double>& phi)
 
       // Loop over groups
       for (unsigned int g = first_grp; g <= last_grp; ++g)
-        local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+        local_fission_rate += rho * sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
     } // for node
   } // for cell
 
@@ -124,6 +128,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
   const auto& grid = lbs_problem.GetGrid();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  const auto& densities = lbs_problem.GetDensitiesLocal();
   auto& phi_new_local = lbs_problem.GetPhiNewLocal();
 
   // Loop over cells
@@ -132,6 +137,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
     const auto& fe_values = unit_cell_matrices[cell.local_id];
     const auto& transport_view = cell_transport_views[cell.local_id];
     const double cell_volume = transport_view.GetVolume();
+    const auto rho = densities[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -154,7 +160,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
         // Loop over groups
         for (unsigned int g = 0; g < lbs_problem.GetNumGroups(); ++g)
           precursor_new_local[dof] +=
-            coeff * nu_delayed_sigma_f[g] * phi_new_local[uk_map + g] * node_V_fraction;
+            coeff * rho * nu_delayed_sigma_f[g] * phi_new_local[uk_map + g] * node_V_fraction;
       } // for node i
     } // for precursor j
   } // for cell

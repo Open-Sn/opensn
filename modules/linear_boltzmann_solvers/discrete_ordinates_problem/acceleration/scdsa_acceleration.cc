@@ -9,6 +9,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
 namespace opensn
@@ -44,6 +45,8 @@ SCDSAAcceleration::SCDSAAcceleration(const InputParameters& params)
 void
 SCDSAAcceleration::Initialize()
 {
+  CheckBlockwiseUniformDensities(do_problem_, "SCDSA");
+
   front_wgs_solver_ = do_problem_.GetWGSSolver(front_gs_.id);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");

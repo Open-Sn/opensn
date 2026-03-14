@@ -18,6 +18,8 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
 
   if (groupset.apply_wgdsa)
   {
+    CheckBlockwiseUniformDensities(do_problem, "WGDSA");
+
     // Make UnknownManager
     const auto num_gs_groups = groupset.GetNumGroups();
     opensn::UnknownManager uk_man;
@@ -73,6 +75,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
+  const auto& densities = do_problem.GetDensitiesLocal();
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
@@ -85,6 +88,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& sigma_s = block_id_to_xs_map.at(cell.block_id)->GetSigmaSGtoG();
+    const auto rho = densities[cell.local_id];
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
@@ -96,7 +100,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
       for (unsigned int g = 0; g < gss; ++g)
       {
-        delta_phi_mapped[g] = sigma_s[gsi + g] * phi_in_mapped[g];
+        delta_phi_mapped[g] = rho * sigma_s[gsi + g] * phi_in_mapped[g];
       }
     }
   }
