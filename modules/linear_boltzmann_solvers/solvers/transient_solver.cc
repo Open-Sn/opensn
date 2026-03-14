@@ -254,20 +254,15 @@ TransientSolver::Advance()
     throw std::runtime_error(GetName() + ": AGS solver not available.");
   ags_solver_->Solve();
 
-  // For non-fission source-only problems, match TimeDependentSourceSolver behavior.
-  // For fissioning problems (and any precursor case), apply the transient
-  // reconstruction so delayed/prompt source coupling is time-consistent.
-  if (has_fissionable_material_ or options.use_precursors)
-  {
-    // Compute t^{n+1} value
-    const double inv_theta = 1.0 / theta;
-    auto& phi = *phi_new_local_;
-    const auto& phi_prev = phi_prev_local_;
-    for (size_t i = 0; i < phi.size(); ++i)
-      phi[i] = inv_theta * (phi[i] + (theta - 1.0) * phi_prev[i]);
-    if (options.use_precursors)
-      StepPrecursors();
-  }
+  // Compute t^{n+1}
+  const double inv_theta = 1.0 / theta;
+  auto& phi = *phi_new_local_;
+  const auto& phi_prev = phi_prev_local_;
+  for (size_t i = 0; i < phi.size(); ++i)
+    phi[i] = inv_theta * (phi[i] + (theta - 1.0) * phi_prev[i]);
+
+  if (options.use_precursors)
+    StepPrecursors();
 
   if (verbose_ and (has_fissionable_material_ or options.use_precursors))
   {
