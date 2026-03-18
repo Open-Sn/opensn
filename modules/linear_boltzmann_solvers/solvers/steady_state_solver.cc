@@ -93,12 +93,12 @@ SteadyStateSourceSolver::ReadRestartData()
   auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
   const auto& groupsets = lbs_problem_->GetGroupsets();
 
-  auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  bool success = (file >= 0);
-  if (file >= 0)
+  const H5FileHandle file(H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
+  bool success = (file.Id() >= 0);
+  if (file.Id() >= 0)
   {
     // Read phi
-    success &= H5ReadDataset1D<double>(file, "phi_old", phi_old_local);
+    success &= H5ReadDataset1D<double>(file.Id(), "phi_old", phi_old_local);
 
     // Read psi
     int gs_id = 0;
@@ -107,17 +107,15 @@ SteadyStateSourceSolver::ReadRestartData()
       if (gs.angle_agg)
       {
         std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
-        if (H5Has(file, name))
+        if (H5Has(file.Id(), name))
         {
           std::vector<double> psi;
-          success &= H5ReadDataset1D<double>(file, name, psi);
+          success &= H5ReadDataset1D<double>(file.Id(), name, psi);
           gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
         }
       }
       ++gs_id;
     }
-
-    H5Fclose(file);
   }
 
   if (success)
@@ -136,12 +134,12 @@ SteadyStateSourceSolver::WriteRestartData()
   auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
   const auto& groupsets = lbs_problem_->GetGroupsets();
 
-  auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-  bool success = (file >= 0);
-  if (file >= 0)
+  const H5FileHandle file(H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
+  bool success = (file.Id() >= 0);
+  if (file.Id() >= 0)
   {
     // Write phi
-    success &= H5WriteDataset1D<double>(file, "phi_old", phi_old_local);
+    success &= H5WriteDataset1D<double>(file.Id(), "phi_old", phi_old_local);
 
     // Write psi
     if (options.write_delayed_psi_to_restart)
@@ -155,14 +153,12 @@ SteadyStateSourceSolver::WriteRestartData()
           if (not psi.empty())
           {
             std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
-            success &= H5WriteDataset1D<double>(file, name, psi);
+            success &= H5WriteDataset1D<double>(file.Id(), name, psi);
           }
         }
         ++gs_id;
       }
     }
-
-    H5Fclose(file);
   }
 
   if (success)

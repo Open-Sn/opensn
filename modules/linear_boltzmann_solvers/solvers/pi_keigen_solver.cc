@@ -260,12 +260,12 @@ PowerIterationKEigenSolver::ReadRestartData()
   auto& phi_old_local = do_problem_->GetPhiOldLocal();
   const auto& groupsets = do_problem_->GetGroupsets();
 
-  auto file = H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  bool success = (file >= 0);
-  if (file >= 0)
+  const H5FileHandle file(H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
+  bool success = (file.Id() >= 0);
+  if (file.Id() >= 0)
   {
     // Read phi
-    success &= H5ReadDataset1D<double>(file, "phi_old", phi_old_local);
+    success &= H5ReadDataset1D<double>(file.Id(), "phi_old", phi_old_local);
 
     // Read psi
     int gs_id = 0;
@@ -274,10 +274,10 @@ PowerIterationKEigenSolver::ReadRestartData()
       if (gs.angle_agg)
       {
         std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
-        if (H5Has(file, name))
+        if (H5Has(file.Id(), name))
         {
           std::vector<double> psi;
-          success &= H5ReadDataset1D<double>(file, name, psi);
+          success &= H5ReadDataset1D<double>(file.Id(), name, psi);
           gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
         }
       }
@@ -285,10 +285,8 @@ PowerIterationKEigenSolver::ReadRestartData()
     }
 
     // Read keff and Fprev
-    success &= H5ReadAttribute<double>(file, "keff", k_eff_) and
-               H5ReadAttribute<double>(file, "Fprev", F_prev_);
-
-    H5Fclose(file);
+    success &= H5ReadAttribute<double>(file.Id(), "keff", k_eff_) and
+               H5ReadAttribute<double>(file.Id(), "Fprev", F_prev_);
   }
 
   if (success)
@@ -307,12 +305,12 @@ PowerIterationKEigenSolver::WriteRestartData()
   auto& phi_old_local = do_problem_->GetPhiOldLocal();
   const auto& groupsets = do_problem_->GetGroupsets();
 
-  auto file = H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-  bool success = (file >= 0);
-  if (file >= 0)
+  const H5FileHandle file(H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
+  bool success = (file.Id() >= 0);
+  if (file.Id() >= 0)
   {
     // Write phi
-    success &= H5WriteDataset1D<double>(file, "phi_old", phi_old_local);
+    success &= H5WriteDataset1D<double>(file.Id(), "phi_old", phi_old_local);
 
     // Write psi
     if (options.write_delayed_psi_to_restart)
@@ -326,17 +324,15 @@ PowerIterationKEigenSolver::WriteRestartData()
           if (not psi.empty())
           {
             std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
-            success &= H5WriteDataset1D<double>(file, name, psi);
+            success &= H5WriteDataset1D<double>(file.Id(), name, psi);
           }
         }
         ++gs_id;
       }
     }
 
-    success &= H5CreateAttribute<double>(file, "keff", k_eff_) and
-               H5CreateAttribute<double>(file, "Fprev", F_prev_);
-
-    H5Fclose(file);
+    success &= H5CreateAttribute<double>(file.Id(), "keff", k_eff_) and
+               H5CreateAttribute<double>(file.Id(), "Fprev", F_prev_);
   }
 
   if (success)
