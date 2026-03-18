@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_residual_func_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/math/nonlinear_solver/nonlinear_solver_context.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include <petscsnes.h>
@@ -42,7 +43,7 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
   {
     std::vector<double> output(diff_num_local_dofs, 0.0);
 
-    const double* phi_raw = nullptr;
+    const PetscScalar* phi_raw = nullptr;
     VecGetArrayRead(phi, &phi_raw);
     for (size_t i = 0; i < diff_num_local_dofs; ++i)
       output[i] = phi_raw[i];
@@ -53,7 +54,7 @@ struct NLKEigenDiffContext : public NonLinearSolverContext
 
   void STLVecToPhiVec(const std::vector<double>& input, Vec phi) const
   {
-    double* phi_raw = nullptr;
+    PetscScalar* phi_raw = nullptr;
     VecGetArray(phi, &phi_raw);
     for (size_t i = 0; i < diff_num_local_dofs; ++i)
       phi_raw[i] = input[i];
