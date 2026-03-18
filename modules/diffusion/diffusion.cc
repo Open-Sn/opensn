@@ -217,7 +217,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 
   if (use_initial_guess)
   {
-    double* x_raw = nullptr;
+    PetscScalar* x_raw = nullptr;
     OpenSnPETScCall(VecGetArray(x, &x_raw));
     size_t k = 0;
     for (const auto& value : solution)

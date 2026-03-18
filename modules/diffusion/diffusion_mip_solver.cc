@@ -1041,7 +1041,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
   const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
-  const double* q_vector = nullptr;
+  const PetscScalar* q_vector = nullptr;
   OpenSnPETScCall(VecGetArrayRead(petsc_q_vector, &q_vector));
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));

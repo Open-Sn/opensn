@@ -21,8 +21,8 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   MultiGroupXS mgxs;
 
   // Open file
-  hid_t file = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  if (not file)
+  const H5FileHandle file(H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
+  if (file.Id() < 0)
   {
     std::string err_msg = "Unable to open " + file_name + " or it is not a valid HDF5 file.\n";
     throw std::logic_error(err_msg);
@@ -30,18 +30,18 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
 
   // Check file type
   std::string filetype;
-  H5ReadAttribute<std::string>(file, "filetype", filetype);
+  H5ReadAttribute<std::string>(file.Id(), "filetype", filetype);
   if (filetype != "mgxs")
     throw std::runtime_error(file_name + " is not a valid OpenMC library file");
 
   log.Log() << "Reading OpenMC cross-section file \"" << file_name << "\"\n";
 
   // Number of groups
-  if (not H5ReadAttribute<unsigned int>(file, "energy_groups", mgxs.num_groups_))
+  if (not H5ReadAttribute<unsigned int>(file.Id(), "energy_groups", mgxs.num_groups_))
     throw std::runtime_error("Failure reading \"energy_groups\" from " + file_name);
 
   // Group structure
-  H5ReadDataset1D<double>(file, "/group structure", mgxs.e_bounds_);
+  H5ReadDataset1D<double>(file.Id(), "/group structure", mgxs.e_bounds_);
   std::reverse(mgxs.e_bounds_.begin(), mgxs.e_bounds_.end());
 
   // Temperature
@@ -52,7 +52,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   std::stringstream ss;
   ss << std::fixed << std::setprecision(0) << mgxs.temperature_ << "K";
   std::string path = "/" + dataset_name + "/" + ss.str() + "/";
-  if (!H5Has(file, path))
+  if (!H5Has(file.Id(), path))
   {
     throw std::runtime_error("Could not find dataset " + dataset_name + "/" + ss.str() + " in " +
                              file_name);
@@ -60,12 +60,13 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   mgxs.temperature_ = temperature;
 
   // Scattering order
-  if (not H5ReadGroupAttribute<unsigned int>(file, dataset_name, "order", mgxs.scattering_order_))
+  if (not H5ReadGroupAttribute<unsigned int>(
+        file.Id(), dataset_name, "order", mgxs.scattering_order_))
     throw std::runtime_error("Failure reading \"order\" from " + file_name);
 
   // Scattering shape
   std::string scatter_shape;
-  H5ReadGroupAttribute<std::string>(file, dataset_name, "scatter_shape", scatter_shape);
+  H5ReadGroupAttribute<std::string>(file.Id(), dataset_name, "scatter_shape", scatter_shape);
   if (scatter_shape != "[G][G'][Order]")
     throw std::runtime_error(file_name + " has an unsupported scatter shape");
 
@@ -73,12 +74,12 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   mgxs.num_precursors_ = 0;
 
   // Inverse velocity
-  H5ReadDataset1D<double>(file, path + "inverse-velocity", mgxs.inv_velocity_);
+  H5ReadDataset1D<double>(file.Id(), path + "inverse-velocity", mgxs.inv_velocity_);
   OpenSnLogicalErrorIf(not IsNonNegative(mgxs.inv_velocity_),
                        "Only positive inverse velocity values are permitted.");
 
   // Total
-  H5ReadDataset1D<double>(file, path + "total", mgxs.sigma_t_);
+  H5ReadDataset1D<double>(file.Id(), path + "total", mgxs.sigma_t_);
   OpenSnLogicalErrorIf(mgxs.sigma_t_.empty(),
                        "\"total\" data block not found in " + file_name + ".");
   OpenSnLogicalErrorIf(not IsNonNegative(mgxs.sigma_t_),
@@ -92,15 +93,15 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   // Transfer
   // Note that the scatter matrices in OpenMC are stored as the transposed version of what OpenSn
   // uses.
-  if (H5Has(file, path + "scatter_data/scatter_matrix"))
+  if (H5Has(file.Id(), path + "scatter_data/scatter_matrix"))
   {
     mgxs.transfer_matrices_.assign(mgxs.scattering_order_ + 1,
                                    SparseMatrix(mgxs.num_groups_, mgxs.num_groups_));
     std::vector<double> flat_scatter_matrix;
-    H5ReadDataset1D<double>(file, path + "scatter_data/scatter_matrix", flat_scatter_matrix);
+    H5ReadDataset1D<double>(file.Id(), path + "scatter_data/scatter_matrix", flat_scatter_matrix);
     std::vector<int> g_min, g_max;
-    H5ReadDataset1D<int>(file, path + "scatter_data/g_min", g_min);
-    H5ReadDataset1D<int>(file, path + "scatter_data/g_max", g_max);
+    H5ReadDataset1D<int>(file.Id(), path + "scatter_data/g_min", g_min);
+    H5ReadDataset1D<int>(file.Id(), path + "scatter_data/g_max", g_max);
     int fidx = 0;
     for (unsigned int gp = 0; gp < mgxs.num_groups_; ++gp)
       for (int g = g_min[gp]; g <= g_max[gp]; ++g)
@@ -113,11 +114,11 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   mgxs.ComputeDiffusionParameters();
 
   // Is fissionable?
-  H5ReadGroupAttribute<bool>(file, dataset_name, "fissionable", mgxs.is_fissionable_);
+  H5ReadGroupAttribute<bool>(file.Id(), dataset_name, "fissionable", mgxs.is_fissionable_);
   if (mgxs.is_fissionable_)
   {
     // Fission
-    H5ReadDataset1D<double>(file, path + "fission", mgxs.sigma_f_);
+    H5ReadDataset1D<double>(file.Id(), path + "fission", mgxs.sigma_f_);
     OpenSnLogicalErrorIf(mgxs.sigma_f_.empty(),
                          "\"fission\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(not IsNonNegative(mgxs.sigma_f_),
@@ -130,7 +131,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
     }
 
     // Nu-Fission
-    H5ReadDataset1D<double>(file, path + "nu-fission", mgxs.nu_sigma_f_);
+    H5ReadDataset1D<double>(file.Id(), path + "nu-fission", mgxs.nu_sigma_f_);
     OpenSnLogicalErrorIf(mgxs.nu_sigma_f_.empty(),
                          "\"nu-fission\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(
@@ -144,7 +145,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
     }
 
     // Chi
-    H5ReadDataset1D<double>(file, path + "chi", mgxs.chi_);
+    H5ReadDataset1D<double>(file.Id(), path + "chi", mgxs.chi_);
     OpenSnLogicalErrorIf(mgxs.chi_.empty(), "\"chi\" data block not found in " + file_name + ".");
     OpenSnLogicalErrorIf(not HasNonZero(mgxs.chi_),
                          "Steady-state fission spectrum must have at least one non-zero value.");
@@ -162,6 +163,9 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
         nu[g] /= mgxs.sigma_f_[g];
 
     // Production matrix (computed)
+    // TODO: This path uses chi * nu_sigma_f (total production). If delayed-neutron data is
+    // introduced here in the future, ensure LBS source/fission-production routines remain
+    // consistent with prompt-vs-total production to avoid double counting.
     if (mgxs.production_matrix_.empty())
     {
       mgxs.production_matrix_.resize(mgxs.num_groups_, std::vector<double>(mgxs.num_groups_));
@@ -195,7 +199,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
 
   for (const auto& xs_name : extra_xs_names)
   {
-    if (!H5Has(file, path + xs_name))
+    if (!H5Has(file.Id(), path + xs_name))
     {
       std::string msg = "Requested XS \"";
       msg += xs_name;
@@ -204,7 +208,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
       throw std::runtime_error(msg);
     }
     std::vector<double> xs_vals;
-    if (!H5ReadDataset1D<double>(file, path + xs_name, xs_vals))
+    if (!H5ReadDataset1D<double>(file.Id(), path + xs_name, xs_vals))
     {
       std::string msg = "Failed to read XS \"";
       msg += xs_name;
@@ -216,8 +220,6 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
       throw std::runtime_error("Requested XS \"" + xs_name + "\" does not have num_groups entries");
     mgxs.custom_xs_[xs_name] = std::move(xs_vals);
   }
-
-  H5Fclose(file);
 
   return mgxs;
 }

@@ -298,5 +298,19 @@
         "abs_tol": 1e-12
       }
     ]
-  }
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_OF.py",
+    "comment": "3D_2G Infinite medium testing OpenFOAM mesh reading with correct boundary tagging; should agree with EXODUSII models",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "Final k-eigenvalue",
+        "wordnum": 4,
+        "gold": 0.929337,
+        "abs_tol": 1e-06
+      }
+    ]
+  }  
 ]

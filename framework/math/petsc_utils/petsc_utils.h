@@ -210,13 +210,13 @@ void CommunicateGhostEntries(Vec x);
 struct GhostVecLocalRaw
 {
   Vec x_localized = nullptr;
-  const double* x_localized_raw = nullptr;
+  const PetscScalar* x_localized_raw = nullptr;
 
   /// Returns a copy of the value at the specified index.
   double operator[](int index) const { return x_localized_raw[index]; }
 
   /// Returns a reference of the value at the specified index.
-  const double& operator()(int index) const { return x_localized_raw[index]; }
+  PetscScalar operator()(int index) const { return x_localized_raw[index]; }
 };
 
 /// Gets a local raw view of a ghost vector.

@@ -18,8 +18,8 @@ LBSSolverIO::WriteFluxMoments(
 {
   // Open file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
-  hid_t file_id = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-  OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
+  const H5FileHandle file(H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
+  OpenSnLogicalErrorIf(file.Id() < 0, "Failed to open " + file_name + ".");
 
   std::vector<double>& src =
     opt_src.has_value() ? opt_src.value().get() : lbs_problem.GetPhiNewLocal();
@@ -38,8 +38,8 @@ LBSSolverIO::WriteFluxMoments(
   OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided.");
 
   // Write number of moments and groups to the root of the h5 file
-  H5CreateAttribute(file_id, "num_moments", num_moments);
-  H5CreateAttribute(file_id, "num_groups", num_groups);
+  H5CreateAttribute(file.Id(), "num_moments", num_moments);
+  H5CreateAttribute(file.Id(), "num_groups", num_groups);
 
   std::vector<uint64_t> cell_ids, num_cell_nodes;
   cell_ids.reserve(num_local_cells);
@@ -65,14 +65,14 @@ LBSSolverIO::WriteFluxMoments(
   }
 
   // Write mesh data to h5 inside the mesh group
-  H5CreateGroup(file_id, "mesh");
-  H5CreateAttribute(file_id, "mesh/num_local_cells", num_local_cells);
-  H5CreateAttribute(file_id, "mesh/num_local_nodes", num_local_nodes);
-  H5WriteDataset1D(file_id, "mesh/cell_ids", cell_ids);
-  H5WriteDataset1D(file_id, "mesh/num_cell_nodes", num_cell_nodes);
-  H5WriteDataset1D(file_id, "mesh/nodes_x", nodes_x);
-  H5WriteDataset1D(file_id, "mesh/nodes_y", nodes_y);
-  H5WriteDataset1D(file_id, "mesh/nodes_z", nodes_z);
+  H5CreateGroup(file.Id(), "mesh");
+  H5CreateAttribute(file.Id(), "mesh/num_local_cells", num_local_cells);
+  H5CreateAttribute(file.Id(), "mesh/num_local_nodes", num_local_nodes);
+  H5WriteDataset1D(file.Id(), "mesh/cell_ids", cell_ids);
+  H5WriteDataset1D(file.Id(), "mesh/num_cell_nodes", num_cell_nodes);
+  H5WriteDataset1D(file.Id(), "mesh/nodes_x", nodes_x);
+  H5WriteDataset1D(file.Id(), "mesh/nodes_y", nodes_y);
+  H5WriteDataset1D(file.Id(), "mesh/nodes_z", nodes_z);
 
   // Loop through dof and store flux values
   std::vector<double> values;
@@ -87,8 +87,7 @@ LBSSolverIO::WriteFluxMoments(
         }
 
   // Write flux values to h5 and close file
-  H5WriteDataset1D(file_id, "values", values);
-  H5Fclose(file_id);
+  H5WriteDataset1D(file.Id(), "values", values);
 }
 
 void
@@ -100,8 +99,8 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   // Open file
   const auto file_name =
     file_base + (single_file ? "" : std::to_string(opensn::mpi_comm.rank())) + ".h5";
-  hid_t file_id = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
+  const H5FileHandle file(H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
+  OpenSnLogicalErrorIf(file.Id() < 0, "Failed to open " + file_name + ".");
 
   std::vector<double>& dest =
     opt_dest.has_value() ? opt_dest.value().get() : lbs_problem.GetPhiOldLocal();
@@ -114,10 +113,10 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   uint64_t file_num_local_cells = 0;
   uint64_t file_num_local_nodes = 0;
 
-  H5ReadAttribute(file_id, "num_moments", file_num_moments);
-  H5ReadAttribute(file_id, "num_groups", file_num_groups);
-  H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
-  H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
+  H5ReadAttribute(file.Id(), "num_moments", file_num_moments);
+  H5ReadAttribute(file.Id(), "num_groups", file_num_groups);
+  H5ReadAttribute(file.Id(), "mesh/num_local_cells", file_num_local_cells);
+  H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes);
 
   // Check compatibility with system macro info
   const auto& grid = lbs_problem.GetGrid();
@@ -141,13 +140,13 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
 
   // Read in mesh information
   std::vector<uint64_t> file_cell_ids, file_num_cell_nodes;
-  H5ReadDataset1D<uint64_t>(file_id, "mesh/cell_ids", file_cell_ids);
-  H5ReadDataset1D<uint64_t>(file_id, "mesh/num_cell_nodes", file_num_cell_nodes);
+  H5ReadDataset1D<uint64_t>(file.Id(), "mesh/cell_ids", file_cell_ids);
+  H5ReadDataset1D<uint64_t>(file.Id(), "mesh/num_cell_nodes", file_num_cell_nodes);
 
   std::vector<double> nodes_x, nodes_y, nodes_z;
-  H5ReadDataset1D<double>(file_id, "mesh/nodes_x", nodes_x);
-  H5ReadDataset1D<double>(file_id, "mesh/nodes_y", nodes_y);
-  H5ReadDataset1D<double>(file_id, "mesh/nodes_z", nodes_z);
+  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_x", nodes_x);
+  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_y", nodes_y);
+  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_z", nodes_z);
 
   // Validate mesh compatibility
   uint64_t curr_node = 0;
@@ -160,9 +159,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
     if (not grid->IsCellLocal(cell_global_id))
       continue;
 
-    // Check for cell compatibility
     const auto& nodes = discretization.GetCellNodeLocations(cell);
-
     OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes[c],
                          "Incompatible number of cell nodes encountered on cell " +
                            std::to_string(cell_global_id) + ".");
@@ -195,7 +192,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
 
   // Read the flux moments data
   std::vector<double> values;
-  H5ReadDataset1D<double>(file_id, "values", values);
+  H5ReadDataset1D<double>(file.Id(), "values", values);
 
   uint64_t v = 0;
   // Assign flux moments data to destination vector
@@ -214,7 +211,6 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
           ++v;
         }
   }
-  H5Fclose(file_id);
 }
 
 } // namespace opensn

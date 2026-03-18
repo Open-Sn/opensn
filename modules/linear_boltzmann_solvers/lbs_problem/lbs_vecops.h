@@ -30,7 +30,7 @@ public:
                                                 Vec dest,
                                                 PhiSTLOption src);
 
-  /// Assembles a vector for a given groupset from a source vector.
+  /// Disassembles a groupset-scoped PETSc vector back into a primary STL vector.
   static void SetPrimarySTLvectorFromGSPETScVec(LBSProblem& lbs_problem,
                                                 const LBSGroupset& groupset,
                                                 Vec src,
@@ -43,20 +43,20 @@ public:
                                                          Vec dest,
                                                          const std::vector<double>& src);
 
-  /// Assembles a vector for a given groupset from a source vector.
+  /// Disassembles a group-span PETSc vector back into a primary STL vector.
   static void SetPrimarySTLvectorFromGroupScopedPETScVec(LBSProblem& lbs_problem,
                                                          unsigned int first_group_id,
                                                          unsigned int last_group_id,
                                                          Vec src,
                                                          PhiSTLOption dest);
 
-  /// Assembles a vector for a given groupset from a source vector.
+  /// Copies one groupset scope from source STL vector to destination STL vector.
   static void GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
                                             const LBSGroupset& groupset,
                                             const std::vector<double>& src,
                                             std::vector<double>& dest);
 
-  /// Assembles a vector for a given groupset from a source vector.
+  /// Copies one groupset scope between primary STL vectors selected by phi options.
   static void GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
                                             const LBSGroupset& groupset,
                                             PhiSTLOption src,
@@ -68,7 +68,7 @@ public:
                                                      Vec x,
                                                      PhiSTLOption which_phi);
 
-  /// Disassembles a multiple Groupset PETSc vector STL vectors.
+  /// Disassembles a multi-groupset PETSc vector back into the primary STL vector.
   static void SetPrimarySTLvectorFromMultiGSPETScVec(LBSProblem& lbs_problem,
                                                      const std::vector<unsigned int>& groupset_ids,
                                                      Vec x,
