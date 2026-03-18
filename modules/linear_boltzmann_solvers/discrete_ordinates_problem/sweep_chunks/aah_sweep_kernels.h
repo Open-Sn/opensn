@@ -24,7 +24,6 @@ struct AAHSweepData
   const SpatialDiscretization& discretization;
   const std::vector<UnitCellMatrices>& unit_cell_matrices;
   std::vector<CellLBSView>& cell_transport_views;
-  const std::vector<double>& densities;
   const std::vector<double>& source_moments;
   const LBSGroupset& groupset;
   const BlockID2XSMap& xs;
@@ -100,7 +99,6 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
 
-    const auto& rho = data.densities[cell.local_id];
     const auto& sigma_t = data.xs.at(cell.block_id)->GetSigmaTotal();
 
     std::vector<double> tau_gsg;
@@ -199,7 +197,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
       {
-        double sigma_tg = rho * sigma_t[gs_gi + gsg];
+        double sigma_tg = sigma_t[gs_gi + gsg];
         if constexpr (time_dependent)
           sigma_tg += tau_gsg[gsg];
 

@@ -14,7 +14,6 @@ TransientSourceFunction::TransientSourceFunction(const LBSProblem& lbs_problem)
 
 double
 TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
-                                        const double& rho,
                                         const std::vector<double>& nu_delayed_sigma_f,
                                         const double* phi) const
 {
@@ -29,8 +28,8 @@ TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
           const double coeff = precursor.emission_spectrum[g_] * precursor.decay_constant /
                                (1.0 + eff_dt * precursor.decay_constant);
 
-          value += coeff * eff_dt * precursor.fractional_yield * rho * nu_delayed_sigma_f[gp] *
-                   phi[gp] / cell_volume_;
+          value += coeff * eff_dt * precursor.fractional_yield * nu_delayed_sigma_f[gp] * phi[gp] /
+                   cell_volume_;
         }
 
   if (apply_wgs_fission_src_)
@@ -40,8 +39,8 @@ TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
         const double coeff = precursor.emission_spectrum[g_] * precursor.decay_constant /
                              (1.0 + eff_dt * precursor.decay_constant);
 
-        value += coeff * eff_dt * precursor.fractional_yield * rho * nu_delayed_sigma_f[gp] *
-                 phi[gp] / cell_volume_;
+        value += coeff * eff_dt * precursor.fractional_yield * nu_delayed_sigma_f[gp] * phi[gp] /
+                 cell_volume_;
       }
 
   return value;

@@ -47,7 +47,6 @@ public:
   using PrecursorList = std::vector<MultiGroupXS::Precursor>;
   /// Compute delayed particle precursor sources.
   virtual double DelayedFission(const PrecursorList& precursors,
-                                const double& rho,
                                 const std::vector<double>& nu_delayed_sigma_f,
                                 const double* phi) const;
 

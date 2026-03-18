@@ -541,7 +541,6 @@ SMMAcceleration::ComputeSourceCorrection() const
   // Build the source
   for (const auto& cell : grid->local_cells)
   {
-    const auto& rho = do_problem_.GetDensitiesLocal()[cell.local_id];
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto nodes = cell_mapping.GetNodeLocations();
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
@@ -557,7 +556,7 @@ SMMAcceleration::ComputeSourceCorrection() const
     for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
     {
       const auto g = first_grp + gsg;
-      const auto& sig_tr = rho * sigma_tr[g];
+      const auto& sig_tr = sigma_tr[g];
 
       // Compute the volumetric correction term to the diffusion source
       // for this diffusion DoF. Unlike in many other areas of the codebase,

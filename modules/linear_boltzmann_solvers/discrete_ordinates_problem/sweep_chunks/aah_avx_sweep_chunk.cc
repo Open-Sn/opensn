@@ -258,7 +258,6 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
 
-    const double rho = data.densities[cell.local_id];
     const auto& sigma_t = data.xs.at(cell.block_id)->GetSigmaTotal();
 
     const auto& unit_mats = data.unit_cell_matrices[cell_local_id];
@@ -393,7 +392,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         for (unsigned int gsg = g0; gsg < g1; ++gsg)
         {
           const size_t rel = gsg - g0;
-          double sigma_tg = rho * sigma_t[gs_gi + gsg];
+          double sigma_tg = sigma_t[gs_gi + gsg];
           if constexpr (time_dependent)
             sigma_tg += tau_gsg[gsg];
           sigma_block[rel] = sigma_tg;
@@ -597,7 +596,6 @@ AAHSweepChunk::Sweep_FixedN(AngleSet& angle_set)
                     discretization_,
                     unit_cell_matrices_,
                     cell_transport_views_,
-                    densities_,
                     source_moments_,
                     groupset_,
                     xs_,

@@ -22,7 +22,6 @@ public:
   explicit TransientSourceFunction(const LBSProblem& lbs_problem);
 
   double DelayedFission(const PrecursorList& precursors,
-                        const double& rho,
                         const std::vector<double>& nu_delayed_sigma_f,
                         const double* phi) const override;
 

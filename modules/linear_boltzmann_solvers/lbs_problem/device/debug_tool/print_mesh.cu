@@ -61,7 +61,6 @@ PrintCell(CellView& cell)
   // basic data
   printf(INDENT(2) "num_nodes: %" PRIu32 "\n", cell.num_nodes);
   printf(INDENT(2) "num_faces: %" PRIu32 "\n", cell.num_faces);
-  printf(INDENT(2) "density: %lf\n", cell.density);
   printf(INDENT(2) "total_xs_ptr: %p\n", cell.total_xs);
   printf(INDENT(2) "phi-address: %" PRIu64 "\n", cell.phi_address);
   printf(INDENT(2) "save_psi_index: %" PRIu64 "\n", cell.save_psi_index);

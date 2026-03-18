@@ -77,7 +77,6 @@ AAHDSweepChunk::AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),
                problem.GetCellTransportViews(),
-               problem.GetDensitiesLocal(),
                problem.GetQMomentsLocal(),
                groupset,
                problem.GetBlockID2XSMap(),

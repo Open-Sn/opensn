@@ -34,8 +34,6 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
   {
     // number of faces and nodes
     alloc_size += 2 * sizeof(std::uint32_t);
-    // densities
-    alloc_size += sizeof(double);
     // pointer to total cross sections
     alloc_size += sizeof(std::uintptr_t);
     // phi address
@@ -113,10 +111,6 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     *(num_node_and_face_data++) = cell_num_nodes;
     *(num_node_and_face_data++) = cell_num_faces;
     cell_data = reinterpret_cast<char*>(num_node_and_face_data);
-    // densitiy
-    double* density_data = reinterpret_cast<double*>(cell_data);
-    *(density_data++) = lbs_problem.GetDensitiesLocal()[cell.local_id];
-    cell_data = reinterpret_cast<char*>(density_data);
     // pointer to total cross section
     double** total_xs_data = reinterpret_cast<double**>(cell_data);
     *(total_xs_data++) = xs.GetXSGPUData(cell.block_id);

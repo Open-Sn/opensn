@@ -59,10 +59,6 @@ struct CellView
     num_nodes = *(num_node_and_face_data++);
     num_faces = *(num_node_and_face_data++);
     cell_data = reinterpret_cast<const char*>(num_node_and_face_data);
-    // density
-    const double* density_data = reinterpret_cast<const double*>(cell_data);
-    density = *(density_data++);
-    cell_data = reinterpret_cast<const char*>(density_data);
     // total cross section pointer
     const double* const* total_xs_data = reinterpret_cast<const double* const*>(cell_data);
     total_xs = *(total_xs_data++);
@@ -90,7 +86,6 @@ struct CellView
 
   std::uint32_t num_nodes;
   std::uint32_t num_faces;
-  double density;
   const double* total_xs;
   std::uint64_t phi_address;
   std::uint64_t save_psi_index;
