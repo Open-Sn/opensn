@@ -132,8 +132,7 @@ SkipFoamHeader(std::istream& in)
   std::string line;
   while (std::getline(in, line))
   {
-    const std::string& tmp = line;
-    StringTrim(tmp);
+    auto tmp = StringTrim(line);
     if (tmp.empty() or StartsWith(tmp, "//"))
       continue;
     if (not tmp.empty() and (std::isdigit(static_cast<unsigned char>(tmp[0])) or tmp[0] == '-'))
@@ -172,10 +171,26 @@ ReadNInts(std::istream& in, int n, std::vector<int>& out)
   return true;
 }
 
+// containers
 struct CellZoneEntry
 {
   std::string name;
   std::vector<int> cells;
+};
+
+struct BoundaryPatchEntry
+{
+  std::string name;
+  std::string type;
+  int n_faces = 0;
+  int start_face = 0;
+};
+
+struct FaceLocation
+{
+  size_t cell_id = 0;
+  size_t local_face_id = 0;
+  bool valid = false;
 };
 
 // generalized function to parse/select OpenFOAM Lists (data structure in file)
@@ -279,6 +294,207 @@ ReadFoamList(std::istream& in,
   }
 }
 
+// Read next non-empty, non-comment line
+inline bool
+ReadNextContentLine(std::istream& s, std::string& out)
+{
+  std::string l;
+  while (std::getline(s, l))
+  {
+    l = StringTrim(l);
+    if (l.empty() or StartsWith(l, "//"))
+      continue;
+    out = std::move(l);
+    return true;
+  }
+  return false;
+}
+
+// Extract first integer token from a line
+inline bool
+ExtractFirstIntToken(const std::string& line, int& value)
+{
+  std::istringstream iss(line);
+  std::string tok;
+  while (iss >> tok)
+  {
+    while (not tok.empty() and (tok.back() == '(' or tok.back() == ')' or tok.back() == ';'))
+      tok.pop_back();
+
+    if (tok == "List<label>" or tok == "labelList" or tok == "label")
+      continue;
+
+    char* endp = nullptr;
+    long val = std::strtol(tok.c_str(), &endp, 10);
+    if (endp and *endp == '\0')
+    {
+      value = static_cast<int>(val);
+      return true;
+    }
+  }
+  return false;
+}
+
+// Parse "keyword value" for patch type in OpenFOAM's boundary file
+inline bool
+ReadBoundaryKeywordValue(const std::string& line, std::string& key, std::string& value)
+{
+  std::string tmp = StringTrim(line);
+  if (tmp.empty() or StartsWith(tmp, "//"))
+    return false;
+
+  if (not tmp.empty() and tmp.back() == ';')
+    tmp.pop_back();
+
+  std::istringstream iss(tmp);
+  if (not(iss >> key))
+    return false;
+
+  std::getline(iss, value);
+  value = StringTrim(value);
+
+  return not key.empty();
+}
+
+std::vector<BoundaryPatchEntry>
+ReadBoundaryFile(const std::filesystem::path& path, const std::string& fname)
+{
+  std::ifstream in(path);
+  if (not in.is_open())
+    return {}; // no boundary file is allowed
+
+  SkipFoamHeader(in);
+
+  int npatches_i = 0;
+  {
+    std::string line;
+    if (not ReadNextContentLine(in, line) or not ExtractFirstIntToken(line, npatches_i))
+      throw std::logic_error(fname + ": Bad or missing boundary patch count.");
+
+    if (not SkipUntil(in, '('))
+      throw std::logic_error(fname + ": Missing '(' starting boundary patch list.");
+  }
+
+  const auto npatches = static_cast<size_t>(npatches_i);
+
+  std::vector<BoundaryPatchEntry> patches;
+  patches.reserve(npatches);
+
+  for (size_t p = 0; p < npatches; ++p)
+  {
+    std::string line;
+    if (not ReadNextContentLine(in, line))
+      throw std::logic_error(fname + ": Unexpected EOF while reading boundary patch #" +
+                             std::to_string(p));
+
+    if (line == ")")
+      throw std::logic_error(fname + ": Unexpected ')' while reading boundary patch #" +
+                             std::to_string(p));
+
+    BoundaryPatchEntry patch;
+    patch.name = line;
+
+    if (not ReadNextContentLine(in, line) or line != "{")
+      throw std::logic_error(fname + ": Expected '{' after boundary patch name '" + patch.name +
+                             "'.");
+
+    bool found_n_faces = false;
+    bool found_start_face = false;
+
+    while (std::getline(in, line))
+    {
+      line = StringTrim(line);
+
+      if (line.empty() or StartsWith(line, "//"))
+        continue;
+
+      if (line == "}")
+        break;
+
+      std::string key, value;
+      if (not ReadBoundaryKeywordValue(line, key, value))
+        continue;
+
+      const auto key_l = LowerCase(key);
+
+      if (key_l == "type")
+        patch.type = value;
+      else if (key_l == "nfaces")
+      {
+        patch.n_faces = std::stoi(value);
+        found_n_faces = true;
+      }
+      else if (key_l == "startface")
+      {
+        patch.start_face = std::stoi(value);
+        found_start_face = true;
+      }
+    }
+
+    if (not found_n_faces or not found_start_face)
+      throw std::logic_error(fname + ": Boundary patch '" + patch.name +
+                             "' missing n_faces and/or start_face.");
+
+    patches.emplace_back(std::move(patch));
+  }
+
+  return patches;
+}
+
+void
+AssignBoundaryIDsFromOpenFOAMPatches(std::shared_ptr<UnpartitionedMesh> mesh,
+                                     const std::vector<BoundaryPatchEntry>& patches,
+                                     const std::vector<FaceLocation>& owner_face_location,
+                                     size_t ninternal_faces,
+                                     size_t n_faces,
+                                     const std::string& fname)
+{
+  auto& raw_cells = mesh->GetRawCells();
+
+  uint64_t bid = 0;
+  for (const auto& patch : patches)
+  {
+    if (patch.n_faces < 0 or patch.start_face < 0)
+      throw std::logic_error(fname + ": Negative n_faces/start_face for boundary patch '" +
+                             patch.name + "'.");
+
+    const auto start = static_cast<size_t>(patch.start_face);
+    const auto end = start + static_cast<size_t>(patch.n_faces);
+
+    if (start < ninternal_faces)
+      throw std::logic_error(fname + ": Boundary patch '" + patch.name +
+                             "' starts inside the internal-face range.");
+
+    if (end > n_faces)
+      throw std::logic_error(fname + ": Boundary patch '" + patch.name +
+                             "' exceeds total number of faces.");
+
+    mesh->AddBoundary(bid, patch.name);
+
+    size_t num_assigned = 0;
+    for (size_t f = start; f < end; ++f)
+    {
+      const auto& loc = owner_face_location.at(f);
+      if (not loc.valid)
+        throw std::logic_error(fname + ": Missing owner face location for boundary face " +
+                               std::to_string(f) + " in patch '" + patch.name + "'.");
+
+      auto& face = raw_cells.at(loc.cell_id)->faces.at(loc.local_face_id);
+
+      // Adjust this to your final field name
+      face.neighbor = bid;
+
+      ++num_assigned;
+    }
+
+    log.Log() << "Assigned " << num_assigned << " faces to boundary id " << bid << "\n"
+              << "\tname: " << patch.name << "\n"
+              << "\ttype: " << patch.type;
+
+    ++bid;
+  }
+}
+
 std::vector<CellZoneEntry>
 ReadCellZones(const std::filesystem::path& path, const std::string& fname)
 {
@@ -286,47 +502,6 @@ ReadCellZones(const std::filesystem::path& path, const std::string& fname)
   if (not in.is_open())
     return {}; // no cellZones is fine.
   SkipFoamHeader(in);
-
-  // Read next non-empty, non-`//` line into `out`. Returns false on EOF.
-  auto ReadNextContentLine = [&](std::istream& s, std::string& out) -> bool
-  {
-    std::string l;
-    while (std::getline(s, l))
-    {
-      StringTrim(l);
-      if (l.empty() or StartsWith(l, "//"))
-        continue;
-      out = std::move(l);
-      return true;
-    }
-    return false;
-  };
-
-  // Extract the first integer token from a line. Skips known type tokens.
-  auto ExtractFirstIntToken = [&](const std::string& line, int& value) -> bool
-  {
-    std::istringstream iss(line);
-    std::string tok;
-    while (iss >> tok)
-    {
-      // strip trailing punctuation
-      std::string t = tok;
-      while (not t.empty() and (t.back() == '(' or t.back() == ')' or t.back() == ';'))
-        t.pop_back();
-
-      if (t == "List<label>" or t == "labelList" or t == "label")
-        continue;
-
-      char* endp = nullptr;
-      long val = std::strtol(t.c_str(), &endp, 10);
-      if (endp and *endp == '\0')
-      {
-        value = static_cast<int>(val);
-        return true;
-      }
-    }
-    return false;
-  };
 
   // Read number of zones
   int nzones_i = 0;
@@ -343,15 +518,14 @@ ReadCellZones(const std::filesystem::path& path, const std::string& fname)
   std::vector<CellZoneEntry> zones;
   zones.reserve(nzones);
 
-  // Read a cellZone dictionary entry
   auto read_zone = [&](std::istream& in2, size_t idx) -> bool
   {
     std::string line;
 
     if (not ReadNextContentLine(in2, line))
-      return false; // EOF at zones list
+      return false;
     if (line == ")")
-      return false; // stray close of outer list
+      return false;
 
     CellZoneEntry z;
     z.name = line;
@@ -363,17 +537,16 @@ ReadCellZones(const std::filesystem::path& path, const std::string& fname)
 
     while (std::getline(in2, line))
     {
-      StringTrim(line);
+      line = StringTrim(line);
       if (line == "}")
         break;
       if (line.empty() or StartsWith(line, "//"))
         continue;
 
-      // Strip trailing ';' and re-trim
       if (auto semicol = line.find(';'); semicol != std::string::npos)
       {
         line.erase(semicol);
-        StringTrim(line);
+        line = StringTrim(line);
         if (line.empty())
           continue;
       }
@@ -389,7 +562,6 @@ ReadCellZones(const std::filesystem::path& path, const std::string& fname)
 
         if (not ExtractFirstIntToken(line, nlab))
         {
-          // keep reading content lines until a line with an int is found
           std::string l2;
           while (true)
           {
@@ -398,24 +570,18 @@ ReadCellZones(const std::filesystem::path& path, const std::string& fname)
                                      z.name + "'.");
             if (ExtractFirstIntToken(l2, nlab) and nlab >= 0)
               break;
-            // keep skipping metadata in cellZone entry dict
           }
         }
 
-        // Find '(' that starts the list of ids (may be on same or later line), then consume it
         if (not SkipUntil(in2, '('))
           throw std::logic_error(fname + ": missing '(' after count in zone '" + z.name + "'.");
-        if (in2.peek() == '(')
-          in2.get();
 
-        // Read nlab entries ( cellIds )
         std::vector<int> labels;
         labels.reserve(static_cast<size_t>(nlab));
         if (not ReadNInts(in2, nlab, labels))
           throw std::logic_error(fname + ": Failed reading cellZones ids for zone '" + z.name +
                                  "'.");
 
-        // Skip to the closing ')'
         if (not SkipUntil(in2, ')'))
           throw std::logic_error(fname + ": missing ')' after ids in zone '" + z.name + "'.");
 
@@ -468,6 +634,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   const auto faces_p = base / "faces";
   const auto owner_p = base / "owner";
   const auto neigh_p = base / "neighbour";
+  const auto boundary_p = base / "boundary";
 
   if (not std::filesystem::exists(neigh_p))
     throw std::logic_error(fname + ": Missing 'neighbour'. Even with zero internal faces it "
@@ -476,7 +643,8 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   auto mesh = std::make_shared<UnpartitionedMesh>();
   log.Log() << "Reading OpenFOAM polyMesh from " << base.string();
 
-  // read " points "
+  // read points
+
   {
     std::ifstream in(points_p);
     if (not in.is_open())
@@ -494,16 +662,17 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
       return true;
     };
     ReadFoamList(in, npoints, read_pt, fname, "points");
+
     if (verts.size() != npoints)
-    {
       throw std::logic_error(fname + ": number of points mismatch (expected " +
                              std::to_string(npoints) + ", but got " + std::to_string(verts.size()) +
                              ").");
-    }
+
     mesh->GetVertices() = std::move(verts);
   }
 
-  // read " faces "
+  // read faces
+
   std::vector<std::vector<int>> face_verts;
   {
     std::ifstream in(faces_p);
@@ -511,30 +680,26 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
       throw std::runtime_error(fname + ": Failed to open " + faces_p.string());
     SkipFoamHeader(in);
 
-    size_t nfaces = 0;
+    size_t n_faces = 0;
     auto read_face = [&](std::istream& in2, size_t) -> bool
     {
       std::vector<int> fv;
       if (not ReadFace(in2, fv))
-      {
         return false;
-      }
-      else
-      {
-        face_verts.emplace_back(std::move(fv));
-        return true;
-      }
+
+      face_verts.emplace_back(std::move(fv));
+      return true;
     };
-    ReadFoamList(in, nfaces, read_face, fname, "faces");
-    if (face_verts.size() != nfaces)
-    {
-      throw std::logic_error(fname + " : number of faces mismatch (expected " +
-                             std::to_string(nfaces) + ", but got " +
+    ReadFoamList(in, n_faces, read_face, fname, "faces");
+
+    if (face_verts.size() != n_faces)
+      throw std::logic_error(fname + ": number of faces mismatch (expected " +
+                             std::to_string(n_faces) + ", but got " +
                              std::to_string(face_verts.size()) + ").");
-    }
   }
 
-  // read " owner "
+  // read owner
+
   std::vector<int> owner;
   {
     std::ifstream in(owner_p);
@@ -542,7 +707,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
       throw std::runtime_error(fname + ": Failed to open " + owner_p.string());
     SkipFoamHeader(in);
 
-    size_t nfaces = 0;
+    size_t n_faces = 0;
     auto read_lab = [&](std::istream& in2, size_t) -> bool
     {
       int v = 0;
@@ -551,16 +716,16 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
       owner.push_back(v);
       return true;
     };
-    ReadFoamList(in, nfaces, read_lab, fname, "owner");
-    if (owner.size() != nfaces)
-    {
+    ReadFoamList(in, n_faces, read_lab, fname, "owner");
+
+    if (owner.size() != n_faces)
       throw std::logic_error(fname + ": owner faces count mismatch (expected " +
-                             std::to_string(nfaces) + ", but got " + std::to_string(owner.size()) +
+                             std::to_string(n_faces) + ", but got " + std::to_string(owner.size()) +
                              ").");
-    }
   }
 
-  // read " neighbour " ( must exist, but can have a zero entry )
+  // read neighbour
+
   std::vector<int> neigh;
   {
     std::ifstream in(neigh_p);
@@ -568,7 +733,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
       throw std::runtime_error(fname + ": Failed to open " + neigh_p.string());
     SkipFoamHeader(in);
 
-    size_t nfaces = 0;
+    size_t n_faces = 0;
     auto read_lab = [&](std::istream& in2, size_t) -> bool
     {
       int v = 0;
@@ -577,23 +742,23 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
       neigh.push_back(v);
       return true;
     };
-    ReadFoamList(in, nfaces, read_lab, fname, "neighbour");
-    if (neigh.size() != nfaces)
-    {
-      throw std::logic_error(fname + ": neigh.size() != nfaces ( expected " +
-                             std::to_string(nfaces) + ", but got " + std::to_string(neigh.size()) +
+    ReadFoamList(in, n_faces, read_lab, fname, "neighbour");
+
+    if (neigh.size() != n_faces)
+      throw std::logic_error(fname + ": neigh.size() != n_faces (expected " +
+                             std::to_string(n_faces) + ", but got " + std::to_string(neigh.size()) +
                              ").");
-    }
   }
 
-  // construct cells
-  const size_t nfaces = face_verts.size();
+  // mesh count statistics
+
+  const size_t n_faces = face_verts.size();
   const size_t ninternal_faces = neigh.size();
-  if (owner.size() != nfaces)
-  {
-    throw std::logic_error(fname + ": owner.size() != nfaces ( expected " + std::to_string(nfaces) +
-                           ", but got " + std::to_string(owner.size()) + ").");
-  }
+
+  if (owner.size() != n_faces)
+    throw std::logic_error(fname + ": owner.size() != n_faces (expected " +
+                           std::to_string(n_faces) + ", but got " + std::to_string(owner.size()) +
+                           ").");
 
   int max_cell = -1;
   for (int v : owner)
@@ -604,52 +769,55 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   if (ncells == 0)
     throw std::logic_error(fname + ": Number of cells computed cannot be zero.");
 
-  auto& raw_cells = mesh->GetRawCells();
-  raw_cells.reserve(ncells);
+  // construct cells from the face notation in OpenFOAM
 
-  // for each cell, collect faces according to OpenFOAM orientation
   std::vector<std::vector<int64_t>> cell_faces(ncells);
+
   for (size_t f = 0; f < ninternal_faces; ++f)
   {
     const int c_o = owner[f];
     const int c_n = neigh[f];
+
     if (c_o < 0 or std::cmp_greater_equal(c_o, ncells) or c_n < 0 or
         std::cmp_greater_equal(c_n, ncells))
-    {
       throw std::logic_error(fname + ": owner/neighbour id out of range (face " +
                              std::to_string(f) + ").");
-    }
-    cell_faces[c_o].push_back(static_cast<int64_t>(f));      // owner side: outward as stored
-    cell_faces[c_n].push_back(-static_cast<int64_t>(f) - 1); // neighbour side: reversed for outward
+
+    cell_faces[c_o].push_back(static_cast<int64_t>(f));
+    cell_faces[c_n].push_back(-static_cast<int64_t>(f) - 1);
   }
-  for (size_t f = ninternal_faces; f < nfaces; ++f)
+
+  for (size_t f = ninternal_faces; f < n_faces; ++f)
   {
     const int c_o = owner[f];
     if (c_o < 0 or std::cmp_greater_equal(c_o, ncells))
       throw std::logic_error(fname + ": owner id out of range (boundary face " + std::to_string(f) +
                              ").");
-    cell_faces[c_o].push_back(static_cast<int64_t>(+f)); // boundary face outward w.r.t owner
+
+    cell_faces[c_o].push_back(static_cast<int64_t>(f));
   }
 
-  // generate the block_id map from cellZones
+  // block map from cellZones
+
   std::vector<unsigned int> block_map(ncells, 0);
-  const auto cz_path = base / "cellZones";
-  const auto zones = ReadCellZones(cz_path, fname);
-  if (not zones.empty())
   {
-    for (size_t z_id = 0; z_id < zones.size(); ++z_id)
+    const auto cz_path = base / "cellZones";
+    const auto zones = ReadCellZones(cz_path, fname);
+
+    if (not zones.empty())
     {
-      for (int c_id : zones[z_id].cells)
-      {
-        if (c_id >= 0 and std::cmp_less(c_id, ncells))
-        {
-          block_map[c_id] = static_cast<unsigned int>(z_id);
-        }
-      }
+      for (size_t z_id = 0; z_id < zones.size(); ++z_id)
+        for (int c_id : zones[z_id].cells)
+          if (c_id >= 0 and std::cmp_less(c_id, ncells))
+            block_map[c_id] = static_cast<unsigned int>(z_id);
     }
   }
 
-  // volume cells (POLYHEDRON)
+  auto& raw_cells = mesh->GetRawCells();
+  raw_cells.reserve(ncells);
+
+  std::vector<FaceLocation> owner_face_location(n_faces);
+
   for (size_t c = 0; c < ncells; ++c)
   {
     auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
@@ -659,10 +827,11 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     for (auto code : cell_faces[c])
     {
       const int64_t f = (code >= 0) ? code : (-code - 1);
-      const auto& f_v = face_verts[f];
+      const auto& f_v = face_verts[static_cast<size_t>(f)];
 
       UnpartitionedMesh::LightWeightFace lwf;
       lwf.vertex_ids.reserve(f_v.size());
+
       if (code >= 0)
       {
         for (int v : f_v)
@@ -673,13 +842,20 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
         for (auto it = f_v.rbegin(); it != f_v.rend(); ++it)
           lwf.vertex_ids.push_back(static_cast<uint64_t>(*it));
       }
+
+      const auto local_face_id = cell->faces.size();
       cell->faces.push_back(std::move(lwf));
+
+      // Keep the owner-oriented location for each global face.
+      // Boundary patch assignment will use this directly.
+      if (code >= 0)
+        owner_face_location.at(static_cast<size_t>(f)) = {c, local_face_id, true};
     }
 
-    // per cell vertex ids
     std::vector<uint64_t> v_set;
     for (const auto& f : cell->faces)
       v_set.insert(v_set.end(), f.vertex_ids.begin(), f.vertex_ids.end());
+
     std::sort(v_set.begin(), v_set.end());
     v_set.erase(std::unique(v_set.begin(), v_set.end()), v_set.end());
     cell->vertex_ids = std::move(v_set);
@@ -693,9 +869,19 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
 
+  // boundary patches
+
+  const auto patches = ReadBoundaryFile(boundary_p, fname);
+  if (not patches.empty())
+  {
+    AssignBoundaryIDsFromOpenFOAMPatches(
+      mesh, patches, owner_face_location, ninternal_faces, n_faces, fname);
+  }
+
   log.Log() << "OpenFOAM polyMesh processed.\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
-            << "Number of cells read: " << mesh->GetRawCells().size() << "\n";
+            << "Number of cells read: " << mesh->GetRawCells().size() << "\n"
+            << "Number of boundary patches read: " << patches.size() << "\n";
 
   return mesh;
 }
