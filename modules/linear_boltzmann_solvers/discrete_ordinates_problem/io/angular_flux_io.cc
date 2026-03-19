@@ -18,8 +18,8 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
 {
   // Open the HDF5 file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
-  hid_t file_id = H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-  OpenSnLogicalErrorIf(file_id < 0, "WriteAngularFluxes: Failed to open " + file_name + ".");
+  const H5FileHandle file(H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
+  OpenSnLogicalErrorIf(file.Id() < 0, "WriteAngularFluxes: Failed to open " + file_name + ".");
 
   // Select source vector
   std::vector<std::vector<double>>& src =
@@ -36,7 +36,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   auto num_local_nodes = discretization.GetNumLocalNodes();
   auto num_groupsets = groupsets.size();
 
-  H5CreateAttribute(file_id, "num_groupsets", num_groupsets);
+  H5CreateAttribute(file.Id(), "num_groupsets", num_groupsets);
 
   // Store Mesh Information
   std::vector<uint64_t> cell_ids, num_cell_nodes;
@@ -63,14 +63,14 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   }
 
   // Write mesh data to h5 inside the mesh group
-  H5CreateGroup(file_id, "mesh");
-  H5CreateAttribute(file_id, "mesh/num_local_cells", num_local_cells);
-  H5CreateAttribute(file_id, "mesh/num_local_nodes", num_local_nodes);
-  H5WriteDataset1D(file_id, "mesh/cell_ids", cell_ids);
-  H5WriteDataset1D(file_id, "mesh/num_cell_nodes", num_cell_nodes);
-  H5WriteDataset1D(file_id, "mesh/nodes_x", nodes_x);
-  H5WriteDataset1D(file_id, "mesh/nodes_y", nodes_y);
-  H5WriteDataset1D(file_id, "mesh/nodes_z", nodes_z);
+  H5CreateGroup(file.Id(), "mesh");
+  H5CreateAttribute(file.Id(), "mesh/num_local_cells", num_local_cells);
+  H5CreateAttribute(file.Id(), "mesh/num_local_nodes", num_local_nodes);
+  H5WriteDataset1D(file.Id(), "mesh/cell_ids", cell_ids);
+  H5WriteDataset1D(file.Id(), "mesh/num_cell_nodes", num_cell_nodes);
+  H5WriteDataset1D(file.Id(), "mesh/nodes_x", nodes_x);
+  H5WriteDataset1D(file.Id(), "mesh/nodes_y", nodes_y);
+  H5WriteDataset1D(file.Id(), "mesh/nodes_z", nodes_z);
 
   // Go through each groupset
   for (const auto& groupset : groupsets)
@@ -84,9 +84,9 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
     auto num_gs_groups = groupset.GetNumGroups();
 
     const auto group_name = "groupset_" + std::to_string(groupset_id);
-    H5CreateGroup(file_id, group_name);
-    H5CreateAttribute(file_id, group_name + "/num_directions", num_gs_dirs);
-    H5CreateAttribute(file_id, group_name + "/num_groups", num_gs_groups);
+    H5CreateGroup(file.Id(), group_name);
+    H5CreateAttribute(file.Id(), group_name + "/num_directions", num_gs_dirs);
+    H5CreateAttribute(file.Id(), group_name + "/num_groups", num_gs_groups);
 
     // Write the groupset angular flux data
     std::vector<double> values;
@@ -98,9 +98,8 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
             const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
             values.push_back(src[groupset_id][dof_map]);
           }
-    H5WriteDataset1D(file_id, group_name + "/values", values);
+    H5WriteDataset1D(file.Id(), group_name + "/values", values);
   }
-  H5Fclose(file_id);
 }
 
 void
@@ -111,8 +110,8 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
 {
   // Open HDF5 file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
-  hid_t file_id = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  OpenSnLogicalErrorIf(file_id < 0, "Failed to open " + file_name + ".");
+  const H5FileHandle file(H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
+  OpenSnLogicalErrorIf(file.Id() < 0, "Failed to open " + file_name + ".");
 
   // Select destination vector
   std::vector<std::vector<double>>& dest =
@@ -125,9 +124,9 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   uint64_t file_num_local_cells = 0;
   uint64_t file_num_local_nodes = 0;
 
-  H5ReadAttribute(file_id, "num_groupsets", file_num_groupsets);
-  H5ReadAttribute(file_id, "mesh/num_local_cells", file_num_local_cells);
-  H5ReadAttribute(file_id, "mesh/num_local_nodes", file_num_local_nodes);
+  H5ReadAttribute(file.Id(), "num_groupsets", file_num_groupsets);
+  H5ReadAttribute(file.Id(), "mesh/num_local_cells", file_num_local_cells);
+  H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes);
 
   const auto& grid = do_problem.GetGrid();
   const auto& discretization = do_problem.GetSpatialDiscretization();
@@ -143,13 +142,13 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
 
   // Read in mesh information
   std::vector<uint64_t> file_cell_ids, file_num_cell_nodes;
-  H5ReadDataset1D<uint64_t>(file_id, "mesh/cell_ids", file_cell_ids);
-  H5ReadDataset1D<uint64_t>(file_id, "mesh/num_cell_nodes", file_num_cell_nodes);
+  H5ReadDataset1D<uint64_t>(file.Id(), "mesh/cell_ids", file_cell_ids);
+  H5ReadDataset1D<uint64_t>(file.Id(), "mesh/num_cell_nodes", file_num_cell_nodes);
 
   std::vector<double> nodes_x, nodes_y, nodes_z;
-  H5ReadDataset1D<double>(file_id, "mesh/nodes_x", nodes_x);
-  H5ReadDataset1D<double>(file_id, "mesh/nodes_y", nodes_y);
-  H5ReadDataset1D<double>(file_id, "mesh/nodes_z", nodes_z);
+  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_x", nodes_x);
+  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_y", nodes_y);
+  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_z", nodes_z);
 
   // Validate mesh compatibility
   uint64_t curr_node = 0;
@@ -201,8 +200,8 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
     unsigned int file_num_gs_groups = 0;
 
     auto group_name = "groupset_" + std::to_string(gs);
-    H5ReadAttribute(file_id, group_name + "/num_directions", file_num_gs_dirs);
-    H5ReadAttribute(file_id, group_name + "/num_groups", file_num_gs_groups);
+    H5ReadAttribute(file.Id(), group_name + "/num_directions", file_num_gs_dirs);
+    H5ReadAttribute(file.Id(), group_name + "/num_groups", file_num_gs_groups);
 
     const auto& groupset = groupsets.at(gs);
     const auto& uk_man = groupset.psi_uk_man_;
@@ -225,7 +224,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
     // Read the groupset angular flux vector
     uint64_t v = 0;
     std::vector<double> values;
-    H5ReadDataset1D<double>(file_id, group_name + "/values", values);
+    H5ReadDataset1D<double>(file.Id(), group_name + "/values", values);
     for (uint64_t c = 0; c < file_num_local_cells; ++c)
     {
       const auto cell_global_id = file_cell_ids[c];
@@ -241,7 +240,6 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
           }
     }
   }
-  H5Fclose(file_id);
 }
 
 } // namespace opensn
