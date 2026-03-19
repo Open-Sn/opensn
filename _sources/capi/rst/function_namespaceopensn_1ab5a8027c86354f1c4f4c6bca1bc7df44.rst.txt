@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a21e5d619af536033b843a74678414013:
+.. _exhale_function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44:
 
 Function opensn::ComputeFissionProduction
 =========================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::ComputeFissionProduction(LBSProblem&, const std::vector<double>&)
+.. doxygenfunction:: opensn::ComputeFissionProduction(const LBSProblem&, const std::vector<double>&)
    :project: opensn

@@ -30,10 +30,6 @@ Includes
 --------
 
 
-- ``cstdint``
-
-- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
-
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 
@@ -52,9 +48,9 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a21e5d619af536033b843a74678414013`
+- :ref:`exhale_function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44`
 
-- :ref:`exhale_function_namespaceopensn_1a774b8ad8c3d9730030fa2c3095c30bfd`
+- :ref:`exhale_function_namespaceopensn_1aee9196a158eb2c2f70975ad9ceaaa3a5`
 
 - :ref:`exhale_function_namespaceopensn_1af6184d19080033614eaed52625ebfdac`
 

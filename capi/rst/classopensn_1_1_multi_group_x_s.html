@@ -217,7 +217,11 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS19GetProductionMatrixEv">
 <span class="target" id="classopensn_1_1_multi_group_x_s_1aa8fb7fe9a79328526dd9e4ce6a0f11ad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetProductionMatrix</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS19GetProductionMatrixEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The LBS source and fission-production routines assume this matrix represents prompt production when delayed-neutrons are enabled, and add delayed production from nu_delayed_sigma_f separately. If production_matrix_ ever includes delayed contributions, those routines must be updated to avoid double counting. </p>
+</div>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS13GetPrecursorsEv">

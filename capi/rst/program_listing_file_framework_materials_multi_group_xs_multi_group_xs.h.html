@@ -179,6 +179,12 @@
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNuDelayedSigmaF</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">nu_delayed_sigma_f_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * @note The LBS source and fission-production routines assume this matrix represents</span>
+<span class="cm">   * prompt production when delayed-neutrons are enabled, and add delayed production</span>
+<span class="cm">   * from nu_delayed_sigma_f separately. If production_matrix_ ever includes delayed</span>
+<span class="cm">   * contributions, those routines must be updated to avoid double counting.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetProductionMatrix</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">adjoint_</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">transposed_production_matrix_</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">production_matrix_</span><span class="p">;</span>
@@ -239,7 +245,10 @@
 <span class="w">  </span><span class="c1">/// Sparse scattering matrix</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SparseMatrix</span><span class="o">&gt;</span><span class="w"> </span><span class="n">transfer_matrices_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SparseMatrix</span><span class="o">&gt;</span><span class="w"> </span><span class="n">transposed_transfer_matrices_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Total neutron production matrix</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Neutron production matrix used by transport source assembly.</span>
+<span class="cm">   * See GetProductionMatrix note regarding prompt-vs-delayed semantics.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">production_matrix_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">transposed_production_matrix_</span><span class="p">;</span>
 

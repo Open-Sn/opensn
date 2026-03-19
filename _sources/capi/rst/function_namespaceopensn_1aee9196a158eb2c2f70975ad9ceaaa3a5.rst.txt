@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a774b8ad8c3d9730030fa2c3095c30bfd:
+.. _exhale_function_namespaceopensn_1aee9196a158eb2c2f70975ad9ceaaa3a5:
 
 Function opensn::ComputeFissionRate
 ===================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::ComputeFissionRate(LBSProblem&, const std::vector<double>&)
+.. doxygenfunction:: opensn::ComputeFissionRate(const LBSProblem&, const std::vector<double>&)
    :project: opensn

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Function opensn::ComputeFissionProduction &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Function opensn::ComputeFissionRate &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Function opensn::ComputeFissionRate" href="function_namespaceopensn_1a774b8ad8c3d9730030fa2c3095c30bfd.html" />
-    <link rel="prev" title="Function opensn::ComputeBalance" href="function_namespaceopensn_1a34bfa5e3ac31f79a84eb9e4fdce91166.html" /> 
+    <link rel="next" title="Function opensn::ComputeGroupBlockSize" href="function_namespaceopensn_1ad137c5d303e39cb4af7e7e2bebd821a1.html" />
+    <link rel="prev" title="Function opensn::ComputeFissionProduction" href="function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -79,8 +79,8 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a97d808c24531d22343e840533a950f11.html">Function opensn::CommunicateGhostEntries</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3fce481e799298c868cf51dad203166b.html">Function opensn::CommunicateLocationDependencies</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a34bfa5e3ac31f79a84eb9e4fdce91166.html">Function opensn::ComputeBalance</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::ComputeFissionProduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a774b8ad8c3d9730030fa2c3095c30bfd.html">Function opensn::ComputeFissionRate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44.html">Function opensn::ComputeFissionProduction</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::ComputeFissionRate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad137c5d303e39cb4af7e7e2bebd821a1.html">Function opensn::ComputeGroupBlockSize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aa83a904d5c173c8c54fb7c3128cd91d3.html">Function opensn::ComputeL2Change</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aaff48373fd5011d4e3dfcc0c1cbe4345.html">Function opensn::ComputeL2PhiChange</a></li>
@@ -281,7 +281,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Function opensn::ComputeFissionProduction</li>
+      <li class="breadcrumb-item active">Function opensn::ComputeFissionRate</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -290,17 +290,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="function-opensn-computefissionproduction">
-<span id="exhale-function-namespaceopensn-1a21e5d619af536033b843a74678414013"></span><h1>Function opensn::ComputeFissionProduction<a class="headerlink" href="#function-opensn-computefissionproduction" title="Link to this heading"></a></h1>
+  <section id="function-opensn-computefissionrate">
+<span id="exhale-function-namespaceopensn-1aee9196a158eb2c2f70975ad9ceaaa3a5"></span><h1>Function opensn::ComputeFissionRate<a class="headerlink" href="#function-opensn-computefissionrate" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-lbs-compute-h"><span class="std std-ref">File lbs_compute.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24ComputeFissionProductionER10LBSProblemRKNSt6vectorIdEE">
-<span class="target" id="namespaceopensn_1a21e5d619af536033b843a74678414013"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ComputeFissionProduction</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lbs_problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">phi</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24ComputeFissionProductionER10LBSProblemRKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Compute the total fission production in the problem. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn18ComputeFissionRateERK10LBSProblemRKNSt6vectorIdEE">
+<span class="target" id="namespaceopensn_1aee9196a158eb2c2f70975ad9ceaaa3a5"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ComputeFissionRate</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lbs_problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">phi</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn18ComputeFissionRateERK10LBSProblemRKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Computes the total fission rate in the problem. </p>
 </dd></dl>
 
 </section>
@@ -310,8 +310,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="function_namespaceopensn_1a34bfa5e3ac31f79a84eb9e4fdce91166.html" class="btn btn-neutral float-left" title="Function opensn::ComputeBalance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1a774b8ad8c3d9730030fa2c3095c30bfd.html" class="btn btn-neutral float-right" title="Function opensn::ComputeFissionRate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44.html" class="btn btn-neutral float-left" title="Function opensn::ComputeFissionProduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_namespaceopensn_1ad137c5d303e39cb4af7e7e2bebd821a1.html" class="btn btn-neutral float-right" title="Function opensn::ComputeGroupBlockSize" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
