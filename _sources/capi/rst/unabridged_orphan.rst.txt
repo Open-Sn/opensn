@@ -970,6 +970,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_h5_file_handle.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_input_parameters.rst
 
 .. toctree::

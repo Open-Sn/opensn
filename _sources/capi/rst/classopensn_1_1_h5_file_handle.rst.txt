@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_h5_file_handle:
+
+Class H5FileHandle
+==================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::H5FileHandle
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:
