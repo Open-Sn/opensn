@@ -110,6 +110,8 @@ if __name__ == "__main__":
     fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
 
+    phi0 = []
+    phi1 = []
     while current_time < stop_time:
         target_time = min(current_time + dt, stop_time)
         step_dt = target_time - current_time
@@ -138,6 +140,7 @@ if __name__ == "__main__":
         ff_interp_g0.Initialize()
         ff_interp_g0.Execute()
         flux_max_g0 = ff_interp_g0.GetValue()
+        phi0.append(flux_max_g0)
 
         # Group 1
         ff_interp_g1 = FieldFunctionInterpolationVolume()
@@ -147,10 +150,11 @@ if __name__ == "__main__":
         ff_interp_g1.Initialize()
         ff_interp_g1.Execute()
         flux_max_g1 = ff_interp_g1.GetValue()
-
-        if rank == 0:
-            print("Max phi0 = {:.6f}".format(flux_max_g0))
-            print("Max phi1 = {:.6f}".format(flux_max_g1))
+        phi1.append(flux_max_g1)
 
         current_time = target_time
         step += 1
+
+    if rank == 0:
+        print("Max phi0 = {:.6f}".format(max(phi0)))
+        print("Max phi1 = {:.6f}".format(max(phi1)))
