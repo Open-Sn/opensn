@@ -140,6 +140,11 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
       }
 
       // Compute production matrix
+      // NOTE: When prompt data exists, this intentionally uses prompt-only production
+      // (chi_prompt * nu_prompt_sigma_f). Downstream LBS source/fission routines add
+      // delayed production separately from nu_delayed_sigma_f. If this changes and
+      // delayed contributions are folded into the production_matrix_, these downstream
+      // routines must be updated to prevent double counting.
       const auto fis_spec = not xsf.chi_prompt_.empty() ? xsf.chi_prompt_ : xsf.chi_;
       const auto nu_sigma_f =
         not xsf.nu_prompt_.empty() ? mgxs.nu_prompt_sigma_f_ : xsf.nu_sigma_f_;
