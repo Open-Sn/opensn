@@ -59,10 +59,10 @@ if __name__ == "__main__":
                 "xs": xs_3_170
             }
         ],
+        boundary_conditions=[
+        ],
         options={
             "wrong-parameter": True,
-            "boundary_conditions": [
-            ],
         }
     )
     ss_solver = SteadyStateSolver(problem=phys)
