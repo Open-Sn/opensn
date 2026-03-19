@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Read a cross section file, apply a scaling factor, and print out some components to the console.
+Read a cross section file, create a scaled copy, and print out some components to the console.
 """
 
 import pprint
@@ -30,8 +30,8 @@ my_xs["fuel"] = fuel_xs
 chi_before = my_xs["fuel"].chi[0]
 sigt_before = my_xs["fuel"].sigma_t[0]
 
-# Apply the scaling factor
-my_xs["fuel"].SetScalingFactor(2.0)
+# Create a scaled copy
+my_xs["fuel"] = my_xs["fuel"].Scale(2.0)
 
 # After scaling
 chi_after = my_xs["fuel"].chi[0]

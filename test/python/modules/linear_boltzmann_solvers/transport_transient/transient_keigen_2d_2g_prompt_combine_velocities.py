@@ -8,8 +8,11 @@
 inputs.
 
 FP_RATIO_ACTUAL = 2.2
-sigma_f_mix = sigma_f_crit + sigma_f_super, so ratio = (1.0 + 1.2) = 2.2
-relative to the critical xs. FP_RATIO_ACTUAL checks Combine behavior with
+Combine uses density weights, so with (1.0, 1.0):
+sigma_f_mix = 1.0 * sigma_f_crit + 1.0 * sigma_f_super.
+Given sigma_f_super = 1.2 * sigma_f_crit, the ratio is
+sigma_f_mix / sigma_f_crit = 1.0 + 1.2 = 2.2.
+FP_RATIO_ACTUAL checks Combine behavior with
 mixed group velocities. TRANSIENT_OK ensures the first transient step is
 finite and positive.
 """
@@ -44,8 +47,7 @@ if __name__ == "__main__":
     xs_super = MultiGroupXS()
     xs_super.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs2g_prompt_super.cxs"))
 
-    xs_mix = MultiGroupXS()
-    xs_mix.Combine([(xs_crit, 0.5), (xs_super, 0.5)])
+    xs_mix = MultiGroupXS.Combine([(xs_crit, 1.0), (xs_super, 1.0)])
 
     pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=4, scattering_order=0)
 
