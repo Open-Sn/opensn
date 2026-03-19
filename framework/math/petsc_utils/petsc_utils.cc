@@ -13,6 +13,7 @@ namespace opensn
 {
 namespace
 {
+
 PetscInt
 ToPetscInt(const int64_t value, const char* name)
 {
@@ -233,7 +234,7 @@ CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
                          "data.size() < N, " + std::to_string(data.size()) + " < " +
                            std::to_string(N));
 
-  const double* x_ref = nullptr;
+  const PetscScalar* x_ref = nullptr;
   OpenSnPETScCall(VecGetArrayRead(x, &x_ref));
 
   std::copy(x_ref, x_ref + N, data.begin());
@@ -255,8 +256,7 @@ CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool re
                            std::to_string(N));
 
   auto info = GetGhostVectorLocalViewRead(x);
-  const double* x_ref = info.x_localized_raw;
-
+  const PetscScalar* x_ref = info.x_localized_raw;
   std::copy(x_ref, x_ref + N, data.begin());
 
   RestoreGhostVectorLocalViewRead(x, info);
@@ -265,7 +265,7 @@ CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool re
 void
 CopySTLvectorToVec(const std::vector<double>& data, Vec x, size_t N)
 {
-  double* x_ref = nullptr;
+  PetscScalar* x_ref = nullptr;
   OpenSnPETScCall(VecGetArray(x, &x_ref));
 
   std::copy(data.begin(), data.end(), x_ref);
@@ -277,7 +277,7 @@ void
 CopyParallelVectorToVec(const ParallelVector& y, Vec x)
 {
   const double* y_data = y.GetData();
-  double* x_data = nullptr;
+  PetscScalar* x_data = nullptr;
   OpenSnPETScCall(VecGetArray(x, &x_data));
   std::copy(y_data, y_data + y.GetLocalSize(), x_data);
   OpenSnPETScCall(VecRestoreArray(x, &x_data));
@@ -319,12 +319,12 @@ CopyGlobalVecToSTLvector(Vec x,
   // Copy to STL
   data.clear();
   data.resize(N, 0.0);
-  const double* x_ref = nullptr;
+  const PetscScalar* x_ref = nullptr;
   OpenSnPETScCall(VecGetArrayRead(local_vec, &x_ref));
 
   std::copy(x_ref, x_ref + N, data.begin());
 
-  OpenSnPETScCall(VecRestoreArrayRead(x, &x_ref));
+  OpenSnPETScCall(VecRestoreArrayRead(local_vec, &x_ref));
 
   // Cleanup
   OpenSnPETScCall(ISDestroy(&global_set));

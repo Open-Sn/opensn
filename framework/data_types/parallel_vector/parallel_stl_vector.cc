@@ -157,7 +157,7 @@ ParallelSTLVector::CopyLocalValues(Vec y)
   OpenSnInvalidArgumentIf(std::cmp_less(n, local_size_),
                           "Attempted update with a vector of insufficient size.");
 
-  const double* x = nullptr;
+  const PetscScalar* x = nullptr;
   OpenSnPETScCall(VecGetArrayRead(y, &x));
   std::copy(x, x + n, values_.begin());
   OpenSnPETScCall(VecRestoreArrayRead(y, &x));
@@ -219,7 +219,7 @@ ParallelSTLVector::BlockCopyLocalValues(Vec y,
                             ", is out of range for destination vector with local size " +
                             std::to_string(local_size_));
 
-  const double* y_data = nullptr;
+  const PetscScalar* y_data = nullptr;
   OpenSnPETScCall(VecGetArrayRead(y, &y_data));
 
   std::copy(y_data + y_offset,
