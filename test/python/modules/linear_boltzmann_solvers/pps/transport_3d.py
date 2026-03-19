@@ -250,3 +250,32 @@ if __name__ == "__main__":
     assert len(int) == num_groups
     assert math.isclose(int[0], 18.776296, rel_tol=1e-6)
     assert math.isclose(int[6], 37.5525924, rel_tol=1e-6)
+
+    # PPS over a groupset
+    pps_gs1_min = VolumePostprocessor(problem=phys, value_type="min", groupset=1)
+    pps_gs1_min.Execute()
+
+    pps_gs1_max = VolumePostprocessor(problem=phys, value_type="max", groupset=1)
+    pps_gs1_max.Execute()
+
+    pps_gs1_avg = VolumePostprocessor(problem=phys, value_type="avg", groupset=1)
+    pps_gs1_avg.Execute()
+
+    pps_gs1_int = VolumePostprocessor(problem=phys, value_type="integral", groupset=1)
+    pps_gs1_int.Execute()
+
+    min = pps_gs1_min.GetValue()[0]
+    assert len(min) == 4
+    assert math.isclose(min[3], 5010.469391, rel_tol=1e-6)
+
+    max = pps_gs1_max.GetValue()[0]
+    assert len(max) == 4
+    assert math.isclose(max[3], 5102.764544, rel_tol=1e-6)
+
+    avg = pps_gs1_avg.GetValue()[0]
+    assert len(avg) == 4
+    assert math.isclose(avg[3], 5050.367541, rel_tol=1e-6)
+
+    int = pps_gs1_int.GetValue()[0]
+    assert len(int) == 4
+    assert math.isclose(int[3], 5050.367541, rel_tol=1e-6)
