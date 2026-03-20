@@ -50,5 +50,5 @@ Classes
 -------
 
 
-- :ref:`exhale_class_structopensn_1_1_memory_pinner`
+- :ref:`exhale_class_classopensn_1_1_memory_pinner`
 

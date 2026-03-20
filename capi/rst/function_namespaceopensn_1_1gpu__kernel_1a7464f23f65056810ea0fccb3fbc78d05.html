@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Template Function opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Template Function opensn::gpu_kernel::SweepDispatch &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Template Function opensn::gpu_kernel::MakeSweepKernelSpecificationMap" href="function_namespaceopensn_1_1gpu__kernel_1aac16fe07f8aa0d684d06a28402f5b000.html" />
-    <link rel="prev" title="Template Function opensn::gpu_kernel::GaussianElimination" href="function_namespaceopensn_1_1gpu__kernel_1a1af778ddf7fe732d40c310fe483709cf.html" /> 
+    <link rel="next" title="Function opensn::gpu_kernel::WritePsiToFludsAndOutflow" href="function_namespaceopensn_1_1gpu__kernel_1ada6c5dddc708de5ed4921c026f204332.html" />
+    <link rel="prev" title="Template Function opensn::gpu_kernel::Sweep" href="function_namespaceopensn_1_1gpu__kernel_1a962be6e44b563578803201182dfab14e.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -139,11 +139,12 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1ab59595c32b28dc506f51f4d503d15986.html">Template Function opensn::gpu_kernel::ComputeGMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1acf463914b6ae4bd044b7e8b205a0056f.html">Template Function opensn::gpu_kernel::ComputePhi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1ad9120c2611363ddd83f5978d89694918.html">Template Function opensn::gpu_kernel::ComputeSurfaceIntegral</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a5e52e6a57cde1d9761236d1fb1cc7def.html">Template Function opensn::gpu_kernel::ForDOFs1ToMax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a2bcc3b725868f4d63e2d99685007e991.html">Template Function opensn::gpu_kernel::ForDOFs1ToN</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a1af778ddf7fe732d40c310fe483709cf.html">Template Function opensn::gpu_kernel::GaussianElimination</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Function opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1aac16fe07f8aa0d684d06a28402f5b000.html">Template Function opensn::gpu_kernel::MakeSweepKernelSpecificationMap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a91d51a8ef38ded85fbf012a562717930.html">Template Function opensn::gpu_kernel::SaveAngularFlux</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a962be6e44b563578803201182dfab14e.html">Template Function opensn::gpu_kernel::Sweep</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Function opensn::gpu_kernel::SweepDispatch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1ada6c5dddc708de5ed4921c026f204332.html">Function opensn::gpu_kernel::WritePsiToFludsAndOutflow</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab29c1808c043128c5ef2680ea73cdb5a.html">Function opensn::GSConvergenceTest</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3421c2233a94d6135eaad57a9a2cb6dc.html">Template Function opensn::H5CreateAttribute</a></li>
@@ -281,7 +282,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Template Function opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl</li>
+      <li class="breadcrumb-item active">Template Function opensn::gpu_kernel::SweepDispatch</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -290,18 +291,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="template-function-opensn-gpu-kernel-makeindexsequencefromrangeimpl">
-<span id="exhale-function-namespaceopensn-1-1gpu-kernel-1a507a271105f24d0765e2cf57e57218b3"></span><h1>Template Function opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl<a class="headerlink" href="#template-function-opensn-gpu-kernel-makeindexsequencefromrangeimpl" title="Link to this heading"></a></h1>
+  <section id="template-function-opensn-gpu-kernel-sweepdispatch">
+<span id="exhale-function-namespaceopensn-1-1gpu-kernel-1a7464f23f65056810ea0fccb3fbc78d05"></span><h1>Template Function opensn::gpu_kernel::SweepDispatch<a class="headerlink" href="#template-function-opensn-gpu-kernel-sweepdispatch" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-main-h"><span class="std std-ref">File main.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_NSt6size_tE_NSt6size_tE_DpNSt6size_tEEN6opensn10gpu_kernel30MakeIndexSequenceFromRangeImplEDaNSt14index_sequenceIDp6IntSeqEE">
-<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">From</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">To</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntSeq</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceopensn_1_1gpu__kernel_1a507a271105f24d0765e2cf57e57218b3"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">gpu_kernel</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">MakeIndexSequenceFromRangeImpl</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">index_sequence</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_NSt6size_tE_NSt6size_tE_DpNSt6size_tEEN6opensn10gpu_kernel30MakeIndexSequenceFromRangeImplEDaNSt14index_sequenceIDp6IntSeqEE" title="opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl::IntSeq"><span class="n"><span class="pre">IntSeq</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_NSt6size_tE_NSt6size_tE_DpNSt6size_tEEN6opensn10gpu_kernel30MakeIndexSequenceFromRangeImplEDaNSt14index_sequenceIDp6IntSeqEE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve function “opensn::gpu_kernel::SweepDispatch” with arguments “(std::uint32_t, Args&amp;&amp;…)”.
+Candidate function could not be parsed. Parsing error is
+Error when parsing function declaration.
+If the function has no return type:
+  Error in declarator or parameters-and-qualifiers
+  Invalid C++ declaration: Expecting “(” in parameters-and-qualifiers. [error at 35]
+    template&lt;class… Args&gt; __device__ void SweepDispatch (std::uint32_t n, Args &amp;&amp;… args)
+    ———————————–^
+If the function has a return type:
+  Error in declarator or parameters-and-qualifiers
+  If pointer to member declarator:
+    Invalid C++ declaration: Expected identifier in nested name, got keyword: void [error at 39]
+      template&lt;class… Args&gt; __device__ void SweepDispatch (std::uint32_t n, Args &amp;&amp;… args)
+      —————————————^
+  If declarator-id:
+    Invalid C++ declaration: Expected identifier in nested name, got keyword: void [error at 39]
+      template&lt;class… Args&gt; __device__ void SweepDispatch (std::uint32_t n, Args &amp;&amp;… args)
+      —————————————^
+</p>
+</div>
 </section>
 </section>
 
@@ -309,8 +327,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="function_namespaceopensn_1_1gpu__kernel_1a1af778ddf7fe732d40c310fe483709cf.html" class="btn btn-neutral float-left" title="Template Function opensn::gpu_kernel::GaussianElimination" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1_1gpu__kernel_1aac16fe07f8aa0d684d06a28402f5b000.html" class="btn btn-neutral float-right" title="Template Function opensn::gpu_kernel::MakeSweepKernelSpecificationMap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1_1gpu__kernel_1a962be6e44b563578803201182dfab14e.html" class="btn btn-neutral float-left" title="Template Function opensn::gpu_kernel::Sweep" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_namespaceopensn_1_1gpu__kernel_1ada6c5dddc708de5ed4921c026f204332.html" class="btn btn-neutral float-right" title="Function opensn::gpu_kernel::WritePsiToFludsAndOutflow" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

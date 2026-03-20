@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Template Function opensn::gpu_kernel::MakeSweepKernelSpecificationMap &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Template Function opensn::gpu_kernel::ForDOFs1ToMax &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Template Function opensn::gpu_kernel::SaveAngularFlux" href="function_namespaceopensn_1_1gpu__kernel_1a91d51a8ef38ded85fbf012a562717930.html" />
-    <link rel="prev" title="Template Function opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl" href="function_namespaceopensn_1_1gpu__kernel_1a507a271105f24d0765e2cf57e57218b3.html" /> 
+    <link rel="next" title="Template Function opensn::gpu_kernel::ForDOFs1ToN" href="function_namespaceopensn_1_1gpu__kernel_1a2bcc3b725868f4d63e2d99685007e991.html" />
+    <link rel="prev" title="Template Function opensn::gpu_kernel::ComputeSurfaceIntegral" href="function_namespaceopensn_1_1gpu__kernel_1ad9120c2611363ddd83f5978d89694918.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -139,11 +139,12 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1ab59595c32b28dc506f51f4d503d15986.html">Template Function opensn::gpu_kernel::ComputeGMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1acf463914b6ae4bd044b7e8b205a0056f.html">Template Function opensn::gpu_kernel::ComputePhi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1ad9120c2611363ddd83f5978d89694918.html">Template Function opensn::gpu_kernel::ComputeSurfaceIntegral</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Function opensn::gpu_kernel::ForDOFs1ToMax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a2bcc3b725868f4d63e2d99685007e991.html">Template Function opensn::gpu_kernel::ForDOFs1ToN</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a1af778ddf7fe732d40c310fe483709cf.html">Template Function opensn::gpu_kernel::GaussianElimination</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a507a271105f24d0765e2cf57e57218b3.html">Template Function opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Function opensn::gpu_kernel::MakeSweepKernelSpecificationMap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a91d51a8ef38ded85fbf012a562717930.html">Template Function opensn::gpu_kernel::SaveAngularFlux</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a962be6e44b563578803201182dfab14e.html">Template Function opensn::gpu_kernel::Sweep</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a7464f23f65056810ea0fccb3fbc78d05.html">Template Function opensn::gpu_kernel::SweepDispatch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1ada6c5dddc708de5ed4921c026f204332.html">Function opensn::gpu_kernel::WritePsiToFludsAndOutflow</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab29c1808c043128c5ef2680ea73cdb5a.html">Function opensn::GSConvergenceTest</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3421c2233a94d6135eaad57a9a2cb6dc.html">Template Function opensn::H5CreateAttribute</a></li>
@@ -281,7 +282,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Template Function opensn::gpu_kernel::MakeSweepKernelSpecificationMap</li>
+      <li class="breadcrumb-item active">Template Function opensn::gpu_kernel::ForDOFs1ToMax</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -290,8 +291,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="template-function-opensn-gpu-kernel-makesweepkernelspecificationmap">
-<span id="exhale-function-namespaceopensn-1-1gpu-kernel-1aac16fe07f8aa0d684d06a28402f5b000"></span><h1>Template Function opensn::gpu_kernel::MakeSweepKernelSpecificationMap<a class="headerlink" href="#template-function-opensn-gpu-kernel-makesweepkernelspecificationmap" title="Link to this heading"></a></h1>
+  <section id="template-function-opensn-gpu-kernel-fordofs1tomax">
+<span id="exhale-function-namespaceopensn-1-1gpu-kernel-1a5e52e6a57cde1d9761236d1fb1cc7def"></span><h1>Template Function opensn::gpu_kernel::ForDOFs1ToMax<a class="headerlink" href="#template-function-opensn-gpu-kernel-fordofs1tomax" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-main-h"><span class="std std-ref">File main.h</span></a></p></li>
 </ul>
@@ -299,24 +300,24 @@
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “opensn::gpu_kernel::MakeSweepKernelSpecificationMap” with arguments “(std::index_sequence&lt;IntSequence…&gt;)”.
+<p>doxygenfunction: Unable to resolve function “opensn::gpu_kernel::ForDOFs1ToMax” with arguments “(F&amp;&amp;)”.
 Candidate function could not be parsed. Parsing error is
 Error when parsing function declaration.
 If the function has no return type:
   Error in declarator or parameters-and-qualifiers
-  Invalid C++ declaration: Expecting “(” in parameters-and-qualifiers. [error at 48]
-    template&lt;std::size_t… IntSequence&gt; __device__ constexpr std::array&lt; SweepFunc, sizeof…(IntSequence)&gt; MakeSweepKernelSpecificationMap (std::index_sequence&lt; IntSequence… &gt;)
-    ————————————————^
+  Invalid C++ declaration: Expecting “(” in parameters-and-qualifiers. [error at 29]
+    template&lt;class F&gt; __device__ void ForDOFs1ToMax (F &amp;&amp;f)
+    —————————–^
 If the function has a return type:
   Error in declarator or parameters-and-qualifiers
   If pointer to member declarator:
-    Invalid C++ declaration: Expected ‘::’ in pointer to member (function). [error at 105]
-      template&lt;std::size_t… IntSequence&gt; __device__ constexpr std::array&lt; SweepFunc, sizeof…(IntSequence)&gt; MakeSweepKernelSpecificationMap (std::index_sequence&lt; IntSequence… &gt;)
-      ———————————————————————————————————^
+    Invalid C++ declaration: Expected identifier in nested name, got keyword: void [error at 33]
+      template&lt;class F&gt; __device__ void ForDOFs1ToMax (F &amp;&amp;f)
+      ———————————^
   If declarator-id:
-    Invalid C++ declaration: Expecting “(” in parameters-and-qualifiers. [error at 105]
-      template&lt;std::size_t… IntSequence&gt; __device__ constexpr std::array&lt; SweepFunc, sizeof…(IntSequence)&gt; MakeSweepKernelSpecificationMap (std::index_sequence&lt; IntSequence… &gt;)
-      ———————————————————————————————————^
+    Invalid C++ declaration: Expected identifier in nested name, got keyword: void [error at 33]
+      template&lt;class F&gt; __device__ void ForDOFs1ToMax (F &amp;&amp;f)
+      ———————————^
 </p>
 </div>
 </section>
@@ -326,8 +327,8 @@ If the function has a return type:
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="function_namespaceopensn_1_1gpu__kernel_1a507a271105f24d0765e2cf57e57218b3.html" class="btn btn-neutral float-left" title="Template Function opensn::gpu_kernel::MakeIndexSequenceFromRangeImpl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1_1gpu__kernel_1a91d51a8ef38ded85fbf012a562717930.html" class="btn btn-neutral float-right" title="Template Function opensn::gpu_kernel::SaveAngularFlux" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1_1gpu__kernel_1ad9120c2611363ddd83f5978d89694918.html" class="btn btn-neutral float-left" title="Template Function opensn::gpu_kernel::ComputeSurfaceIntegral" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_namespaceopensn_1_1gpu__kernel_1a2bcc3b725868f4d63e2d99685007e991.html" class="btn btn-neutral float-right" title="Template Function opensn::gpu_kernel::ForDOFs1ToN" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

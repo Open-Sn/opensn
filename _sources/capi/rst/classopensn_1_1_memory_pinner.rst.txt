@@ -1,4 +1,4 @@
-.. _exhale_class_structopensn_1_1_memory_pinner:
+.. _exhale_class_classopensn_1_1_memory_pinner:
 
 Template Class MemoryPinner
 ===========================

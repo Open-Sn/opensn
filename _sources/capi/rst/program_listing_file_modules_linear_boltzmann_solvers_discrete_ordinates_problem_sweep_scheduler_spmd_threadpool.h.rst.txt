@@ -16,15 +16,27 @@ Program Listing for File spmd_threadpool.h
    #pragma once
    
    #include <condition_variable>
-   #include <functional>
    #include <cstddef>
-   #include <exception>
+   #include <functional>
+   #include <memory>
    #include <mutex>
+   #include <semaphore>
    #include <thread>
    #include <vector>
    
    namespace opensn
    {
+   
+   /// State of a worker thread in the current epoch.
+   struct alignas(std::hardware_destructive_interference_size) EpochState
+   {
+     /// Number of epochs requested for this worker.
+     std::size_t request;
+     /// Number of epochs completed by this worker.
+     std::size_t done;
+   
+     bool IsIncomplete() const noexcept { return request > done; }
+   };
    
    /**
     * Single-Program Multiple-Data (SPMD) thread pool.
@@ -51,9 +63,8 @@ Program Listing for File spmd_threadpool.h
      ~SPMD_ThreadPool();
    
      std::size_t GetSize() const noexcept { return worker_threads_.size(); }
-     bool IsInitialized() const noexcept { return workers_initialized_; }
    
-     /// Resize the numnber of worker threads.
+     /// Resize the number of worker threads.
      void Resize(std::size_t n);
    
      /**
@@ -62,30 +73,34 @@ Program Listing for File spmd_threadpool.h
       */
      void Stop();
    
-     /// Run one SPMD epoch, then wait for all tasks to finish.
+     /**
+      * Assign task to be run by all worker threads in the next epoch.
+      * \warning Do not call this method while another thread is running. This method does not
+      * guarantee thread safety.
+      */
      template <class F>
-     void run(F&& task)
+     void AssignTask(F&& task)
      {
-       if (!workers_initialized_)
-         Start(0);
-       if (worker_threads_.empty())
-         throw std::runtime_error("SPMD_ThreadPool has size 0");
+       task_ = std::function<void(std::size_t)>(std::forward<F>(task));
+     }
+     /// Run the currently assigned task for the worker with the given index.
+     void Run(std::size_t thread_idx);
+     /// Wait until all workers have completed the current epoch.
+     void WaitAll();
    
-       // ensure that task stay alive after all workers have finished
+     /// Execute the currently assigned task in a new epoch.
+     template <class F>
+     void ExecuteBatch(F&& task)
+     {
+       AssignTask(std::forward<F>(task));
+       const std::size_t n = worker_threads_.size();
+       outstanding_ += n;
        {
          std::scoped_lock<std::mutex> lock(mutex_);
-         task_fn_ = std::function<void(std::size_t)>(std::forward<F>(task));
-         workers_remaining_ = worker_threads_.size();
-         ++work_epoch_;
+         for (std::size_t i = 0; i < n; ++i)
+           ++epoch_states_[i].request;
        }
-       cv_start_.notify_all();
-   
-       // wait for all workers to complete this epoch
-       {
-         std::unique_lock<std::mutex> lock(mutex_);
-         cv_done_.wait(lock, [this] { return workers_remaining_ == 0; });
-         task_fn_ = nullptr;
-       }
+       WaitAll();
      }
    
    private:
@@ -103,21 +118,20 @@ Program Listing for File spmd_threadpool.h
      std::condition_variable cv_start_;
      /// Notifier that the current epoch has completed (i.e., all workers have finished).
      std::condition_variable cv_done_;
-   
+     /// Per-worker state for the current epoch.
+     std::vector<EpochState> epoch_states_;
+     /// Number of workers that have not yet completed the current epoch.
+     std::size_t outstanding_ = 0;
      /// Flag indicating whether workers have been started at least once.
      bool workers_initialized_ = false;
      /// Flag indicating whether workers should stop.
      bool stop_workers_ = false;
-     /// Number of workers remaining to finish the current epoch.
-     std::size_t workers_remaining_ = 0;
-     /// Monotonic epoch counter used to distinguish work submissions and to avoid missed wakeups.
-     std::size_t work_epoch_ = 0;
    
      /**
       * Published per-epoch task.
       * \note This callable is valid only while an epoch is in progress.
       */
-     std::function<void(std::size_t)> task_fn_;
+     std::function<void(std::size_t)> task_;
    };
    
    } // namespace opensn

@@ -32,13 +32,13 @@ Includes
 
 - ``caribou/main.hpp``
 
-- ``latch``
-
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aahd_async_comm.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aahd_async_comm.h`)
+
+- ``mutex``
 
 - ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
 

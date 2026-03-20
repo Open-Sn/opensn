@@ -133,14 +133,9 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn15SPMD_ThreadPool13IsInitializedEv">
-<span class="target" id="classopensn_1_1_s_p_m_d___thread_pool_1ad4ea04e029ca01d2c01bfddb9a3f10c3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsInitialized</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn15SPMD_ThreadPool13IsInitializedEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15SPMD_ThreadPool6ResizeENSt6size_tE">
 <span class="target" id="classopensn_1_1_s_p_m_d___thread_pool_1a6df5aed5878ddd564cf21c797048b410"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Resize</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15SPMD_ThreadPool6ResizeENSt6size_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>Resize the numnber of worker threads. </p>
+<dd><p>Resize the number of worker threads. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -154,9 +149,31 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN6opensn15SPMD_ThreadPool3runEvRR1F">
-<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classopensn_1_1_s_p_m_d___thread_pool_1a94fa5f8d3e2c861a5f3859938a02872b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">run</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6opensn15SPMD_ThreadPool3runEvRR1F" title="opensn::SPMD_ThreadPool::run::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">task</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6opensn15SPMD_ThreadPool3runEvRR1F" title="Link to this definition"></a><br /></dt>
-<dd><p>Run one SPMD epoch, then wait for all tasks to finish. </p>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6opensn15SPMD_ThreadPool10AssignTaskEvRR1F">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classopensn_1_1_s_p_m_d___thread_pool_1a9241f0cd359f3fe68a0f72dd124fe2b8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AssignTask</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6opensn15SPMD_ThreadPool10AssignTaskEvRR1F" title="opensn::SPMD_ThreadPool::AssignTask::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">task</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6opensn15SPMD_ThreadPool10AssignTaskEvRR1F" title="Link to this definition"></a><br /></dt>
+<dd><p>Assign task to be run by all worker threads in the next epoch. </p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not call this method while another thread is running. This method does not guarantee thread safety. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15SPMD_ThreadPool3RunENSt6size_tE">
+<span class="target" id="classopensn_1_1_s_p_m_d___thread_pool_1a378e4b782595339b9aa82779fea1d77b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Run</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thread_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15SPMD_ThreadPool3RunENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Run the currently assigned task for the worker with the given index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15SPMD_ThreadPool7WaitAllEv">
+<span class="target" id="classopensn_1_1_s_p_m_d___thread_pool_1a50e01d99ec929666bd01271651ccf3b9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WaitAll</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15SPMD_ThreadPool7WaitAllEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Wait until all workers have completed the current epoch. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6opensn15SPMD_ThreadPool12ExecuteBatchEvRR1F">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classopensn_1_1_s_p_m_d___thread_pool_1a130a6fb690d483cda250a0a0fb78c3e4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExecuteBatch</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6opensn15SPMD_ThreadPool12ExecuteBatchEvRR1F" title="opensn::SPMD_ThreadPool::ExecuteBatch::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">task</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6opensn15SPMD_ThreadPool12ExecuteBatchEvRR1F" title="Link to this definition"></a><br /></dt>
+<dd><p>Execute the currently assigned task in a new epoch. </p>
 </dd></dl>
 
 </div>

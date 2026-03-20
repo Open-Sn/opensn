@@ -131,8 +131,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet16SetStartingLatchEv">
-<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1ab70ee5ef2e192c42001bc888b56ef0d5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetStartingLatch</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet16SetStartingLatchEv" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet22ResetDependencyCounterEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a9ac9ac2e1f7a5495b899d2e8f5d22dc9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResetDependencyCounter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet22ResetDependencyCounterEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Set the latch value to wait on before starting the sweep. </p>
 </dd></dl>
 
@@ -154,6 +154,21 @@
 <span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1adf314578c4c631455aa761f600e7a0eb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetMaxBufferMessages</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet20SetMaxBufferMessagesEi" title="Link to this definition"></a><br /></dt>
 <dd><p>Sets the maximum buffer size for the sweepbuffer. </p>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet15PrepostReceivesEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a263142c7fcf9027d822e12d96352956b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrepostReceives</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet15PrepostReceivesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet7IsReadyEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a31a75a4bc13a6b0e4c802a94591ebcd3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsReady</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet7IsReadyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet27WaitForDownstreamAndDelayedEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a4acd4c084098bfd58e7a6f11cb4ff300"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WaitForDownstreamAndDelayed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet27WaitForDownstreamAndDelayedEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet15AngleSetAdvanceER10SweepChunk14AngleSetStatus">
@@ -192,6 +207,14 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet1mE">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a7be9e769b261ef53423e5475cf575434"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">mutex</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet1mE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet7stream_E">
@@ -218,10 +241,9 @@
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet15starting_latch_E">
-<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1af67bfd51a3ef06d457a35d7fb07f27b3"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">latch</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">starting_latch_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet15starting_latch_E" title="Link to this definition"></a><br /></dt>
-<dd><p>Starting latch. </p>
-<p>Sweep operations wait on this latch to be fully released before starting. The OS puts the thread to sleep while waiting, avoiding taking up CPU resources for spinning wait. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet19dependency_counter_E">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1aa14d2e8345d41c4433a02209ebac1512"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dependency_counter_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet19dependency_counter_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Counter for un-resolved dependencies. </p>
 </dd></dl>
 
 <dl class="cpp var">

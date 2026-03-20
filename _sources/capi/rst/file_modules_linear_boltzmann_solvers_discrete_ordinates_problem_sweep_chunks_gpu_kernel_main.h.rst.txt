@@ -38,6 +38,8 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`)
 
+- ``utility``
+
 
 
 
@@ -56,23 +58,9 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a507a271105f24d0765e2cf57e57218b3`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a5e52e6a57cde1d9761236d1fb1cc7def`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1aac16fe07f8aa0d684d06a28402f5b000`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a2bcc3b725868f4d63e2d99685007e991`
 
-
-Typedefs
---------
-
-
-- :ref:`exhale_typedef_namespaceopensn_1_1gpu__kernel_1a69a596d3d36f43fdd11b6ba9634370f5`
-
-- :ref:`exhale_typedef_namespaceopensn_1_1gpu__kernel_1a5cda33bafd26845051870f96091282d6`
-
-
-Variables
----------
-
-
-- :ref:`exhale_variable_namespaceopensn_1_1gpu__kernel_1aa1b3846832c5d77d83db1bc1d2d12a87`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a7464f23f65056810ea0fccb3fbc78d05`
 

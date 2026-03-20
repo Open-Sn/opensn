@@ -19,36 +19,41 @@ Program Listing for File main.h
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/buffer.h"
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/solver.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+   #include <utility>
    
    namespace opensn::gpu_kernel
    {
    
-   template <std::size_t From, std::size_t To, std::size_t... IntSeq>
-   constexpr auto
-   MakeIndexSequenceFromRangeImpl(std::index_sequence<IntSeq...>)
+   template <std::uint32_t... I, class F>
+   __device__ inline void
+   ForDOFs1ToN(std::integer_sequence<std::uint32_t, I...>, F&& f)
    {
-     return std::index_sequence<(IntSeq + From)...>{};
+     (f(std::integral_constant<std::uint32_t, I + 1>{}), ...);
    }
    
-   template <std::size_t From, std::size_t To>
-   using MakeIndexSequenceFromRange =
-     decltype(MakeIndexSequenceFromRangeImpl<From, To>(std::make_index_sequence<To - From>{}));
-   
-   using SweepFunc = std::add_pointer_t<void(const gpu_kernel::Arguments&,
-                                             CellView&,
-                                             DirectionView&,
-                                             const std::uint64_t*,
-                                             const unsigned int&,
-                                             const unsigned int&,
-                                             const std::uint32_t&,
-                                             double*)>;
-   template <std::size_t... IntSequence>
-   __device__ constexpr std::array<SweepFunc, sizeof...(IntSequence)>
-   MakeSweepKernelSpecificationMap(std::index_sequence<IntSequence...>)
+   template <class F>
+   __device__ inline void
+   ForDOFs1ToMax(F&& f)
    {
-     return std::array<SweepFunc, sizeof...(IntSequence)>{&gpu_kernel::Sweep<IntSequence>...};
+     ForDOFs1ToN(std::make_integer_sequence<std::uint32_t, LBSProblem::max_dofs_gpu>{},
+                 std::forward<F>(f));
    }
-   __device__ std::array<SweepFunc, LBSProblem::max_dofs_gpu> sweep_spec_map =
-     MakeSweepKernelSpecificationMap(MakeIndexSequenceFromRange<1, LBSProblem::max_dofs_gpu + 1>{});
+   
+   template <class... Args>
+   __device__ inline void
+   SweepDispatch(std::uint32_t n, Args&&... args)
+   {
+     bool done = false;
+     ForDOFs1ToMax(
+       [&](auto dof_c)
+       {
+         constexpr std::uint32_t dof = decltype(dof_c)::value;
+         if (!done && n == dof)
+         {
+           gpu_kernel::Sweep<dof>(std::forward<Args>(args)...);
+           done = true;
+         }
+       });
+   }
    
    } // namespace opensn::gpu_kernel

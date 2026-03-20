@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_epoch_state:
+
+Struct EpochState
+=================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_spmd_threadpool.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::EpochState
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

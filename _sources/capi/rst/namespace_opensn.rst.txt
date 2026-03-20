@@ -85,6 +85,8 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_edge`
 
+- :ref:`exhale_struct_structopensn_1_1_epoch_state`
+
 - :ref:`exhale_struct_structopensn_1_1_extrusion_layer`
 
 - :ref:`exhale_struct_structopensn_1_1_face`
@@ -455,7 +457,7 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_log_stream`
 
-- :ref:`exhale_class_structopensn_1_1_memory_pinner`
+- :ref:`exhale_class_classopensn_1_1_memory_pinner`
 
 - :ref:`exhale_class_classopensn_1_1_mesh_carrier`
 

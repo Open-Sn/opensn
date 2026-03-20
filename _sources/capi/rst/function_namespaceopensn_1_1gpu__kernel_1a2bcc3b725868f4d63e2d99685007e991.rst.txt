@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a2bcc3b725868f4d63e2d99685007e991:
+
+Template Function opensn::gpu_kernel::ForDOFs1ToN
+=================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::ForDOFs1ToN(std::integer_sequence<std::uint32_t, I...>, F&&)
+   :project: opensn

@@ -34,11 +34,13 @@ Includes
 
 - ``cstddef``
 
-- ``exception``
-
 - ``functional``
 
+- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+
 - ``mutex``
+
+- ``semaphore``
 
 - ``thread`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_spmd_threadpool.h`)
 
@@ -65,6 +67,8 @@ Namespaces
 Classes
 -------
 
+
+- :ref:`exhale_struct_structopensn_1_1_epoch_state`
 
 - :ref:`exhale_class_classopensn_1_1_s_p_m_d___thread_pool`
 

@@ -150,6 +150,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_epoch_state.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_extrusion_layer.rst
 
 .. toctree::
@@ -1085,7 +1090,7 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   class_structopensn_1_1_memory_pinner.rst
+   classopensn_1_1_memory_pinner.rst
 
 .. toctree::
    :maxdepth: 1
