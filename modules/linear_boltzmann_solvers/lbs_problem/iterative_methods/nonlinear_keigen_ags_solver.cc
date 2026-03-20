@@ -65,10 +65,7 @@ NLKEigenvalueAGSSolver::SetSystemSize()
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& lbs_problem = nl_context_ptr->lbs_problem;
-  auto sizes = lbs_problem->GetNumPhiIterativeUnknowns();
-
-  num_local_dofs_ = static_cast<PetscInt>(sizes.first);
-  num_global_dofs_ = static_cast<PetscInt>(sizes.second);
+  std::tie(num_local_dofs_, num_global_dofs_) = lbs_problem->GetNumPhiIterativeUnknowns();
 }
 
 void
