@@ -1,0 +1,564 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.7. Very Strong Forward-Peaked Scattering &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="3.8. Delta-Forward Scattering and Galerkin Quadrature Methods" href="delta_forward.html" />
+    <link rel="prev" title="3.6. Operator Construction Methods" href="operator_methods.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">3. Angular Quadrature</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="introduction.html">3.1. Introduction to Angular Quadratures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="product_GLC.html">3.2. Product Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="triangular_GLC.html">3.3. Triangular Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sLDFE.html">3.4. Simplified Linear Discontinuous Finite Element (LDFE) Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lebedev.html">3.5. Lebedev Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="operator_methods.html">3.6. Operator Construction Methods</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.7. Very Strong Forward-Peaked Scattering</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#The-Henyey-Greenstein-Kernel:-g-=-0.9-vs.-g-=-0.99">3.7.1. The Henyey-Greenstein Kernel: g = 0.9 vs. g = 0.99</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#How-Many-Legendre-Moments-Are-Needed?">3.7.2. How Many Legendre Moments Are Needed?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Legendre-Expansion-Truncation-for-g-=-0.99">3.7.3. Legendre Expansion Truncation for g = 0.99</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#1D-Transport-Problem:-Scattering-Order-Convergence">3.7.4. 1D Transport Problem: Scattering Order Convergence</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Convergence-Study">3.7.5. Convergence Study</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Results">3.7.6. Results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Discussion">3.7.7. Discussion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">3.7.8. Finalize (for Jupyter Notebook only)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="delta_forward.html">3.8. Delta-Forward Scattering and Galerkin Quadrature Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lbs/index.html">5. Linear Boltzmann Solver</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">3. </span>Angular Quadrature</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.7. </span>Very Strong Forward-Peaked Scattering</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Very-Strong-Forward-Peaked-Scattering">
+<h1><span class="section-number">3.7. </span>Very Strong Forward-Peaked Scattering<a class="headerlink" href="#Very-Strong-Forward-Peaked-Scattering" title="Link to this heading"></a></h1>
+<p>In this tutorial, we will discuss the challenges associated with highly forward-peaked cross sections. For this exercise, a Henyey-Greenstein (HG) cross section expansion will be assumed.</p>
+<dl class="simple">
+<dt>:nbsphinx-math:<a href="#id1"><span class="problematic" id="id2">`</span></a>begin{equation}</dt><dd><p>f(mu) = frac{1 - g^2}{2(1 + g^2 - 2gmu)^{3/2}}</p>
+</dd>
+</dl>
+<p>end{equation}`</p>
+<p>We choose the HG function for this due to its simple expansion in terms of the Legendre polynomials <span class="math notranslate nohighlight">\(P_n\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[f(\mu_0) = \sum_{\ell=0}^{\infty} \frac{2\ell+1}{2}\, g^\ell\, P_\ell(\mu_0)\]</div>
+<p>so the Legendre moments are simply <span class="math notranslate nohighlight">\(f_\ell = g^\ell\)</span>. This closed-form result means that the convergence rate of the Legendre expansion is entirely determined by how quickly <span class="math notranslate nohighlight">\(g^\ell\)</span> decays, which is why large <span class="math notranslate nohighlight">\(g\)</span> creates a severe truncation problem.</p>
+<p>For <span class="math notranslate nohighlight">\(g = 0.99\)</span>, the scattering cross-sections converge increadibly slowly: the Legendre moments decay as <span class="math notranslate nohighlight">\(0.99^\ell\)</span>, and even the 31st moment retains <span class="math notranslate nohighlight">\(0.99^{31} \approx 0.73\)</span> — meaning the scattering information is still substantial at <span class="math notranslate nohighlight">\(\ell = 31\)</span>.</p>
+<p>This tutorial quantifies the convergence problem analytically and solves a 1D slab transport problem to demonstrate the practical consequence: all <span class="math notranslate nohighlight">\(P_L\)</span> solutions with <span class="math notranslate nohighlight">\(L \leq 31\)</span> are substantially wrong.</p>
+<p>To run the code: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">forward_peaked_g099.ipynb</span></code>.</p>
+<p>To convert to a Python script: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">forward_peaked_g099.ipynb</span></code></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../../..&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSlab</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationLine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
+
+<span class="n">UseColor</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+</pre></div>
+</div>
+</div>
+<section id="The-Henyey-Greenstein-Kernel:-g-=-0.9-vs.-g-=-0.99">
+<h2><span class="section-number">3.7.1. </span>The Henyey-Greenstein Kernel: g = 0.9 vs. g = 0.99<a class="headerlink" href="#The-Henyey-Greenstein-Kernel:-g-=-0.9-vs.-g-=-0.99" title="Link to this heading"></a></h2>
+<p>The Legendre moments of the HG kernel are <span class="math notranslate nohighlight">\(f_\ell = g^\ell\)</span>. For large <span class="math notranslate nohighlight">\(g\)</span> the moments decay slowly, requiring many terms to accurately represent the scattering kernel.</p>
+<p>The table below contrasts the two asymmetry factors:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Moment <span class="math notranslate nohighlight">\(\ell\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(g = 0.9\)</span> (<span class="math notranslate nohighlight">\(0.9^\ell\)</span>)</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(g = 0.99\)</span> (<span class="math notranslate nohighlight">\(0.99^\ell\)</span>)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>0.900</p></td>
+<td><p>0.990</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>0.590</p></td>
+<td><p>0.951</p></td>
+</tr>
+<tr class="row-even"><td><p>15</p></td>
+<td><p>0.206</p></td>
+<td><p><strong>0.860</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>31</p></td>
+<td><p>0.033</p></td>
+<td><p><strong>0.730</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>44</p></td>
+<td><p>0.009</p></td>
+<td><p>0.643</p></td>
+</tr>
+<tr class="row-odd"><td><p>100</p></td>
+<td><p><span class="math notranslate nohighlight">\(\approx 0\)</span></p></td>
+<td><p>0.366</p></td>
+</tr>
+</tbody>
+</table>
+<p>For <span class="math notranslate nohighlight">\(g = 0.99\)</span>, even the 31st moment is still <span class="math notranslate nohighlight">\(\approx 73\%\)</span> of the zeroth moment. By contrast, for <span class="math notranslate nohighlight">\(g = 0.9\)</span> it is only <span class="math notranslate nohighlight">\(\approx 3\%\)</span>. This stark difference makes <span class="math notranslate nohighlight">\(g = 0.99\)</span> vastly harder to handle with a truncated <span class="math notranslate nohighlight">\(P_N\)</span> expansion.</p>
+</section>
+<section id="How-Many-Legendre-Moments-Are-Needed?">
+<h2><span class="section-number">3.7.2. </span>How Many Legendre Moments Are Needed?<a class="headerlink" href="#How-Many-Legendre-Moments-Are-Needed?" title="Link to this heading"></a></h2>
+<p>After truncating at order <span class="math notranslate nohighlight">\(L\)</span>, the next scattering moment is <span class="math notranslate nohighlight">\(g^{L+1}\)</span>. For this to fall below <span class="math notranslate nohighlight">\(\varepsilon\)</span> we need:</p>
+<div class="math notranslate nohighlight">
+\[L \;\geq\; \frac{\ln \varepsilon}{\ln g} - 1\]</div>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><span class="math notranslate nohighlight">\(g\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(L\)</span> for 1% accuracy</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(L\)</span> for 0.1% accuracy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0.5</p></td>
+<td><p><span class="math notranslate nohighlight">\(\approx 6\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\approx 9\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>0.9</p></td>
+<td><p><span class="math notranslate nohighlight">\(\approx 44\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\approx 66\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>0.99</p></td>
+<td><p><span class="math notranslate nohighlight">\(\approx 458\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\approx 687\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>For <span class="math notranslate nohighlight">\(g = 0.99\)</span>, achieving 1% accuracy requires <span class="math notranslate nohighlight">\(L \approx 458\)</span> moments. Since each additional moment increases computational cost, this makes brute-force <span class="math notranslate nohighlight">\(P_N\)</span> completely impractical for very strongly forward-peaked media.</p>
+</section>
+<section id="Legendre-Expansion-Truncation-for-g-=-0.99">
+<h2><span class="section-number">3.7.3. </span>Legendre Expansion Truncation for g = 0.99<a class="headerlink" href="#Legendre-Expansion-Truncation-for-g-=-0.99" title="Link to this heading"></a></h2>
+<p>The <span class="math notranslate nohighlight">\(P_L\)</span> expansion of the HG kernel is:</p>
+<div class="math notranslate nohighlight">
+\[f_L(\mu_0) = \sum_{\ell=0}^{L} \frac{2\ell + 1}{2}\, g^\ell\, P_\ell(\mu_0)\]</div>
+<p>For <span class="math notranslate nohighlight">\(g = 0.99\)</span>, even truncating at <span class="math notranslate nohighlight">\(L = 31\)</span> leaves <span class="math notranslate nohighlight">\(g^{32} = 0.99^{32} \approx 0.725\)</span> of the scattering unrepresented — nearly three-quarters of the kernel is missing. The truncated expansion suffers severe oscillations near <span class="math notranslate nohighlight">\(\mu_0 = 1\)</span> that produce large unphysical negative values in the reconstructed scattering kernel.</p>
+<p>These negative values are problematic because a physical scattering kernel must be non-negative everywhere: <span class="math notranslate nohighlight">\(f(\mu_0) \geq 0\)</span>. When the truncated expansion goes negative, it effectively removes particles from certain angular bins during the within-group scattering source computation, which can cause spurious dips or even negative fluxes in the transport solution. The deeper the truncation (lower <span class="math notranslate nohighlight">\(L\)</span>), the more severe and widespread these oscillations become.</p>
+</section>
+<section id="1D-Transport-Problem:-Scattering-Order-Convergence">
+<h2><span class="section-number">3.7.4. </span>1D Transport Problem: Scattering Order Convergence<a class="headerlink" href="#1D-Transport-Problem:-Scattering-Order-Convergence" title="Link to this heading"></a></h2>
+<p>We solve a one-group 1D slab transport problem with <span class="math notranslate nohighlight">\(g = 0.99\)</span> to show how poorly the <span class="math notranslate nohighlight">\(P_L\)</span> approximation converges.</p>
+<p><strong>Problem setup:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Geometry</p></td>
+<td><p>1D slab, <span class="math notranslate nohighlight">\(z \in [0, 10]\)</span> mfp</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\sigma_t\)</span></p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\sigma_s\)</span></p></td>
+<td><p>0.9</p></td>
+</tr>
+<tr class="row-odd"><td><p>Scattering kernel</p></td>
+<td><p>HG, <span class="math notranslate nohighlight">\(g = 0.99\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Source</p></td>
+<td><p>Isotropic flux at <span class="math notranslate nohighlight">\(z = 0\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Right boundary</p></td>
+<td><p>Vacuum</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Transport cross section:</strong> <span class="math notranslate nohighlight">\(\sigma_{tr} = \sigma_t - g\,\sigma_s = 1.0 - 0.891 = 0.109\)</span>, giving a transport mean free path <span class="math notranslate nohighlight">\(\lambda_{tr} = 1/0.109 \approx 9.17\)</span> mfp. The 10 mfp slab is only <span class="math notranslate nohighlight">\(\approx 1.09\,\lambda_{tr}\)</span> thick — optically very thin from a transport perspective.</p>
+<p><strong>Remaining moments</strong> at each <span class="math notranslate nohighlight">\(L\)</span> used in the study:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><span class="math notranslate nohighlight">\(L\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(g^{L+1}\)</span></p></th>
+<th class="head"><p>Fraction still missing</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>0.990</p></td>
+<td><p>99.0%</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>0.980</p></td>
+<td><p>98.0%</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>0.923</p></td>
+<td><p>92.3%</p></td>
+</tr>
+<tr class="row-odd"><td><p>15</p></td>
+<td><p>0.851</p></td>
+<td><p>85.1%</p></td>
+</tr>
+<tr class="row-even"><td><p>31</p></td>
+<td><p>0.725</p></td>
+<td><p>72.5%</p></td>
+</tr>
+</tbody>
+</table>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sigma_t</span>  <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">sigma_s</span>  <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">g_hg</span>     <span class="o">=</span> <span class="mf">0.99</span>
+<span class="n">L_max</span>    <span class="o">=</span> <span class="mi">31</span>
+<span class="n">L_slab</span>   <span class="o">=</span> <span class="mf">10.0</span>
+<span class="n">N_cells</span>  <span class="o">=</span> <span class="mi">100</span>
+
+<span class="n">sigma_tr</span>  <span class="o">=</span> <span class="n">sigma_t</span> <span class="o">-</span> <span class="n">g_hg</span> <span class="o">*</span> <span class="n">sigma_s</span>
+<span class="n">lambda_tr</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">sigma_tr</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sigma_tr   = </span><span class="si">{</span><span class="n">sigma_tr</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;lambda_tr  = </span><span class="si">{</span><span class="n">lambda_tr</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> mfp&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Slab in transport mfp: </span><span class="si">{</span><span class="n">L_slab</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">lambda_tr</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">xs_filename</span> <span class="o">=</span> <span class="s2">&quot;forward_peaked_hg099.xs&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">xs_filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;NUM_GROUPS 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NUM_MOMENTS </span><span class="si">{</span><span class="n">L_max</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;SIGMA_T_BEGIN</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0 </span><span class="si">{</span><span class="n">sigma_t</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;SIGMA_T_END</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TRANSFER_MOMENTS_BEGIN</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ell</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;M_GFROM_GTO_VAL </span><span class="si">{</span><span class="n">ell</span><span class="si">}</span><span class="s2"> 0 0 </span><span class="si">{</span><span class="n">sigma_s</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">g_hg</span><span class="o">**</span><span class="n">ell</span><span class="si">:</span><span class="s2">.10f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TRANSFER_MOMENTS_END</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Cross-section file written: </span><span class="si">{</span><span class="n">xs_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ell</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">31</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  sigma_s,</span><span class="si">{</span><span class="n">ell</span><span class="si">:</span><span class="s2">&lt;2d</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">sigma_s</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">g_hg</span><span class="o">**</span><span class="n">ell</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">dx</span>    <span class="o">=</span> <span class="n">L_slab</span> <span class="o">/</span> <span class="n">N_cells</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">dx</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">])</span>
+<span class="n">grid</span>  <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Mesh: </span><span class="si">{</span><span class="n">N_cells</span><span class="si">}</span><span class="s2"> cells, length = </span><span class="si">{</span><span class="n">L_slab</span><span class="si">}</span><span class="s2"> mfp&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Convergence-Study">
+<h2><span class="section-number">3.7.5. </span>Convergence Study<a class="headerlink" href="#Convergence-Study" title="Link to this heading"></a></h2>
+<p>We solve for <span class="math notranslate nohighlight">\(L = 0, 1, 7, 15, 31\)</span>, spanning a wide range of truncation levels:</p>
+<ul class="simple">
+<li><p><strong>:math:`P_0`</strong> (isotropic): all scattering is treated as perfectly isotropic — maximally wrong for <span class="math notranslate nohighlight">\(g = 0.99\)</span>.</p></li>
+<li><p><strong>:math:`P_1`</strong>: the classic diffusion-theory scattering order; adequate only for nearly isotropic media.</p></li>
+<li><p><strong>:math:`P_7`</strong> and <strong>:math:`P_{15}`</strong>: intermediate orders that capture some directional preference but remain far from convergence.</p></li>
+<li><p><strong>:math:`P_{31}`</strong>: the highest order permitted by the cross-section file written above (which stores moments <span class="math notranslate nohighlight">\(\ell = 0, \ldots, 31\)</span>); still missing <span class="math notranslate nohighlight">\(\approx 72.5\%\)</span> of the scattering kernel.</p></li>
+</ul>
+<p>If the <span class="math notranslate nohighlight">\(P_L\)</span> expansion were the only source of error we would expect the solutions to diverge wildly from each other. The interesting finding — explained in the Discussion section — is that the scalar flux profiles are far less sensitive to scattering order than the kernel convergence analysis would suggest.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scattering_orders</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">31</span><span class="p">]</span>
+<span class="n">flux_results</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="n">scattering_orders</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Solving with P</span><span class="si">{</span><span class="n">L</span><span class="si">}</span><span class="s2"> scattering (scattering_order = </span><span class="si">{</span><span class="n">L</span><span class="si">}</span><span class="s2">) ===&quot;</span><span class="p">)</span>
+
+    <span class="n">pquad</span>  <span class="o">=</span> <span class="n">GLProductQuadrature1DSlab</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">xs_mat</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+    <span class="n">xs_mat</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_filename</span><span class="p">)</span>
+
+    <span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+        <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+        <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">groupsets</span><span class="o">=</span><span class="p">[{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">pquad</span><span class="p">,</span>
+            <span class="s2">&quot;angle_aggregation_num_subsets&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+            <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="p">}],</span>
+        <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_mat</span><span class="p">}],</span>
+        <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;isotropic&quot;</span><span class="p">,</span> <span class="s2">&quot;group_strength&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]},</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">ss_solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+    <span class="n">ss_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+    <span class="n">ss_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+    <span class="n">fflist</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cline</span>  <span class="o">=</span> <span class="n">FieldFunctionInterpolationLine</span><span class="p">()</span>
+    <span class="n">cline</span><span class="o">.</span><span class="n">SetInitialPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">))</span>
+    <span class="n">cline</span><span class="o">.</span><span class="n">SetFinalPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">L_slab</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">))</span>
+    <span class="n">cline</span><span class="o">.</span><span class="n">SetNumberOfPoints</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">cline</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">cline</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+    <span class="n">cline</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">csv_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;flux_g099_P</span><span class="si">{</span><span class="n">L</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">cline</span><span class="o">.</span><span class="n">ExportToCSV</span><span class="p">(</span><span class="n">csv_base</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">csv_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">csv_base</span><span class="si">}</span><span class="s2">_*.csv&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">csv_files</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">csv_files</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">idx</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+            <span class="n">flux_results</span><span class="p">[</span><span class="n">L</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max flux = </span><span class="si">{</span><span class="n">data</span><span class="p">[:,</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  WARNING: CSV not found for P</span><span class="si">{</span><span class="n">L</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">number of scattering orders tested = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">scattering_orders</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">flux_results</span><span class="p">:</span>
+    <span class="n">labels_m</span>  <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;$P_0$&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;$P_1$&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;$P_7$&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="s1">&#39;$P_</span><span class="si">{15}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="mi">31</span><span class="p">:</span> <span class="s1">&#39;$P_</span><span class="si">{31}</span><span class="s1">$&#39;</span><span class="p">}</span>
+    <span class="n">colors_m</span>  <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;tab:red&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;tab:orange&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="s1">&#39;tab:purple&#39;</span><span class="p">,</span> <span class="mi">31</span><span class="p">:</span> <span class="s1">&#39;tab:green&#39;</span><span class="p">}</span>
+    <span class="n">ls_m</span>      <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;-.&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">31</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))}</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;images&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">use_log</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="n">scattering_orders</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">L</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">flux_results</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">z</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">flux_results</span><span class="p">[</span><span class="n">L</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">use_log</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">phi</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
+                            <span class="n">color</span><span class="o">=</span><span class="n">colors_m</span><span class="p">[</span><span class="n">L</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">ls_m</span><span class="p">[</span><span class="n">L</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels_m</span><span class="p">[</span><span class="n">L</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors_m</span><span class="p">[</span><span class="n">L</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">ls_m</span><span class="p">[</span><span class="n">L</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels_m</span><span class="p">[</span><span class="n">L</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Position $z$ (mfp)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">L_slab</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Scattering order&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Scalar flux $\phi(z)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;1D Slab: $g = </span><span class="si">{</span><span class="n">g_hg</span><span class="si">}</span><span class="s1">$  (linear scale)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Scalar flux $\phi(z)$ (log)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;1D Slab: $g = </span><span class="si">{</span><span class="n">g_hg</span><span class="si">}</span><span class="s1">$  (log scale)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;images/forward_peaked_flux_g099.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Results">
+<h2><span class="section-number">3.7.6. </span>Results<a class="headerlink" href="#Results" title="Link to this heading"></a></h2>
+<p>The figure below shows the scalar flux <span class="math notranslate nohighlight">\(\phi(z)\)</span> on linear (left) and log (right) scales for each scattering order.</p>
+<p><img alt="forward_peaked_flux_g099.png" src="../../_images/forward_peaked_flux_g099.png" /></p>
+<p><strong>Key observations:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>All :math:`P_L` curves track each other closely</strong> despite the enormous differences in scattering kernel accuracy. Even <span class="math notranslate nohighlight">\(P_0\)</span> and <span class="math notranslate nohighlight">\(P_{31}\)</span> predict very similar flux profiles in the linear plot.</p></li>
+<li><p><strong>The flux decays roughly exponentially</strong>, consistent with the transport mean free path <span class="math notranslate nohighlight">\(\lambda_{tr} \approx 9.17\)</span> mfp dominating the attenuation.</p></li>
+<li><p><strong>Lower-order solutions tend to slightly overestimate the flux</strong> deep in the slab because the isotropic or weakly anisotropic scattering approximation re-emits more particles in the backward hemisphere, effectively softening absorption and boosting the surviving flux.</p></li>
+</ol>
+<p>These observations motivate the deeper discussion in the next section.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">xs_filename</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xs_filename</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="n">scattering_orders</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flux_g099_P</span><span class="si">{</span><span class="n">L</span><span class="si">}</span><span class="s2">_*.csv&quot;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Discussion">
+<h2><span class="section-number">3.7.7. </span>Discussion<a class="headerlink" href="#Discussion" title="Link to this heading"></a></h2>
+<section id="Kernel-Convergence-vs.-Solution-Convergence">
+<h3><span class="section-number">3.7.7.1. </span>Kernel Convergence vs. Solution Convergence<a class="headerlink" href="#Kernel-Convergence-vs.-Solution-Convergence" title="Link to this heading"></a></h3>
+<p>The central insight from this tutorial is that <strong>convergence of the scattering kernel and convergence of the transport solution are two distinct requirements</strong>.</p>
+<p>The analytical results show that accurately representing the HG kernel with <span class="math notranslate nohighlight">\(g = 0.99\)</span> requires <span class="math notranslate nohighlight">\(L \approx 458\)</span> Legendre moments for 1% accuracy. However, the scalar flux profiles look essentially converged at much lower orders. This is not a contradiction — it reflects a fundamental property of the <span class="math notranslate nohighlight">\(P_N\)</span> method:</p>
+<blockquote>
+<div><p><strong>What matters is not whether the scattering kernel is converged, but whether the angular flux solution itself can be well represented by a finite number of spherical harmonics OR if the scattering kernel is converged</strong></p>
+</div></blockquote>
+<p>For this problem, the angular flux is heavily concentrated in the forward direction (<span class="math notranslate nohighlight">\(\mu \approx +1\)</span>) because:</p>
+<ol class="arabic simple">
+<li><p>The source at <span class="math notranslate nohighlight">\(z = 0\)</span> emits isotropically, but forward-going particles dominate after the first mean free path.</p></li>
+<li><p>With <span class="math notranslate nohighlight">\(g = 0.99\)</span>, scattering barely redirects particles — they continue nearly straight ahead after each collision.</p></li>
+<li><p>The transport mean free path <span class="math notranslate nohighlight">\(\lambda_{tr} \approx 9.17\)</span> mfp means the slab is only <span class="math notranslate nohighlight">\(\approx 1.09\,\lambda_{tr}\)</span> thick, so most particles stream through with few effective direction changes.</p></li>
+</ol>
+<p>As a result, the angular flux is already a smooth, nearly-isotropic-in-the-forward-hemisphere function that low-order <span class="math notranslate nohighlight">\(P_L\)</span> expansions can represent adequately. The scalar flux <span class="math notranslate nohighlight">\(\phi(z) = \int \psi \, d\Omega\)</span> integrates away angular detail further, making it even less sensitive to high-order moments.</p>
+</section>
+<section id="When-Does-Scattering-Order-Actually-Matter?">
+<h3><span class="section-number">3.7.7.2. </span>When Does Scattering Order Actually Matter?<a class="headerlink" href="#When-Does-Scattering-Order-Actually-Matter?" title="Link to this heading"></a></h3>
+<p>The scattering order has a stronger effect on accuracy when:</p>
+<ul class="simple">
+<li><p><strong>The angular flux itself requires many harmonics</strong>, e.g., when collimated sources, strongly absorbing media, or reflective boundaries create sharp angular gradients.</p></li>
+<li><p><strong>Higher angular moments are the quantity of interest</strong>, e.g., the net current <span class="math notranslate nohighlight">\(J(z)\)</span>.</p></li>
+<li><p><strong>Multi-dimensional geometry</strong> allows scattered particles to reach detectors via side-scattering paths that are suppressed in 1D.</p></li>
+</ul>
+</section>
+<section id="Practical-Implication">
+<h3><span class="section-number">3.7.7.3. </span>Practical Implication<a class="headerlink" href="#Practical-Implication" title="Link to this heading"></a></h3>
+<p>The <span class="math notranslate nohighlight">\(P_L\)</span> approximation is only as demanding as the problem’s angular flux requires — not as demanding as the kernel itself requires. For many practical forward-peaked transport problems, a modest scattering order gives adequate scalar flux accuracy even when the kernel is far from converged. However, when accurate angular flux or current distributions are needed, or for problems with strong absorbers and sharply anisotropic angular flux, higher orders become necessary.</p>
+</section>
+</section>
+<section id="Finalize-(for-Jupyter-Notebook-only)">
+<h2><span class="section-number">3.7.8. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
+<p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">finalize_env</span><span class="p">():</span>
+    <span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+
+<span class="n">ipython_instance</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="operator_methods.html" class="btn btn-neutral float-left" title="3.6. Operator Construction Methods" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="delta_forward.html" class="btn btn-neutral float-right" title="3.8. Delta-Forward Scattering and Galerkin Quadrature Methods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

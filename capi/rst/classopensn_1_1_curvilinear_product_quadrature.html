@@ -108,7 +108,8 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CurvilinearProductQuadratureE">
 <span class="target" id="classopensn_1_1_curvilinear_product_quadrature"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CurvilinearProductQuadrature</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_product_quadrature.html#_CPPv4N6opensn17ProductQuadratureE" title="opensn::ProductQuadrature"><span class="n"><span class="pre">ProductQuadrature</span></span></a><a class="headerlink" href="#_CPPv4N6opensn28CurvilinearProductQuadratureE" title="Link to this definition"></a><br /></dt>
-<dd><p>Base class for curvilinear angular quadratures (product angular quadratures with additional direction-dependent parameters). </p>
+<dd><p>Base class for curvilinear angular quadratures. </p>
+<p>Extends product quadratures with direction-dependent parametrizing factors needed for the curvilinear streaming operator. </p>
 <p>Subclassed by <a class="reference internal" href="classopensn_1_1_g_l_c_product_quadrature2_d_r_z.html#classopensn_1_1_g_l_c_product_quadrature2_d_r_z"><span class="std std-ref">opensn::GLCProductQuadrature2DRZ</span></a>, <a class="reference internal" href="classopensn_1_1_g_l_product_quadrature1_d_spherical.html#classopensn_1_1_g_l_product_quadrature1_d_spherical"><span class="std std-ref">opensn::GLProductQuadrature1DSpherical</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -131,8 +132,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CurvilinearProductQuadrature28CurvilinearProductQuadratureEjj">
-<span class="target" id="classopensn_1_1_curvilinear_product_quadrature_1a8ad187b2a29e74daa87feab47b586d6d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CurvilinearProductQuadrature</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dimension</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scattering_order</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CurvilinearProductQuadrature28CurvilinearProductQuadratureEjj" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CurvilinearProductQuadrature28CurvilinearProductQuadratureEjj26OperatorConstructionMethod">
+<span class="target" id="classopensn_1_1_curvilinear_product_quadrature_1af2753cb7f0b9011ed42a4493401cacb4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CurvilinearProductQuadrature</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dimension</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scattering_order</span></span>, <a class="reference internal" href="enum_namespaceopensn_1af374fa8b10c3bc4ed30bc997c1ee2327.html#_CPPv4N6opensn26OperatorConstructionMethodE" title="opensn::OperatorConstructionMethod"><span class="n"><span class="pre">OperatorConstructionMethod</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">method</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CurvilinearProductQuadrature28CurvilinearProductQuadratureEjj26OperatorConstructionMethod" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -147,7 +148,7 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CurvilinearProductQuadrature23fac_streaming_operator_E">
 <span class="target" id="classopensn_1_1_curvilinear_product_quadrature_1a5ecfb0c572c8c7e5acca8606755d9f37"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fac_streaming_operator_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CurvilinearProductQuadrature23fac_streaming_operator_E" title="Link to this definition"></a><br /></dt>
-<dd><p>Factor to account for discretisation of the component of the streaming operator that contains the angular derivative. </p>
+<dd><p>Factor for discretization of the angular-derivative component of the streaming operator. </p>
 </dd></dl>
 
 </div>

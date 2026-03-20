@@ -1,0 +1,433 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.6. Operator Construction Methods &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="3.7. Very Strong Forward-Peaked Scattering" href="forward_peaked_g099.html" />
+    <link rel="prev" title="3.5. Lebedev Quadrature" href="lebedev.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">3. Angular Quadrature</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="introduction.html">3.1. Introduction to Angular Quadratures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="product_GLC.html">3.2. Product Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="triangular_GLC.html">3.3. Triangular Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sLDFE.html">3.4. Simplified Linear Discontinuous Finite Element (LDFE) Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lebedev.html">3.5. Lebedev Quadrature</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">3.6. Operator Construction Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Helper-function">3.6.1. Helper function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Standard-method">3.6.2. Standard method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Galerkin-One-method">3.6.3. Galerkin One method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Galerkin-Three-method">3.6.4. Galerkin Three method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Summary-comparison">3.6.5. Summary comparison</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Comparison-2">3.6.6. Comparison 2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Summary-Comparison">3.6.7. Summary Comparison</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Finalize-(for-Jupyter-Notebook-only)">3.6.8. Finalize (for Jupyter Notebook only)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="forward_peaked_g099.html">3.7. Very Strong Forward-Peaked Scattering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="delta_forward.html">3.8. Delta-Forward Scattering and Galerkin Quadrature Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lbs/index.html">5. Linear Boltzmann Solver</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">3. </span>Angular Quadrature</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.6. </span>Operator Construction Methods</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Operator-Construction-Methods">
+<h1><span class="section-number">3.6. </span>Operator Construction Methods<a class="headerlink" href="#Operator-Construction-Methods" title="Link to this heading"></a></h1>
+<p>In discrete-ordinates transport, we need operators to map between the angular flux (defined at discrete directions) and flux moments (expanded in spherical harmonics). The two key operators are:</p>
+<ul class="simple">
+<li><p><strong>Discrete-to-Moment (D)</strong>: computes flux moments from the angular flux.</p></li>
+<li><p><strong>Moment-to-Discrete (M)</strong>: reconstructs the angular flux from flux moments.</p></li>
+</ul>
+<p>OpenSn provides various methods for constructing these operators:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">standard</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">galerkin_three</span></code></p></li>
+</ol>
+<p>This tutorial demonstrates each method and compares their properties.</p>
+<p>To run the code, simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;basename&gt;.ipynb</span></code>.</p>
+<p>To convert it to a python file (named <code class="docutils literal notranslate"><span class="pre">&lt;basename&gt;.py</span></code>), simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">&lt;basename&gt;.ipynb</span></code></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../../..&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
+<span class="ansi-green-intense-fg ansi-bold">/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb Cell 2</span> line <span class="ansi-cyan-fg">8
+</span><span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#W1sdnNjb2RlLXJlbW90ZQ%3D%3D?line=3&#39;&gt;4&lt;/a&gt;</span> from mpi4py import MPI
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#W1sdnNjb2RlLXJlbW90ZQ%3D%3D?line=5&#39;&gt;6&lt;/a&gt;</span> sys.path.append(&#34;../..&#34;)
+<span class="ansi-green-fg">----&gt; &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#W1sdnNjb2RlLXJlbW90ZQ%3D%3D?line=7&#39;&gt;8&lt;/a&gt;</span> from pyopensn.aquad import GLCProductQuadrature3DXYZ
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#W1sdnNjb2RlLXJlbW90ZQ%3D%3D?line=8&#39;&gt;9&lt;/a&gt;</span> from pyopensn.context import UseColor, Finalize
+<span class="ansi-green-intense-fg ansi-bold">     &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#W1sdnNjb2RlLXJlbW90ZQ%3D%3D?line=10&#39;&gt;11&lt;/a&gt;</span> UseColor(False)
+
+<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named &#39;pyopensn.aquad&#39;
+</pre></div></div>
+</div>
+<section id="Helper-function">
+<h2><span class="section-number">3.6.1. </span>Helper function<a class="headerlink" href="#Helper-function" title="Link to this heading"></a></h2>
+<p>We define a helper function to evaluate the orthogonality of the D2M and M2D operators. Ideally, the product <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M}\)</span> should equal the identity matrix, which means the operators are consistent inverses of each other. For cases where <span class="math notranslate nohighlight">\(N_{mom} \leq N_{dir}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> will be the left inverse of <span class="math notranslate nohighlight">\(\mathbf{M}\)</span>.</p>
+<p>OpenSn does not store <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> as it is seen in literature. Instead, <span class="math notranslate nohighlight">\(\mathbf{D}^T\)</span> is stored, and you will see various transposes done to convert OpenSn’s <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> into the literature defined <span class="math notranslate nohighlight">\(\mathbf{D}\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_orthogonality</span><span class="p">(</span><span class="n">D2M</span><span class="p">,</span> <span class="n">M2D</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check how close D @ M is to the identity matrix.&quot;&quot;&quot;</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="n">D2M</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">M2D</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">product</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">product</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">max_off_diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">product</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">if</span> <span class="n">product</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+    <span class="n">max_diag_dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diag</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  D2M shape: </span><span class="si">{</span><span class="n">D2M</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, M2D shape: </span><span class="si">{</span><span class="n">M2D</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max off-diagonal of D2M^T @ M2D: </span><span class="si">{</span><span class="n">max_off_diag</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max diagonal deviation from 1:   </span><span class="si">{</span><span class="n">max_diag_dev</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">max_off_diag</span><span class="p">,</span> <span class="n">max_diag_dev</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Standard-method">
+<h2><span class="section-number">3.6.2. </span>Standard method<a class="headerlink" href="#Standard-method" title="Link to this heading"></a></h2>
+<p>The <strong>Standard</strong> method builds the operators directly from the spherical harmonics evaluated at the quadrature points:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{D2M}_{n,m} = w_n \, Y_{\ell}^{m}(\hat{\Omega}_n)\]</div>
+<div class="math notranslate nohighlight">
+\[\mathbf{M2D}_{n,m} = \frac{2\ell + 1}{\sum_n w_n} \, Y_{\ell}^{m}(\hat{\Omega}_n)\]</div>
+<p>This is the default method and works with any quadrature set and any scattering order. However, for a finite quadrature, <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M}\)</span> is not guaranteed to be the identity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pquad_std</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span>
+<span class="p">)</span>
+
+<span class="n">D2M_pquad_std</span> <span class="o">=</span> <span class="n">pquad_std</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M2D_pquad_std</span> <span class="o">=</span> <span class="n">pquad_std</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+
+<span class="n">off_pquad_std</span><span class="p">,</span> <span class="n">diag_pquad_std</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_pquad_std</span><span class="p">,</span> <span class="n">M2D_pquad_std</span><span class="p">,</span> <span class="s2">&quot;Standard&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Galerkin-One-method">
+<h2><span class="section-number">3.6.3. </span>Galerkin One method<a class="headerlink" href="#Galerkin-One-method" title="Link to this heading"></a></h2>
+<p>The <strong>Galerkin One</strong> method builds the M2D operator the same way as the Standard method, then computes D2M by directly inverting the M2D matrix. This requires the operator to be square, i.e., the number of directions must equal the number of moments.</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code>, the <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> parameter is optional. If omitted, OpenSn automatically selects the scattering order so that the number of spherical harmonic moments equals the number of quadrature directions, yielding a square (and thus invertible) system.</p>
+<p>This method produces operators that satisfy <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M} = \mathbf{I}\)</span> to machine precision, as long as <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> is well-conditioned.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pquad_g1</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s1">&#39;galerkin_one&#39;</span>
+<span class="p">)</span>
+
+<span class="n">D2M_pquad_g1</span> <span class="o">=</span> <span class="n">pquad_g1</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M2D_pquad_g1</span> <span class="o">=</span> <span class="n">pquad_g1</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+
+<span class="n">off_pquad_g1</span><span class="p">,</span> <span class="n">diag_pquad_g1</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_pquad_g1</span><span class="p">,</span> <span class="n">M2D_pquad_g1</span><span class="p">,</span> <span class="s2">&quot;Galerkin One&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-intense-fg ansi-bold">/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb Cell 8</span> line <span class="ansi-cyan-fg">1
+</span><span class="ansi-green-fg">----&gt; &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X10sdnNjb2RlLXJlbW90ZQ%3D%3D?line=0&#39;&gt;1&lt;/a&gt;</span> pquad_g1 = GLCProductQuadrature3DXYZ(
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X10sdnNjb2RlLXJlbW90ZQ%3D%3D?line=1&#39;&gt;2&lt;/a&gt;</span>     n_polar=4, n_azimuthal=8, operator_method=&#39;galerkin_one&#39;
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X10sdnNjb2RlLXJlbW90ZQ%3D%3D?line=2&#39;&gt;3&lt;/a&gt;</span> )
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X10sdnNjb2RlLXJlbW90ZQ%3D%3D?line=4&#39;&gt;5&lt;/a&gt;</span> D2M_g1 = pquad_g1.GetDiscreteToMomentOperator()
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X10sdnNjb2RlLXJlbW90ZQ%3D%3D?line=5&#39;&gt;6&lt;/a&gt;</span> M2D_g1 = pquad_g1.GetMomentToDiscreteOperator()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;GLCProductQuadrature3DXYZ&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+<section id="Galerkin-Three-method">
+<h2><span class="section-number">3.6.4. </span>Galerkin Three method<a class="headerlink" href="#Galerkin-Three-method" title="Link to this heading"></a></h2>
+<p>The <strong>Galerkin Three</strong> method provides a middle ground. It orthogonalizes the spherical harmonics to form a set of approximate spherical harmonics that are orthogonal with respect to the given quadrature rule. Both D2M and M2D are built from these approximate, orthogonalized harmonics.</p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code>, this method does not require a square operator, so it works with any scattering order. Due to the construction of <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{M}\)</span>, it guarantees <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M} = \mathbf{I}\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pquad_g3</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s1">&#39;galerkin_three&#39;</span>
+<span class="p">)</span>
+
+<span class="n">D2M_pquad_g3</span> <span class="o">=</span> <span class="n">pquad_g3</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M2D_pquad_g3</span> <span class="o">=</span> <span class="n">pquad_g3</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+
+<span class="n">off_pquad_g3</span><span class="p">,</span> <span class="n">diag_pquad_g3</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_pquad_g3</span><span class="p">,</span> <span class="n">M2D_pquad_g3</span><span class="p">,</span> <span class="s2">&quot;Galerkin Three&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Summary-comparison">
+<h2><span class="section-number">3.6.5. </span>Summary comparison<a class="headerlink" href="#Summary-comparison" title="Link to this heading"></a></h2>
+<p>The table below compares the orthogonality of <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M}\)</span> for each method using a 3D-Product quadrature set with 4 Polar angles and 8 Azimuthal angles. Smaller values indicate operators that are closer to being exact inverses of each other.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Method&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Max off-diagonal&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Max diag deviation&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">62</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Standard&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_pquad_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_pquad_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin One&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_pquad_g1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_pquad_g1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin Three&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_pquad_g3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_pquad_g3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Comparison-2">
+<h2><span class="section-number">3.6.6. </span>Comparison 2<a class="headerlink" href="#Comparison-2" title="Link to this heading"></a></h2>
+<p>We will now show how these operators can differ from eachother using a different quadrature set.</p>
+<p>First, we apply the Standard method to an LDFE quadrature set with 1 level of global refinement.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">SLDFEsqQuadrature3DXYZ</span>
+
+<span class="n">ldfe_std</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s2">&quot;standard&quot;</span>
+<span class="p">)</span>
+
+<span class="n">D2M_ldfe_std</span> <span class="o">=</span> <span class="n">ldfe_std</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M2D_ldfe_std</span> <span class="o">=</span> <span class="n">ldfe_std</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+
+<span class="n">off_ldfe_std</span><span class="p">,</span> <span class="n">diag_ldfe_std</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_ldfe_std</span><span class="p">,</span> <span class="n">M2D_ldfe_std</span><span class="p">,</span> <span class="s2">&quot;Standard&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-intense-fg ansi-bold">/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb Cell 15</span> line <span class="ansi-cyan-fg">1
+</span><span class="ansi-green-fg">----&gt; &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X20sdnNjb2RlLXJlbW90ZQ%3D%3D?line=0&#39;&gt;1&lt;/a&gt;</span> ldfe_std = SLDFEsqQuadrature3DXY(
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X20sdnNjb2RlLXJlbW90ZQ%3D%3D?line=1&#39;&gt;2&lt;/a&gt;</span>     level=1, scattering_order=20, operator_method=&#34;standard&#34;
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X20sdnNjb2RlLXJlbW90ZQ%3D%3D?line=2&#39;&gt;3&lt;/a&gt;</span> )
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X20sdnNjb2RlLXJlbW90ZQ%3D%3D?line=4&#39;&gt;5&lt;/a&gt;</span> D2M_ldfe_std = ldfe_std.GetDiscreteToMomentOperator()
+<span class="ansi-green-intense-fg ansi-bold">      &lt;a href=&#39;vscode-notebook-cell://wsl%2Bubuntu/root/opensn/doc/source/tutorials/aquad/operator_methods.ipynb#X20sdnNjb2RlLXJlbW90ZQ%3D%3D?line=5&#39;&gt;6&lt;/a&gt;</span> M2D_ldfe_std = ldfe_std.GetMomentToDiscreteOperator()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SLDFEsqQuadrature3DXY&#39; is not defined
+</pre></div></div>
+</div>
+<p>Next, we do the same with the Galerkin One method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ldfe_gq1</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s2">&quot;galerkin_one&quot;</span>
+<span class="p">)</span>
+
+<span class="n">D2M_ldfe_gq1</span> <span class="o">=</span> <span class="n">ldfe_gq1</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M2D_ldfe_gq1</span> <span class="o">=</span> <span class="n">ldfe_gq1</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+
+<span class="n">off_ldfe_gq1</span><span class="p">,</span> <span class="n">diag_ldfe_gq1</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_ldfe_gq1</span><span class="p">,</span> <span class="n">M2D_ldfe_gq1</span><span class="p">,</span> <span class="s2">&quot;Galerkin One&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Finally, we apply the Galerkin Three method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ldfe_gq3</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s2">&quot;galerkin_three&quot;</span>
+<span class="p">)</span>
+
+<span class="n">D2M_ldfe_gq3</span> <span class="o">=</span> <span class="n">ldfe_gq3</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M2D_ldfe_gq3</span> <span class="o">=</span> <span class="n">ldfe_gq3</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+
+<span class="n">off_ldfe_gq3</span><span class="p">,</span> <span class="n">diag_ldfe_gq3</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_ldfe_gq3</span><span class="p">,</span> <span class="n">M2D_ldfe_gq3</span><span class="p">,</span> <span class="s2">&quot;Galerkin Three&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Summary-Comparison">
+<h2><span class="section-number">3.6.7. </span>Summary Comparison<a class="headerlink" href="#Summary-Comparison" title="Link to this heading"></a></h2>
+<p>The table below compares the orthogonality of <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M}\)</span>. It can be seen that the deviation of each matrix varies, depending on the construction chosen.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Method&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Max off-diagonal&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Max diag deviation&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">62</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Standard&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_ldfe_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_ldfe_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin One&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_ldfe_gq1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_ldfe_gq1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin Three&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_ldfe_gq3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_ldfe_gq3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Finalize-(for-Jupyter-Notebook-only)">
+<h2><span class="section-number">3.6.8. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
+<p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">finalize_env</span><span class="p">():</span>
+    <span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+
+<span class="n">ipython_instance</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lebedev.html" class="btn btn-neutral float-left" title="3.5. Lebedev Quadrature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="forward_peaked_g099.html" class="btn btn-neutral float-right" title="3.7. Very Strong Forward-Peaked Scattering" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

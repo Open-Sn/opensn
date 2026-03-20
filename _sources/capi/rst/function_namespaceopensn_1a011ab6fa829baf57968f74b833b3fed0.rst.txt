@@ -1,7 +1,7 @@
 .. _exhale_function_namespaceopensn_1a011ab6fa829baf57968f74b833b3fed0:
 
-Template Function opensn::Transpose
-===================================
+Template Function opensn::Transpose(const DenseMatrix<TYPE>&)
+=============================================================
 
 - Defined in :ref:`file_framework_data_types_dense_matrix.h`
 

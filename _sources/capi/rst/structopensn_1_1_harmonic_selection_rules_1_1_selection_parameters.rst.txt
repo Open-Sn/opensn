@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_harmonic_selection_rules_1_1_selection_parameters:
+
+Struct HarmonicSelectionRules::SelectionParameters
+==================================================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_harmonic_selection_rules.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_harmonic_selection_rules`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::HarmonicSelectionRules::SelectionParameters
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

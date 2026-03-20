@@ -1,0 +1,46 @@
+
+.. _namespace_opensn__EmpiricalHarmonicRules:
+
+Namespace opensn::EmpiricalHarmonicRules
+========================================
+
+
+Empirical harmonic selection rules for special quadrature types. 
+
+
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+Detailed Description
+--------------------
+
+This namespace contains pre-computed empirical rules for quadrature types where mathematical rules are not easily derived or where empirical selection provides better results. 
+
+
+
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_empirical_harmonic_rules_1_1_harmonic_set`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1ae40bf781e5a3f34b41ade1744eee8f06`
+
+- :ref:`exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1a6bd86005ac41eb425fc5e3fff217b649`
+
+- :ref:`exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1aa2fdbf6ed2dd7238fff1b341cd70b953`
+
+- :ref:`exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1af0d3002f4a9c217ec82fe62d12d4fece`

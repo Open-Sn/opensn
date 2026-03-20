@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1aa2fdbf6ed2dd7238fff1b341cd70b953:
+
+Variable opensn::EmpiricalHarmonicRules::SLDFEHarmonics
+=======================================================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_harmonic_selection_rules_emperical.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::EmpiricalHarmonicRules::SLDFEHarmonics
+   :project: opensn

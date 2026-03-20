@@ -97,19 +97,17 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Base class for triangular quadratures.</span>
-<span class="cm"> *</span>
-<span class="cm"> * Unlike product quadratures which have a fixed number of azimuthal angles per polar level,</span>
-<span class="cm"> * triangular quadratures have a varying number of azimuthal angles that decreases</span>
-<span class="cm"> * as the polar angle moves away from the equatorial plane.</span>
-<span class="cm"> */</span>
+<span class="c1">/// Base class for triangular quadratures.</span>
+<span class="c1">///</span>
+<span class="c1">/// Unlike product quadratures which have a fixed number of azimuthal angles per polar level,</span>
+<span class="c1">/// triangular quadratures have a varying number that decreases as the polar angle moves away</span>
+<span class="c1">/// from the equatorial plane.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TriangularQuadrature</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AngularQuadrature</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="o">~</span><span class="n">TriangularQuadrature</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Obtain the abscissae index given the polar angle index and the azimuthal angle index.</span>
+<span class="w">  </span><span class="c1">/// Return the abscissae index for the given polar and azimuthal angle indices.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetAngleNum</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">polar_angle_index</span><span class="p">,</span>
 <span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">azimu_angle_index</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
@@ -126,8 +124,11 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">polar_ang</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">TriangularQuadrature</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="p">(</span><span class="n">AngularQuadratureType</span><span class="o">::</span><span class="n">TRIANGULAR_QUADRATURE</span><span class="p">,</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">),</span>
+<span class="w">  </span><span class="n">TriangularQuadrature</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="p">(</span>
+<span class="w">        </span><span class="n">AngularQuadratureType</span><span class="o">::</span><span class="n">TRIANGULAR_QUADRATURE</span><span class="p">,</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="p">),</span>
 <span class="w">      </span><span class="n">weight_sum_</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
@@ -135,91 +136,66 @@
 <span class="w">  </span><span class="c1">/// Sum of all quadrature weights.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">weight_sum_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Azimuthal angles for each polar level.</span>
-<span class="cm">   *</span>
-<span class="cm">   * Unlike product quadratures which have a fixed number of azimuthal angles per polar level,</span>
-<span class="cm">   * triangular quadratures have a varying number that decreases as the polar angle moves from</span>
-<span class="cm">   * the equator.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Azimuthal angles for each polar level.</span>
+<span class="w">  </span><span class="c1">///</span>
+<span class="w">  </span><span class="c1">/// The number of azimuthal angles decreases as the polar angle moves away from the equator,</span>
+<span class="w">  </span><span class="c1">/// in contrast to product quadratures which have a fixed count at every level.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">azimuthal_per_polar_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Linear indices of ordered directions mapped to polar level.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">map_directions_</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Triangular GLC quadrature for 3D XYZ geometry.</span>
-<span class="cm"> *</span>
-<span class="cm"> * Similar to GLCProductQuadrature3DXYZ, but with fewer azimuthal angles as the polar angle moves</span>
-<span class="cm"> * away from the equatorial plane. The number of azimuthal angles is maximized automatically based</span>
-<span class="cm"> * on Npolar.</span>
-<span class="cm"> */</span>
+<span class="c1">/// Triangular GLC quadrature for 3D XYZ geometry.</span>
+<span class="c1">///</span>
+<span class="c1">/// Similar to GLCProductQuadrature3DXYZ, but with fewer azimuthal angles as the polar angle moves</span>
+<span class="c1">/// away from the equatorial plane. The maximum number of azimuthal angles (at the equator) is</span>
+<span class="c1">/// computed automatically as 2 * Npolar.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">GLCTriangularQuadrature3DXYZ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">TriangularQuadrature</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Construct a 3D XYZ triangular Gauss-Legendre Chebyshev quadrature.</span>
-<span class="cm">   *</span>
-<span class="cm">   * For each polar angle away from the equator, there is 1 less azimuthal angle per octant.</span>
-<span class="cm">   * The maximum number of azimuthal angles (at the equator) is computed as 2 * Npolar.</span>
-<span class="cm">   *</span>
-<span class="cm">   * \param Npolar Number of polar angles.</span>
-<span class="cm">   * \param scattering_order Scattering order for moment calculations.</span>
-<span class="cm">   * \param verbose Flag to enable verbose output.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">GLCTriangularQuadrature3DXYZ</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
-<span class="w">                                        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
-<span class="w">                                        </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Construct a 3D XYZ triangular Gauss-Legendre-Chebyshev quadrature.</span>
+<span class="w">  </span><span class="c1">///</span>
+<span class="w">  </span><span class="c1">/// For each polar angle away from the equator there is 1 fewer azimuthal angle per octant.</span>
+<span class="w">  </span><span class="c1">/// \param Npolar Number of polar angles.</span>
+<span class="w">  </span><span class="c1">/// \param scattering_order Scattering order for moment calculations.</span>
+<span class="w">  </span><span class="c1">/// \param verbose Enable verbose output.</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">GLCTriangularQuadrature3DXYZ</span><span class="p">(</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
 
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Assemble the quadrature points and weights for varying azimuthal angles per polar level.</span>
-<span class="cm">   *</span>
-<span class="cm">   * \param azimuthal_per_polar Azimuthal angles for each polar level.</span>
-<span class="cm">   * \param polar Polar angles.</span>
-<span class="cm">   * \param wts_per_polar Weights for each polar level.</span>
-<span class="cm">   * \param verbose Flag to enable verbose output.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Assemble quadrature points and weights for the varying azimuthal angles per polar level.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AssembleTriangularCosines</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">azimuthal_per_polar</span><span class="p">,</span>
 <span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">polar</span><span class="p">,</span>
 <span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">wts_per_polar</span><span class="p">,</span>
 <span class="w">                                 </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="p">);</span>
 <span class="p">};</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Triangular GLC quadrature for 2D XY geometry.</span>
-<span class="cm"> *</span>
-<span class="cm"> * Similar to GLCProductQuadrature2DXY, but with fewer azimuthal angles as the polar angle moves</span>
-<span class="cm"> * away from the equatorial plane. Only includes upper hemisphere points (z &gt;= 0). The number of</span>
-<span class="cm"> * azimuthal angles is maximized automatically based on Npolar.</span>
-<span class="cm"> */</span>
+<span class="c1">/// Triangular GLC quadrature for 2D XY geometry.</span>
+<span class="c1">///</span>
+<span class="c1">/// Similar to GLCProductQuadrature2DXY, but with fewer azimuthal angles as the polar angle moves</span>
+<span class="c1">/// away from the equatorial plane. Only upper hemisphere points (z &gt;= 0) are included. The maximum</span>
+<span class="c1">/// number of azimuthal angles is computed automatically as 2 * Npolar.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">GLCTriangularQuadrature2DXY</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">TriangularQuadrature</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Construct a 2D XY triangular Gauss-Legendre Chebyshev quadrature.</span>
-<span class="cm">   *</span>
-<span class="cm">   * For each polar angle away from the equator, there is 1 less azimuthal angle per octant.</span>
-<span class="cm">   * The maximum number of azimuthal angles (at the equator) is computed as 2 * Npolar.</span>
-<span class="cm">   *</span>
-<span class="cm">   * \param Npolar Number of polar angles.</span>
-<span class="cm">   * \param scattering_order Scattering order for moment calculations.</span>
-<span class="cm">   * \param verbose Flag to enable verbose output.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">GLCTriangularQuadrature2DXY</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
-<span class="w">                                       </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
-<span class="w">                                       </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Construct a 2D XY triangular Gauss-Legendre-Chebyshev quadrature.</span>
+<span class="w">  </span><span class="c1">///</span>
+<span class="w">  </span><span class="c1">/// For each polar angle away from the equator there is 1 fewer azimuthal angle per octant.</span>
+<span class="w">  </span><span class="c1">/// \param Npolar Number of polar angles.</span>
+<span class="w">  </span><span class="c1">/// \param scattering_order Scattering order for moment calculations.</span>
+<span class="w">  </span><span class="c1">/// \param verbose Enable verbose output.</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">GLCTriangularQuadrature2DXY</span><span class="p">(</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
 
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Assemble the quadrature points and weights for varying azimuthal angles per polar level.</span>
-<span class="cm">   *</span>
-<span class="cm">   * \param azimuthal_per_polar Azimuthal angles for each polar level.</span>
-<span class="cm">   * \param polar Polar angles.</span>
-<span class="cm">   * \param wts_per_polar Weights for each polar level.</span>
-<span class="cm">   * \param verbose Flag to enable verbose output.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Assemble quadrature points and weights for the varying azimuthal angles per polar level.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AssembleTriangularCosines</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">azimuthal_per_polar</span><span class="p">,</span>
 <span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">polar</span><span class="p">,</span>
 <span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">wts_per_polar</span><span class="p">,</span>

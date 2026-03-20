@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3f3074c6aeadd445ee556459fdc31564:
+
+Function opensn::Transpose(const std::vector<std::vector<double>>&)
+===================================================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Transpose(const std::vector<std::vector<double>>&)
+   :project: opensn

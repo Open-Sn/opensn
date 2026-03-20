@@ -109,6 +109,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1af44db9c1ce3bab159ed7d936f147e4f3`
 
+- :ref:`exhale_function_namespaceopensn_1aba39c6729aaf37d65540f18f2ee63fcc`
+
 - :ref:`exhale_function_namespaceopensn_1a8eb2c0e27bee677a06aeb140fc102158`
 
 - :ref:`exhale_function_namespaceopensn_1ab32620964e0bc997f9352c15a1eb1d11`
@@ -125,6 +127,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a82d9ea81b6e836be4901504d07e88ee0`
 
+- :ref:`exhale_function_namespaceopensn_1a9c06eab1eaeb4f37a44d6a2165710292`
+
 - :ref:`exhale_function_namespaceopensn_1a1c36c8d4ab7c73dd14d760aa62e10594`
 
 - :ref:`exhale_function_namespaceopensn_1a66d063a5930d52b5e36dfb7571799817`
@@ -132,6 +136,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a1bea552a3cd9dec00e2872622a33d676`
 
 - :ref:`exhale_function_namespaceopensn_1a29b56d0fb78a6d7899dfcc7f7209bb61`
+
+- :ref:`exhale_function_namespaceopensn_1a3f3074c6aeadd445ee556459fdc31564`
 
 
 Typedefs

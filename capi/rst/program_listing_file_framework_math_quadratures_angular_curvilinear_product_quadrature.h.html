@@ -96,10 +96,10 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Base class for curvilinear angular quadratures (product angular quadratures with additional</span>
-<span class="cm"> * direction-dependent parameters).</span>
-<span class="cm"> */</span>
+<span class="c1">/// Base class for curvilinear angular quadratures.</span>
+<span class="c1">///</span>
+<span class="c1">/// Extends product quadratures with direction-dependent parametrizing factors</span>
+<span class="c1">/// needed for the curvilinear streaming operator.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CurvilinearProductQuadrature</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ProductQuadrature</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
@@ -110,68 +110,62 @@
 <span class="w">  </span><span class="o">~</span><span class="n">CurvilinearProductQuadrature</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">CurvilinearProductQuadrature</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">ProductQuadrature</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
+<span class="w">  </span><span class="n">CurvilinearProductQuadrature</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span>
+<span class="w">                               </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">ProductQuadrature</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Factor to account for angular diamond differencing.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fac_diamond_difference_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Factor to account for discretisation of the component of the streaming operator that contains</span>
-<span class="cm">   * the angular derivative.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Factor for discretization of the angular-derivative component of the streaming operator.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fac_streaming_operator_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GLCProductQuadrature2DRZ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">CurvilinearProductQuadrature</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
-<span class="w">                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Nazimuthal</span><span class="p">,</span>
-<span class="w">                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
-<span class="w">                           </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">  </span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Nazimuthal</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
 
 <span class="w">  </span><span class="o">~</span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Initialize with one-dimensional quadratures: a polar quadrature and a possibly unique azimuthal</span>
-<span class="cm">   * quadrature for each polar level.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Initialize from a polar quadrature and a per-polar-level azimuthal quadrature vector.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Initialize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">GaussQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quad_polar</span><span class="p">,</span>
 <span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">GaussQuadrature</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">quad_azimu_vec</span><span class="p">,</span>
 <span class="w">                  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Initialize parametrizing factors of the cylindrical angular quadrature, starting from a fully</span>
-<span class="cm">   * initialized underlying product quadrature.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Initialize cylindrical parametrizing factors from the underlying product quadrature.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeParameters</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GLProductQuadrature1DSpherical</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">CurvilinearProductQuadrature</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
-<span class="w">                                 </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
-<span class="w">                                 </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">  </span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
 
 <span class="w">  </span><span class="o">~</span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Initialize with one-dimensional quadrature.</span>
+<span class="w">  </span><span class="c1">/// Initialize with a 1D polar quadrature.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Initialize</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">Npolar</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Initialize parametrizing factors of the spherical angular quadrature, starting from a fully</span>
-<span class="cm">   * initialized underlying product quadrature.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Initialize spherical parametrizing factors from the underlying product quadrature.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeParameters</span><span class="p">();</span>
 <span class="p">};</span>
 

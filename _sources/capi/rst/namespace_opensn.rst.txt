@@ -32,6 +32,8 @@ Namespaces
 
 - :ref:`namespace_opensn__device_dbg`
 
+- :ref:`namespace_opensn__EmpiricalHarmonicRules`
+
 - :ref:`namespace_opensn__gpu_kernel`
 
 
@@ -96,6 +98,8 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_face_view`
 
 - :ref:`exhale_struct_structopensn_1_1_ghost_vec_local_raw`
+
+- :ref:`exhale_struct_structopensn_1_1_harmonic_selection_rules_1_1_selection_parameters`
 
 - :ref:`exhale_struct_structopensn_1_1is__shared__ptr`
 
@@ -413,6 +417,8 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_h5_file_handle`
 
+- :ref:`exhale_class_classopensn_1_1_harmonic_selection_rules`
+
 - :ref:`exhale_class_classopensn_1_1_input_parameters`
 
 - :ref:`exhale_class_classopensn_1_1_isotropic_boundary`
@@ -684,6 +690,8 @@ Enums
 
 - :ref:`exhale_enum_namespaceopensn_1a2bc625d5a3bcad808cdb614d13f73457`
 
+- :ref:`exhale_enum_namespaceopensn_1af374fa8b10c3bc4ed30bc997c1ee2327`
+
 - :ref:`exhale_enum_namespaceopensn_1a05f2bd4e18caaed618352dd6b880f07f`
 
 - :ref:`exhale_enum_namespaceopensn_1a888a70b0fcfee2519583f22c144fdb85`
@@ -899,6 +907,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a95d6f66ba869623b59a1a1b78148d94f`
 
+- :ref:`exhale_function_namespaceopensn_1aba39c6729aaf37d65540f18f2ee63fcc`
+
 - :ref:`exhale_function_namespaceopensn_1ac7c0232212b4c28d47595e8520281d22`
 
 - :ref:`exhale_function_namespaceopensn_1a1a389594753619fc6b1d544485f4f3c5`
@@ -956,6 +966,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a482b5ac75802192e834d71531adea8c3`
 
 - :ref:`exhale_function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195`
+
+- :ref:`exhale_function_namespaceopensn_1a9c06eab1eaeb4f37a44d6a2165710292`
 
 - :ref:`exhale_function_namespaceopensn_1a073c22c5a84f641da97dabf6ee200eb6`
 
@@ -1038,6 +1050,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
 
 - :ref:`exhale_function_namespaceopensn_1a011ab6fa829baf57968f74b833b3fed0`
+
+- :ref:`exhale_function_namespaceopensn_1a3f3074c6aeadd445ee556459fdc31564`
 
 - :ref:`exhale_function_namespaceopensn_1a6c0ed6c651dd58f8d684435e40c94d95`
 

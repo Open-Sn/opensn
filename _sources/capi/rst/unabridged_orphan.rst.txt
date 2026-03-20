@@ -21,6 +21,11 @@ Namespaces
 .. toctree::
    :maxdepth: 1
 
+   namespace_opensn__EmpiricalHarmonicRules.rst
+
+.. toctree::
+   :maxdepth: 1
+
    namespace_opensn__gpu_kernel.rst
 
 .. toctree::
@@ -150,6 +155,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_empirical_harmonic_rules_1_1_harmonic_set.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_epoch_state.rst
 
 .. toctree::
@@ -181,6 +191,11 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1gpu__kernel_1_1_arguments.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_harmonic_selection_rules_1_1_selection_parameters.rst
 
 .. toctree::
    :maxdepth: 1
@@ -980,6 +995,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_harmonic_selection_rules.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_input_parameters.rst
 
 .. toctree::
@@ -1655,6 +1675,11 @@ Enums
    :maxdepth: 1
 
    enum_namespaceopensn_1a2bc625d5a3bcad808cdb614d13f73457.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   enum_namespaceopensn_1af374fa8b10c3bc4ed30bc997c1ee2327.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2478,6 +2503,16 @@ Files
    :maxdepth: 1
 
    file_framework_mesh_mesh_continuum_grid_vtk_utils.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_math_quadratures_angular_harmonic_selection_rules.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_math_quadratures_angular_harmonic_selection_rules_emperical.h.rst
 
 .. toctree::
    :maxdepth: 1

@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1af374fa8b10c3bc4ed30bc997c1ee2327:
+
+Enum OperatorConstructionMethod
+===============================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::OperatorConstructionMethod
+   :project: opensn

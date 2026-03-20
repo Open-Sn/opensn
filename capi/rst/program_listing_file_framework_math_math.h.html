@@ -130,47 +130,44 @@
 <span class="w">  </span><span class="n">LINF_NORM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
 <span class="p">};</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Sample a Cumulative Distribution Function (CDF) given a probability.</span>
+<span class="cm">/**Sample a Cumulative Distribution Function (CDF) given a probability.</span>
 <span class="cm"> *</span>
-<span class="cm"> * The supplied vector should contain the upper bin boundary for each</span>
-<span class="cm"> * bin and will return the bin associated with the bin that brackets</span>
-<span class="cm"> * the supplied probability.</span>
-<span class="cm"> *</span>
-<span class="cm"> * Example:</span>
-<span class="cm"> * Suppose we sample bins 0-9. Suppose also that the probalities for each</span>
-<span class="cm"> * bin is as follows:</span>
-<span class="cm"> * - 0.1 bin 0</span>
-<span class="cm"> * - 0.1 bin 1</span>
-<span class="cm"> * - 0.5 bin 5</span>
-<span class="cm"> * - 0.3 bin 8</span>
-<span class="cm"> *</span>
-<span class="cm"> * The CDF for this probability distribution will look like this</span>
-<span class="cm"> * - bin 0 = 0.1</span>
-<span class="cm"> * - bin 1 = 0.2</span>
-<span class="cm"> * - bin 2 = 0.2</span>
-<span class="cm"> * - bin 3 = 0.2</span>
-<span class="cm"> * - bin 4 = 0.2</span>
-<span class="cm"> * - bin 5 = 0.7</span>
-<span class="cm"> * - bin 6 = 0.7</span>
-<span class="cm"> * - bin 7 = 0.7</span>
-<span class="cm"> * - bin 8 = 1.0</span>
-<span class="cm"> * - bin 9 = 1.0</span>
-<span class="cm"> *</span>
-<span class="cm"> * Supplying a random number between 0 and 1 should indicate sampling one</span>
-<span class="cm"> * of the bins 0,1,5 or 8. The most inefficient way to do this is to</span>
-<span class="cm"> * linearly loop through the cdf and check \f$ cdf_{i-1} \ge \theta &lt; cdf_i \f$.</span>
-<span class="cm"> *  An optimized version of this sampling would be to perform a recursive</span>
-<span class="cm"> *  block search which starts with a course view of the cdf and then gradually</span>
-<span class="cm"> *  refines the view until the final linear search can be performed.*/</span>
+<span class="cm"> * The supplied vector should contain the upper bin boundary for each bin and will return</span>
+<span class="cm"> * the bin associated with the bin that brackets the supplied probability.</span>
+<span class="cm"> */</span>
 <span class="kt">int</span><span class="w"> </span><span class="nf">SampleCDF</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cdf_bin</span><span class="p">);</span>
+
+<span class="cm">/** Return the transpose of a matrix.</span>
+<span class="cm"> *</span>
+<span class="cm"> * For an m x n input A, returns an n x m matrix T where T[j][i] = A[i][j].</span>
+<span class="cm"> * \throws std::runtime_error if the matrix is empty or has inconsistent row sizes.</span>
+<span class="cm"> */</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">Transpose</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">matrix</span><span class="p">);</span>
+
+<span class="cm">/** Invert a square matrix using SVD-based pseudo-inversion (LAPACK dgesvd).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Singular values below machine-epsilon * n * sigma_max are treated as zero.</span>
+<span class="cm"> * Emits a warning if the condition number exceeds 1e10.</span>
+<span class="cm"> * \throws std::runtime_error if the matrix is empty, non-square, or SVD fails.</span>
+<span class="cm"> */</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">InvertMatrix</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">matrix</span><span class="p">);</span>
+
+<span class="cm">/** Orthogonalize the columns of a matrix under a weighted inner product.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Applies double-pass modified Gram-Schmidt and normalizes each column so that</span>
+<span class="cm"> * \f$\langle q_i, q_j \rangle_w = \delta_{ij}\f$.  Columns whose weighted norm</span>
+<span class="cm"> * falls below 1e-14 are left as zero vectors (linearly dependent directions).</span>
+<span class="cm"> * \throws std::runtime_error if the matrix is empty or has inconsistent row sizes.</span>
+<span class="cm"> */</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span>
+<span class="n">OrthogonalizeMatrixSpan</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">matrix</span><span class="p">,</span>
+<span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">weights</span><span class="p">);</span>
 
 <span class="c1">/// Computes the factorial of an integer.</span>
 <span class="kt">double</span><span class="w"> </span><span class="nf">Factorial</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">);</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Determines the azimuthal- and polar-angle associated with the given direction vector.</span>
-<span class="cm"> * Returns a pair = [azimuthal-angle,polar-angle].</span>
+<span class="cm">/** Return the azimuthal and polar angles for the given direction vector as a pair</span>
+<span class="cm"> * [azimuthal-angle, polar-angle].</span>
 <span class="cm"> */</span>
 <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">OmegaToPhiThetaSafe</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">);</span>
 
@@ -186,48 +183,28 @@
 <span class="c1">/// Multiplies the vector with a constant and returns result.</span>
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Mult</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">val</span><span class="p">);</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Returns the 1-norm. Also known as the Taxicab or Manhattan norm.</span>
-<span class="cm"> *</span>
-<span class="cm"> * \f[</span>
-<span class="cm"> * \|\boldsymbol{x}\|_{1}=\sum_{i=1}^{n}\left|x_{i}\right|</span>
-<span class="cm"> * \f]</span>
+<span class="cm">/** Return the 1-norm (Taxicab / Manhattan norm):</span>
+<span class="cm"> * \f$\|\boldsymbol{x}\|_{1}=\sum_{i=1}^{n}\left|x_{i}\right|\f$</span>
 <span class="cm"> */</span>
 <span class="kt">double</span><span class="w"> </span><span class="nf">L1Norm</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">);</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Returns the 2-norm. Also known as the Euclidian or Frobenius norm.</span>
-<span class="cm"> *</span>
-<span class="cm"> * \f[</span>
-<span class="cm"> * \|\boldsymbol{x}\|_{2}=\sqrt{x_{1}^{2}+\cdots+x_{n}^{2}}</span>
-<span class="cm"> * \f]</span>
+<span class="cm">/** Return the 2-norm (Euclidean / Frobenius norm):</span>
+<span class="cm"> * \f$\|\boldsymbol{x}\|_{2}=\sqrt{x_{1}^{2}+\cdots+x_{n}^{2}}\f$</span>
 <span class="cm"> */</span>
 <span class="kt">double</span><span class="w"> </span><span class="nf">L2Norm</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">);</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Returns the infinity-norm.</span>
-<span class="cm"> *</span>
-<span class="cm"> * \f[</span>
-<span class="cm"> * \|\mathbf{x}\|_{\infty}=\max \left(\left|x_{1}\right|,</span>
-<span class="cm"> * \ldots,\left|x_{n}\right|\right) \f]</span>
+<span class="cm">/** Return the infinity-norm:</span>
+<span class="cm"> * \f$\|\mathbf{x}\|_{\infty}=\max\left(\left|x_{1}\right|,\ldots,\left|x_{n}\right|\right)\f$</span>
 <span class="cm"> */</span>
 <span class="kt">double</span><span class="w"> </span><span class="nf">LInfNorm</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">);</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Returns the p-norm.</span>
-<span class="cm"> *</span>
-<span class="cm"> * \f[</span>
-<span class="cm"> * \|\mathbf{x}\|_{p}=\left(\sum_{i=1}^{n}\left|x_{i}\right|^{p}\right)^{1 / p}</span>
-<span class="cm"> * \f]</span>
+<span class="cm">/** Return the p-norm:</span>
+<span class="cm"> * \f$\|\mathbf{x}\|_{p}=\left(\sum_{i=1}^{n}\left|x_{i}\right|^{p}\right)^{1/p}\f$</span>
 <span class="cm"> */</span>
 <span class="kt">double</span><span class="w"> </span><span class="nf">LpNorm</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">);</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Computes the dot product of two vectors.</span>
-<span class="cm"> *</span>
-<span class="cm"> * \f[</span>
-<span class="cm"> * \mathrm{a} \cdot \mathrm{b}=\sum_{i=1}^{n} a_{i} b_{i}</span>
-<span class="cm"> * \f]</span>
+<span class="cm">/** Compute the dot product of two vectors:</span>
+<span class="cm"> * \f$a \cdot b=\sum_{i=1}^{n} a_{i} b_{i}\f$</span>
 <span class="cm"> */</span>
 <span class="kt">double</span><span class="w"> </span><span class="nf">Dot</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
 

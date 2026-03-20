@@ -23,8 +23,6 @@
       <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -167,6 +165,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ae3c19e76a3093fc6b02efdd9c3e32f23.html">Function opensn::InitMatrixSparsity(Mat&amp;, int64_t, int64_t)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a18b5e25b2eb4c7f42b6018278d5073dc.html">Template Function opensn::Inverse</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a95d6f66ba869623b59a1a1b78148d94f.html">Template Function opensn::InverseGEPivoting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aba39c6729aaf37d65540f18f2ee63fcc.html">Function opensn::InvertMatrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ac7c0232212b4c28d47595e8520281d22.html">Function opensn::IsNonNegative</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1a389594753619fc6b1d544485f4f3c5.html">Function opensn::IsPositive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1a772889c5ca897ef33121c36b8ebfd4.html">Function opensn::KEigenKSPMonitor</a></li>
@@ -196,6 +195,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a82d9ea81b6e836be4901504d07e88ee0.html">Function opensn::operator-</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a482b5ac75802192e834d71531adea8c3.html">Function opensn::operator|(SourceFlags, SourceFlags)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195.html">Function opensn::operator|(SourceType, SourceType)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a9c06eab1eaeb4f37a44d6a2165710292.html">Function opensn::OrthogonalizeMatrixSpan</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a073c22c5a84f641da97dabf6ee200eb6.html">Function opensn::PackGroupsetXS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a6c9b162528be69b3b3ef1bdc01ee0136.html">Function opensn::ParameterBlockTypeName</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a22094640b32abe9b9b936991c578aef9.html">Function opensn::PopulateRaySegmentLengths</a></li>
@@ -236,7 +236,8 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1af5d0740a6b08cd24f6f67db3c5eeb06c.html">Function opensn::ToString(CoordinateSystemType)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610.html">Function opensn::ToString(MeshType)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572.html">Function opensn::TranslateBCs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a011ab6fa829baf57968f74b833b3fed0.html">Template Function opensn::Transpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a011ab6fa829baf57968f74b833b3fed0.html">Template Function opensn::Transpose(const DenseMatrix&lt;TYPE&gt;&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3f3074c6aeadd445ee556459fdc31564.html">Function opensn::Transpose(const std::vector&lt;std::vector&lt;double&gt;&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a6c0ed6c651dd58f8d684435e40c94d95.html">Function opensn::UploadCellGeometryContinuous</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a13660551805fab66499262e589e2df32.html">Function opensn::UploadCellGeometryDiscontinuous</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a4e053d3f1e0ca26faa917f2bae7f283b.html">Function opensn::UploadFaceGeometry</a></li>
@@ -304,28 +305,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn9SampleCDFEdNSt6vectorIdEE">
 <span class="target" id="namespaceopensn_1a66d063a5930d52b5e36dfb7571799817"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">SampleCDF</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cdf_bin</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9SampleCDFEdNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
 <dd><p>Sample a Cumulative Distribution Function (CDF) given a probability. </p>
-<p>The supplied vector should contain the upper bin boundary for each bin and will return the bin associated with the bin that brackets the supplied probability.</p>
-<p>Example: Suppose we sample bins 0-9. Suppose also that the probalities for each bin is as follows:<ul class="simple">
-<li><p>0.1 bin 0</p></li>
-<li><p>0.1 bin 1</p></li>
-<li><p>0.5 bin 5</p></li>
-<li><p>0.3 bin 8</p></li>
-</ul>
-</p>
-<p>The CDF for this probability distribution will look like this<ul class="simple">
-<li><p>bin 0 = 0.1</p></li>
-<li><p>bin 1 = 0.2</p></li>
-<li><p>bin 2 = 0.2</p></li>
-<li><p>bin 3 = 0.2</p></li>
-<li><p>bin 4 = 0.2</p></li>
-<li><p>bin 5 = 0.7</p></li>
-<li><p>bin 6 = 0.7</p></li>
-<li><p>bin 7 = 0.7</p></li>
-<li><p>bin 8 = 1.0</p></li>
-<li><p>bin 9 = 1.0</p></li>
-</ul>
-</p>
-<p>Supplying a random number between 0 and 1 should indicate sampling one of the bins 0,1,5 or 8. The most inefficient way to do this is to linearly loop through the cdf and check <span class="math notranslate nohighlight">\( cdf_{i-1} \ge \theta &lt; cdf_i \)</span>. An optimized version of this sampling would be to perform a recursive block search which starts with a course view of the cdf and then gradually refines the view until the final linear search can be performed. </p>
+<p>The supplied vector should contain the upper bin boundary for each bin and will return the bin associated with the bin that brackets the supplied probability. </p>
 </dd></dl>
 
 </section>

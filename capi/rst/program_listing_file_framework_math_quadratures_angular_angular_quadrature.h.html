@@ -107,6 +107,14 @@
 <span class="w">  </span><span class="n">TRIANGULAR_QUADRATURE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
 <span class="p">};</span>
 
+<span class="c1">/// Method used to construct the discrete-to-moment and moment-to-discrete operators.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">OperatorConstructionMethod</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">STANDARD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">      </span><span class="c1">///&lt; Standard weighted quadrature projection.</span>
+<span class="w">  </span><span class="n">GALERKIN_ONE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">  </span><span class="c1">///&lt; Galerkin method 1: D2M = (M2D)^{-1}.</span>
+<span class="w">  </span><span class="n">GALERKIN_THREE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="c1">///&lt; Galerkin method 3: orthogonalized approximate harmonics.</span>
+<span class="p">};</span>
+
 <span class="c1">/// Quadrature point in spherical coordinates.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">QuadraturePointPhiTheta</span>
 <span class="p">{</span>
@@ -140,25 +148,34 @@
 <span class="w">  </span><span class="p">};</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="p">(</span><span class="n">AngularQuadratureType</span><span class="w"> </span><span class="n">type</span><span class="p">,</span>
-<span class="w">                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span>
-<span class="w">                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">type_</span><span class="p">(</span><span class="n">type</span><span class="p">),</span><span class="w"> </span><span class="n">dimension_</span><span class="p">(</span><span class="n">dimension</span><span class="p">),</span><span class="w"> </span><span class="n">scattering_order_</span><span class="p">(</span><span class="n">scattering_order</span><span class="p">)</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="p">(</span>
+<span class="w">    </span><span class="n">AngularQuadratureType</span><span class="w"> </span><span class="n">type</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">type_</span><span class="p">(</span><span class="n">type</span><span class="p">),</span>
+<span class="w">      </span><span class="n">dimension_</span><span class="p">(</span><span class="n">dimension</span><span class="p">),</span>
+<span class="w">      </span><span class="n">scattering_order_</span><span class="p">(</span><span class="n">scattering_order</span><span class="p">),</span>
+<span class="w">      </span><span class="n">construction_method_</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Discrete-to-moment operator matrix.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">d2m_op_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">d2m_op_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="w">  </span><span class="c1">/// Moment-to-discrete operator matrix.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">m2d_op_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">m2d_op_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="w">  </span><span class="c1">/// Mapping from moment index to spherical harmonic indices.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">HarmonicIndices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_to_ell_em_map_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">HarmonicIndices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">m_to_ell_em_map_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="w">  </span><span class="c1">/// Quadrature type identifier.</span>
 <span class="w">  </span><span class="n">AngularQuadratureType</span><span class="w"> </span><span class="n">type_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Spatial dimension of the quadrature.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Maximum scattering order for moment calculations.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">construction_method_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">quadrature_order_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n_polar_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n_azimuthal_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Populate the map of moment index to spherical harmonic indices.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
@@ -172,18 +189,21 @@
 <span class="w">  </span><span class="c1">/// Compute the moment-to-discrete operator.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildMomentToDiscreteOperator</span><span class="p">();</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Return a reference to the precomputed discrete-to-moment operator.</span>
-<span class="cm">   *</span>
-<span class="cm">   * The operator is accessed as [d][m], where m is the moment index and d is the direction index.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Sets the operator construction method</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOperatorConstructionMethod</span><span class="p">(</span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">construction_method_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Gets the current operator construction method</span>
+<span class="w">  </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="nf">GetOperatorConstructionMethod</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">construction_method_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Return a reference to the precomputed discrete-to-moment operator.</span>
+<span class="w">  </span><span class="c1">/// The operator is accessed as [d][m], where d is the direction index and m is the moment index.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Return a reference to the precomputed moment-to-discrete operator.</span>
-<span class="cm">   *</span>
-<span class="cm">   * The operator is accessed as [d][m], where m is the moment index and d is the direction index.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Return a reference to the precomputed moment-to-discrete operator.</span>
+<span class="w">  </span><span class="c1">/// The operator is accessed as [d][m], where d is the direction index and m is the moment index.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Return a reference to the precomputed harmonic index map.</span>
@@ -197,12 +217,22 @@
 
 <span class="w">  </span><span class="n">AngularQuadratureType</span><span class="w"> </span><span class="nf">GetType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">type_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
+<span class="w">  </span><span class="c1">/// Set the quadrature-specific order parameter.</span>
+<span class="w">  </span><span class="c1">/// For Lebedev: Lebedev order {3, 5, 7, ...}; for SLDFESQ: uniform refinement level.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetQuadratureOrder</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">order</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">quadrature_order_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Set the number of positive-mu polar points (product quadrature types).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetNumberOfPolar</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_polar</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">n_polar_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_polar</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Set the total number of azimuthal points (product quadrature types).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetNumberOfAzimuthal</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_azimu</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">n_azimuthal_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_azimu</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="w">  </span><span class="c1">/// Quadrature point abscissae in spherical coordinates.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">QuadraturePointPhiTheta</span><span class="o">&gt;</span><span class="w"> </span><span class="n">abscissae</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">QuadraturePointPhiTheta</span><span class="o">&gt;</span><span class="w"> </span><span class="n">abscissae</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="w">  </span><span class="c1">/// Quadrature weights.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">weights</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="w">  </span><span class="c1">/// Quadrature point direction vectors in Cartesian coordinates.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">omegas</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">omegas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

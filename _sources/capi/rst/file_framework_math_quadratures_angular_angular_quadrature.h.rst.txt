@@ -44,6 +44,8 @@ Included By
 
 - :ref:`file_framework_math_math.h`
 
+- :ref:`file_framework_math_quadratures_angular_harmonic_selection_rules.h`
+
 - :ref:`file_framework_math_quadratures_angular_lebedev_quadrature.h`
 
 - :ref:`file_framework_math_quadratures_angular_product_quadrature.h`
@@ -82,4 +84,6 @@ Enums
 
 
 - :ref:`exhale_enum_namespaceopensn_1af16122b4c89e5fd31115feebfe4c0239`
+
+- :ref:`exhale_enum_namespaceopensn_1af374fa8b10c3bc4ed30bc997c1ee2327`
 

@@ -1,0 +1,69 @@
+
+.. _file_framework_math_quadratures_angular_harmonic_selection_rules_emperical.h:
+
+File harmonic_selection_rules_emperical.h
+=========================================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_math_quadratures_angular>` (``framework/math/quadratures/angular``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/math/quadratures/angular/harmonic_selection_rules_emperical.h``)
+----------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_math_quadratures_angular_harmonic_selection_rules_emperical.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_opensn__EmpiricalHarmonicRules`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_empirical_harmonic_rules_1_1_harmonic_set`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1ae40bf781e5a3f34b41ade1744eee8f06`
+
+- :ref:`exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1a6bd86005ac41eb425fc5e3fff217b649`
+
+- :ref:`exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1aa2fdbf6ed2dd7238fff1b341cd70b953`
+
+- :ref:`exhale_variable_namespaceopensn_1_1_empirical_harmonic_rules_1af0d3002f4a9c217ec82fe62d12d4fece`
+

@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_empirical_harmonic_rules_1_1_harmonic_set:
+
+Struct HarmonicSet
+==================
+
+- Defined in :ref:`file_framework_math_quadratures_angular_harmonic_selection_rules_emperical.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::EmpiricalHarmonicRules::HarmonicSet
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

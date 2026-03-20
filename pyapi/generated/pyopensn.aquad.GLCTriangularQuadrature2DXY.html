@@ -121,6 +121,23 @@
 <p>Only includes points in the upper hemisphere (z &gt;= 0).</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_g_l_c_triangular_quadrature2_d_x_y.html#_CPPv4N6opensn27GLCTriangularQuadrature2DXYE" title="opensn::GLCTriangularQuadrature2DXY"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::GLCTriangularQuadrature2DXY</span></code></a>.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.aquad.GLCTriangularQuadrature2DXY.GetDiscreteToMomentOperator">
+<span class="sig-name descname"><span class="pre">GetDiscreteToMomentOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature" title="pyopensn.aquad.AngularQuadrature"><span class="pre">pyopensn.aquad.AngularQuadrature</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.aquad.GLCTriangularQuadrature2DXY.GetDiscreteToMomentOperator" title="Link to this definition"></a></dt>
+<dd><p>Get the discrete-to-moment operator as a numpy array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.aquad.GLCTriangularQuadrature2DXY.GetMomentToDiscreteOperator">
+<span class="sig-name descname"><span class="pre">GetMomentToDiscreteOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature" title="pyopensn.aquad.AngularQuadrature"><span class="pre">pyopensn.aquad.AngularQuadrature</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.aquad.GLCTriangularQuadrature2DXY.GetMomentToDiscreteOperator" title="Link to this definition"></a></dt>
+<dd><p>Get the moment-to-discrete operator as a numpy array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.aquad.GLCTriangularQuadrature2DXY.GetMomentToHarmonicsIndexMap">
+<span class="sig-name descname"><span class="pre">GetMomentToHarmonicsIndexMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature" title="pyopensn.aquad.AngularQuadrature"><span class="pre">pyopensn.aquad.AngularQuadrature</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">pyopensn.aquad.HarmonicIndices</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.aquad.GLCTriangularQuadrature2DXY.GetMomentToHarmonicsIndexMap" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.aquad.GLCTriangularQuadrature2DXY.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.aquad.GLCTriangularQuadrature2DXY" title="pyopensn.aquad.GLCTriangularQuadrature2DXY"><span class="pre">pyopensn.aquad.GLCTriangularQuadrature2DXY</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.aquad.GLCTriangularQuadrature2DXY.__init__" title="Link to this definition"></a></dt>
 <dd><p>Construct a Triangular Gauss-Legendre-Chebyshev quadrature for 2D, XY geometry.</p>
@@ -129,7 +146,10 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_polar</strong> (<em>int</em>) – Number of polar angles (only upper hemisphere will be used). The maximum
 number of azimuthal angles (at the equator) is automatically computed as 2 * n_polar.</p></li>
-<li><p><strong>scattering_order</strong> (<em>int</em>) – Maximum scattering order supported by the angular quadrature.</p></li>
+<li><p><strong>scattering_order</strong> (<em>int</em>) – Maximum scattering order supported by the angular quadrature.
+Optional when <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>, in which case the scattering order
+is automatically determined so that the number of moments equals the number of angles.</p></li>
+<li><p><strong>operator_method</strong> (<em>{'standard'</em><em>, </em><em>'galerkin_one'</em><em>, </em><em>'galerkin_three'}</em><em>, </em><em>default='standard'</em>) – Method used to construct the discrete-to-moment and moment-to-discrete operators.</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Verbosity.</p></li>
 </ul>
 </dd>
