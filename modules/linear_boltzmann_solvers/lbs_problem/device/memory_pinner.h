@@ -17,7 +17,7 @@ namespace opensn
  * its associated memory on GPU.
  */
 template <typename T>
-struct MemoryPinner
+class MemoryPinner
 {
 public:
   /// Constructor.
