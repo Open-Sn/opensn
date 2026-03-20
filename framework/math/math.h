@@ -43,47 +43,44 @@ enum class NormType : int
   LINF_NORM = 3
 };
 
-/**
- * Sample a Cumulative Distribution Function (CDF) given a probability.
+/**Sample a Cumulative Distribution Function (CDF) given a probability.
  *
- * The supplied vector should contain the upper bin boundary for each
- * bin and will return the bin associated with the bin that brackets
- * the supplied probability.
- *
- * Example:
- * Suppose we sample bins 0-9. Suppose also that the probalities for each
- * bin is as follows:
- * - 0.1 bin 0
- * - 0.1 bin 1
- * - 0.5 bin 5
- * - 0.3 bin 8
- *
- * The CDF for this probability distribution will look like this
- * - bin 0 = 0.1
- * - bin 1 = 0.2
- * - bin 2 = 0.2
- * - bin 3 = 0.2
- * - bin 4 = 0.2
- * - bin 5 = 0.7
- * - bin 6 = 0.7
- * - bin 7 = 0.7
- * - bin 8 = 1.0
- * - bin 9 = 1.0
- *
- * Supplying a random number between 0 and 1 should indicate sampling one
- * of the bins 0,1,5 or 8. The most inefficient way to do this is to
- * linearly loop through the cdf and check \f$ cdf_{i-1} \ge \theta < cdf_i \f$.
- *  An optimized version of this sampling would be to perform a recursive
- *  block search which starts with a course view of the cdf and then gradually
- *  refines the view until the final linear search can be performed.*/
+ * The supplied vector should contain the upper bin boundary for each bin and will return
+ * the bin associated with the bin that brackets the supplied probability.
+ */
 int SampleCDF(double x, std::vector<double> cdf_bin);
+
+/** Return the transpose of a matrix.
+ *
+ * For an m x n input A, returns an n x m matrix T where T[j][i] = A[i][j].
+ * \throws std::runtime_error if the matrix is empty or has inconsistent row sizes.
+ */
+std::vector<std::vector<double>> Transpose(const std::vector<std::vector<double>>& matrix);
+
+/** Invert a square matrix using SVD-based pseudo-inversion (LAPACK dgesvd).
+ *
+ * Singular values below machine-epsilon * n * sigma_max are treated as zero.
+ * Emits a warning if the condition number exceeds 1e10.
+ * \throws std::runtime_error if the matrix is empty, non-square, or SVD fails.
+ */
+std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<double>>& matrix);
+
+/** Orthogonalize the columns of a matrix under a weighted inner product.
+ *
+ * Applies double-pass modified Gram-Schmidt and normalizes each column so that
+ * \f$\langle q_i, q_j \rangle_w = \delta_{ij}\f$.  Columns whose weighted norm
+ * falls below 1e-14 are left as zero vectors (linearly dependent directions).
+ * \throws std::runtime_error if the matrix is empty or has inconsistent row sizes.
+ */
+std::vector<std::vector<double>>
+OrthogonalizeMatrixSpan(const std::vector<std::vector<double>>& matrix,
+                        const std::vector<double>& weights);
 
 /// Computes the factorial of an integer.
 double Factorial(int x);
 
-/**
- * Determines the azimuthal- and polar-angle associated with the given direction vector.
- * Returns a pair = [azimuthal-angle,polar-angle].
+/** Return the azimuthal and polar angles for the given direction vector as a pair
+ * [azimuthal-angle, polar-angle].
  */
 std::pair<double, double> OmegaToPhiThetaSafe(const Vector3& omega);
 
@@ -99,48 +96,28 @@ void Set(std::vector<double>& x, const double& val);
 /// Multiplies the vector with a constant and returns result.
 std::vector<double> Mult(const std::vector<double>& x, const double& val);
 
-/**
- * Returns the 1-norm. Also known as the Taxicab or Manhattan norm.
- *
- * \f[
- * \|\boldsymbol{x}\|_{1}=\sum_{i=1}^{n}\left|x_{i}\right|
- * \f]
+/** Return the 1-norm (Taxicab / Manhattan norm):
+ * \f$\|\boldsymbol{x}\|_{1}=\sum_{i=1}^{n}\left|x_{i}\right|\f$
  */
 double L1Norm(const std::vector<double>& x);
 
-/**
- * Returns the 2-norm. Also known as the Euclidian or Frobenius norm.
- *
- * \f[
- * \|\boldsymbol{x}\|_{2}=\sqrt{x_{1}^{2}+\cdots+x_{n}^{2}}
- * \f]
+/** Return the 2-norm (Euclidean / Frobenius norm):
+ * \f$\|\boldsymbol{x}\|_{2}=\sqrt{x_{1}^{2}+\cdots+x_{n}^{2}}\f$
  */
 double L2Norm(const std::vector<double>& x);
 
-/**
- * Returns the infinity-norm.
- *
- * \f[
- * \|\mathbf{x}\|_{\infty}=\max \left(\left|x_{1}\right|,
- * \ldots,\left|x_{n}\right|\right) \f]
+/** Return the infinity-norm:
+ * \f$\|\mathbf{x}\|_{\infty}=\max\left(\left|x_{1}\right|,\ldots,\left|x_{n}\right|\right)\f$
  */
 double LInfNorm(const std::vector<double>& x);
 
-/**
- * Returns the p-norm.
- *
- * \f[
- * \|\mathbf{x}\|_{p}=\left(\sum_{i=1}^{n}\left|x_{i}\right|^{p}\right)^{1 / p}
- * \f]
+/** Return the p-norm:
+ * \f$\|\mathbf{x}\|_{p}=\left(\sum_{i=1}^{n}\left|x_{i}\right|^{p}\right)^{1/p}\f$
  */
 double LpNorm(const std::vector<double>& x, const double& p);
 
-/**
- * Computes the dot product of two vectors.
- *
- * \f[
- * \mathrm{a} \cdot \mathrm{b}=\sum_{i=1}^{n} a_{i} b_{i}
- * \f]
+/** Compute the dot product of two vectors:
+ * \f$a \cdot b=\sum_{i=1}^{n} a_{i} b_{i}\f$
  */
 double Dot(const std::vector<double>& x, const std::vector<double>& y);
 
