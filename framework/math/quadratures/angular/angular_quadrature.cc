@@ -8,6 +8,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <iomanip>
+#include <algorithm>
 #include <numeric>
 #include <stdexcept>
 #include <cmath>
@@ -109,8 +110,8 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
   {
     case OperatorConstructionMethod::STANDARD:
     {
-      d2m_op_.clear();
-      d2m_op_.assign(num_angles, std::vector<double>(num_moms, 0.0));
+      d2m_op_.resize({num_angles, num_moms});
+      std::fill(d2m_op_.begin(), d2m_op_.end(), 0.0);
 
       for (size_t n = 0; n < num_angles; ++n)
       {
@@ -121,7 +122,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         {
           const auto& ell_em = m_to_ell_em_map_[m];
           auto value = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-          d2m_op_[n][m] = value * w;
+          d2m_op_(n, m) = value * w;
         }
       }
 
@@ -133,7 +134,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         outs << std::setw(5) << n;
         for (size_t m = 0; m < num_moms; ++m)
         {
-          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[n][m]
+          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_(n, m)
                << " ";
         }
         outs << "\n";
@@ -179,10 +180,8 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
 
     case OperatorConstructionMethod::GALERKIN_THREE:
     {
-      d2m_op_.clear();
-
       // Build matrix of exact spherical harmonic values
-      std::vector<std::vector<double>> exact_harmonics(num_angles, std::vector<double>(num_moms));
+      NDArray<double, 2> exact_harmonics({num_angles, num_moms}, 0.0);
 
       for (size_t m = 0; m < num_moms; ++m)
       {
@@ -190,13 +189,12 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         for (size_t n = 0; n < num_angles; ++n)
         {
           const auto& cur_angle = abscissae[n];
-          exact_harmonics[n][m] = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+          exact_harmonics(n, m) = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
         }
       }
 
       // Orthogonalize Matrix Span
-      std::vector<std::vector<double>> approx_harmonics =
-        OrthogonalizeMatrixSpan(exact_harmonics, weights);
+      NDArray<double, 2> approx_harmonics = OrthogonalizeMatrixSpan(exact_harmonics, weights);
 
       // Remove zero vectors (harmonics that are linearly dependent on the quadrature set).
       // This happens when no Galerkin rule exists and standard moments are used — some
@@ -209,7 +207,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         {
           double norm_sq = 0.0;
           for (size_t n = 0; n < num_angles; ++n)
-            norm_sq += weights[n] * approx_harmonics[n][m] * approx_harmonics[n][m];
+            norm_sq += weights[n] * approx_harmonics(n, m) * approx_harmonics(n, m);
           if (std::sqrt(norm_sq) > zero_tol)
             valid_cols.push_back(m);
         }
@@ -221,13 +219,12 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
                     << " zero vector(s) from orthogonalized harmonic set.";
 
           std::vector<HarmonicIndices> new_map;
-          std::vector<std::vector<double>> new_harmonics(num_angles,
-                                                         std::vector<double>(valid_cols.size()));
+          NDArray<double, 2> new_harmonics({num_angles, valid_cols.size()}, 0.0);
           for (size_t i = 0; i < valid_cols.size(); ++i)
           {
             new_map.push_back(m_to_ell_em_map_[valid_cols[i]]);
             for (size_t n = 0; n < num_angles; ++n)
-              new_harmonics[n][i] = approx_harmonics[n][valid_cols[i]];
+              new_harmonics(n, i) = approx_harmonics(n, valid_cols[i]);
           }
           m_to_ell_em_map_ = std::move(new_map);
           approx_harmonics = std::move(new_harmonics);
@@ -241,7 +238,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         double norm_squared = 0.0;
         for (size_t n = 0; n < num_angles; ++n)
         {
-          norm_squared += approx_harmonics[n][m] * approx_harmonics[n][m] * weights[n];
+          norm_squared += approx_harmonics(n, m) * approx_harmonics(n, m) * weights[n];
         }
 
         // The desired normalization for spherical harmonics is 1/(2*ell+1)
@@ -254,23 +251,17 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         // Apply scaling
         for (size_t n = 0; n < num_angles; ++n)
         {
-          approx_harmonics[n][m] *= scale;
+          approx_harmonics(n, m) *= scale;
         }
       }
 
-      // Build D2M operator using approximate harmonics
-      for (size_t m = 0; m < m_to_ell_em_map_.size(); ++m)
-      {
-        std::vector<double> cur_mom(num_angles);
-        for (size_t n = 0; n < num_angles; ++n)
-        {
-          cur_mom[n] = approx_harmonics[n][m] * weights[n];
-        }
-        d2m_op_.push_back(cur_mom);
-      }
-
-      // OpenSn stores the TRANSPOSE of the D2M Matrix, rather than it directly
-      d2m_op_ = Transpose(d2m_op_);
+      // Build D2M operator using approximate harmonics.
+      // OpenSn storage is indexed [angle][moment].
+      d2m_op_.resize({num_angles, m_to_ell_em_map_.size()});
+      std::fill(d2m_op_.begin(), d2m_op_.end(), 0.0);
+      for (size_t n = 0; n < num_angles; ++n)
+        for (size_t m = 0; m < m_to_ell_em_map_.size(); ++m)
+          d2m_op_(n, m) = approx_harmonics(n, m) * weights[n];
 
       // Verbose printout
       std::stringstream outs;
@@ -280,7 +271,7 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
         outs << std::setw(5) << n;
         for (size_t m = 0; m < m_to_ell_em_map_.size(); ++m)
         {
-          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_[n][m]
+          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << d2m_op_(n, m)
                << " ";
         }
         outs << "\n";
@@ -304,8 +295,8 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
     case OperatorConstructionMethod::GALERKIN_ONE:
     {
       // Both STANDARD and GALERKIN_ONE use the same M2D construction
-      m2d_op_.clear();
-      m2d_op_.assign(num_angles, std::vector<double>(num_moms, 0.0));
+      m2d_op_.resize({num_angles, num_moms});
+      std::fill(m2d_op_.begin(), m2d_op_.end(), 0.0);
 
       const auto normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
 
@@ -317,7 +308,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
           const auto& cur_angle = abscissae[n];
           double value = ((2.0 * ell_em.ell + 1.0) / normalization) *
                          Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
-          m2d_op_[n][m] = value;
+          m2d_op_(n, m) = value;
         }
       }
 
@@ -329,7 +320,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
         outs << std::setw(5) << n;
         for (size_t m = 0; m < num_moms; ++m)
         {
-          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[n][m]
+          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_(n, m)
                << " ";
         }
         outs << "\n";
@@ -341,10 +332,8 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
 
     case OperatorConstructionMethod::GALERKIN_THREE:
     {
-      m2d_op_.clear();
-
       // Build matrix of exact spherical harmonic values
-      std::vector<std::vector<double>> exact_harmonics(num_angles, std::vector<double>(num_moms));
+      NDArray<double, 2> exact_harmonics({num_angles, num_moms}, 0.0);
 
       for (size_t m = 0; m < num_moms; ++m)
       {
@@ -352,13 +341,12 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
         for (size_t n = 0; n < num_angles; ++n)
         {
           const auto& cur_angle = abscissae[n];
-          exact_harmonics[n][m] = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
+          exact_harmonics(n, m) = Ylm(ell_em.ell, ell_em.m, cur_angle.phi, cur_angle.theta);
         }
       }
 
       // Orthogonalize
-      std::vector<std::vector<double>> approx_harmonics =
-        OrthogonalizeMatrixSpan(exact_harmonics, weights);
+      NDArray<double, 2> approx_harmonics = OrthogonalizeMatrixSpan(exact_harmonics, weights);
 
       // Remove zero vectors (harmonics that are linearly dependent on the quadrature set).
       // This happens when no Galerkin rule exists and standard moments are used — some
@@ -371,7 +359,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
         {
           double norm_sq = 0.0;
           for (size_t n = 0; n < num_angles; ++n)
-            norm_sq += weights[n] * approx_harmonics[n][m] * approx_harmonics[n][m];
+            norm_sq += weights[n] * approx_harmonics(n, m) * approx_harmonics(n, m);
           if (std::sqrt(norm_sq) > zero_tol)
             valid_cols.push_back(m);
         }
@@ -383,13 +371,12 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
                     << " zero vector(s) from orthogonalized harmonic set.";
 
           std::vector<HarmonicIndices> new_map;
-          std::vector<std::vector<double>> new_harmonics(num_angles,
-                                                         std::vector<double>(valid_cols.size()));
+          NDArray<double, 2> new_harmonics({num_angles, valid_cols.size()}, 0.0);
           for (size_t i = 0; i < valid_cols.size(); ++i)
           {
             new_map.push_back(m_to_ell_em_map_[valid_cols[i]]);
             for (size_t n = 0; n < num_angles; ++n)
-              new_harmonics[n][i] = approx_harmonics[n][valid_cols[i]];
+              new_harmonics(n, i) = approx_harmonics(n, valid_cols[i]);
           }
           m_to_ell_em_map_ = std::move(new_map);
           approx_harmonics = std::move(new_harmonics);
@@ -403,7 +390,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
         double norm_squared = 0.0;
         for (size_t n = 0; n < num_angles; ++n)
         {
-          norm_squared += approx_harmonics[n][m] * approx_harmonics[n][m] * weights[n];
+          norm_squared += approx_harmonics(n, m) * approx_harmonics(n, m) * weights[n];
         }
 
         // The desired normalization for spherical harmonics is 1/(2*ell+1)
@@ -413,24 +400,21 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
 
         for (size_t n = 0; n < num_angles; ++n)
         {
-          approx_harmonics[n][m] *= scale;
+          approx_harmonics(n, m) *= scale;
         }
       }
 
       // Build M2D operator using approximate harmonics
       const auto normalization = std::accumulate(weights.begin(), weights.end(), 0.0);
-
+      m2d_op_.resize({num_angles, m_to_ell_em_map_.size()});
+      std::fill(m2d_op_.begin(), m2d_op_.end(), 0.0);
       for (size_t n = 0; n < num_angles; ++n)
       {
-        std::vector<double> cur_row(m_to_ell_em_map_.size());
-
         for (size_t m = 0; m < m_to_ell_em_map_.size(); ++m)
         {
           const auto& ell_em = m_to_ell_em_map_[m];
-          cur_row[m] = ((2.0 * ell_em.ell + 1.0) / normalization) * approx_harmonics[n][m];
+          m2d_op_(n, m) = ((2.0 * ell_em.ell + 1.0) / normalization) * approx_harmonics(n, m);
         }
-
-        m2d_op_.push_back(cur_row);
       }
 
       // Verbose printout
@@ -441,7 +425,7 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
         outs << std::setw(5) << n;
         for (size_t m = 0; m < m_to_ell_em_map_.size(); ++m)
         {
-          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_[n][m]
+          outs << std::setw(15) << std::left << std::fixed << std::setprecision(10) << m2d_op_(n, m)
                << " ";
         }
         outs << "\n";
@@ -453,13 +437,13 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
   }
 }
 
-std::vector<std::vector<double>> const&
+NDArray<double, 2> const&
 AngularQuadrature::GetDiscreteToMomentOperator() const
 {
   return d2m_op_;
 }
 
-std::vector<std::vector<double>> const&
+NDArray<double, 2> const&
 AngularQuadrature::GetMomentToDiscreteOperator() const
 {
   return m2d_op_;

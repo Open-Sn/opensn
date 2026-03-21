@@ -108,7 +108,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
 
           double psi_ijk = rhs / lhs;
 
-          phi_0(i, j, k) += D2M[0][n] * psi_ijk;
+          phi_0(i, j, k) += D2M(0, n) * psi_ijk;
 
           psi_ds_x(i, j, k) = 2.0 * psi_ijk - psi_us_x;
           psi_ds_y(i, j, k) = 2.0 * psi_ijk - psi_us_y;
