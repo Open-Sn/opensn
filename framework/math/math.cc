@@ -92,6 +92,27 @@ Transpose(const std::vector<std::vector<double>>& matrix)
   return transposed;
 }
 
+NDArray<double, 2>
+Transpose(const NDArray<double, 2>& matrix)
+{
+  if (matrix.empty())
+    throw std::runtime_error("Cannot transpose empty matrix");
+
+  const auto dims = matrix.dimension();
+  if (dims.size() != 2)
+    throw std::runtime_error("Transpose requires a rank-2 matrix");
+
+  const auto m = dims[0];
+  const auto n = dims[1];
+  NDArray<double, 2> transposed({n, m}, 0.0);
+
+  for (size_t i = 0; i < m; ++i)
+    for (size_t j = 0; j < n; ++j)
+      transposed(j, i) = matrix(i, j);
+
+  return transposed;
+}
+
 std::vector<std::vector<double>>
 InvertMatrix(const std::vector<std::vector<double>>& matrix)
 {
@@ -209,6 +230,87 @@ InvertMatrix(const std::vector<std::vector<double>>& matrix)
   return inverse;
 }
 
+NDArray<double, 2>
+InvertMatrix(const NDArray<double, 2>& matrix)
+{
+  if (matrix.empty())
+    throw std::runtime_error("Matrix must not be empty for inversion");
+
+  const auto dims = matrix.dimension();
+  if (dims.size() != 2 or dims[0] != dims[1])
+    throw std::runtime_error("Matrix must be square for inversion");
+
+  const size_t n = dims[0];
+
+  std::vector<double> A_col_major(n * n);
+  std::vector<double> U(n * n);
+  std::vector<double> VT(n * n);
+  std::vector<double> S(n);
+
+  for (size_t j = 0; j < n; ++j)
+    for (size_t i = 0; i < n; ++i)
+      A_col_major[j * n + i] = matrix(i, j);
+
+  char jobu = 'A';
+  char jobvt = 'A';
+  auto n_blas = static_cast<PetscBLASInt>(n);
+  PetscBLASInt lwork = std::max(PetscBLASInt(1), 5 * n_blas);
+  std::vector<double> work(lwork);
+  PetscBLASInt info_svd = 0;
+
+  LAPACKgesvd_(&jobu,
+               &jobvt,
+               &n_blas,
+               &n_blas,
+               A_col_major.data(),
+               &n_blas,
+               S.data(),
+               U.data(),
+               &n_blas,
+               VT.data(),
+               &n_blas,
+               work.data(),
+               &lwork,
+               &info_svd);
+
+  if (info_svd != 0)
+    throw std::runtime_error("SVD decomposition failed with LAPACK error code: " +
+                             std::to_string(info_svd));
+
+  const double sigma_max = S[0];
+  const double sigma_min = S[n - 1];
+  const double machine_eps = std::numeric_limits<double>::epsilon();
+  const double tol = static_cast<double>(n) * machine_eps * sigma_max;
+
+  const double condition_number = (sigma_min > tol) ? (sigma_max / sigma_min) : INFINITY;
+  if (condition_number > 1.0e10)
+  {
+    log.Log0Warning() << "InvertMatrix: Matrix is ill-conditioned (condition number = "
+                      << std::scientific << std::setprecision(3) << condition_number << ")";
+  }
+
+  NDArray<double, 2> inverse({static_cast<size_t>(n), static_cast<size_t>(n)}, 0.0);
+  for (size_t i = 0; i < n; ++i)
+  {
+    for (size_t j = 0; j < n; ++j)
+    {
+      double sum = 0.0;
+      for (size_t k = 0; k < n; ++k)
+      {
+        if (S[k] > tol)
+        {
+          const double v_ik = VT[k + i * n];
+          const double u_jk = U[j + k * n];
+          sum += v_ik * (1.0 / S[k]) * u_jk;
+        }
+      }
+      inverse(i, j) = sum;
+    }
+  }
+
+  return inverse;
+}
+
 std::vector<std::vector<double>>
 OrthogonalizeMatrixSpan(const std::vector<std::vector<double>>& matrix,
                         const std::vector<double>& weights)
@@ -274,6 +376,51 @@ OrthogonalizeMatrixSpan(const std::vector<std::vector<double>>& matrix,
       }
     }
   }
+  return Q;
+}
+
+NDArray<double, 2>
+OrthogonalizeMatrixSpan(const NDArray<double, 2>& matrix, const std::vector<double>& weights)
+{
+  if (matrix.empty())
+    throw std::runtime_error("Cannot orthogonalize empty matrix");
+
+  const auto dims = matrix.dimension();
+  if (dims.size() != 2)
+    throw std::runtime_error("OrthogonalizeMatrixSpan requires a rank-2 matrix");
+
+  const size_t m = dims[0];
+  const size_t n = dims[1];
+  if (weights.size() != m)
+    throw std::runtime_error("OrthogonalizeMatrixSpan weight size mismatch");
+
+  NDArray<double, 2> Q(matrix);
+
+  for (size_t j = 0; j < n; ++j)
+  {
+    for (int pass = 0; pass < 2; ++pass)
+    {
+      for (size_t i = 0; i < j; ++i)
+      {
+        double dot_product = 0.0;
+        for (size_t row = 0; row < m; ++row)
+          dot_product += weights[row] * Q(row, i) * Q(row, j);
+
+        for (size_t row = 0; row < m; ++row)
+          Q(row, j) -= dot_product * Q(row, i);
+      }
+    }
+
+    double norm_squared = 0.0;
+    for (size_t row = 0; row < m; ++row)
+      norm_squared += weights[row] * Q(row, j) * Q(row, j);
+    const double norm = std::sqrt(norm_squared);
+
+    if (norm > 1e-14)
+      for (size_t row = 0; row < m; ++row)
+        Q(row, j) /= norm;
+  }
+
   return Q;
 }
 

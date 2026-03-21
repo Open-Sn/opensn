@@ -10,6 +10,7 @@
 #include "framework/math/quadratures/angular/lebedev_quadrature.h"
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 
@@ -115,24 +116,22 @@ WrapQuadrature(py::module& aquad)
       if (op.empty()) {
         return py::array_t<double>();
       }
-      
-      size_t num_rows = op.size();
-      size_t num_cols = op[0].size();
-      
+
+      const auto dims = op.dimension();
+      const auto num_rows = dims[0];
+      const auto num_cols = dims[1];
+
       // Create numpy array with shape [num_rows, num_cols]
       py::array_t<double> result = py::array_t<double>(
         {num_rows, num_cols},  // shape
         {sizeof(double) * num_cols, sizeof(double)}  // strides (row-major)
       );
-      
+
       py::buffer_info buf = result.request();
       auto* ptr = static_cast<double*>(buf.ptr);
-      
-      // Copy data row by row
-      for (size_t i = 0; i < num_rows; ++i) {
-        std::copy(op[i].begin(), op[i].end(), ptr + i * num_cols);
-      }
-      
+
+      std::copy_n(op.data(), op.size(), ptr);
+
       return result;
     },
     "Get the discrete-to-moment operator as a numpy array."
@@ -144,24 +143,22 @@ WrapQuadrature(py::module& aquad)
       if (op.empty()) {
         return py::array_t<double>();
       }
-      
-      size_t num_rows = op.size();
-      size_t num_cols = op[0].size();
-      
+
+      const auto dims = op.dimension();
+      const auto num_rows = dims[0];
+      const auto num_cols = dims[1];
+
       // Create numpy array with shape [num_rows, num_cols]
       py::array_t<double> result = py::array_t<double>(
         {num_rows, num_cols},  // shape
         {sizeof(double) * num_cols, sizeof(double)}  // strides (row-major)
       );
-      
+
       py::buffer_info buf = result.request();
       auto* ptr = static_cast<double*>(buf.ptr);
-      
-      // Copy data row by row
-      for (size_t i = 0; i < num_rows; ++i) {
-        std::copy(op[i].begin(), op[i].end(), ptr + i * num_cols);
-      }
-      
+
+      std::copy_n(op.data(), op.size(), ptr);
+
       return result;
     },
     "Get the moment-to-discrete operator as a numpy array."

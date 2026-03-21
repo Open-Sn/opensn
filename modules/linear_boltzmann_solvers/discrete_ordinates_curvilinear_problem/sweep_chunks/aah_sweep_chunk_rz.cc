@@ -216,6 +216,11 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
         } // for face node i
       } // for f
 
+      const size_t row_offset =
+        static_cast<size_t>(direction_num) * static_cast<size_t>(num_moments_);
+      const double* m2d_row = m2d_op.data() + row_offset;
+      const double* d2m_row = d2m_op.data() + row_offset;
+
       // Looping over groups, assembling mass terms
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
       {
@@ -228,7 +233,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
           for (unsigned int m = 0; m < num_moments_; ++m)
           {
             const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-            temp_src += m2d_op[direction_num][m] * source_moments_[ir];
+            temp_src += m2d_row[m] * source_moments_[ir];
           }
           source[i] = temp_src;
         }
@@ -255,7 +260,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       // Update phi
       for (unsigned int m = 0; m < num_moments_; ++m)
       {
-        const double wn_d2m = d2m_op[direction_num][m];
+        const double wn_d2m = d2m_row[m];
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const auto ir = cell_transport_view.MapDOF(i, m, gs_gi);

@@ -166,6 +166,11 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
       } // for face node i
     } // for f
 
+    const auto dir_moment_offset =
+      static_cast<std::size_t>(direction_num) * static_cast<std::size_t>(num_moments_);
+    const double* m2d_row = m2d_op.data() + dir_moment_offset;
+    const double* d2m_row = d2m_op.data() + dir_moment_offset;
+
     // Looping over groups, assembling mass terms
     for (unsigned int gsg = 0; gsg < gs_size_; ++gsg)
     {
@@ -178,7 +183,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
         for (unsigned int m = 0; m < num_moments_; ++m)
         {
           const auto ir = cell_transport_view_->MapDOF(i, m, gs_gi_ + gsg);
-          temp_src += m2d_op[direction_num][m] * source_moments_[ir];
+          temp_src += m2d_row[m] * source_moments_[ir];
         }
         source[i] = temp_src;
       }
@@ -205,7 +210,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
     // Update phi
     for (unsigned int m = 0; m < num_moments_; ++m)
     {
-      const double wn_d2m = d2m_op[direction_num][m];
+      const auto wn_d2m = d2m_row[m];
       for (size_t i = 0; i < cell_num_nodes_; ++i)
       {
         const auto ir = cell_transport_view_->MapDOF(i, m, gs_gi_);
