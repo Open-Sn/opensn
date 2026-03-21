@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <new>
 #include <semaphore>
 #include <thread>
 #include <vector>
@@ -15,8 +16,15 @@
 namespace opensn
 {
 
+constexpr std::size_t HardwareInterferenceSize =
+#ifdef __cpp_lib_hardware_interference_size
+  std::hardware_destructive_interference_size;
+#else
+  64;
+#endif
+
 /// State of a worker thread in the current epoch.
-struct alignas(std::hardware_destructive_interference_size) EpochState
+struct alignas(HardwareInterferenceSize) EpochState
 {
   /// Number of epochs requested for this worker.
   std::size_t request;
