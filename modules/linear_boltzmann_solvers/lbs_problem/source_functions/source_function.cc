@@ -33,8 +33,6 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   apply_ags_fission_src_ = (source_flags & APPLY_AGS_FISSION_SOURCES);
   suppress_wg_scatter_src_ = (source_flags & SUPPRESS_WG_SCATTER);
 
-  const auto& densities = lbs_problem_.GetDensitiesLocal();
-
   // Get group setup
   gs_i_ = groupset.first_group;
   gs_f_ = groupset.last_group;
@@ -55,7 +53,6 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& grid = lbs_problem_.GetGrid();
   for (const auto& cell : grid->local_cells)
   {
-    const auto& rho = densities[cell.local_id];
     const auto& transport_view = cell_transport_views[cell.local_id];
     cell_volume_ = transport_view.GetVolume();
 
@@ -103,7 +100,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
             if (apply_ags_scatter_src_)
               for (const auto& [_, gp, sigma_sm] : S_ell.Row(g))
                 if (gp < gs_i_ or gp > gs_f_)
-                  rhs += rho * sigma_sm * phi_im[gp];
+                  rhs += sigma_sm * phi_im[gp];
 
             // Add Within GroupSet Scattering (WGS)
             if (apply_wgs_scatter_src_)
@@ -112,7 +109,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                 {
                   if (suppress_wg_scatter_src_ and g_ == gp)
                     continue;
-                  rhs += rho * sigma_sm * phi_im[gp];
+                  rhs += sigma_sm * phi_im[gp];
                 }
           }
 
@@ -123,14 +120,14 @@ SourceFunction::operator()(const LBSGroupset& groupset,
             if (apply_ags_fission_src_)
               for (size_t gp = first_grp_; gp <= last_grp_; ++gp)
                 if (gp < gs_i_ or gp > gs_f_)
-                  rhs += rho * F_g[gp] * phi_im[gp];
+                  rhs += F_g[gp] * phi_im[gp];
 
             if (apply_wgs_fission_src_)
               for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
-                rhs += rho * F_g[gp] * phi_im[gp];
+                rhs += F_g[gp] * phi_im[gp];
 
             if (lbs_problem_.GetOptions().use_precursors)
-              rhs += DelayedFission(precursors, rho, nu_delayed_sigma_f, &phi[uk_map]);
+              rhs += DelayedFission(precursors, nu_delayed_sigma_f, &phi[uk_map]);
           }
 
           // Add to destination vector
@@ -152,7 +149,6 @@ SourceFunction::FixedSourceMoments() const
 
 double
 SourceFunction::DelayedFission(const PrecursorList& precursors,
-                               const double& rho,
                                const std::vector<double>& nu_delayed_sigma_f,
                                const double* phi) const
 {
@@ -161,13 +157,13 @@ SourceFunction::DelayedFission(const PrecursorList& precursors,
     for (auto gp = first_grp_; gp <= last_grp_; ++gp)
       if (gp < gs_i_ or gp > gs_f_)
         for (const auto& precursor : precursors)
-          value += precursor.emission_spectrum[g_] * precursor.fractional_yield * rho *
+          value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
                    nu_delayed_sigma_f[gp] * phi[gp];
 
   if (apply_wgs_fission_src_)
     for (auto gp = gs_i_; gp <= gs_f_; ++gp)
       for (const auto& precursor : precursors)
-        value += precursor.emission_spectrum[g_] * precursor.fractional_yield * rho *
+        value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
                  nu_delayed_sigma_f[gp] * phi[gp];
 
   return value;

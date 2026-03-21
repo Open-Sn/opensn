@@ -98,7 +98,7 @@ LBSProblem::LBSProblem(const InputParameters& params)
 
   InitializeGroupsets(params);
   InitializeSources(params);
-  InitializeXSmapAndDensities(params);
+  InitializeXSMap(params);
   InitializeMaterials();
 }
 
@@ -430,18 +430,6 @@ const std::vector<double>&
 LBSProblem::GetPrecursorsNewLocal() const
 {
   return precursor_new_local_;
-}
-
-std::vector<double>&
-LBSProblem::GetDensitiesLocal()
-{
-  return densities_local_;
-}
-
-const std::vector<double>&
-LBSProblem::GetDensitiesLocal() const
-{
-  return densities_local_;
 }
 
 SetSourceFunction
@@ -871,7 +859,7 @@ LBSProblem::InitializeGroupsets(const InputParameters& params)
 }
 
 void
-LBSProblem::InitializeXSmapAndDensities(const InputParameters& params)
+LBSProblem::InitializeXSMap(const InputParameters& params)
 {
   // Build XS map
   const auto& xs_array = params.GetParam("xs_map");
@@ -889,9 +877,6 @@ LBSProblem::InitializeXSmapAndDensities(const InputParameters& params)
     for (const auto& block_id : block_ids)
       block_id_to_xs_map_[block_id] = xs;
   }
-
-  // Assign placeholder unit densities
-  densities_local_.assign(grid_->local_cells.size(), 1.0);
 }
 
 void
@@ -1541,28 +1526,6 @@ LBSProblem::ScaleExtSrcMoments(double factor)
 {
   for (auto& value : ext_src_moments_local_)
     value *= factor;
-}
-
-void
-LBSProblem::SetUniformDensities(double density)
-{
-  assert(densities_local_.size() == grid_->local_cells.size() &&
-         "Densities/local-cells size mismatch.");
-  std::fill(densities_local_.begin(), densities_local_.end(), density);
-}
-
-void
-LBSProblem::SetDensity(size_t cell_local_id, double density)
-{
-  assert(cell_local_id < densities_local_.size() && "SetDensity cell index out of range.");
-  densities_local_[cell_local_id] = density;
-}
-
-void
-LBSProblem::SetDensitiesFrom(const std::vector<double>& densities)
-{
-  assert(densities.size() == densities_local_.size() && "SetDensitiesFrom size mismatch.");
-  densities_local_ = densities;
 }
 
 void

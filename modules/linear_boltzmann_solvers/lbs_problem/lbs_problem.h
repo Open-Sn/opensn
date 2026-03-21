@@ -103,10 +103,6 @@ public:
   void ZeroPrecursors();
   void ZeroExtSrcMoments();
   void ScaleExtSrcMoments(double factor);
-  void SetUniformDensities(double density);
-  void SetDensity(size_t cell_local_id, double density);
-  void SetDensitiesFrom(const std::vector<double>& densities);
-
   virtual void ZeroPsi() = 0;
 
   GeometryType GetGeometryType() const;
@@ -239,12 +235,6 @@ public:
   /// Read access to newest updated precursors vector.
   const std::vector<double>& GetPrecursorsNewLocal() const;
 
-  /// Read/write access to the cell-wise densities.
-  std::vector<double>& GetDensitiesLocal();
-
-  /// Read access to the cell-wise densities.
-  const std::vector<double>& GetDensitiesLocal() const;
-
   SetSourceFunction GetActiveSetSourceFunction() const;
 
   std::shared_ptr<AGSLinearSolver> GetAGSSolver() const;
@@ -364,7 +354,6 @@ protected:
   std::vector<double> q_moments_local_, ext_src_moments_local_;
   std::vector<double> phi_new_local_, phi_old_local_;
   std::vector<double> precursor_new_local_;
-  std::vector<double> densities_local_;
 
   SetSourceFunction active_set_source_function_;
 
@@ -403,7 +392,7 @@ private:
   void InitializeGroupsets(const InputParameters& params);
 
   /// Initializes materials
-  void InitializeXSmapAndDensities(const InputParameters& params);
+  void InitializeXSMap(const InputParameters& params);
   void InitializeMaterials();
 
   /// Initialize sources

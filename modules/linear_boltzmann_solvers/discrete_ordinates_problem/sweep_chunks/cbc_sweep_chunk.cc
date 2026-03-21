@@ -20,7 +20,6 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),
                problem.GetCellTransportViews(),
-               problem.GetDensitiesLocal(),
                problem.GetQMomentsLocal(),
                groupset,
                problem.GetBlockID2XSMap(),
@@ -90,7 +89,6 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
   const auto& face_orientations = angle_set.GetSPDS().GetCellFaceOrientations()[cell_local_id_];
   std::vector<double> face_mu_values(cell_num_faces_);
 
-  const auto& rho = densities_[cell_local_id_];
   const auto& sigma_t = xs_.at(cell_->block_id)->GetSigmaTotal();
 
   // as = angle set
@@ -169,7 +167,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
     // Looping over groups, assembling mass terms
     for (unsigned int gsg = 0; gsg < gs_size_; ++gsg)
     {
-      double sigma_tg = rho * sigma_t[gs_gi_ + gsg];
+      double sigma_tg = sigma_t[gs_gi_ + gsg];
 
       // Contribute source moments q = M_n^T * q_moms
       for (size_t i = 0; i < cell_num_nodes_; ++i)
