@@ -152,6 +152,16 @@ WrapMultiGroupXS(py::module& xs)
     py::arg("extra_xs_names") = std::vector<std::string>()
   );
   multigroup_xs.def(
+    "LoadFromCEPXS",
+    [](MultiGroupXS& self, const std::string& file_name, int material_id)
+    {
+      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id);
+    },
+    "Load multi-group cross sections from a CEPXS cross-section file.",
+    py::arg("file_name"),
+    py::arg("material_id") = 0
+  );
+  multigroup_xs.def(
     "SetScalingFactor",
     &MultiGroupXS::SetScalingFactor,
     "Scale the cross sections by the specified factor.",
@@ -192,6 +202,12 @@ WrapMultiGroupXS(py::module& xs)
     "sigma_a",
     XS_GETTER(GetSigmaAbsorption),
     "Get absorption cross section.",
+    py::keep_alive<0, 1>()
+  );
+  multigroup_xs.def_property_readonly(
+    "energy_deposition",
+    XS_GETTER(GetEnergyDeposition),
+    "Get energy deposition cross section.",
     py::keep_alive<0, 1>()
   );
   multigroup_xs.def_property_readonly(
