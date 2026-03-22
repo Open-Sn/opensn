@@ -298,7 +298,7 @@ DiscreteOrdinatesProblem::SetBoundaryOptions(const InputParameters& params)
   {
     std::ostringstream names;
     bool first = true;
-    for (const auto& [_, name] : bnd_name_map)
+    for (const auto& [name, _] : bnd_name_map)
     {
       if (not first)
         names << ", ";
