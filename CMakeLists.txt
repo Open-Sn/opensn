@@ -18,8 +18,9 @@ include(CheckCXXCompilerFlag)
 include(CheckLinkerFlag)
 include(FetchContent)
 
-# Avoid prepending external build-time dependency paths that shadow installed libs
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+# Inherit link-time library paths into the install rpath to keep runtime
+# consistent with the build MPI/GPU/toolchain stack.
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O3 -g -DNDEBUG" CACHE STRING "" FORCE)
@@ -348,14 +349,53 @@ set_target_properties(
         SOVERSION ${PROJECT_VERSION_MAJOR}
         OUTPUT_NAME opensn
 )
-if (APPLE)
-  set(_opensn_install_rpath_lib "@loader_path")
-  set(_opensn_install_rpath_bin "@loader_path/../${CMAKE_INSTALL_LIBDIR}")
-elseif(UNIX)
-  set(_opensn_install_rpath_lib "$ORIGIN")
-  set(_opensn_install_rpath_bin "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+set(_opensn_rpath_extra "")
+function(_opensn_add_rpath_from_lib item)
+  if(TARGET "${item}")
+    get_target_property(_loc "${item}" IMPORTED_LOCATION)
+    if(NOT _loc)
+      get_target_property(_loc "${item}" IMPORTED_LOCATION_RELEASE)
+    endif()
+    if(NOT _loc)
+      get_target_property(_loc "${item}" IMPORTED_LOCATION_RELWITHDEBINFO)
+    endif()
+    if(NOT _loc)
+      get_target_property(_loc "${item}" IMPORTED_LOCATION_DEBUG)
+    endif()
+    if(NOT _loc)
+      get_target_property(_loc "${item}" LOCATION)
+    endif()
+    if(_loc)
+      get_filename_component(_dir "${_loc}" DIRECTORY)
+      list(APPEND _opensn_rpath_extra "${_dir}")
+    endif()
+  else()
+    if(EXISTS "${item}")
+      get_filename_component(_dir "${item}" DIRECTORY)
+      list(APPEND _opensn_rpath_extra "${_dir}")
+    endif()
+  endif()
+endfunction()
+
+foreach(_lib IN LISTS PETSC_LIBRARY HDF5_LIBRARIES VTK_LIBRARIES)
+  _opensn_add_rpath_from_lib("${_lib}")
+endforeach()
+if(TARGET caliper)
+  _opensn_add_rpath_from_lib(caliper)
 endif()
-if (UNIX)
+list(REMOVE_DUPLICATES _opensn_rpath_extra)
+
+if (APPLE)
+  list(PREPEND _opensn_rpath_extra "@loader_path")
+  list(PREPEND _opensn_rpath_extra "@loader_path/../${CMAKE_INSTALL_LIBDIR}")
+elseif(UNIX)
+  list(PREPEND _opensn_rpath_extra "$ORIGIN")
+  list(PREPEND _opensn_rpath_extra "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+endif()
+
+if(APPLE OR UNIX)
+  set(_opensn_install_rpath_lib "${_opensn_rpath_extra}")
+  set(_opensn_install_rpath_bin "${_opensn_rpath_extra}")
   set_target_properties(libopensn PROPERTIES INSTALL_RPATH "${_opensn_install_rpath_lib}")
 endif()
 
@@ -402,14 +442,6 @@ write_basic_package_version_file(
 install(
     TARGETS libopensn
     EXPORT openSnTargets
-    RUNTIME_DEPENDENCIES
-    PRE_EXCLUDE_REGEXES
-      "^api-ms-"
-      "^ext-ms-"
-      "^/System/Library/.*"
-      "^/usr/lib/.*"
-    POST_EXCLUDE_REGEXES
-      ".*[Ww]indows[\\\\/](System32|WinSxS)[\\\\/].*"
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -469,14 +501,6 @@ if(OPENSN_WITH_PYTHON)
   endif()
   install(
         TARGETS opensn
-        RUNTIME_DEPENDENCIES
-        PRE_EXCLUDE_REGEXES
-          "^api-ms-"
-          "^ext-ms-"
-          "^/System/Library/.*"
-          "^/usr/lib/.*"
-        POST_EXCLUDE_REGEXES
-          ".*[Ww]indows[\\\\/](System32|WinSxS)[\\\\/].*"
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
         BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -510,14 +534,6 @@ if(OPENSN_WITH_PYTHON)
     endif()
     install(
           TARGETS __init__
-          RUNTIME_DEPENDENCIES
-          PRE_EXCLUDE_REGEXES
-            "^api-ms-"
-            "^ext-ms-"
-            "^/System/Library/.*"
-            "^/usr/lib/.*"
-          POST_EXCLUDE_REGEXES
-            ".*[Ww]indows[\\\\/](System32|WinSxS)[\\\\/].*"
           LIBRARY DESTINATION ${_opensn_python_package_dir}
           FRAMEWORK DESTINATION ${_opensn_python_package_dir}
           BUNDLE DESTINATION ${_opensn_python_package_dir}
