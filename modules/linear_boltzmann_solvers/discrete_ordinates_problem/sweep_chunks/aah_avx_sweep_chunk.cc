@@ -375,8 +375,10 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         }
       }
 
-      const double* __restrict m2d_row = m2d_op[direction_num].data();
-      const double* __restrict d2m_row = d2m_op[direction_num].data();
+      const auto dir_moment_offset =
+        static_cast<std::size_t>(direction_num) * static_cast<std::size_t>(data.num_moments);
+      const double* __restrict m2d_row = m2d_op.data() + dir_moment_offset;
+      const double* __restrict d2m_row = d2m_op.data() + dir_moment_offset;
 
       const double* psi_old =
         (time_dependent and data.psi_old)

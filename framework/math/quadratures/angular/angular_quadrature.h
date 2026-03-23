@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/data_types/vector3.h"
+#include "framework/data_types/ndarray.h"
 #include <memory>
 #include <vector>
 
@@ -74,9 +75,11 @@ protected:
   }
 
   /// Discrete-to-moment operator matrix.
-  std::vector<std::vector<double>> d2m_op_ = {};
+  /// OpenSn storage is indexed [angle][moment].
+  NDArray<double, 2> d2m_op_ = {};
   /// Moment-to-discrete operator matrix.
-  std::vector<std::vector<double>> m2d_op_ = {};
+  /// OpenSn storage is indexed [angle][moment].
+  NDArray<double, 2> m2d_op_ = {};
   /// Mapping from moment index to spherical harmonic indices.
   std::vector<HarmonicIndices> m_to_ell_em_map_ = {};
   /// Quadrature type identifier.
@@ -112,12 +115,12 @@ public:
   OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
 
   /// Return a reference to the precomputed discrete-to-moment operator.
-  /// The operator is accessed as [d][m], where d is the direction index and m is the moment index.
-  std::vector<std::vector<double>> const& GetDiscreteToMomentOperator() const;
+  /// The operator is accessed as (d,m), where d is the direction index and m is the moment index.
+  NDArray<double, 2> const& GetDiscreteToMomentOperator() const;
 
   /// Return a reference to the precomputed moment-to-discrete operator.
-  /// The operator is accessed as [d][m], where d is the direction index and m is the moment index.
-  std::vector<std::vector<double>> const& GetMomentToDiscreteOperator() const;
+  /// The operator is accessed as (d,m), where d is the direction index and m is the moment index.
+  NDArray<double, 2> const& GetMomentToDiscreteOperator() const;
 
   /// Return a reference to the precomputed harmonic index map.
   const std::vector<HarmonicIndices>& GetMomentToHarmonicsIndexMap() const;

@@ -41,8 +41,8 @@ QuadratureCarrier::Assemble(const LBSGroupset& groupset)
   std::uint32_t* num_angles_and_moments_data = reinterpret_cast<std::uint32_t*>(data);
   std::size_t num_angles = quadrature.omegas.size();
   *(num_angles_and_moments_data++) = num_angles;
-  const std::vector<std::vector<double>>& m2d = quadrature.GetMomentToDiscreteOperator();
-  const std::vector<std::vector<double>>& d2m = quadrature.GetDiscreteToMomentOperator();
+  const auto& m2d = quadrature.GetMomentToDiscreteOperator();
+  const auto& d2m = quadrature.GetDiscreteToMomentOperator();
   auto num_moments = quadrature.GetNumMoments();
   *(num_angles_and_moments_data++) = num_moments;
   data = reinterpret_cast<char*>(num_angles_and_moments_data);
@@ -61,15 +61,11 @@ QuadratureCarrier::Assemble(const LBSGroupset& groupset)
     // M2D data
     double* m2d_data = weight_data;
     for (unsigned int m = 0; m < num_moments; ++m)
-    {
-      *(m2d_data++) = m2d[direction_num][m];
-    }
+      *(m2d_data++) = m2d(direction_num, m);
     // D2M data
     double* d2m_data = m2d_data;
     for (unsigned int m = 0; m < num_moments; ++m)
-    {
-      *(d2m_data++) = d2m[direction_num][m];
-    }
+      *(d2m_data++) = d2m(direction_num, m);
     data = reinterpret_cast<char*>(d2m_data);
   }
 }
