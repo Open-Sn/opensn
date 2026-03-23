@@ -15,12 +15,11 @@ if __name__ == "__main__":
     xs_2 = MultiGroupXS()
     xs_2.CreateSimpleOneGroup(sigma_t=2, c=1. / 3.)
 
-    xs_combined = MultiGroupXS()
     combo = [
         (xs_1, 0.5),
         (xs_2, 3.0)
     ]
-    xs_combined.Combine(combo)
+    xs_combined = MultiGroupXS.Combine(combo)
 
     print(f"Combined sigma_t: {xs_combined.sigma_t[0]}")
     print(f"Combined sigma_a: {xs_combined.sigma_a[0]}")

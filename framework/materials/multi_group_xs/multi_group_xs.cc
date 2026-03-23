@@ -49,14 +49,11 @@ MultiGroupXS::Combine(
     auto xs = combo.first;
     xsecs.push_back(xs);
 
-    // Set the scaling factor
-    xs->SetScalingFactor(combo.second);
-
     // Increment densities
     if (xs->IsFissionable())
     {
       mgxs.is_fissionable_ = true;
-      Nf_total += xs->GetScalingFactor();
+      Nf_total += combo.second;
     }
 
     // Define and check number of groups
@@ -123,39 +120,42 @@ MultiGroupXS::Combine(
   unsigned int precursor_count = 0;
   for (size_t x = 0; x < xsecs.size(); ++x)
   {
+    const auto& xs = xsecs[x];
+    const double density = combinations[x].second;
+
     // Fraction of fissile density
-    const auto N_i = xsecs[x]->GetScalingFactor();
-    const auto ff_i = xsecs[x]->IsFissionable() ? N_i / Nf_total : 0.0;
+    const auto ff_i = xs->IsFissionable() ? density / Nf_total : 0.0;
 
     // Combine cross sections
-    const auto& sig_t = xsecs[x]->GetSigmaTotal();
-    const auto& sig_a = xsecs[x]->GetSigmaAbsorption();
-    const auto& chi = xsecs[x]->GetChi();
-    const auto& sig_f = xsecs[x]->GetSigmaFission();
-    const auto& nu_p_sig_f = xsecs[x]->GetNuPromptSigmaF();
-    const auto& nu_d_sig_f = xsecs[x]->GetNuDelayedSigmaF();
-    const auto& F = xsecs[x]->GetProductionMatrix();
+    const auto& sig_t = xs->GetSigmaTotal();
+    const auto& sig_a = xs->GetSigmaAbsorption();
+    const auto& chi = xs->GetChi();
+    const auto& sig_f = xs->GetSigmaFission();
+    const auto& nu_sig_f = xs->GetNuSigmaF();
+    const auto& nu_p_sig_f = xs->GetNuPromptSigmaF();
+    const auto& nu_d_sig_f = xs->GetNuDelayedSigmaF();
+    const auto& F = xs->GetProductionMatrix();
 
     // Here, raw cross sections are scaled by densities and spectra by
     // fractional densities. The latter is done to preserve a unit spectra.
     for (unsigned int g = 0; g < n_grps; ++g)
     {
-      mgxs.sigma_t_[g] += sig_t[g];
-      mgxs.sigma_a_[g] += sig_a[g];
+      mgxs.sigma_t_[g] += density * sig_t[g];
+      mgxs.sigma_a_[g] += density * sig_a[g];
 
-      if (xsecs[x]->IsFissionable())
+      if (xs->IsFissionable())
       {
-        mgxs.sigma_f_[g] += sig_f[g];
+        mgxs.sigma_f_[g] += density * sig_f[g];
         if (not chi.empty())
           mgxs.chi_[g] += ff_i * chi[g];
-        mgxs.nu_sigma_f_[g] += sig_f[g];
+        mgxs.nu_sigma_f_[g] += density * nu_sig_f[g];
         for (unsigned int gp = 0; gp < mgxs.num_groups_; ++gp)
-          mgxs.production_matrix_[g][gp] += F[g][gp];
+          mgxs.production_matrix_[g][gp] += density * F[g][gp];
 
         if (n_precs > 0)
         {
-          mgxs.nu_prompt_sigma_f_[g] += nu_p_sig_f[g];
-          mgxs.nu_delayed_sigma_f_[g] += nu_d_sig_f[g];
+          mgxs.nu_prompt_sigma_f_[g] += density * nu_p_sig_f[g];
+          mgxs.nu_delayed_sigma_f_[g] += density * nu_d_sig_f[g];
         }
       }
     } // for g
@@ -168,10 +168,10 @@ MultiGroupXS::Combine(
     // precursor yields must be scaled based on the fraction of the total density of materials
     // with precursors they make up.
 
-    if (xsecs[x]->GetNumPrecursors() > 0)
+    if (xs->GetNumPrecursors() > 0)
     {
-      const auto& precursors = xsecs[x]->GetPrecursors();
-      for (unsigned int j = 0; j < xsecs[x]->GetNumPrecursors(); ++j)
+      const auto& precursors = xs->GetPrecursors();
+      for (unsigned int j = 0; j < xs->GetNumPrecursors(); ++j)
       {
         auto count = precursor_count + j;
         const auto& precursor = precursors[j];
@@ -180,15 +180,15 @@ MultiGroupXS::Combine(
         mgxs.precursors_[count].emission_spectrum = precursor.emission_spectrum;
       } // for j
 
-      precursor_count += xsecs[x]->GetNumPrecursors();
+      precursor_count += xs->GetNumPrecursors();
     }
 
     // Set inverse velocity data
-    if (x == 0 and not xsecs[x]->GetInverseVelocity().empty())
-      mgxs.inv_velocity_ = xsecs[x]->GetInverseVelocity();
+    if (x == 0 and not xs->GetInverseVelocity().empty())
+      mgxs.inv_velocity_ = xs->GetInverseVelocity();
     if (not mgxs.inv_velocity_.empty())
       OpenSnLogicalErrorIf(
-        xsecs[x]->GetInverseVelocity() != mgxs.inv_velocity_,
+        xs->GetInverseVelocity() != mgxs.inv_velocity_,
         "All cross sections being combined must have the same group-wise velocities.");
 
     // Combine transfer matrices
@@ -198,18 +198,18 @@ MultiGroupXS::Combine(
     // together has to take the sparse matrix's protection mechanisms into
     // account.
 
-    if (not xsecs[x]->GetTransferMatrices().empty())
+    if (not xs->GetTransferMatrices().empty())
     {
-      for (unsigned int m = 0; m < xsecs[x]->GetScatteringOrder() + 1; ++m)
+      for (unsigned int m = 0; m < xs->GetScatteringOrder() + 1; ++m)
       {
         auto& Sm = mgxs.transfer_matrices_[m];
-        const auto& Sm_other = xsecs[x]->GetTransferMatrix(m);
+        const auto& Sm_other = xs->GetTransferMatrix(m);
         for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
         {
           const auto& cols = Sm_other.rowI_indices[g];
           const auto& vals = Sm_other.rowI_values[g];
           for (size_t t = 0; t < cols.size(); ++t)
-            Sm.InsertAdd(g, t, vals[t]);
+            Sm.InsertAdd(g, cols[t], density * vals[t]);
         }
       }
     }
@@ -231,6 +231,7 @@ MultiGroupXS::Reset()
   sigma_t_.clear();
   sigma_a_.clear();
   transfer_matrices_.clear();
+  transposed_transfer_matrices_.clear();
 
   sigma_f_.clear();
   chi_.clear();
@@ -238,6 +239,7 @@ MultiGroupXS::Reset()
   nu_prompt_sigma_f_.clear();
   nu_delayed_sigma_f_.clear();
   production_matrix_.clear();
+  transposed_production_matrix_.clear();
   precursors_.clear();
 
   inv_velocity_.clear();
@@ -394,47 +396,59 @@ MultiGroupXS::ComputeDiffusionParameters()
   diffusion_initialized_ = true;
 }
 
-void
-MultiGroupXS::SetScalingFactor(const double factor)
+MultiGroupXS
+MultiGroupXS::Scale(const double factor) const
 {
-  const double m = factor / scaling_factor_;
-  scaling_factor_ = factor;
+  MultiGroupXS scaled = *this;
 
   // Apply to STL vector-based data
-  for (unsigned int g = 0; g < num_groups_; ++g)
+  for (unsigned int g = 0; g < scaled.num_groups_; ++g)
   {
-    sigma_t_[g] *= m;
-    sigma_a_[g] *= m;
+    scaled.sigma_t_[g] *= factor;
+    scaled.sigma_a_[g] *= factor;
 
-    if (is_fissionable_)
+    if (scaled.is_fissionable_)
     {
-      sigma_f_[g] *= m;
-      nu_sigma_f_[g] *= m;
-      if (num_precursors_ > 0)
+      scaled.sigma_f_[g] *= factor;
+      scaled.nu_sigma_f_[g] *= factor;
+      if (scaled.num_precursors_ > 0)
       {
-        nu_prompt_sigma_f_[g] *= m;
-        nu_delayed_sigma_f_[g] *= m;
+        scaled.nu_prompt_sigma_f_[g] *= factor;
+        scaled.nu_delayed_sigma_f_[g] *= factor;
       }
 
-      for (auto& x : production_matrix_[g])
-        x *= m;
+      for (auto& x : scaled.production_matrix_[g])
+        x *= factor;
     }
   }
 
   // Apply to transfer matrices
-  for (auto& S_ell : transfer_matrices_)
-    for (unsigned int g = 0; g < num_groups_; ++g)
+  for (auto& S_ell : scaled.transfer_matrices_)
+    for (unsigned int g = 0; g < scaled.num_groups_; ++g)
       for (const auto& [_, gp, sig_ell] : S_ell.Row(g))
-        sig_ell *= m;
+        sig_ell *= factor;
 
-  // Reinitialize diffusion
-  diffusion_initialized_ = false;
-  ComputeDiffusionParameters();
+  for (auto& S_ell : scaled.transposed_transfer_matrices_)
+    for (unsigned int g = 0; g < scaled.num_groups_; ++g)
+      for (const auto& [_, gp, sig_ell] : S_ell.Row(g))
+        sig_ell *= factor;
+
+  for (auto& row : scaled.transposed_production_matrix_)
+    for (auto& x : row)
+      x *= factor;
+
+  scaled.diffusion_initialized_ = false;
+  scaled.ComputeDiffusionParameters();
+
+  return scaled;
 }
 
 void
 MultiGroupXS::TransposeTransferAndProduction()
 {
+  transposed_transfer_matrices_.clear();
+  transposed_production_matrix_.clear();
+
   // Transpose transfer matrices
   for (unsigned int ell = 0; ell <= scattering_order_; ++ell)
   {
@@ -455,7 +469,6 @@ MultiGroupXS::TransposeTransferAndProduction()
   // Transpose production matrices
   if (is_fissionable_)
   {
-    transposed_production_matrix_.clear();
     transposed_production_matrix_.resize(num_groups_);
     const auto& F = production_matrix_;
     for (unsigned int g = 0; g < num_groups_; ++g)

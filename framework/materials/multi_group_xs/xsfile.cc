@@ -278,7 +278,7 @@ XSFile::Read()
         {
           log.Log0Warning() << "The delayed fission neutron yield specified in "
                             << "\"" << file_name_ << "\" is uniformly zero... Clearing it.";
-          nu_prompt_.clear();
+          nu_delayed_.clear();
         }
       } // if nu_delayed
 

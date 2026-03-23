@@ -170,6 +170,9 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
                            "When a production matrix is specified, it must "
                            "be accompanied with a fission cross section.");
 
+      mgxs.sigma_f_ = xsf.sigma_f_;
+      mgxs.production_matrix_ = xsf.production_matrix_;
+
       // Compute production cross section
       mgxs.nu_sigma_f_.assign(xsf.num_groups_, 0.0);
       for (unsigned int g = 0; g < xsf.num_groups_; ++g)
@@ -177,7 +180,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
           mgxs.nu_sigma_f_[gp] += xsf.production_matrix_[g][gp];
 
       // Check for reasonable fission neutron yield
-      auto nu = xsf.nu_sigma_f_;
+      auto nu = mgxs.nu_sigma_f_;
       for (unsigned int g = 0; g < xsf.num_groups_; ++g)
         if (xsf.sigma_f_[g] > 0.0)
           nu[g] /= xsf.sigma_f_[g];

@@ -28,6 +28,13 @@ WrapMultiGroupXS(py::module& xs)
     Multi-group cross section.
 
     Wrapper of :cpp:class:`opensn::MultiGroupXS`.
+
+    The Python API currently has two types of methods:
+
+    - Creation/loading methods such as ``CreateSimpleOneGroup``,
+      ``LoadFromOpenSn``, and ``LoadFromOpenMC`` populate an existing object.
+    - Transformation methods such as ``Scale`` and ``Combine`` return new
+      cross-section objects and do not mutate their inputs.
     )"
   );
   multigroup_xs.def(
@@ -46,7 +53,7 @@ WrapMultiGroupXS(py::module& xs)
       self = MultiGroupXS::CreateSimpleOneGroup(sigma_t, c, velocity);
     },
     R"(
-    Create a one-group cross section.
+    Populate this object with a one-group cross section.
 
     Parameters
     ----------
@@ -57,6 +64,10 @@ WrapMultiGroupXS(py::module& xs)
     velocity: float, optional
         Group velocity. If provided and positive, inverse velocity
         is populated with 1.0/velocity.
+
+    Notes
+    -----
+    This method mutates ``self`` by replacing its current contents.
     )",
     py::arg("sigma_t"),
     py::arg("c"),
@@ -70,7 +81,8 @@ WrapMultiGroupXS(py::module& xs)
     },
     py::arg("file_name"),
     R"(
-    Load multi-group cross sections from an OpenSn cross section input file.
+    Load multi-group cross sections from an OpenSn cross section input file
+    into this object.
 
     Format is as follows (for transfers, gprime denotes the departing group and g is the arrival
     group).
@@ -102,22 +114,42 @@ WrapMultiGroupXS(py::module& xs)
        .
        M_GFROM_GTO_VAL nmom-1 ng-1 ng-1 value
        TRANSFER_MOMENTS_END
+
+    Notes
+    -----
+    This method mutates ``self`` by replacing its current contents.
     )"
   );
-  multigroup_xs.def(
+  multigroup_xs.def_static(
     "Combine",
-    [](MultiGroupXS& self, const std::vector<std::pair<std::shared_ptr<MultiGroupXS>, double>>& combinations)
-    {
-      self = MultiGroupXS::Combine(combinations);
-    },
+    &MultiGroupXS::Combine,
     R"(
-    Combine cross-section
+    Return a new combined cross-section.
 
     Parameters
     ----------
 
     combinations: List[Tuple[pyopensn.xs.MultiGroupXS, float]]
-        List of combinations (cross section, factor)
+        List of ``(cross_section, density)`` pairs.
+        The density values are linear weights used to combine raw cross sections.
+
+    Returns
+    -------
+    pyopensn.xs.MultiGroupXS
+        A new combined cross-section object. The input cross sections are not
+        modified.
+
+    Notes
+    -----
+    Let :math:`d_i` be the supplied density for cross section :math:`i`.
+
+    - Raw XS terms are density-weighted sums:
+      :math:`\sigma = \sum_i d_i \sigma_i`
+      (e.g. total, absorption, fission, transfer, production).
+    - Fission spectra and precursor yields are weighted by fissile density
+      fraction so their sums remain normalized.
+    - All inputs must have the same number of groups.
+    - If inverse velocity is present, all inputs must have identical values.
 
     Examples
     --------
@@ -126,12 +158,11 @@ WrapMultiGroupXS(py::module& xs)
     >>> xs_1.CreateSimpleOneGroup(sigma_t=1, c=0.5)
     >>> xs_2 = MultiGroupXS()
     >>> xs_2.CreateSimpleOneGroup(sigma_t=2, c=1./3.)
-    >>> xs_combined = MultiGroupXS()
     >>> combo = [
     ...     ( xs_1, 0.5 ),
     ...     ( xs_2, 3.0 )
     ... ]
-    >>> xs_combined.Combine(combo)
+    >>> xs_combined = MultiGroupXS.Combine(combo)
     )",
     py::arg("combinations")
   );
@@ -145,16 +176,35 @@ WrapMultiGroupXS(py::module& xs)
     {
       self = MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature, extra_xs_names);
     },
-    "Load multi-group cross sections from an OpenMC cross-section file.",
+    R"(
+    Load multi-group cross sections from an OpenMC cross-section file into this
+    object.
+
+    Notes
+    -----
+    This method mutates ``self`` by replacing its current contents.
+    )",
     py::arg("file_name"),
     py::arg("dataset_name"),
     py::arg("temperature"),
     py::arg("extra_xs_names") = std::vector<std::string>()
   );
   multigroup_xs.def(
-    "SetScalingFactor",
-    &MultiGroupXS::SetScalingFactor,
-    "Scale the cross sections by the specified factor.",
+    "Scale",
+    &MultiGroupXS::Scale,
+    R"(
+    Return a scaled copy of the cross sections.
+
+    Parameters
+    ----------
+    factor: float
+        Multiplicative factor applied to scalable cross-section data.
+
+    Returns
+    -------
+    pyopensn.xs.MultiGroupXS
+        A new scaled cross-section object. ``self`` is not modified.
+    )",
     py::arg("factor")
   );
   multigroup_xs.def_property_readonly(
@@ -176,11 +226,6 @@ WrapMultiGroupXS(py::module& xs)
     "is_fissionable",
     &MultiGroupXS::IsFissionable,
     "Check if the material is fissile."
-  );
-  multigroup_xs.def_property_readonly(
-    "scaling_factor",
-    &MultiGroupXS::GetScalingFactor,
-    "Get the arbitrary scaling factor."
   );
   multigroup_xs.def_property_readonly(
     "sigma_t",

@@ -18,7 +18,6 @@ public:
       num_precursors_(0),
       is_fissionable_(false),
       adjoint_(false),
-      scaling_factor_(1.0),
       diffusion_initialized_(false)
   {
   }
@@ -31,13 +30,8 @@ public:
     std::vector<double> emission_spectrum;
   };
 
-  /**
-   * Scale the cross sections by the specified factor.
-   *
-   * @note Scaling factors do not compound. Each time this routine is called, the cross sections
-   *       are scaled by the ratio of the argument and the existing scaling factor.
-   */
-  void SetScalingFactor(double factor);
+  /// Return a scaled copy of the cross sections.
+  MultiGroupXS Scale(double factor) const;
 
   /**
    * Exports the cross-section information to OpenSn format.
@@ -65,8 +59,6 @@ public:
   }
 
   bool GetAdjointMode() const { return adjoint_; }
-
-  double GetScalingFactor() const { return scaling_factor_; }
 
   const std::vector<double>& GetSigmaTotal() const { return sigma_t_; }
 
@@ -132,8 +124,6 @@ private:
   bool is_fissionable_;
   /// Can be used for adjoint calculations
   bool adjoint_;
-  /// An arbitrary scaling factor
-  double scaling_factor_ = 1.0;
   /// Evaluation temperature
   double temperature_ = 294.0;
   /// Energy bin boundaries in MeV

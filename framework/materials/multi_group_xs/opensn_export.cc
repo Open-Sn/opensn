@@ -128,18 +128,18 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
     Print1DXS(ofile, "INV_VELOCITY", GetInverseVelocity(), 1.0e-20);
 
   // Transfer matrices
-  if (not GetTransferMatrices().empty())
+  if (not transfer_matrices_.empty())
   {
     ofile << "\n";
     ofile << "TRANSFER_MOMENTS_BEGIN\n";
-    for (size_t ell = 0; ell < GetTransferMatrices().size(); ++ell)
+    for (size_t ell = 0; ell < transfer_matrices_.size(); ++ell)
     {
       if (ell == 0)
         ofile << "#Zeroth moment (l=0)\n";
       else
         ofile << "#(l=" << ell << ")\n";
 
-      const auto& matrix = GetTransferMatrix(ell);
+      const auto& matrix = transfer_matrices_[ell];
 
       for (size_t g = 0; g < matrix.rowI_values.size(); ++g)
       {
@@ -156,14 +156,15 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
   } // if has transfer matrices
 
   // Write production matrix
-  if (not GetProductionMatrix().empty())
+  if (not production_matrix_.empty())
   {
     ofile << "\n";
     ofile << "PRODUCTION_MATRIX_BEGIN\n";
     for (unsigned int g = 0; g < GetNumGroups(); ++g)
       for (unsigned int gp = 0; gp < GetNumGroups(); ++gp)
-        ofile << "G_GPRIME_VAL " << g << " " << gp << " "
-              << fission_scaling * GetProductionMatrix()[g][gp] << "\n";
+        ofile << "GPRIME_G_VAL " << g << " " << gp << " "
+              << fission_scaling * production_matrix_[g][gp] << "\n";
+    ofile << "PRODUCTION_MATRIX_END\n";
   }
   ofile.close();
 
