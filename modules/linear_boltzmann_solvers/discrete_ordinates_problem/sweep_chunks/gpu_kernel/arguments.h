@@ -4,7 +4,12 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_structs.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_structs.h"
+#include "caribou/main.hpp"
 #include <cstdint>
+#include <type_traits>
+
+namespace crb = caribou;
 
 namespace opensn
 {
@@ -12,37 +17,58 @@ class DiscreteOrdinatesProblem;
 class LBSGroupset;
 class AAHD_AngleSet;
 class AAHD_FLUDS;
+class CBCD_AngleSet;
+class CBCD_FLUDS;
 } // namespace opensn
 
 namespace opensn::gpu_kernel
 {
 
-/// Arguments for the sweep kernel.
+enum class SweepType
+{
+  AAH = 0,
+  CBC = 1
+};
+
+consteval bool
+to_bool(SweepType t)
+{
+  return t == SweepType::AAH;
+}
+
+template <SweepType t>
+using NodeIndexType = std::conditional_t<to_bool(t), AAHD_NodeIndex, CBCD_NodeIndex>;
+
+/// Argument structure for both AAH and CBC kernels
+template <SweepType t>
 struct Arguments
 {
-  /// Constructor
+  using AngleSetType = std::conditional_t<to_bool(t), AAHD_AngleSet, CBCD_AngleSet>;
+  using FLUDSType = std::conditional_t<to_bool(t), AAHD_FLUDS, CBCD_FLUDS>;
+  using FLUDSPointerSetType =
+    std::conditional_t<to_bool(t), AAHD_FLUDSPointerSet, CBCD_FLUDSPointerSet>;
+
   Arguments(DiscreteOrdinatesProblem& problem,
             const LBSGroupset& groupset,
-            AAHD_AngleSet& angle_set,
-            AAHD_FLUDS& fluds,
-            bool is_surface_source_active);
+            AngleSetType& angle_set,
+            FLUDSType& fluds);
 
-  // mesh and quadrature
+  // Mesh and quadrature
   const char* __restrict__ mesh_data;
   const char* __restrict__ quad_data;
-  // source moments and phi
+  // Source moments and phi
   const double* __restrict__ src_moment;
   double* __restrict__ phi;
-  // angle set
+  // Angle set
   const std::uint32_t* __restrict__ directions;
   std::uint32_t angleset_size;
-  // group set
+  // Group set
   std::uint32_t num_groups;
   std::uint32_t groupset_start;
   std::uint32_t groupset_size;
-  // fluds
-  AAHD_FLUDSPointerSet flud_data;
+  // FLUDS
   const std::uint64_t* __restrict__ flud_index;
+  FLUDSPointerSetType flud_data;
 };
 
 } // namespace opensn::gpu_kernel
