@@ -33,8 +33,8 @@ WrapMultiGroupXS(py::module& xs)
 
     - Creation/loading methods such as ``CreateSimpleOneGroup``,
       ``LoadFromOpenSn``, and ``LoadFromOpenMC`` populate an existing object.
-    - Transformation methods such as ``Scale`` and ``Combine`` return new
-      cross-section objects and do not mutate their inputs.
+    - ``Scale`` mutates the current object.
+    - ``Combine`` returns a new cross-section object and does not mutate inputs.
     )"
   );
   multigroup_xs.def(
@@ -193,17 +193,11 @@ WrapMultiGroupXS(py::module& xs)
     "Scale",
     &MultiGroupXS::Scale,
     R"(
-    Return a scaled copy of the cross sections.
+    Scale the cross sections in-place.
 
-    Parameters
-    ----------
-    factor: float
-        Multiplicative factor applied to scalable cross-section data.
-
-    Returns
-    -------
-    pyopensn.xs.MultiGroupXS
-        A new scaled cross-section object. ``self`` is not modified.
+    Notes
+    -----
+    Scaling does not compound. Each call scales from the original baseline data.
     )",
     py::arg("factor")
   );
@@ -226,6 +220,11 @@ WrapMultiGroupXS(py::module& xs)
     "is_fissionable",
     &MultiGroupXS::IsFissionable,
     "Check if the material is fissile."
+  );
+  multigroup_xs.def(
+    "GetScaleFactor",
+    &MultiGroupXS::GetScaleFactor,
+    "Get the scaling factor."
   );
   multigroup_xs.def_property_readonly(
     "sigma_t",

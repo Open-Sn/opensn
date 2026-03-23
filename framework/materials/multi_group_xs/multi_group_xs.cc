@@ -227,6 +227,8 @@ MultiGroupXS::Reset()
   scattering_order_ = 0;
   num_precursors_ = 0;
   is_fissionable_ = false;
+  scaling_factor_ = 1.0;
+  base_xs_initialized_ = false;
 
   sigma_t_.clear();
   sigma_a_.clear();
@@ -251,6 +253,16 @@ MultiGroupXS::Reset()
   sigma_r_.clear();
   sigma_s_gtog_.clear();
   custom_xs_.clear();
+
+  base_sigma_t_.clear();
+  base_sigma_a_.clear();
+  base_sigma_f_.clear();
+  base_nu_sigma_f_.clear();
+  base_nu_prompt_sigma_f_.clear();
+  base_nu_delayed_sigma_f_.clear();
+  base_production_matrix_.clear();
+  base_transfer_matrices_.clear();
+  base_custom_xs_.clear();
 }
 
 bool
@@ -396,51 +408,71 @@ MultiGroupXS::ComputeDiffusionParameters()
   diffusion_initialized_ = true;
 }
 
-MultiGroupXS
-MultiGroupXS::Scale(const double factor) const
+void
+MultiGroupXS::Scale(const double factor)
 {
-  MultiGroupXS scaled = *this;
+  InitializeBaseXS();
+  scaling_factor_ = factor;
 
-  // Apply to STL vector-based data
-  for (unsigned int g = 0; g < scaled.num_groups_; ++g)
+  // Apply to 1D data
+  sigma_t_ = base_sigma_t_;
+  sigma_a_ = base_sigma_a_;
+  for (unsigned int g = 0; g < num_groups_; ++g)
   {
-    scaled.sigma_t_[g] *= factor;
-    scaled.sigma_a_[g] *= factor;
+    sigma_t_[g] *= scaling_factor_;
+    sigma_a_[g] *= scaling_factor_;
 
-    if (scaled.is_fissionable_)
+    if (is_fissionable_)
     {
-      scaled.sigma_f_[g] *= factor;
-      scaled.nu_sigma_f_[g] *= factor;
-      if (scaled.num_precursors_ > 0)
+      sigma_f_[g] = base_sigma_f_[g] * scaling_factor_;
+      nu_sigma_f_[g] = base_nu_sigma_f_[g] * scaling_factor_;
+      if (num_precursors_ > 0)
       {
-        scaled.nu_prompt_sigma_f_[g] *= factor;
-        scaled.nu_delayed_sigma_f_[g] *= factor;
+        nu_prompt_sigma_f_[g] = base_nu_prompt_sigma_f_[g] * scaling_factor_;
+        nu_delayed_sigma_f_[g] = base_nu_delayed_sigma_f_[g] * scaling_factor_;
       }
 
-      for (auto& x : scaled.production_matrix_[g])
-        x *= factor;
+      for (size_t gp = 0; gp < production_matrix_[g].size(); ++gp)
+        production_matrix_[g][gp] = base_production_matrix_[g][gp] * scaling_factor_;
     }
   }
 
   // Apply to transfer matrices
-  for (auto& S_ell : scaled.transfer_matrices_)
-    for (unsigned int g = 0; g < scaled.num_groups_; ++g)
+  transfer_matrices_ = base_transfer_matrices_;
+  for (auto& S_ell : transfer_matrices_)
+    for (unsigned int g = 0; g < num_groups_; ++g)
       for (const auto& [_, gp, sig_ell] : S_ell.Row(g))
-        sig_ell *= factor;
+        sig_ell *= scaling_factor_;
 
-  for (auto& S_ell : scaled.transposed_transfer_matrices_)
-    for (unsigned int g = 0; g < scaled.num_groups_; ++g)
-      for (const auto& [_, gp, sig_ell] : S_ell.Row(g))
-        sig_ell *= factor;
+  custom_xs_ = base_custom_xs_;
 
-  for (auto& row : scaled.transposed_production_matrix_)
-    for (auto& x : row)
-      x *= factor;
+  if (adjoint_ and not transfer_matrices_.empty())
+  {
+    transposed_transfer_matrices_.clear();
+    transposed_production_matrix_.clear();
+    TransposeTransferAndProduction();
+  }
 
-  scaled.diffusion_initialized_ = false;
-  scaled.ComputeDiffusionParameters();
+  diffusion_initialized_ = false;
+  ComputeDiffusionParameters();
+}
 
-  return scaled;
+void
+MultiGroupXS::InitializeBaseXS()
+{
+  if (base_xs_initialized_)
+    return;
+
+  base_sigma_t_ = sigma_t_;
+  base_sigma_a_ = sigma_a_;
+  base_sigma_f_ = sigma_f_;
+  base_nu_sigma_f_ = nu_sigma_f_;
+  base_nu_prompt_sigma_f_ = nu_prompt_sigma_f_;
+  base_nu_delayed_sigma_f_ = nu_delayed_sigma_f_;
+  base_production_matrix_ = production_matrix_;
+  base_transfer_matrices_ = transfer_matrices_;
+  base_custom_xs_ = custom_xs_;
+  base_xs_initialized_ = true;
 }
 
 void
