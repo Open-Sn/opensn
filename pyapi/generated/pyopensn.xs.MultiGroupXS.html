@@ -23,6 +23,8 @@
       <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -112,26 +114,51 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.xs.</span></span><span class="sig-name descname"><span class="pre">MultiGroupXS</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS" title="Link to this definition"></a></dt>
 <dd><p>Multi-group cross section.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXSE" title="opensn::MultiGroupXS"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::MultiGroupXS</span></code></a>.</p>
+<p>The Python API currently has two types of methods:</p>
+<ul class="simple">
+<li><p>Creation/loading methods such as <code class="docutils literal notranslate"><span class="pre">CreateSimpleOneGroup</span></code>,
+<code class="docutils literal notranslate"><span class="pre">LoadFromOpenSn</span></code>, and <code class="docutils literal notranslate"><span class="pre">LoadFromOpenMC</span></code> populate an existing object.</p></li>
+<li><p>Transformation methods such as <code class="docutils literal notranslate"><span class="pre">Scale</span></code> and <code class="docutils literal notranslate"><span class="pre">Combine</span></code> return new
+cross-section objects and do not mutate their inputs.</p></li>
+</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.Combine">
-<span class="sig-name descname"><span class="pre">Combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">combinations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.Combine" title="Link to this definition"></a></dt>
-<dd><p>Combine cross-section</p>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">combinations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.Combine" title="Link to this definition"></a></dt>
+<dd><p>Return a new combined cross-section.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>combinations</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><em>pyopensn.xs.MultiGroupXS</em></a><em>, </em><em>float</em><em>]</em><em>]</em>) – List of combinations (cross section, factor)</p>
+<dd class="field-odd"><p><strong>combinations</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><em>pyopensn.xs.MultiGroupXS</em></a><em>, </em><em>float</em><em>]</em><em>]</em>) – List of <code class="docutils literal notranslate"><span class="pre">(cross_section,</span> <span class="pre">density)</span></code> pairs.
+The density values are linear weights used to combine raw cross sections.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new combined cross-section object. The input cross sections are not
+modified.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS">pyopensn.xs.MultiGroupXS</a></p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Let <span class="math notranslate nohighlight">\(d_i\)</span> be the supplied density for cross section <span class="math notranslate nohighlight">\(i\)</span>.</p>
+<ul class="simple">
+<li><p>Raw XS terms are density-weighted sums:
+<span class="math notranslate nohighlight">\(\sigma = \sum_i d_i \sigma_i\)</span>
+(e.g. total, absorption, fission, transfer, production).</p></li>
+<li><p>Fission spectra and precursor yields are weighted by fissile density
+fraction so their sums remain normalized.</p></li>
+<li><p>All inputs must have the same number of groups.</p></li>
+<li><p>If inverse velocity is present, all inputs must have identical values.</p></li>
+</ul>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xs_1</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xs_1</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xs_2</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xs_2</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xs_combined</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">combo</span> <span class="o">=</span> <span class="p">[</span>
 <span class="gp">... </span>    <span class="p">(</span> <span class="n">xs_1</span><span class="p">,</span> <span class="mf">0.5</span> <span class="p">),</span>
 <span class="gp">... </span>    <span class="p">(</span> <span class="n">xs_2</span><span class="p">,</span> <span class="mf">3.0</span> <span class="p">)</span>
 <span class="gp">... </span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xs_combined</span><span class="o">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">combo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs_combined</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="o">.</span><span class="n">Combine</span><span class="p">(</span><span class="n">combo</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -139,7 +166,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup">
 <span class="sig-name descname"><span class="pre">CreateSimpleOneGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="Link to this definition"></a></dt>
-<dd><p>Create a one-group cross section.</p>
+<dd><p>Populate this object with a one-group cross section.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -150,18 +177,24 @@ is populated with 1.0/velocity.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This method mutates <code class="docutils literal notranslate"><span class="pre">self</span></code> by replacing its current contents.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.LoadFromOpenMC">
 <span class="sig-name descname"><span class="pre">LoadFromOpenMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_xs_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="Link to this definition"></a></dt>
-<dd><p>Load multi-group cross sections from an OpenMC cross-section file.</p>
+<dd><p>Load multi-group cross sections from an OpenMC cross-section file into this
+object.</p>
+<p class="rubric">Notes</p>
+<p>This method mutates <code class="docutils literal notranslate"><span class="pre">self</span></code> by replacing its current contents.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.LoadFromOpenSn">
 <span class="sig-name descname"><span class="pre">LoadFromOpenSn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.LoadFromOpenSn" title="Link to this definition"></a></dt>
-<dd><p>Load multi-group cross sections from an OpenSn cross section input file.</p>
+<dd><p>Load multi-group cross sections from an OpenSn cross section input file
+into this object.</p>
 <p>Format is as follows (for transfers, gprime denotes the departing group and g is the arrival
 group).</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Add comment lines, as needed
@@ -191,12 +224,25 @@ M_GFROM_GTO_VAL nmom-1 ng-1 ng-1 value
 TRANSFER_MOMENTS_END
 </pre></div>
 </div>
+<p class="rubric">Notes</p>
+<p>This method mutates <code class="docutils literal notranslate"><span class="pre">self</span></code> by replacing its current contents.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.SetScalingFactor">
-<span class="sig-name descname"><span class="pre">SetScalingFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.SetScalingFactor" title="Link to this definition"></a></dt>
-<dd><p>Scale the cross sections by the specified factor.</p>
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.Scale">
+<span class="sig-name descname"><span class="pre">Scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.Scale" title="Link to this definition"></a></dt>
+<dd><p>Return a scaled copy of the cross sections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>) – Multiplicative factor applied to scalable cross-section data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new scaled cross-section object. <code class="docutils literal notranslate"><span class="pre">self</span></code> is not modified.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS">pyopensn.xs.MultiGroupXS</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -269,12 +315,6 @@ TRANSFER_MOMENTS_END
 <dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.num_precursors">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_precursors</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.num_precursors" title="Link to this definition"></a></dt>
 <dd><p>Get number of precursors.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.scaling_factor">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scaling_factor</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.scaling_factor" title="Link to this definition"></a></dt>
-<dd><p>Get the arbitrary scaling factor.</p>
 </dd></dl>
 
 <dl class="py property">

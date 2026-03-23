@@ -105,7 +105,6 @@
 <span class="w">      </span><span class="n">num_precursors_</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
 <span class="w">      </span><span class="n">is_fissionable_</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span>
 <span class="w">      </span><span class="n">adjoint_</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span>
-<span class="w">      </span><span class="n">scaling_factor_</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span>
 <span class="w">      </span><span class="n">diffusion_initialized_</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
@@ -118,13 +117,8 @@
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">emission_spectrum</span><span class="p">;</span>
 <span class="w">  </span><span class="p">};</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Scale the cross sections by the specified factor.</span>
-<span class="cm">   *</span>
-<span class="cm">   * @note Scaling factors do not compound. Each time this routine is called, the cross sections</span>
-<span class="cm">   *       are scaled by the ratio of the argument and the existing scaling factor.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetScalingFactor</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">factor</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Return a scaled copy of the cross sections.</span>
+<span class="w">  </span><span class="n">MultiGroupXS</span><span class="w"> </span><span class="nf">Scale</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">factor</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Exports the cross-section information to OpenSn format.</span>
@@ -152,8 +146,6 @@
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">GetAdjointMode</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">adjoint_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetScalingFactor</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">scaling_factor_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetSigmaTotal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">sigma_t_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
@@ -219,8 +211,6 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_fissionable_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Can be used for adjoint calculations</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// An arbitrary scaling factor</span>
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">scaling_factor_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Evaluation temperature</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">temperature_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">294.0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Energy bin boundaries in MeV</span>
