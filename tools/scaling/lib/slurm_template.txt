@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH --job-name={{base_name}}_{{n_nodes}}
+#SBATCH --partition={{partition}}
+#SBATCH --output={{base_name}}_{{n_nodes}}.out
+#SBATCH --error={{base_name}}_{{n_nodes}}.err
+#SBATCH --nodes={{n_nodes}}
+#SBATCH --exclusive
+#SBATCH --time=01:00:00
+{{gpu_options}}
+
+srun -n {{n_nodes * n_tasks}} -c {{n_cores}} {{opensn_binary}} -i {{input_script}}
