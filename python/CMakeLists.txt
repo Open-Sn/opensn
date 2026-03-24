@@ -27,7 +27,7 @@ target_link_libraries(libopensnpy
     PUBLIC
     libopensn
     ${PETSC_LIBRARY}
-    MPI::MPI_CXX
+    MPI::MPI_C
     caliper
     pybind11::embed
 )
