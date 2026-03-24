@@ -31,7 +31,7 @@ chi_before = my_xs["fuel"].chi[0]
 sigt_before = my_xs["fuel"].sigma_t[0]
 
 # Create a scaled copy
-my_xs["fuel"] = my_xs["fuel"].Scale(2.0)
+my_xs["fuel"].Scale(2.0)
 
 # After scaling
 chi_after = my_xs["fuel"].chi[0]

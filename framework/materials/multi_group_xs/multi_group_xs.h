@@ -18,6 +18,7 @@ public:
       num_precursors_(0),
       is_fissionable_(false),
       adjoint_(false),
+      scaling_factor_(1.0),
       diffusion_initialized_(false)
   {
   }
@@ -30,8 +31,15 @@ public:
     std::vector<double> emission_spectrum;
   };
 
-  /// Return a scaled copy of the cross sections.
-  MultiGroupXS Scale(double factor) const;
+  /**
+   * Scale the cross sections by the specified factor.
+   *
+   * @note Scaling factors do not compound. Each time this routine is called, the cross sections
+   *       are scaled from the original, unscaled data.
+   */
+  void Scale(double factor);
+
+  double GetScaleFactor() const { return scaling_factor_; }
 
   /**
    * Exports the cross-section information to OpenSn format.
@@ -124,6 +132,8 @@ private:
   bool is_fissionable_;
   /// Can be used for adjoint calculations
   bool adjoint_;
+  /// An arbitrary scaling factor
+  double scaling_factor_ = 1.0;
   /// Evaluation temperature
   double temperature_ = 294.0;
   /// Energy bin boundaries in MeV
@@ -168,6 +178,17 @@ private:
 
   std::map<std::string, std::vector<double>> custom_xs_;
 
+  bool base_xs_initialized_ = false;
+  std::vector<double> base_sigma_t_;
+  std::vector<double> base_sigma_a_;
+  std::vector<double> base_sigma_f_;
+  std::vector<double> base_nu_sigma_f_;
+  std::vector<double> base_nu_prompt_sigma_f_;
+  std::vector<double> base_nu_delayed_sigma_f_;
+  std::vector<std::vector<double>> base_production_matrix_;
+  std::vector<SparseMatrix> base_transfer_matrices_;
+  std::map<std::string, std::vector<double>> base_custom_xs_;
+
   void Reset();
 
   void ComputeAbsorption();
@@ -175,6 +196,8 @@ private:
   void ComputeDiffusionParameters();
 
   void TransposeTransferAndProduction();
+
+  void InitializeBaseXS();
 
 public:
   /// Makes a simple material with a 1-group cross-section set.
