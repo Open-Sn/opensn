@@ -105,6 +105,7 @@
 <span class="w">      </span><span class="n">num_precursors_</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
 <span class="w">      </span><span class="n">is_fissionable_</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span>
 <span class="w">      </span><span class="n">adjoint_</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span>
+<span class="w">      </span><span class="n">scaling_factor_</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span>
 <span class="w">      </span><span class="n">diffusion_initialized_</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
@@ -117,8 +118,15 @@
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">emission_spectrum</span><span class="p">;</span>
 <span class="w">  </span><span class="p">};</span>
 
-<span class="w">  </span><span class="c1">/// Return a scaled copy of the cross sections.</span>
-<span class="w">  </span><span class="n">MultiGroupXS</span><span class="w"> </span><span class="nf">Scale</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">factor</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Scale the cross sections by the specified factor.</span>
+<span class="cm">   *</span>
+<span class="cm">   * @note Scaling factors do not compound. Each time this routine is called, the cross sections</span>
+<span class="cm">   *       are scaled from the original, unscaled data.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Scale</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">factor</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetScaleFactor</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">scaling_factor_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Exports the cross-section information to OpenSn format.</span>
@@ -211,6 +219,8 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_fissionable_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Can be used for adjoint calculations</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// An arbitrary scaling factor</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">scaling_factor_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Evaluation temperature</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">temperature_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">294.0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Energy bin boundaries in MeV</span>
@@ -255,6 +265,17 @@
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">custom_xs_</span><span class="p">;</span>
 
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">base_xs_initialized_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">base_sigma_t_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">base_sigma_a_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">base_sigma_f_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">base_nu_sigma_f_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">base_nu_prompt_sigma_f_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">base_nu_delayed_sigma_f_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">base_production_matrix_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SparseMatrix</span><span class="o">&gt;</span><span class="w"> </span><span class="n">base_transfer_matrices_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">base_custom_xs_</span><span class="p">;</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Reset</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeAbsorption</span><span class="p">();</span>
@@ -262,6 +283,8 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeDiffusionParameters</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TransposeTransferAndProduction</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBaseXS</span><span class="p">();</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Makes a simple material with a 1-group cross-section set.</span>

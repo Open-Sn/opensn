@@ -111,10 +111,19 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS5ScaleEd">
-<span class="target" id="classopensn_1_1_multi_group_x_s_1ae090f20194f81a71afba202a9e2ea795"></span><a class="reference internal" href="#_CPPv4N6opensn12MultiGroupXSE" title="opensn::MultiGroupXS"><span class="n"><span class="pre">MultiGroupXS</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Scale</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS5ScaleEd" title="Link to this definition"></a><br /></dt>
-<dd><p>Return a scaled copy of the cross sections. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12MultiGroupXS5ScaleEd">
+<span class="target" id="classopensn_1_1_multi_group_x_s_1aeacb9029253f4510783bcb4b01a3196b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Scale</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12MultiGroupXS5ScaleEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Scale the cross sections by the specified factor. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Scaling factors do not compound. Each time this routine is called, the cross sections are scaled from the original, unscaled data. </p>
+</div>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS14GetScaleFactorEv">
+<span class="target" id="classopensn_1_1_multi_group_x_s_1a211616a5c90ea41402792ef5547c3c5f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetScaleFactor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS14GetScaleFactorEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS20ExportToOpenSnXSFileERKNSt6stringEd">
