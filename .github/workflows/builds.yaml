@@ -15,23 +15,36 @@ jobs:
         include:
           - compiler: gcc/13
             tag: gcc-13
+            dir: gcc/13.3.0
           - compiler: gcc/14
             tag: gcc-14
+            dir: gcc/14.2.0
           - compiler: clang/17
             tag: clang-17
+            dir: clang/17.0.6
           - compiler: clang/18
             tag: clang-18
+            dir: clang/18.1.8
           - compiler: clang/19
             tag: clang-19
+            dir: clang/19.1.5
           - compiler: intel/oneapi
             tag: intel-oneapi
+            dir: intel/2025.0.0
     steps:
       - uses: actions/checkout@v6
       - name: build
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLAS_LIBRARIES="/opt/local/opensn/${{ matrix.dir }}/dependencies/lib/libf2cblas.a" \
+            -DLAPACK_LIBRARIES="/opt/local/opensn/${{ matrix.dir }}/dependencies/lib/libf2cblas.a" \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
@@ -70,15 +83,25 @@ jobs:
         include:
           - compiler: gcc/14
             tag: gcc-14
+            dir: gcc/14.2.0
           - compiler: clang/19
             tag: clang-19
+            dir: clang/19.1.5
     steps:
       - uses: actions/checkout@v6
       - name: build
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Native -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLAS_LIBRARIES="/opt/local/opensn/${{ matrix.dir }}/dependencies/lib/libf2cblas.a" \
+            -DLAPACK_LIBRARIES="/opt/local/opensn/${{ matrix.dir }}/dependencies/lib/libf2cblas.a" \
+            -DCMAKE_BUILD_TYPE=Native \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
@@ -104,15 +127,26 @@ jobs:
         include:
           - compiler: gcc/14
             tag: gcc-14
+            dir: gcc/14.2.0
           - compiler: clang/19
             tag: clang-19
+            dir: clang/19.1.5
     steps:
       - uses: actions/checkout@v6
       - name: build
         shell: bash
         run: |
           module load cuda/13.0 python3/3.12.3 opensn/${{ matrix.compiler }}
-          mkdir build && cd build && cmake -DOPENSN_WITH_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89 -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLAS_LIBRARIES="/opt/local/opensn/${{ matrix.dir }}/dependencies/lib/libf2cblas.a" \
+            -DLAPACK_LIBRARIES="/opt/local/opensn/${{ matrix.dir }}/dependencies/lib/libf2cblas.a" \
+            -DOPENSN_WITH_CUDA=ON \
+            -DCMAKE_CUDA_ARCHITECTURES=89 \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
@@ -137,7 +171,11 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/clang/17
-          cmake -DOPENSN_WITH_PYTHON_MODULE=ON --preset clang+debug+sanitizer
+          cmake \
+            -DBLAS_LIBRARIES="/opt/local/opensn/clang/17.0.6/dependencies/lib/libf2cblas.a" \
+            -DLAPACK_LIBRARIES="/opt/local/opensn/clang/17.0.6/dependencies/lib/libf2cblas.a" \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            --preset clang+debug+sanitizer
           cmake --build --preset clang+debug+sanitizer -j64
       - name: test
         shell: bash
