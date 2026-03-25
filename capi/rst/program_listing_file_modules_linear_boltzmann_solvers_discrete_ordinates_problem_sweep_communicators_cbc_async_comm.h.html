@@ -91,7 +91,6 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/byte_array.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mpicpp-lite/mpicpp-lite.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
@@ -106,17 +105,14 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MPICommunicatorSet</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ByteArray</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">CBC_FLUDS</span><span class="p">;</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">CBC_ASynchronousCommunicator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CBC_AsynchronousCommunicator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">CBC_ASynchronousCommunicator</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">CBC_AsynchronousCommunicator</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
 <span class="w">                                        </span><span class="n">FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
 <span class="w">                                        </span><span class="k">const</span><span class="w"> </span><span class="n">MPICommunicatorSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm_set</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="p">(</span><span class="n">fluds</span><span class="p">,</span><span class="w"> </span><span class="n">comm_set</span><span class="p">),</span>
-<span class="w">      </span><span class="n">angle_set_id_</span><span class="p">(</span><span class="n">angle_set_id</span><span class="p">),</span>
-<span class="w">      </span><span class="n">cbc_fluds_</span><span class="p">(</span><span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">CBC_FLUDS</span><span class="o">&amp;&gt;</span><span class="p">(</span><span class="n">fluds</span><span class="p">))</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="p">(</span><span class="n">fluds</span><span class="p">,</span><span class="w"> </span><span class="n">comm_set</span><span class="p">),</span><span class="w"> </span><span class="n">angle_set_id_</span><span class="p">(</span><span class="n">angle_set_id</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
@@ -138,7 +134,6 @@
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">CBC_FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cbc_fluds_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">// location_id, cell_global_id, face_id</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">MessageKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="p">;</span>
@@ -153,6 +148,10 @@
 <span class="w">    </span><span class="n">ByteArray</span><span class="w"> </span><span class="n">data_array</span><span class="p">;</span>
 <span class="w">  </span><span class="p">};</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BufferItem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">send_buffer_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// cell_global_id, face_id</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">CellFaceKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MergeDeplocsOutgoingMessages</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">CellFaceKey</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">received_messages</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

@@ -87,11 +87,20 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aahd-structs-h"><span class="std std-ref">File aahd_structs.h</span></a></p></li>
 </ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::NodeIndex</span></code> (<a class="reference internal" href="classopensn_1_1_node_index.html#exhale-class-classopensn-1-1-node-index"><span class="std std-ref">Class NodeIndex</span></a>)</p></li>
+</ul>
+</section>
+</section>
 <section id="class-documentation">
 <h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndexE">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndexE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_a_a_h_d___node_index"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_node_index.html#_CPPv4N6opensn9NodeIndexE" title="opensn::NodeIndex"><span class="n"><span class="pre">NodeIndex</span></span></a><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndexE" title="Link to this definition"></a><br /></dt>
 <dd><p>64-bit integer encoding the index and the bank information of a face node. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -105,13 +114,13 @@
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-index-bits">Index bits</p>
-<p>/ / / Index bit mask (<code class="docutils literal notranslate"><span class="pre">1</span></code> at the last 60 bits) </p>
+<p>/ / / Index bit mask (<code class="docutils literal notranslate"><span class="pre">1</span></code> at the last 60 bits). </p>
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexEv">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a1b11aa184dc57902d03cea70d5ea2473"></span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexEv" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a3fff0081058abb2fa93046bd1b657367"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Default constructor. </p>
 </dd></dl>
 
@@ -124,7 +133,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbb">
 <span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a37954c058f50946178a2697d97059427"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_outgoing</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_local</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_delayed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbb" title="Link to this definition"></a><br /></dt>
-<dd><p>Contruct a non-boundary node index. </p>
+<dd><p>Construct a non-boundary node index. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -141,7 +150,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEb">
 <span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a5c494f1d4a8ab6999d31eb3a1e7d2a90"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_outgoing</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEb" title="Link to this definition"></a><br /></dt>
-<dd><p>Contruct a boundary node index. </p>
+<dd><p>Construct a boundary node index. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -153,45 +162,21 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex11IsUndefinedEv">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1aae78dd2d724eeeb7b9b6bfb83d40392b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsUndefined</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex11IsUndefinedEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Check if the current index is in undefined form. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex10IsOutGoingEv">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a135d5e3a21eacb2962902d4c0712038c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsOutGoing</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex10IsOutGoingEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Check if the current index is incoming or outgoing. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex9IsDelayedEv">
 <span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a37708c252344393097186deae1f8e721"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsDelayed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex9IsDelayedEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Check if the current index is corresponding to a delayed bank. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex10IsBoundaryEv">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1ae03526dcd1d3613d6e7d273e229a3206"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsBoundary</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex10IsBoundaryEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Check if the current index is corresponding to boundary. </p>
+<dd><p>Check if the current index corresponds to a delayed bank. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex7IsLocalEv">
 <span class="target" id="classopensn_1_1_a_a_h_d___node_index_1aae4b4819d338829b61c20c7948a59f28"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsLocal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex7IsLocalEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Check if the current index is corresponding to a local bank. </p>
+<dd><p>Check if the current index corresponds to a local bank. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex8GetIndexEv">
 <span class="target" id="classopensn_1_1_a_a_h_d___node_index_1ab85ecb51709e3fe398281753787b44eb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetIndex</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex8GetIndexEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Get the index into the bank. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex12GetCoreValueEv">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a5c3868213d80bab3d0defa9f54eb2be0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetCoreValue</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex12GetCoreValueEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get the core value. </p>
 </dd></dl>
 
 </div>

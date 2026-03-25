@@ -113,13 +113,13 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk11SetAngleSetER8AngleSet">
 <span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a606171bd7e9c0af80555e63230e06965"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetAngleSet</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk11SetAngleSetER8AngleSet" title="Link to this definition"></a><br /></dt>
-<dd><p>Sets the currently active angleset. </p>
+<dd><p>Set the current <a class="reference internal" href="classopensn_1_1_angle_set.html#classopensn_1_1_angle_set"><span class="std std-ref">AngleSet</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk7SetCellEPK4CellR8AngleSet">
 <span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1af5a80a53a748aa95d327681ef13f3e06"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetCell</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cell_ptr</span></span>, <a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk7SetCellEPK4CellR8AngleSet" title="Link to this definition"></a><br /></dt>
-<dd><p>For cell-by-cell methods or computing the residual on a single cell. </p>
+<dd><p>Set the current cell to be swept. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -136,6 +136,94 @@
 </ul>
 </p>
 </dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk6fluds_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a4e4f8c194557ab2d4a79ec54eacce9f1"></span><a class="reference internal" href="classopensn_1_1_c_b_c___f_l_u_d_s.html#_CPPv4N6opensn9CBC_FLUDSE" title="opensn::CBC_FLUDS"><span class="n"><span class="pre">CBC_FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">fluds_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk6fluds_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk8gs_size_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a6686cc23ea6a905d9ed77fe69f4897d9"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gs_size_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk8gs_size_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk6gs_gi_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a7fafa286a4c8c9ceb03d59934140e704"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gs_gi_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk6gs_gi_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk17num_angles_in_as_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a0a844bdcddf44ea1e507fffee49dd0de"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_angles_in_as_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk17num_angles_in_as_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk13group_stride_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a8786cc3f02652f71a5e3d1cb6813ea90"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">group_stride_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk13group_stride_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk19group_angle_stride_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1ad9c6d15e73a7e375cae6fb85129877f5"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">group_angle_stride_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk19group_angle_stride_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk22surface_source_active_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a65298b77f612d6e504457a58ed410c69"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">surface_source_active_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk22surface_source_active_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk5cell_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a7746bd0e5df329463cd9550624989708"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">cell_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk5cell_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk14cell_local_id_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a21353f5336a94070fabd21b24308ce5d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_local_id_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk14cell_local_id_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk13cell_mapping_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1ac91ff58d2cfb7d7442c598e3ecad35cd"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell_mapping.html#_CPPv4N6opensn11CellMappingE" title="opensn::CellMapping"><span class="n"><span class="pre">CellMapping</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">cell_mapping_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk13cell_mapping_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk20cell_transport_view_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a70af138155ebc30f407b9f441ea46134"></span><a class="reference internal" href="classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSViewE" title="opensn::CellLBSView"><span class="n"><span class="pre">CellLBSView</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">cell_transport_view_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk20cell_transport_view_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk15cell_num_faces_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a5f6d3f263101d5aca6ce49de38ef8c1f"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_num_faces_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk15cell_num_faces_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk15cell_num_nodes_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1aecc728018226bea3e98d491eb9ec07a6"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_num_nodes_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk15cell_num_nodes_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk2G_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1a228de925092ae64ad277cd58cfdfc39f"></span><a class="reference internal" href="classopensn_1_1_dense_matrix.html#_CPPv4I0EN6opensn11DenseMatrixE" title="opensn::DenseMatrix"><span class="n"><span class="pre">DenseMatrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">G_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk2G_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk2M_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1aa100ea5a730664594325b5af459f3aef"></span><a class="reference internal" href="classopensn_1_1_dense_matrix.html#_CPPv4I0EN6opensn11DenseMatrixE" title="opensn::DenseMatrix"><span class="n"><span class="pre">DenseMatrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">M_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk2M_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk7M_surf_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1ab2cdc31131704f8987f16ad782f00625"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_dense_matrix.html#_CPPv4I0EN6opensn11DenseMatrixE" title="opensn::DenseMatrix"><span class="n"><span class="pre">DenseMatrix</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">M_surf_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk7M_surf_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13CBCSweepChunk12IntS_shapeI_E">
+<span class="target" id="classopensn_1_1_c_b_c_sweep_chunk_1af62589c12c972acbf18fdc5119e9ae3f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_vector.html#_CPPv4I0EN6opensn6VectorE" title="opensn::Vector"><span class="n"><span class="pre">Vector</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IntS_shapeI_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13CBCSweepChunk12IntS_shapeI_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 </div>
 </dd></dl>

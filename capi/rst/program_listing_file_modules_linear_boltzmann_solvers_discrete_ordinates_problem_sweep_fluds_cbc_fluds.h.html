@@ -92,6 +92,8 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/unknown_manager/unknown_manager.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/spatial_discretization/spatial_discretization.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
@@ -122,7 +124,7 @@
 <span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">psi_uk_man</span><span class="p">,</span>
 <span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">);</span>
 
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetCommonData</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetCommonData</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Given a local upwind neighbor cell, a node index on this cell, and an</span>
@@ -175,7 +177,7 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">deplocs_outgoing_messages_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="k">private</span><span class="o">:</span>
+<span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CBC_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">psi_uk_man_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm_</span><span class="p">;</span>
@@ -183,6 +185,7 @@
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_quadrature_local_dofs_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_local_spatial_dofs_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">local_psi_data_size_</span><span class="p">;</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Layout for storage for local angular fluxes:</span>
 <span class="cm">   * spatial DOF major -&gt; angle in angleset major -&gt; group in groupset major</span>

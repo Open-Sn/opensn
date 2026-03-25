@@ -1,0 +1,54 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_round_up.h:
+
+File round_up.h
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/round_up.h``)
+---------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_round_up.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``caribou/main.hpp``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_opensn__gpu_kernel`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a64be7bce3bfba2c0773f72f3d1efdf04`
+

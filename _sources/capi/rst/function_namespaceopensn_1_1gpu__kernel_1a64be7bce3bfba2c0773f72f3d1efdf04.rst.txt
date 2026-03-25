@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a64be7bce3bfba2c0773f72f3d1efdf04:
+
+Function opensn::gpu_kernel::RoundUp
+====================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_round_up.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::RoundUp(unsigned int, unsigned int)
+   :project: opensn

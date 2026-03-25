@@ -105,29 +105,14 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="p">;</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * \brief Get pointer to index data of a cell and the number of indexes for that cell.</span>
-<span class="cm"> * \param device_node_indexes Pointer to the flatten node index structure on device.</span>
-<span class="cm"> * \param cell_local_idx Cell local index.</span>
-<span class="cm"> * \return Pointer to the indexes of the cell and the number of indexes (total number of face nodes)</span>
-<span class="cm"> * for the cell.</span>
-<span class="cm"> */</span>
-<span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span>
-<span class="n">GetCellDataIndex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">device_node_indexes</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">cell_data</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">device_node_indexes</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">);</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="n">device_node_indexes</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cell_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">cell_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]};</span>
-<span class="p">}</span>
-
-<span class="cm">/**</span>
-<span class="cm"> * \brief Random-access stack based FLUDS.</span>
+<span class="cm"> * Random-access stack based FLUDS.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AAHD_FLUDSCommonData</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FLUDSCommonData</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * \brief Constructor from SPDS and grid nodal mappings.</span>
-<span class="cm">   * \details Initialize the index tracker for all face nodes of the grid. Once created, the indexes</span>
+<span class="cm">   * Constructor from SPDS and grid nodal mappings.</span>
+<span class="cm">   * Initialize the index tracker for all face nodes of the grid. Once created, the indexes</span>
 <span class="cm">   * are utilized by the AAHD_FLUDS to access the correct location in the flux storage arrays.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">AAHD_FLUDSCommonData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">,</span>

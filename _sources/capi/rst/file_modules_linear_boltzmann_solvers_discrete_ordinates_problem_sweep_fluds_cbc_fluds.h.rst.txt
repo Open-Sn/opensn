@@ -32,6 +32,10 @@ Includes
 
 - ``cstddef``
 
+- ``framework/math/spatial_discretization/spatial_discretization.h`` (:ref:`file_framework_math_spatial_discretization_spatial_discretization.h`)
+
+- ``framework/math/unknown_manager/unknown_manager.h`` (:ref:`file_framework_math_unknown_manager_unknown_manager.h`)
+
 - ``functional``
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
@@ -45,8 +49,6 @@ Includes
 Included By
 -----------
 
-
-- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_chunk.h`
 

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct Arguments &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Template Struct Arguments &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -73,7 +73,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Struct Arguments</li>
+      <li class="breadcrumb-item active">Template Struct Arguments</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -82,81 +82,98 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-arguments">
-<span id="exhale-struct-structopensn-1-1gpu-kernel-1-1-arguments"></span><h1>Struct Arguments<a class="headerlink" href="#struct-arguments" title="Link to this heading"></a></h1>
+  <section id="template-struct-arguments">
+<span id="exhale-struct-structopensn-1-1gpu-kernel-1-1-arguments"></span><h1>Template Struct Arguments<a class="headerlink" href="#template-struct-arguments" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-arguments-h"><span class="std std-ref">File arguments.h</span></a></p></li>
 </ul>
 <section id="struct-documentation">
 <h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9ArgumentsE">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Arguments</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9ArgumentsE" title="Link to this definition"></a><br /></dt>
-<dd><p><a class="reference internal" href="#structopensn_1_1gpu__kernel_1_1_arguments"><span class="std std-ref">Arguments</span></a> for the sweep kernel. </p>
+<dt class="sig sig-object cpp" id="_CPPv4I_9SweepTypeEN6opensn10gpu_kernel9ArgumentsE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="enum_namespaceopensn_1_1gpu__kernel_1abf9680878c4fe5d551baa11d492f7855.html#_CPPv4N6opensn10gpu_kernel9SweepTypeE" title="opensn::gpu_kernel::SweepType"><span class="n"><span class="pre">SweepType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Arguments</span></span></span><a class="headerlink" href="#_CPPv4I_9SweepTypeEN6opensn10gpu_kernel9ArgumentsE" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="#structopensn_1_1gpu__kernel_1_1_arguments"><span class="std std-ref">Arguments</span></a> for AAHD and CBCD kernels. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments12AngleSetTypeE">
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a9f9b927da8fd06d4513100f01808b9d5"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AngleSetType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a568cd7dc2e4381e50d0c40a84abe76aa.html#_CPPv4N6opensn10gpu_kernel7to_boolE9SweepType" title="opensn::gpu_kernel::to_bool"><span class="n"><span class="pre">to_bool</span></span></a><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_9SweepTypeEN6opensn10gpu_kernel9ArgumentsE" title="opensn::gpu_kernel::Arguments::t"><span class="n"><span class="pre">t</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_a_a_h_d___angle_set.html#_CPPv4N6opensn13AAHD_AngleSetE" title="opensn::AAHD_AngleSet"><span class="n"><span class="pre">AAHD_AngleSet</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_c_b_c_d___angle_set.html#_CPPv4N6opensn13CBCD_AngleSetE" title="opensn::CBCD_AngleSet"><span class="n"><span class="pre">CBCD_AngleSet</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments12AngleSetTypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments9FLUDSTypeE">
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a294fd18ea7f3e5cb77f63a23ca0fcfe7"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FLUDSType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a568cd7dc2e4381e50d0c40a84abe76aa.html#_CPPv4N6opensn10gpu_kernel7to_boolE9SweepType" title="opensn::gpu_kernel::to_bool"><span class="n"><span class="pre">to_bool</span></span></a><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_9SweepTypeEN6opensn10gpu_kernel9ArgumentsE" title="opensn::gpu_kernel::Arguments::t"><span class="n"><span class="pre">t</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_a_a_h_d___f_l_u_d_s.html#_CPPv4N6opensn10AAHD_FLUDSE" title="opensn::AAHD_FLUDS"><span class="n"><span class="pre">AAHD_FLUDS</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_c_b_c_d___f_l_u_d_s.html#_CPPv4N6opensn10CBCD_FLUDSE" title="opensn::CBCD_FLUDS"><span class="n"><span class="pre">CBCD_FLUDS</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments9FLUDSTypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments19FLUDSPointerSetTypeE">
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a47e9321172bfb9fe4fa8523bb65646a3"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FLUDSPointerSetType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">conditional_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1a568cd7dc2e4381e50d0c40a84abe76aa.html#_CPPv4N6opensn10gpu_kernel7to_boolE9SweepType" title="opensn::gpu_kernel::to_bool"><span class="n"><span class="pre">to_bool</span></span></a><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4I_9SweepTypeEN6opensn10gpu_kernel9ArgumentsE" title="opensn::gpu_kernel::Arguments::t"><span class="n"><span class="pre">t</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set.html#_CPPv4N6opensn20AAHD_FLUDSPointerSetE" title="opensn::AAHD_FLUDSPointerSet"><span class="n"><span class="pre">AAHD_FLUDSPointerSet</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_c_b_c_d___f_l_u_d_s_pointer_set.html#_CPPv4N6opensn20CBCD_FLUDSPointerSetE" title="opensn::CBCD_FLUDSPointerSet"><span class="n"><span class="pre">CBCD_FLUDSPointerSet</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments19FLUDSPointerSetTypeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments9ArgumentsER24DiscreteOrdinatesProblemRK11LBSGroupsetR13AAHD_AngleSetR10AAHD_FLUDSb">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1afd03ad9931b504bba91ce04f1cbc74c1"></span><span class="sig-name descname"><span class="n"><span class="pre">Arguments</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span>, <a class="reference internal" href="classopensn_1_1_a_a_h_d___angle_set.html#_CPPv4N6opensn13AAHD_AngleSetE" title="opensn::AAHD_AngleSet"><span class="n"><span class="pre">AAHD_AngleSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span>, <a class="reference internal" href="classopensn_1_1_a_a_h_d___f_l_u_d_s.html#_CPPv4N6opensn10AAHD_FLUDSE" title="opensn::AAHD_FLUDS"><span class="n"><span class="pre">AAHD_FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fluds</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_surface_source_active</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments9ArgumentsER24DiscreteOrdinatesProblemRK11LBSGroupsetR13AAHD_AngleSetR10AAHD_FLUDSb" title="Link to this definition"></a><br /></dt>
-<dd><p>Constructor. </p>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments9ArgumentsER24DiscreteOrdinatesProblemRK11LBSGroupsetR12AngleSetTypeR9FLUDSType">
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1abf1d4b453de8361129eb6f5ed9a3252b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Arguments</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span>, <a class="reference internal" href="#_CPPv4N6opensn10gpu_kernel9Arguments12AngleSetTypeE" title="opensn::gpu_kernel::Arguments::AngleSetType"><span class="n"><span class="pre">AngleSetType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_set</span></span>, <a class="reference internal" href="#_CPPv4N6opensn10gpu_kernel9Arguments9FLUDSTypeE" title="opensn::gpu_kernel::Arguments::FLUDSType"><span class="n"><span class="pre">FLUDSType</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fluds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments9ArgumentsER24DiscreteOrdinatesProblemRK11LBSGroupsetR12AngleSetTypeR9FLUDSType" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a378154cafdc1d718e196790576cde029"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*__restrict__</span> <span class="pre">mesh_data</span></span></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a121792d3f73f42eb2bf06f0c7849cb06"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*__restrict__</span> <span class="pre">mesh_data</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a63eddc603910d90286997e42fca51833"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*__restrict__</span> <span class="pre">quad_data</span></span></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1abf2d7a7bf96528de897e150c5cc72f5b"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*__restrict__</span> <span class="pre">quad_data</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a2a5f10f14dc2bb07d790e78a9d1f5b03"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">src_moment</span></span></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1af9b4a4fa8d5aa304d69125af94d0562d"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">src_moment</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1ad26e1b83078ba506dca8cbe7401b48cc"></span><span class="sig-name descname"><span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">phi</span></span></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a880c4f68a50678c2258c405aeca8bbb1"></span><span class="sig-name descname"><span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">phi</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a5d8a73ea921e96b4c4f3b783a6686cbf"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">std::uint32_t</span> <span class="pre">*__restrict__</span> <span class="pre">directions</span></span></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1ab595e6c4b804a85b0ed3db2656fb0832"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">std::uint32_t</span> <span class="pre">*__restrict__</span> <span class="pre">directions</span></span></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments13angleset_sizeE">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1af0dd41b8a70e01eb7ba165f484ea2347"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">angleset_size</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments13angleset_sizeE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a76bfe1d5c7ddd8bd4432a3748a0655a0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">angleset_size</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments13angleset_sizeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments10num_groupsE">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1aa55b7efb75333938eab381c3fec42d87"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_groups</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments10num_groupsE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1afdf2fa92d347e8bdf67bd3ac3b625a2b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_groups</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments10num_groupsE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments14groupset_startE">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a517998bd68d629e249fed7c2662da4d4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">groupset_start</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments14groupset_startE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a6eded0a4e214f62d89ac8a1de509ffb9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">groupset_start</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments14groupset_startE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments13groupset_sizeE">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1ab0e2893026ad91157c2ea67f383d2d5a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">groupset_size</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments13groupset_sizeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments9flud_dataE">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a8a0add59d35bc747450891a9a86bc9ed"></span><a class="reference internal" href="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set.html#_CPPv4N6opensn20AAHD_FLUDSPointerSetE" title="opensn::AAHD_FLUDSPointerSet"><span class="n"><span class="pre">AAHD_FLUDSPointerSet</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flud_data</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments9flud_dataE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a49c16a0c70063d91bf5f450d0dd13db1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">groupset_size</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments13groupset_sizeE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1af8a61d452a64adc85d388f0e68832ab9"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">std::uint64_t</span> <span class="pre">*__restrict__</span> <span class="pre">flud_index</span></span></dt>
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1acb5ffb2a2981c7028f40cdbcb90459e5"></span><span class="sig-name descname"><span class="pre">const</span> <span class="pre">std::uint64_t</span> <span class="pre">*__restrict__</span> <span class="pre">flud_index</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10gpu_kernel9Arguments9flud_dataE">
+<span class="target" id="structopensn_1_1gpu__kernel_1_1_arguments_1a7deb27a1fa43b57f3d40b44ae03cb1a1"></span><a class="reference internal" href="#_CPPv4N6opensn10gpu_kernel9Arguments19FLUDSPointerSetTypeE" title="opensn::gpu_kernel::Arguments::FLUDSPointerSetType"><span class="n"><span class="pre">FLUDSPointerSetType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flud_data</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10gpu_kernel9Arguments9flud_dataE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

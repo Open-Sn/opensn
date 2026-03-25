@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1_1gpu__kernel_1a030dd19000066224d23b6c62de6e4bea:
+
+Typedef opensn::gpu_kernel::NodeIndexType
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::gpu_kernel::NodeIndexType
+   :project: opensn

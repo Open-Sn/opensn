@@ -21,7 +21,6 @@ Program Listing for File cbc_angle_set.h
    namespace opensn
    {
    
-   struct Task;
    class CBC_SPDS;
    
    class CBC_AngleSet : public AngleSet
@@ -72,7 +71,7 @@ Program Listing for File cbc_angle_set.h
    protected:
      const CBC_SPDS& cbc_spds_;
      std::vector<Task> current_task_list_;
-     CBC_ASynchronousCommunicator async_comm_;
+     CBC_AsynchronousCommunicator async_comm_;
    };
    
    } // namespace opensn

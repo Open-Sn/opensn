@@ -1,0 +1,27 @@
+.. _exhale_class_classopensn_1_1_node_index:
+
+Class NodeIndex
+===============
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_structs.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::AAHD_NodeIndex`` (:ref:`exhale_class_classopensn_1_1_a_a_h_d___node_index`)
+- ``public opensn::CBCD_NodeIndex`` (:ref:`exhale_class_classopensn_1_1_c_b_c_d___node_index`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::NodeIndex
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

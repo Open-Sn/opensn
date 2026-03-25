@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad42868d85ee5c6ee1a0d2de5618c7c57:
+
+Function opensn::GetCellDataIndex
+=================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GetCellDataIndex(const std::uint64_t *, const std::uint32_t&)
+   :project: opensn

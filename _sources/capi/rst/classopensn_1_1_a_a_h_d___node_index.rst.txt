@@ -6,6 +6,15 @@ Class AAHD_NodeIndex
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h`
 
 
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::NodeIndex`` (:ref:`exhale_class_classopensn_1_1_node_index`)
+
+
 Class Documentation
 -------------------
 

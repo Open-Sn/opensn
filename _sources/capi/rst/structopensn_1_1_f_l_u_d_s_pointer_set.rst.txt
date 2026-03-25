@@ -1,0 +1,27 @@
+.. _exhale_struct_structopensn_1_1_f_l_u_d_s_pointer_set:
+
+Struct FLUDSPointerSet
+======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_structs.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Derived Types
+*************
+
+- ``public opensn::AAHD_FLUDSPointerSet`` (:ref:`exhale_struct_structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set`)
+- ``public opensn::CBCD_FLUDSPointerSet`` (:ref:`exhale_struct_structopensn_1_1_c_b_c_d___f_l_u_d_s_pointer_set`)
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::FLUDSPointerSet
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

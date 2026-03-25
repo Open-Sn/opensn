@@ -87,11 +87,20 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aahd-structs-h"><span class="std std-ref">File aahd_structs.h</span></a></p></li>
 </ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::FLUDSPointerSet</span></code> (<a class="reference internal" href="structopensn_1_1_f_l_u_d_s_pointer_set.html#exhale-struct-structopensn-1-1-f-l-u-d-s-pointer-set"><span class="std std-ref">Struct FLUDSPointerSet</span></a>)</p></li>
+</ul>
+</section>
+</section>
 <section id="struct-documentation">
 <h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn20AAHD_FLUDSPointerSetE">
-<span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_FLUDSPointerSet</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20AAHD_FLUDSPointerSetE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_FLUDSPointerSet</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structopensn_1_1_f_l_u_d_s_pointer_set.html#_CPPv4N6opensn15FLUDSPointerSetE" title="opensn::FLUDSPointerSet"><span class="n"><span class="pre">FLUDSPointerSet</span></span></a><a class="headerlink" href="#_CPPv4N6opensn20AAHD_FLUDSPointerSetE" title="Link to this definition"></a><br /></dt>
 <dd><p>Set of pointers for AAHD <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a>. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -104,18 +113,12 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20AAHD_FLUDSPointerSet22GetOutgoingFluxPointerERK14AAHD_NodeIndex">
 <span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set_1a74c40e56744a54180c84555de650b937"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetOutgoingFluxPointer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_a_a_h_d___node_index.html#_CPPv4N6opensn14AAHD_NodeIndexE" title="opensn::AAHD_NodeIndex"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">node_index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn20AAHD_FLUDSPointerSet22GetOutgoingFluxPointerERK14AAHD_NodeIndex" title="Link to this definition"></a><br /></dt>
-<dd><p>Get pointer to the outgoing angular flux (if the face is not incoming, a nullptr is returned). </p>
+<dd><p>Get pointer to the outgoing angular flux (if the face is not outgoing, a nullptr is returned). </p>
 </dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set_1ad8363ac8a512ae3a2a8c7e78c3c2cdb5"></span><span class="sig-name descname"><span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">local_psi</span>&#160;&#160; <span class="pre">=</span> <span class="pre">nullptr</span></span></dt>
-<dd><p>Pointer to local angular fluxes. </p>
-</dd></dl>
-
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
 <span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set_1ae01224b187d6bee3a06b4e36ff9f4854"></span><span class="sig-name descname"><span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">delayed_local_psi</span>&#160;&#160; <span class="pre">=</span> <span class="pre">nullptr</span></span></dt>
@@ -130,32 +133,14 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set_1acb385d3c235c1234f91a09a7c84c5afa"></span><span class="sig-name descname"><span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">nonlocal_incoming_psi</span>&#160;&#160; <span class="pre">=</span> <span class="pre">nullptr</span></span></dt>
-<dd><p>Pointer to non-local incoming angular fluxes. </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp">
 <span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set_1aa63f9a971c8f7fbc6e20602c54731a14"></span><span class="sig-name descname"><span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">nonlocal_delayed_incoming_psi_old</span>&#160;&#160; <span class="pre">=</span> <span class="pre">nullptr</span></span></dt>
 <dd><p>Pointer to non-local old delayed incoming angular fluxes. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp">
-<span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set_1acc04379446655bbd82bea1b05ee6ab88"></span><span class="sig-name descname"><span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">nonlocal_outgoing_psi</span>&#160;&#160; <span class="pre">=</span> <span class="pre">nullptr</span></span></dt>
-<dd><p>Pointer to non-local outgoing angular fluxes. </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp">
 <span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set_1a5079b0b10c8bc2104677f71f3f4eff57"></span><span class="sig-name descname"><span class="pre">double</span> <span class="pre">*__restrict__</span> <span class="pre">boundary_psi</span>&#160;&#160; <span class="pre">=</span> <span class="pre">nullptr</span></span></dt>
 <dd><p>Pointer to boundary angular fluxes. </p>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn20AAHD_FLUDSPointerSet11stride_sizeE">
-<span class="target" id="structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set_1a16b583f51812b58902a7ed07982774eb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride_size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn20AAHD_FLUDSPointerSet11stride_sizeE" title="Link to this definition"></a><br /></dt>
-<dd><p>Stride size (number of groups times number of angles). </p>
 </dd></dl>
 
 </div>

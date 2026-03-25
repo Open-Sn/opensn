@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_nonlocal_node_info:
+
+Struct NonlocalNodeInfo
+=======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_cbcd_structs.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::NonlocalNodeInfo
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

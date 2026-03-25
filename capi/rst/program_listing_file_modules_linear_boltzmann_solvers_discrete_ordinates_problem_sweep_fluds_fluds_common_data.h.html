@@ -98,6 +98,20 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SPDS</span><span class="p">;</span>
 
+<span class="cm">/**</span>
+<span class="cm"> * Get pointer to index data of a cell and the number of indices for that cell.</span>
+<span class="cm"> * \param node_indices Pointer to the flattened node index structure.</span>
+<span class="cm"> * \param cell_local_idx Cell local index.</span>
+<span class="cm"> * \return Pointer to the indices of the cell and the number of indices (total number of face nodes)</span>
+<span class="cm"> * for the cell.</span>
+<span class="cm"> */</span>
+<span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span>
+<span class="n">GetCellDataIndex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">node_indices</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">cell_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_indices</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="n">node_indices</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cell_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">cell_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]};</span>
+<span class="p">}</span>
+
 <span class="k">struct</span><span class="w"> </span><span class="nc">FaceNodalMapping</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="c1">/// Face index on the neighbor cell.</span>

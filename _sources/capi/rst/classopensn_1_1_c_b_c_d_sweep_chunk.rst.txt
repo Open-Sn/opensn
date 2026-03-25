@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_c_b_c_d_sweep_chunk:
+
+Class CBCDSweepChunk
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbcd_sweep_chunk.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::SweepChunk`` (:ref:`exhale_class_classopensn_1_1_sweep_chunk`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CBCDSweepChunk
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

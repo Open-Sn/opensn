@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a568cd7dc2e4381e50d0c40a84abe76aa:
+
+Function opensn::gpu_kernel::to_bool
+====================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::gpu_kernel::to_bool(SweepType)
+   :project: opensn

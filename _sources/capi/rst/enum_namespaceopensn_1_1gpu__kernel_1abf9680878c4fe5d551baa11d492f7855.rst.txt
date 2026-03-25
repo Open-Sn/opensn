@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1_1gpu__kernel_1abf9680878c4fe5d551baa11d492f7855:
+
+Enum SweepType
+==============
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::gpu_kernel::SweepType
+   :project: opensn
