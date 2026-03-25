@@ -32,6 +32,7 @@ public:
 private:
   void CreateSpatialRestriction();
   void CreateEnergyRestriction();
+  void CreateMultipliers();
   std::vector<std::uint32_t> GetLogicalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol);
 
   std::shared_ptr<LBSProblem> lbs_problem_;
@@ -51,6 +52,12 @@ private:
   std::optional<unsigned int> selected_group_;
   /// Selected groupset
   std::optional<unsigned int> selected_groupset_;
+  /// Constant multiplier
+  std::optional<double> const_multiplier_;
+  /// Group-wise multipliers
+  std::optional<std::vector<double>> group_multipliers_;
+  /// Multiplier applied group-wise
+  std::vector<double> multipliers_;
 
   // Helper functions for different computation types
   std::vector<double> ComputeIntegral(const std::vector<uint32_t>& cell_local_ids);

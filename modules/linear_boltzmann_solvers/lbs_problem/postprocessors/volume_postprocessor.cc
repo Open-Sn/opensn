@@ -35,6 +35,10 @@ VolumePostprocessor::GetInputParameters()
   params.AddOptionalParameter(
     "groupset", 0, "Single groupset to compute (mutually exclusive with group).");
 
+  params.AddOptionalParameter("multiplier", 1., "Constant multiplier.");
+  params.AddOptionalParameterArray(
+    "group_multipliers", std::vector<double>{}, "Group multipliers, one per group.");
+
   params.ConstrainParameterRange("value_type",
                                  AllowableRangeList::New({"integral", "max", "min", "avg"}));
 
@@ -57,7 +61,14 @@ VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
                       : std::nullopt),
     selected_groupset_(params.IsParameterValid("groupset")
                          ? std::make_optional(params.GetParamValue<unsigned int>("groupset"))
-                         : std::nullopt)
+                         : std::nullopt),
+    const_multiplier_(params.IsParameterValid("multiplier")
+                        ? std::make_optional(params.GetParamValue<double>("multiplier"))
+                        : std::nullopt),
+    group_multipliers_(
+      params.IsParameterValid("group_multipliers")
+        ? std::make_optional(params.GetParamVectorValue<double>("group_multipliers"))
+        : std::nullopt)
 {
   if (selected_group_.has_value() && selected_groupset_.has_value())
     throw std::invalid_argument("'group' and 'groupset' cannot be specified together");
@@ -85,6 +96,7 @@ VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
 
   CreateSpatialRestriction();
   CreateEnergyRestriction();
+  CreateMultipliers();
 
   auto n_lvs = std::max(static_cast<std::size_t>(1), logical_volumes_.size());
   values_.resize(n_lvs);
@@ -125,6 +137,31 @@ VolumePostprocessor::CreateSpatialRestriction()
 
   OpenSnLogicalErrorIf(cell_local_ids_.empty(),
                        "No mesh cells were selected by a VolumePostprocessor.");
+}
+
+void
+VolumePostprocessor::CreateMultipliers()
+{
+  if (not const_multiplier_.has_value() and not group_multipliers_.has_value())
+  {
+    multipliers_ = std::vector<double>(groups_.size(), 1.);
+  }
+  else if (const_multiplier_.has_value() and not group_multipliers_.has_value())
+  {
+    multipliers_ = std::vector<double>(groups_.size(), const_multiplier_.value());
+  }
+  else if (not const_multiplier_.has_value() and group_multipliers_.has_value())
+  {
+    OpenSnInvalidArgumentIf(group_multipliers_.value().size() != lbs_problem_->GetNumGroups(),
+                            "Must provide one multiplier per group");
+    multipliers_.resize(groups_.size());
+    for (std::size_t i = 0; i < groups_.size(); i++)
+    {
+      multipliers_[i] = group_multipliers_.value()[groups_[i]];
+    }
+  }
+  else
+    throw std::logic_error("Can specify either 'multiplier' or 'group_multipliers', not both.");
 }
 
 std::vector<std::uint32_t>
@@ -232,7 +269,8 @@ VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids
         for (std::size_t j = 0; j < num_nodes; ++j)
           phi_h += fe_vol_data.ShapeValue(j, qp) * nodal_value[j];
 
-        local_integral[k] += phi_h * coord(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);
+        local_integral[k] +=
+          multipliers_[k] * phi_h * coord(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);
       }
     }
   }
@@ -264,7 +302,7 @@ VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
         const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
-        local_max[k] = std::max(local_max[k], phi[imap]);
+        local_max[k] = std::max(local_max[k], multipliers_[k] * phi[imap]);
       }
     }
   }
@@ -296,7 +334,7 @@ VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
         const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
-        local_min[k] = std::min(local_min[k], phi[imap]);
+        local_min[k] = std::min(local_min[k], multipliers_[k] * phi[imap]);
       }
     }
   }
