@@ -1,0 +1,59 @@
+name: Coverage
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: [self-hosted]
+    steps:
+      - uses: actions/checkout@v4
+      - name: build
+        shell: bash
+        run: |
+          module load cuda/13.0 python3/3.12.3 opensn/gcc/14
+          cmake -DOPENSN_WITH_PYTHON_MODULE=ON -DOPENSN_WITH_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89 --preset coverage
+          cmake --build --preset coverage -j64
+      - name: test
+        shell: bash
+        run: |
+          module load cuda/13.0 python3/3.12.3 opensn/gcc/14
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test \
+            --run-log "$RUNNER_TEMP/logs/nightly_coverage_log.txt"
+      - name: gpu tests
+        shell: bash
+        run: |
+          module load cuda/13.0 python3/3.12.3 opensn/gcc/14
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d test/python --gpu -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test \
+            --run-log "$RUNNER_TEMP/logs/nightly_coverage_gpu_log.txt"
+      - name: unit tests
+        shell: bash
+        run: |
+          module load cuda/13.0 python3/3.12.3 opensn/gcc/14
+          ./build-coverage/test/opensn-unit
+      - name: test tutorials
+        shell: bash
+        run: |
+          module load cuda/13.0 python3/3.12.3 opensn/gcc/14
+          export PYTHONPATH=$PWD/build-coverage
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test --engine=jupyter \
+            --run-log "$RUNNER_TEMP/logs/nightly_coverage_tutorials_log.txt"
+      - name: coveralls
+        shell: bash
+        run: |
+          module load cuda/13.0 python3/3.12.3 opensn/gcc/14
+          gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|python|modules)/' --coveralls coverage.json
+          /opt/local/opensn/coveralls/bin/coveralls -c /opt/local/opensn/coveralls/.coveralls.yml -f coverage.json
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-logs-coverage
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7

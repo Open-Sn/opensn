@@ -1,7 +1,7 @@
 [![Regression Tests](https://github.com/Open-Sn/openSn/actions/workflows/regression.yaml/badge.svg)](https://github.com/Open-Sn/openSn/actions/workflows/regression.yaml)
 [![Weekly Tests](https://github.com/Open-Sn/openSn/actions/workflows/weekly.yaml/badge.svg)](https://github.com/Open-Sn/openSn/actions/workflows/weekly.yaml)
 [![Nightly Builds](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml/badge.svg)](https://github.com/Open-Sn/opensn/actions/workflows/builds.yaml)
-[![Coverage Status](https://coveralls.io/repos/github/Open-Sn/opensn/badge.svg)](https://coveralls.io/github/Open-Sn/opensn)
+[![Coverage Status](https://coveralls.io/repos/github/Open-Sn/opensn/badge.svg?branch=main)](https://coveralls.io/github/Open-Sn/opensn?branch=main)
 
 <p align="center">
   <img src="doc/source/gallery/images/CoolPics/banner.png" width="700">
