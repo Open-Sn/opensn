@@ -2,6 +2,8 @@
 #include "test/unit/opensn_unit_test.h"
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/quadratures/gausschebyshev_quadrature.h"
+#include "framework/math/quadratures/spatial/line_quadrature.h"
+#include "framework/math/quadratures/spatial/triangle_quadrature.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;
@@ -82,4 +84,51 @@ TEST_F(QuadratureTest, Ylm)
 {
   EXPECT_NEAR(Ylm(0, 0, 45 * M_PI / 180.0, 45 * M_PI / 180.0), 1.0, 1e-12);
   EXPECT_NEAR(Ylm(1, 0, 45 * M_PI / 180.0, 45 * M_PI / 180.0), 0.70710678118655, 1e-12);
+}
+
+TEST_F(QuadratureTest, GaussQuadratureSetRange)
+{
+  GaussLegendreQuadrature quad(QuadratureOrder::FIRST);
+  quad.SetRange({2.0, 4.0});
+
+  ASSERT_EQ(quad.qpoints.size(), 1);
+  ASSERT_EQ(quad.weights.size(), 1);
+  EXPECT_NEAR(quad.qpoints[0].x, 3.0, 1e-12);
+  EXPECT_NEAR(quad.weights[0], 2.0, 1e-12);
+}
+
+TEST_F(QuadratureTest, LineQuadratureSetRange)
+{
+  LineQuadrature quad(QuadratureOrder::FIRST);
+
+  ASSERT_EQ(quad.qpoints.size(), 1);
+  ASSERT_EQ(quad.weights.size(), 1);
+  EXPECT_NEAR(quad.qpoints[0].x, 0.5, 1e-12);
+  EXPECT_NEAR(quad.weights[0], 1.0, 1e-12);
+
+  quad.SetRange({-1.0, 1.0});
+  EXPECT_NEAR(quad.qpoints[0].x, 0.0, 1e-12);
+  EXPECT_NEAR(quad.weights[0], 2.0, 1e-12);
+
+  EXPECT_THROW(quad.SetRange({1.0, 1.0}), std::invalid_argument);
+}
+
+TEST_F(QuadratureTest, TriangleQuadrature)
+{
+  TriangleQuadrature q1(QuadratureOrder::FIRST);
+  ASSERT_EQ(q1.qpoints.size(), 1);
+  ASSERT_EQ(q1.weights.size(), 1);
+  EXPECT_NEAR(q1.weights[0], 0.5, 1e-12);
+
+  TriangleQuadrature q2(QuadratureOrder::SECOND);
+  ASSERT_EQ(q2.qpoints.size(), 3);
+  ASSERT_EQ(q2.weights.size(), 3);
+  EXPECT_NEAR(q2.weights[0] + q2.weights[1] + q2.weights[2], 0.5, 1e-12);
+
+  EXPECT_THROW(
+    {
+      TriangleQuadrature bad_quad(QuadratureOrder::FIFTH);
+      (void)bad_quad;
+    },
+    std::invalid_argument);
 }
