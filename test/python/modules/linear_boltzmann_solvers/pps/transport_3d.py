@@ -102,38 +102,57 @@ if __name__ == "__main__":
     ss_solver.Initialize()
     ss_solver.Execute()
 
+    multipliers = [0.0 for _ in range(num_groups)]
+    multipliers[0] = 2.
+    multipliers[6] = 3.
     # PPS over whole domain
-    pps_whole_min = VolumePostprocessor(problem=phys, value_type="min")
+    pps_whole_min = VolumePostprocessor(
+        problem=phys,
+        value_type="min",
+        group_multipliers=multipliers
+    )
     pps_whole_min.Execute()
 
-    pps_whole_max = VolumePostprocessor(problem=phys, value_type="max")
+    pps_whole_max = VolumePostprocessor(
+        problem=phys,
+        value_type="max",
+        group_multipliers=multipliers
+    )
     pps_whole_max.Execute()
 
-    pps_whole_avg = VolumePostprocessor(problem=phys, value_type="avg")
+    pps_whole_avg = VolumePostprocessor(
+        problem=phys,
+        value_type="avg",
+        group_multipliers=multipliers
+    )
     pps_whole_avg.Execute()
 
-    pps_whole_int = VolumePostprocessor(problem=phys, value_type="integral")
+    pps_whole_int = VolumePostprocessor(
+        problem=phys,
+        value_type="integral",
+        group_multipliers=multipliers
+    )
     pps_whole_int.Execute()
 
     min = pps_whole_min.GetValue()[0]
     assert len(min) == num_groups
-    assert math.isclose(min[0], 2505.23468, rel_tol=1e-6)
-    assert math.isclose(min[6], 5010.469391, rel_tol=1e-6)
+    assert math.isclose(min[0], 2. * 2505.23468, rel_tol=1e-6)
+    assert math.isclose(min[6], 3. * 5010.469391, rel_tol=1e-6)
 
     max = pps_whole_max.GetValue()[0]
     assert len(max) == num_groups
-    assert math.isclose(max[0], 2551.382249, rel_tol=1e-6)
-    assert math.isclose(max[6], 5102.764544, rel_tol=1e-6)
+    assert math.isclose(max[0], 2. * 2551.382249, rel_tol=1e-6)
+    assert math.isclose(max[6], 3. * 5102.764544, rel_tol=1e-6)
 
     avg = pps_whole_avg.GetValue()[0]
     assert len(avg) == num_groups
-    assert math.isclose(avg[0], 2525.183749, rel_tol=1e-6)
-    assert math.isclose(avg[6], 5050.367541, rel_tol=1e-6)
+    assert math.isclose(avg[0], 2. * 2525.183749, rel_tol=1e-6)
+    assert math.isclose(avg[6], 3. * 5050.367541, rel_tol=1e-6)
 
     int = pps_whole_int.GetValue()[0]
     assert len(int) == num_groups
-    assert math.isclose(int[0], 2525.183749, rel_tol=1e-6)
-    assert math.isclose(int[6], 5050.367541, rel_tol=1e-6)
+    assert math.isclose(int[0], 2. * 2525.183749, rel_tol=1e-6)
+    assert math.isclose(int[6], 3. * 5050.367541, rel_tol=1e-6)
 
     # PPS over a mesh block
     pps_blk2_min = VolumePostprocessor(problem=phys, value_type="min", block_ids=[2])

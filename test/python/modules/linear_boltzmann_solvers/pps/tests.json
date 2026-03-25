@@ -8,25 +8,25 @@
       {
         "type": "KeyValuePair",
         "key": "whole: min =",
-        "goldvalue": 0.028303055,
+        "goldvalue": 0.05660611,
         "abs_tol": 1e-8
       },
       {
         "type": "KeyValuePair",
         "key": "whole: max =",
-        "goldvalue": 1.96717796,
+        "goldvalue": 3.93435592,
         "abs_tol": 1e-8
       },
       {
         "type": "KeyValuePair",
         "key": "whole: avg =",
-        "goldvalue": 0.958822496,
+        "goldvalue": 1.917644992,
         "abs_tol": 1e-8
       },
       {
         "type": "KeyValuePair",
         "key": "whole: int =",
-        "goldvalue": 7.67057997,
+        "goldvalue": 15.34115994,
         "abs_tol": 1e-8
       },
       {

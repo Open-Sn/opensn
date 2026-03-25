@@ -91,16 +91,32 @@ if __name__ == "__main__":
     ss_solver.Execute()
 
     # PPS over whole domain
-    pps_whole_min = VolumePostprocessor(problem=phys, value_type="min")
+    pps_whole_min = VolumePostprocessor(
+        problem=phys,
+        value_type="min",
+        multiplier=2.0
+    )
     pps_whole_min.Execute()
 
-    pps_whole_max = VolumePostprocessor(problem=phys, value_type="max")
+    pps_whole_max = VolumePostprocessor(
+        problem=phys,
+        value_type="max",
+        multiplier=2.0
+    )
     pps_whole_max.Execute()
 
-    pps_whole_avg = VolumePostprocessor(problem=phys, value_type="avg")
+    pps_whole_avg = VolumePostprocessor(
+        problem=phys,
+        value_type="avg",
+        multiplier=2.0
+    )
     pps_whole_avg.Execute()
 
-    pps_whole_int = VolumePostprocessor(problem=phys, value_type="integral")
+    pps_whole_int = VolumePostprocessor(
+        problem=phys,
+        value_type="integral",
+        multiplier=2.0
+    )
     pps_whole_int.Execute()
 
     if rank == 0:
