@@ -23,7 +23,6 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
   mgxs.num_precursors_ = xsf.num_precursors_;
   mgxs.inv_velocity_ = xsf.inv_velocity_;
   mgxs.e_bounds_ = xsf.e_bounds_;
-  mgxs.delta_e_valid_ = false;
   mgxs.sigma_t_ = xsf.sigma_t_;
   mgxs.sigma_a_ = xsf.sigma_a_;
   mgxs.chi_ = xsf.chi_;

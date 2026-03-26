@@ -97,6 +97,13 @@ public:
                       int groupset_id,
                       unsigned int group_idx) override;
 
+  double* PsiIncomingE(std::uint32_t cell_local_id,
+                       unsigned int face_num,
+                       unsigned int fi,
+                       unsigned int angle_num,
+                       int groupset_id,
+                       unsigned int group_num) override;
+
   double* PsiOutgoing(uint64_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
@@ -105,6 +112,12 @@ public:
 
   std::uint64_t
   GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing) override;
+
+  double* PsiOutgoingE(uint64_t cell_local_id,
+                       unsigned int face_num,
+                       unsigned int fi,
+                       unsigned int angle_num,
+                       int groupset_id) override;
 
   void InitializeReflectingMap(const std::vector<LBSGroupset>& groupsets) override;
   void InitializeAngleDependent(const std::vector<LBSGroupset>& groupsets) override;
@@ -139,6 +152,8 @@ protected:
     std::uint64_t node_stride = 0;
     /// Offset separating current and old boundary flux.
     std::uint64_t old_stride = 0;
+    /// Offset from the current flux block to the current angular slope block.
+    std::uint64_t slope_stride = 0;
   };
   /// List of data per groupset.
   std::vector<ExtraData> extra_data_;
@@ -155,6 +170,15 @@ private:
 
   template <bool ApplyOnOldFlux, typename Fn>
   void ForEachDelayedAngularFlux(int groupset_id, Fn&& fn) const;
+
+  template <bool ApplyOnOldFlux, typename Fn>
+  void ForEachDelayedAngularSlope(int groupset_id, Fn&& fn);
+
+  template <bool ApplyOnOldFlux, typename Fn>
+  void ForEachDelayedAngularSlope(int groupset_id, Fn&& fn) const;
+
+  template <typename Fn>
+  void AppendDelayedAngularFields(int groupset_id, bool old_store, Fn&& fn) const;
 
 private:
   static constexpr double epsilon_ = 1.0e-8;
