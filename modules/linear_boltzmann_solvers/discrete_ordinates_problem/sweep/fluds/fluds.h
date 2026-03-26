@@ -39,20 +39,32 @@ public:
 
   std::span<double>& DelayedLocalPsi() { return delayed_local_psi_view_; }
   std::span<double>& DelayedLocalPsiOld() { return delayed_local_psi_old_view_; }
+  std::span<double>& DelayedLocalPsiE() { return delayed_local_psiE_view_; }
+  std::span<double>& DelayedLocalPsiEOld() { return delayed_local_psiE_old_view_; }
   virtual void SetDelayedLocalPsiOldToNew() {}
   virtual void SetDelayedLocalPsiNewToOld() {}
 
   std::vector<std::span<double>>& DeplocIOutgoingPsi() { return deplocI_outgoing_psi_view_; }
+  std::vector<std::span<double>>& DeplocIOutgoingPsiE() { return deplocI_outgoing_psiE_view_; }
 
   std::vector<std::span<double>>& PrelocIOutgoingPsi() { return prelocI_outgoing_psi_view_; }
+  std::vector<std::span<double>>& PrelocIOutgoingPsiE() { return prelocI_outgoing_psiE_view_; }
 
   std::vector<std::span<double>>& DelayedPrelocIOutgoingPsi()
   {
     return delayed_prelocI_outgoing_psi_view_;
   }
+  std::vector<std::span<double>>& DelayedPrelocIOutgoingPsiE()
+  {
+    return delayed_prelocI_outgoing_psiE_view_;
+  }
   std::vector<std::span<double>>& DelayedPrelocIOutgoingPsiOld()
   {
     return delayed_prelocI_outgoing_psi_old_view_;
+  }
+  std::vector<std::span<double>>& DelayedPrelocIOutgoingPsiEOld()
+  {
+    return delayed_prelocI_outgoing_psiE_old_view_;
   }
   virtual void SetDelayedOutgoingPsiOldToNew() {}
   virtual void SetDelayedOutgoingPsiNewToOld() {}
@@ -67,10 +79,16 @@ protected:
 
   std::span<double> delayed_local_psi_view_;
   std::span<double> delayed_local_psi_old_view_;
+  std::span<double> delayed_local_psiE_view_;
+  std::span<double> delayed_local_psiE_old_view_;
   std::vector<std::span<double>> deplocI_outgoing_psi_view_;
+  std::vector<std::span<double>> deplocI_outgoing_psiE_view_;
   std::vector<std::span<double>> prelocI_outgoing_psi_view_;
+  std::vector<std::span<double>> prelocI_outgoing_psiE_view_;
   std::vector<std::span<double>> delayed_prelocI_outgoing_psi_view_;
   std::vector<std::span<double>> delayed_prelocI_outgoing_psi_old_view_;
+  std::vector<std::span<double>> delayed_prelocI_outgoing_psiE_view_;
+  std::vector<std::span<double>> delayed_prelocI_outgoing_psiE_old_view_;
 };
 
 } // namespace opensn

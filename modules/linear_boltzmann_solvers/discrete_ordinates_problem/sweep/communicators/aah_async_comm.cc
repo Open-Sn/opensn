@@ -33,6 +33,8 @@ AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(
     data_initialized_(false),
     upstream_data_initialized_(false)
 {
+  // psi and psiE messages use separate tag blocks.
+  num_message_tag_blocks_ = 2;
   BuildMessageStructure();
 }
 
@@ -140,19 +142,24 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData()
   for (std::size_t i = 0; i < num_delayed_dependencies; ++i)
   {
     auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[i];
+    auto& upstream_psiE = fluds_.DelayedPrelocIOutgoingPsiE()[i];
 
     for (int m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      const int tag = GetMessageTag(m);
+      const int psi_tag = GetMessageTag(m, 0);
+      const int psiE_tag = GetMessageTag(m, 1);
       if (not delayed_preloc_msg_received_[i][m])
       {
-        if (not comm.iprobe(source, tag))
+        if (not comm.iprobe(source, psi_tag) or not comm.iprobe(source, psiE_tag))
         {
           all_messages_received = false;
           continue;
         }
-        if (not comm.recv<double>(source, tag, &upstream_psi[block_pos], size).error())
+        const bool psi_ok = not comm.recv<double>(source, psi_tag, &upstream_psi[block_pos], size).error();
+        const bool psiE_ok =
+          not comm.recv<double>(source, psiE_tag, &upstream_psiE[block_pos], size).error();
+        if (psi_ok and psiE_ok)
           delayed_preloc_msg_received_[i][m] = true;
       }
     }
@@ -180,19 +187,24 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi()
   for (std::size_t i = 0; i < num_dependencies; ++i)
   {
     auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[i];
+    auto& upstream_psiE = fluds_.PrelocIOutgoingPsiE()[i];
 
     for (int m = 0; m < preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      const int tag = GetMessageTag(m);
+      const int psi_tag = GetMessageTag(m, 0);
+      const int psiE_tag = GetMessageTag(m, 1);
       if (not preloc_msg_received_[i][m])
       {
-        if (not comm.iprobe(source, tag))
+        if (not comm.iprobe(source, psi_tag) or not comm.iprobe(source, psiE_tag))
         {
           all_messages_received = false;
           continue;
         }
-        if (not comm.recv<double>(source, tag, &upstream_psi[block_pos], size).error())
+        const bool psi_ok = not comm.recv<double>(source, psi_tag, &upstream_psi[block_pos], size).error();
+        const bool psiE_ok =
+          not comm.recv<double>(source, psiE_tag, &upstream_psiE[block_pos], size).error();
+        if (psi_ok and psiE_ok)
           preloc_msg_received_[i][m] = true;
       }
     }
@@ -216,12 +228,15 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi()
   for (std::size_t i = 0, req = 0; i < num_successors; ++i)
   {
     const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
+    const auto& outgoing_psiE = fluds_.DeplocIOutgoingPsiE()[i];
 
     for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
-      const int tag = GetMessageTag(m);
-      deploc_msg_request_[req] = comm.isend(dest, tag, &outgoing_psi[block_pos], size);
+      const int psi_tag = GetMessageTag(m, 0);
+      const int psiE_tag = GetMessageTag(m, 1);
+      deploc_msg_request_[req] = comm.isend(dest, psi_tag, &outgoing_psi[block_pos], size);
+      comm.send<double>(dest, psiE_tag, &outgoing_psiE[block_pos], size);
     }
   }
 }

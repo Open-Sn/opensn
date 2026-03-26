@@ -129,9 +129,6 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   else
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
-  if (options_.csda_enabled && opensn::mpi_comm.size() > 1)
-    throw std::runtime_error(GetName() + ": CSDA is currently supported only in serial mode.");
-
   if (params.Has("boundary_conditions"))
   {
     const auto& bcs = params.GetParam("boundary_conditions");

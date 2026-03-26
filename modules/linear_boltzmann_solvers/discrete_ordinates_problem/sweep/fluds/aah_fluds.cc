@@ -351,6 +351,7 @@ AAH_FLUDS::ClearLocalAndReceivePsi()
   prelocI_outgoing_psi_.clear();
   prelocI_outgoing_psiE_.clear();
   prelocI_outgoing_psi_view_.clear();
+  prelocI_outgoing_psiE_view_.clear();
 }
 
 void
@@ -359,6 +360,7 @@ AAH_FLUDS::ClearSendPsi()
   deplocI_outgoing_psi_.clear();
   deplocI_outgoing_psiE_.clear();
   deplocI_outgoing_psi_view_.clear();
+  deplocI_outgoing_psiE_view_.clear();
 }
 
 void
@@ -392,6 +394,7 @@ AAH_FLUDS::AllocateOutgoingPsi()
       common_data_.deplocI_face_dof_count_[deplocI] * num_groups_and_angles_, 0.0);
   }
   UpdateRange(deplocI_outgoing_psi_, deplocI_outgoing_psi_view_);
+  UpdateRange(deplocI_outgoing_psiE_, deplocI_outgoing_psiE_view_);
 }
 
 void
@@ -407,7 +410,9 @@ AAH_FLUDS::AllocateDelayedLocalPsi()
   delayed_local_psi_old_view_ = std::span<double>(delayed_local_psi_old_);
 
   delayed_local_psiE_.resize(delayed_local_psi_size, 0.0);
+  delayed_local_psiE_view_ = std::span<double>(delayed_local_psiE_);
   delayed_local_psiE_old_.resize(delayed_local_psi_size, 0.0);
+  delayed_local_psiE_old_view_ = std::span<double>(delayed_local_psiE_old_);
 }
 
 void
@@ -424,6 +429,7 @@ AAH_FLUDS::AllocatePrelocIOutgoingPsi()
       common_data_.prelocI_face_dof_count_[prelocI] * num_groups_and_angles_, 0.0);
   }
   UpdateRange(prelocI_outgoing_psi_, prelocI_outgoing_psi_view_);
+  UpdateRange(prelocI_outgoing_psiE_, prelocI_outgoing_psiE_view_);
 }
 
 void
@@ -448,6 +454,8 @@ AAH_FLUDS::AllocateDelayedPrelocIOutgoingPsi()
   }
   UpdateRange(delayed_prelocI_outgoing_psi_, delayed_prelocI_outgoing_psi_view_);
   UpdateRange(delayed_prelocI_outgoing_psi_old_, delayed_prelocI_outgoing_psi_old_view_);
+  UpdateRange(delayed_prelocI_outgoing_psiE_, delayed_prelocI_outgoing_psiE_view_);
+  UpdateRange(delayed_prelocI_outgoing_psiE_old_, delayed_prelocI_outgoing_psiE_old_view_);
 }
 
 void
@@ -456,6 +464,7 @@ AAH_FLUDS::SetDelayedOutgoingPsiNewToOld()
   delayed_prelocI_outgoing_psi_old_ = delayed_prelocI_outgoing_psi_;
   UpdateRange(delayed_prelocI_outgoing_psi_old_, delayed_prelocI_outgoing_psi_old_view_);
   delayed_prelocI_outgoing_psiE_old_ = delayed_prelocI_outgoing_psiE_;
+  UpdateRange(delayed_prelocI_outgoing_psiE_old_, delayed_prelocI_outgoing_psiE_old_view_);
 }
 
 void
@@ -464,6 +473,7 @@ AAH_FLUDS::SetDelayedOutgoingPsiOldToNew()
   delayed_prelocI_outgoing_psi_ = delayed_prelocI_outgoing_psi_old_;
   UpdateRange(delayed_prelocI_outgoing_psi_, delayed_prelocI_outgoing_psi_view_);
   delayed_prelocI_outgoing_psiE_ = delayed_prelocI_outgoing_psiE_old_;
+  UpdateRange(delayed_prelocI_outgoing_psiE_, delayed_prelocI_outgoing_psiE_view_);
 }
 
 void
@@ -472,6 +482,7 @@ AAH_FLUDS::SetDelayedLocalPsiNewToOld()
   delayed_local_psi_old_ = delayed_local_psi_;
   delayed_local_psi_old_view_ = std::span<double>(delayed_local_psi_old_);
   delayed_local_psiE_old_ = delayed_local_psiE_;
+  delayed_local_psiE_old_view_ = std::span<double>(delayed_local_psiE_old_);
 }
 
 void
@@ -480,6 +491,7 @@ AAH_FLUDS::SetDelayedLocalPsiOldToNew()
   delayed_local_psi_ = delayed_local_psi_old_;
   delayed_local_psi_view_ = std::span<double>(delayed_local_psi_);
   delayed_local_psiE_ = delayed_local_psiE_old_;
+  delayed_local_psiE_view_ = std::span<double>(delayed_local_psiE_);
 }
 
 } // namespace opensn
