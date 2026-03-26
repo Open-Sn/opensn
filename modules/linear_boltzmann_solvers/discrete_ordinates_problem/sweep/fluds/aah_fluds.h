@@ -28,6 +28,10 @@ public:
                       int outb_face_counter,
                       std::size_t face_dof,
                       std::size_t n);
+  double* OutgoingPsiE(std::size_t cell_so_index,
+                       int outb_face_counter,
+                       std::size_t face_dof,
+                       std::size_t n);
 
   /**
    * Given a sweep ordering index, the incoming face counter, the incoming face dof, this function
@@ -39,9 +43,15 @@ public:
                     std::size_t face_dof,
                     unsigned int g,
                     std::size_t n);
+  double* UpwindPsiE(std::size_t cell_so_index,
+                     int inc_face_counter,
+                     std::size_t face_dof,
+                     unsigned int g,
+                     std::size_t n);
 
   /// Given a outbound face counter this method returns a pointer to the location
   double* NLOutgoingPsi(int outb_face_count, std::size_t face_dof, std::size_t n);
+  double* NLOutgoingPsiE(int outb_face_count, std::size_t face_dof, std::size_t n);
 
   /**
    * Given a sweep ordering index, the incoming face counter, the incoming face dof, this function
@@ -49,6 +59,8 @@ public:
    */
   double*
   NLUpwindPsi(int nonl_inc_face_counter, std::size_t face_dof, unsigned int g, std::size_t n);
+  double*
+  NLUpwindPsiE(int nonl_inc_face_counter, std::size_t face_dof, unsigned int g, std::size_t n);
 
   size_t GetPrelocIFaceDOFCount(std::size_t prelocI) const;
   size_t GetDelayedPrelocIFaceDOFCount(std::size_t prelocI) const;
@@ -80,14 +92,21 @@ private:
   size_t delayed_local_psi_Gn_block_strideG_; // Custom G
 
   std::vector<std::vector<double>> local_psi_;
+  std::vector<std::vector<double>> local_psiE_;
   std::vector<double> delayed_local_psi_;
   std::vector<double> delayed_local_psi_old_;
+  std::vector<double> delayed_local_psiE_;
+  std::vector<double> delayed_local_psiE_old_;
   std::vector<std::vector<double>> deplocI_outgoing_psi_;
   std::vector<std::vector<double>> prelocI_outgoing_psi_;
   std::vector<std::vector<double>> boundryI_incoming_psi_;
+  std::vector<std::vector<double>> deplocI_outgoing_psiE_;
+  std::vector<std::vector<double>> prelocI_outgoing_psiE_;
 
   std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_;
   std::vector<std::vector<double>> delayed_prelocI_outgoing_psi_old_;
+  std::vector<std::vector<double>> delayed_prelocI_outgoing_psiE_;
+  std::vector<std::vector<double>> delayed_prelocI_outgoing_psiE_old_;
 };
 
 } // namespace opensn
