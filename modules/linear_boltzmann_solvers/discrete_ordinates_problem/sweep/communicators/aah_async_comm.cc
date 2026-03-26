@@ -59,6 +59,9 @@ AAH_ASynchronousCommunicator::ClearDownstreamBuffers()
   if (not mpi::test_all(deploc_msg_request_))
     return;
 
+  if (not mpi::test_all(deploc_msgE_request_))
+    return;
+
   done_sending_ = true;
 
   fluds_.ClearSendPsi();
@@ -121,6 +124,7 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
                                                             std::plus<>{},
                                                             [](const auto& v) { return v.size(); });
   deploc_msg_request_.resize(total_deploc_messages);
+  deploc_msgE_request_.resize(total_deploc_messages);
 }
 
 void
@@ -156,7 +160,8 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData()
           all_messages_received = false;
           continue;
         }
-        const bool psi_ok = not comm.recv<double>(source, psi_tag, &upstream_psi[block_pos], size).error();
+        const bool psi_ok =
+          not comm.recv<double>(source, psi_tag, &upstream_psi[block_pos], size).error();
         const bool psiE_ok =
           not comm.recv<double>(source, psiE_tag, &upstream_psiE[block_pos], size).error();
         if (psi_ok and psiE_ok)
@@ -201,7 +206,8 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi()
           all_messages_received = false;
           continue;
         }
-        const bool psi_ok = not comm.recv<double>(source, psi_tag, &upstream_psi[block_pos], size).error();
+        const bool psi_ok =
+          not comm.recv<double>(source, psi_tag, &upstream_psi[block_pos], size).error();
         const bool psiE_ok =
           not comm.recv<double>(source, psiE_tag, &upstream_psiE[block_pos], size).error();
         if (psi_ok and psiE_ok)
@@ -236,7 +242,7 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi()
       const int psi_tag = GetMessageTag(m, 0);
       const int psiE_tag = GetMessageTag(m, 1);
       deploc_msg_request_[req] = comm.isend(dest, psi_tag, &outgoing_psi[block_pos], size);
-      comm.send<double>(dest, psiE_tag, &outgoing_psiE[block_pos], size);
+      deploc_msgE_request_[req] = comm.isend(dest, psiE_tag, &outgoing_psiE[block_pos], size);
     }
   }
 }

@@ -43,7 +43,6 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   // Group structure
   H5ReadDataset1D<double>(file.Id(), "/group structure", mgxs.e_bounds_);
   std::reverse(mgxs.e_bounds_.begin(), mgxs.e_bounds_.end());
-  mgxs.delta_e_valid_ = false;
 
   // Temperature
   log.Log0() << file_name + " cross-section data evaluated at " << temperature << "K\n";

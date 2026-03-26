@@ -292,14 +292,6 @@ WrapMultiGroupXS(py::module& xs)
     py::arg("name")
   );
   multigroup_xs.def(
-    "set_custom_xs",
-    [](MultiGroupXS& self, const std::string& name, const std::vector<double>& values)
-    { self.SetCustomXS(name, values); },
-    "Set a custom XS vector.",
-    py::arg("name"),
-    py::arg("values")
-  );
-  multigroup_xs.def(
     "custom_xs_names",
     &MultiGroupXS::GetCustomXSNames,
     "Get a list of custom XS entries."
@@ -308,18 +300,6 @@ WrapMultiGroupXS(py::module& xs)
     "inv_velocity",
     XS_GETTER(GetInverseVelocity),
     "Get inverse velocity."
-  );
-  multigroup_xs.def_property_readonly(
-    "energy_bounds",
-    XS_GETTER(GetEnergyBounds),
-    "Get energy group boundaries.",
-    py::keep_alive<0, 1>()
-  );
-  multigroup_xs.def_property_readonly(
-    "delta_e",
-    XS_GETTER(GetDeltaE),
-    "Get energy group widths.",
-    py::keep_alive<0, 1>()
   );
   // clang-format on
 }

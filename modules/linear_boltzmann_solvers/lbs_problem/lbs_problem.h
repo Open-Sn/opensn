@@ -446,7 +446,6 @@ private:
   /// Initializes materials
   void InitializeXSMap(const InputParameters& params);
   void InitializeMaterials();
-  void ValidateCSDAGroupOrdering() const;
 
   /// Initialize sources
   void InitializeSources(const InputParameters& params);
