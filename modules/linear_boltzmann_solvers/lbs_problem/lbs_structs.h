@@ -73,6 +73,9 @@ struct LBSOptions
   double ags_tolerance = 1.0e-6;
 
   double power_default_kappa = 3.20435e-11; // 200MeV to Joule
+  double power_normalization = -1.0;
+
+  bool csda_enabled = false;
 
   std::string field_function_prefix_option = "prefix";
   std::string field_function_prefix; // Default is empty

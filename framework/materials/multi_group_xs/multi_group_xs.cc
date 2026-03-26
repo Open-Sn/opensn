@@ -97,7 +97,10 @@ MultiGroupXS::Combine(
   mgxs.sigma_a_.assign(n_grps, 0.0);
   std::map<std::string, std::vector<double>> combined_custom_xs;
   mgxs.energy_deposition_.assign(n_grps, 0.0);
+  mgxs.stopping_power_.assign(n_grps, 0.0);
   bool has_energy_deposition = false;
+  bool has_stopping_power = false;
+  mgxs.custom_xs_.clear();
 
   // Init transfer matrices only if at least one exists
   if (std::any_of(xsecs.begin(),
@@ -163,6 +166,11 @@ MultiGroupXS::Combine(
         has_energy_deposition = true;
         mgxs.energy_deposition_[g] += density * xsecs[x]->GetEnergyDeposition()[g];
       }
+      if (not xsecs[x]->GetStoppingPower().empty())
+      {
+        has_stopping_power = true;
+        mgxs.stopping_power_[g] += density * xsecs[x]->GetStoppingPower()[g];
+      }
 
       if (xs->IsFissionable())
       {
@@ -180,6 +188,15 @@ MultiGroupXS::Combine(
         }
       }
     } // for g
+
+    // Combine custom cross sections (scaled by density like other xs)
+    const auto custom_names = xs->GetCustomXSNames();
+    for (const auto& name : custom_names)
+    {
+      const auto& vals = xs->GetCustomXS(name);
+      if (vals.size() != n_grps)
+        throw std::runtime_error("MultiGroupXS: Custom XS size mismatch for " + name);
+    }
 
     // Combine precursor data
     // Here, all precursors across all materials are stored. The decay constants and delayed
@@ -239,6 +256,8 @@ MultiGroupXS::Combine(
   mgxs.custom_xs_ = std::move(combined_custom_xs);
   if (not has_energy_deposition)
     mgxs.energy_deposition_.clear();
+  if (not has_stopping_power)
+    mgxs.stopping_power_.clear();
   mgxs.ComputeDiffusionParameters();
 
   return mgxs;
@@ -257,6 +276,7 @@ MultiGroupXS::Reset()
   sigma_t_.clear();
   sigma_a_.clear();
   energy_deposition_.clear();
+  stopping_power_.clear();
   transfer_matrices_.clear();
   transposed_transfer_matrices_.clear();
 
@@ -270,6 +290,9 @@ MultiGroupXS::Reset()
   precursors_.clear();
 
   inv_velocity_.clear();
+  e_bounds_.clear();
+  delta_e_cache_.clear();
+  delta_e_valid_ = false;
 
   // Diffusion quantities
   diffusion_initialized_ = false;
@@ -287,6 +310,8 @@ MultiGroupXS::Reset()
   base_nu_delayed_sigma_f_.clear();
   base_production_matrix_.clear();
   base_transfer_matrices_.clear();
+  base_energy_deposition_.clear();
+  base_stopping_power_.clear();
   base_custom_xs_.clear();
 }
 
@@ -313,6 +338,35 @@ MultiGroupXS::GetCustomXSNames() const
   for (const auto& entry : custom_xs_)
     names.push_back(entry.first);
   return names;
+}
+
+const std::vector<double>&
+MultiGroupXS::GetDeltaE() const
+{
+  if (e_bounds_.size() != num_groups_ + 1)
+    throw std::runtime_error("MultiGroupXS: energy bounds not initialized for delta_e");
+  if (not delta_e_valid_)
+  {
+    delta_e_cache_.clear();
+    delta_e_cache_.reserve(num_groups_);
+    for (size_t g = 0; g < num_groups_; ++g)
+    {
+      const double de = e_bounds_[g] - e_bounds_[g + 1];
+      delta_e_cache_.push_back(std::abs(de));
+    }
+    delta_e_valid_ = true;
+  }
+  return delta_e_cache_;
+}
+
+void
+MultiGroupXS::SetCustomXS(const std::string& name, const std::vector<double>& values)
+{
+  if (values.size() != num_groups_)
+    throw std::runtime_error("MultiGroupXS: Custom XS size mismatch for " + name);
+  custom_xs_[name] = values;
+  if (base_xs_initialized_)
+    base_custom_xs_[name] = values;
 }
 
 const std::vector<double>*
@@ -473,12 +527,16 @@ MultiGroupXS::Scale(const double factor)
   // Apply to 1D data
   sigma_t_ = base_sigma_t_;
   sigma_a_ = base_sigma_a_;
+  energy_deposition_ = base_energy_deposition_;
+  stopping_power_ = base_stopping_power_;
   for (unsigned int g = 0; g < num_groups_; ++g)
   {
     sigma_t_[g] *= scaling_factor_;
     sigma_a_[g] *= scaling_factor_;
     if (not energy_deposition_.empty())
       energy_deposition_[g] *= scaling_factor_;
+    if (not stopping_power_.empty())
+      stopping_power_[g] *= scaling_factor_;
 
     if (is_fissionable_)
     {
@@ -532,6 +590,8 @@ MultiGroupXS::InitializeBaseXS()
   base_nu_delayed_sigma_f_ = nu_delayed_sigma_f_;
   base_production_matrix_ = production_matrix_;
   base_transfer_matrices_ = transfer_matrices_;
+  base_energy_deposition_ = energy_deposition_;
+  base_stopping_power_ = stopping_power_;
   base_custom_xs_ = custom_xs_;
   base_xs_initialized_ = true;
 }

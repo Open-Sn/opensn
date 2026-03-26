@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
+#include "framework/utils/error.h"
 #include <algorithm>
 
 namespace opensn
@@ -38,6 +39,7 @@ struct AAHSweepData
   std::vector<double>& destination_psi;
   bool surface_source_active;
   bool include_rhs_time_term;
+  bool csda_enabled;
   DiscreteOrdinatesProblem& problem;
   const std::vector<double>* psi_old; // nullptr for steady sweeps
   unsigned int group_block_size;      // used by fixed-N/AVX path
@@ -61,7 +63,9 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
   DenseMatrix<double> Amat(data.max_num_cell_dofs, data.max_num_cell_dofs);
   DenseMatrix<double> Atemp(data.max_num_cell_dofs, data.max_num_cell_dofs);
+  DenseMatrix<double> Aext(data.max_num_cell_dofs + 1, data.max_num_cell_dofs + 1);
   std::vector<Vector<double>> b(gs_size, Vector<double>(data.max_num_cell_dofs, 0.0));
+  Vector<double> b_ext(data.max_num_cell_dofs + 1, 0.0);
   std::vector<double> source(data.max_num_cell_dofs);
 
   const auto& spds = angle_set.GetSPDS();
@@ -81,7 +85,21 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
 
-    const auto& sigma_t = data.xs.at(cell.block_id)->GetSigmaTotal();
+    const auto& xs = data.xs.at(cell.block_id);
+    const auto& sigma_t = xs->GetSigmaTotal();
+
+    const bool csda_enabled = data.csda_enabled;
+    const std::vector<double>* stopping_power = nullptr;
+    std::vector<double> delta_e_local;
+    const std::vector<double>* delta_e = nullptr;
+    if (csda_enabled)
+    {
+      OpenSnInvalidArgumentIf(not xs->HasCustomXS("stopping_power"),
+                              "CSDA requires custom XS: stopping_power");
+      stopping_power = &xs->GetCustomXS("stopping_power");
+      delta_e_local = xs->GetDeltaE();
+      delta_e = &delta_e_local;
+    }
 
     std::vector<double> tau_gsg;
     if constexpr (time_dependent)
@@ -98,7 +116,13 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
     const auto& G = data.unit_cell_matrices[cell_local_id].intV_shapeI_gradshapeJ;
     const auto& M = data.unit_cell_matrices[cell_local_id].intV_shapeI_shapeJ;
+    const auto& v = data.unit_cell_matrices[cell_local_id].intV_shapeI;
     const auto& M_surf = data.unit_cell_matrices[cell_local_id].intS_shapeI_shapeJ;
+    const auto& IntF_shapeI = data.unit_cell_matrices[cell_local_id].intS_shapeI;
+
+    double cell_volume = 0.0;
+    for (size_t i = 0; i < cell_num_nodes; ++i)
+      cell_volume += v(i);
 
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
@@ -112,6 +136,12 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;
+
+      // Cell-wise coefficient of the within-group energy basis
+      // chi_g(E) = 2 * (E - E_g) / DeltaE_g.
+      std::vector<double> psiE_gsg;
+      if (csda_enabled)
+        psiE_gsg.assign(gs_size, 0.0);
 
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
         for (size_t i = 0; i < cell_num_nodes; ++i)
@@ -140,6 +170,12 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           ++preloc_face_counter;
 
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
+        double face_area = 0.0;
+        for (size_t fi = 0; fi < num_face_nodes; ++fi)
+        {
+          const int i = cell_mapping.MapFaceNode(f, fi);
+          face_area += IntF_shapeI[f](i);
+        }
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
@@ -170,6 +206,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
               b[gsg](i) += psi[gsg] * mu_Nij;
           }
         }
+
       }
 
       const double* psi_old =
@@ -205,19 +242,145 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           source[i] = temp_src;
         }
 
-        for (size_t i = 0; i < cell_num_nodes; ++i)
+        if (csda_enabled)
         {
-          double temp = 0.0;
-          for (size_t j = 0; j < cell_num_nodes; ++j)
-          {
-            const double Mij = M(i, j);
-            Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
-            temp += Mij * source[j];
-          }
-          b[gsg](i) += temp;
-        }
+          const double Sg = (*stopping_power)[gs_gi + gsg];
+          const double dEg = (*delta_e)[gs_gi + gsg];
 
-        GaussElimination(Atemp, b[gsg], cell_num_nodes);
+          for (size_t i = 0; i < cell_num_nodes; ++i)
+          {
+            double temp = 0.0;
+            for (size_t j = 0; j < cell_num_nodes; ++j)
+            {
+              const double Mij = M(i, j);
+              Aext(i, j) = Amat(i, j) + Mij * (sigma_tg + Sg / dEg);
+              temp += Mij * source[j];
+            }
+
+            double csda_gm1 = 0.0;
+            if (gsg > 0)
+            {
+              const double Sgm1 = (*stopping_power)[gs_gi + gsg - 1];
+              const double dEgm1 = (*delta_e)[gs_gi + gsg - 1];
+              double sumM = 0.0;
+              for (size_t j = 0; j < cell_num_nodes; ++j)
+                sumM += M(i, j) * b[gsg - 1](j);
+              csda_gm1 = (Sgm1 / dEgm1) * sumM - Sgm1 * v(i) * psiE_gsg[gsg - 1];
+            }
+
+            // With chi_g(E) = 2(E-E_g)/DeltaE_g, edge values contribute +/- psiE_g.
+            Aext(i, cell_num_nodes) = -Sg * v(i);
+            b_ext(i) = b[gsg](i) + temp + csda_gm1;
+          }
+
+          // Slope row
+          double slope_stream_coeff = 0.0;
+          double slope_rhs_stream = 0.0;
+          {
+            int in_face_counter_slope = -1;
+            int preloc_face_counter_slope = ni_preloc_face_counter;
+            for (size_t f = 0; f < cell_num_faces; ++f)
+            {
+              const auto orientation = face_orientations[f];
+              const bool is_incoming = (orientation == FaceOrientation::INCOMING);
+              const bool is_outgoing = (orientation == FaceOrientation::OUTGOING);
+              if (not is_incoming and not is_outgoing)
+                continue;
+
+              const auto& cell_face = cell.faces[f];
+              const bool is_local_face = cell_transport_view.IsFaceLocal(f);
+              const bool is_boundary_face = not cell_face.has_neighbor;
+
+              if (is_incoming)
+              {
+                if (is_local_face)
+                  ++in_face_counter_slope;
+                else if (not is_boundary_face)
+                  ++preloc_face_counter_slope;
+              }
+
+              const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
+              double face_area = 0.0;
+              for (size_t fi = 0; fi < num_face_nodes; ++fi)
+              {
+                const int i = cell_mapping.MapFaceNode(f, fi);
+                face_area += IntF_shapeI[f](i);
+              }
+
+              if (is_outgoing)
+              {
+                slope_stream_coeff += face_mu_values[f] * face_area;
+              }
+              else if (is_incoming)
+              {
+                double psiE_upwind = 0.0;
+                if (is_local_face)
+                {
+                  double* psiE = fluds.UpwindPsiE(
+                    spls_index, in_face_counter_slope, 0, 0, as_ss_idx);
+                  if (psiE)
+                    psiE_upwind = psiE[gsg];
+                }
+                else if (not is_boundary_face)
+                {
+                  double* psiE =
+                    fluds.NLUpwindPsiE(preloc_face_counter_slope, 0, 0, as_ss_idx);
+                  if (psiE)
+                    psiE_upwind = psiE[gsg];
+                }
+                // Boundary faces default to zero slope
+                slope_rhs_stream += (-face_mu_values[f]) * face_area * psiE_upwind;
+              }
+            }
+          }
+
+          // Current-group flux term appears on the RHS as
+          //   -(3 Sg / ΔE_g^2) v^T psi_g
+          // so when assembled into A x = b it enters the slope row with
+          // a positive matrix coefficient.
+          const double coeff_row = 3.0 * Sg / (dEg * dEg);
+          for (size_t j = 0; j < cell_num_nodes; ++j)
+            Aext(cell_num_nodes, j) = v(j) * coeff_row;
+
+          double rhs_csda_gm1 = 0.0;
+          if (gsg > 0)
+          {
+            const double Sgm1 = (*stopping_power)[gs_gi + gsg - 1];
+            const double dEgm1 = (*delta_e)[gs_gi + gsg - 1];
+            double sum_v_psi = 0.0;
+            for (size_t j = 0; j < cell_num_nodes; ++j)
+              sum_v_psi += v(j) * b[gsg - 1](j);
+            rhs_csda_gm1 =
+              (3.0 / dEg) * Sgm1 *
+              ((1.0 / dEgm1) * sum_v_psi - psiE_gsg[gsg - 1] * cell_volume);
+          }
+
+          Aext(cell_num_nodes, cell_num_nodes) =
+            slope_stream_coeff + sigma_tg * cell_volume + (3.0 * Sg * cell_volume / dEg);
+          b_ext(cell_num_nodes) = slope_rhs_stream + rhs_csda_gm1;
+
+          GaussElimination(Aext, b_ext, cell_num_nodes + 1);
+
+          for (size_t i = 0; i < cell_num_nodes; ++i)
+            b[gsg](i) = b_ext(i);
+          psiE_gsg[gsg] = b_ext(cell_num_nodes);
+        }
+        else
+        {
+          for (size_t i = 0; i < cell_num_nodes; ++i)
+          {
+            double temp = 0.0;
+            for (size_t j = 0; j < cell_num_nodes; ++j)
+            {
+              const double Mij = M(i, j);
+              Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
+              temp += Mij * source[j];
+            }
+            b[gsg](i) += temp;
+          }
+
+          GaussElimination(Atemp, b[gsg], cell_num_nodes);
+        }
       }
 
       for (unsigned int m = 0; m < data.num_moments; ++m)
@@ -304,6 +467,23 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           {
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
               psi[gsg] = b[gsg](i);
+          }
+
+          if (csda_enabled and (not is_boundary_face or is_reflecting_boundary_face))
+          {
+            double* psiE = nullptr;
+            if (is_local_face)
+              psiE = fluds.OutgoingPsiE(spls_index, out_face_counter, fi, as_ss_idx);
+            else if (not is_boundary_face)
+              psiE = fluds.NLOutgoingPsiE(deploc_face_counter, fi, as_ss_idx);
+            else if (is_reflecting_boundary_face)
+              psiE = fluds.OutgoingPsiE(spls_index, out_face_counter, fi, as_ss_idx);
+
+            if (psiE)
+            {
+              for (size_t gsg = 0; gsg < gs_size; ++gsg)
+                psiE[gsg] = psiE_gsg[gsg];
+            }
           }
         }
       }
