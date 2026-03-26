@@ -44,16 +44,20 @@ protected:
       return;
     }
 
-    const int last_tag = BuildMessageTag(count, count - 1);
+    // Each angle set reserves num_message_tag_blocks_ contiguous blocks of count tags.
+    const auto stride = static_cast<std::size_t>(count) * num_message_tag_blocks_;
+    const int last_tag = BuildMessageTag(stride, stride - 1);
     max_num_messages_ = count;
-    message_tag_base_ = last_tag - count + 1;
+    message_tag_base_ = last_tag - static_cast<int>(stride) + 1;
   }
 
-  int GetMessageTag(int offset = 0) const
+  int GetMessageTag(int offset = 0, int block = 0) const
   {
     if (offset < 0 or offset >= max_num_messages_)
       throw std::out_of_range("AsynchronousCommunicator: Message offset is out of range.");
-    return message_tag_base_ + offset;
+    if (block < 0 or block >= num_message_tag_blocks_)
+      throw std::out_of_range("AsynchronousCommunicator: Message tag block is out of range.");
+    return message_tag_base_ + block * max_num_messages_ + offset;
   }
 
   int BuildMessageTag(std::size_t stride = 1, std::size_t offset = 0) const
@@ -67,6 +71,8 @@ protected:
   const SweepCommunicator& sweep_communicator_;
   int max_num_messages_ = 0;
   int message_tag_base_ = 0;
+  /// Number of independent message streams (tag blocks) per angle set.
+  int num_message_tag_blocks_ = 1;
 };
 
 } // namespace opensn
