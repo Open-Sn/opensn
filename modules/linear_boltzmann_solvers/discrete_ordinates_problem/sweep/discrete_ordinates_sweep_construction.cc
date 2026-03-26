@@ -133,8 +133,8 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
   const size_t gs_num_grps = groupset.GetNumGroups();
 
   // Passing the sweep boundaries to the angle aggregation
-  groupset.angle_agg =
-    std::make_shared<AngleAggregation>(groupset, sweep_boundaries_, groupset.quadrature, grid_);
+  groupset.angle_agg = std::make_shared<AngleAggregation>(
+    groupset, sweep_boundaries_, groupset.quadrature, grid_, options_.csda_enabled);
 
   size_t angle_set_id = 0;
   for (const auto& so_grouping : unique_so_groupings)

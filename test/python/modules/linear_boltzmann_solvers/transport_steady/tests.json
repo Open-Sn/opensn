@@ -346,37 +346,6 @@
     ]
   },
   {
-    "file": "transport_1d_cepxs_synthetic_3g.py",
-    "comment": "Synthetic CEPXS 3-group reader test with analytic infinite-medium solution and energy deposition",
-    "num_procs": 2,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "Phi0=",
-        "goldvalue": 0.950124,
-        "abs_tol": 0.001
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Phi1=",
-        "goldvalue": 0.933380,
-        "abs_tol": 0.001
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Phi2=",
-        "goldvalue": 0.562868,
-        "abs_tol": 0.001
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Edep=",
-        "goldvalue": 0.867650,
-        "abs_tol": 0.001
-      }
-    ]
-  },
-  {
     "file": "transport_1d_3a_dsa_ortho.py",
     "comment": "1D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
@@ -1643,6 +1612,226 @@
         "key": "WGDSA_TGDSA_DIFF_G120=",
         "goldvalue": 0.0,
         "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cepxs_synthetic_csda_infinite_medium.py",
+    "comment": "2D synthetic CEPXS CSDA infinite medium with reflecting boundaries",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_0_AVG=",
+        "goldvalue": 7.051282051282e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_1_AVG=",
+        "goldvalue": 4.688467731944e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_2_AVG=",
+        "goldvalue": 5.767228565162e-02,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_AVG=",
+        "goldvalue": 5.281949303125e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_MIN=",
+        "goldvalue": 5.281949303120e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_MAX=",
+        "goldvalue": 5.281949303125e-01,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cepxs_synthetic_csda_infinite_medium_unstructured.py",
+    "comment": "2D unstructured synthetic CEPXS CSDA infinite medium with reflecting boundaries",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_0_AVG=",
+        "goldvalue": 7.051282051282e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_1_AVG=",
+        "goldvalue": 4.688467731946e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_2_AVG=",
+        "goldvalue": 5.767228565203e-02,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_AVG=",
+        "goldvalue": 5.281949303126e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_MIN=",
+        "goldvalue": 5.281949303122e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_MAX=",
+        "goldvalue": 5.281949303126e-01,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_cepxs_ii3c2.py",
+    "comment": "1D aluminum CEPXS benchmark, standard and CSDA sampled depth-dose values",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_STANDARD_FMR_0p0165=",
+        "goldvalue": 1.886731927503e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_CSDA_FMR_0p0165=",
+        "goldvalue": 1.910257661846e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_STANDARD_FMR_0p0987=",
+        "goldvalue": 2.699827907716e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_CSDA_FMR_0p0987=",
+        "goldvalue": 2.734477896523e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_STANDARD_FMR_0p253=",
+        "goldvalue": 3.346818528187e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_CSDA_FMR_0p253=",
+        "goldvalue": 3.383347466798e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_STANDARD_FMR_0p511=",
+        "goldvalue": 2.013676725433e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_CSDA_FMR_0p511=",
+        "goldvalue": 1.988059708370e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_STANDARD_FMR_0p736=",
+        "goldvalue": 4.460737486225e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3C1_CSDA_FMR_0p736=",
+        "goldvalue": 4.619672179717e-01,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_cepxs_ii3d.py",
+    "comment": "1D coupled copper CEPXS benchmark, standard and CSDA sampled depth-dose values",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_STANDARD_FMR_0p02=",
+        "goldvalue": 2.454043058150e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_CSDA_FMR_0p02=",
+        "goldvalue": 2.487214127824e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_STANDARD_FMR_0p1=",
+        "goldvalue": 3.764882171688e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_CSDA_FMR_0p1=",
+        "goldvalue": 3.806548245246e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_STANDARD_FMR_0p25=",
+        "goldvalue": 3.040890115185e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_CSDA_FMR_0p25=",
+        "goldvalue": 3.057423048517e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_STANDARD_FMR_0p5=",
+        "goldvalue": 7.665862723214e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_CSDA_FMR_0p5=",
+        "goldvalue": 7.657714843750e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_STANDARD_FMR_0p75=",
+        "goldvalue": 2.029196088473e-02,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "II3D_CSDA_FMR_0p75=",
+        "goldvalue": 3.757285659509e-02,
+        "abs_tol": 1e-10
       }
     ]
   }

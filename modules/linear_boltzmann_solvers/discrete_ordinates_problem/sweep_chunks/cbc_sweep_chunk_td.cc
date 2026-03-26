@@ -14,6 +14,7 @@ namespace opensn
 CBCSweepChunkTD::CBCSweepChunkTD(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
   : SweepChunk(problem.GetPhiNewLocal(),
                problem.GetPsiNewLocal()[groupset.id],
+               problem.GetOptions().csda_enabled,
                problem.GetGrid(),
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),

@@ -98,6 +98,7 @@ private:
   std::vector<std::vector<AAH_MessageDetails>> delayed_preloc_msg_data_;
 
   std::vector<mpi::Request> deploc_msg_request_;
+  std::vector<mpi::Request> deploc_msgE_request_;
   std::vector<std::vector<AAH_MessageDetails>> deploc_msg_data_;
 };
 

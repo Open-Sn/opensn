@@ -129,6 +129,18 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   else
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
+  if (options_.csda_enabled)
+  {
+    if (use_gpus_)
+      throw std::runtime_error(GetName() + ": CSDA is not supported on GPUs.");
+    if (options_.adjoint)
+      throw std::runtime_error(GetName() + ": CSDA is not supported for adjoint problems.");
+    if (sweep_type_ == "CBC")
+      throw std::runtime_error(GetName() + ": CSDA is not supported with CBC sweeps.");
+    if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
+      throw std::runtime_error(GetName() + ": CSDA is not supported for RZ problems.");
+  }
+
   if (params.Has("boundary_conditions"))
   {
     const auto& bcs = params.GetParam("boundary_conditions");
@@ -399,6 +411,62 @@ DiscreteOrdinatesProblem::BuildRuntime()
 
   LBSProblem::BuildRuntime();
   InitializeFCS();
+
+  if (options_.csda_enabled)
+  {
+    std::vector<bool> csda_active_by_group(num_groups_, false);
+    constexpr double csda_tol = 1.0e-12;
+    for (const auto& [_, xs] : block_id_to_xs_map_)
+    {
+      const auto& stopping_power = xs->GetStoppingPower();
+      if (stopping_power.empty())
+        continue;
+
+      OpenSnLogicalErrorIf(stopping_power.size() < num_groups_,
+                           GetName() +
+                             ": CSDA stopping power data is incompatible with the configured "
+                             "number of groups.");
+
+      for (size_t g = 0; g < num_groups_; ++g)
+        csda_active_by_group[g] =
+          csda_active_by_group[g] or std::abs(stopping_power[g]) > csda_tol;
+    }
+
+    std::vector<std::pair<size_t, size_t>> charged_ranges;
+    size_t g = 0;
+    while (g < csda_active_by_group.size())
+    {
+      while (g < csda_active_by_group.size() and not csda_active_by_group[g])
+        ++g;
+      if (g >= csda_active_by_group.size())
+        break;
+
+      const size_t g_begin = g;
+      while (g < csda_active_by_group.size() and csda_active_by_group[g])
+        ++g;
+      charged_ranges.emplace_back(g_begin, g);
+    }
+
+    for (const auto& [g_begin, g_end] : charged_ranges)
+    {
+      bool covered_by_one_groupset = false;
+      for (const auto& groupset : groupsets_)
+      {
+        if (groupset.first_group <= g_begin and groupset.last_group + 1 >= g_end)
+        {
+          covered_by_one_groupset = true;
+          break;
+        }
+      }
+
+      OpenSnInvalidArgumentIf(
+        not covered_by_one_groupset,
+        GetName() + ": CSDA charged-particle group range [" + std::to_string(g_begin) + ", " +
+          std::to_string(g_end - 1) +
+          "] is split across groupsets. Current CSDA implementation requires each contiguous "
+          "charged-particle block to be fully contained within a single groupset.");
+    }
+  }
 
   UpdateAngularFluxStorage();
 

@@ -16,6 +16,7 @@ namespace opensn
 AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
   : SweepChunk(problem.GetPhiNewLocal(),
                problem.GetPsiNewLocal()[groupset.id],
+               problem.GetOptions().csda_enabled,
                problem.GetGrid(),
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),
@@ -36,8 +37,7 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
   // per-cell solve-strategy switch adds fixed overhead that's negligible for large group counts
   // but could dominate few-group problems. Per-cell dispatch is only the fallback for genuinely
   // mixed-topology meshes or a uniform N outside [2, 8]. CSDA always uses the generic path.
-  const bool csda_enabled = problem_.GetOptions().csda_enabled;
-  if (not csda_enabled and min_num_cell_dofs_ == max_num_cell_dofs_ and
+  if (not csda_enabled_ and min_num_cell_dofs_ == max_num_cell_dofs_ and
       min_num_cell_dofs_ >= 2 and min_num_cell_dofs_ <= 8)
   {
     switch (min_num_cell_dofs_)
@@ -97,7 +97,7 @@ AAHSweepChunk::Sweep_Generic(AngleSet& angle_set)
                     destination_psi_,
                     surface_source_active_,
                     include_rhs_time_term_,
-                    problem_.GetOptions().csda_enabled,
+                    csda_enabled_,
                     problem_,
                     nullptr,
                     group_block_size_};

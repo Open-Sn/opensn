@@ -74,6 +74,52 @@ ReflectingBoundary::ForEachDelayedAngularFlux(int groupset_id, Fn&& fn) const
   std::for_each_n(flux, size, f);
 }
 
+template <bool ApplyOnOldFlux, typename Fn>
+void
+ReflectingBoundary::ForEachDelayedAngularSlope(int groupset_id, Fn&& fn)
+{
+  if (not opposing_reflected_ or not delayed_angular_slope_enabled_)
+    return;
+  auto&& f = std::forward<Fn>(fn);
+  const auto& extra_data = extra_data_[groupset_id];
+  const auto old_stride = extra_data.old_stride;
+  const auto offset = extra_data.slope_stride + (ApplyOnOldFlux ? old_stride : 0);
+  double* slope = GetBoundaryFlux(groupset_id, offset);
+  std::size_t size = old_stride * bank_[groupset_id].groupset_size;
+  std::for_each_n(slope, size, f);
+}
+
+template <bool ApplyOnOldFlux, typename Fn>
+void
+ReflectingBoundary::ForEachDelayedAngularSlope(int groupset_id, Fn&& fn) const
+{
+  if (not opposing_reflected_ or not delayed_angular_slope_enabled_)
+    return;
+  auto&& f = std::forward<Fn>(fn);
+  const auto& extra_data = extra_data_[groupset_id];
+  const auto old_stride = extra_data.old_stride;
+  const auto offset = extra_data.slope_stride + (ApplyOnOldFlux ? old_stride : 0);
+  const double* slope = GetBoundaryFlux(groupset_id, offset);
+  std::size_t size = old_stride * bank_[groupset_id].groupset_size;
+  std::for_each_n(slope, size, f);
+}
+
+template <typename Fn>
+void
+ReflectingBoundary::AppendDelayedAngularFields(int groupset_id, bool old_store, Fn&& fn) const
+{
+  if (old_store)
+  {
+    ForEachDelayedAngularFlux<true>(groupset_id, fn);
+    ForEachDelayedAngularSlope<true>(groupset_id, fn);
+  }
+  else
+  {
+    ForEachDelayedAngularFlux<false>(groupset_id, fn);
+    ForEachDelayedAngularSlope<false>(groupset_id, fn);
+  }
+}
+
 ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
                                        std::uint64_t bid,
                                        const std::shared_ptr<MeshContinuum>& grid,
@@ -111,7 +157,6 @@ ReflectingBoundary::InitializeReflectingMap(const std::vector<LBSGroupset>& grou
   for (const auto& groupset : groupsets)
   {
     const auto& quadrature = groupset.quadrature;
-    auto& angle_agg = *(groupset.angle_agg);
     auto num_angles = quadrature->GetNumAngles();
 
     auto& extra_data = extra_data_[groupset.id];
@@ -134,10 +179,8 @@ ReflectingBoundary::InitializeReflectingMap(const std::vector<LBSGroupset>& grou
           break;
         case CoordinateSystemType::CYLINDRICAL:
         {
-          // left, top and bottom are regular reflecting
           if (std::fabs(normal_.Dot(jhat)) > 0.999999 or normal_.Dot(ihat) < -0.999999)
             omega_reflected = omega_n - 2.0 * normal_ * omega_n.Dot(normal_);
-          // right derives normal from omega_n
           else if (normal_.Dot(ihat) > 0.999999)
           {
             Vector3 normal_star;
@@ -193,6 +236,7 @@ ReflectingBoundary::InitializeAngleDependent(const std::vector<LBSGroupset>& gro
     auto& reflected_anglenum = extra_data.reflected_anglenum;
     auto& node_stride = extra_data.node_stride;
     auto& old_stride = extra_data.old_stride;
+    auto& slope_stride = extra_data.slope_stride;
 
     map_dirnum.reserve(num_angles);
     map_dirnum.resize(num_angles, std::numeric_limits<std::uint64_t>::max());
@@ -227,16 +271,12 @@ ReflectingBoundary::InitializeAngleDependent(const std::vector<LBSGroupset>& gro
     offset_[groupset.id] = counter;
     node_stride = internal_angle_idx;
     old_stride = facenode_to_index_.size() * node_stride;
-    if (opposing_reflected_)
-    {
-      counter += 2 * old_stride;
-      bank_.ExtendBoundaryFlux(groupset.id, 2 * old_stride * groupset.GetNumGroups());
-    }
-    else
-    {
-      counter += old_stride;
-      bank_.ExtendBoundaryFlux(groupset.id, old_stride * groupset.GetNumGroups());
-    }
+    const std::uint64_t time_stride = opposing_reflected_ ? 2 * old_stride : old_stride;
+    slope_stride = time_stride;
+    const std::uint64_t total_stride =
+      delayed_angular_slope_enabled_ ? 2 * time_stride : time_stride;
+    counter += total_stride;
+    bank_.ExtendBoundaryFlux(groupset.id, total_stride * groupset.GetNumGroups());
   }
 }
 
@@ -288,6 +328,7 @@ void
 ReflectingBoundary::ZeroOpposingDelayedAngularFluxOld(int groupset_id)
 {
   TransformGroupset<true>(groupset_id, [](auto flux) { std::fill(flux.begin(), flux.end(), 0.0); });
+  ForEachDelayedAngularSlope<true>(groupset_id, [](double& val) { val = 0.0; });
 }
 
 size_t
@@ -296,7 +337,8 @@ ReflectingBoundary::CountDelayedAngularDOFsNew(int groupset_id) const
   if (not opposing_reflected_)
     return 0;
   const auto& extra_data = extra_data_[groupset_id];
-  return extra_data.old_stride * bank_[groupset_id].groupset_size;
+  const auto field_size = extra_data.old_stride * bank_[groupset_id].groupset_size;
+  return delayed_angular_slope_enabled_ ? 2 * field_size : field_size;
 }
 
 size_t
@@ -309,16 +351,15 @@ void
 ReflectingBoundary::AppendNewDelayedAngularDOFsToVector(int groupset_id,
                                                         std::vector<double>& output) const
 {
-  TransformGroupset<false>(
-    groupset_id, [&output](auto flux) { output.insert(output.end(), flux.begin(), flux.end()); });
+  AppendDelayedAngularFields(
+    groupset_id, false, [&output](double val) { output.push_back(val); });
 }
 
 void
 ReflectingBoundary::AppendOldDelayedAngularDOFsToVector(int groupset_id,
                                                         std::vector<double>& output) const
 {
-  TransformGroupset<true>(
-    groupset_id, [&output](auto flux) { output.insert(output.end(), flux.begin(), flux.end()); });
+  AppendDelayedAngularFields(groupset_id, true, [&output](double val) { output.push_back(val); });
 }
 
 void
@@ -326,8 +367,8 @@ ReflectingBoundary::AppendNewDelayedAngularDOFsToArray(int groupset_id,
                                                        int64_t& index,
                                                        double* buffer) const
 {
-  ForEachDelayedAngularFlux<false>(groupset_id,
-                                   [&index, buffer](double psi) { buffer[++index] = psi; });
+  AppendDelayedAngularFields(
+    groupset_id, false, [&index, buffer](double val) { buffer[++index] = val; });
 }
 
 void
@@ -335,8 +376,8 @@ ReflectingBoundary::AppendOldDelayedAngularDOFsToArray(int groupset_id,
                                                        int64_t& index,
                                                        double* buffer) const
 {
-  ForEachDelayedAngularFlux<true>(groupset_id,
-                                  [&index, buffer](double psi) { buffer[++index] = psi; });
+  AppendDelayedAngularFields(
+    groupset_id, true, [&index, buffer](double val) { buffer[++index] = val; });
 }
 
 void
@@ -346,6 +387,8 @@ ReflectingBoundary::SetNewDelayedAngularDOFsFromArray(int groupset_id,
 {
   ForEachDelayedAngularFlux<false>(groupset_id,
                                    [&index, buffer](double& psi) { psi = buffer[++index]; });
+  ForEachDelayedAngularSlope<false>(groupset_id,
+                                    [&index, buffer](double& slope) { slope = buffer[++index]; });
 }
 
 void
@@ -355,6 +398,8 @@ ReflectingBoundary::SetOldDelayedAngularDOFsFromArray(int groupset_id,
 {
   ForEachDelayedAngularFlux<true>(groupset_id,
                                   [&index, buffer](double& psi) { psi = buffer[++index]; });
+  ForEachDelayedAngularSlope<true>(groupset_id,
+                                   [&index, buffer](double& slope) { slope = buffer[++index]; });
 }
 
 void
@@ -364,6 +409,8 @@ ReflectingBoundary::SetNewDelayedAngularDOFsFromVector(int groupset_id,
 {
   ForEachDelayedAngularFlux<false>(groupset_id,
                                    [&values, &index](double& psi) { psi = values[index++]; });
+  ForEachDelayedAngularSlope<false>(
+    groupset_id, [&values, &index](double& slope) { slope = values[index++]; });
 }
 
 void
@@ -373,6 +420,8 @@ ReflectingBoundary::SetOldDelayedAngularDOFsFromVector(int groupset_id,
 {
   ForEachDelayedAngularFlux<true>(groupset_id,
                                   [&values, &index](double& psi) { psi = values[index++]; });
+  ForEachDelayedAngularSlope<true>(
+    groupset_id, [&values, &index](double& slope) { slope = values[index++]; });
 }
 
 void
@@ -381,10 +430,16 @@ ReflectingBoundary::CopyDelayedAngularFluxOldToNew(int groupset_id)
   if (not opposing_reflected_)
     return;
   const auto& extra_data = extra_data_[groupset_id];
+  const auto field_size = extra_data.old_stride * bank_[groupset_id].groupset_size;
   double* flux = GetBoundaryFlux(groupset_id);
-  std::size_t size = extra_data.old_stride * bank_[groupset_id].groupset_size;
-  const double* flux_old = flux + size;
-  std::copy_n(flux_old, size, flux);
+  const double* flux_old = flux + field_size;
+  std::copy_n(flux_old, field_size, flux);
+  if (delayed_angular_slope_enabled_)
+  {
+    double* slope = GetBoundaryFlux(groupset_id, extra_data.slope_stride);
+    const double* slope_old = slope + field_size;
+    std::copy_n(slope_old, field_size, slope);
+  }
 }
 
 void
@@ -393,10 +448,16 @@ ReflectingBoundary::CopyDelayedAngularFluxNewToOld(int groupset_id)
   if (not opposing_reflected_)
     return;
   const auto& extra_data = extra_data_[groupset_id];
+  const auto field_size = extra_data.old_stride * bank_[groupset_id].groupset_size;
   double* flux = GetBoundaryFlux(groupset_id);
-  std::size_t size = extra_data.old_stride * bank_[groupset_id].groupset_size;
-  double* flux_old = flux + size;
-  std::copy_n(flux, size, flux_old);
+  double* flux_old = flux + field_size;
+  std::copy_n(flux, field_size, flux_old);
+  if (delayed_angular_slope_enabled_)
+  {
+    double* slope = GetBoundaryFlux(groupset_id, extra_data.slope_stride);
+    double* slope_old = slope + field_size;
+    std::copy_n(slope, field_size, slope_old);
+  }
 }
 
 double*
@@ -419,6 +480,28 @@ ReflectingBoundary::PsiIncoming(std::uint32_t cell_local_id,
 }
 
 double*
+ReflectingBoundary::PsiIncomingE(std::uint32_t cell_local_id,
+                                 unsigned int face_num,
+                                 unsigned int fi,
+                                 unsigned int angle_num,
+                                 int groupset_id,
+                                 unsigned int group_num)
+{
+  if (not delayed_angular_slope_enabled_)
+    return ZeroFlux(groupset_id, group_num);
+  FaceNode fn(cell_local_id, face_num, fi);
+  std::uint64_t facenode_idx = facenode_to_index_.at(fn);
+  auto& extra_data = extra_data_[groupset_id];
+  const auto& node_stride = extra_data.node_stride;
+  const auto& old_stride = extra_data.old_stride;
+  std::uint64_t node_angle_offset =
+    extra_data.slope_stride + facenode_idx * node_stride + extra_data.map_dirnum[angle_num];
+  if (opposing_reflected_)
+    node_angle_offset += old_stride;
+  return GetBoundaryFlux(groupset_id, node_angle_offset) + group_num;
+}
+
+double*
 ReflectingBoundary::PsiOutgoing(uint64_t cell_local_id,
                                 unsigned int face_num,
                                 unsigned int fi,
@@ -430,6 +513,24 @@ ReflectingBoundary::PsiOutgoing(uint64_t cell_local_id,
   auto& extra_data = extra_data_[groupset_id];
   const auto& node_stride = extra_data.node_stride;
   std::uint64_t node_angle_offset = facenode_idx * node_stride + extra_data.map_dirnum[angle_num];
+  return GetBoundaryFlux(groupset_id, node_angle_offset);
+}
+
+double*
+ReflectingBoundary::PsiOutgoingE(uint64_t cell_local_id,
+                                 unsigned int face_num,
+                                 unsigned int fi,
+                                 unsigned int angle_num,
+                                 int groupset_id)
+{
+  if (not delayed_angular_slope_enabled_)
+    return ZeroFlux(groupset_id, 0);
+  FaceNode fn(cell_local_id, face_num, fi);
+  std::uint64_t facenode_idx = facenode_to_index_.at(fn);
+  auto& extra_data = extra_data_[groupset_id];
+  const auto& node_stride = extra_data.node_stride;
+  std::uint64_t node_angle_offset =
+    extra_data.slope_stride + facenode_idx * node_stride + extra_data.map_dirnum[angle_num];
   return GetBoundaryFlux(groupset_id, node_angle_offset);
 }
 

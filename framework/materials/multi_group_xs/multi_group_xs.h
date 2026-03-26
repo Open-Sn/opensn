@@ -119,13 +119,11 @@ public:
   const std::vector<double>& GetSigmaRemoval() const { return sigma_r_; }
 
   const std::vector<double>& GetSigmaSGtoG() const { return sigma_s_gtog_; }
-  const std::vector<double>& GetEnergyBounds() const { return e_bounds_; }
-  const std::vector<double>& GetDeltaE() const;
+  std::vector<double> GetDeltaE() const;
 
   bool HasCustomXS(const std::string& name) const;
   const std::vector<double>& GetCustomXS(const std::string& name) const;
   std::vector<std::string> GetCustomXSNames() const;
-  void SetCustomXS(const std::string& name, const std::vector<double>& values);
   /// Load multi-group cross sections from a CEPXS file.
 
   const std::vector<double>* GetByName(const std::string& xs_name) const;
@@ -147,15 +145,13 @@ private:
   double temperature_ = 294.0;
   /// Energy bin boundaries in MeV
   std::vector<double> e_bounds_;
-  mutable std::vector<double> delta_e_cache_;
-  mutable bool delta_e_valid_ = false;
   /// Total cross section
   std::vector<double> sigma_t_;
   /// Absorption cross section
   std::vector<double> sigma_a_;
   /// Energy deposition cross section
   std::vector<double> energy_deposition_;
-  /// Charged-particle stopping power
+  /// Stopping power used by CSDA charged-particle transport
   std::vector<double> stopping_power_;
   /// Fission cross section
   std::vector<double> sigma_f_;
@@ -196,14 +192,14 @@ private:
   bool base_xs_initialized_ = false;
   std::vector<double> base_sigma_t_;
   std::vector<double> base_sigma_a_;
+  std::vector<double> base_energy_deposition_;
+  std::vector<double> base_stopping_power_;
   std::vector<double> base_sigma_f_;
   std::vector<double> base_nu_sigma_f_;
   std::vector<double> base_nu_prompt_sigma_f_;
   std::vector<double> base_nu_delayed_sigma_f_;
   std::vector<std::vector<double>> base_production_matrix_;
   std::vector<SparseMatrix> base_transfer_matrices_;
-  std::vector<double> base_energy_deposition_;
-  std::vector<double> base_stopping_power_;
   std::map<std::string, std::vector<double>> base_custom_xs_;
 
   void Reset();
@@ -220,9 +216,8 @@ public:
   /// Makes a simple material with a 1-group cross-section set.
   static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c, double velocity = 0.0);
   static MultiGroupXS LoadFromOpenSn(const std::string& filename);
-  static MultiGroupXS LoadFromCEPXS(const std::string& filename,
-                                    int material_id = 0,
-                                    bool csda_format = false);
+  static MultiGroupXS
+  LoadFromCEPXS(const std::string& filename, int material_id = 0, bool csda_format = false);
   /// This method populates transport cross sections from an OpenMC cross-section file.
   static MultiGroupXS LoadFromOpenMC(const std::string& file_name,
                                      const std::string& dataset_name,

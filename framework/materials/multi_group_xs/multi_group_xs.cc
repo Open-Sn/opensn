@@ -59,9 +59,14 @@ MultiGroupXS::Combine(
 
     // Define and check number of groups
     if (xsecs.size() == 1)
+    {
       n_grps = xs->GetNumGroups();
+      mgxs.e_bounds_ = xs->e_bounds_;
+    }
     OpenSnLogicalErrorIf(xs->GetNumGroups() != n_grps,
                          "All cross sections being combined must have the same group structure.");
+    OpenSnLogicalErrorIf(xs->e_bounds_ != mgxs.e_bounds_,
+                         "All cross sections being combined must have the same energy bounds.");
 
     // Increment number of precursors
     if (xs->IsFissionable())
@@ -189,15 +194,6 @@ MultiGroupXS::Combine(
       }
     } // for g
 
-    // Combine custom cross sections (scaled by density like other xs)
-    const auto custom_names = xs->GetCustomXSNames();
-    for (const auto& name : custom_names)
-    {
-      const auto& vals = xs->GetCustomXS(name);
-      if (vals.size() != n_grps)
-        throw std::runtime_error("MultiGroupXS: Custom XS size mismatch for " + name);
-    }
-
     // Combine precursor data
     // Here, all precursors across all materials are stored. The decay constants and delayed
     // spectrum are what they are, however, some special treatment must be given to the yields.
@@ -291,8 +287,6 @@ MultiGroupXS::Reset()
 
   inv_velocity_.clear();
   e_bounds_.clear();
-  delta_e_cache_.clear();
-  delta_e_valid_ = false;
 
   // Diffusion quantities
   diffusion_initialized_ = false;
@@ -304,6 +298,8 @@ MultiGroupXS::Reset()
 
   base_sigma_t_.clear();
   base_sigma_a_.clear();
+  base_energy_deposition_.clear();
+  base_stopping_power_.clear();
   base_sigma_f_.clear();
   base_nu_sigma_f_.clear();
   base_nu_prompt_sigma_f_.clear();
@@ -340,33 +336,20 @@ MultiGroupXS::GetCustomXSNames() const
   return names;
 }
 
-const std::vector<double>&
+std::vector<double>
 MultiGroupXS::GetDeltaE() const
 {
   if (e_bounds_.size() != num_groups_ + 1)
     throw std::runtime_error("MultiGroupXS: energy bounds not initialized for delta_e");
-  if (not delta_e_valid_)
-  {
-    delta_e_cache_.clear();
-    delta_e_cache_.reserve(num_groups_);
-    for (size_t g = 0; g < num_groups_; ++g)
-    {
-      const double de = e_bounds_[g] - e_bounds_[g + 1];
-      delta_e_cache_.push_back(std::abs(de));
-    }
-    delta_e_valid_ = true;
-  }
-  return delta_e_cache_;
-}
 
-void
-MultiGroupXS::SetCustomXS(const std::string& name, const std::vector<double>& values)
-{
-  if (values.size() != num_groups_)
-    throw std::runtime_error("MultiGroupXS: Custom XS size mismatch for " + name);
-  custom_xs_[name] = values;
-  if (base_xs_initialized_)
-    base_custom_xs_[name] = values;
+  std::vector<double> delta_e;
+  delta_e.reserve(num_groups_);
+  for (size_t g = 0; g < num_groups_; ++g)
+  {
+    const double de = e_bounds_[g] - e_bounds_[g + 1];
+    delta_e.push_back(std::abs(de));
+  }
+  return delta_e;
 }
 
 const std::vector<double>*
@@ -376,6 +359,10 @@ MultiGroupXS::GetByName(const std::string& xs_name) const
     return &GetSigmaTotal();
   if (xs_name == "sigma_a")
     return &GetSigmaAbsorption();
+  if (xs_name == "energy_deposition")
+    return GetEnergyDeposition().empty() ? nullptr : &GetEnergyDeposition();
+  if (xs_name == "stopping_power")
+    return GetStoppingPower().empty() ? nullptr : &GetStoppingPower();
   if (xs_name == "sigma_f")
     return GetSigmaFission().empty() ? nullptr : &GetSigmaFission();
   if (xs_name == "nu_sigma_f")
@@ -584,6 +571,8 @@ MultiGroupXS::InitializeBaseXS()
 
   base_sigma_t_ = sigma_t_;
   base_sigma_a_ = sigma_a_;
+  base_energy_deposition_ = energy_deposition_;
+  base_stopping_power_ = stopping_power_;
   base_sigma_f_ = sigma_f_;
   base_nu_sigma_f_ = nu_sigma_f_;
   base_nu_prompt_sigma_f_ = nu_prompt_sigma_f_;

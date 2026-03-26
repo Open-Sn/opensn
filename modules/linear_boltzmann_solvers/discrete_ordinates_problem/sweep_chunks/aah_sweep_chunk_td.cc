@@ -14,6 +14,7 @@ namespace opensn
 AAHSweepChunkTD::AAHSweepChunkTD(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
   : SweepChunk(problem.GetPhiNewLocal(),
                problem.GetPsiNewLocal()[groupset.id],
+               problem.GetOptions().csda_enabled,
                problem.GetGrid(),
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),
@@ -101,7 +102,7 @@ AAHSweepChunkTD::Sweep_Generic(AngleSet& angle_set)
                     destination_psi_,
                     surface_source_active_,
                     include_rhs_time_term_,
-                    problem_.GetOptions().csda_enabled,
+                    csda_enabled_,
                     problem_,
                     &psi_old_,
                     group_block_size_};
@@ -131,7 +132,7 @@ AAHSweepChunkTD::Sweep_FixedN(AngleSet& angle_set)
                     destination_psi_,
                     surface_source_active_,
                     include_rhs_time_term_,
-                    problem_.GetOptions().csda_enabled,
+                    csda_enabled_,
                     problem_,
                     &psi_old_,
                     group_block_size_};

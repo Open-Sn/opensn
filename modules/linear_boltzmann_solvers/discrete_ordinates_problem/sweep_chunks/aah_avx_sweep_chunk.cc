@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/csda_sweep_helper.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_kernels.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -57,12 +58,16 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
 
-    const auto& sigma_t = cell_transport_view.GetXS().GetSigmaTotal();
+    const auto& xs = cell_transport_view.GetXS();
+    const auto& sigma_t = xs.GetSigmaTotal();
+    const auto csda_enabled = data.csda_enabled;
+    const auto csda_data = csda_enabled ? MakeCSDAMaterialData(xs) : CSDAMaterialData{};
 
     const auto& unit_mats = data.unit_cell_matrices[cell_local_id];
     const auto& G = unit_mats.intV_shapeI_gradshapeJ;
     const auto& M = unit_mats.intV_shapeI_shapeJ;
     const auto& M_surf = unit_mats.intS_shapeI_shapeJ;
+    const auto& v = unit_mats.intV_shapeI;
 
     const size_t matrix_size = static_cast<size_t>(NumNodes) * static_cast<size_t>(NumNodes);
     auto Idx = [](int i, int j) -> size_t
@@ -78,6 +83,9 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     }
 
     std::array<double, matrix_size> Amat{};
+    DenseMatrix<double> Amat_dense(NumNodes, NumNodes);
+    DenseMatrix<double> Aext(NumNodes + 1, NumNodes + 1);
+    Vector<double> b_ext(NumNodes + 1, 0.0);
     std::vector<std::array<size_t, NumNodes>> moment_dof_map(data.num_moments);
     for (unsigned int m = 0; m < data.num_moments; ++m)
     {
@@ -99,6 +107,10 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         tau_gsg[gsg] = inv_velg[gs_gi + gsg] * inv_theta * inv_dt;
     }
 
+    double cell_volume = 0.0;
+    for (int i = 0; i < NumNodes; ++i)
+      cell_volume += v(i);
+
     const std::vector<std::uint32_t>& as_angle_indices = angle_set.GetAngleIndices();
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
@@ -110,13 +122,19 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
       preloc_face_counter = ni_preloc_face_counter;
 
       std::fill(b.begin(), b.end(), 0.0);
+      std::vector<double> psiE_gsg;
+      if (csda_enabled)
+        psiE_gsg.assign(gs_size, 0.0);
 
       PRAGMA_UNROLL
       for (int i = 0; i < NumNodes; ++i)
       {
         PRAGMA_UNROLL
         for (int j = 0; j < NumNodes; ++j)
+        {
           Amat[Idx(i, j)] = omega.Dot(G(i, j));
+          Amat_dense(i, j) = Amat[Idx(i, j)];
+        }
       }
 
       for (size_t f = 0; f < cell_num_faces; ++f)
@@ -164,6 +182,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
             const int i = cell_mapping.MapFaceNode(f, fi);
             const double mu_Nij = mu_f * Ms_f(i, j);
             Amat[Idx(i, j)] += mu_Nij;
+            Amat_dense(i, j) += mu_Nij;
 
             if (not psi)
               continue;
@@ -184,48 +203,145 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
           ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
           : nullptr;
 
-      for (unsigned int g0 = 0; g0 < gs_size; g0 += data.group_block_size)
+      if (csda_enabled)
       {
-        const auto g1 = std::min(g0 + data.group_block_size, gs_size);
-        const auto block_len = g1 - g0;
-        sigma_block.resize(block_len);
-
-        for (unsigned int gsg = g0; gsg < g1; ++gsg)
+        std::array<double, NumNodes> source{};
+        for (size_t gsg = 0; gsg < gs_size; ++gsg)
         {
-          const size_t rel = gsg - g0;
           double sigma_tg = sigma_t[gs_gi + gsg];
           if constexpr (time_dependent)
             sigma_tg += tau_gsg[gsg];
-          sigma_block[rel] = sigma_tg;
 
-          double* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
-          for (unsigned int m = 0; m < data.num_moments; ++m)
+          for (int i = 0; i < NumNodes; ++i)
           {
-            const double w = m2d_row[m];
-            std::array<double, NumNodes> nodal_source{};
-            for (int i = 0; i < NumNodes; ++i)
-              nodal_source[i] = w * data.source_moments[moment_dof_map[m][i] + gsg];
+            double temp_src = 0.0;
+            for (unsigned int m = 0; m < data.num_moments; ++m)
+              temp_src += m2d_row[m] * data.source_moments[moment_dof_map[m][i] + gsg];
 
+            if constexpr (time_dependent)
+            {
+              const size_t imap = static_cast<size_t>(i) * data.groupset_angle_group_stride +
+                                  direction_num * data.groupset_group_stride;
+              if (data.include_rhs_time_term and psi_old)
+                temp_src += tau_gsg[gsg] * psi_old[imap + gsg];
+            }
+
+            source[i] = temp_src;
+          }
+
+          if (IsCSDAActive(csda_data, gs_gi + gsg))
+          {
+            const CSDALocalSolveContext csda_ctx{gsg,
+                                                 gs_gi,
+                                                 sigma_tg,
+                                                 cell_volume,
+                                                 &Amat_dense,
+                                                 &M,
+                                                 &v,
+                                                 &cell,
+                                                 &cell_mapping,
+                                                 &face_orientations,
+                                                 &face_mu_values,
+                                                 &unit_mats.intS_shapeI,
+                                                 &cell_transport_view,
+                                                 &angle_set,
+                                                 ni_preloc_face_counter,
+                                                 &csda_data,
+                                                 &Aext,
+                                                 &b_ext,
+                                                 &psiE_gsg};
+            SolveCSDALocalSystem(
+              csda_ctx,
+              [&source](size_t j) { return source[j]; },
+              [&b](size_t gg, size_t j) { return b[gg * NumNodes + j]; },
+              [&b](size_t gg, size_t i, double value) { b[gg * NumNodes + i] = value; },
+              [&fluds, &angle_set, &cell, cell_local_id, direction_num, spls_index, as_ss_idx](
+                bool is_local,
+                bool is_reflecting,
+                size_t face_num,
+                int in_face_counter_slope,
+                int preloc_face_counter_slope,
+                size_t gg)
+              {
+                const double* psiE = nullptr;
+                if (is_local)
+                  psiE = fluds.UpwindPsiE(spls_index, in_face_counter_slope, 0, 0, as_ss_idx);
+                else if (is_reflecting)
+                  psiE = angle_set.PsiBoundaryE(
+                    cell.faces[face_num].neighbor_id, direction_num, cell_local_id, face_num, 0, 0);
+                else
+                  psiE = fluds.NLUpwindPsiE(preloc_face_counter_slope, 0, 0, as_ss_idx);
+                return psiE ? psiE[gg] : 0.0;
+              });
+          }
+          else
+          {
+            double* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
             for (int i = 0; i < NumNodes; ++i)
             {
-              double value = 0.0;
+              double value = bg[i];
               const double* row = &mass_matrix[Idx(i, 0)];
               PRAGMA_UNROLL
               for (int j = 0; j < NumNodes; ++j)
-                value += row[j] * nodal_source[j];
-              bg[i] += value;
+                value += row[j] * source[j];
+              bg[i] = value;
+            }
+
+            std::array<double, matrix_size> A{};
+            PRAGMA_UNROLL
+            for (int i = 0; i < NumNodes; ++i)
+            {
+              PRAGMA_UNROLL
+              for (int j = 0; j < NumNodes; ++j)
+                A[Idx(i, j)] = Amat[Idx(i, j)] + sigma_tg * mass_matrix[Idx(i, j)];
+            }
+
+            for (int pivot = 0; pivot < NumNodes; ++pivot)
+            {
+              const double inv = 1.0 / A[Idx(pivot, pivot)];
+              for (int row = pivot + 1; row < NumNodes; ++row)
+              {
+                const double factor = A[Idx(row, pivot)] * inv;
+                bg[row] -= factor * bg[pivot];
+                PRAGMA_UNROLL
+                for (int col = pivot + 1; col < NumNodes; ++col)
+                  A[Idx(row, col)] -= factor * A[Idx(pivot, col)];
+              }
+            }
+
+            for (int pivot = NumNodes - 1; pivot >= 0; --pivot)
+            {
+              PRAGMA_UNROLL
+              for (int col = pivot + 1; col < NumNodes; ++col)
+                bg[pivot] -= A[Idx(pivot, col)] * bg[col];
+              bg[pivot] /= A[Idx(pivot, pivot)];
             }
           }
         }
-
-        if constexpr (time_dependent)
+      }
+      else
+      {
+        for (unsigned int g0 = 0; g0 < gs_size; g0 += data.group_block_size)
         {
-          if (data.include_rhs_time_term and psi_old)
+          const auto g1 = std::min(g0 + data.group_block_size, gs_size);
+          const auto block_len = g1 - g0;
+          sigma_block.resize(block_len);
+
+          for (unsigned int gsg = g0; gsg < g1; ++gsg)
           {
-            for (size_t gsg = g0; gsg < g1; ++gsg)
+            const size_t rel = gsg - g0;
+            double sigma_tg = sigma_t[gs_gi + gsg];
+            if constexpr (time_dependent)
+              sigma_tg += tau_gsg[gsg];
+            sigma_block[rel] = sigma_tg;
+
+            double* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
+            for (unsigned int m = 0; m < data.num_moments; ++m)
             {
-              const double tau = tau_gsg[gsg];
-              double* __restrict bg = &b[gsg * NumNodes];
+              const double w = m2d_row[m];
+              std::array<double, NumNodes> nodal_source{};
+              for (int i = 0; i < NumNodes; ++i)
+                nodal_source[i] = w * data.source_moments[moment_dof_map[m][i] + gsg];
 
               for (int i = 0; i < NumNodes; ++i)
               {
@@ -233,74 +349,96 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
                 const double* row = &mass_matrix[Idx(i, 0)];
                 PRAGMA_UNROLL
                 for (int j = 0; j < NumNodes; ++j)
-                {
-                  const size_t imap = static_cast<size_t>(j) * data.groupset_angle_group_stride +
-                                      direction_num * data.groupset_group_stride;
-                  const double psi_old_val = psi_old[imap + gsg];
-                  value += row[j] * psi_old_val;
-                }
-                bg[i] += tau * value;
+                  value += row[j] * nodal_source[j];
+                bg[i] += value;
               }
             }
           }
-        }
 
-        size_t k = 0;
-
-        for (; k + Simd::size <= block_len; k += Simd::size)
-          detail::SimdBatchSolve<NumNodes>(
-            Amat.data(), mass_matrix.data(), &sigma_block[k], &b[(g0 + k) * NumNodes]);
-
-        for (; k < block_len; ++k)
-        {
-          const size_t gsg = g0 + k;
-          const double sigma_tg = sigma_block[k];
-
-          std::array<double, matrix_size> A{};
-          PRAGMA_UNROLL
-          for (int i = 0; i < NumNodes; ++i)
+          if constexpr (time_dependent)
           {
-            PRAGMA_UNROLL
-            for (int j = 0; j < NumNodes; ++j)
-              A[Idx(i, j)] = Amat[Idx(i, j)] + sigma_tg * mass_matrix[Idx(i, j)];
-          }
-
-          double* __restrict bg = &b[gsg * NumNodes];
-
-          for (int pivot = 0; pivot < NumNodes; ++pivot)
-          {
-            const double inv = 1.0 / A[Idx(pivot, pivot)];
-            for (int row = pivot + 1; row < NumNodes; ++row)
+            if (data.include_rhs_time_term and psi_old)
             {
-              const double factor = A[Idx(row, pivot)] * inv;
-              bg[row] -= factor * bg[pivot];
-              PRAGMA_UNROLL
-              for (int col = pivot + 1; col < NumNodes; ++col)
-                A[Idx(row, col)] -= factor * A[Idx(pivot, col)];
+              for (size_t gsg = g0; gsg < g1; ++gsg)
+              {
+                const double tau = tau_gsg[gsg];
+                double* __restrict bg = &b[gsg * NumNodes];
+
+                for (int i = 0; i < NumNodes; ++i)
+                {
+                  double value = 0.0;
+                  const double* row = &mass_matrix[Idx(i, 0)];
+                  PRAGMA_UNROLL
+                  for (int j = 0; j < NumNodes; ++j)
+                  {
+                    const size_t imap = static_cast<size_t>(j) * data.groupset_angle_group_stride +
+                                        direction_num * data.groupset_group_stride;
+                    const double psi_old_val = psi_old[imap + gsg];
+                    value += row[j] * psi_old_val;
+                  }
+                  bg[i] += tau * value;
+                }
+              }
             }
           }
 
-          for (int pivot = NumNodes - 1; pivot >= 0; --pivot)
-          {
-            PRAGMA_UNROLL
-            for (int col = pivot + 1; col < NumNodes; ++col)
-              bg[pivot] -= A[Idx(pivot, col)] * bg[col];
-            bg[pivot] /= A[Idx(pivot, pivot)];
-          }
-        }
+          size_t k = 0;
 
-        for (size_t gsg = g0; gsg < g1; ++gsg)
-        {
-          const double* __restrict bg = &b[gsg * NumNodes];
-          for (unsigned int m = 0; m < data.num_moments; ++m)
+          for (; k + Simd::size <= block_len; k += Simd::size)
+            detail::SimdBatchSolve<NumNodes>(
+              Amat.data(), mass_matrix.data(), &sigma_block[k], &b[(g0 + k) * NumNodes]);
+
+          for (; k < block_len; ++k)
           {
-            const double w = d2m_row[m];
+            const size_t gsg = g0 + k;
+            const double sigma_tg = sigma_block[k];
+
+            std::array<double, matrix_size> A{};
             PRAGMA_UNROLL
             for (int i = 0; i < NumNodes; ++i)
             {
-              const size_t dof = cell_transport_view.MapDOF(i, m, gs_gi);
-              data.destination_phi[dof + gsg] += w * bg[i];
+              PRAGMA_UNROLL
+              for (int j = 0; j < NumNodes; ++j)
+                A[Idx(i, j)] = Amat[Idx(i, j)] + sigma_tg * mass_matrix[Idx(i, j)];
             }
+
+            double* __restrict bg = &b[gsg * NumNodes];
+
+            for (int pivot = 0; pivot < NumNodes; ++pivot)
+            {
+              const double inv = 1.0 / A[Idx(pivot, pivot)];
+              for (int row = pivot + 1; row < NumNodes; ++row)
+              {
+                const double factor = A[Idx(row, pivot)] * inv;
+                bg[row] -= factor * bg[pivot];
+                PRAGMA_UNROLL
+                for (int col = pivot + 1; col < NumNodes; ++col)
+                  A[Idx(row, col)] -= factor * A[Idx(pivot, col)];
+              }
+            }
+
+            for (int pivot = NumNodes - 1; pivot >= 0; --pivot)
+            {
+              PRAGMA_UNROLL
+              for (int col = pivot + 1; col < NumNodes; ++col)
+                bg[pivot] -= A[Idx(pivot, col)] * bg[col];
+              bg[pivot] /= A[Idx(pivot, pivot)];
+            }
+          }
+        }
+      }
+
+      for (size_t gsg = 0; gsg < gs_size; ++gsg)
+      {
+        const double* __restrict bg = &b[gsg * NumNodes];
+        for (unsigned int m = 0; m < data.num_moments; ++m)
+        {
+          const double w = d2m_row[m];
+          PRAGMA_UNROLL
+          for (int i = 0; i < NumNodes; ++i)
+          {
+            const size_t dof = cell_transport_view.MapDOF(i, m, gs_gi);
+            data.destination_phi[dof + gsg] += w * bg[i];
           }
         }
       }
@@ -373,6 +511,22 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
               psi[gsg] = b[gsg * NumNodes + i];
           }
+
+          if (csda_enabled)
+            StoreOutgoingCSDASlope(
+              (not is_boundary or is_reflecting),
+              psiE_gsg,
+              [&]() -> double*
+              {
+                if (is_local_face)
+                  return fluds.OutgoingPsiE(spls_index, out_face_counter, fi, as_ss_idx);
+                if (is_reflecting)
+                  return angle_set.PsiReflectedE(
+                    face.neighbor_id, direction_num, cell_local_id, f, fi);
+                if (not is_boundary)
+                  return fluds.NLOutgoingPsiE(deploc_face_counter, fi, as_ss_idx);
+                return nullptr;
+              });
         }
       }
     }
@@ -401,7 +555,7 @@ AAHSweepChunk::Sweep_FixedN(AngleSet& angle_set)
                     destination_psi_,
                     surface_source_active_,
                     include_rhs_time_term_,
-                    problem_.GetOptions().csda_enabled,
+                    csda_enabled_,
                     problem_,
                     nullptr,
                     group_block_size_};
