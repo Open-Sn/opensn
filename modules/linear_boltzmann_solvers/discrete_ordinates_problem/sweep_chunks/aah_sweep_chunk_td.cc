@@ -101,6 +101,7 @@ AAHSweepChunkTD::Sweep_Generic(AngleSet& angle_set)
                     destination_psi_,
                     surface_source_active_,
                     include_rhs_time_term_,
+                    problem_.GetOptions().csda_enabled,
                     problem_,
                     &psi_old_,
                     group_block_size_};
@@ -130,6 +131,7 @@ AAHSweepChunkTD::Sweep_FixedN(AngleSet& angle_set)
                     destination_psi_,
                     surface_source_active_,
                     include_rhs_time_term_,
+                    problem_.GetOptions().csda_enabled,
                     problem_,
                     &psi_old_,
                     group_block_size_};

@@ -98,6 +98,9 @@ LBSProblem::LBSProblem(const InputParameters& params)
   InitializeSources(params);
   InitializeXSMap(params);
   InitializeMaterials();
+
+  if (options_.csda_enabled)
+    ValidateCSDAGroupOrdering();
 }
 
 const LBSOptions&
@@ -586,6 +589,13 @@ LBSProblem::GetOptionsBlock()
                               "Default `kappa` value (Energy released per fission) to use for "
                               "power generation when cross sections do not have `kappa` values. "
                               "Default: 3.20435e-11 Joule (corresponding to 200 MeV per fission).");
+  params.AddOptionalParameter("power_normalization",
+                              -1.0,
+                              "Power normalization factor to use. Supply a negative or zero number "
+                              "to turn this off.");
+  params.AddOptionalParameter("csda_enabled",
+                              false,
+                              "Enable CSDA charged-particle transport with energy-slope solve.");
   params.AddOptionalParameter("field_function_prefix_option",
                               "prefix",
                               "Prefix option on field function names. Default: `\"prefix\"`. Can "
@@ -683,6 +693,11 @@ LBSProblem::ParseOptions(const InputParameters& input)
     {"power_default_kappa",
      [this](const ParameterBlock& spec)
      { options_.power_default_kappa = spec.GetValue<double>(); }},
+    {"power_normalization",
+     [this](const ParameterBlock& spec)
+     { options_.power_normalization = spec.GetValue<double>(); }},
+    {"csda_enabled",
+     [this](const ParameterBlock& spec) { options_.csda_enabled = spec.GetValue<bool>(); }},
     {"field_function_prefix_option",
      [this](const ParameterBlock& spec)
      { options_.field_function_prefix_option = spec.GetValue<std::string>(); }},
@@ -1046,6 +1061,88 @@ LBSProblem::InitializeMaterials()
 }
 
 void
+LBSProblem::ValidateCSDAGroupOrdering() const
+{
+  // Ensure groupsets are ordered ascending by group index.
+  for (size_t i = 0; i < groupsets_.size(); ++i)
+  {
+    const auto& gs = groupsets_[i];
+    OpenSnInvalidArgumentIf(gs.last_group < gs.first_group,
+                            GetName() + ": CSDA requires groupsets ordered ascending in group "
+                                        "index.");
+    if (i + 1 < groupsets_.size())
+    {
+      const auto& next = groupsets_[i + 1];
+      OpenSnInvalidArgumentIf(next.first_group < gs.first_group,
+                              GetName() +
+                                ": CSDA requires groupsets ordered ascending in group index.");
+    }
+  }
+
+  // Ensure energy bounds are strictly decreasing for CSDA-active groups.
+  for (const auto& [blk_id, xs] : block_id_to_xs_map_)
+  {
+    const auto& eb = xs->GetEnergyBounds();
+    OpenSnInvalidArgumentIf(eb.size() != static_cast<size_t>(num_groups_ + 1),
+                            GetName() + ": CSDA requires energy bounds for all groups.");
+    std::vector<int> active_groups;
+    if (xs->HasCustomXS("stopping_power"))
+    {
+      const auto& sp = xs->GetCustomXS("stopping_power");
+      for (size_t g = 0; g < sp.size(); ++g)
+      {
+        if (std::abs(sp[g]) > 0.0)
+          active_groups.push_back(static_cast<int>(g));
+      }
+    }
+
+    if (active_groups.empty())
+    {
+      // Fall back to checking all groups if stopping power is not available.
+      for (size_t g = 1; g < eb.size(); ++g)
+      {
+        const double prev = eb[g - 1];
+        const double curr = eb[g];
+        const double tol = 1.0e-12 * std::max(1.0, std::abs(prev));
+        OpenSnInvalidArgumentIf(
+          prev <= curr + tol,
+          GetName() + ": CSDA requires energy bounds to be strictly decreasing "
+                      "(high-to-low). First non-decreasing pair at index " +
+            std::to_string(g - 1) + " -> " + std::to_string(g) + " : " +
+            std::to_string(prev) + " <= " + std::to_string(curr) +
+            ". If your library is low-to-high, reverse the group order.");
+      }
+      continue;
+    }
+
+    // Ensure active groups are contiguous.
+    for (size_t i = 1; i < active_groups.size(); ++i)
+    {
+      OpenSnInvalidArgumentIf(active_groups[i] != active_groups[i - 1] + 1,
+                              GetName() +
+                                ": CSDA requires stopping-power groups to be contiguous.");
+    }
+
+    // Check monotonic bounds over active group range only.
+    const int g_start = active_groups.front();
+    const int g_end = active_groups.back();
+    for (int g = g_start + 1; g <= g_end; ++g)
+    {
+      const double prev = eb[g - 1];
+      const double curr = eb[g];
+      const double tol = 1.0e-12 * std::max(1.0, std::abs(prev));
+      OpenSnInvalidArgumentIf(
+        prev <= curr + tol,
+        GetName() + ": CSDA requires energy bounds to be strictly decreasing "
+                    "for CSDA-active groups. First non-decreasing pair at index " +
+          std::to_string(g - 1) + " -> " + std::to_string(g) + " : " +
+          std::to_string(prev) + " <= " + std::to_string(curr) +
+          ". If your library is low-to-high, reverse the group order.");
+    }
+  }
+}
+
+void
 LBSProblem::InitializeSpatialDiscretization()
 {
   CALI_CXX_MARK_SCOPE("SpatialDiscretization");
@@ -1263,6 +1360,25 @@ LBSProblem::MakeSourceMomentsFromPhi()
                                 APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
                                   APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES |
                                   APPLY_PREVIOUS_PRECURSOR_SOURCES);
+  }
+
+  // Debug safety: ensure source moments are finite before sweeps use them
+  for (const auto& cell : grid_->local_cells)
+  {
+    const auto& cell_mapping = discretization_->GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
+    for (size_t i = 0; i < num_nodes; ++i)
+      for (unsigned int m = 0; m < GetNumMoments(); ++m)
+        for (size_t g = 0; g < GetNumGroups(); ++g)
+        {
+          const auto imap = discretization_->MapDOFLocal(cell, i, flux_moments_uk_man_, m, g);
+          if (not std::isfinite(source_moments[imap]))
+            throw std::logic_error("NaN/Inf in source moments. cell=" +
+                                   std::to_string(cell.local_id) + " node=" +
+                                   std::to_string(i) + " m=" + std::to_string(m) +
+                                   " g=" + std::to_string(g) + " value=" +
+                                   std::to_string(source_moments[imap]));
+        }
   }
 
   return source_moments;

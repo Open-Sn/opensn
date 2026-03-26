@@ -191,13 +191,14 @@ WrapMultiGroupXS(py::module& xs)
   );
   multigroup_xs.def(
     "LoadFromCEPXS",
-    [](MultiGroupXS& self, const std::string& file_name, int material_id)
+    [](MultiGroupXS& self, const std::string& file_name, int material_id, bool csda_format)
     {
-      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id);
+      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format);
     },
     "Load multi-group cross sections from a CEPXS cross-section file.",
     py::arg("file_name"),
-    py::arg("material_id") = 0
+    py::arg("material_id") = 0,
+    py::arg("csda_format") = false
   );
   multigroup_xs.def(
     "Scale",
@@ -291,6 +292,14 @@ WrapMultiGroupXS(py::module& xs)
     py::arg("name")
   );
   multigroup_xs.def(
+    "set_custom_xs",
+    [](MultiGroupXS& self, const std::string& name, const std::vector<double>& values)
+    { self.SetCustomXS(name, values); },
+    "Set a custom XS vector.",
+    py::arg("name"),
+    py::arg("values")
+  );
+  multigroup_xs.def(
     "custom_xs_names",
     &MultiGroupXS::GetCustomXSNames,
     "Get a list of custom XS entries."
@@ -299,6 +308,18 @@ WrapMultiGroupXS(py::module& xs)
     "inv_velocity",
     XS_GETTER(GetInverseVelocity),
     "Get inverse velocity."
+  );
+  multigroup_xs.def_property_readonly(
+    "energy_bounds",
+    XS_GETTER(GetEnergyBounds),
+    "Get energy group boundaries.",
+    py::keep_alive<0, 1>()
+  );
+  multigroup_xs.def_property_readonly(
+    "delta_e",
+    XS_GETTER(GetDeltaE),
+    "Get energy group widths.",
+    py::keep_alive<0, 1>()
   );
   // clang-format on
 }

@@ -129,6 +129,9 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   else
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
+  if (options_.csda_enabled && opensn::mpi_comm.size() > 1)
+    throw std::runtime_error(GetName() + ": CSDA is currently supported only in serial mode.");
+
   if (params.Has("boundary_conditions"))
   {
     const auto& bcs = params.GetParam("boundary_conditions");
@@ -369,6 +372,8 @@ DiscreteOrdinatesProblem::ValidateTimeDependentModeAllowed() const
     throw std::runtime_error(GetName() + ": Time-dependent problems are not supported on GPUs.");
   if (options_.adjoint)
     throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
+  if (options_.csda_enabled)
+    throw std::runtime_error(GetName() + ": CSDA is not supported in time-dependent mode.");
   if (not SupportsTimeDependentMode())
     throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
   OpenSnInvalidArgumentIf(not options_.save_angular_flux,
