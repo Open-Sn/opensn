@@ -216,9 +216,9 @@ LBSVecOps::GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
   if (groupset.angle_agg)
   {
     if (src == PhiSTLOption::PHI_NEW and dest == PhiSTLOption::PHI_OLD)
-      groupset.angle_agg->SetDelayedPsiOld2New();
-    else if (src == PhiSTLOption::PHI_OLD and dest == PhiSTLOption::PHI_NEW)
       groupset.angle_agg->SetDelayedPsiNew2Old();
+    else if (src == PhiSTLOption::PHI_OLD and dest == PhiSTLOption::PHI_NEW)
+      groupset.angle_agg->SetDelayedPsiOld2New();
   }
 }
 
