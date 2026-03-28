@@ -38,6 +38,8 @@ Includes
 
 - ``framework/data_types/dense_matrix.h`` (:ref:`file_framework_data_types_dense_matrix.h`)
 
+- ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
+
 - ``framework/data_types/vector.h`` (:ref:`file_framework_data_types_vector.h`)
 
 - ``framework/math/quadratures/angular/angular_quadrature.h`` (:ref:`file_framework_math_quadratures_angular_angular_quadrature.h`)
@@ -111,6 +113,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1aba39c6729aaf37d65540f18f2ee63fcc`
 
+- :ref:`exhale_function_namespaceopensn_1a90a066c315750af6f6c781392a5a2e2c`
+
 - :ref:`exhale_function_namespaceopensn_1a8eb2c0e27bee677a06aeb140fc102158`
 
 - :ref:`exhale_function_namespaceopensn_1ab32620964e0bc997f9352c15a1eb1d11`
@@ -129,6 +133,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a9c06eab1eaeb4f37a44d6a2165710292`
 
+- :ref:`exhale_function_namespaceopensn_1ae7b499513b903d1588322ea3e6fbfcca`
+
 - :ref:`exhale_function_namespaceopensn_1a1c36c8d4ab7c73dd14d760aa62e10594`
 
 - :ref:`exhale_function_namespaceopensn_1a66d063a5930d52b5e36dfb7571799817`
@@ -138,6 +144,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a29b56d0fb78a6d7899dfcc7f7209bb61`
 
 - :ref:`exhale_function_namespaceopensn_1a3f3074c6aeadd445ee556459fdc31564`
+
+- :ref:`exhale_function_namespaceopensn_1a453c952935eb4bd4e5b4f15e048758b9`
 
 
 Typedefs

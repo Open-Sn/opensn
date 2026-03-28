@@ -206,6 +206,8 @@ Program Listing for File aah_sweep_kernels.h
            (time_dependent and data.psi_old)
              ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
              : nullptr;
+         const double* m2d_row = m2d_op.data() + direction_num * static_cast<size_t>(data.num_moments);
+         const double* d2m_row = d2m_op.data() + direction_num * static_cast<size_t>(data.num_moments);
    
          for (size_t gsg = 0; gsg < gs_size; ++gsg)
          {
@@ -219,7 +221,7 @@ Program Listing for File aah_sweep_kernels.h
              for (unsigned int m = 0; m < data.num_moments; ++m)
              {
                const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-               temp_src += m2d_op[direction_num][m] * data.source_moments[ir];
+               temp_src += m2d_row[m] * data.source_moments[ir];
              }
    
              if constexpr (time_dependent)
@@ -250,7 +252,7 @@ Program Listing for File aah_sweep_kernels.h
    
          for (unsigned int m = 0; m < data.num_moments; ++m)
          {
-           const double wn_d2m = d2m_op[direction_num][m];
+           const auto wn_d2m = d2m_row[m];
            for (size_t i = 0; i < cell_num_nodes; ++i)
            {
              const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);

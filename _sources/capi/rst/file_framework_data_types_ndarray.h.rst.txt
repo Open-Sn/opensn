@@ -62,6 +62,10 @@ Included By
 
 - :ref:`file_framework_data_types_vector.h`
 
+- :ref:`file_framework_math_math.h`
+
+- :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+
 - :ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_smm_acceleration.h`

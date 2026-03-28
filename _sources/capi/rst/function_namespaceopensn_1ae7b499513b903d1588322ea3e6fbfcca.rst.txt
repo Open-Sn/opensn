@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ae7b499513b903d1588322ea3e6fbfcca:
+
+Function opensn::OrthogonalizeMatrixSpan(const NDArray<double, 2>&, const std::vector<double>&)
+===============================================================================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::OrthogonalizeMatrixSpan(const NDArray<double, 2>&, const std::vector<double>&)
+   :project: opensn

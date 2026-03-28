@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
+
 - ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
 
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)

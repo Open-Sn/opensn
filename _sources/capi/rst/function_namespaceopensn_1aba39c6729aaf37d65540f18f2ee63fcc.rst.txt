@@ -1,7 +1,7 @@
 .. _exhale_function_namespaceopensn_1aba39c6729aaf37d65540f18f2ee63fcc:
 
-Function opensn::InvertMatrix
-=============================
+Function opensn::InvertMatrix(const std::vector<std::vector<double>>&)
+======================================================================
 
 - Defined in :ref:`file_framework_math_math.h`
 

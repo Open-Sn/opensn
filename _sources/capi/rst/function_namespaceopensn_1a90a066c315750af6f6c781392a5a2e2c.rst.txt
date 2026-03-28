@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a90a066c315750af6f6c781392a5a2e2c:
+
+Function opensn::InvertMatrix(const NDArray<double, 2>&)
+========================================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::InvertMatrix(const NDArray<double, 2>&)
+   :project: opensn

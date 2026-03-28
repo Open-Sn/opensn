@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a453c952935eb4bd4e5b4f15e048758b9:
+
+Function opensn::Transpose(const NDArray<double, 2>&)
+=====================================================
+
+- Defined in :ref:`file_framework_math_math.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Transpose(const NDArray<double, 2>&)
+   :project: opensn
