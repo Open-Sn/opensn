@@ -8,6 +8,7 @@
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/data_types/vector.h"
 #include "framework/data_types/dense_matrix.h"
+#include "framework/data_types/ndarray.h"
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -56,6 +57,7 @@ int SampleCDF(double x, std::vector<double> cdf_bin);
  * \throws std::runtime_error if the matrix is empty or has inconsistent row sizes.
  */
 std::vector<std::vector<double>> Transpose(const std::vector<std::vector<double>>& matrix);
+NDArray<double, 2> Transpose(const NDArray<double, 2>& matrix);
 
 /** Invert a square matrix using SVD-based pseudo-inversion (LAPACK dgesvd).
  *
@@ -64,6 +66,7 @@ std::vector<std::vector<double>> Transpose(const std::vector<std::vector<double>
  * \throws std::runtime_error if the matrix is empty, non-square, or SVD fails.
  */
 std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<double>>& matrix);
+NDArray<double, 2> InvertMatrix(const NDArray<double, 2>& matrix);
 
 /** Orthogonalize the columns of a matrix under a weighted inner product.
  *
@@ -75,6 +78,8 @@ std::vector<std::vector<double>> InvertMatrix(const std::vector<std::vector<doub
 std::vector<std::vector<double>>
 OrthogonalizeMatrixSpan(const std::vector<std::vector<double>>& matrix,
                         const std::vector<double>& weights);
+NDArray<double, 2> OrthogonalizeMatrixSpan(const NDArray<double, 2>& matrix,
+                                           const std::vector<double>& weights);
 
 /// Computes the factorial of an integer.
 double Factorial(int x);
