@@ -3,6 +3,7 @@
 
 # Standard Reed 1D 1-group problem
 
+import math
 import os
 import sys
 
@@ -119,11 +120,14 @@ if __name__ == "__main__":
     )
     pps_whole_int.Execute()
 
-    if rank == 0:
-        print(f"whole: min = {pps_whole_min.GetValue()[0][0]}")
-        print(f"whole: max = {pps_whole_max.GetValue()[0][0]}")
-        print(f"whole: avg = {pps_whole_avg.GetValue()[0][0]}")
-        print(f"whole: int = {pps_whole_int.GetValue()[0][0]}")
+    min = pps_whole_min.GetValue()[0]
+    assert math.isclose(min[0], 0.056606109, rel_tol=1e-8)
+    max = pps_whole_max.GetValue()[0]
+    assert math.isclose(max[0], 3.93435592, rel_tol=1e-8)
+    avg = pps_whole_avg.GetValue()[0]
+    assert math.isclose(avg[0], 1.917644992, rel_tol=1e-8)
+    int = pps_whole_int.GetValue()[0]
+    assert math.isclose(int[0], 15.34115994, rel_tol=1e-8)
 
     # PPS over a mesh block
     pps_blk4_min = VolumePostprocessor(
@@ -154,11 +158,14 @@ if __name__ == "__main__":
     )
     pps_blk4_int.Execute()
 
-    if rank == 0:
-        print(f"blk4: min = {pps_blk4_min.GetValue()[0][0]}")
-        print(f"blk4: max = {pps_blk4_max.GetValue()[0][0]}")
-        print(f"blk4: avg = {pps_blk4_avg.GetValue()[0][0]}")
-        print(f"blk4: int = {pps_blk4_int.GetValue()[0][0]}")
+    min = pps_blk4_min.GetValue()[0]
+    assert math.isclose(min[0], 0.222698796, rel_tol=1e-8)
+    max = pps_blk4_max.GetValue()[0]
+    assert math.isclose(max[0], 1.632885767, rel_tol=1e-8)
+    avg = pps_blk4_avg.GetValue()[0]
+    assert math.isclose(avg[0], 0.766828429, rel_tol=1e-8)
+    int = pps_blk4_int.GetValue()[0]
+    assert math.isclose(int[0], 1.533656858, rel_tol=1e-8)
 
     # PPS over a logical volume
     lv1 = RPPLogicalVolume(infz=True, infy=True, zmin=4.0, zmax=7.)
@@ -190,11 +197,14 @@ if __name__ == "__main__":
     )
     pps_lv1_int.Execute()
 
-    if rank == 0:
-        print(f"lv1: min = {pps_lv1_min.GetValue()[0][0]}")
-        print(f"lv1: max = {pps_lv1_max.GetValue()[0][0]}")
-        print(f"lv1: avg = {pps_lv1_avg.GetValue()[0][0]}")
-        print(f"lv1: int = {pps_lv1_int.GetValue()[0][0]}")
+    min = pps_lv1_min.GetValue()[0]
+    assert math.isclose(min[0], 0.0283030546, rel_tol=1e-8)
+    max = pps_lv1_max.GetValue()[0]
+    assert math.isclose(max[0], 1.967177957, rel_tol=1e-8)
+    avg = pps_lv1_avg.GetValue()[0]
+    assert math.isclose(avg[0], 0.958822496, rel_tol=1e-8)
+    int = pps_lv1_int.GetValue()[0]
+    assert math.isclose(int[0], 7.670579967, rel_tol=1e-8)
 
     # PPS over logical volume and mesh blocks
     lv2 = RPPLogicalVolume(infx=True, infy=True, zmin=6.1, zmax=6.5)
@@ -232,12 +242,15 @@ if __name__ == "__main__":
     )
     pps_cmb_int.Execute()
 
-    if rank == 0:
-        print(f"cmb: min[0] = {pps_cmb_min.GetValue()[0][0]}")
-        print(f"cmb: min[1] = {pps_cmb_min.GetValue()[1][0]}")
-        print(f"cmb: max[0] = {pps_cmb_max.GetValue()[0][0]}")
-        print(f"cmb: max[1] = {pps_cmb_max.GetValue()[1][0]}")
-        print(f"cmb: avg[0] = {pps_cmb_avg.GetValue()[0][0]}")
-        print(f"cmb: avg[1] = {pps_cmb_avg.GetValue()[1][0]}")
-        print(f"cmb: int[0] = {pps_cmb_int.GetValue()[0][0]}")
-        print(f"cmb: int[1] = {pps_cmb_int.GetValue()[1][0]}")
+    min = pps_cmb_min.GetValue()
+    assert math.isclose(min[0][0], 1.034539408, rel_tol=1e-8)
+    assert math.isclose(min[1][0], 0.602754163, rel_tol=1e-8)
+    max = pps_cmb_max.GetValue()
+    assert math.isclose(max[0][0], 1.441386822, rel_tol=1e-8)
+    assert math.isclose(max[1][0], 0.765556698, rel_tol=1e-8)
+    avg = pps_cmb_avg.GetValue()
+    assert math.isclose(avg[0][0], 1.2179016519, rel_tol=1e-8)
+    assert math.isclose(avg[1][0], 0.682130241, rel_tol=1e-8)
+    int = pps_cmb_int.GetValue()
+    assert math.isclose(int[0][0], 0.487160661, rel_tol=1e-8)
+    assert math.isclose(int[1][0], 0.204639072, rel_tol=1e-8)
