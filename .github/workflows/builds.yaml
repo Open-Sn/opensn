@@ -31,7 +31,15 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
@@ -78,7 +86,16 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/${{ matrix.compiler }}
-          mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Native -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DCMAKE_BUILD_TYPE=Native \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
@@ -112,7 +129,17 @@ jobs:
         shell: bash
         run: |
           module load cuda/13.0 python3/3.12.3 opensn/${{ matrix.compiler }}
-          mkdir build && cd build && cmake -DOPENSN_WITH_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89 -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DOPENSN_WITH_CUDA=ON \
+            -DCMAKE_CUDA_ARCHITECTURES=89 \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
@@ -137,7 +164,12 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/clang/17
-          cmake -DOPENSN_WITH_PYTHON_MODULE=ON --preset clang+debug+sanitizer
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            --preset clang+debug+sanitizer
           cmake --build --preset clang+debug+sanitizer -j64
       - name: test
         shell: bash

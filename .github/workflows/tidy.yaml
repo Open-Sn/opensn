@@ -20,7 +20,15 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/clang/21
-          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: clang-tidy
         shell: bash
         run: |

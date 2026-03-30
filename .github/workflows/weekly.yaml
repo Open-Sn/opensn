@@ -14,7 +14,14 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          mkdir build && cd build && cmake .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
