@@ -10,7 +10,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "test/python/src/bindings.h"
 
 using namespace opensn;
 

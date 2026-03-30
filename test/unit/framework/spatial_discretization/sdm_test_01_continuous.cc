@@ -8,7 +8,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "python/lib/console.h"
-#include "test/python/src/bindings.h"
 #include <memory>
 
 using namespace opensn;

@@ -11,7 +11,6 @@
 #include "framework/data_types/ndarray.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "test/python/src/bindings.h"
 #include <iomanip>
 
 using namespace opensn;

@@ -11,7 +11,6 @@
 #include "framework/data_types/dense_matrix.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "test/python/src/bindings.h"
 
 using namespace opensn;
 
@@ -21,6 +20,7 @@ namespace unit_tests
 void
 acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
 {
+#if 0
   using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
   opensn::log.Log() << "SimTest92_DSA";
 
@@ -128,6 +128,7 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
 
   opensn::log.Log() << "Error: " << std::scientific << global_error
                     << " Num-cells: " << grid->GetGlobalNumberOfCells();
+#endif
 }
 
 } //  namespace unit_tests

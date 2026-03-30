@@ -25,7 +25,6 @@ target_link_libraries(opensn-unit
 )
 
 if(OPENSN_WITH_PYTHON)
-    add_subdirectory(python)
     target_link_libraries(opensn-unit PRIVATE libopensnpy)
     target_compile_definitions(opensn-unit PRIVATE OPENSN_WITH_PYTHON)
 endif()

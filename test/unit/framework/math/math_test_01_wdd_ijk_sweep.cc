@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "test/python/src/bindings.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/data_types/range.h"

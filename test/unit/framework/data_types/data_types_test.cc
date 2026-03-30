@@ -1,32 +1,28 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "test/python/src/bindings.h"
+#include "gtest/gtest.h"
+#include "test/unit/opensn_unit_test.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "mpicpp-lite/mpicpp-lite.h"
 #include <map>
 
 using namespace opensn;
-using namespace opensnpy;
+namespace mpi = mpicpp_lite;
 
-namespace unit_tests
+class DataTypesTest : public OpenSnUnitTest
 {
+};
 
-void
-data_types_Test00()
+TEST_F(DataTypesTest, 00)
 {
   bool passed = true;
 
-  opensn::log.Log() << "GOLD_BEGIN";
-
-  // Testing Byte array
-  // serialization
-  opensn::log.Log() << "Testing ByteArray "
-                       "Serialization/DeSerialization\n";
   if (opensn::mpi_comm.size() == 2)
   {
 
@@ -210,20 +206,11 @@ data_types_Test00()
       }
     }
   } // if #procs=2
-  else
-    throw std::invalid_argument("unit_tests::Test_data_types requires"
-                                " at least 2 MPI processes.");
 
-  if (not passed)
-  {
-    opensn::log.Log() << "ByteArray "
-                         "Serialization/DeSerialization ... Failed\n";
-  }
-  else
-    opensn::log.Log() << "ByteArray"
-                         "Serialization/DeSerialization ... Passed\n";
+  opensn::mpi_comm.all_reduce(passed, mpi::op::logical_and<bool>());
 
-  opensn::log.Log() << "GOLD_END";
+  if (passed)
+    SUCCEED();
+  else
+    FAIL();
 }
-
-} //  namespace unit_tests

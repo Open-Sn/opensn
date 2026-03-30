@@ -9,7 +9,6 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "test/python/src/bindings.h"
 
 using namespace opensn;
 

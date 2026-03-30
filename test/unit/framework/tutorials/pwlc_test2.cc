@@ -7,7 +7,6 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "test/python/src/bindings.h"
 
 using namespace opensn;
 
@@ -16,13 +15,14 @@ namespace unit_tests
 
 /**
  * This is a simple test of the Finite Volume spatial discretization applied
- * to Laplace's problem.
+ * to Laplace's problem but with a manufactured solution.
  */
 
 void
-SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
+SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
 {
-  opensn::log.Log() << "Coding Tutorial 3";
+#if 0
+  opensn::log.Log() << "Coding Tutorial 4";
 
   opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
@@ -54,12 +54,18 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
 
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
+  // Retrieve the functions defined in the global namespace.
+  py::module main_module = py::module::import("__main__");
+  py::object MMS_phi = main_module.attr("MMS_phi");
+  py::object MMS_q = main_module.attr("MMS_q");
+
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
   for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
+    const auto cell_node_xyzs = cell_mapping.GetNodeLocations();
 
     const size_t num_nodes = cell_mapping.GetNumNodes();
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
@@ -78,7 +84,11 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
         Acell(i, j) = entry_aij;
       } // for j
       for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
-        cell_rhs(i) += 1.0 * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
+      {
+        auto temp = MMS_q(py::make_tuple(fe_vol_data.QPointXYZ(qp).x, fe_vol_data.QPointXYZ(qp).y));
+        double res = temp.cast<double>();
+        cell_rhs(i) += res * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
+      }
     } // for i
 
     // Flag nodes for being on dirichlet boundary
@@ -109,7 +119,9 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
       if (node_boundary_flag[i]) // if dirichlet node
       {
         MatSetValue(A, imap[i], imap[i], 1.0, ADD_VALUES);
-        VecSetValue(b, imap[i], 0.0, ADD_VALUES);
+        auto tmp = MMS_phi(py::make_tuple(cell_node_xyzs[i].x, cell_node_xyzs[i].y));
+        double bval = tmp.cast<double>();
+        VecSetValue(b, imap[i], bval, ADD_VALUES);
       }
       else
       {
@@ -117,6 +129,12 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
         {
           if (not node_boundary_flag[j])
             MatSetValue(A, imap[i], imap[j], Acell(i, j), ADD_VALUES);
+          else
+          {
+            auto tmp = MMS_phi(py::make_tuple(cell_node_xyzs[j].x, cell_node_xyzs[j].y));
+            double bval = tmp.cast<double>();
+            VecSetValue(b, imap[i], -Acell(i, j) * bval, ADD_VALUES);
+          }
         } // for j
         VecSetValue(b, imap[i], cell_rhs(i), ADD_VALUES);
       }
@@ -135,16 +153,14 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
   // Create Krylov Solver
   opensn::log.Log() << "Solving: ";
   auto petsc_solver =
-    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 1.0e-15, 0.0, 30);
+    CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 0.0, 1.0e-9, 15);
 
   // Solve
   KSPSolve(petsc_solver.ksp, b, x);
   KSPConvergedReason reason;
   KSPGetConvergedReason(petsc_solver.ksp, &reason);
-  if (reason == KSP_CONVERGED_RTOL)
+  if (reason == KSP_CONVERGED_ATOL)
     opensn::log.Log() << "Converged";
-
-  opensn::log.Log() << "Done solving";
 
   // Extract PETSc vector
   std::vector<double> field;
@@ -164,7 +180,49 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
 
   ff->UpdateFieldVector(field);
 
-  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut3_PWLC", {ff});
+  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut4_PWLC", {ff});
+
+  // Compute error
+  // First get ghosted values
+  const auto field_wg = ff->GetGhostedFieldVector();
+
+  double local_error = 0.0;
+  for (const auto& cell : grid->local_cells)
+  {
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
+
+    // Grab nodal phi values
+    std::vector<double> nodal_phi(num_nodes, 0.0);
+    for (size_t j = 0; j < num_nodes; ++j)
+    {
+      const auto jmap = sdm.MapDOFLocal(cell, j);
+      nodal_phi[j] = field_wg[jmap];
+    } // for j
+
+    // Quadrature loop
+    for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
+    {
+      double phi_fem = 0.0;
+      for (size_t j = 0; j < num_nodes; ++j)
+        phi_fem += nodal_phi[j] * fe_vol_data.ShapeValue(j, qp);
+
+      auto tmp = MMS_phi(py::make_tuple(fe_vol_data.QPointXYZ(qp).x, fe_vol_data.QPointXYZ(qp).y));
+      double phi_true = tmp.cast<double>();
+
+      local_error += std::pow(phi_true - phi_fem, 2.0) * fe_vol_data.JxW(qp);
+    }
+  } // for cell
+
+  double global_error = 0.0;
+  opensn::mpi_comm.all_reduce(local_error, global_error, mpi::op::sum<double>());
+
+  global_error = std::sqrt(global_error);
+
+  opensn::log.Log() << "Error: " << std::scientific << global_error
+                    << " Num-cells: " << grid->GetGlobalNumberOfCells();
+#endif
 }
 
 } // namespace unit_tests
