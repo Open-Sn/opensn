@@ -81,3 +81,7 @@ if __name__ == "__main__":
     )
     k_solver.Initialize()
     k_solver.Execute()
+
+    balance = k_solver.ComputeBalanceTable()
+    if rank == 0:
+        print(f"Balance={balance['balance']:.6e}")

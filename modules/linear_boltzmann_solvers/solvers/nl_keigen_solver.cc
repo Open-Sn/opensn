@@ -127,4 +127,10 @@ NonLinearKEigenSolver::GetEigenvalue() const
   return nl_context_->kresid_func_context.k_eff;
 }
 
+BalanceTable
+NonLinearKEigenSolver::ComputeBalanceTable() const
+{
+  return opensn::ComputeBalanceTable(*do_problem_, 1.0 / GetEigenvalue());
+}
+
 } // namespace opensn

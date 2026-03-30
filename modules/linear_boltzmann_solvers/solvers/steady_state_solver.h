@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_compute.h"
 
 namespace opensn
 {
@@ -18,6 +19,8 @@ public:
   void Initialize() override;
 
   void Execute() override;
+
+  BalanceTable ComputeBalanceTable() const;
 
 protected:
   std::shared_ptr<LBSProblem> lbs_problem_;

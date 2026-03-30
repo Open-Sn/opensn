@@ -52,6 +52,12 @@ TransientSolver::SetTheta(double theta)
   do_problem_->SetTheta(theta);
 }
 
+BalanceTable
+TransientSolver::ComputeBalanceTable() const
+{
+  return opensn::ComputeBalanceTable(*do_problem_);
+}
+
 std::shared_ptr<TransientSolver>
 TransientSolver::Create(const ParameterBlock& params)
 {

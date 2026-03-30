@@ -221,6 +221,12 @@ PowerIterationKEigenSolver::Execute()
   log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
 }
 
+BalanceTable
+PowerIterationKEigenSolver::ComputeBalanceTable() const
+{
+  return opensn::ComputeBalanceTable(*do_problem_, 1.0 / k_eff_);
+}
+
 void
 PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input,
                                                 const bool additive)

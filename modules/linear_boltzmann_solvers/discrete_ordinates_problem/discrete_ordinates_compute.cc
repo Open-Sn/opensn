@@ -8,16 +8,17 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <cmath>
 #include <iomanip>
 #include <unordered_set>
 
 namespace opensn
 {
 
-void
-ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
+BalanceTable
+ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 {
-  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ComputeBalance");
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ComputeBalanceTable");
 
   opensn::mpi_comm.barrier();
 
@@ -180,9 +181,8 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 
   // Compute local balance
   double local_balance = local_production + local_in_flow - local_absorption - local_out_flow;
-  double local_gain = local_production + local_in_flow;
   std::vector<double> local_balance_table = {
-    local_absorption, local_production, local_in_flow, local_out_flow, local_balance, local_gain};
+    local_absorption, local_production, local_in_flow, local_out_flow, local_balance};
   if (time_dependent)
   {
     local_balance_table.push_back(local_initial);
@@ -199,20 +199,18 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   double global_in_flow = global_balance_table.at(2);
   double global_out_flow = global_balance_table.at(3);
   double global_balance = global_balance_table.at(4);
-  double global_gain = global_balance_table.at(5);
   double global_initial = 0.0;
   double global_final = 0.0;
   if (scaling_factor != 1.0)
   {
     global_production *= scaling_factor;
-    global_gain = global_production + global_in_flow;
-    global_balance = global_gain - (global_absorption + global_out_flow);
+    global_balance = global_production + global_in_flow - (global_absorption + global_out_flow);
   }
 
   if (time_dependent)
   {
-    global_initial = global_balance_table.at(6);
-    global_final = global_balance_table.at(7);
+    global_initial = global_balance_table.at(5);
+    global_final = global_balance_table.at(6);
   }
 
   if (time_dependent)
@@ -222,37 +220,87 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     // should use theta-centered rates (sources/absorption), time-averaged boundary
     // inflow/outflow, and a correct handling of pulsed sources/boundaries when
     // start/end times fall inside the timestep.
-    const double source = dt * global_production;
-    const double absorption = dt * global_absorption;
-    const double net_outflow = dt * (global_out_flow - global_in_flow);
-    const double net_gain = source - absorption - net_outflow;
-    const double conservation_error =
-      (global_final == 0.0) ? 0.0 : (global_final - (global_initial + net_gain)) / global_final;
-
+    const double predicted_inventory_change = dt * global_balance;
+    const double actual_inventory_change = global_final - global_initial;
+    const double inventory_residual = actual_inventory_change - predicted_inventory_change;
+    const BalanceTable table{global_absorption,
+                             global_production,
+                             global_in_flow,
+                             global_out_flow,
+                             global_balance,
+                             global_initial,
+                             global_final,
+                             predicted_inventory_change,
+                             actual_inventory_change,
+                             inventory_residual};
     log.Log() << "\nTimestep balance (dt = " << std::setprecision(6) << std::fixed << dt << "):\n"
               << std::setprecision(6) << std::scientific
-              << " Source                      = " << source << "\n"
-              << " Absorption                  = " << absorption << "\n"
-              << " Net out-flow                = " << net_outflow << "\n"
-              << " Initial                     = " << global_initial << "\n"
-              << " Final                       = " << global_final << "\n"
-              << " Conservation error          = " << conservation_error << "\n\n";
-  }
-  else
-  {
-    const double conservation_error = (global_gain == 0.0) ? 0.0 : (global_balance / global_gain);
-    log.Log() << "\nBalance table:\n"
-              << std::setprecision(6) << std::scientific
-              << " Absorption rate             = " << global_absorption << "\n"
-              << " Production rate             = " << global_production << "\n"
-              << " In-flow rate                = " << global_in_flow << "\n"
-              << " Out-flow rate               = " << global_out_flow << "\n"
-              << " Gain (In-flow + Production) = " << global_gain << "\n"
-              << " Balance (Gain - Loss)       = " << global_balance << "\n"
-              << " Conservation error          = " << conservation_error << "\n\n";
+              << " Production rate             = " << table.production_rate << "\n"
+              << " In-flow rate                = " << table.inflow_rate << "\n"
+              << " Absorption rate             = " << table.absorption_rate << "\n"
+              << " Out-flow rate               = " << table.outflow_rate << "\n"
+              << " Balance                     = " << table.balance << "\n"
+              << " Initial inventory           = " << table.initial_inventory.value() << "\n"
+              << " Final inventory             = " << table.final_inventory.value() << "\n"
+              << " Predicted inventory change  = " << table.predicted_inventory_change.value()
+              << "\n"
+              << " Actual inventory change     = " << table.actual_inventory_change.value() << "\n"
+              << " Inventory residual          = " << table.inventory_residual.value() << "\n\n";
+
+    opensn::mpi_comm.barrier();
+    return table;
   }
 
   opensn::mpi_comm.barrier();
+  return {global_absorption,
+          global_production,
+          global_in_flow,
+          global_out_flow,
+          global_balance,
+          std::nullopt,
+          std::nullopt,
+          std::nullopt,
+          std::nullopt,
+          std::nullopt};
+}
+
+void
+ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
+{
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ComputeBalance");
+
+  const auto table = ComputeBalanceTable(do_problem, scaling_factor);
+  const auto time_dependent = do_problem.IsTimeDependent();
+  const auto dt = time_dependent ? do_problem.GetTimeStep() : 0.0;
+
+  if (time_dependent)
+  {
+    log.Log() << "\nTimestep balance (dt = " << std::setprecision(6) << std::fixed << dt << "):\n"
+              << std::setprecision(6) << std::scientific
+              << " Production rate             = " << table.production_rate << "\n"
+              << " In-flow rate                = " << table.inflow_rate << "\n"
+              << " Absorption rate             = " << table.absorption_rate << "\n"
+              << " Out-flow rate               = " << table.outflow_rate << "\n"
+              << " Balance                     = " << table.balance << "\n"
+              << " Initial inventory           = " << table.initial_inventory.value_or(0.0) << "\n"
+              << " Final inventory             = " << table.final_inventory.value_or(0.0) << "\n"
+              << " Predicted inventory change  = " << table.predicted_inventory_change.value_or(0.0)
+              << "\n"
+              << " Actual inventory change     = " << table.actual_inventory_change.value_or(0.0)
+              << "\n"
+              << " Inventory residual          = " << table.inventory_residual.value_or(0.0)
+              << "\n\n";
+  }
+  else
+  {
+    log.Log() << "\nBalance table:\n"
+              << std::setprecision(6) << std::scientific
+              << " Absorption rate             = " << table.absorption_rate << "\n"
+              << " Production rate             = " << table.production_rate << "\n"
+              << " In-flow rate                = " << table.inflow_rate << "\n"
+              << " Out-flow rate               = " << table.outflow_rate << "\n"
+              << " Balance                     = " << table.balance << "\n\n";
+  }
 }
 
 static double

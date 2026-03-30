@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_solver.h"
 #include <petscsnes.h>
@@ -20,6 +21,8 @@ public:
   void Execute() override;
   /// Return the current k-eigenvalue
   double GetEigenvalue() const;
+
+  BalanceTable ComputeBalanceTable() const;
 
 private:
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
