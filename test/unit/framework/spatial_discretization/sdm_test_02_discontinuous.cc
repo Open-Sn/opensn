@@ -1,16 +1,20 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
+#include "test/unit/common/mesh_builders.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include <filesystem>
 
 using namespace opensn;
+namespace fs = std::filesystem;
 
-namespace unit_tests
+namespace
 {
 
 /**Maps a face, in a discontinuous sense, using the spatial discretization.*/
@@ -28,7 +32,8 @@ double HPerpendicular(const CellMapping& cell_mapping, unsigned int f);
 void
 math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
                               std::string sdm_type,
-                              bool export_vtk)
+                              bool export_vtk,
+                              double gold)
 {
   const double penalty_factor = 4.0;
 
@@ -346,8 +351,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
   KSPSolve(petsc_solver.ksp, b, x);
   KSPConvergedReason reason;
   KSPGetConvergedReason(petsc_solver.ksp, &reason);
-  if (reason == KSP_CONVERGED_ATOL)
-    opensn::log.Log() << "Converged";
+  EXPECT_TRUE(reason == KSP_CONVERGED_ATOL);
 
   // Extract PETSc vector
   std::vector<double> field;
@@ -360,7 +364,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
   double global_max;
   opensn::mpi_comm.all_reduce(local_max, global_max, mpi::op::max<double>());
 
-  opensn::log.Log() << "Nodal max = " << global_max;
+  EXPECT_NEAR(global_max, gold, 1e-5);
 
   // Clean up
   KSPDestroy(&petsc_solver.ksp);
@@ -474,4 +478,70 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
   return hp;
 }
 
-} //  namespace unit_tests
+} // namespace
+
+TEST(SDMTestPWLD, 1D_Ortho)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  const unsigned int N = 100;
+  const double L = 2.0;
+
+  auto grid = BuildLineMesh(L, N, -L / 2);
+  math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.500684);
+}
+
+TEST(SDMTestPWLD, 2D_Ortho)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  const unsigned int N = 100;
+  const double L = 2.0;
+
+  auto grid = BuildSquareMesh(L, N, -L / 2);
+  math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.295603);
+}
+
+TEST(SDMTestPWLD, 3D_Ortho)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  const unsigned int N = 30;
+  const double L = 2.0;
+
+  auto grid = BuildBoxMesh(L, N, -L / 2);
+  math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.225199);
+}
+
+TEST(SDMTestPWLD, 2D_Tris)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "triangle_mesh2x2.obj";
+  auto grid = BuildMeshFromFile(mfile);
+  math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.296448);
+}
+
+TEST(SDMTestPWLD, 3D_Hexes)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_hexes.vtu";
+  auto grid = BuildMeshFromFile(mfile);
+  math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.220627);
+}
+
+TEST(SDMTestPWLD, 3D_Tets)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_tets.vtu";
+  auto grid = BuildMeshFromFile(mfile);
+  math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.226529);
+}
