@@ -484,17 +484,13 @@ LBSProblem::GetNumPhiIterativeUnknowns()
 }
 
 std::shared_ptr<FieldFunctionGridBased>
-LBSProblem::GetScalarFluxFieldFunction(unsigned int g, unsigned int m) const
+LBSProblem::GetScalarFluxFieldFunction(unsigned int g, unsigned int m)
 {
   OpenSnLogicalErrorIf(g >= num_groups_, GetName() + ": Group index out of range.");
   OpenSnLogicalErrorIf(m >= num_moments_, GetName() + ": Moment index out of range.");
 
-  const auto map_it = phi_field_functions_local_map_.find({g, m});
-  OpenSnLogicalErrorIf(map_it == phi_field_functions_local_map_.end(),
-                       GetName() + ": Failed to map phi field function for g=" + std::to_string(g) +
-                         ", m=" + std::to_string(m) + ".");
-
-  return field_functions_.at(map_it->second);
+  const size_t ff_index = AllocatePhiFieldFunction(g, m);
+  return field_functions_.at(ff_index);
 }
 
 std::shared_ptr<FieldFunctionGridBased>
@@ -1166,35 +1162,11 @@ LBSProblem::InitializeFieldFunctions()
 
   // Initialize Field Functions for flux moments
   phi_field_functions_local_map_.clear();
+  field_functions_.reserve(num_groups_ + (options_.power_field_function_on ? 1 : 0));
 
+  // Create only scalar-flux field functions eagerly. Higher moments are created on demand.
   for (unsigned int g = 0; g < num_groups_; ++g)
-  {
-    for (unsigned int m = 0; m < num_moments_; ++m)
-    {
-      std::string prefix;
-      if (options_.field_function_prefix_option == "prefix")
-      {
-        prefix = options_.field_function_prefix;
-        if (not prefix.empty())
-          prefix += "_";
-      }
-      if (options_.field_function_prefix_option == "solver_name")
-        prefix = GetName() + "_";
-
-      std::ostringstream oss;
-      oss << prefix << "phi_g" << std::setw(3) << std::setfill('0') << static_cast<int>(g) << "_m"
-          << std::setw(2) << std::setfill('0') << static_cast<int>(m);
-      const std::string name = oss.str();
-
-      auto group_ff = std::make_shared<FieldFunctionGridBased>(
-        name, discretization_, Unknown(UnknownType::SCALAR));
-
-      field_function_stack.push_back(group_ff);
-      field_functions_.push_back(group_ff);
-
-      phi_field_functions_local_map_[{g, m}] = field_functions_.size() - 1;
-    } // for m
-  } // for g
+    AllocatePhiFieldFunction(g, 0);
 
   // Initialize power generation field function
   if (options_.power_field_function_on)
@@ -1217,6 +1189,62 @@ LBSProblem::InitializeFieldFunctions()
 
     power_gen_fieldfunc_local_handle_ = field_functions_.size() - 1;
   }
+}
+
+size_t
+LBSProblem::AllocatePhiFieldFunction(unsigned int g, unsigned int m)
+{
+  const auto key = std::make_pair(g, m);
+  const auto map_it = phi_field_functions_local_map_.find(key);
+  if (map_it != phi_field_functions_local_map_.end())
+    return map_it->second;
+
+  std::string prefix;
+  if (options_.field_function_prefix_option == "prefix")
+  {
+    prefix = options_.field_function_prefix;
+    if (not prefix.empty())
+      prefix += "_";
+  }
+  if (options_.field_function_prefix_option == "solver_name")
+    prefix = GetName() + "_";
+
+  std::ostringstream oss;
+  oss << prefix << "phi_g" << std::setw(3) << std::setfill('0') << static_cast<int>(g) << "_m"
+      << std::setw(2) << std::setfill('0') << static_cast<int>(m);
+
+  auto group_ff = std::make_shared<FieldFunctionGridBased>(
+    oss.str(), discretization_, Unknown(UnknownType::SCALAR));
+
+  // Initialize newly-created field functions from the current phi solution so on-demand
+  // allocation after a solve returns up-to-date data immediately.
+  {
+    const auto& sdm = *discretization_;
+    const auto& phi_uk_man = flux_moments_uk_man_;
+    std::vector<double> data_vector_local(local_node_count_, 0.0);
+
+    for (const auto& cell : grid_->local_cells)
+    {
+      const auto& cell_mapping = sdm.GetCellMapping(cell);
+      const size_t num_nodes = cell_mapping.GetNumNodes();
+
+      for (size_t i = 0; i < num_nodes; ++i)
+      {
+        const auto imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+        const auto imapB = sdm.MapDOFLocal(cell, i);
+        data_vector_local[imapB] = phi_new_local_[imapA];
+      }
+    }
+
+    group_ff->UpdateFieldVector(data_vector_local);
+  }
+
+  field_function_stack.push_back(group_ff);
+  field_functions_.push_back(group_ff);
+
+  const size_t ff_index = field_functions_.size() - 1;
+  phi_field_functions_local_map_[key] = ff_index;
+  return ff_index;
 }
 
 void
@@ -1404,7 +1432,15 @@ LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
   {
     for (const auto g : g_ids_to_copy)
     {
-      const size_t ff_index = phi_field_functions_local_map_.at({g, m});
+      const auto key = std::make_pair(g, m);
+      const auto ff_it = phi_field_functions_local_map_.find(key);
+      OpenSnLogicalErrorIf(ff_it == phi_field_functions_local_map_.end(),
+                           GetName() +
+                             ": SetPhiFromFieldFunctions requested field function "
+                             "for group=" +
+                             std::to_string(g) + " moment=" + std::to_string(m) +
+                             " but it has not been allocated.");
+      const size_t ff_index = ff_it->second;
       const auto& ff_ptr = field_functions_.at(ff_index);
       const auto& ff_data = ff_ptr->GetLocalFieldVector();
 

@@ -141,6 +141,18 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
+    Flux-moment field functions are allocated lazily.
+
+    The zeroth-moment field function for each group is created eagerly during solver
+    initialization, so scalar-flux output is always available.
+
+    Higher-moment field functions are created on demand. Calling
+    ``GetScalarFluxFieldFunction(only_scalar_flux=False)`` allocates all higher moments
+    and initializes them from the current solver state.
+
+    This is a substantial memory saver for typical problems, because most workflows only
+    need scalar-flux output and do not need to store field functions for every moment.
+
     In the nested form (``only_scalar_flux=False``), the moment index varies fastest
     within each group (inner index = moment, outer index = group).
     )",
