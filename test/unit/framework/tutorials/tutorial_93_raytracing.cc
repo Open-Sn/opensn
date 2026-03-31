@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
+#include "test/unit/common/mesh_builders.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/random_number_generation/random_number_generator.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
@@ -12,7 +14,7 @@
 
 using namespace opensn;
 
-namespace unit_tests
+namespace
 {
 
 void
@@ -322,10 +324,24 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
   ff_list[0]->UpdateFieldVector(m0_phi);
 
   // Update field function
-  std::vector<std::shared_ptr<const FieldFunctionGridBased>> const_ff_list;
-  for (const auto& ff_ptr : ff_list)
-    const_ff_list.push_back(ff_ptr);
-  FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_93", const_ff_list);
+  // std::vector<std::shared_ptr<const FieldFunctionGridBased>> const_ff_list;
+  // for (const auto& ff_ptr : ff_list)
+  //   const_ff_list.push_back(ff_ptr);
+  // FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_93", const_ff_list);
 }
 
-} // namespace unit_tests
+} // namespace
+
+TEST(TutorialsTest, Raytracing93)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  const unsigned int N = 11;
+  const double L = 11.0;
+
+  auto grid = BuildSquareMesh(L, N, -L / 2);
+  grid->SetUniformBlockID(0);
+  grid->SetOrthogonalBoundaries();
+  SimTest93_RayTracing(grid);
+}
