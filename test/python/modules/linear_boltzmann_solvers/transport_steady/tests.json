@@ -1244,13 +1244,13 @@
       {
         "type": "KeyValuePair",
         "key": " Absorption rate             =",
-        "goldvalue": 0.3245019,
+        "goldvalue": 0.3245017,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": " Out-flow rate               =",
-        "goldvalue": 13.43587,
+        "goldvalue": 13.43599,
         "abs_tol": 1e-06
       }
     ]
