@@ -10,3 +10,5 @@ BuildOrthogonalMesh(const std::vector<std::vector<double>>& node_sets);
 std::shared_ptr<opensn::MeshContinuum> BuildLineMesh(double length, unsigned int n, double xmin);
 
 std::shared_ptr<opensn::MeshContinuum> BuildSquareMesh(double length, unsigned int n, double xmin);
+
+std::shared_ptr<opensn::MeshContinuum> BuildBoxMesh(double length, unsigned int n, double xmin);
