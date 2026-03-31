@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
+#include "test/unit/common/mesh_builders.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
@@ -10,7 +12,7 @@
 
 using namespace opensn;
 
-namespace unit_tests
+namespace
 {
 
 /**
@@ -18,14 +20,21 @@ namespace unit_tests
  * to Laplace's problem but with a manufactured solution.
  */
 
+double
+MMS_phi(const Vector3& pt)
+{
+  return std::cos(M_PI * pt[0]) + std::cos(M_PI * pt[1]);
+}
+
+auto
+MMS_q(const Vector3& pt)
+{
+  return std::pow(M_PI, 2) * (std::cos(M_PI * pt[0]) + std::cos(M_PI * pt[1]));
+}
+
 void
 SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
 {
-#if 0
-  opensn::log.Log() << "Coding Tutorial 4";
-
-  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
-
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);
   const auto& sdm = *sdm_ptr;
@@ -34,9 +43,6 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
 
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_global_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
-
-  opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
-  opensn::log.Log() << "Num globl DOFs: " << num_global_dofs;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
@@ -54,13 +60,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
 
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
-  // Retrieve the functions defined in the global namespace.
-  py::module main_module = py::module::import("__main__");
-  py::object MMS_phi = main_module.attr("MMS_phi");
-  py::object MMS_q = main_module.attr("MMS_q");
-
   // Assemble the system
-  opensn::log.Log() << "Assembling system: ";
   for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -85,8 +85,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
       } // for j
       for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
       {
-        auto temp = MMS_q(py::make_tuple(fe_vol_data.QPointXYZ(qp).x, fe_vol_data.QPointXYZ(qp).y));
-        double res = temp.cast<double>();
+        auto res = MMS_q(fe_vol_data.QPointXYZ(qp));
         cell_rhs(i) += res * fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
       }
     } // for i
@@ -119,8 +118,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
       if (node_boundary_flag[i]) // if dirichlet node
       {
         MatSetValue(A, imap[i], imap[i], 1.0, ADD_VALUES);
-        auto tmp = MMS_phi(py::make_tuple(cell_node_xyzs[i].x, cell_node_xyzs[i].y));
-        double bval = tmp.cast<double>();
+        auto bval = MMS_phi(cell_node_xyzs[i]);
         VecSetValue(b, imap[i], bval, ADD_VALUES);
       }
       else
@@ -131,8 +129,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
             MatSetValue(A, imap[i], imap[j], Acell(i, j), ADD_VALUES);
           else
           {
-            auto tmp = MMS_phi(py::make_tuple(cell_node_xyzs[j].x, cell_node_xyzs[j].y));
-            double bval = tmp.cast<double>();
+            auto bval = MMS_phi(cell_node_xyzs[j]);
             VecSetValue(b, imap[i], -Acell(i, j) * bval, ADD_VALUES);
           }
         } // for j
@@ -141,17 +138,12 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
     } // for i
   } // for cell
 
-  opensn::log.Log() << "Global assembly";
-
   MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
   VecAssemblyBegin(b);
   VecAssemblyEnd(b);
 
-  opensn::log.Log() << "Done global assembly";
-
   // Create Krylov Solver
-  opensn::log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 0.0, 1.0e-9, 15);
 
@@ -159,8 +151,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
   KSPSolve(petsc_solver.ksp, b, x);
   KSPConvergedReason reason;
   KSPGetConvergedReason(petsc_solver.ksp, &reason);
-  if (reason == KSP_CONVERGED_ATOL)
-    opensn::log.Log() << "Converged";
+  EXPECT_TRUE(reason == KSP_CONVERGED_ATOL);
 
   // Extract PETSc vector
   std::vector<double> field;
@@ -173,14 +164,10 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
   VecDestroy(&b);
   MatDestroy(&A);
 
-  opensn::log.Log() << "Done cleanup";
-
   // Create Field Function
   auto ff = std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, Unknown(UnknownType::SCALAR));
 
   ff->UpdateFieldVector(field);
-
-  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut4_PWLC", {ff});
 
   // Compute error
   // First get ghosted values
@@ -208,8 +195,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
       for (size_t j = 0; j < num_nodes; ++j)
         phi_fem += nodal_phi[j] * fe_vol_data.ShapeValue(j, qp);
 
-      auto tmp = MMS_phi(py::make_tuple(fe_vol_data.QPointXYZ(qp).x, fe_vol_data.QPointXYZ(qp).y));
-      double phi_true = tmp.cast<double>();
+      auto phi_true = MMS_phi(fe_vol_data.QPointXYZ(qp));
 
       local_error += std::pow(phi_true - phi_fem, 2.0) * fe_vol_data.JxW(qp);
     }
@@ -219,10 +205,22 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
   opensn::mpi_comm.all_reduce(local_error, global_error, mpi::op::sum<double>());
 
   global_error = std::sqrt(global_error);
-
-  opensn::log.Log() << "Error: " << std::scientific << global_error
-                    << " Num-cells: " << grid->GetGlobalNumberOfCells();
-#endif
+  EXPECT_NEAR(global_error, 7.032369e-02, 1e-7);
 }
 
-} // namespace unit_tests
+TEST(TutorialsTest, Pwlc2)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  const unsigned int N = 10;
+  const double L = 2.0;
+
+  auto grid = BuildSquareMesh(L, N, -L / 2);
+  grid->SetUniformBlockID(0);
+  SimTest04_PWLC(grid);
+
+  opensn::mpi_comm.barrier();
+}
+
+} // namespace
