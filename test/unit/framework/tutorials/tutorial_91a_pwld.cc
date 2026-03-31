@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
+#include "test/unit/common/mesh_builders.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/multi_group_xs/xsfile.h"
@@ -12,10 +14,12 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <iomanip>
+#include <filesystem>
 
 using namespace opensn;
+namespace fs = std::filesystem;
 
-namespace unit_tests
+namespace
 {
 
 /**PWLD Sweep. */
@@ -24,11 +28,6 @@ void
 SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
 {
   const std::string fname = "SimTest91_PWLD";
-
-  opensn::log.Log() << "SimTest91_PWLD num_args = " << 0;
-
-  if (opensn::mpi_comm.size() != 1)
-    throw std::logic_error(fname + ": Is serial only.");
 
   opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
@@ -97,7 +96,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "End ukmanagers." << std::endl;
 
   // Make XSs
-  MultiGroupXS xs = MultiGroupXS::LoadFromOpenSn("xs_graphite_pure.xs");
+  auto xsf =
+    fs::path(OPENSN_UNIT_TEST_ROOT) / "unit" / "framework" / "tutorials" / "xs_graphite_pure.xs";
+  MultiGroupXS xs = MultiGroupXS::LoadFromOpenSn(xsf.string());
 
   // Initializes vectors
   std::vector<double> phi_old(num_local_phi_dofs, 0.0);
@@ -433,6 +434,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
     return pw_change;
   };
 
+  std::vector<double> rel_resids;
   // Classic Richardson iteration
   opensn::log.Log() << "Starting iterations" << std::endl;
   for (size_t iter = 0; iter < 200; ++iter)
@@ -443,6 +445,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
     Sweep();
 
     const double rel_change = ComputeRelativePWChange(phi_new, phi_old);
+    rel_resids.push_back(rel_change);
 
     std::stringstream outstr;
     outstr << "Iteration " << std::setw(5) << iter << " ";
@@ -506,7 +509,24 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   std::vector<std::shared_ptr<const FieldFunctionGridBased>> const_ff_list;
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
-  FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_91a_PWLD", const_ff_list);
+  // FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_91a_PWLD", const_ff_list);
+
+  EXPECT_NEAR(rel_resids[8], 5.872e-07, 1e-10);
 }
 
-} // namespace unit_tests
+} // namespace
+
+TEST(TutorialsTest, Pwld_91a)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  const unsigned int N = 25;
+  const double L = 2.0;
+
+  auto grid = BuildSquareMesh(L, N, -L / 2);
+  grid->SetUniformBlockID(0);
+  SimTest91_PWLD(grid);
+
+  opensn::mpi_comm.barrier();
+}

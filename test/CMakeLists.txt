@@ -24,6 +24,11 @@ target_link_libraries(opensn-unit
     GTest::gtest_main
 )
 
+target_compile_definitions(opensn-unit
+  PRIVATE
+    OPENSN_UNIT_TEST_ROOT="${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
 if(OPENSN_WITH_PYTHON)
     target_link_libraries(opensn-unit PRIVATE libopensnpy)
     target_compile_definitions(opensn-unit PRIVATE OPENSN_WITH_PYTHON)
