@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
 #include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
 #include "framework/data_types/parallel_vector/parallel_stl_vector.h"
 #include "framework/runtime.h"
@@ -8,15 +9,10 @@
 
 using namespace opensn;
 
-namespace unit_tests
+TEST(MathTest, ParallelVector)
 {
-
-void
-math_Test02_ParallelVector()
-{
-  OpenSnLogicalErrorIf(opensn::mpi_comm.size() != 2, "Requires 2 processors");
-
-  opensn::log.Log() << "Testing ParallelSTLVector" << std::endl;
+  if (opensn::mpi_comm.size() != 2)
+    return;
 
   ParallelSTLVector vec(5, 10, opensn::mpi_comm);
 
@@ -26,14 +22,15 @@ math_Test02_ParallelVector()
     vec.SetValue(0, 1.0, VecOpType::SET_VALUE);
   vec.Assemble();
 
-  opensn::log.LogAll() << "vec after assembly: " << vec.PrintStr() << std::endl;
-
-  opensn::log.Log() << "Testing GhostedParallelSTLVector" << std::endl;
+  if (opensn::mpi_comm.rank() == 0)
+    EXPECT_THAT(vec.GetLocalSTLData(), ::testing::ElementsAre(1, 0, 0, 0, 0));
+  else
+    EXPECT_THAT(vec.GetLocalSTLData(), ::testing::ElementsAre(2, 0, 0, 0, 0));
 
   const uint64_t ghost_id = opensn::mpi_comm.rank() == 0 ? 5 : 4;
   GhostedParallelSTLVector ghost_vec(5, 10, {ghost_id}, opensn::mpi_comm);
 
-  opensn::log.LogAll() << "Number of Ghosts: " << ghost_vec.GetNumGhosts() << std::endl;
+  EXPECT_EQ(ghost_vec.GetNumGhosts(), 1);
 
   if (opensn::mpi_comm.rank() == 0)
     ghost_vec.SetValue(5, 2.0, VecOpType::SET_VALUE);
@@ -42,39 +39,27 @@ math_Test02_ParallelVector()
   ghost_vec.Assemble();
   ghost_vec.CommunicateGhostEntries();
 
-  opensn::log.LogAll() << "Ghost vec after communicate: " << ghost_vec.PrintStr() << std::endl;
+  if (opensn::mpi_comm.rank() == 0)
+    EXPECT_THAT(ghost_vec.GetLocalSTLData(), ::testing::ElementsAre(0, 0, 0, 0, 1, 2));
+  else
+    EXPECT_THAT(ghost_vec.GetLocalSTLData(), ::testing::ElementsAre(2, 0, 0, 0, 0, 1));
 
   {
-    std::stringstream outstr;
-    // const auto& raw_vals = ghost_vec.MakeLocalVector();
-    const double* data = ghost_vec.GetData();
-    for (size_t i = 0; i < ghost_vec.GetLocalSizeWithGhosts(); ++i)
-      outstr << data[i] << " ";
-    opensn::log.LogAll() << "Ghost vec raw values: " << outstr.str();
-  }
-
-  {
-    std::stringstream outstr;
     const auto made_vals = ghost_vec.MakeLocalVector();
-    for (double val : made_vals)
-      outstr << val << " ";
-    opensn::log.LogAll() << "Ghost vec make-local values: " << outstr.str();
+    if (opensn::mpi_comm.rank() == 0)
+      EXPECT_THAT(made_vals, ::testing::ElementsAre(0, 0, 0, 0, 1));
+    else
+      EXPECT_THAT(made_vals, ::testing::ElementsAre(2, 0, 0, 0, 0));
   }
 
-  opensn::log.LogAll() << "Parallel vector norm-1: " << vec.ComputeNorm(opensn::NormType::L1_NORM);
-  opensn::log.LogAll() << "Parallel vector norm-2: " << vec.ComputeNorm(opensn::NormType::L2_NORM);
-  opensn::log.LogAll() << "Parallel vector norm-inf: "
-                       << vec.ComputeNorm(opensn::NormType::LINF_NORM);
+  EXPECT_NEAR(vec.ComputeNorm(opensn::NormType::L1_NORM), 3., 1e-10);
+  EXPECT_NEAR(vec.ComputeNorm(opensn::NormType::L2_NORM), 2.236067977, 1e-8);
+  EXPECT_NEAR(vec.ComputeNorm(opensn::NormType::LINF_NORM), 2., 1e-10);
 
-  opensn::log.LogAll() << "Ghost vector norm-1: "
-                       << ghost_vec.ComputeNorm(opensn::NormType::L1_NORM);
-  opensn::log.LogAll() << "Ghost vector norm-2: "
-                       << ghost_vec.ComputeNorm(opensn::NormType::L2_NORM);
-  opensn::log.LogAll() << "Ghost vector norm-inf: "
-                       << ghost_vec.ComputeNorm(opensn::NormType::LINF_NORM);
+  EXPECT_NEAR(ghost_vec.ComputeNorm(opensn::NormType::L1_NORM), 3., 1e-10);
+  EXPECT_NEAR(ghost_vec.ComputeNorm(opensn::NormType::L2_NORM), 2.236067977, 1e-8);
+  EXPECT_NEAR(ghost_vec.ComputeNorm(opensn::NormType::LINF_NORM), 2., 1e-10);
 
-  opensn::log.Log() << "Testing ParallelSTLVector "
-                    << "ADD_VALUE and CopyValues" << std::endl;
   ParallelSTLVector vec2(5, 10, opensn::mpi_comm);
 
   vec2.CopyLocalValues(vec);
@@ -85,10 +70,11 @@ math_Test02_ParallelVector()
     vec2.SetValue(0, 1.0, VecOpType::ADD_VALUE);
   vec2.Assemble();
 
-  opensn::log.LogAll() << "vec2 after assembly: " << vec2.PrintStr() << std::endl;
+  if (opensn::mpi_comm.rank() == 0)
+    EXPECT_THAT(vec2.GetLocalSTLData(), ::testing::ElementsAre(2, 0, 0, 0, 0));
+  else
+    EXPECT_THAT(vec2.GetLocalSTLData(), ::testing::ElementsAre(4, 0, 0, 0, 0));
 
-  opensn::log.Log() << "Testing ParallelSTLVector "
-                    << "SetValues" << std::endl;
   ParallelSTLVector vec3(5, 10, opensn::mpi_comm);
 
   if (opensn::mpi_comm.rank() == 0)
@@ -97,12 +83,10 @@ math_Test02_ParallelVector()
     vec3.SetValues({0, 1}, {1.0, 4.0}, VecOpType::ADD_VALUE);
   vec3.Assemble();
 
-  opensn::log.LogAll() << "vec3 after assembly: " << vec3.PrintStr() << std::endl;
-
-  opensn::log.Log() << "Testing GhostedParallelSTLVector "
-                    << "Constructed from VectorGhostCommunicator and "
-                       "other utilities"
-                    << std::endl;
+  if (opensn::mpi_comm.rank() == 0)
+    EXPECT_THAT(vec3.GetLocalSTLData(), ::testing::ElementsAre(1, 4, 0, 0, 0));
+  else
+    EXPECT_THAT(vec3.GetLocalSTLData(), ::testing::ElementsAre(2, 3, 0, 0, 0));
 
   std::vector<uint64_t> ghost_ids;
   if (opensn::mpi_comm.rank() == 0)
@@ -113,8 +97,10 @@ math_Test02_ParallelVector()
 
   GhostedParallelSTLVector ghost_vec2(vgc);
 
-  opensn::log.LogAll() << "ghost_vec2 local size with ghosts "
-                       << ghost_vec2.GetLocalSizeWithGhosts() << std::endl;
+  if (opensn::mpi_comm.rank() == 0)
+    EXPECT_EQ(ghost_vec2.GetLocalSizeWithGhosts(), 7);
+  else
+    EXPECT_EQ(ghost_vec2.GetLocalSizeWithGhosts(), 8);
 
   if (opensn::mpi_comm.rank() == 0)
     ghost_vec2.SetValues({5, 6}, {6.0, 7.0}, VecOpType::ADD_VALUE);
@@ -124,41 +110,38 @@ math_Test02_ParallelVector()
   ghost_vec2.Assemble();
   ghost_vec2.CommunicateGhostEntries();
 
-  opensn::log.LogAll() << "ghost_vec2 after assembly: " << ghost_vec2.PrintStr() << std::endl;
+  if (opensn::mpi_comm.rank() == 0)
+    EXPECT_THAT(ghost_vec2.GetLocalSTLData(), ::testing::ElementsAre(1, 2, 0, 4, 0, 6, 7));
+  else
+    EXPECT_THAT(ghost_vec2.GetLocalSTLData(), ::testing::ElementsAre(6, 7, 0, 0, 0, 1, 2, 4));
 
   {
-    std::stringstream outstr;
-    for (uint64_t gid : ghost_vec2.GetGhostIndices())
-      outstr << gid << " ";
-    opensn::log.LogAll() << "ghost_vec2 ghost ids: " << outstr.str() << std::endl;
+    if (opensn::mpi_comm.rank() == 0)
+      EXPECT_THAT(ghost_vec2.GetGhostIndices(), ::testing::ElementsAre(5, 6));
+    else
+      EXPECT_THAT(ghost_vec2.GetGhostIndices(), ::testing::ElementsAre(0, 1, 3));
   }
 
   if (opensn::mpi_comm.rank() == 0)
-    opensn::log.LogAll() << "ghost_vec2 mapghostA: " << ghost_vec2.MapGhostToLocal(6) << std::endl;
+    EXPECT_EQ(ghost_vec2.MapGhostToLocal(6), 6);
   else
-    opensn::log.LogAll() << "ghost_vec2 mapghostA: " << ghost_vec2.MapGhostToLocal(1) << std::endl;
+    EXPECT_EQ(ghost_vec2.MapGhostToLocal(1), 6);
 
   {
     const auto ghosted_local = ghost_vec2.MakeGhostedLocalVector();
-    std::stringstream outstr;
-    for (double gid : ghosted_local)
-      outstr << gid << " ";
-    opensn::log.LogAll() << "ghost_vec2 MakeGhostedLocalVector: " << outstr.str() << std::endl;
+    if (opensn::mpi_comm.rank() == 0)
+      EXPECT_THAT(ghosted_local, ::testing::ElementsAre(1, 2, 0, 4, 0, 6, 7));
+    else
+      EXPECT_THAT(ghosted_local, ::testing::ElementsAre(6, 7, 0, 0, 0, 1, 2, 4));
   }
 
   if (opensn::mpi_comm.rank() == 0)
-    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(local): " << ghost_vec2.GetGlobalValue(3)
-                         << std::endl;
+    EXPECT_NEAR(ghost_vec2.GetGlobalValue(3), 4., 1e-10);
   else
-    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(local): " << ghost_vec2.GetGlobalValue(6)
-                         << std::endl;
+    EXPECT_NEAR(ghost_vec2.GetGlobalValue(6), 7., 1e-10);
 
   if (opensn::mpi_comm.rank() == 0)
-    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(ghost): " << ghost_vec2.GetGlobalValue(6)
-                         << std::endl;
+    EXPECT_NEAR(ghost_vec2.GetGlobalValue(6), 7., 1e-10);
   else
-    opensn::log.LogAll() << "ghost_vec2 GetGlobalValue(ghost): " << ghost_vec2.GetGlobalValue(1)
-                         << std::endl;
+    EXPECT_NEAR(ghost_vec2.GetGlobalValue(1), 2., 1e-10);
 }
-
-} //  namespace unit_tests
