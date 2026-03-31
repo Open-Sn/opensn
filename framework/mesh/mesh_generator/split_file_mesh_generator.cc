@@ -78,16 +78,13 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
                                        const int num_partitions) const
 {
   const std::filesystem::path dir_path = std::filesystem::absolute(split_mesh_dir_path_);
-
-  const auto parent_path = dir_path.parent_path();
-  if (not std::filesystem::exists(parent_path))
-    throw std::runtime_error("Parent path " + parent_path.string() + " does not exist");
-
-  bool root_dir_created = true;
-  if (not std::filesystem::exists(dir_path))
-    root_dir_created = std::filesystem::create_directories(dir_path);
-  if (not root_dir_created)
-    throw std::runtime_error("Failed to create directory " + dir_path.string() + ".");
+  std::error_code err;
+  std::filesystem::create_directories(dir_path, err);
+  if (err and not std::filesystem::exists(dir_path))
+    throw std::runtime_error("Failed to create directory " + dir_path.string() + ". " +
+                             err.message());
+  if (not std::filesystem::is_directory(dir_path))
+    throw std::runtime_error("Path " + dir_path.string() + " exists but is not a directory.");
 
   const auto& vertex_subs = umesh.GetVertextCellSubscriptions();
   const auto& raw_cells = umesh.GetRawCells();
@@ -339,7 +336,7 @@ SplitFileMeshGenerator::GetInputParameters()
 
   params.AddOptionalParameter(
     "split_mesh_dir_path",
-    "split_mesh",
+    (input_path.parent_path() / (input_path.stem().string() + "_split_mesh")).string(),
     "Path of the directory to be created for containing the split meshes.");
 
   params.AddOptionalParameter(
