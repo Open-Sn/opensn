@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
+#include "test/unit/common/mesh_builders.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
@@ -14,13 +16,24 @@
 
 using namespace opensn;
 
-namespace unit_tests
+namespace
 {
+
+double
+MMS_phi(const Vector3& pt)
+{
+  return std::cos(M_PI * pt.x) + std::cos(M_PI * pt.y);
+}
+
+double
+MMS_q(const Vector3& pt)
+{
+  return M_PI * M_PI * (std::cos(M_PI * pt.x) + std::cos(M_PI * pt.y));
+}
 
 void
 acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
 {
-#if 0
   using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
   opensn::log.Log() << "SimTest92_DSA";
 
@@ -56,12 +69,8 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
     unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
   }
 
-  // Retrieve the functions defined in the global namespace.
-  py::module main_module = py::module::import("__main__");
-  py::object mms_phi_fn = main_module.attr("mms_phi_fn");
-  py::object mms_q_fn = main_module.attr("mms_q_fn");
-  ScalarSpatialFunction mms_phi = mms_phi_fn.cast<ScalarSpatialFunction>();
-  ScalarSpatialFunction mms_q = mms_q_fn.cast<ScalarSpatialFunction>();
+  ScalarSpatialFunction mms_phi = MMS_phi;
+  ScalarSpatialFunction mms_q = MMS_q;
 
   // Make solver
   DiffusionMIPSolver solver(
@@ -128,7 +137,24 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
 
   opensn::log.Log() << "Error: " << std::scientific << global_error
                     << " Num-cells: " << grid->GetGlobalNumberOfCells();
-#endif
+
+  EXPECT_NEAR(global_error, 9.25362783, 1e-6);
 }
 
-} //  namespace unit_tests
+} // namespace
+
+TEST(LBS_DSA_Test, DFEM)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  const unsigned int N = 10;
+  const double L = 2.0;
+
+  auto grid = BuildSquareMesh(L, N, -L / 2);
+  grid->SetUniformBlockID(0);
+  grid->SetOrthogonalBoundaries();
+  acceleration_Diffusion_DFEM(grid);
+
+  opensn::mpi_comm.barrier();
+}
