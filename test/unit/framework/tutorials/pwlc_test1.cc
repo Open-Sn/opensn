@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
+#include "test/unit/common/mesh_builders.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
@@ -10,7 +12,7 @@
 
 using namespace opensn;
 
-namespace unit_tests
+namespace
 {
 
 /**
@@ -21,10 +23,6 @@ namespace unit_tests
 void
 SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
 {
-  opensn::log.Log() << "Coding Tutorial 3";
-
-  opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
-
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);
   const auto& sdm = *sdm_ptr;
@@ -33,9 +31,6 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
 
   const size_t num_local_dofs = sdm.GetNumLocalDOFs(OneDofPerNode);
   const size_t num_global_dofs = sdm.GetNumGlobalDOFs(OneDofPerNode);
-
-  opensn::log.Log() << "Num local DOFs: " << num_local_dofs;
-  opensn::log.Log() << "Num globl DOFs: " << num_global_dofs;
 
   // Initializes Mats and Vecs
   const auto n = static_cast<int64_t>(num_local_dofs);
@@ -54,7 +49,6 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   // Assemble the system
-  opensn::log.Log() << "Assembling system: ";
   for (const auto& cell : grid->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -122,17 +116,12 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
     } // for i
   } // for cell
 
-  opensn::log.Log() << "Global assembly";
-
   MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
   VecAssemblyBegin(b);
   VecAssemblyEnd(b);
 
-  opensn::log.Log() << "Done global assembly";
-
   // Create Krylov Solver
-  opensn::log.Log() << "Solving: ";
   auto petsc_solver =
     CreateCommonKrylovSolverSetup(A, "PWLCDiffSolver", KSPCG, PCGAMG, 1.0e-15, 0.0, 30);
 
@@ -140,10 +129,7 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
   KSPSolve(petsc_solver.ksp, b, x);
   KSPConvergedReason reason;
   KSPGetConvergedReason(petsc_solver.ksp, &reason);
-  if (reason == KSP_CONVERGED_RTOL)
-    opensn::log.Log() << "Converged";
-
-  opensn::log.Log() << "Done solving";
+  EXPECT_TRUE(reason == KSP_CONVERGED_RTOL);
 
   // Extract PETSc vector
   std::vector<double> field;
@@ -156,14 +142,25 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
   VecDestroy(&b);
   MatDestroy(&A);
 
-  opensn::log.Log() << "Done cleanup";
-
   // Create Field Function
   auto ff = std::make_shared<FieldFunctionGridBased>("Phi", sdm_ptr, Unknown(UnknownType::SCALAR));
 
   ff->UpdateFieldVector(field);
-
-  FieldFunctionGridBased::ExportMultipleToPVTU("CodeTut3_PWLC", {ff});
 }
 
-} // namespace unit_tests
+} // namespace
+
+TEST(TutorialsTest, Pwlc1)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  const unsigned int N = 100;
+  const double L = 2.0;
+
+  auto grid = BuildSquareMesh(L, N, -L / 2);
+  grid->SetUniformBlockID(0);
+  SimTest03_PWLC(grid);
+
+  opensn::mpi_comm.barrier();
+}
