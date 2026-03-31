@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
+#include "test/unit/common/mesh_builders.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
@@ -9,16 +11,19 @@
 #include "framework/logging/log.h"
 #include "python/lib/console.h"
 #include <memory>
+#include <filesystem>
 
 using namespace opensn;
+namespace fs = std::filesystem;
 
-namespace unit_tests
+namespace
 {
 
 void
 math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
                            std::string sdm_type,
-                           bool export_vtk)
+                           bool export_vtk,
+                           double gold)
 {
   opensn::log.Log() << "Global num cells: " << grid->GetGlobalNumberOfCells();
 
@@ -158,8 +163,7 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
   KSPSolve(petsc_solver.ksp, b, x);
   KSPConvergedReason reason;
   KSPGetConvergedReason(petsc_solver.ksp, &reason);
-  if (reason == KSP_CONVERGED_ATOL)
-    opensn::log.Log() << "Converged";
+  EXPECT_TRUE(reason == KSP_CONVERGED_ATOL);
 
   // Extract PETSc vector
   std::vector<double> field;
@@ -172,7 +176,7 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
   double global_max;
   opensn::mpi_comm.all_reduce(local_max, global_max, mpi::op::max<double>());
 
-  opensn::log.Log() << "Nodal max = " << global_max;
+  EXPECT_NEAR(global_max, gold, 1e-5);
 
   // Clean up
   KSPDestroy(&petsc_solver.ksp);
@@ -195,4 +199,70 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
   }
 }
 
-} //  namespace unit_tests
+TEST(SDMTestPWLC, 1D_Ortho)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  const unsigned int N = 100;
+  const double L = 2.0;
+
+  auto grid = BuildLineMesh(L, N, -L / 2);
+  math_SDM_Test01_Continuous(grid, "PWLC", false, 0.5);
+}
+
+TEST(SDMTestPWLC, 2D_Ortho)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  const unsigned int N = 100;
+  const double L = 2.0;
+
+  auto grid = BuildSquareMesh(L, N, -L / 2);
+  math_SDM_Test01_Continuous(grid, "PWLC", false, 0.294697);
+}
+
+TEST(SDMTestPWLC, 3D_Ortho)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  const unsigned int N = 30;
+  const double L = 2.0;
+
+  auto grid = BuildBoxMesh(L, N, -L / 2);
+  math_SDM_Test01_Continuous(grid, "PWLC", false, 0.225042);
+}
+
+TEST(SDMTestPWLC, 2D_Tris)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "triangle_mesh2x2.obj";
+  auto grid = BuildMeshFromFile(mfile);
+  math_SDM_Test01_Continuous(grid, "PWLC", false, 0.303836);
+}
+
+TEST(SDMTestPWLC, 3D_Hexes)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_hexes.vtu";
+  auto grid = BuildMeshFromFile(mfile);
+  math_SDM_Test01_Continuous(grid, "PWLC", false, 0.221298);
+}
+
+TEST(SDMTestPWLC, 3D_Tets)
+{
+  if (opensn::mpi_comm.size() != 4)
+    return;
+
+  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_tets.vtu";
+  auto grid = BuildMeshFromFile(mfile);
+  math_SDM_Test01_Continuous(grid, "PWLC", false, 0.226633);
+}
+
+} // namespace
