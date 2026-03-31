@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
+#include "test/unit/common/mesh_builders.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/diffusion/diffusion_pwlc_solver.h"
@@ -13,7 +15,7 @@
 
 using namespace opensn;
 
-namespace unit_tests
+namespace
 {
 
 void
@@ -91,7 +93,28 @@ acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
 
   ff->UpdateFieldVector(x_vector);
 
-  FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_92b_DSA_PWLC", {ff});
+  // FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_92b_DSA_PWLC", {ff});
 }
 
-} // namespace unit_tests
+} // namespace
+
+TEST(LBS_DSA_Test, CFEM)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  testing::internal::CaptureStdout();
+
+  const unsigned int N = 10;
+  const double L = 2.0;
+
+  auto grid = BuildSquareMesh(L, N, -L / 2);
+  grid->SetUniformBlockID(0);
+  grid->SetOrthogonalBoundaries();
+  acceleration_Diffusion_CFEM(grid);
+
+  opensn::mpi_comm.barrier();
+
+  auto out = testing::internal::GetCapturedStdout();
+  EXPECT_THAT(out, testing::HasSubstr("Convergence Reason: KSP_CONVERGED_RTOL"));
+}
