@@ -1,6 +1,7 @@
 #include "test/unit/common/mesh_builders.h"
 #include "framework/parameters/parameter_block.h"
 #include "framework/mesh/mesh_generator/orthogonal_mesh_generator.h"
+#include "framework/mesh/mesh_generator/from_file_mesh_generator.h"
 
 using namespace opensn;
 
@@ -81,4 +82,15 @@ BuildBoxMesh(double length, unsigned int n, double xmin)
   auto params = OrthogonalMeshGenerator::GetInputParameters();
   params.AssignParameters(block);
   return OrthogonalMeshGenerator(params).Execute();
+}
+
+std::shared_ptr<opensn::MeshContinuum>
+BuildMeshFromFile(std::filesystem::path file_name)
+{
+  ParameterBlock block;
+  block.AddParameter("filename", file_name.string());
+
+  auto params = FromFileMeshGenerator::GetInputParameters();
+  params.AssignParameters(block);
+  return FromFileMeshGenerator(params).Execute();
 }
