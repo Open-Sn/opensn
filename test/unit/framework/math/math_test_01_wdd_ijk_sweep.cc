@@ -1,18 +1,17 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#include "gmock/gmock.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/data_types/range.h"
-#include "framework/logging/log.h"
-#include "framework/runtime.h"
 #include <array>
 #include <cstddef>
 #include <cmath>
 
 using namespace opensn;
 
-namespace unit_tests
+namespace
 {
 
 NDArray<double, 3>
@@ -43,9 +42,6 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   int n = 0;
   for (const auto& omega_n : quad.omegas)
   {
-    if (opensn::mpi_comm.rank() == 0 and verbose)
-      std::cout << "Sweep angle " << n << " " << omega_n.PrintStr() << std::endl;
-
     // Determine sweep ordering
     if (omega_n.x > 0.0)
       iorder = Range<int>(0, Nx);
@@ -119,11 +115,11 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   return phi_0;
 }
 
-void
-math_Test01_WDD_IJK_Sweep()
+} // namespace
+
+TEST(MathTest, WDD_IJK_Sweep)
 {
-  opensn::log.Log() << "GOLD_BEGIN";
-  bool verbose = true;
+  bool verbose = false;
   const std::array<size_t, 3> mesh_divisions = {1, 1, 10};
   const std::array<double, 3> mesh_lengths = {1.0, 1.0, 10.0};
   const std::array<double, 6> bcs = {0.0, 0.0, 0.0, 0.0, 0.5, 0.0};
@@ -131,21 +127,31 @@ math_Test01_WDD_IJK_Sweep()
   NDArray<double, 3> sigma_t(mesh_divisions, 0.2);
   NDArray<double, 3> q(mesh_divisions, 0.0);
 
-  //  sigma_t.Set(0.2);
-  //  q.Set(0.0);
-
   auto pquad = std::make_shared<GLProductQuadrature1DSlab>(2, 0, verbose);
-
   auto phi = WDD_IJK_Sweep2(mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
 
-  if (opensn::mpi_comm.rank() == 0 and verbose)
   {
-    std::cout << "order:\n";
-    for (auto i : phi)
-      std::cout << i << "\n";
+    ASSERT_EQ(pquad->omegas.size(), 2);
+    EXPECT_NEAR(pquad->omegas[0].x, 0.816497, 1e-5);
+    EXPECT_NEAR(pquad->omegas[0].y, 0, 1e-5);
+    EXPECT_NEAR(pquad->omegas[0].z, 0.57735, 1e-5);
+    EXPECT_NEAR(pquad->omegas[1].x, 0.816497, 1e-5);
+    EXPECT_NEAR(pquad->omegas[1].y, 0., 1e-5);
+    EXPECT_NEAR(pquad->omegas[1].z, -0.57735, 1e-5);
   }
 
-  opensn::log.Log() << "GOLD_END";
+  {
+    auto* vals = phi.data();
+    ASSERT_EQ(phi.size(), 10);
+    EXPECT_NEAR(vals[0], 0.21309152596827, 1e-6);
+    EXPECT_NEAR(vals[1], 0.15017266359160633, 1e-6);
+    EXPECT_NEAR(vals[2], 0.10583078021596619, 1e-6);
+    EXPECT_NEAR(vals[3], 0.074582374805187826, 1e-6);
+    EXPECT_NEAR(vals[4], 0.052560252875463634, 1e-6);
+    EXPECT_NEAR(vals[5], 0.037041270476724626, 1e-6);
+    EXPECT_NEAR(vals[6], 0.026104167930776304, 1e-6);
+    EXPECT_NEAR(vals[7], 0.018396388221625048, 1e-6);
+    EXPECT_NEAR(vals[8], 0.012964563756386171, 1e-6);
+    EXPECT_NEAR(vals[9], 0.0091364791372981619, 1e-6);
+  }
 }
-
-} //  namespace unit_tests
