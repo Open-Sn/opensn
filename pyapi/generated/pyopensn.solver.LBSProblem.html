@@ -235,6 +235,14 @@ If False, returns all moment field functions for each group.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
+<p>Flux-moment field functions are allocated lazily.</p>
+<p>The zeroth-moment field function for each group is created eagerly during solver
+initialization, so scalar-flux output is always available.</p>
+<p>Higher-moment field functions are created on demand. Calling
+<code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(only_scalar_flux=False)</span></code> allocates all higher moments
+and initializes them from the current solver state.</p>
+<p>This is a substantial memory saver for typical problems, because most workflows only
+need scalar-flux output and do not need to store field functions for every moment.</p>
 <p>In the nested form (<code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>), the moment index varies fastest
 within each group (inner index = moment, outer index = group).</p>
 </dd></dl>

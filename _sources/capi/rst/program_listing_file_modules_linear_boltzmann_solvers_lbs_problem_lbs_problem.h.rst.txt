@@ -262,9 +262,14 @@ Program Listing for File lbs_problem.h
       */
      virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
    
-     /// Returns a flux-moment field function for a given group and moment.
+     /**
+      * Returns a flux-moment field function for a given group and moment.
+      *
+      * Scalar-flux field functions are created eagerly during initialization. Higher moments are
+      * allocated lazily on first request and initialized from the current \c phi_new state.
+      */
      std::shared_ptr<FieldFunctionGridBased> GetScalarFluxFieldFunction(unsigned int g,
-                                                                        unsigned int m = 0) const;
+                                                                        unsigned int m = 0);
    
      /// Returns the power generation field function, if enabled.
      std::shared_ptr<FieldFunctionGridBased> GetPowerFieldFunction() const;
@@ -289,7 +294,12 @@ Program Listing for File lbs_problem.h
      /// Copy relevant section of phi_old to the field functions.
      void UpdateFieldFunctions();
    
-     /// Sets the internal phi vector to the value in the associated field function.
+     /**
+      * Sets the internal phi vector to the value in previously allocated field functions.
+      *
+      * With lazy field-function allocation, higher-moment field functions must already exist before
+      * this method is called.
+      */
      void SetPhiFromFieldFunctions(PhiSTLOption which_phi,
                                    const std::vector<unsigned int>& m_indices,
                                    const std::vector<unsigned int>& g_indices);
@@ -395,6 +405,7 @@ Program Listing for File lbs_problem.h
      /// Initializes parallel arrays.
      void InitializeParrays();
      void InitializeFieldFunctions();
+     size_t AllocatePhiFieldFunction(unsigned int g, unsigned int m);
      /// Initializes data carriers to GPUs and memory pinner.
      void InitializeGPUExtras();
      /// Reset data carriers to null and unpin memory.
