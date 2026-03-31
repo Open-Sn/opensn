@@ -97,7 +97,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
 
   // Make XSs
   auto xsf =
-    fs::path(OPENSN_UNIT_TEST_ROOT) / "unit" / "framework" / "tutorials" / "xs_graphite_pure.xs";
+    fs::path(OPENSN_TEST_ROOT) / "unit" / "framework" / "tutorials" / "xs_graphite_pure.xs";
   MultiGroupXS xs = MultiGroupXS::LoadFromOpenSn(xsf.string());
 
   // Initializes vectors

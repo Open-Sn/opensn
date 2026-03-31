@@ -1,14 +1,19 @@
 #include "framework/mesh/io/mesh_io.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include <gtest/gtest.h>
+#include <filesystem>
 
 using namespace opensn;
+namespace fs = std::filesystem;
 
 TEST(MeshIOTest, ReadOpenFOAMMeshes)
 {
+  auto meshes_loc =
+    fs::path(OPENSN_TEST_ROOT) / "python" / "framework" / "mesh" / "openfoam_meshes";
+
   {
     UnpartitionedMesh::Options options;
-    options.file_name = "test/python/framework/mesh/openfoam_meshes/hex";
+    options.file_name = meshes_loc / "hex";
     auto mesh = MeshIO::FromOpenFOAM(options);
     ASSERT_TRUE(mesh != nullptr);
     EXPECT_EQ(mesh->GetVertices().size(), 1331);
@@ -17,7 +22,7 @@ TEST(MeshIOTest, ReadOpenFOAMMeshes)
 
   {
     UnpartitionedMesh::Options options;
-    options.file_name = "test/python/framework/mesh/openfoam_meshes/pyr";
+    options.file_name = meshes_loc / "pyr";
     auto mesh = MeshIO::FromOpenFOAM(options);
     ASSERT_TRUE(mesh != nullptr);
     EXPECT_EQ(mesh->GetVertices().size(), 5);
@@ -26,7 +31,7 @@ TEST(MeshIOTest, ReadOpenFOAMMeshes)
 
   {
     UnpartitionedMesh::Options options;
-    options.file_name = "test/python/framework/mesh/openfoam_meshes/tets";
+    options.file_name = meshes_loc / "tets";
     auto mesh = MeshIO::FromOpenFOAM(options);
     ASSERT_TRUE(mesh != nullptr);
     EXPECT_EQ(mesh->GetVertices().size(), 75);
@@ -35,7 +40,7 @@ TEST(MeshIOTest, ReadOpenFOAMMeshes)
 
   {
     UnpartitionedMesh::Options options;
-    options.file_name = "test/python/framework/mesh/openfoam_meshes/wedge";
+    options.file_name = meshes_loc / "wedge";
     auto mesh = MeshIO::FromOpenFOAM(options);
     ASSERT_TRUE(mesh != nullptr);
     EXPECT_EQ(mesh->GetVertices().size(), 231);
@@ -45,9 +50,10 @@ TEST(MeshIOTest, ReadOpenFOAMMeshes)
 
 TEST(MeshIOTest, ReadVTUMeshes)
 {
+  auto meshes_loc = fs::path(OPENSN_TEST_ROOT) / "assets" / "mesh";
   {
     UnpartitionedMesh::Options options;
-    options.file_name = "test/assets/mesh/gmsh_all_hexes.vtu";
+    options.file_name = meshes_loc / "gmsh_all_hexes.vtu";
     auto mesh = MeshIO::FromVTU(options);
     ASSERT_TRUE(mesh != nullptr);
     EXPECT_EQ(mesh->GetVertices().size(), 18021);
@@ -56,7 +62,7 @@ TEST(MeshIOTest, ReadVTUMeshes)
 
   {
     UnpartitionedMesh::Options options;
-    options.file_name = "test/assets/mesh/gmsh_all_tets.vtu";
+    options.file_name = meshes_loc / "gmsh_all_tets.vtu";
     auto mesh = MeshIO::FromVTU(options);
     ASSERT_TRUE(mesh != nullptr);
     EXPECT_EQ(mesh->GetVertices().size(), 2566);

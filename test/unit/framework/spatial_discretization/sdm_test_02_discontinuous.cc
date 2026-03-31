@@ -521,7 +521,7 @@ TEST(SDMTestPWLD, 2D_Tris)
   if (opensn::mpi_comm.size() != 4)
     return;
 
-  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "triangle_mesh2x2.obj";
+  fs::path mfile = fs::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "triangle_mesh2x2.obj";
   auto grid = BuildMeshFromFile(mfile);
   math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.296448);
 }
@@ -531,7 +531,7 @@ TEST(SDMTestPWLD, 3D_Hexes)
   if (opensn::mpi_comm.size() != 4)
     return;
 
-  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_hexes.vtu";
+  fs::path mfile = fs::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_hexes.vtu";
   auto grid = BuildMeshFromFile(mfile);
   math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.220627);
 }
@@ -541,7 +541,7 @@ TEST(SDMTestPWLD, 3D_Tets)
   if (opensn::mpi_comm.size() != 4)
     return;
 
-  fs::path mfile = fs::path(OPENSN_UNIT_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_tets.vtu";
+  fs::path mfile = fs::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_tets.vtu";
   auto grid = BuildMeshFromFile(mfile);
   math_SDM_Test02_Discontinuous(grid, "PWLD", false, 0.226529);
 }
