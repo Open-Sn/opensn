@@ -1,14 +1,9 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/data_types/dense_matrix.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;
 
-class DenseMatrixTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(DenseMatrixTest, ColRows)
+TEST(DenseMatrixTest, ColRows)
 {
   DenseMatrix<double> a(2, 4);
 
@@ -16,7 +11,7 @@ TEST_F(DenseMatrixTest, ColRows)
   EXPECT_EQ(a.Columns(), 4);
 }
 
-TEST_F(DenseMatrixTest, OpCall)
+TEST(DenseMatrixTest, OpCall)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -38,7 +33,7 @@ TEST_F(DenseMatrixTest, OpCall)
   EXPECT_DOUBLE_EQ(a(1, 3), -4);
 }
 
-TEST_F(DenseMatrixTest, SetRow)
+TEST(DenseMatrixTest, SetRow)
 {
   DenseMatrix<double> a(2, 4);
   Vector<double> r0(4);
@@ -54,7 +49,7 @@ TEST_F(DenseMatrixTest, SetRow)
   EXPECT_DOUBLE_EQ(a(0, 3), 13);
 }
 
-TEST_F(DenseMatrixTest, FSwapRows)
+TEST(DenseMatrixTest, FSwapRows)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -77,7 +72,7 @@ TEST_F(DenseMatrixTest, FSwapRows)
   EXPECT_DOUBLE_EQ(a(1, 3), 4);
 }
 
-TEST_F(DenseMatrixTest, SetDiagonal)
+TEST(DenseMatrixTest, SetDiagonal)
 {
   DenseMatrix<double> diag(3, 3, 0.);
   diag.SetDiagonal(12.);
@@ -87,7 +82,7 @@ TEST_F(DenseMatrixTest, SetDiagonal)
   EXPECT_DOUBLE_EQ(diag(2, 2), 12.);
 }
 
-TEST_F(DenseMatrixTest, FTranspose)
+TEST(DenseMatrixTest, FTranspose)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -110,7 +105,7 @@ TEST_F(DenseMatrixTest, FTranspose)
   EXPECT_DOUBLE_EQ(a_trans(3, 1), -4);
 }
 
-TEST_F(DenseMatrixTest, FMultScalar)
+TEST(DenseMatrixTest, FMultScalar)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -133,7 +128,7 @@ TEST_F(DenseMatrixTest, FMultScalar)
   EXPECT_DOUBLE_EQ(a_mult(1, 3), -8);
 }
 
-TEST_F(DenseMatrixTest, FMultVec)
+TEST(DenseMatrixTest, FMultVec)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -157,7 +152,7 @@ TEST_F(DenseMatrixTest, FMultVec)
   EXPECT_DOUBLE_EQ(a_mult_vec(1), 0);
 }
 
-TEST_F(DenseMatrixTest, FMultMat)
+TEST(DenseMatrixTest, FMultMat)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -193,7 +188,7 @@ TEST_F(DenseMatrixTest, FMultMat)
   EXPECT_DOUBLE_EQ(ab(1, 2), -22);
 }
 
-TEST_F(DenseMatrixTest, FAdd)
+TEST(DenseMatrixTest, FAdd)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -217,7 +212,7 @@ TEST_F(DenseMatrixTest, FAdd)
   EXPECT_DOUBLE_EQ(apb(1, 3), -12);
 }
 
-TEST_F(DenseMatrixTest, FSubtract)
+TEST(DenseMatrixTest, FSubtract)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -241,7 +236,7 @@ TEST_F(DenseMatrixTest, FSubtract)
   EXPECT_DOUBLE_EQ(amb(1, 3), 4);
 }
 
-TEST_F(DenseMatrixTest, FScale)
+TEST(DenseMatrixTest, FScale)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -265,7 +260,7 @@ TEST_F(DenseMatrixTest, FScale)
   EXPECT_DOUBLE_EQ(a_scaled(1, 3), -2);
 }
 
-TEST_F(DenseMatrixTest, FScaled)
+TEST(DenseMatrixTest, FScaled)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -288,7 +283,7 @@ TEST_F(DenseMatrixTest, FScaled)
   EXPECT_DOUBLE_EQ(a_scaled(1, 3), -2);
 }
 
-TEST_F(DenseMatrixTest, FDeterminant)
+TEST(DenseMatrixTest, FDeterminant)
 {
   DenseMatrix<double> diag(3, 3, 0.);
   diag.SetDiagonal(12.);
@@ -297,7 +292,7 @@ TEST_F(DenseMatrixTest, FDeterminant)
   EXPECT_DOUBLE_EQ(d0, 12. * 12. * 12.);
 }
 
-TEST_F(DenseMatrixTest, Add)
+TEST(DenseMatrixTest, Add)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -321,7 +316,7 @@ TEST_F(DenseMatrixTest, Add)
   EXPECT_DOUBLE_EQ(a(1, 3), -12);
 }
 
-TEST_F(DenseMatrixTest, Subtract)
+TEST(DenseMatrixTest, Subtract)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -345,7 +340,7 @@ TEST_F(DenseMatrixTest, Subtract)
   EXPECT_DOUBLE_EQ(a(1, 3), 4);
 }
 
-TEST_F(DenseMatrixTest, MultVec)
+TEST(DenseMatrixTest, MultVec)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -369,7 +364,7 @@ TEST_F(DenseMatrixTest, MultVec)
   EXPECT_DOUBLE_EQ(mv1(1), 0);
 }
 
-TEST_F(DenseMatrixTest, MultMat)
+TEST(DenseMatrixTest, MultMat)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -404,7 +399,7 @@ TEST_F(DenseMatrixTest, MultMat)
   EXPECT_DOUBLE_EQ(mm1(1, 2), -22);
 }
 
-TEST_F(DenseMatrixTest, Transposed)
+TEST(DenseMatrixTest, Transposed)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;
@@ -427,7 +422,7 @@ TEST_F(DenseMatrixTest, Transposed)
   EXPECT_DOUBLE_EQ(a_trans(3, 1), -4);
 }
 
-TEST_F(DenseMatrixTest, Transpose)
+TEST(DenseMatrixTest, Transpose)
 {
   DenseMatrix<double> a(2, 4);
   a(0, 0) = 1;

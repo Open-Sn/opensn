@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "gtest/gtest.h"
-#include "test/unit/opensn_unit_test.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/mesh/cell/cell.h"
@@ -15,11 +14,7 @@
 using namespace opensn;
 namespace mpi = mpicpp_lite;
 
-class DataTypesTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(DataTypesTest, 00)
+TEST(DataTypesTest, 00)
 {
   bool passed = true;
 

@@ -1,4 +1,3 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/math/functions/piecewise_linear_1d.h"
 #include "framework/parameters/input_parameters.h"
 #include <gtest/gtest.h>
@@ -22,11 +21,7 @@ MakePiecewiseLinear(const std::vector<double>& x_values, const std::vector<doubl
 
 } // namespace
 
-class PiecewiseLinear1DTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(PiecewiseLinear1DTest, EvaluateAndSlope)
+TEST(PiecewiseLinear1DTest, EvaluateAndSlope)
 {
   auto func = MakePiecewiseLinear({0.0, 1.0, 3.0}, {0.0, 2.0, 2.0});
 
@@ -49,7 +44,7 @@ TEST_F(PiecewiseLinear1DTest, EvaluateAndSlope)
   EXPECT_NEAR(s[0], 2.0, 1e-12);
 }
 
-TEST_F(PiecewiseLinear1DTest, InvalidInputs)
+TEST(PiecewiseLinear1DTest, InvalidInputs)
 {
   EXPECT_THROW(MakePiecewiseLinear({0.0}, {1.0}), std::invalid_argument);
   EXPECT_THROW(MakePiecewiseLinear({0.0, 1.0}, {1.0}), std::invalid_argument);

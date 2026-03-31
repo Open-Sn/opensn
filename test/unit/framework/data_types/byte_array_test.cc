@@ -1,15 +1,10 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/data_types/vector3.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;
 
-class ByteArrayTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(ByteArrayTest, WriteRead)
+TEST(ByteArrayTest, WriteRead)
 {
   ByteArray barr;
 
@@ -35,7 +30,7 @@ TEST_F(ByteArrayTest, WriteRead)
   EXPECT_DOUBLE_EQ(vec3_z, 1.0);
 }
 
-TEST_F(ByteArrayTest, Seek)
+TEST(ByteArrayTest, Seek)
 {
   ByteArray seeker;
   seeker.Write<bool>(false);

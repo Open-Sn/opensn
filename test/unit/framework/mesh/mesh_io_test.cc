@@ -1,15 +1,10 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/mesh/io/mesh_io.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;
 
-class MeshIOTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(MeshIOTest, ReadOpenFOAMMeshes)
+TEST(MeshIOTest, ReadOpenFOAMMeshes)
 {
   {
     UnpartitionedMesh::Options options;
@@ -48,7 +43,7 @@ TEST_F(MeshIOTest, ReadOpenFOAMMeshes)
   }
 }
 
-TEST_F(MeshIOTest, ReadVTUMeshes)
+TEST(MeshIOTest, ReadVTUMeshes)
 {
   {
     UnpartitionedMesh::Options options;

@@ -1,22 +1,17 @@
 // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "test/unit/opensn_unit_test.h"
 #include "framework/math/math.h"
 #include <gtest/gtest.h>
 #include <cmath>
 
 using namespace opensn;
 
-class MatrixTransformTest : public OpenSnUnitTest
-{
-};
-
 // ---------------------------------------------------------------------------
 // Transpose
 // ---------------------------------------------------------------------------
 
-TEST_F(MatrixTransformTest, TransposeNonSquare)
+TEST(MatrixTransformTest, TransposeNonSquare)
 {
   // 2x3 input
   const std::vector<std::vector<double>> A = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
@@ -34,7 +29,7 @@ TEST_F(MatrixTransformTest, TransposeNonSquare)
   EXPECT_DOUBLE_EQ(AT[2][1], 6.0);
 }
 
-TEST_F(MatrixTransformTest, TransposeSquare)
+TEST(MatrixTransformTest, TransposeSquare)
 {
   const std::vector<std::vector<double>> A = {{1.0, 2.0}, {3.0, 4.0}};
   const auto AT = Transpose(A);
@@ -46,7 +41,7 @@ TEST_F(MatrixTransformTest, TransposeSquare)
   EXPECT_DOUBLE_EQ(AT[1][1], 4.0);
 }
 
-TEST_F(MatrixTransformTest, TransposeOfTransposeIsOriginal)
+TEST(MatrixTransformTest, TransposeOfTransposeIsOriginal)
 {
   const std::vector<std::vector<double>> A = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
   const auto ATA = Transpose(Transpose(A));
@@ -57,12 +52,12 @@ TEST_F(MatrixTransformTest, TransposeOfTransposeIsOriginal)
       EXPECT_DOUBLE_EQ(ATA[i][j], A[i][j]);
 }
 
-TEST_F(MatrixTransformTest, TransposeEmptyThrows)
+TEST(MatrixTransformTest, TransposeEmptyThrows)
 {
   EXPECT_THROW(Transpose(std::vector<std::vector<double>>{}), std::runtime_error);
 }
 
-TEST_F(MatrixTransformTest, TransposeNDArrayNonSquare)
+TEST(MatrixTransformTest, TransposeNDArrayNonSquare)
 {
   NDArray<double, 2> A({2, 3}, 0.0);
   A(0, 0) = 1.0;
@@ -86,7 +81,7 @@ TEST_F(MatrixTransformTest, TransposeNDArrayNonSquare)
   EXPECT_DOUBLE_EQ(AT(2, 1), 6.0);
 }
 
-TEST_F(MatrixTransformTest, TransposeNDArrayEmptyThrows)
+TEST(MatrixTransformTest, TransposeNDArrayEmptyThrows)
 {
   EXPECT_THROW(Transpose(NDArray<double, 2>()), std::runtime_error);
 }
@@ -95,7 +90,7 @@ TEST_F(MatrixTransformTest, TransposeNDArrayEmptyThrows)
 // InvertMatrix
 // ---------------------------------------------------------------------------
 
-TEST_F(MatrixTransformTest, InvertIdentity2x2)
+TEST(MatrixTransformTest, InvertIdentity2x2)
 {
   const std::vector<std::vector<double>> I = {{1.0, 0.0}, {0.0, 1.0}};
   const auto Iinv = InvertMatrix(I);
@@ -107,7 +102,7 @@ TEST_F(MatrixTransformTest, InvertIdentity2x2)
   EXPECT_NEAR(Iinv[1][1], 1.0, 1e-12);
 }
 
-TEST_F(MatrixTransformTest, InvertKnown2x2)
+TEST(MatrixTransformTest, InvertKnown2x2)
 {
   // [[2, 1], [1, 1]]^{-1} = [[1, -1], [-1, 2]]
   const std::vector<std::vector<double>> A = {{2.0, 1.0}, {1.0, 1.0}};
@@ -120,7 +115,7 @@ TEST_F(MatrixTransformTest, InvertKnown2x2)
   EXPECT_NEAR(Ainv[1][1], 2.0, 1e-12);
 }
 
-TEST_F(MatrixTransformTest, InvertRoundTripIsIdentity)
+TEST(MatrixTransformTest, InvertRoundTripIsIdentity)
 {
   // A * A^{-1} should be the identity (within tolerance)
   const std::vector<std::vector<double>> A = {{4.0, 3.0}, {6.0, 5.0}};
@@ -137,7 +132,7 @@ TEST_F(MatrixTransformTest, InvertRoundTripIsIdentity)
     }
 }
 
-TEST_F(MatrixTransformTest, InvertDiagonal3x3)
+TEST(MatrixTransformTest, InvertDiagonal3x3)
 {
   const std::vector<std::vector<double>> D = {{2.0, 0.0, 0.0}, {0.0, 4.0, 0.0}, {0.0, 0.0, 0.5}};
   const auto Dinv = InvertMatrix(D);
@@ -147,12 +142,12 @@ TEST_F(MatrixTransformTest, InvertDiagonal3x3)
   EXPECT_NEAR(Dinv[2][2], 2.0, 1e-12);
 }
 
-TEST_F(MatrixTransformTest, InvertEmptyThrows)
+TEST(MatrixTransformTest, InvertEmptyThrows)
 {
   EXPECT_THROW(InvertMatrix(std::vector<std::vector<double>>{}), std::runtime_error);
 }
 
-TEST_F(MatrixTransformTest, InvertNDArrayKnown2x2)
+TEST(MatrixTransformTest, InvertNDArrayKnown2x2)
 {
   NDArray<double, 2> A({2, 2}, 0.0);
   A(0, 0) = 2.0;
@@ -172,7 +167,7 @@ TEST_F(MatrixTransformTest, InvertNDArrayKnown2x2)
   EXPECT_NEAR(Ainv(1, 1), 2.0, 1e-12);
 }
 
-TEST_F(MatrixTransformTest, InvertNDArrayEmptyThrows)
+TEST(MatrixTransformTest, InvertNDArrayEmptyThrows)
 {
   EXPECT_THROW(InvertMatrix(NDArray<double, 2>()), std::runtime_error);
 }
@@ -181,7 +176,7 @@ TEST_F(MatrixTransformTest, InvertNDArrayEmptyThrows)
 // OrthogonalizeMatrixSpan
 // ---------------------------------------------------------------------------
 
-TEST_F(MatrixTransformTest, OrthogonalizeProducesOrthonormalColumns)
+TEST(MatrixTransformTest, OrthogonalizeProducesOrthonormalColumns)
 {
   // Two non-orthogonal vectors with uniform weights
   const std::vector<std::vector<double>> A = {
@@ -215,7 +210,7 @@ TEST_F(MatrixTransformTest, OrthogonalizeProducesOrthonormalColumns)
   EXPECT_NEAR(n01, 0.0, 1e-12);
 }
 
-TEST_F(MatrixTransformTest, OrthogonalizeSingleColumnNormalized)
+TEST(MatrixTransformTest, OrthogonalizeSingleColumnNormalized)
 {
   const std::vector<std::vector<double>> A = {{3.0}, {4.0}};
   const std::vector<double> w = {1.0, 1.0};
@@ -227,7 +222,7 @@ TEST_F(MatrixTransformTest, OrthogonalizeSingleColumnNormalized)
   EXPECT_NEAR(norm_sq, 1.0, 1e-12);
 }
 
-TEST_F(MatrixTransformTest, OrthogonalizeNonUniformWeights)
+TEST(MatrixTransformTest, OrthogonalizeNonUniformWeights)
 {
   // Three-row two-column matrix with non-uniform weights
   const std::vector<std::vector<double>> A = {
@@ -250,13 +245,13 @@ TEST_F(MatrixTransformTest, OrthogonalizeNonUniformWeights)
     }
 }
 
-TEST_F(MatrixTransformTest, OrthogonalizeEmptyThrows)
+TEST(MatrixTransformTest, OrthogonalizeEmptyThrows)
 {
   EXPECT_THROW(OrthogonalizeMatrixSpan(std::vector<std::vector<double>>{}, std::vector<double>{}),
                std::runtime_error);
 }
 
-TEST_F(MatrixTransformTest, OrthogonalizeNDArrayProducesOrthonormalColumns)
+TEST(MatrixTransformTest, OrthogonalizeNDArrayProducesOrthonormalColumns)
 {
   NDArray<double, 2> A({3, 2}, 0.0);
   A(0, 0) = 1.0;
@@ -284,7 +279,7 @@ TEST_F(MatrixTransformTest, OrthogonalizeNDArrayProducesOrthonormalColumns)
     }
 }
 
-TEST_F(MatrixTransformTest, OrthogonalizeNDArrayEmptyThrows)
+TEST(MatrixTransformTest, OrthogonalizeNDArrayEmptyThrows)
 {
   EXPECT_THROW(OrthogonalizeMatrixSpan(NDArray<double, 2>(), std::vector<double>{}),
                std::runtime_error);

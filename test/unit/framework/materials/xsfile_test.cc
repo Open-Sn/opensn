@@ -1,4 +1,3 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/materials/multi_group_xs/xsfile.h"
 #include <gtest/gtest.h>
 
@@ -41,11 +40,7 @@ MakeTempXSFile()
 
 } // namespace
 
-class XSFileTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(XSFileTest, ReadMinimalFile)
+TEST(XSFileTest, ReadMinimalFile)
 {
   const std::string fname = MakeTempXSFile();
   XSFile xs(fname);

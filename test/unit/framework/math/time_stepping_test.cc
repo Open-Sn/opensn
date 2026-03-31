@@ -1,14 +1,9 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/math/math_time_stepping.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;
 
-class TimeSteppingTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(TimeSteppingTest, SteppingMethodStringName)
+TEST(TimeSteppingTest, SteppingMethodStringName)
 {
   EXPECT_EQ(SteppingMethodStringName(SteppingMethod::NONE), "none");
   EXPECT_EQ(SteppingMethodStringName(SteppingMethod::EXPLICIT_EULER), "explicit_euler");

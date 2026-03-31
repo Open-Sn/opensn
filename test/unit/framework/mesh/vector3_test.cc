@@ -1,11 +1,7 @@
-#include "test/unit/opensn_unit_test.h"
+#include "gtest/gtest.h"
 #include "framework/data_types/vector3.h"
 
 using namespace opensn;
-
-class Vector3Test : public OpenSnUnitTest
-{
-};
 
 void
 ExpectVectorEqual(const Vector3& v, const double x, const double y = 0.0, const double z = 0.0)
@@ -23,7 +19,7 @@ ExpectVectorEqual(const Vector3& a, const Vector3& b)
   EXPECT_DOUBLE_EQ(a.z, b.z);
 }
 
-TEST_F(Vector3Test, Constructors)
+TEST(Vector3Test, Constructors)
 {
   ExpectVectorEqual(Vector3(), 0);
   ExpectVectorEqual(Vector3(1), 1);
@@ -39,14 +35,14 @@ TEST_F(Vector3Test, Constructors)
   ExpectVectorEqual(Vector3(std::vector<double>{7, 8, 9}), 7, 8, 9);
 }
 
-TEST_F(Vector3Test, Plus)
+TEST(Vector3Test, Plus)
 {
   const Vector3 a(1, 2, 3);
   const Vector3 b(4, 5, 6);
   ExpectVectorEqual(a + b, a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
-TEST_F(Vector3Test, PlusEquals)
+TEST(Vector3Test, PlusEquals)
 {
   Vector3 a(1, 2, 3);
   const Vector3 b(4, 5, 6);
@@ -55,7 +51,7 @@ TEST_F(Vector3Test, PlusEquals)
   ExpectVectorEqual(a, a_copy.x + b.x, a_copy.y + b.y, a_copy.z + b.z);
 }
 
-TEST_F(Vector3Test, Shifted)
+TEST(Vector3Test, Shifted)
 {
   const Vector3 a(1, 2, 3);
   const double val = 2;
@@ -63,7 +59,7 @@ TEST_F(Vector3Test, Shifted)
   ExpectVectorEqual(b, a.x + val, a.y + val, a.z + val);
 }
 
-TEST_F(Vector3Test, Shift)
+TEST(Vector3Test, Shift)
 {
   Vector3 a(1, 2, 3);
   const auto a_copy = a;
@@ -72,14 +68,14 @@ TEST_F(Vector3Test, Shift)
   ExpectVectorEqual(a, a_copy.x + val, a_copy.y + val, a_copy.z + val);
 }
 
-TEST_F(Vector3Test, Minus)
+TEST(Vector3Test, Minus)
 {
   const Vector3 a(1, 2, 3);
   const Vector3 b(4, 5, 6);
   ExpectVectorEqual(a - b, a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
-TEST_F(Vector3Test, MinsEquals)
+TEST(Vector3Test, MinsEquals)
 {
   Vector3 a(1, 2, 3);
   const Vector3 b(4, 5, 6);
@@ -88,14 +84,14 @@ TEST_F(Vector3Test, MinsEquals)
   ExpectVectorEqual(a, a_copy.x - b.x, a_copy.y - b.y, a_copy.z - b.z);
 }
 
-TEST_F(Vector3Test, Times)
+TEST(Vector3Test, Times)
 {
   const Vector3 a(1, 2, 3);
   const double val = 2;
   ExpectVectorEqual(a * val, a.x * val, a.y * val, a.z * val);
 }
 
-TEST_F(Vector3Test, TimesEquals)
+TEST(Vector3Test, TimesEquals)
 {
   Vector3 a(1, 2, 3);
   const Vector3 a_copy = a;
@@ -104,14 +100,14 @@ TEST_F(Vector3Test, TimesEquals)
   ExpectVectorEqual(a, a_copy.x * val, a_copy.y * val, a_copy.z * val);
 }
 
-TEST_F(Vector3Test, Div)
+TEST(Vector3Test, Div)
 {
   const Vector3 a(1, 2, 3);
   const double val = 2;
   ExpectVectorEqual(a / val, a.x / val, a.y / val, a.z / val);
 }
 
-TEST_F(Vector3Test, DivEquals)
+TEST(Vector3Test, DivEquals)
 {
   Vector3 a(1, 2, 3);
   const Vector3 a_copy = a;
@@ -120,14 +116,14 @@ TEST_F(Vector3Test, DivEquals)
   ExpectVectorEqual(a, a_copy.x / val, a_copy.y / val, a_copy.z / val);
 }
 
-TEST_F(Vector3Test, DivComponent)
+TEST(Vector3Test, DivComponent)
 {
   const Vector3 a(1, 2, 3);
   const Vector3 b(6, 5, 4);
   ExpectVectorEqual(a / b, a.x / b.x, a.y / b.y, a.z / b.z);
 }
 
-TEST_F(Vector3Test, DivComponentEquals)
+TEST(Vector3Test, DivComponentEquals)
 {
   Vector3 a(1, 2, 3);
   const auto a_copy = a;
@@ -136,7 +132,7 @@ TEST_F(Vector3Test, DivComponentEquals)
   ExpectVectorEqual(a, a_copy.x / b.x, a_copy.y / b.y, a_copy.z / b.z);
 }
 
-TEST_F(Vector3Test, Cross)
+TEST(Vector3Test, Cross)
 {
   const Vector3 a(1, 2, 3);
   const Vector3 b(6, 5, 4);
@@ -144,26 +140,26 @@ TEST_F(Vector3Test, Cross)
     a.Cross(b), a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
 
-TEST_F(Vector3Test, Dot)
+TEST(Vector3Test, Dot)
 {
   const Vector3 a(1, 2, 3);
   const Vector3 b(6, 5, 4);
   EXPECT_DOUBLE_EQ(a.Dot(b), a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
-TEST_F(Vector3Test, Norm)
+TEST(Vector3Test, Norm)
 {
   const Vector3 a(1, 2, 3);
   EXPECT_DOUBLE_EQ(a.Norm(), std::sqrt(a.x * a.x + a.y * a.y + a.z * a.z));
 }
 
-TEST_F(Vector3Test, NormSquare)
+TEST(Vector3Test, NormSquare)
 {
   const Vector3 a(1, 2, 3);
   EXPECT_DOUBLE_EQ(a.NormSquare(), a.x * a.x + a.y * a.y + a.z * a.z);
 }
 
-TEST_F(Vector3Test, Normalize)
+TEST(Vector3Test, Normalize)
 {
   const Vector3 a(1, 2, 3);
   const auto norm = a.Norm();
@@ -172,14 +168,14 @@ TEST_F(Vector3Test, Normalize)
   ExpectVectorEqual(a / norm, a_copy);
 }
 
-TEST_F(Vector3Test, Normalized)
+TEST(Vector3Test, Normalized)
 {
   const Vector3 a(1, 2, 3);
   const auto norm = a.Norm();
   ExpectVectorEqual(a.Normalized(), a / norm);
 }
 
-TEST_F(Vector3Test, InverseZeroIfSmaller)
+TEST(Vector3Test, InverseZeroIfSmaller)
 {
   const double tol = 1;
   const double val = 2 * -tol;
@@ -192,7 +188,7 @@ TEST_F(Vector3Test, InverseZeroIfSmaller)
   }
 }
 
-TEST_F(Vector3Test, InverseOneIfSmaller)
+TEST(Vector3Test, InverseOneIfSmaller)
 {
   const double tol = 10;
   const double val = 2 * tol;
@@ -205,7 +201,7 @@ TEST_F(Vector3Test, InverseOneIfSmaller)
   }
 }
 
-TEST_F(Vector3Test, Inverse)
+TEST(Vector3Test, Inverse)
 {
   const Vector3 a(1, 2, 3);
   ExpectVectorEqual(a.Inverse(), 1 / a.x, 1 / a.y, 1 / a.z);
@@ -226,7 +222,7 @@ TEST_F(Vector3Test, Inverse)
     std::runtime_error);
 }
 
-TEST_F(Vector3Test, AbsoluteEquals)
+TEST(Vector3Test, AbsoluteEquals)
 {
   const Vector3 a(1, 2, 3);
 
@@ -241,7 +237,7 @@ TEST_F(Vector3Test, AbsoluteEquals)
   }
 }
 
-TEST_F(Vector3Test, Size)
+TEST(Vector3Test, Size)
 {
   EXPECT_EQ(Vector3::Size(), std::size_t(3));
 }
