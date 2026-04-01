@@ -90,6 +90,7 @@ MultiGroupXS::Combine(
   // Init mandatory cross sections
   mgxs.sigma_t_.assign(n_grps, 0.0);
   mgxs.sigma_a_.assign(n_grps, 0.0);
+  std::map<std::string, std::vector<double>> combined_custom_xs;
 
   // Init transfer matrices only if at least one exists
   if (std::any_of(xsecs.begin(),
@@ -135,6 +136,7 @@ MultiGroupXS::Combine(
     const auto& nu_p_sig_f = xs->GetNuPromptSigmaF();
     const auto& nu_d_sig_f = xs->GetNuDelayedSigmaF();
     const auto& F = xs->GetProductionMatrix();
+    const auto custom_xs_names = xs->GetCustomXSNames();
 
     // Here, raw cross sections are scaled by densities and spectra by
     // fractional densities. The latter is done to preserve a unit spectra.
@@ -142,6 +144,13 @@ MultiGroupXS::Combine(
     {
       mgxs.sigma_t_[g] += density * sig_t[g];
       mgxs.sigma_a_[g] += density * sig_a[g];
+      for (const auto& xs_name : custom_xs_names)
+      {
+        auto& combined_xs = combined_custom_xs[xs_name];
+        if (combined_xs.empty())
+          combined_xs.assign(n_grps, 0.0);
+        combined_xs[g] += density * xs->GetCustomXS(xs_name)[g];
+      }
 
       if (xs->IsFissionable())
       {
@@ -215,6 +224,7 @@ MultiGroupXS::Combine(
     }
   } // for cross sections
 
+  mgxs.custom_xs_ = std::move(combined_custom_xs);
   mgxs.ComputeDiffusionParameters();
 
   return mgxs;
@@ -445,6 +455,9 @@ MultiGroupXS::Scale(const double factor)
         sig_ell *= scaling_factor_;
 
   custom_xs_ = base_custom_xs_;
+  for (auto& [_, values] : custom_xs_)
+    for (auto& value : values)
+      value *= scaling_factor_;
 
   if (adjoint_ and not transfer_matrices_.empty())
   {
