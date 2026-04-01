@@ -173,7 +173,7 @@ def WriteAggregatedRunLog(tests, run_log_path: str, base_directory: str):
 
 # Check the exe exists
 if argv.exe is None:
-    argv.exe = "build/test/python/opensn-test"
+    argv.exe = "build/python/opensn"
 if not os.path.isfile(argv.exe):
     raise FileNotFoundError(argv.exe)
 
