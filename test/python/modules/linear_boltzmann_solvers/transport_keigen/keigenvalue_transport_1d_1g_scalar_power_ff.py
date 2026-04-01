@@ -43,9 +43,6 @@ if __name__ == "__main__":
             {
                 "groups_from_to": (0, 0),
                 "angular_quadrature": GLProductQuadrature1DSlab(n_polar=32, scattering_order=0),
-                "inner_linear_method": "petsc_gmres",
-                "l_max_its": 500,
-                "l_abs_tol": 1.0e-8,
             }
         ],
         xs_map=[

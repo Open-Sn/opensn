@@ -43,10 +43,6 @@ if __name__ == "__main__":
     kes_max_iterations = 5000
     kes_tolerance = 1e-8
 
-    # Source iteration parameters
-    si_max_iterations = 500
-    si_tolerance = 1e-8
-
     # Create and configure the discrete ordinates solver
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -58,9 +54,6 @@ if __name__ == "__main__":
                     n_polar=n_angles,
                     scattering_order=scat_order
                 ),
-                "inner_linear_method": "petsc_gmres",
-                "l_max_its": si_max_iterations,
-                "l_abs_tol": si_tolerance,
             }
         ],
         xs_map=[

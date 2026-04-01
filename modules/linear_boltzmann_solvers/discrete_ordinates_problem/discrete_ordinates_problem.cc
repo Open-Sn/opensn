@@ -1067,11 +1067,14 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
 }
 
 void
-DiscreteOrdinatesProblem::InitializeWGSSolvers()
+DiscreteOrdinatesProblem::InitializeWGSContexts()
 {
-  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeWGSSolvers");
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeWGSContexts");
 
   // Determine max size and number of matrices along sweep front
+  max_groupset_size_ = 0;
+  max_level_size_ = 0;
+  max_angleset_size_ = 0;
   for (auto& groupset : groupsets_)
   {
     // Max groupset size
@@ -1090,7 +1093,7 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
     }
   }
 
-  wgs_solvers_.clear(); // this is required
+  wgs_contexts_.clear();
   for (auto& groupset : groupsets_)
   {
     std::shared_ptr<SweepChunk> sweep_chunk = SetSweepChunk(groupset);
@@ -1102,7 +1105,27 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
       APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES,
       options_.verbose_inner_iterations,
       sweep_chunk);
+    wgs_contexts_.push_back(sweep_wgs_context_ptr);
+  }
+}
 
+void
+DiscreteOrdinatesProblem::InitializeWGSSolvers()
+{
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeWGSSolvers");
+
+  if (not wgs_solvers_.empty())
+    return;
+
+  CheckWGSContextsInitialized();
+  OpenSnLogicalErrorIf(wgs_contexts_.size() != groupsets_.size(),
+                       GetName() + ": WGS context count does not match groupset count.");
+
+  for (size_t gsid = 0; gsid < groupsets_.size(); ++gsid)
+  {
+    auto& groupset = groupsets_[gsid];
+    const auto& sweep_wgs_context_ptr = wgs_contexts_[gsid];
+    OpenSnLogicalErrorIf(not sweep_wgs_context_ptr, GetName() + ": Null WGS context.");
     if (groupset.iterative_method == LinearSystemSolver::IterativeMethod::CLASSIC_RICHARDSON)
     {
       wgs_solvers_.push_back(std::make_shared<ClassicRichardson>(

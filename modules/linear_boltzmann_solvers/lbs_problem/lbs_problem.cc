@@ -445,32 +445,69 @@ LBSProblem::SetActiveSetSourceFunction(SetSourceFunction source_function)
 }
 
 std::shared_ptr<AGSLinearSolver>
-LBSProblem::GetAGSSolver() const
+LBSProblem::GetAGSSolver()
 {
+  CheckAGSSolverInitialized();
   return ags_solver_;
 }
 
 std::shared_ptr<LinearSolver>
-LBSProblem::GetWGSSolver(size_t groupset_id) const
+LBSProblem::GetWGSSolver(size_t groupset_id)
 {
+  CheckWGSSolversInitialized();
   return wgs_solvers_.at(groupset_id);
 }
 
 size_t
-LBSProblem::GetNumWGSSolvers() const
+LBSProblem::GetNumWGSSolvers()
 {
+  CheckWGSSolversInitialized();
   return wgs_solvers_.size();
 }
 
 WGSContext&
 LBSProblem::GetWGSContext(int groupset_id)
 {
-  auto& wgs_solver = wgs_solvers_[groupset_id];
-  auto raw_context = wgs_solver->GetContext();
-  auto wgs_context_ptr = std::dynamic_pointer_cast<WGSContext>(raw_context);
-  OpenSnLogicalErrorIf(not wgs_context_ptr,
-                       GetName() + ": Failed to cast solver context to WGSContext.");
+  CheckWGSContextsInitialized();
+  auto& wgs_context_ptr = wgs_contexts_.at(groupset_id);
+  OpenSnLogicalErrorIf(not wgs_context_ptr, GetName() + ": Null WGS context.");
   return *wgs_context_ptr;
+}
+
+void
+LBSProblem::CheckWGSContextsInitialized()
+{
+  if (wgs_contexts_.empty())
+    InitializeWGSContexts();
+}
+
+void
+LBSProblem::CheckWGSSolversInitialized()
+{
+  CheckWGSContextsInitialized();
+  if (wgs_solvers_.empty())
+    InitializeWGSSolvers();
+}
+
+void
+LBSProblem::CheckAGSSolverInitialized()
+{
+  CheckWGSSolversInitialized();
+  if (ags_solver_)
+    return;
+
+  ags_solver_ = std::make_shared<AGSLinearSolver>(*this, wgs_solvers_);
+  if (groupsets_.size() == 1)
+  {
+    ags_solver_->SetMaxIterations(1);
+    ags_solver_->SetVerbosity(false);
+  }
+  else
+  {
+    ags_solver_->SetMaxIterations(options_.max_ags_iterations);
+    ags_solver_->SetVerbosity(options_.verbose_ags_iterations);
+  }
+  ags_solver_->SetTolerance(options_.ags_tolerance);
 }
 
 std::pair<size_t, size_t>
@@ -1251,20 +1288,10 @@ void
 LBSProblem::InitializeSolverSchemes()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::InitializeSolverSchemes");
-  InitializeWGSSolvers();
-
-  ags_solver_ = std::make_shared<AGSLinearSolver>(*this, wgs_solvers_);
-  if (groupsets_.size() == 1)
-  {
-    ags_solver_->SetMaxIterations(1);
-    ags_solver_->SetVerbosity(false);
-  }
-  else
-  {
-    ags_solver_->SetMaxIterations(options_.max_ags_iterations);
-    ags_solver_->SetVerbosity(options_.verbose_ags_iterations);
-  }
-  ags_solver_->SetTolerance(options_.ags_tolerance);
+  ags_solver_.reset();
+  wgs_solvers_.clear();
+  wgs_contexts_.clear();
+  InitializeWGSContexts();
 }
 
 #ifndef __OPENSN_WITH_GPU__

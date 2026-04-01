@@ -26,6 +26,7 @@ class MPICommunicatorSet;
 class GridFaceHistogram;
 class AGSLinearSolver;
 class WGSLinearSolver;
+class LinearSolver;
 struct WGSContext;
 class TotalXSCarrier;
 class OutflowCarrier;
@@ -237,10 +238,10 @@ public:
 
   SetSourceFunction GetActiveSetSourceFunction() const;
 
-  std::shared_ptr<AGSLinearSolver> GetAGSSolver() const;
+  std::shared_ptr<AGSLinearSolver> GetAGSSolver();
 
-  std::shared_ptr<LinearSolver> GetWGSSolver(size_t groupset_id) const;
-  size_t GetNumWGSSolvers() const;
+  std::shared_ptr<LinearSolver> GetWGSSolver(size_t groupset_id);
+  size_t GetNumWGSSolvers();
 
   WGSContext& GetWGSContext(int groupset_id);
 
@@ -322,7 +323,11 @@ protected:
 
   void InitializeSolverSchemes();
 
+  virtual void InitializeWGSContexts() {};
   virtual void InitializeWGSSolvers() {};
+  void CheckWGSContextsInitialized();
+  void CheckWGSSolversInitialized();
+  void CheckAGSSolverInitialized();
 
   void SetActiveSetSourceFunction(SetSourceFunction source_function);
 
@@ -368,6 +373,7 @@ protected:
   SetSourceFunction active_set_source_function_;
 
   std::shared_ptr<AGSLinearSolver> ags_solver_;
+  std::vector<std::shared_ptr<WGSContext>> wgs_contexts_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
   bool initialized_ = false;
 

@@ -125,6 +125,8 @@ protected:
 
   void InitializeBoundaries() override;
 
+  void InitializeWGSContexts() override;
+
   /// Initializes Within-GroupSet solvers.
   void InitializeWGSSolvers() override;
 
