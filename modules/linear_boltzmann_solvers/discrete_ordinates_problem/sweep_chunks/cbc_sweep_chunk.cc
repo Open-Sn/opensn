@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
@@ -26,6 +27,8 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetNumMoments(),
                problem.GetMaxCellDOFCount(),
                problem.GetMinCellDOFCount()),
+    sweep_impl_(&CBCSweepChunk::Sweep_Generic),
+    group_block_size_(0),
     fluds_(nullptr),
     gs_size_(0),
     gs_gi_(0),
@@ -40,6 +43,37 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
     cell_num_faces_(0),
     cell_num_nodes_(0)
 {
+  if ((min_num_cell_dofs_ == max_num_cell_dofs_) and (min_num_cell_dofs_ >= 2)
+      and (min_num_cell_dofs_ <= 8))
+  {
+    switch (min_num_cell_dofs_)
+    {
+      case 2:
+        sweep_impl_ = &CBCSweepChunk::Sweep_FixedN<2>;
+        break;
+      case 3:
+        sweep_impl_ = &CBCSweepChunk::Sweep_FixedN<3>;
+        break;
+      case 4:
+        sweep_impl_ = &CBCSweepChunk::Sweep_FixedN<4>;
+        break;
+      case 5:
+        sweep_impl_ = &CBCSweepChunk::Sweep_FixedN<5>;
+        break;
+      case 6:
+        sweep_impl_ = &CBCSweepChunk::Sweep_FixedN<6>;
+        break;
+      case 7:
+        sweep_impl_ = &CBCSweepChunk::Sweep_FixedN<7>;
+        break;
+      case 8:
+        sweep_impl_ = &CBCSweepChunk::Sweep_FixedN<8>;
+        break;
+      default:
+        break;
+    }
+  }
+  group_block_size_ = ComputeGroupBlockSize(groupset_.GetNumGroups());
 }
 
 void
@@ -69,14 +103,21 @@ CBCSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
   cell_num_nodes_ = cell_mapping_->GetNumNodes();
 
   // Get cell matrices
-  G_ = unit_cell_matrices_[cell_local_id_].intV_shapeI_gradshapeJ;
-  M_ = unit_cell_matrices_[cell_local_id_].intV_shapeI_shapeJ;
-  M_surf_ = unit_cell_matrices_[cell_local_id_].intS_shapeI_shapeJ;
-  IntS_shapeI_ = unit_cell_matrices_[cell_local_id_].intS_shapeI;
+  const auto& unit_mats = unit_cell_matrices_[cell_local_id_];
+  G_ = &unit_mats.intV_shapeI_gradshapeJ;
+  M_ = &unit_mats.intV_shapeI_shapeJ;
+  M_surf_ = &unit_mats.intS_shapeI_shapeJ;
+  IntS_shapeI_ = &unit_mats.intS_shapeI;
 }
 
 void
 CBCSweepChunk::Sweep(AngleSet& angle_set)
+{
+  (this->*sweep_impl_)(angle_set);
+}
+
+void
+CBCSweepChunk::Sweep_Generic(AngleSet& angle_set)
 {
   const auto& m2d_op = groupset_.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
@@ -108,7 +149,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
 
     for (size_t i = 0; i < cell_num_nodes_; ++i)
       for (size_t j = 0; j < cell_num_nodes_; ++j)
-        Amat(i, j) = omega.Dot(G_(i, j));
+        Amat(i, j) = omega.Dot((*G_)(i, j));
 
     // Update face orientations
     for (size_t f = 0; f < cell_num_faces_; ++f)
@@ -136,7 +177,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
         {
           const int j = cell_mapping_->MapFaceNode(f, fj);
 
-          const double mu_Nij = -face_mu_values[f] * M_surf_[f](i, j);
+          const double mu_Nij = -face_mu_values[f] * (*M_surf_)[f](i, j);
           Amat(i, j) += mu_Nij;
 
           const double* psi = nullptr;
@@ -194,7 +235,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
         double temp = 0.0;
         for (size_t j = 0; j < cell_num_nodes_; ++j)
         {
-          const double Mij = M_(i, j);
+          const double Mij = (*M_)(i, j);
           Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
           temp += Mij * source[j];
         }
@@ -244,7 +285,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
       const bool is_boundary_face = not face.has_neighbor;
       const bool is_reflecting_boundary_face =
         (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
-      const auto& IntF_shapeI = IntS_shapeI_[f];
+      const auto& IntF_shapeI = (*IntS_shapeI_)[f];
 
       const int locality = cell_transport_view_->FaceLocality(f);
       const size_t num_face_nodes = cell_mapping_->GetNumFaceNodes(f);
@@ -254,7 +295,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
 
       if (not is_boundary_face and not is_local_face)
       {
-        auto& async_comm = *angle_set.GetCommunicator();
+        auto& async_comm = static_cast<CBC_AsynchronousCommunicator&>(*angle_set.GetCommunicator());
         const size_t data_size_for_msg = num_face_nodes * group_angle_stride_;
         psi_nonlocal_outgoing =
           &async_comm.InitGetDownwindMessageData(locality,

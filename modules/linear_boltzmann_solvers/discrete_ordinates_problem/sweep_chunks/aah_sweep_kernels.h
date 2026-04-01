@@ -42,26 +42,6 @@ struct AAHSweepData
   unsigned int group_block_size;      // used by fixed-N/AVX path
 };
 
-inline size_t
-ComputeGroupBlockSize(size_t gs_size)
-{
-  if (gs_size <= simd_width)
-    return gs_size;
-
-  size_t target = 0;
-  if (gs_size >= 16 * simd_width)
-    target = 4 * simd_width;
-  else if (gs_size >= 4 * simd_width)
-    target = 2 * simd_width;
-  else
-    target = 1 * simd_width;
-
-  target = std::min(target, gs_size);
-  if (target >= simd_width)
-    target = (target / simd_width) * simd_width;
-  return target;
-}
-
 /// Generic sweep kernel (scalar), parameterized by time dependence.
 template <bool time_dependent>
 inline void

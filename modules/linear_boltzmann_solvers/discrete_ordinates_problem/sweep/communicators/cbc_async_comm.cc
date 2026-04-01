@@ -3,12 +3,12 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mpi/mpi_comm_set.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <cstring>
 #include <memory>
 
 namespace opensn
@@ -53,8 +53,12 @@ CBC_AsynchronousCommunicator::SendData()
       buffer_array.Write(cell_global_id);
       buffer_array.Write(face_id);
       buffer_array.Write(data_size);
-      for (const double value : data) // actual psi_data
-        buffer_array.Write(value);
+
+      auto& raw = buffer_array.Data();
+      const size_t old_size = raw.size();
+      const size_t num_bytes = data_size * sizeof(double);
+      raw.resize(old_size + num_bytes);
+      std::memcpy(raw.data() + old_size, data.data(), num_bytes);
     }
 
     for (auto& [locI, buffer] : locI_buffer_map)
@@ -94,10 +98,11 @@ CBC_AsynchronousCommunicator::ReceiveData()
 {
   CALI_CXX_MARK_SCOPE("CBC_AsynchronousCommunicator::ReceiveData");
 
-  using CellFaceKey = std::pair<uint64_t, unsigned int>; // cell_gid + face_id
-  std::map<CellFaceKey, std::vector<double>> received_messages;
+  std::unordered_map<FLUDS::CellFaceKey, std::vector<double>, FLUDS::CellFaceKeyHash>
+    received_messages;
   std::vector<uint64_t> cells_who_received_data;
   const auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();
+  auto& deplocs_outgoing_messages = fluds_.GetDeplocsOutgoingMessages();
   for (int locJ : location_dependencies)
   {
     const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
@@ -117,33 +122,19 @@ CBC_AsynchronousCommunicator::ReceiveData()
         const auto face_id = data_array.Read<unsigned int>();
         const auto data_size = data_array.Read<size_t>();
 
-        std::vector<double> psi_data;
-        psi_data.reserve(data_size);
-        for (size_t k = 0; k < data_size; ++k)
-          psi_data.push_back(data_array.Read<double>());
+        std::vector<double> psi_data(data_size);
+        const size_t num_bytes = data_size * sizeof(double);
+        std::memcpy(psi_data.data(), &data_array.Data()[data_array.Offset()], num_bytes);
+        data_array.Seek(data_array.Offset() + num_bytes);
 
-        received_messages[{cell_global_id, face_id}] = std::move(psi_data);
+        deplocs_outgoing_messages[{cell_global_id, face_id}] = std::move(psi_data);
         cells_who_received_data.push_back(
           fluds_.GetSPDS().GetGrid()->MapCellGlobalID2LocalID(cell_global_id));
       } // while not at end of buffer
     } // Process each message embedded in buffer
   }
 
-  auto* cbc_fluds = dynamic_cast<CBC_FLUDS*>(&fluds_);
-  if (cbc_fluds != nullptr)
-    cbc_fluds->GetDeplocsOutgoingMessages().merge(received_messages);
-  else
-    MergeDeplocsOutgoingMessages(received_messages);
-
   return cells_who_received_data;
 }
-
-#ifndef __OPENSN_WITH_GPU__
-void
-CBC_AsynchronousCommunicator::MergeDeplocsOutgoingMessages(
-  std::map<CBC_FLUDS::CellFaceKey, std::vector<double>>& received_messages)
-{
-}
-#endif
 
 } // namespace opensn

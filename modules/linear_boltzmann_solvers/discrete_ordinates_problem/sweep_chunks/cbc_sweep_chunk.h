@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/avx_sweep_chunk_utils.h"
 
 namespace opensn
 {
@@ -51,7 +52,16 @@ public:
    */
   void Sweep(AngleSet& angle_set) override;
 
-protected:
+private:
+  using SweepFunc = void (CBCSweepChunk::*)(AngleSet&);
+  SweepFunc sweep_impl_ = nullptr;
+
+  void Sweep_Generic(AngleSet& angle_set);
+  template <unsigned int NumNodes>
+  void Sweep_FixedN(AngleSet& angle_set);
+
+  unsigned int group_block_size_;
+
   CBC_FLUDS* fluds_;
   size_t gs_size_;
   unsigned int gs_gi_;
@@ -67,10 +77,10 @@ protected:
   size_t cell_num_faces_;
   size_t cell_num_nodes_;
 
-  DenseMatrix<Vector3> G_;
-  DenseMatrix<double> M_;
-  std::vector<DenseMatrix<double>> M_surf_;
-  std::vector<Vector<double>> IntS_shapeI_;
+  const DenseMatrix<Vector3>* G_;
+  const DenseMatrix<double>* M_;
+  const std::vector<DenseMatrix<double>>* M_surf_;
+  const std::vector<Vector<double>>* IntS_shapeI_;
 };
 
 } // namespace opensn

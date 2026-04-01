@@ -8,7 +8,7 @@
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include <cstddef>
-#include <map>
+#include <unordered_map>
 #include <functional>
 
 namespace opensn
@@ -82,14 +82,6 @@ public:
   void AllocatePrelocIOutgoingPsi() override {}
   void AllocateDelayedPrelocIOutgoingPsi() override {}
 
-  // cell_global_id, face_id
-  using CellFaceKey = std::pair<uint64_t, unsigned int>;
-
-  std::map<CellFaceKey, std::vector<double>>& GetDeplocsOutgoingMessages()
-  {
-    return deplocs_outgoing_messages_;
-  }
-
 protected:
   const CBC_FLUDSCommonData& common_data_;
   const UnknownManager& psi_uk_man_;
@@ -107,7 +99,8 @@ protected:
 
   std::vector<std::vector<double>> boundryI_incoming_psi_;
 
-  std::map<CellFaceKey, std::vector<double>> deplocs_outgoing_messages_;
+  /// Pre-computed start index into local_psi_data_ for each local cell
+  std::vector<size_t> cell_psi_start_;
 };
 
 } // namespace opensn
