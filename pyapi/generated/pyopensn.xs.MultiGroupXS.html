@@ -144,6 +144,7 @@ modified.</p>
 <li><p>Raw XS terms are density-weighted sums:
 <span class="math notranslate nohighlight">\(\sigma = \sum_i d_i \sigma_i\)</span>
 (e.g. total, absorption, fission, transfer, production).</p></li>
+<li><p>Named custom 1D XS are preserved and combined with the same density weighting.</p></li>
 <li><p>Fission spectra and precursor yields are weighted by fissile density
 fraction so their sums remain normalized.</p></li>
 <li><p>All inputs must have the same number of groups.</p></li>
@@ -239,7 +240,8 @@ TRANSFER_MOMENTS_END
 <span class="sig-name descname"><span class="pre">Scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.Scale" title="Link to this definition"></a></dt>
 <dd><p>Scale the cross sections in-place.</p>
 <p class="rubric">Notes</p>
-<p>Scaling does not compound. Each call scales from the original baseline data.</p>
+<p>Scaling does not compound. Each call scales from the original baseline data.
+Named custom 1D XS are scaled along with the standard 1D cross-section data.</p>
 </dd></dl>
 
 <dl class="py method">
