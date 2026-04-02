@@ -21,7 +21,7 @@ public:
    *
    * \param lbs_problem LBS problem
    * \param file_base File name base
-   * \param per_material Optional flux moments source vector
+   * \param opt_src Optional source vector to write instead of the problem-owned flux moments.
    */
   static void WriteFluxMoments(
     LBSProblem& lbs_problem,
@@ -34,7 +34,8 @@ public:
    * \param lbs_problem LBS problem
    * \param file_base File name base
    * \param single_file Single data file or data file per rank?
-   * \param per_material Optional flux moments destination vector
+   * \param opt_dest Optional destination vector to populate instead of the problem-owned flux
+   * moments.
    */
   static void ReadFluxMoments(
     LBSProblem& lbs_problem,

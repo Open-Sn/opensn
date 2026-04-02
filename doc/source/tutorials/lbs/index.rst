@@ -8,3 +8,4 @@ Linear Boltzmann Solver
    primer/index
    keigen/index
    src_driven/index
+   transient/index

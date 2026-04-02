@@ -146,15 +146,12 @@ WrapLBS(py::module& slv)
     The returned field functions are snapshots of the solver state at creation time; they are not
     refreshed automatically if the solver state changes.
 
-    They support ``CanUpdate()`` and ``Update()`` while their owning solver is still alive.
+    They support ``CanUpdate()`` and ``Update()`` while their owning problem is still alive.
     Calling ``Update()`` explicitly refreshes the same field-function object from the solver's
     latest state.
 
     Calling ``GetScalarFluxFieldFunction(only_scalar_flux=False)`` creates all requested
     moments from the current ``phi`` iterate at the time of the call.
-
-    To obtain independent field functions from a newer solver state, call
-    ``GetScalarFluxFieldFunction(...)`` again instead of updating the existing objects.
 
     In the nested form (``only_scalar_flux=False``), the moment index varies fastest
     within each group (inner index = moment, outer index = group).
@@ -185,7 +182,7 @@ WrapLBS(py::module& slv)
 
     The returned field function is a snapshot of the solver state at creation time; it is not
     refreshed automatically if the solver state changes. It supports ``CanUpdate()`` and
-    ``Update()`` while its owning solver is still alive. Calling ``Update()`` explicitly
+    ``Update()`` while its owning problem is still alive. Calling ``Update()`` explicitly
     recomputes the same field function from the solver's latest state.
 
     If ``xs_name == "power"``, the same power-generation formula used elsewhere by the solver
@@ -194,6 +191,9 @@ WrapLBS(py::module& slv)
     If ``power_normalization_target > 0``, the returned field function is scaled using the power
     implied by the current scalar flux. This scaling affects only the returned field function;
     it does not mutate the solver's internal ``phi`` vectors.
+
+    The returned field function is a fresh object created for this call. It is not
+    automatically updated by later solves or timesteps.
     )",
     py::arg("name"),
     py::arg("xs_name"),
@@ -905,41 +905,50 @@ WrapLBS(py::module& slv)
     Create field functions for selected angular flux components.
 
     Note: You must enable angular flux storage (``save_angular_flux=True``) in
-    the problem options, otherwise the returned field functions will remain zero.
+    the problem options. For transient problems this is required. Otherwise
+    the returned field functions will remain zero.
 
     Example
     -------
-    ```python
-    solver.Initialize()
-    solver.Execute()
-    ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
-    ```
+    .. code-block:: python
 
-    For transient/time-dependent runs, call this after each timestep. Two common
-    patterns are:
+       solver.Initialize()
+       solver.Execute()
+       ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
 
-    1) Use `TransientSolver.Execute()` with a post-advance callback:
-    ```python
-    solver = TransientSolver(problem=phys)
-    solver.Initialize()
+    For transient/time-dependent runs, each field function is still a snapshot. Either call
+    this after each timestep to create a fresh object or keep the returned object and call
+    ``Update()`` after each timestep before exporting or interpolating it. Two common patterns
+    are:
 
-    def post_advance():
-        ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
-        FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, "angular_flux_t")
+    1) Use ``TransientSolver.Execute()`` with a post-advance callback:
 
-    solver.SetPostAdvanceCallback(post_advance)
-    solver.Execute()
-    ```
+    .. code-block:: python
 
-    2) Use a custom Python loop with `TransientSolver.Advance()`:
-    ```python
-    solver = TransientSolver(problem=phys)
-    solver.Initialize()
-    for _ in range(num_steps):
-        solver.Advance()
-        ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
-        FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, "angular_flux_t")
-    ```
+       solver = TransientSolver(problem=phys)
+       solver.Initialize()
+       ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
+
+       def post_advance():
+           for ff in ang_ff:
+               ff.Update()
+           FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, "angular_flux_t")
+
+       solver.SetPostAdvanceCallback(post_advance)
+       solver.Execute()
+
+    2) Use a custom Python loop with ``TransientSolver.Advance()``:
+
+    .. code-block:: python
+
+       solver = TransientSolver(problem=phys)
+       solver.Initialize()
+       ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
+       for _ in range(num_steps):
+           solver.Advance()
+           for ff in ang_ff:
+               ff.Update()
+           FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, "angular_flux_t")
 
     Parameters
     ----------
@@ -952,7 +961,7 @@ WrapLBS(py::module& slv)
     -------
     List[pyopensn.fieldfunc.FieldFunctionGridBased]
         Field functions for the requested ``(group, angle)`` pairs. Each returned field function
-        is a snapshot, but supports ``CanUpdate()`` and ``Update()`` while its owning solver is
+        is a snapshot, but supports ``CanUpdate()`` and ``Update()`` while its owning problem is
         alive.
     )",
     py::arg("groups"),
@@ -1333,6 +1342,11 @@ WrapTransient(py::module& slv)
         In "zero" mode, scalar flux vectors are reset to zero.
     verbose : bool, optional, default=True
         Enable verbose logging.
+
+    Notes
+    -----
+    The associated problem must have ``save_angular_flux=True`` enabled. This
+    is required for transient problems.
     )"
   );
   transient_solver.def(

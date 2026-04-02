@@ -3,19 +3,21 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import logging
 import sys
 from pathlib import Path
 
 # -- Import package ----------------------------------------------------------
 
-try:
-    import pyopensn
-except ImportError:
-    project_dir = Path(__file__).resolve().parent.parent.parent
-    sys.path.append(str(project_dir))
-    binary_dir = project_dir / "build"
-    sys.path.append(str(binary_dir))
-    import pyopensn
+project_dir = Path(__file__).resolve().parent.parent.parent
+binary_dir = project_dir / "build"
+
+# Prefer the in-tree package over any stale site-packages install.
+for path in (str(project_dir), str(binary_dir)):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+import pyopensn  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
@@ -78,3 +80,19 @@ html_css_files = ["pyopensn.css"]
 latex_elements = {
     "maxlistdepth": "10"
 }
+
+
+class _CppWarningFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        message = record.getMessage()
+        suppressed_fragments = (
+            "Duplicate C++ declaration",
+            "Invalid C++ declaration",
+            "Error when parsing function declaration.",
+            "Candidate function could not be parsed.",
+        )
+        return not any(fragment in message for fragment in suppressed_fragments)
+
+
+def setup(app):
+    logging.getLogger("sphinx").addFilter(_CppWarningFilter())
