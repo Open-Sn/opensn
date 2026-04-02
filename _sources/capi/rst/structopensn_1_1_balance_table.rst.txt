@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_balance_table:
+
+Struct BalanceTable
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_compute.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::BalanceTable
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

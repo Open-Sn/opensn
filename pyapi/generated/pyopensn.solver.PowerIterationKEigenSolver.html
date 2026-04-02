@@ -123,6 +123,42 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSolver.ComputeBalanceTable">
+<span class="sig-name descname"><span class="pre">ComputeBalanceTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSolver.ComputeBalanceTable" title="Link to this definition"></a></dt>
+<dd><p>Compute and return the global balance table using the solver’s normalization.
+This is a collective operation and must be called on all ranks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>Dictionary with the following entries:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">absorption_rate</span></code>:
+Global absorption rate, approximately <code class="docutils literal notranslate"><span class="pre">integral</span> <span class="pre">sigma_a</span> <span class="pre">*</span> <span class="pre">phi</span> <span class="pre">dV</span></code> summed over
+groups and the full domain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">production_rate</span></code>:
+Global volumetric production/source rate used by the solver,
+approximately <code class="docutils literal notranslate"><span class="pre">integral</span> <span class="pre">Q</span> <span class="pre">dV</span></code> summed over groups and the full domain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code>:
+Global incoming boundary contribution integrated over incoming
+angular flux on boundaries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code>:
+Global outgoing boundary contribution accumulated from face outflow
+tallies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">balance</span></code>:
+Rate balance,
+<code class="docutils literal notranslate"><span class="pre">production_rate</span> <span class="pre">+</span> <span class="pre">inflow_rate</span> <span class="pre">-</span> <span class="pre">absorption_rate</span> <span class="pre">-</span> <span class="pre">outflow_rate</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>For k-eigenvalue balance reporting, this solver scales the production term by
+<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">k_eff</span></code> before forming both <code class="docutils literal notranslate"><span class="pre">production_rate</span></code> and <code class="docutils literal notranslate"><span class="pre">balance</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSolver.Execute">
 <span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSolver.Execute" title="Link to this definition"></a></dt>
 <dd><p>Execute the solver.</p>
@@ -131,7 +167,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSolver.GetEigenvalue">
 <span class="sig-name descname"><span class="pre">GetEigenvalue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSolver.GetEigenvalue" title="Link to this definition"></a></dt>
-<dd><p>Return the current k‑eigenvalue.</p>
+<dd><p>Return the current k-eigenvalue.</p>
 </dd></dl>
 
 <dl class="py method">

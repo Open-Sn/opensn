@@ -95,6 +95,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_balance_table.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_boundary_condition.rst
 
 .. toctree::

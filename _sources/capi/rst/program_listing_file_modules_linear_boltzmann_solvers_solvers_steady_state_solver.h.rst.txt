@@ -16,6 +16,7 @@ Program Listing for File steady_state_solver.h
    #pragma once
    
    #include "modules/solver.h"
+   #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_compute.h"
    
    namespace opensn
    {
@@ -30,6 +31,8 @@ Program Listing for File steady_state_solver.h
      void Initialize() override;
    
      void Execute() override;
+   
+     BalanceTable ComputeBalanceTable() const;
    
    protected:
      std::shared_ptr<LBSProblem> lbs_problem_;
