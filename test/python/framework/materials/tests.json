@@ -62,5 +62,18 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "xs_custom_combine_scale.py",
+    "comment": "custom XS are preserved and weighted by MultiGroupXS combine and scale operations",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS ",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
   }
 ]

@@ -146,6 +146,7 @@ WrapMultiGroupXS(py::module& xs)
     - Raw XS terms are density-weighted sums:
       :math:`\sigma = \sum_i d_i \sigma_i`
       (e.g. total, absorption, fission, transfer, production).
+    - Named custom 1D XS are preserved and combined with the same density weighting.
     - Fission spectra and precursor yields are weighted by fissile density
       fraction so their sums remain normalized.
     - All inputs must have the same number of groups.
@@ -198,6 +199,7 @@ WrapMultiGroupXS(py::module& xs)
     Notes
     -----
     Scaling does not compound. Each call scales from the original baseline data.
+    Named custom 1D XS are scaled along with the standard 1D cross-section data.
     )",
     py::arg("factor")
   );
