@@ -65,9 +65,6 @@ if __name__ == "__main__":
                     n_azimuthal=4,
                     scattering_order=1
                 ),
-                "inner_linear_method": "petsc_gmres",
-                "l_max_its": 500,
-                "l_abs_tol": 1.0e-12,
             },
         ],
         xs_map=[
