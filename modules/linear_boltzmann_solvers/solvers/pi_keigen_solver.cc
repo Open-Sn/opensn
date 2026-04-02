@@ -211,7 +211,6 @@ PowerIterationKEigenSolver::Execute()
     do_problem_->ScalePrecursors(1.0 / k_eff_);
   }
 
-  do_problem_->UpdateFieldFunctions();
   if (IsBalanceEnabled())
   {
     ComputeBalance(*do_problem_, 1.0 / k_eff_);

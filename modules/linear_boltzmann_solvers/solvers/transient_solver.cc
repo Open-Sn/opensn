@@ -288,7 +288,6 @@ TransientSolver::Advance()
   current_time_ += dt;
   do_problem_->SetTime(current_time_);
   phi_prev_local_ = *phi_new_local_;
-  do_problem_->UpdateFieldFunctions();
   do_problem_->UpdatePsiOld();
   if (options.use_precursors)
     precursor_prev_local_ = *precursor_new_local_;

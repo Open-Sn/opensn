@@ -107,7 +107,6 @@ if __name__ == "__main__":
     step = 0
     solver.SetTheta(theta)
 
-    fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
 
     phi0 = []
@@ -131,6 +130,7 @@ if __name__ == "__main__":
 
         # Advance the solution from current_time to target_time
         solver.Advance()
+        fflist = phys.GetScalarFluxFieldFunction()
 
         # Group 0
         ff_interp_g0 = FieldFunctionInterpolationVolume()

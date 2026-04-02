@@ -107,14 +107,14 @@ WrapLBS(py::module& slv)
       {
         if (only_scalar_flux)
         {
-          field_function_list_per_group.append(self.GetScalarFluxFieldFunction(group, 0));
+          field_function_list_per_group.append(self.CreateScalarFluxFieldFunction(group, 0));
         }
         else
         {
           py::list field_function_list_per_moment;
           for (unsigned int moment = 0; moment < self.GetNumMoments(); moment++)
           {
-            field_function_list_per_moment.append(self.GetScalarFluxFieldFunction(group, moment));
+            field_function_list_per_moment.append(self.CreateScalarFluxFieldFunction(group, moment));
           }
           field_function_list_per_group.append(field_function_list_per_moment);
         }
@@ -141,17 +141,11 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
-    Flux-moment field functions are allocated lazily.
+    Field functions are created on demand from the current solver state. The solver does
+    not retain or continuously update scalar-flux field functions between calls.
 
-    The zeroth-moment field function for each group is created eagerly during solver
-    initialization, so scalar-flux output is always available.
-
-    Higher-moment field functions are created on demand. Calling
-    ``GetScalarFluxFieldFunction(only_scalar_flux=False)`` allocates all higher moments
-    and initializes them from the current solver state.
-
-    This is a substantial memory saver for typical problems, because most workflows only
-    need scalar-flux output and do not need to store field functions for every moment.
+    Calling ``GetScalarFluxFieldFunction(only_scalar_flux=False)`` creates all requested
+    moments from the current ``phi`` iterate at the time of the call.
 
     In the nested form (``only_scalar_flux=False``), the moment index varies fastest
     within each group (inner index = moment, outer index = group).
@@ -159,11 +153,37 @@ WrapLBS(py::module& slv)
     py::arg("only_scalar_flux") = true
   );
   lbs_problem.def(
-    "GetPowerFieldFunction",
-    &LBSProblem::GetPowerFieldFunction,
+    "CreateFieldFunction",
+    static_cast<std::shared_ptr<FieldFunctionGridBased> (LBSProblem::*)(
+      const std::string&, const std::string&, double)>(&LBSProblem::CreateFieldFunction),
     R"(
-    Returns the power generation field function, if enabled.
-    )"
+    Create a named scalar field function derived from a 1D XS or ``power``.
+
+    Parameters
+    ----------
+    name : str
+        Name to assign to the returned field function.
+    xs_name : str
+        Built-in 1D XS name, custom XS name, or the special value ``power``.
+    power_normalization_target : float, default=-1.0
+        If positive, scale the derived field function so that the raw power field would
+        integrate to this total power.
+
+    Notes
+    -----
+    The returned field function is created on demand from the current scalar-flux iterate.
+    For ordinary XS names this computes ``sum_g xs[g] * phi_g`` at each node.
+
+    If ``xs_name == "power"``, the same power-generation formula used elsewhere by the solver
+    is applied on demand.
+
+    If ``power_normalization_target > 0``, the returned field function is scaled using the power
+    implied by the current scalar flux. This scaling affects only the returned field function;
+    it does not mutate the solver's internal ``phi`` vectors.
+    )",
+    py::arg("name"),
+    py::arg("xs_name"),
+    py::arg("power_normalization_target") = -1.0
   );
   lbs_problem.def(
     "GetTime",
@@ -731,9 +751,7 @@ WrapLBS(py::module& slv)
           - ags_tolerance: float, default=1.0e-6
           - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
           - verbose_ags_iterations: bool, default=True
-          - power_field_function_on: bool, default=False
           - power_default_kappa: float, default=3.20435e-11
-          - power_normalization: float, default=-1.0
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
         These options are applied at problem creation.
@@ -863,17 +881,17 @@ WrapLBS(py::module& slv)
       for (py::handle a : angles)
         angle_ids.push_back(a.cast<size_t>());
 
-      auto ff_list = self.GetAngularFluxFieldFunctionList(group_ids, angle_ids);
+      auto ff_list = self.CreateAngularFluxFieldFunctionList(group_ids, angle_ids);
       py::list out;
       for (const auto& ff : ff_list)
         out.append(ff);
       return out;
     },
     R"(
-    Return field functions for selected angular flux components.
+    Create field functions for selected angular flux components.
 
     Note: You must enable angular flux storage (``save_angular_flux=True``) in
-    the problem options, otherwise the field functions will remain zero.
+    the problem options, otherwise the returned field functions will remain zero.
 
     Example
     -------
@@ -919,7 +937,7 @@ WrapLBS(py::module& slv)
     Returns
     -------
     List[pyopensn.fieldfunc.FieldFunctionGridBased]
-        Field functions for the requested (group, angle) pairs.
+        Field-function snapshots for the requested (group, angle) pairs.
     )",
     py::arg("groups"),
     py::arg("angles")
@@ -1137,9 +1155,7 @@ WrapLBS(py::module& slv)
           - ags_tolerance: float, default=1.0e-6
           - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
           - verbose_ags_iterations: bool, default=True
-          - power_field_function_on: bool, default=False
           - power_default_kappa: float, default=3.20435e-11
-          - power_normalization: float, default=-1.0
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
     sweep_type : str, optional

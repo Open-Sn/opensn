@@ -838,21 +838,24 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
 }
 
 std::vector<std::shared_ptr<FieldFunctionGridBased>>
-DiscreteOrdinatesProblem::GetAngularFluxFieldFunctionList(const std::vector<unsigned int>& groups,
-                                                          const std::vector<size_t>& angles)
+DiscreteOrdinatesProblem::CreateAngularFluxFieldFunctionList(
+  const std::vector<unsigned int>& groups, const std::vector<size_t>& angles)
 {
   OpenSnLogicalErrorIf(discretization_ == nullptr || grid_ == nullptr || groupsets_.empty(),
-                       "GetAngularFluxFieldFunctionList: problem not fully constructed.");
+                       "CreateAngularFluxFieldFunctionList: problem not fully constructed.");
 
-  OpenSnLogicalErrorIf(groups.empty(), "GetAngularFluxFieldFunctionList: groups cannot be empty.");
-  OpenSnLogicalErrorIf(angles.empty(), "GetAngularFluxFieldFunctionList: angles cannot be empty.");
+  OpenSnLogicalErrorIf(groups.empty(),
+                       "CreateAngularFluxFieldFunctionList: groups cannot be empty.");
+  OpenSnLogicalErrorIf(angles.empty(),
+                       "CreateAngularFluxFieldFunctionList: angles cannot be empty.");
 
   std::vector<std::shared_ptr<FieldFunctionGridBased>> result;
+  result.reserve(groups.size() * angles.size());
 
   for (const auto g : groups)
   {
     OpenSnLogicalErrorIf(g >= num_groups_,
-                         "GetAngularFluxFieldFunctionList: group index out of range.");
+                         "CreateAngularFluxFieldFunctionList: group index out of range.");
 
     const LBSGroupset* gs_ptr = nullptr;
     size_t gs_id = 0;
@@ -864,7 +867,7 @@ DiscreteOrdinatesProblem::GetAngularFluxFieldFunctionList(const std::vector<unsi
         break;
       }
     OpenSnLogicalErrorIf(gs_ptr == nullptr,
-                         "GetAngularFluxFieldFunctionList: group not found in any groupset.");
+                         "CreateAngularFluxFieldFunctionList: group not found in any groupset.");
 
     const auto& groupset = *gs_ptr;
     const auto num_angles = groupset.quadrature->omegas.size();
@@ -872,89 +875,63 @@ DiscreteOrdinatesProblem::GetAngularFluxFieldFunctionList(const std::vector<unsi
     for (const auto a : angles)
     {
       OpenSnLogicalErrorIf(a >= num_angles,
-                           "GetAngularFluxFieldFunctionList: angle index out of range for "
+                           "CreateAngularFluxFieldFunctionList: angle index out of range for "
                            "groupset " +
                              std::to_string(gs_id) + ".");
 
-      const auto key = std::make_tuple(gs_id, static_cast<size_t>(g), a);
-      auto it = angular_flux_field_functions_local_map_.find(key);
-      if (it == angular_flux_field_functions_local_map_.end())
-      {
-        std::string prefix;
-        if (options_.field_function_prefix_option == "prefix")
-        {
-          prefix = options_.field_function_prefix;
-          if (not prefix.empty())
-            prefix += "_";
-        }
-        if (options_.field_function_prefix_option == "solver_name")
-          prefix = GetName() + "_";
-
-        std::ostringstream oss;
-        oss << prefix << "psi_g" << std::setw(3) << std::setfill('0') << static_cast<int>(g) << "_a"
-            << std::setw(3) << std::setfill('0') << static_cast<int>(a) << "_gs" << std::setw(2)
-            << std::setfill('0') << static_cast<int>(gs_id);
-        const std::string name = oss.str();
-
-        auto ff_ptr = std::make_shared<FieldFunctionGridBased>(
-          name, discretization_, Unknown(UnknownType::SCALAR));
-
-        field_function_stack.push_back(std::static_pointer_cast<FieldFunction>(ff_ptr));
-        field_functions_.push_back(ff_ptr);
-
-        it =
-          angular_flux_field_functions_local_map_.emplace(key, field_functions_.size() - 1).first;
-      }
-      result.push_back(field_functions_.at(it->second));
+      auto ff_ptr = CreateEmptyFieldFunction(MakeAngularFieldFunctionName(gs_id, g, a));
+      ff_ptr->UpdateFieldVector(ComputeAngularFieldFunctionData(gs_id, g, a));
+      result.push_back(ff_ptr);
     }
   }
-
-  UpdateAngularFieldFunctions();
 
   return result;
 }
 
-void
-DiscreteOrdinatesProblem::UpdateAngularFieldFunctions()
+std::string
+DiscreteOrdinatesProblem::MakeAngularFieldFunctionName(const size_t groupset_id,
+                                                       const unsigned int group,
+                                                       const size_t angle) const
 {
-  if (angular_flux_field_functions_local_map_.empty())
-    return;
+  std::ostringstream oss;
+  oss << MakeFieldFunctionName("psi_g") << std::setw(3) << std::setfill('0')
+      << static_cast<int>(group) << "_a" << std::setw(3) << std::setfill('0')
+      << static_cast<int>(angle) << "_gs" << std::setw(2) << std::setfill('0')
+      << static_cast<int>(groupset_id);
+  return oss.str();
+}
+
+std::vector<double>
+DiscreteOrdinatesProblem::ComputeAngularFieldFunctionData(const size_t groupset_id,
+                                                          const unsigned int group,
+                                                          const size_t angle) const
+{
+  std::vector<double> data_vector_local(local_node_count_, 0.0);
+
+  if (groupset_id >= psi_new_local_.size() || psi_new_local_[groupset_id].empty())
+    return data_vector_local;
 
   const auto& sdm = *discretization_;
+  const auto& groupset = groupsets_.at(groupset_id);
+  const auto group_start = static_cast<size_t>(groupset.first_group);
+  const auto group_in_groupset = group - group_start;
+  const auto& uk_man = groupset.psi_uk_man_;
+  const auto& psi = psi_new_local_.at(groupset_id);
 
-  for (const auto& [key, ff_index] : angular_flux_field_functions_local_map_)
+  for (const auto& cell : grid_->local_cells)
   {
-    const auto gs_id = std::get<0>(key);
-    const auto g = std::get<1>(key);
-    const auto a = std::get<2>(key);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    if (gs_id >= psi_new_local_.size() || psi_new_local_[gs_id].empty())
-      continue;
-
-    const auto& groupset = groupsets_.at(gs_id);
-    const auto gsi = static_cast<size_t>(groupset.first_group);
-    const auto gsg = g - gsi;
-    const auto& uk_man = groupset.psi_uk_man_;
-
-    std::vector<double> data_vector_local(local_node_count_, 0.0);
-    const auto& psi = psi_new_local_.at(gs_id);
-
-    for (const auto& cell : grid_->local_cells)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.GetNumNodes();
-
-      for (size_t i = 0; i < num_nodes; ++i)
-      {
-        const auto imapA = sdm.MapDOFLocal(cell, i, uk_man, a, gsg);
-        const auto imapB = sdm.MapDOFLocal(cell, i);
-        data_vector_local[imapB] = psi[imapA];
-      }
+      const auto imapA = sdm.MapDOFLocal(cell, i, uk_man, angle, group_in_groupset);
+      const auto imapB = sdm.MapDOFLocal(cell, i);
+      data_vector_local[imapB] = psi[imapA];
     }
-
-    auto& ff_ptr = field_functions_.at(ff_index);
-    ff_ptr->UpdateFieldVector(data_vector_local);
   }
+
+  return data_vector_local;
 }
 
 void
