@@ -1,5 +1,4 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
-#include "test/unit/opensn_unit_test.h"
 #include "framework/math/quadratures/gausslegendre_quadrature.h"
 #include "framework/math/quadratures/gausschebyshev_quadrature.h"
 #include "framework/math/quadratures/spatial/line_quadrature.h"
@@ -8,11 +7,7 @@
 
 using namespace opensn;
 
-class QuadratureTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(QuadratureTest, GaussLegendre)
+TEST(QuadratureTest, GaussLegendre)
 {
   GaussLegendreQuadrature quad(4);
 
@@ -40,7 +35,7 @@ TEST_F(QuadratureTest, GaussLegendre)
   EXPECT_NEAR(quad.weights[3], 0.34785484513745, 1e-12);
 }
 
-TEST_F(QuadratureTest, GaussChebyshev)
+TEST(QuadratureTest, GaussChebyshev)
 {
   GaussChebyshevQuadrature quad(4);
 
@@ -68,25 +63,25 @@ TEST_F(QuadratureTest, GaussChebyshev)
   EXPECT_NEAR(quad.weights[3], 0.78539816339745, 1e-12);
 }
 
-TEST_F(QuadratureTest, Legendre)
+TEST(QuadratureTest, Legendre)
 {
   EXPECT_NEAR(Legendre(0, 0.25), 1., 1e-12);
   EXPECT_NEAR(Legendre(1, 0.25), 0.25, 1e-12);
 }
 
-TEST_F(QuadratureTest, dLegendredx)
+TEST(QuadratureTest, dLegendredx)
 {
   EXPECT_NEAR(dLegendredx(0, 0.25), 0., 1e-12);
   EXPECT_NEAR(dLegendredx(1, 0.25), 1., 1e-12);
 }
 
-TEST_F(QuadratureTest, Ylm)
+TEST(QuadratureTest, Ylm)
 {
   EXPECT_NEAR(Ylm(0, 0, 45 * M_PI / 180.0, 45 * M_PI / 180.0), 1.0, 1e-12);
   EXPECT_NEAR(Ylm(1, 0, 45 * M_PI / 180.0, 45 * M_PI / 180.0), 0.70710678118655, 1e-12);
 }
 
-TEST_F(QuadratureTest, GaussQuadratureSetRange)
+TEST(QuadratureTest, GaussQuadratureSetRange)
 {
   GaussLegendreQuadrature quad(QuadratureOrder::FIRST);
   quad.SetRange({2.0, 4.0});
@@ -97,7 +92,7 @@ TEST_F(QuadratureTest, GaussQuadratureSetRange)
   EXPECT_NEAR(quad.weights[0], 2.0, 1e-12);
 }
 
-TEST_F(QuadratureTest, LineQuadratureSetRange)
+TEST(QuadratureTest, LineQuadratureSetRange)
 {
   LineQuadrature quad(QuadratureOrder::FIRST);
 
@@ -113,7 +108,7 @@ TEST_F(QuadratureTest, LineQuadratureSetRange)
   EXPECT_THROW(quad.SetRange({1.0, 1.0}), std::invalid_argument);
 }
 
-TEST_F(QuadratureTest, TriangleQuadrature)
+TEST(QuadratureTest, TriangleQuadrature)
 {
   TriangleQuadrature q1(QuadratureOrder::FIRST);
   ASSERT_EQ(q1.qpoints.size(), 1);

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "framework/runtime.h"
+#include "test/unit/mpi_env.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 #include "petsc.h"
 
@@ -12,6 +13,7 @@ main(int argc, char** argv)
   PetscInitialize(nullptr, nullptr, nullptr, nullptr);
 
   testing::InitGoogleTest(&argc, argv);
+  ::testing::AddGlobalTestEnvironment(new MPIEnvironment());
   const auto exit_code = RUN_ALL_TESTS();
 
   PetscFinalize();

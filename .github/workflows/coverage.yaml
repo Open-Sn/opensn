@@ -21,14 +21,14 @@ jobs:
         run: |
           module load cuda/13.0 python3/3.12.3 opensn/gcc/14
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test \
+          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-coverage/python/opensn \
             --run-log "$RUNNER_TEMP/logs/nightly_coverage_log.txt"
       - name: gpu tests
         shell: bash
         run: |
           module load cuda/13.0 python3/3.12.3 opensn/gcc/14
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests -d test/python --gpu -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test \
+          test/run_tests -d test/python --gpu -j 32 -v 1 -w 3 --exe build-coverage/python/opensn \
             --run-log "$RUNNER_TEMP/logs/nightly_coverage_gpu_log.txt"
       - name: unit tests
         shell: bash
@@ -41,7 +41,7 @@ jobs:
           module load cuda/13.0 python3/3.12.3 opensn/gcc/14
           export PYTHONPATH=$PWD/build-coverage
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --exe build-coverage/test/python/opensn-test --engine=jupyter \
+          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --exe build-coverage/python/opensn --engine=jupyter \
             --run-log "$RUNNER_TEMP/logs/nightly_coverage_tutorials_log.txt"
       - name: coveralls
         shell: bash

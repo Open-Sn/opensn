@@ -1,11 +1,10 @@
-#include "test/unit/opensn_unit_test.h"
+#include "gtest/gtest.h"
+#include "test/unit/common/mesh_builders.h"
+#include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_mapping/mesh_mapping.h"
+#include "framework/runtime.h"
 
 using namespace opensn;
-
-class MeshMappingTest : public OpenSnUnitTest
-{
-};
 
 void
 TestMapping(const std::shared_ptr<MeshContinuum> fine_grid,
@@ -76,15 +75,21 @@ TestMapping(const std::shared_ptr<MeshContinuum> fine_grid,
   }
 }
 
-TEST_F(MeshMappingTest, Test1D)
+TEST(MeshMappingTest, Test1D)
 {
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
   const auto fine_grid_ptr = BuildOrthogonalMesh({{-1.0, -0.8, -0.75, -0.5, -0.25, 0.0, 0.5, 1.0}});
   const auto coarse_grid_ptr = BuildOrthogonalMesh({{-1.0, -0.5, 0.0, 0.5, 1.0}});
   TestMapping(fine_grid_ptr, coarse_grid_ptr);
 }
 
-TEST_F(MeshMappingTest, Test2D)
+TEST(MeshMappingTest, Test2D)
 {
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
   const auto fine_grid_ptr =
     BuildOrthogonalMesh({{-1.0, -0.8, -0.75, -0.5, -0.25, 0.0, 0.5, 1.0},
                          {-1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0}});
@@ -93,8 +98,11 @@ TEST_F(MeshMappingTest, Test2D)
   TestMapping(fine_grid_ptr, coarse_grid_ptr);
 }
 
-TEST_F(MeshMappingTest, Test3D)
+TEST(MeshMappingTest, Test3D)
 {
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
   const auto fine_grid_ptr =
     BuildOrthogonalMesh({{-1.0, -0.75, -0.5, -0.25, 0.0, 0.5, 1.0},
                          {-1.0, -0.9, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0},
@@ -104,8 +112,11 @@ TEST_F(MeshMappingTest, Test3D)
   TestMapping(fine_grid_ptr, coarse_grid_ptr);
 }
 
-TEST_F(MeshMappingTest, GetCoarseMappingMissing)
+TEST(MeshMappingTest, GetCoarseMappingMissing)
 {
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}});
 
   MeshMapping mesh_mapping;
@@ -126,8 +137,11 @@ TEST_F(MeshMappingTest, GetCoarseMappingMissing)
     std::logic_error);
 }
 
-TEST_F(MeshMappingTest, GetFineMappingMissing)
+TEST(MeshMappingTest, GetFineMappingMissing)
 {
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}});
 
   MeshMapping mesh_mapping;

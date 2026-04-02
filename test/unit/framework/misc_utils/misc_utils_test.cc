@@ -1,14 +1,9 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/utils/utils.h"
 #include <gmock/gmock.h>
 
 using namespace opensn;
 
-class MiscUtilsTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(MiscUtilsTest, Progress)
+TEST(MiscUtilsTest, Progress)
 {
   const unsigned int I = 4;
   const size_t N = 39;

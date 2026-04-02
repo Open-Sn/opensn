@@ -1,11 +1,9 @@
-#include "test/unit/opensn_unit_test.h"
+#include "gtest/gtest.h"
+#include "test/unit/common/mesh_builders.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/runtime.h"
 
 using namespace opensn;
-
-class MeshContinuumTest : public OpenSnUnitTest
-{
-};
 
 /// Helper for the PointInsideCellXD tests
 void
@@ -99,19 +97,19 @@ TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
   }
 }
 
-TEST_F(MeshContinuumTest, PointInsideCell1D)
+TEST(MeshContinuumTest, PointInsideCell1D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0, 1.0, 2.0}});
   TestPointInsideCell(grid_ptr);
 }
 
-TEST_F(MeshContinuumTest, PointInsideCell2D)
+TEST(MeshContinuumTest, PointInsideCell2D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0, 1.0}, {0.0, 0.5, 1.0}});
   TestPointInsideCell(grid_ptr);
 }
 
-TEST_F(MeshContinuumTest, PointInsideCell3D)
+TEST(MeshContinuumTest, PointInsideCell3D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCell(grid_ptr);
@@ -184,19 +182,22 @@ TestPointInsideCellFace(const std::shared_ptr<MeshContinuum> grid)
   }
 }
 
-TEST_F(MeshContinuumTest, PointInsideCellFace1D)
+TEST(MeshContinuumTest, PointInsideCellFace1D)
 {
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 0.0, 1.0, 2.0}});
   TestPointInsideCellFace(grid_ptr);
 }
 
-TEST_F(MeshContinuumTest, PointInsideCellFace2D)
+TEST(MeshContinuumTest, PointInsideCellFace2D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0}, {0.0, 0.5, 1.0}});
   TestPointInsideCellFace(grid_ptr);
 }
 
-TEST_F(MeshContinuumTest, PointInsideCellFace3D)
+TEST(MeshContinuumTest, PointInsideCellFace3D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCellFace(grid_ptr);

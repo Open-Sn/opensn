@@ -1,14 +1,9 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/data_types/vector.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;
 
-class VectorTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(VectorTest, Resize)
+TEST(VectorTest, Resize)
 {
   Vector<double> a(3);
   EXPECT_EQ(a.Rows(), 3);
@@ -16,7 +11,7 @@ TEST_F(VectorTest, Resize)
   EXPECT_EQ(a.Rows(), 4);
 }
 
-TEST_F(VectorTest, Set)
+TEST(VectorTest, Set)
 {
   Vector<double> a(3);
   a.Set(123.);
@@ -25,7 +20,7 @@ TEST_F(VectorTest, Set)
   EXPECT_DOUBLE_EQ(a(2), 123.);
 }
 
-TEST_F(VectorTest, Scale)
+TEST(VectorTest, Scale)
 {
   Vector<double> a(3);
   a.Set(123.);
@@ -35,7 +30,7 @@ TEST_F(VectorTest, Scale)
   EXPECT_DOUBLE_EQ(a(2), 12.3);
 }
 
-TEST_F(VectorTest, Normalized)
+TEST(VectorTest, Normalized)
 {
   Vector<double> b(2);
   b(0) = 3;
@@ -46,7 +41,7 @@ TEST_F(VectorTest, Normalized)
   EXPECT_DOUBLE_EQ(b_normalized(1), 0.8);
 }
 
-TEST_F(VectorTest, Add2)
+TEST(VectorTest, Add2)
 {
   Vector<double> b(2);
   b.Set(1.);
@@ -58,7 +53,7 @@ TEST_F(VectorTest, Add2)
   EXPECT_DOUBLE_EQ(added(1), 2.);
 }
 
-TEST_F(VectorTest, Subtract2)
+TEST(VectorTest, Subtract2)
 {
   Vector<double> b(2);
   b.Set(1.);
@@ -70,7 +65,7 @@ TEST_F(VectorTest, Subtract2)
   EXPECT_DOUBLE_EQ(subtracted(1), 1.);
 }
 
-TEST_F(VectorTest, Dot)
+TEST(VectorTest, Dot)
 {
   Vector<double> b(2);
   b(0) = 3;
@@ -86,7 +81,7 @@ TEST_F(VectorTest, Dot)
 
 // free functions
 
-TEST_F(VectorTest, FVec2Norm)
+TEST(VectorTest, FVec2Norm)
 {
   Vector<double> b(2);
   b(0) = 3;
@@ -94,7 +89,7 @@ TEST_F(VectorTest, FVec2Norm)
   EXPECT_DOUBLE_EQ(Vec2Norm(b), 5.);
 }
 
-TEST_F(VectorTest, FAdd)
+TEST(VectorTest, FAdd)
 {
   Vector<double> b(2);
   b(0) = 3;
@@ -109,7 +104,7 @@ TEST_F(VectorTest, FAdd)
   EXPECT_DOUBLE_EQ(d(1), 6.);
 }
 
-TEST_F(VectorTest, FSubtract)
+TEST(VectorTest, FSubtract)
 {
   Vector<double> b(2);
   b(0) = 3;
@@ -124,7 +119,7 @@ TEST_F(VectorTest, FSubtract)
   EXPECT_DOUBLE_EQ(e(1), 2.);
 }
 
-TEST_F(VectorTest, FDot)
+TEST(VectorTest, FDot)
 {
   Vector<double> b(2);
   b(0) = 3;
@@ -138,7 +133,7 @@ TEST_F(VectorTest, FDot)
   EXPECT_DOUBLE_EQ(dp0, 23.);
 }
 
-TEST_F(VectorTest, FScaled)
+TEST(VectorTest, FScaled)
 {
   Vector<double> b(2);
   b(0) = 3;
@@ -149,7 +144,7 @@ TEST_F(VectorTest, FScaled)
   EXPECT_DOUBLE_EQ(b_scaled(1), 16.);
 }
 
-TEST_F(VectorTest, FScale)
+TEST(VectorTest, FScale)
 {
   Vector<double> b(2);
   b(0) = 3;

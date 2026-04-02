@@ -1,26 +1,30 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/mesh/mesh_face.h"
 #include <gtest/gtest.h>
+#include <filesystem>
 
 using namespace opensn;
+namespace fs = std::filesystem;
 
-class SurfaceMeshTest : public OpenSnUnitTest
+namespace
 {
-};
 
-TEST_F(SurfaceMeshTest, ImportOBJ)
+auto meshes_loc = fs::path(OPENSN_TEST_ROOT) / "assets" / "mesh";
+
+}
+
+TEST(SurfaceMeshTest, ImportOBJ)
 {
   SurfaceMesh mesh;
-  EXPECT_EQ(mesh.ImportFromOBJFile("test/assets/mesh/test_surface1.obj"), 0);
+  EXPECT_EQ(mesh.ImportFromOBJFile(meshes_loc / "test_surface1.obj"), 0);
   EXPECT_EQ(mesh.GetVertices().size(), 8);
   EXPECT_EQ(mesh.GetTriangles().size(), 6);
 
   mesh.UpdateInternalConnectivity();
 }
 
-TEST_F(SurfaceMeshTest, ImportOBJMissingFile)
+TEST(SurfaceMeshTest, ImportOBJMissingFile)
 {
   SurfaceMesh mesh;
-  EXPECT_THROW(mesh.ImportFromOBJFile("test/assets/mesh/does_not_exist.obj"), std::runtime_error);
+  EXPECT_THROW(mesh.ImportFromOBJFile(meshes_loc / "does_not_exist.obj"), std::runtime_error);
 }

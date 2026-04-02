@@ -145,7 +145,7 @@ jobs:
           module load python3/3.12.3 opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/test/python/opensn-test \
+          test/run_tests -d test/python -j 32 -v 1 -w 3 --exe build-debug-sanitizer/python/opensn \
             --run-log "$RUNNER_TEMP/logs/nightly_sanitize_log.txt"
       - name: upload test logs
         if: always()

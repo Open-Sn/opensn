@@ -1,15 +1,9 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/data_types/sparse_matrix/sparse_matrix.h"
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include "gmock/gmock.h"
 
 using namespace opensn;
 
-class SparseMatrixTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(SparseMatrixTest, Insert)
+TEST(SparseMatrixTest, Insert)
 {
   SparseMatrix matrix(4, 4);
   auto& mat = matrix;
@@ -40,7 +34,7 @@ TEST_F(SparseMatrixTest, Insert)
   EXPECT_DOUBLE_EQ(mat.GetValueIJ(3, 3), 4.0);
 }
 
-TEST_F(SparseMatrixTest, Row)
+TEST(SparseMatrixTest, Row)
 {
   SparseMatrix m(3, 3);
   m.Insert(0, 0, 1.);
@@ -75,7 +69,7 @@ TEST_F(SparseMatrixTest, Row)
   EXPECT_THAT(vals, ::testing::ElementsAre(14., 16., 18.));
 }
 
-TEST_F(SparseMatrixTest, Compress)
+TEST(SparseMatrixTest, Compress)
 {
   SparseMatrix mat(4, 4);
   mat.Insert(0, 0, 1.0);
@@ -106,14 +100,14 @@ TEST_F(SparseMatrixTest, Compress)
               ::testing::ElementsAre(1.0, 1.1, 1.2, 1.3, 1.9, 2.0, 2.1, 2.9, 3.0, 3.1, 3.9, 4.0));
 }
 
-TEST_F(SparseMatrixTest, RowsCols)
+TEST(SparseMatrixTest, RowsCols)
 {
   SparseMatrix mat(3, 4);
   EXPECT_EQ(mat.GetNumRows(), 3);
   EXPECT_EQ(mat.GetNumCols(), 4);
 }
 
-TEST_F(SparseMatrixTest, InsertAdd)
+TEST(SparseMatrixTest, InsertAdd)
 {
   SparseMatrix mat(3, 4);
   mat.Insert(0, 0, 2.);
@@ -121,7 +115,7 @@ TEST_F(SparseMatrixTest, InsertAdd)
   EXPECT_DOUBLE_EQ(mat.GetValueIJ(0, 0), 7.);
 }
 
-TEST_F(SparseMatrixTest, SetDiagonal)
+TEST(SparseMatrixTest, SetDiagonal)
 {
   SparseMatrix mat(3, 3);
   mat.SetDiagonal({1., 2., 3.});

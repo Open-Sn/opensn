@@ -1,14 +1,9 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/data_types/ndarray.h"
 #include <gtest/gtest.h>
 
 using namespace opensn;
 
-class NDArrayTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(NDArrayTest, CtorVector)
+TEST(NDArrayTest, CtorVector)
 {
   NDArray<double, 3> arr({2, 2, 2});
   arr.set(0.0);
@@ -16,7 +11,7 @@ TEST_F(NDArrayTest, CtorVector)
     EXPECT_DOUBLE_EQ(val, 0.);
 }
 
-TEST_F(NDArrayTest, CtorArray)
+TEST(NDArrayTest, CtorArray)
 {
   NDArray<double, 3> arr({2, 2, 2});
   arr.set(0.0);
@@ -24,7 +19,7 @@ TEST_F(NDArrayTest, CtorArray)
     EXPECT_DOUBLE_EQ(val, 0.);
 }
 
-TEST_F(NDArrayTest, CtorInitList)
+TEST(NDArrayTest, CtorInitList)
 {
   NDArray<double, 3> arr({2, 2, 2});
   arr.set(0.0);
@@ -32,34 +27,34 @@ TEST_F(NDArrayTest, CtorInitList)
     EXPECT_DOUBLE_EQ(val, 0.);
 }
 
-TEST_F(NDArrayTest, CtorVectorWithInit)
+TEST(NDArrayTest, CtorVectorWithInit)
 {
   NDArray<double, 3> arr({2, 2, 2}, 0.0);
   for (auto val : arr)
     EXPECT_DOUBLE_EQ(val, 0.);
 }
 
-TEST_F(NDArrayTest, CtorArrayWithInit)
+TEST(NDArrayTest, CtorArrayWithInit)
 {
   NDArray<double, 3> arr({2, 2, 2}, 0.0);
   for (auto val : arr)
     EXPECT_DOUBLE_EQ(val, 0.);
 }
 
-TEST_F(NDArrayTest, CtorInitListWithInit)
+TEST(NDArrayTest, CtorInitListWithInit)
 {
   NDArray<double, 3> arr({2, 2, 2}, 0.0);
   for (auto val : arr)
     EXPECT_DOUBLE_EQ(val, 0.);
 }
 
-TEST_F(NDArrayTest, CtorDefault)
+TEST(NDArrayTest, CtorDefault)
 {
   NDArray<double, 2> arr;
   EXPECT_EQ(arr.size(), 0);
 }
 
-TEST_F(NDArrayTest, Rank)
+TEST(NDArrayTest, Rank)
 {
   NDArray<double, 2> arr2;
   EXPECT_EQ(arr2.rank(), 2);
@@ -68,7 +63,7 @@ TEST_F(NDArrayTest, Rank)
   EXPECT_EQ(arr4.rank(), 4);
 }
 
-TEST_F(NDArrayTest, Iterators)
+TEST(NDArrayTest, Iterators)
 {
   NDArray<double, 3> arr({2, 2, 2});
   arr.set(1.0);
@@ -78,7 +73,7 @@ TEST_F(NDArrayTest, Iterators)
     EXPECT_DOUBLE_EQ(*i, 1.0);
 }
 
-TEST_F(NDArrayTest, Size)
+TEST(NDArrayTest, Size)
 {
   NDArray<double, 3> arr({2, 2, 2});
   arr.set(1.0);
@@ -88,13 +83,13 @@ TEST_F(NDArrayTest, Size)
     EXPECT_DOUBLE_EQ(val, 1.0);
 }
 
-TEST_F(NDArrayTest, Empty)
+TEST(NDArrayTest, Empty)
 {
   NDArray<double, 3> arr;
   EXPECT_TRUE(arr.empty());
 }
 
-TEST_F(NDArrayTest, NotEmpty)
+TEST(NDArrayTest, NotEmpty)
 {
   NDArray<double, 3> arr({2, 2, 2});
   EXPECT_FALSE(arr.empty());

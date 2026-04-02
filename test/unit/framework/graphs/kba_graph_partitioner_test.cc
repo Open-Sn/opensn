@@ -1,14 +1,9 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/graphs/kba_graph_partitioner.h"
 #include <gmock/gmock.h>
 
 using namespace opensn;
 
-class KBAGraphPartitionerTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(KBAGraphPartitionerTest, Partition)
+TEST(KBAGraphPartitionerTest, Partition)
 {
   ParameterBlock input_parameters;
 

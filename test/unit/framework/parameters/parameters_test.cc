@@ -1,4 +1,3 @@
-#include "test/unit/opensn_unit_test.h"
 #include "framework/utils/utils.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/data_types/allowable_range.h"
@@ -19,11 +18,7 @@ GetInputParameters()
 
 } // namespace
 
-class ParametersTest : public OpenSnUnitTest
-{
-};
-
-TEST_F(ParametersTest, AssignAParameter)
+TEST(ParametersTest, AssignAParameter)
 {
   ParameterBlock name("name", "this_is_my_name");
 
@@ -36,7 +31,7 @@ TEST_F(ParametersTest, AssignAParameter)
   EXPECT_EQ(params.GetParamValue<std::string>("name"), "this_is_my_name");
 }
 
-TEST_F(ParametersTest, AssignNonexistentParameter)
+TEST(ParametersTest, AssignNonexistentParameter)
 {
   ParameterBlock non("non-existent", 42.);
 
@@ -47,7 +42,7 @@ TEST_F(ParametersTest, AssignNonexistentParameter)
   EXPECT_THROW(params.AssignParameters(input), std::invalid_argument);
 }
 
-TEST_F(ParametersTest, AssignIncorrectlyTypedParameter)
+TEST(ParametersTest, AssignIncorrectlyTypedParameter)
 {
   ParameterBlock name("name", 42.);
 
@@ -58,7 +53,7 @@ TEST_F(ParametersTest, AssignIncorrectlyTypedParameter)
   EXPECT_THROW(params.AssignParameters(input), std::invalid_argument);
 }
 
-TEST_F(ParametersTest, RequiredMissingAndRenamed)
+TEST(ParametersTest, RequiredMissingAndRenamed)
 {
   InputParameters params;
   params.SetObjectType("UnitTest");
@@ -73,7 +68,7 @@ TEST_F(ParametersTest, RequiredMissingAndRenamed)
   EXPECT_THROW(params.AssignParameters(input_with_old), std::invalid_argument);
 }
 
-TEST_F(ParametersTest, DeprecationAndConstraints)
+TEST(ParametersTest, DeprecationAndConstraints)
 {
   InputParameters params;
   params.SetObjectType("UnitTest");
