@@ -137,6 +137,8 @@ Program Listing for File discrete_ordinates_problem.h
    
      void InitializeBoundaries() override;
    
+     void InitializeWGSContexts() override;
+   
      /// Initializes Within-GroupSet solvers.
      void InitializeWGSSolvers() override;
    
