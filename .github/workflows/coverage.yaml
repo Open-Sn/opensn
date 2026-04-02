@@ -47,7 +47,8 @@ jobs:
         shell: bash
         run: |
           module load cuda/13.0 python3/3.12.3 opensn/gcc/14
-          gcovr --gcov-suspicious-hits-threshold=2000000000000 -r . --filter '^(framework|python|modules)/' --coveralls coverage.json
+          gcovr --gcov-ignore-parse-errors=negative_hits.warn --gcov-suspicious-hits-threshold=2000000000000 -r . \
+            --filter '^(framework|python|modules)/' --coveralls coverage.json
           /opt/local/opensn/coveralls/bin/coveralls -c /opt/local/opensn/coveralls/.coveralls.yml -f coverage.json
       - name: upload test logs
         if: always()
