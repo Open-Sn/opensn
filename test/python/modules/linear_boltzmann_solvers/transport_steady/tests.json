@@ -6,13 +6,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": " In-flow rate                =",
+        "key": "InFlow=",
         "goldvalue": 155.3633,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " Out-flow rate               =",
+        "key": "OutFlow=",
         "goldvalue": 155.3633,
         "abs_tol": 1e-06
       }
@@ -1087,13 +1087,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": " Absorption rate             =",
+        "key": "Absorption=",
         "goldvalue": 100.6178,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " Out-flow rate               =",
+        "key": "OutFlow=",
         "goldvalue": 0.3821562,
         "abs_tol": 1e-06
       }
@@ -1107,13 +1107,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": " Absorption rate             =",
+        "key": "Absorption=",
         "goldvalue": 100.6178,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " Out-flow rate               =",
+        "key": "OutFlow=",
         "goldvalue": 0.3821562,
         "abs_tol": 1e-06
       }
@@ -1139,25 +1139,25 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": " Absorption rate             =",
+        "key": "Absorption=",
         "goldvalue": 1000.0,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " Production rate             =",
+        "key": "Production=",
         "goldvalue": 1000.0,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " In-flow rate                =",
+        "key": "InFlow=",
         "goldvalue": 12365.98,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " Out-flow rate               =",
+        "key": "OutFlow=",
         "goldvalue": 12365.98,
         "abs_tol": 1e-06
       }
@@ -1170,13 +1170,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": " In-flow rate                =",
+        "key": "InFlow=",
         "goldvalue": 155.3633,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " Out-flow rate               =",
+        "key": "OutFlow=",
         "goldvalue": 155.3633,
         "abs_tol": 1e-06
       }
@@ -1223,13 +1223,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": " Production rate             =",
+        "key": "Production=",
         "goldvalue": 12.5,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " Out-flow rate               =",
+        "key": "OutFlow=",
         "goldvalue": 12.5,
         "abs_tol": 1e-06
       }
@@ -1243,13 +1243,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": " Absorption rate             =",
+        "key": "Absorption=",
         "goldvalue": 0.3245017,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": " Out-flow rate               =",
+        "key": "OutFlow=",
         "goldvalue": 13.43599,
         "abs_tol": 1e-06
       }

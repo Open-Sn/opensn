@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_compute.h"
 #include "framework/object_factory.h"
 #include <memory>
 #include <string>
@@ -35,6 +36,7 @@ public:
   void SetPostAdvanceCallback(std::nullptr_t);
   double GetCurrentTime() const { return current_time_; }
   unsigned int GetStep() const { return step_; }
+  BalanceTable ComputeBalanceTable() const;
 
 private:
   void RefreshLocalViews();

@@ -44,25 +44,25 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "[0]   Absorption rate             =",
+        "key": "Absorption=",
         "goldvalue": 1000.0,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Production rate             =",
+        "key": "Production=",
         "goldvalue": 1000.0,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   In-flow rate                =",
+        "key": "InFlow=",
         "goldvalue": 12365.98,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "[0]   Out-flow rate               =",
+        "key": "OutFlow=",
         "goldvalue": 12365.98,
         "abs_tol": 1e-06
       }

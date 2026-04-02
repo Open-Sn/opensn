@@ -81,6 +81,11 @@ if __name__ == "__main__":
     ss_solver.Initialize()
     ss_solver.Execute()
 
+    balance = ss_solver.ComputeBalanceTable()
+    if rank == 0:
+        print(f"Production={balance['production_rate']:.6e}")
+        print(f"OutFlow={balance['outflow_rate']:.6e}")
+
     # Get field functions
     fflist = phys.GetScalarFluxFieldFunction()
 

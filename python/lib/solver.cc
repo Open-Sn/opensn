@@ -1153,6 +1153,27 @@ WrapLBS(py::module& slv)
 void
 WrapSteadyState(py::module& slv)
 {
+  const auto balance_table_to_dict = [](const BalanceTable& table)
+  {
+    py::dict values;
+    values["absorption_rate"] = table.absorption_rate;
+    values["production_rate"] = table.production_rate;
+    values["inflow_rate"] = table.inflow_rate;
+    values["outflow_rate"] = table.outflow_rate;
+    values["balance"] = table.balance;
+    if (table.initial_inventory.has_value())
+      values["initial_inventory"] = table.initial_inventory.value();
+    if (table.final_inventory.has_value())
+      values["final_inventory"] = table.final_inventory.value();
+    if (table.predicted_inventory_change.has_value())
+      values["predicted_inventory_change"] = table.predicted_inventory_change.value();
+    if (table.actual_inventory_change.has_value())
+      values["actual_inventory_change"] = table.actual_inventory_change.value();
+    if (table.inventory_residual.has_value())
+      values["inventory_residual"] = table.inventory_residual.value();
+    return values;
+  };
+
   // clang-format off
   // steady state solver
   auto steady_state_solver = py::class_<SteadyStateSourceSolver, std::shared_ptr<SteadyStateSourceSolver>,
@@ -1181,6 +1202,42 @@ WrapSteadyState(py::module& slv)
         Existing LBSProblem instance.
     )"
   );
+  steady_state_solver.def(
+    "ComputeBalanceTable",
+    [balance_table_to_dict](const SteadyStateSourceSolver& self)
+    {
+      return balance_table_to_dict(self.ComputeBalanceTable());
+    },
+    R"(
+    Compute and return the global balance table using the solver's normalization.
+    This is a collective operation and must be called on all ranks.
+
+    Returns
+    -------
+    dict
+        Dictionary with the following entries:
+
+        - ``absorption_rate``:
+          Global absorption rate, approximately ``integral sigma_a * phi dV`` summed over
+          groups and the full domain.
+        - ``production_rate``:
+          Global volumetric production/source rate used by the solver,
+          approximately ``integral Q dV`` summed over groups and the full domain.
+        - ``inflow_rate``:
+          Global incoming boundary contribution integrated over incoming
+          angular flux on boundaries.
+        - ``outflow_rate``:
+          Global outgoing boundary contribution accumulated from face outflow
+          tallies.
+        - ``balance``:
+          Rate balance,
+          ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
+
+    Notes
+    -----
+    This solver applies no extra normalization to the balance table.
+    )"
+  );
   // clang-format on
 }
 
@@ -1188,6 +1245,26 @@ WrapSteadyState(py::module& slv)
 void
 WrapTransient(py::module& slv)
 {
+  const auto balance_table_to_dict = [](const BalanceTable& table)
+  {
+    py::dict values;
+    values["absorption_rate"] = table.absorption_rate;
+    values["production_rate"] = table.production_rate;
+    values["inflow_rate"] = table.inflow_rate;
+    values["outflow_rate"] = table.outflow_rate;
+    values["balance"] = table.balance;
+    if (table.initial_inventory.has_value())
+      values["initial_inventory"] = table.initial_inventory.value();
+    if (table.final_inventory.has_value())
+      values["final_inventory"] = table.final_inventory.value();
+    if (table.predicted_inventory_change.has_value())
+      values["predicted_inventory_change"] = table.predicted_inventory_change.value();
+    if (table.actual_inventory_change.has_value())
+      values["actual_inventory_change"] = table.actual_inventory_change.value();
+    if (table.inventory_residual.has_value())
+      values["inventory_residual"] = table.inventory_residual.value();
+    return values;
+  };
   // clang-format off
   auto transient_solver =
     py::class_<TransientSolver, std::shared_ptr<TransientSolver>, Solver>(
@@ -1295,6 +1372,61 @@ WrapTransient(py::module& slv)
     static_cast<void (TransientSolver::*)(std::nullptr_t)>(
       &TransientSolver::SetPostAdvanceCallback),
     "Clear the PostAdvance callback by passing None.");
+  transient_solver.def(
+    "ComputeBalanceTable",
+    [balance_table_to_dict](const TransientSolver& self)
+    {
+      return balance_table_to_dict(self.ComputeBalanceTable());
+    },
+    R"(
+    Compute and return the global balance table using the solver's normalization.
+    This is a collective operation and must be called on all ranks.
+
+    Returns
+    -------
+    dict
+        Dictionary with the following entries:
+
+        - ``absorption_rate``:
+          Global absorption rate, approximately ``integral sigma_a * phi dV`` summed over
+          groups and the full domain.
+        - ``production_rate``:
+          Global volumetric production/source rate used by the solver,
+          approximately ``integral Q dV`` summed over groups and the full domain.
+        - ``inflow_rate``:
+          Global incoming boundary contribution integrated over incoming
+          angular flux on boundaries.
+        - ``outflow_rate``:
+          Global outgoing boundary contribution accumulated from face outflow
+          tallies.
+        - ``balance``:
+          Rate balance,
+          ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
+        - ``initial_inventory``:
+          Total particle inventory at the start of the timestep, computed as
+          ``integral (1 / v_g) * phi_old dV`` summed over groups and the full domain.
+        - ``final_inventory``:
+          Total particle inventory at the end of the timestep, computed as
+          ``integral (1 / v_g) * phi_new dV`` summed over groups and the full domain.
+        - ``predicted_inventory_change``:
+          Inventory change predicted by the current timestep balance, computed as 
+          ``dt * balance``.
+        - ``actual_inventory_change``:
+          Measured change in total particle inventory over the timestep, computed as
+          ``final_inventory - initial_inventory``.
+        - ``inventory_residual``:
+          Mismatch between the measured and predicted timestep inventory
+          changes, computed as
+          ``actual_inventory_change - predicted_inventory_change``.
+
+    Notes
+    -----
+    This solver applies no extra normalization to the balance table.
+
+    The transient inventory terms currently use the end-of-step rate balance to
+    estimate the timestep inventory change.
+    )"
+  );
   slv.attr("BackwardEuler") = 1.0;
   slv.attr("CrankNicolson") = 0.5;
   // clang-format on
@@ -1304,6 +1436,26 @@ WrapTransient(py::module& slv)
 void
 WrapNLKEigen(py::module& slv)
 {
+  const auto balance_table_to_dict = [](const BalanceTable& table)
+  {
+    py::dict values;
+    values["absorption_rate"] = table.absorption_rate;
+    values["production_rate"] = table.production_rate;
+    values["inflow_rate"] = table.inflow_rate;
+    values["outflow_rate"] = table.outflow_rate;
+    values["balance"] = table.balance;
+    if (table.initial_inventory.has_value())
+      values["initial_inventory"] = table.initial_inventory.value();
+    if (table.final_inventory.has_value())
+      values["final_inventory"] = table.final_inventory.value();
+    if (table.predicted_inventory_change.has_value())
+      values["predicted_inventory_change"] = table.predicted_inventory_change.value();
+    if (table.actual_inventory_change.has_value())
+      values["actual_inventory_change"] = table.actual_inventory_change.value();
+    if (table.inventory_residual.has_value())
+      values["inventory_residual"] = table.inventory_residual.value();
+    return values;
+  };
   // clang-format off
   // non-linear k-eigen solver
   auto non_linear_k_eigen_solver = py::class_<NonLinearKEigenSolver, std::shared_ptr<NonLinearKEigenSolver>,
@@ -1360,7 +1512,44 @@ WrapNLKEigen(py::module& slv)
     "GetEigenvalue",
     &NonLinearKEigenSolver::GetEigenvalue,
     R"(
-    Return the current k‑eigenvalue.
+    Return the current k-eigenvalue.
+    )"
+  );
+  non_linear_k_eigen_solver.def(
+    "ComputeBalanceTable",
+    [balance_table_to_dict](const NonLinearKEigenSolver& self)
+    {
+      return balance_table_to_dict(self.ComputeBalanceTable());
+    },
+    R"(
+    Compute and return the global balance table using the solver's normalization.
+    This is a collective operation and must be called on all ranks.
+
+    Returns
+    -------
+    dict
+        Dictionary with the following entries:
+
+        - ``absorption_rate``:
+          Global absorption rate, approximately ``integral sigma_a * phi dV`` summed over
+          groups and the full domain.
+        - ``production_rate``:
+          Global volumetric production/source rate used by the solver,
+          approximately ``integral Q dV`` summed over groups and the full domain.
+        - ``inflow_rate``:
+          Global incoming boundary contribution integrated over incoming
+          angular flux on boundaries.
+        - ``outflow_rate``:
+          Global outgoing boundary contribution accumulated from face outflow
+          tallies.
+        - ``balance``:
+          Rate balance,
+          ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
+
+    Notes
+    -----
+    For k-eigenvalue balance reporting, this solver scales the production term by
+    ``1 / k_eff`` before forming both ``production_rate`` and ``balance``.
     )"
   );
   // clang-format on
@@ -1370,6 +1559,26 @@ WrapNLKEigen(py::module& slv)
 void
 WrapPIteration(py::module& slv)
 {
+  const auto balance_table_to_dict = [](const BalanceTable& table)
+  {
+    py::dict values;
+    values["absorption_rate"] = table.absorption_rate;
+    values["production_rate"] = table.production_rate;
+    values["inflow_rate"] = table.inflow_rate;
+    values["outflow_rate"] = table.outflow_rate;
+    values["balance"] = table.balance;
+    if (table.initial_inventory.has_value())
+      values["initial_inventory"] = table.initial_inventory.value();
+    if (table.final_inventory.has_value())
+      values["final_inventory"] = table.final_inventory.value();
+    if (table.predicted_inventory_change.has_value())
+      values["predicted_inventory_change"] = table.predicted_inventory_change.value();
+    if (table.actual_inventory_change.has_value())
+      values["actual_inventory_change"] = table.actual_inventory_change.value();
+    if (table.inventory_residual.has_value())
+      values["inventory_residual"] = table.inventory_residual.value();
+    return values;
+  };
   // clang-format off
   // power iteration k-eigen solver
   auto pi_k_eigen_solver = py::class_<PowerIterationKEigenSolver, std::shared_ptr<PowerIterationKEigenSolver>,
@@ -1412,7 +1621,44 @@ WrapPIteration(py::module& slv)
     "GetEigenvalue",
     &PowerIterationKEigenSolver::GetEigenvalue,
     R"(
-    Return the current k‑eigenvalue.
+    Return the current k-eigenvalue.
+    )"
+  );
+  pi_k_eigen_solver.def(
+    "ComputeBalanceTable",
+    [balance_table_to_dict](const PowerIterationKEigenSolver& self)
+    {
+      return balance_table_to_dict(self.ComputeBalanceTable());
+    },
+    R"(
+    Compute and return the global balance table using the solver's normalization.
+    This is a collective operation and must be called on all ranks.
+
+    Returns
+    -------
+    dict
+        Dictionary with the following entries:
+
+        - ``absorption_rate``:
+          Global absorption rate, approximately ``integral sigma_a * phi dV`` summed over
+          groups and the full domain.
+        - ``production_rate``:
+          Global volumetric production/source rate used by the solver,
+          approximately ``integral Q dV`` summed over groups and the full domain.
+        - ``inflow_rate``:
+          Global incoming boundary contribution integrated over incoming
+          angular flux on boundaries.
+        - ``outflow_rate``:
+          Global outgoing boundary contribution accumulated from face outflow
+          tallies.
+        - ``balance``:
+          Rate balance,
+          ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
+
+    Notes
+    -----
+    For k-eigenvalue balance reporting, this solver scales the production term by
+    ``1 / k_eff`` before forming both ``production_rate`` and ``balance``.
     )"
   );
   // clang-format on

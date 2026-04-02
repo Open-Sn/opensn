@@ -17,6 +17,20 @@
 namespace opensn
 {
 
+namespace
+{
+DiscreteOrdinatesProblem&
+GetDOSteadyProblem(const SteadyStateSourceSolver& solver,
+                   const std::shared_ptr<LBSProblem>& problem)
+{
+  auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(problem);
+  OpenSnLogicalErrorIf(not do_problem,
+                       solver.GetName() + ": balance table queries require a "
+                                          "DiscreteOrdinatesProblem.");
+  return *do_problem;
+}
+} // namespace
+
 OpenSnRegisterObjectInNamespace(lbs, SteadyStateSourceSolver);
 
 InputParameters
@@ -84,6 +98,12 @@ SteadyStateSourceSolver::Execute()
   if (IsBalanceEnabled())
     if (auto do_problem = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(lbs_problem_))
       ComputeBalance(*do_problem);
+}
+
+BalanceTable
+SteadyStateSourceSolver::ComputeBalanceTable() const
+{
+  return opensn::ComputeBalanceTable(GetDOSteadyProblem(*this, lbs_problem_));
 }
 
 bool
