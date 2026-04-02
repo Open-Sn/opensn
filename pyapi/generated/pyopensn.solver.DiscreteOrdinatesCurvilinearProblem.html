@@ -205,11 +205,35 @@ the corresponding boundary surface.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.CreateFieldFunction">
+<span class="sig-name descname"><span class="pre">CreateFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xs_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_normalization_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.CreateFieldFunction" title="Link to this definition"></a></dt>
+<dd><p>Create a named scalar field function derived from a 1D XS or <code class="docutils literal notranslate"><span class="pre">power</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name to assign to the returned field function.</p></li>
+<li><p><strong>xs_name</strong> (<em>str</em>) – Built-in 1D XS name, custom XS name, or the special value <code class="docutils literal notranslate"><span class="pre">power</span></code>.</p></li>
+<li><p><strong>power_normalization_target</strong> (<em>float</em><em>, </em><em>default=-1.0</em>) – If positive, scale the derived field function so that the raw power field would
+integrate to this total power.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The returned field function is created on demand from the current scalar-flux iterate.
+For ordinary XS names this computes <code class="docutils literal notranslate"><span class="pre">sum_g</span> <span class="pre">xs[g]</span> <span class="pre">*</span> <span class="pre">phi_g</span></code> at each node.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">xs_name</span> <span class="pre">==</span> <span class="pre">&quot;power&quot;</span></code>, the same power-generation formula used elsewhere by the solver
+is applied on demand.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the returned field function is scaled using the power
+implied by the current scalar flux. This scaling affects only the returned field function;
+it does not mutate the solver’s internal <code class="docutils literal notranslate"><span class="pre">phi</span></code> vectors.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetAngularFieldFunctionList">
 <span class="sig-name descname"><span class="pre">GetAngularFieldFunctionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetAngularFieldFunctionList" title="Link to this definition"></a></dt>
-<dd><p>Return field functions for selected angular flux components.</p>
+<dd><p>Create field functions for selected angular flux components.</p>
 <p>Note: You must enable angular flux storage (<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>) in
-the problem options, otherwise the field functions will remain zero.</p>
+the problem options, otherwise the returned field functions will remain zero.</p>
 <p class="rubric">Example</p>
 <p><code class="docutils literal notranslate"><span class="pre">`python</span>
 <span class="pre">solver.Initialize()</span>
@@ -249,7 +273,7 @@ FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, “angular_flux_t”)</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Field functions for the requested (group, angle) pairs.</p>
+<dd class="field-even"><p>Field-function snapshots for the requested (group, angle) pairs.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>]</p>
@@ -286,12 +310,6 @@ FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, “angular_flux_t”)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPowerFieldFunction">
-<span class="sig-name descname"><span class="pre">GetPowerFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPowerFieldFunction" title="Link to this definition"></a></dt>
-<dd><p>Returns the power generation field function, if enabled.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPsi">
 <span class="sig-name descname"><span class="pre">GetPsi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetPsi" title="Link to this definition"></a></dt>
 <dd><p>Return psi as a list of NumPy arrays (float64), using zero-copy views into the
@@ -319,14 +337,10 @@ If False, returns all moment field functions for each group.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Flux-moment field functions are allocated lazily.</p>
-<p>The zeroth-moment field function for each group is created eagerly during solver
-initialization, so scalar-flux output is always available.</p>
-<p>Higher-moment field functions are created on demand. Calling
-<code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(only_scalar_flux=False)</span></code> allocates all higher moments
-and initializes them from the current solver state.</p>
-<p>This is a substantial memory saver for typical problems, because most workflows only
-need scalar-flux output and do not need to store field functions for every moment.</p>
+<p>Field functions are created on demand from the current solver state. The solver does
+not retain or continuously update scalar-flux field functions between calls.</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(only_scalar_flux=False)</span></code> creates all requested
+moments from the current <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterate at the time of the call.</p>
 <p>In the nested form (<code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>), the moment index varies fastest
 within each group (inner index = moment, outer index = group).</p>
 </dd></dl>
@@ -785,9 +799,7 @@ groupset. Each dictionary supports:</p>
 <li><p>ags_tolerance: float, default=1.0e-6</p></li>
 <li><p>ags_convergence_check: {‘l2’, ‘pointwise’}, default=’l2’</p></li>
 <li><p>verbose_ags_iterations: bool, default=True</p></li>
-<li><p>power_field_function_on: bool, default=False</p></li>
 <li><p>power_default_kappa: float, default=3.20435e-11</p></li>
-<li><p>power_normalization: float, default=-1.0</p></li>
 <li><p>field_function_prefix_option: {‘prefix’, ‘solver_name’}, default=’prefix’</p></li>
 <li><p>field_function_prefix: str, default=’’</p></li>
 </ul>
