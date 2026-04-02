@@ -97,18 +97,15 @@ public:
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
 
   /**
-   * Create (if needed) and return angular flux field functions for the given groups and angles.
+   * Create angular flux field functions for the given groups and angles.
    *
    * Angles are indices into the groupset quadrature associated with each group.
    */
   std::vector<std::shared_ptr<FieldFunctionGridBased>>
-  GetAngularFluxFieldFunctionList(const std::vector<unsigned int>& groups,
-                                  const std::vector<size_t>& angles);
+  CreateAngularFluxFieldFunctionList(const std::vector<unsigned int>& groups,
+                                     const std::vector<size_t>& angles);
 
   void SetSaveAngularFlux(bool save) override;
-
-  /// Update angular flux field functions from psi_new_local_.
-  void UpdateAngularFieldFunctions();
 
   void SetBoundaryOptions(const InputParameters& params) override;
   void ClearBoundaries() override;
@@ -184,9 +181,12 @@ protected:
   std::vector<std::vector<double>> psi_old_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
 
-  std::map<std::tuple<size_t, size_t, size_t>, size_t> angular_flux_field_functions_local_map_;
-
 private:
+  std::string
+  MakeAngularFieldFunctionName(size_t groupset_id, unsigned int group, size_t angle) const;
+  std::vector<double>
+  ComputeAngularFieldFunctionData(size_t groupset_id, unsigned int group, size_t angle) const;
+
   void CreateAAHD_FLUDSCommonData();
   std::shared_ptr<FLUDS> CreateAAHD_FLUDS(unsigned int num_groups,
                                           std::size_t num_angles,

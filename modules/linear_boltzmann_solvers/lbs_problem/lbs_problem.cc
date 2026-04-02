@@ -521,23 +521,43 @@ LBSProblem::GetNumPhiIterativeUnknowns()
 }
 
 std::shared_ptr<FieldFunctionGridBased>
-LBSProblem::GetScalarFluxFieldFunction(unsigned int g, unsigned int m)
+LBSProblem::CreateScalarFluxFieldFunction(unsigned int g, unsigned int m)
 {
   OpenSnLogicalErrorIf(g >= num_groups_, GetName() + ": Group index out of range.");
   OpenSnLogicalErrorIf(m >= num_moments_, GetName() + ": Moment index out of range.");
 
-  const size_t ff_index = AllocatePhiFieldFunction(g, m);
-  return field_functions_.at(ff_index);
+  auto ff_ptr = CreateEmptyFieldFunction(MakeScalarFluxFieldFunctionName(g, m));
+  ff_ptr->UpdateFieldVector(ComputeScalarFluxFieldFunctionData(g, m));
+  return ff_ptr;
 }
 
 std::shared_ptr<FieldFunctionGridBased>
-LBSProblem::GetPowerFieldFunction() const
+LBSProblem::CreateFieldFunction(const std::string& name,
+                                const std::string& xs_name,
+                                const double power_normalization_target)
 {
-  OpenSnLogicalErrorIf(not options_.power_field_function_on,
-                       GetName() + ": GetPowerFieldFunction called with "
-                                   "options_.power_field_function_on=false.");
+  const std::string ff_name = MakeFieldFunctionName(name);
+  auto ff_ptr = CreateEmptyFieldFunction(ff_name);
 
-  return field_functions_[power_gen_fieldfunc_local_handle_];
+  std::vector<double> data_vector_local;
+  if (xs_name == "power")
+  {
+    double local_total_power = 0.0;
+    data_vector_local = ComputePowerFieldFunctionData(local_total_power);
+  }
+  else
+  {
+    data_vector_local = ComputeXSFieldFunctionData(xs_name);
+  }
+
+  if (power_normalization_target > 0.0)
+  {
+    const double scale_factor = ComputeFieldFunctionPowerScaleFactor(power_normalization_target);
+    Scale(data_vector_local, scale_factor);
+  }
+
+  ff_ptr->UpdateFieldVector(data_vector_local);
+  return ff_ptr;
 }
 
 InputParameters
@@ -584,20 +604,11 @@ LBSProblem::GetOptionsBlock()
                               "`\"l2\"` and '\"pointwise\"'");
   params.AddOptionalParameter(
     "verbose_ags_iterations", true, "Flag to control verbosity of across-groupset iterations.");
-  params.AddOptionalParameter("power_field_function_on",
-                              false,
-                              "Flag to control the creation of the power generation field "
-                              "function. If set to `true` then a field function will be created "
-                              "with the general name <solver_name>_power_generation`.");
   params.AddOptionalParameter("power_default_kappa",
                               3.20435e-11,
                               "Default `kappa` value (Energy released per fission) to use for "
                               "power generation when cross sections do not have `kappa` values. "
                               "Default: 3.20435e-11 Joule (corresponding to 200 MeV per fission).");
-  params.AddOptionalParameter("power_normalization",
-                              -1.0,
-                              "Power normalization factor to use. Supply a negative or zero number "
-                              "to turn this off.");
   params.AddOptionalParameter("field_function_prefix_option",
                               "prefix",
                               "Prefix option on field function names. Default: `\"prefix\"`. Can "
@@ -687,15 +698,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
     {"verbose_outer_iterations",
      [this](const ParameterBlock& spec)
      { options_.verbose_outer_iterations = spec.GetValue<bool>(); }},
-    {"power_field_function_on",
-     [this](const ParameterBlock& spec)
-     { options_.power_field_function_on = spec.GetValue<bool>(); }},
     {"power_default_kappa",
      [this](const ParameterBlock& spec)
      { options_.power_default_kappa = spec.GetValue<double>(); }},
-    {"power_normalization",
-     [this](const ParameterBlock& spec)
-     { options_.power_normalization = spec.GetValue<double>(); }},
     {"field_function_prefix_option",
      [this](const ParameterBlock& spec)
      { options_.field_function_prefix_option = spec.GetValue<std::string>(); }},
@@ -1182,60 +1187,13 @@ LBSProblem::InitializeParrays()
   // Get grid localized communicator set
   grid_local_comm_set_ = grid_->MakeMPILocalCommunicatorSet();
 
-  // Initialize Field Functions
-  InitializeFieldFunctions();
-
   opensn::mpi_comm.barrier();
   log.Log() << "Done with parallel arrays." << std::endl;
 }
 
-void
-LBSProblem::InitializeFieldFunctions()
+std::string
+LBSProblem::MakeFieldFunctionName(const std::string& base_name) const
 {
-  CALI_CXX_MARK_SCOPE("LBSProblem::InitializeFieldFunctions");
-
-  if (not field_functions_.empty())
-    return;
-
-  // Initialize Field Functions for flux moments
-  phi_field_functions_local_map_.clear();
-  field_functions_.reserve(num_groups_ + (options_.power_field_function_on ? 1 : 0));
-
-  // Create only scalar-flux field functions eagerly. Higher moments are created on demand.
-  for (unsigned int g = 0; g < num_groups_; ++g)
-    AllocatePhiFieldFunction(g, 0);
-
-  // Initialize power generation field function
-  if (options_.power_field_function_on)
-  {
-    std::string prefix;
-    if (options_.field_function_prefix_option == "prefix")
-    {
-      prefix = options_.field_function_prefix;
-      if (not prefix.empty())
-        prefix += "_";
-    }
-    if (options_.field_function_prefix_option == "solver_name")
-      prefix = GetName() + "_";
-
-    auto power_ff = std::make_shared<FieldFunctionGridBased>(
-      prefix + "power_generation", discretization_, Unknown(UnknownType::SCALAR));
-
-    field_function_stack.push_back(power_ff);
-    field_functions_.push_back(power_ff);
-
-    power_gen_fieldfunc_local_handle_ = field_functions_.size() - 1;
-  }
-}
-
-size_t
-LBSProblem::AllocatePhiFieldFunction(unsigned int g, unsigned int m)
-{
-  const auto key = std::make_pair(g, m);
-  const auto map_it = phi_field_functions_local_map_.find(key);
-  if (map_it != phi_field_functions_local_map_.end())
-    return map_it->second;
-
   std::string prefix;
   if (options_.field_function_prefix_option == "prefix")
   {
@@ -1246,42 +1204,165 @@ LBSProblem::AllocatePhiFieldFunction(unsigned int g, unsigned int m)
   if (options_.field_function_prefix_option == "solver_name")
     prefix = GetName() + "_";
 
+  return prefix + base_name;
+}
+
+std::string
+LBSProblem::MakeScalarFluxFieldFunctionName(const unsigned int g, const unsigned int m) const
+{
   std::ostringstream oss;
-  oss << prefix << "phi_g" << std::setw(3) << std::setfill('0') << static_cast<int>(g) << "_m"
-      << std::setw(2) << std::setfill('0') << static_cast<int>(m);
+  oss << MakeFieldFunctionName("phi_g") << std::setw(3) << std::setfill('0') << static_cast<int>(g)
+      << "_m" << std::setw(2) << std::setfill('0') << static_cast<int>(m);
+  return oss.str();
+}
 
-  auto group_ff = std::make_shared<FieldFunctionGridBased>(
-    oss.str(), discretization_, Unknown(UnknownType::SCALAR));
+std::shared_ptr<FieldFunctionGridBased>
+LBSProblem::CreateEmptyFieldFunction(const std::string& name) const
+{
+  auto discretization = discretization_;
+  return std::make_shared<FieldFunctionGridBased>(
+    name, discretization, Unknown(UnknownType::SCALAR));
+}
 
-  // Initialize newly-created field functions from the current phi solution so on-demand
-  // allocation after a solve returns up-to-date data immediately.
+std::vector<double>
+LBSProblem::ComputeScalarFluxFieldFunctionData(const unsigned int g, const unsigned int m) const
+{
+  const auto& sdm = *discretization_;
+  const auto& phi_uk_man = flux_moments_uk_man_;
+  std::vector<double> data_vector_local(local_node_count_, 0.0);
+
+  for (const auto& cell : grid_->local_cells)
   {
-    const auto& sdm = *discretization_;
-    const auto& phi_uk_man = flux_moments_uk_man_;
-    std::vector<double> data_vector_local(local_node_count_, 0.0);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    for (const auto& cell : grid_->local_cells)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.GetNumNodes();
-
-      for (size_t i = 0; i < num_nodes; ++i)
-      {
-        const auto imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-        const auto imapB = sdm.MapDOFLocal(cell, i);
-        data_vector_local[imapB] = phi_new_local_[imapA];
-      }
+      const auto imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+      const auto imapB = sdm.MapDOFLocal(cell, i);
+      data_vector_local[imapB] = phi_new_local_[imapA];
     }
-
-    group_ff->UpdateFieldVector(data_vector_local);
   }
 
-  field_function_stack.push_back(group_ff);
-  field_functions_.push_back(group_ff);
+  return data_vector_local;
+}
 
-  const size_t ff_index = field_functions_.size() - 1;
-  phi_field_functions_local_map_[key] = ff_index;
-  return ff_index;
+double
+LBSProblem::ComputeFieldFunctionPowerScaleFactor(const double power_normalization_target) const
+{
+  OpenSnInvalidArgumentIf(power_normalization_target <= 0.0,
+                          GetName() + ": power_normalization_target must be positive.");
+
+  double local_total_power = 0.0;
+  auto power_vector = ComputePowerFieldFunctionData(local_total_power);
+  (void)power_vector;
+
+  double global_total_power = 0.0;
+  mpi_comm.all_reduce(local_total_power, global_total_power, mpi::op::sum<double>());
+  OpenSnLogicalErrorIf(
+    global_total_power <= 0.0,
+    GetName() + ": Power normalization requested, but global total power is non-positive.");
+
+  return power_normalization_target / global_total_power;
+}
+
+const std::vector<double>*
+LBSProblem::GetFieldFunctionCoefficients(const MultiGroupXS& xs, const std::string& xs_name) const
+{
+  if (xs_name == "sigma_t")
+    return &xs.GetSigmaTotal();
+  if (xs_name == "sigma_a")
+    return &xs.GetSigmaAbsorption();
+  if (xs_name == "sigma_f")
+    return xs.GetSigmaFission().empty() ? nullptr : &xs.GetSigmaFission();
+  if (xs_name == "nu_sigma_f")
+    return xs.GetNuSigmaF().empty() ? nullptr : &xs.GetNuSigmaF();
+  if (xs_name == "chi")
+    return xs.GetChi().empty() ? nullptr : &xs.GetChi();
+  if (xs_name == "inv_velocity")
+    return xs.GetInverseVelocity().empty() ? nullptr : &xs.GetInverseVelocity();
+  if (xs.HasCustomXS(xs_name))
+    return &xs.GetCustomXS(xs_name);
+
+  throw std::logic_error(GetName() + ": Unknown 1D cross section \"" + xs_name +
+                         "\" requested for field function generation.");
+}
+
+std::vector<double>
+LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
+{
+  const auto& sdm = *discretization_;
+  const auto& phi_uk_man = flux_moments_uk_man_;
+  std::vector<double> data_vector_local(local_node_count_, 0.0);
+
+  for (const auto& cell : grid_->local_cells)
+  {
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto& xs = block_id_to_xs_map_.at(cell.block_id);
+    const auto* coeffs = GetFieldFunctionCoefficients(*xs, xs_name);
+
+    if (coeffs == nullptr)
+      continue;
+
+    OpenSnLogicalErrorIf(coeffs->size() != num_groups_,
+                         GetName() + ": 1D cross section \"" + xs_name +
+                           "\" has incompatible group size for field function generation.");
+
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+      const auto imapA = sdm.MapDOFLocal(cell, i);
+      const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+
+      double nodal_value = 0.0;
+      for (unsigned int g = 0; g < num_groups_; ++g)
+        nodal_value += coeffs->at(g) * phi_new_local_[imapB + g];
+
+      data_vector_local[imapA] = nodal_value;
+    }
+  }
+
+  return data_vector_local;
+}
+
+std::vector<double>
+LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
+{
+  const auto& sdm = *discretization_;
+  const auto& phi_uk_man = flux_moments_uk_man_;
+  std::vector<double> data_vector_power_local(local_node_count_, 0.0);
+  local_total_power = 0.0;
+
+  for (const auto& cell : grid_->local_cells)
+  {
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const size_t num_nodes = cell_mapping.GetNumNodes();
+
+    const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
+    const auto& xs = block_id_to_xs_map_.at(cell.block_id);
+
+    if (not xs->IsFissionable())
+      continue;
+
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+      const auto imapA = sdm.MapDOFLocal(cell, i);
+      const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+
+      double nodal_power = 0.0;
+      for (unsigned int g = 0; g < num_groups_; ++g)
+      {
+        const double sigma_fg = xs->GetSigmaFission()[g];
+        const double kappa_g = options_.power_default_kappa;
+        nodal_power += kappa_g * sigma_fg * phi_new_local_[imapB + g];
+      }
+
+      data_vector_power_local[imapA] = nodal_power;
+      local_total_power += nodal_power * Vi(i);
+    }
+  }
+
+  return data_vector_power_local;
 }
 
 void
@@ -1329,166 +1410,6 @@ LBSProblem::MakeSourceMomentsFromPhi()
   }
 
   return source_moments;
-}
-
-void
-LBSProblem::UpdateFieldFunctions()
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::UpdateFieldFunctions");
-
-  const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
-
-  // Update flux moments
-  for (const auto& [g_and_m, ff_index] : phi_field_functions_local_map_)
-  {
-    const auto g = g_and_m.first;
-    const auto m = g_and_m.second;
-
-    std::vector<double> data_vector_local(local_node_count_, 0.0);
-
-    for (const auto& cell : grid_->local_cells)
-    {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.GetNumNodes();
-
-      for (size_t i = 0; i < num_nodes; ++i)
-      {
-        const auto imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-        const auto imapB = sdm.MapDOFLocal(cell, i);
-
-        data_vector_local[imapB] = phi_new_local_[imapA];
-      } // for node
-    } // for cell
-
-    auto& ff_ptr = field_functions_.at(ff_index);
-    ff_ptr->UpdateFieldVector(data_vector_local);
-  }
-
-  // Update power generation and scalar flux
-  if (options_.power_field_function_on)
-  {
-    std::vector<double> data_vector_power_local(local_node_count_, 0.0);
-
-    double local_total_power = 0.0;
-    for (const auto& cell : grid_->local_cells)
-    {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t num_nodes = cell_mapping.GetNumNodes();
-
-      const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
-
-      const auto& xs = block_id_to_xs_map_.at(cell.block_id);
-
-      if (not xs->IsFissionable())
-        continue;
-
-      for (size_t i = 0; i < num_nodes; ++i)
-      {
-        const auto imapA = sdm.MapDOFLocal(cell, i);
-        const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
-
-        double nodal_power = 0.0;
-        for (unsigned int g = 0; g < num_groups_; ++g)
-        {
-          const double sigma_fg = xs->GetSigmaFission()[g];
-          // const double kappa_g = xs->Kappa()[g];
-          const double kappa_g = options_.power_default_kappa;
-
-          nodal_power += kappa_g * sigma_fg * phi_new_local_[imapB + g];
-        } // for g
-
-        data_vector_power_local[imapA] = nodal_power;
-        local_total_power += nodal_power * Vi(i);
-      } // for node
-    } // for cell
-
-    double scale_factor = 1.0;
-    if (options_.power_normalization > 0.0)
-    {
-      double global_total_power = 0.0;
-      mpi_comm.all_reduce(local_total_power, global_total_power, mpi::op::sum<double>());
-      OpenSnLogicalErrorIf(
-        global_total_power <= 0.0,
-        GetName() + ": Power normalization requested, but global total power is non-positive.");
-      scale_factor = options_.power_normalization / global_total_power;
-      Scale(data_vector_power_local, scale_factor);
-    }
-
-    const size_t ff_index = power_gen_fieldfunc_local_handle_;
-
-    auto& ff_ptr = field_functions_.at(ff_index);
-    ff_ptr->UpdateFieldVector(data_vector_power_local);
-
-    // scale scalar flux if neccessary
-    if (scale_factor != 1.0)
-    {
-      for (unsigned int g = 0; g < num_groups_; ++g)
-      {
-        const size_t phi_ff_index = phi_field_functions_local_map_.at({g, size_t{0}});
-        auto& phi_ff_ptr = field_functions_.at(phi_ff_index);
-        const auto& phi_vec = phi_ff_ptr->GetLocalFieldVector();
-        std::vector<double> phi_scaled(phi_vec.begin(), phi_vec.end());
-        Scale(phi_scaled, scale_factor);
-        phi_ff_ptr->UpdateFieldVector(phi_scaled);
-      }
-    }
-  } // if power enabled
-}
-
-void
-LBSProblem::SetPhiFromFieldFunctions(PhiSTLOption which_phi,
-                                     const std::vector<unsigned int>& m_indices,
-                                     const std::vector<unsigned int>& g_indices)
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::SetPhiFromFieldFunctions");
-
-  std::vector<unsigned int> m_ids_to_copy = m_indices;
-  std::vector<unsigned int> g_ids_to_copy = g_indices;
-  if (m_indices.empty())
-    for (unsigned int m = 0; m < num_moments_; ++m)
-      m_ids_to_copy.push_back(m);
-  if (g_ids_to_copy.empty())
-    for (unsigned int g = 0; g < num_groups_; ++g)
-      g_ids_to_copy.push_back(g);
-
-  const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
-
-  for (const auto m : m_ids_to_copy)
-  {
-    for (const auto g : g_ids_to_copy)
-    {
-      const auto key = std::make_pair(g, m);
-      const auto ff_it = phi_field_functions_local_map_.find(key);
-      OpenSnLogicalErrorIf(ff_it == phi_field_functions_local_map_.end(),
-                           GetName() +
-                             ": SetPhiFromFieldFunctions requested field function "
-                             "for group=" +
-                             std::to_string(g) + " moment=" + std::to_string(m) +
-                             " but it has not been allocated.");
-      const size_t ff_index = ff_it->second;
-      const auto& ff_ptr = field_functions_.at(ff_index);
-      const auto& ff_data = ff_ptr->GetLocalFieldVector();
-
-      for (const auto& cell : grid_->local_cells)
-      {
-        const auto& cell_mapping = sdm.GetCellMapping(cell);
-        const size_t num_nodes = cell_mapping.GetNumNodes();
-
-        for (size_t i = 0; i < num_nodes; ++i)
-        {
-          const auto imapA = sdm.MapDOFLocal(cell, i);
-          const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-
-          if (which_phi == PhiSTLOption::PHI_OLD)
-            phi_old_local_[imapB] = ff_data[imapA];
-          else if (which_phi == PhiSTLOption::PHI_NEW)
-            phi_new_local_[imapB] = ff_data[imapA];
-        } // for node
-      } // for cell
-    } // for g
-  } // for m
 }
 
 LBSProblem::~LBSProblem()

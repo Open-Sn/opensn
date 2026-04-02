@@ -111,7 +111,6 @@ NonLinearKEigenSolver::Execute()
     do_problem_->ScalePrecursors(1.0 / nl_context_->kresid_func_context.k_eff);
   }
 
-  do_problem_->UpdateFieldFunctions();
   if (IsBalanceEnabled())
   {
     ComputeBalance(*do_problem_, 1.0 / nl_context_->kresid_func_context.k_eff);

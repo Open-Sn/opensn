@@ -71,7 +71,6 @@ if __name__ == "__main__":
         options={"save_angular_flux": True},
     )
 
-    fflist = phys.GetScalarFluxFieldFunction()
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
     dt = 0.01
     theta_cn = 0.5
@@ -92,6 +91,7 @@ if __name__ == "__main__":
         solver.SetTheta(theta_step)
         solver.Advance()
         current_time = target_time
+        fflist = phys.GetScalarFluxFieldFunction()
 
         field_interp = FieldFunctionInterpolationVolume()
         field_interp.SetOperationType("max")
