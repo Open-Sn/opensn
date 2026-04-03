@@ -380,8 +380,6 @@ private:
   std::string MakeScalarFluxFieldFunctionName(unsigned int g, unsigned int m) const;
   std::vector<double> ComputeScalarFluxFieldFunctionData(unsigned int g, unsigned int m) const;
   double ComputeFieldFunctionPowerScaleFactor(double power_normalization_target) const;
-  const std::vector<double>* GetFieldFunctionCoefficients(const MultiGroupXS& xs,
-                                                          const std::string& xs_name) const;
   std::vector<double> ComputeXSFieldFunctionData(const std::string& xs_name) const;
   std::vector<double> ComputePowerFieldFunctionData(double& local_total_power) const;
   /// Initializes data carriers to GPUs and memory pinner.
