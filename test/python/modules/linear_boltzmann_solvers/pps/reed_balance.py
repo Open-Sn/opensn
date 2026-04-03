@@ -254,3 +254,41 @@ if __name__ == "__main__":
     int = pps_cmb_int.GetValue()
     assert math.isclose(int[0][0], 0.487160661, rel_tol=1e-8)
     assert math.isclose(int[1][0], 0.204639072, rel_tol=1e-8)
+
+    # Over the comadin using XS multipliers
+    pps_whole_min_xs = VolumePostprocessor(
+        problem=phys,
+        value_type="min",
+        xs_multiplier="sigma_t"
+    )
+    pps_whole_min_xs.Execute()
+
+    pps_whole_max_xs = VolumePostprocessor(
+        problem=phys,
+        value_type="max",
+        xs_multiplier="sigma_t"
+    )
+    pps_whole_max_xs.Execute()
+
+    pps_whole_avg_xs = VolumePostprocessor(
+        problem=phys,
+        value_type="avg",
+        xs_multiplier="sigma_t"
+    )
+    pps_whole_avg_xs.Execute()
+
+    pps_whole_int_xs = VolumePostprocessor(
+        problem=phys,
+        value_type="integral",
+        xs_multiplier="sigma_t"
+    )
+    pps_whole_int_xs.Execute()
+
+    min = pps_whole_min_xs.GetValue()[0]
+    assert math.isclose(min[0], 0.0, rel_tol=1e-8)
+    max = pps_whole_max_xs.GetValue()[0]
+    assert math.isclose(max[0], 49.99999999, rel_tol=1e-8)
+    avg = pps_whole_avg_xs.GetValue()[0]
+    assert math.isclose(avg[0], 12.94967616, rel_tol=1e-8)
+    int = pps_whole_int_xs.GetValue()[0]
+    assert math.isclose(int[0], 103.59740933, rel_tol=1e-8)
