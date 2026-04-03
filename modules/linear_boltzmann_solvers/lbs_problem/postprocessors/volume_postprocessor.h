@@ -34,6 +34,7 @@ private:
   void CreateEnergyRestriction();
   void CreateMultipliers();
   std::vector<std::uint32_t> GetLogicalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol);
+  const std::vector<double>& GetCoefficients(const Cell& cell);
 
   std::shared_ptr<LBSProblem> lbs_problem_;
   /// Block IDs this postprocessor is restricted to
@@ -56,6 +57,8 @@ private:
   std::optional<double> const_multiplier_;
   /// Group-wise multipliers
   std::optional<std::vector<double>> group_multipliers_;
+  ///
+  std::optional<std::string> xs_multiplier_;
   /// Multiplier applied group-wise
   std::vector<double> multipliers_;
 

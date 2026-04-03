@@ -38,6 +38,7 @@ VolumePostprocessor::GetInputParameters()
   params.AddOptionalParameter("multiplier", 1., "Constant multiplier.");
   params.AddOptionalParameterArray(
     "group_multipliers", std::vector<double>{}, "Group multipliers, one per group.");
+  params.AddOptionalParameter("xs_multiplier", "", "Cross-sections multiplier.");
 
   params.ConstrainParameterRange("value_type",
                                  AllowableRangeList::New({"integral", "max", "min", "avg"}));
@@ -68,7 +69,10 @@ VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
     group_multipliers_(
       params.IsParameterValid("group_multipliers")
         ? std::make_optional(params.GetParamVectorValue<double>("group_multipliers"))
-        : std::nullopt)
+        : std::nullopt),
+    xs_multiplier_(params.IsParameterValid("xs_multiplier")
+                     ? std::make_optional(params.GetParamValue<std::string>("xs_multiplier"))
+                     : std::nullopt)
 {
   if (selected_group_.has_value() && selected_groupset_.has_value())
     throw std::invalid_argument("'group' and 'groupset' cannot be specified together");
@@ -142,23 +146,30 @@ VolumePostprocessor::CreateSpatialRestriction()
 void
 VolumePostprocessor::CreateMultipliers()
 {
-  if (not const_multiplier_.has_value() and not group_multipliers_.has_value())
+  auto n_groups = lbs_problem_->GetNumGroups();
+
+  if (not const_multiplier_.has_value() and not group_multipliers_.has_value() and
+      not xs_multiplier_.has_value())
   {
-    multipliers_ = std::vector<double>(groups_.size(), 1.);
+    multipliers_ = std::vector<double>(n_groups, 1.);
   }
-  else if (const_multiplier_.has_value() and not group_multipliers_.has_value())
+  else if (const_multiplier_.has_value() and not group_multipliers_.has_value() and
+           not xs_multiplier_.has_value())
   {
-    multipliers_ = std::vector<double>(groups_.size(), const_multiplier_.value());
+    multipliers_ = std::vector<double>(n_groups, const_multiplier_.value());
   }
-  else if (not const_multiplier_.has_value() and group_multipliers_.has_value())
+  else if (not const_multiplier_.has_value() and group_multipliers_.has_value() and
+           not xs_multiplier_.has_value())
   {
-    OpenSnInvalidArgumentIf(group_multipliers_.value().size() != lbs_problem_->GetNumGroups(),
+    OpenSnInvalidArgumentIf(group_multipliers_.value().size() != n_groups,
                             "Must provide one multiplier per group");
-    multipliers_.resize(groups_.size());
-    for (std::size_t i = 0; i < groups_.size(); i++)
-    {
-      multipliers_[i] = group_multipliers_.value()[groups_[i]];
-    }
+    multipliers_ = group_multipliers_.value();
+  }
+  else if (not const_multiplier_.has_value() and not group_multipliers_.has_value() and
+           xs_multiplier_.has_value())
+  {
+    // do nothing, the actual values will be pulled from xs object during the post-processor
+    // computation
   }
   else
     throw std::logic_error("Can specify either 'multiplier' or 'group_multipliers', not both.");
@@ -237,6 +248,25 @@ VolumePostprocessor::Execute()
   }
 }
 
+const std::vector<double>&
+VolumePostprocessor::GetCoefficients(const Cell& cell)
+{
+  if (xs_multiplier_.has_value())
+  {
+    const auto blk_id = cell.block_id;
+    const auto xs_map = lbs_problem_->GetBlockID2XSMap();
+    const auto& xs = xs_map.at(blk_id);
+    const auto* coeffs = xs->GetByName(xs_multiplier_.value());
+    if (coeffs == nullptr)
+      throw std::runtime_error("Requested cross-section name does not exist.");
+    return *coeffs;
+  }
+  else
+  {
+    return multipliers_;
+  }
+}
+
 std::vector<double>
 VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids)
 {
@@ -253,6 +283,7 @@ VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
+    const auto& coeffs = GetCoefficients(cell);
 
     for (std::size_t k = 0; k < groups_.size(); ++k)
     {
@@ -270,7 +301,7 @@ VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids
           phi_h += fe_vol_data.ShapeValue(j, qp) * nodal_value[j];
 
         local_integral[k] +=
-          multipliers_[k] * phi_h * coord(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);
+          coeffs[groups_[k]] * phi_h * coord(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);
       }
     }
   }
@@ -296,13 +327,14 @@ VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
     const auto& cell = grid->local_cells[cell_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
+    const auto& coeffs = GetCoefficients(cell);
 
     for (std::size_t k = 0; k < groups_.size(); ++k)
     {
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
         const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
-        local_max[k] = std::max(local_max[k], multipliers_[k] * phi[imap]);
+        local_max[k] = std::max(local_max[k], coeffs[groups_[k]] * phi[imap]);
       }
     }
   }
@@ -328,13 +360,14 @@ VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
     const auto& cell = grid->local_cells[cell_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
+    const auto& coeffs = GetCoefficients(cell);
 
     for (std::size_t k = 0; k < groups_.size(); ++k)
     {
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
         const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
-        local_min[k] = std::min(local_min[k], multipliers_[k] * phi[imap]);
+        local_min[k] = std::min(local_min[k], coeffs[groups_[k]] * phi[imap]);
       }
     }
   }
@@ -361,6 +394,7 @@ VolumePostprocessor::ComputeVolumeWeightedAverage(const std::vector<uint32_t>& c
     const auto& cell = grid->local_cells[cell_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
+    const auto& coeffs = GetCoefficients(cell);
 
     for (const std::size_t qp : fe_vol_data.GetQuadraturePointIndices())
       local_weighted_volume += coord(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);
