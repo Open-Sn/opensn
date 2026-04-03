@@ -36,8 +36,15 @@ NLKEigenvalueAGSSolver::PreSetupCallback()
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& lbs_problem = nl_context_ptr->lbs_problem;
+  nl_context_ptr->groupset_ids.clear();
   for (const auto& groupset : lbs_problem->GetGroupsets())
+  {
+    if ((groupset.apply_wgdsa or groupset.apply_tgdsa) and lbs_problem->GetNumGroupsets() > 1)
+      throw std::logic_error(
+        std::string(__PRETTY_FUNCTION__) +
+        ": Preconditioning currently only supports single groupset simulations.");
     nl_context_ptr->groupset_ids.push_back(groupset.id);
+  }
 }
 
 void
@@ -117,9 +124,11 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   // Unpack solution
   LBSVecOps::SetPrimarySTLvectorFromGroupScopedPETScVec(
     *lbs_problem, 0, lbs_problem->GetNumGroups() - 1, x_, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetPrimarySTLvectorFromGroupScopedPETScVec(
+    *lbs_problem, 0, lbs_problem->GetNumGroups() - 1, x_, PhiSTLOption::PHI_OLD);
 
   // Compute final k_eff
-  double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
+  double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiNewLocal());
 
   PetscInt number_of_func_evals = 0;
   OpenSnPETScCall(SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals));

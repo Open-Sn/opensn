@@ -59,14 +59,14 @@ ComputePointwisePhiChange(
         auto gsi = groupset.first_group;
         for (unsigned int g = 0; g < groupset.GetNumGroups(); ++g)
         {
-          auto m0g_idx = transport_view.MapDOF(i, 0, gsi + g);
-          double max_phi = std::max(fabs(phi_new[m0g_idx]), fabs(phi_old[m0g_idx]));
           for (unsigned int m = 0; m < num_moments; ++m)
           {
             auto mng_idx = transport_view.MapDOF(i, m, gsi + g);
             double delta_phi = std::fabs(phi_new[mng_idx] - phi_old[mng_idx]);
-            if (max_phi >= std::numeric_limits<double>::min())
-              pw_change = std::max(delta_phi / max_phi, pw_change);
+            const double max_moment =
+              std::max(std::fabs(phi_new[mng_idx]), std::fabs(phi_old[mng_idx]));
+            if (max_moment >= std::numeric_limits<double>::min())
+              pw_change = std::max(delta_phi / max_moment, pw_change);
             else
               pw_change = std::max(delta_phi, pw_change);
           } // for m

@@ -120,6 +120,7 @@ PETScLinearSolver::PostSolveCallback()
 void
 PETScLinearSolver::Solve()
 {
+  suppress_kspsolve_ = false;
   PreSolveCallback();
   SetInitialGuess();
   SetRHS();

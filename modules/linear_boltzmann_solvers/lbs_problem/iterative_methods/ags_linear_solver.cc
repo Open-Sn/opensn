@@ -22,7 +22,7 @@ AGSLinearSolver::Solve()
   const bool does_ags_iterations = max_iterations_ > 1;
   const bool print_ags_stats = verbose_ and is_multi_groupset and does_ags_iterations;
 
-  std::fill(phi_old_.begin(), phi_old_.end(), 0.0);
+  phi_old_ = lbs_problem_.GetPhiOldLocal();
 
   // Save qmoms to be restored after each iteration. This is necessary for multiple ags iterations
   // to function and for keigen-value problems

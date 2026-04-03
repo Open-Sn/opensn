@@ -26,6 +26,17 @@ ClassicRichardson::ClassicRichardson(const std::shared_ptr<WGSContext>& gs_conte
 }
 
 void
+ClassicRichardson::SyncLaggedStateToLatestIterate(WGSContext& gs_context)
+{
+  auto& do_problem = gs_context.do_problem;
+  auto& groupset = gs_context.groupset;
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(
+    do_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
+  groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi_new_);
+  psi_old_ = psi_new_;
+}
+
+void
 ClassicRichardson::Solve()
 {
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
@@ -36,7 +47,7 @@ ClassicRichardson::Solve()
   auto& do_problem = gs_context_ptr->do_problem;
   const auto scope = gs_context_ptr->lhs_src_scope | gs_context_ptr->rhs_src_scope;
   saved_q_moments_local_ = do_problem.GetQMomentsLocal();
-  psi_old_.resize(groupset.angle_agg->GetNumDelayedAngularDOFs().first, 0.0);
+  psi_old_ = groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
 
   double pw_phi_change_prev = 1.0;
   bool converged = false;
@@ -84,12 +95,7 @@ ClassicRichardson::Solve()
       converged = true;
     }
     else
-    {
-      LBSVecOps::GSScopedCopyPrimarySTLvectors(
-        do_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
-      groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi_new_);
-      psi_old_ = psi_new_;
-    }
+      SyncLaggedStateToLatestIterate(*gs_context_ptr);
 
     if (verbose_)
     {
@@ -104,10 +110,15 @@ ClassicRichardson::Solve()
       {
         iter_stats << " CONVERGED";
         log.Log() << iter_stats.str();
-        break;
       }
       else
         log.Log() << iter_stats.str();
+    }
+
+    if (converged)
+    {
+      SyncLaggedStateToLatestIterate(*gs_context_ptr);
+      break;
     }
   }
 

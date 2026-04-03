@@ -16,7 +16,6 @@ namespace opensn
 PetscErrorCode
 NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
-  const std::string fname = "SNESKResidualFunction";
   auto& function_context = *static_cast<KResidualFunctionContext*>(ctx);
 
   NLKEigenAGSContext* nl_context_ptr = nullptr;
@@ -28,9 +27,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   auto active_set_source_function = lbs_problem->GetActiveSetSourceFunction();
 
-  std::vector<unsigned int> groupset_ids;
-  for (const auto& groupset : lbs_problem->GetGroupsets())
-    groupset_ids.push_back(groupset.id);
+  const auto& groupset_ids = nl_context_ptr->groupset_ids;
 
   // Disassemble phi vector
   LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(
@@ -79,10 +76,6 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 
   for (const auto& groupset : lbs_problem->GetGroupsets())
   {
-    if ((groupset.apply_wgdsa or groupset.apply_tgdsa) and lbs_problem->GetNumGroupsets() > 1)
-      throw std::logic_error(fname + ": Preconditioning currently only supports"
-                                     "single groupset simulations.");
-
     auto& wgs_context = lbs_problem->GetWGSContext(groupset.id);
     WGDSA_TGDSA_PreConditionerMult2(wgs_context, r, r);
   }

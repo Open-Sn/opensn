@@ -34,6 +34,8 @@ private:
   bool verbose_;
   std::vector<double> saved_q_moments_local_;
   std::vector<double> psi_new_, psi_old_;
+
+  void SyncLaggedStateToLatestIterate(WGSContext& gs_context);
 };
 
 } // namespace opensn
