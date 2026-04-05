@@ -23,7 +23,7 @@ public:
 
   ~FieldFunctionInterpolationLine() override = default;
 
-  int& GetNumberOfPoints() { return number_of_points_; }
+  int GetNumberOfPoints() const { return number_of_points_; }
 
   void SetNumberOfPoints(int number) { number_of_points_ = number; }
 
@@ -35,11 +35,9 @@ public:
 
   void SetFinalPoint(const Vector3& point) { pf_ = point; }
 
-  void Initialize() override;
-
   void Execute() override;
 
-  FieldFunctionInterpolationOperation& GetOperationType() { return op_type_; }
+  FieldFunctionInterpolationOperation GetOperationType() const { return op_type_; }
 
   void SetOperationType(FieldFunctionInterpolationOperation type) { op_type_ = type; }
 
@@ -48,6 +46,8 @@ public:
   void ExportToCSV(std::string base_name) const override;
 
 private:
+  void RebuildLineLocationData();
+
   int number_of_points_;
   double op_value_;
   Vector3 pi_, pf_;

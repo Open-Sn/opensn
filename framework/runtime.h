@@ -19,10 +19,6 @@ namespace opensn
 
 static const std::string program = "OpenSn";
 
-class FieldFunctionInterpolation;
-class Solver;
-class FieldFunction;
-class SpatialDiscretization;
 class Timer;
 class Logger;
 
@@ -34,10 +30,6 @@ extern std::string cali_config;
 extern cali::ConfigManager cali_mgr;
 extern bool suppress_color;
 extern std::filesystem::path input_path;
-
-/// Global stack of handlers
-extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
-extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 
 /// Initializes all necessary items
 int Initialize();

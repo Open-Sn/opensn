@@ -144,8 +144,14 @@ WrapLBS(py::module& slv)
     Field functions are created on demand from the current solver state. The solver does
     not retain or continuously update scalar-flux field functions between calls.
 
+    These returned field functions are snapshots. If the solver state changes,
+    previously returned field functions are not refreshed in place.
+
     Calling ``GetScalarFluxFieldFunction(only_scalar_flux=False)`` creates all requested
     moments from the current ``phi`` iterate at the time of the call.
+
+    To obtain field functions from a newer solver state, call
+    ``GetScalarFluxFieldFunction(...)`` again.
 
     In the nested form (``only_scalar_flux=False``), the moment index varies fastest
     within each group (inner index = moment, outer index = group).
@@ -173,6 +179,12 @@ WrapLBS(py::module& slv)
     -----
     The returned field function is created on demand from the current scalar-flux iterate.
     For ordinary XS names this computes ``sum_g xs[g] * phi_g`` at each node.
+
+    The returned field function is a snapshot. If the solver state changes,
+    call ``CreateFieldFunction(...)`` again to obtain a new field function.
+
+    To obtain a field function from a newer solver state, call
+    ``CreateFieldFunction(...)`` again.
 
     If ``xs_name == "power"``, the same power-generation formula used elsewhere by the solver
     is applied on demand.
@@ -937,7 +949,18 @@ WrapLBS(py::module& slv)
     Returns
     -------
     List[pyopensn.fieldfunc.FieldFunctionGridBased]
-        Field-function snapshots for the requested (group, angle) pairs.
+        Field functions for the requested (group, angle) pairs.
+
+    Notes
+    -----
+    Field functions are created on demand from the currently stored angular flux. The solver does
+    not retain or continuously update angular field functions between calls.
+
+    The returned field functions are snapshots. If the solver state changes,
+    previously returned angular field functions are not refreshed in place.
+
+    To obtain angular field functions from a newer solver state, call
+    ``GetAngularFieldFunctionList(...)`` again.
     )",
     py::arg("groups"),
     py::arg("angles")

@@ -10,7 +10,9 @@
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
+#include "framework/utils/error.h"
 #include "framework/runtime.h"
+#include <limits>
 #include <petsc.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkCellData.h>
@@ -187,10 +189,17 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
   // Communicate number of point hits
   size_t global_num_point_hits = 0;
   mpi_comm.all_reduce(local_num_point_hits, global_num_point_hits, mpi::op::sum<size_t>());
+  OpenSnLogicalErrorIf(global_num_point_hits == 0,
+                       "FieldFunctionGridBased::GetPointValue: No cell identified containing "
+                       "the specified point.");
 
   std::vector<double> global_point_value(num_components, 0.0);
+  OpenSnLogicalErrorIf(num_components > static_cast<size_t>(std::numeric_limits<int>::max()),
+                       "FieldFunctionGridBased::GetPointValue: Number of components exceeds "
+                       "MPI reduction count limit.");
+  const auto point_value_size = static_cast<int>(num_components);
   mpi_comm.all_reduce(
-    local_point_value.data(), 1, global_point_value.data(), mpi::op::sum<double>());
+    local_point_value.data(), point_value_size, global_point_value.data(), mpi::op::sum<double>());
 
   Scale(global_point_value, 1.0 / static_cast<double>(global_num_point_hits));
 

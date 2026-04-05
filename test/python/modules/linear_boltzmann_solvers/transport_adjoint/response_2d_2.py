@@ -109,7 +109,6 @@ if __name__ == "__main__":
     ffi.SetOperationType("sum")  # Using a sum operation (corresponding to OP_SUM)
     ffi.SetLogicalVolume(qoi_vol)
     ffi.AddFieldFunction(ff_m0)
-    ffi.Initialize()
     ffi.Execute()
     fwd_qoi = ffi.GetValue()
 

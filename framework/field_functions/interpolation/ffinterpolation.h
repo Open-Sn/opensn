@@ -5,7 +5,6 @@
 
 #include <memory>
 #include <stdexcept>
-#include <vector>
 #include <string>
 #include <cstdint>
 
@@ -62,23 +61,30 @@ public:
 
   virtual ~FieldFunctionInterpolation() = default;
 
-  std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions()
+  void ClearFieldFunctions() { field_function_.reset(); }
+
+  void SetFieldFunction(std::shared_ptr<FieldFunction> ff)
   {
-    return field_functions_;
+    ClearFieldFunctions();
+    AddFieldFunction(std::move(ff));
   }
 
   void AddFieldFunction(std::shared_ptr<FieldFunction> ff)
   {
     auto gbff = std::dynamic_pointer_cast<FieldFunctionGridBased>(ff);
     if (gbff)
-      field_functions_.push_back(gbff);
+    {
+      if (field_function_)
+        throw std::runtime_error(
+          "FieldFunctionInterpolation currently supports exactly one field function. "
+          "Use SetFieldFunction to replace it or ClearFieldFunctions before adding another.");
+      field_function_ = std::move(gbff);
+    }
     else
       throw std::runtime_error("Expected FieldFunctionGridBased field function");
   }
 
   FieldFunctionInterpolationType Type() const { return type_; }
-
-  virtual void Initialize() {};
 
   virtual void Execute() {};
 
@@ -89,7 +95,7 @@ public:
 protected:
   FieldFunctionInterpolationType type_;
   unsigned int ref_component_;
-  std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
+  std::shared_ptr<FieldFunctionGridBased> field_function_;
 };
 
 } // namespace opensn

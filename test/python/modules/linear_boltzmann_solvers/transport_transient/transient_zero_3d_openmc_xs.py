@@ -97,7 +97,6 @@ if __name__ == "__main__":
         field_interp.SetOperationType("max")
         field_interp.SetLogicalVolume(monitor_volume)
         field_interp.AddFieldFunction(fflist[3])
-        field_interp.Initialize()
         field_interp.Execute()
         flux_max = field_interp.GetValue()
         step += 1

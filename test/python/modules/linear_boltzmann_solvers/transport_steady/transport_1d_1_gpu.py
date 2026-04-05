@@ -115,7 +115,6 @@ if __name__ == "__main__":
     cline.SetFinalPoint(Vector3(0.0, 0.0, 29.999 + xmin))
     cline.SetNumberOfPoints(50)
     cline.AddFieldFunction(fflist[164][0])
-    cline.Initialize()
     cline.Execute()
 
     # Volume integrations
@@ -125,7 +124,6 @@ if __name__ == "__main__":
     curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
     curffi.AddFieldFunction(fflist[0][0])
-    curffi.Initialize()
     curffi.Execute()
     maxval = curffi.GetValue()
     if rank == 0:
@@ -136,7 +134,6 @@ if __name__ == "__main__":
     curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
     curffi.AddFieldFunction(fflist[159][0])
-    curffi.Initialize()
     curffi.Execute()
     maxval = curffi.GetValue()
     if rank == 0:

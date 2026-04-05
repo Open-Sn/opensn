@@ -9,7 +9,6 @@
 
 namespace opensn
 {
-class FieldFunctionGridBased;
 class TimeStepper;
 
 class Problem
@@ -21,10 +20,6 @@ public:
 
   std::string GetName() const;
 
-  std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions();
-
-  const std::vector<std::shared_ptr<FieldFunctionGridBased>>& GetFieldFunctions() const;
-
   /// Initialize function.
   virtual void Initialize();
 
@@ -35,9 +30,6 @@ public:
 
   /// PreCheck call to GetInfo.
   ParameterBlock GetInfoWithPreCheck(const ParameterBlock& params) const;
-
-protected:
-  std::vector<std::shared_ptr<FieldFunctionGridBased>> field_functions_;
 
 private:
   const std::string name_;

@@ -122,7 +122,6 @@ if __name__ == "__main__":
     ffi1.SetOperationType("max")
     ffi1.SetLogicalVolume(vol0)
     ffi1.AddFieldFunction(fflist[0])
-    ffi1.Initialize()
     ffi1.Execute()
     maxval = ffi1.GetValue()
     if rank == 0:
@@ -132,7 +131,6 @@ if __name__ == "__main__":
     ffi1.SetOperationType("max")
     ffi1.SetLogicalVolume(vol0)
     ffi1.AddFieldFunction(fflist[19])
-    ffi1.Initialize()
     ffi1.Execute()
     maxval = ffi1.GetValue()
     if rank == 0:

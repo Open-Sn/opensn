@@ -79,7 +79,6 @@ if __name__ == "__main__":
     ffi_max.SetOperationType("max")
     ffi_max.SetLogicalVolume(vol)
     ffi_max.AddFieldFunction(ff)
-    ffi_max.Initialize()
     ffi_max.Execute()
     phi_max = ffi_max.GetValue()
 

@@ -125,7 +125,6 @@ if __name__ == "__main__":
         ffi.SetOperationType("sum")  # OP_SUM operation
         ffi.SetLogicalVolume(qoi_vol)
         ffi.AddFieldFunction(ff)
-        ffi.Initialize()
         ffi.Execute()
         value = ffi.GetValue()
         fwd_qois.append(value)

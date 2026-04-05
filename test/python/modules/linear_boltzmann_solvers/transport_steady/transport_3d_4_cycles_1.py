@@ -113,7 +113,6 @@ if __name__ == "__main__":
     curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
     curffi.AddFieldFunction(fflist[0])
-    curffi.Initialize()
     curffi.Execute()
     maxval = curffi.GetValue()
     if rank == 0:
@@ -124,7 +123,6 @@ if __name__ == "__main__":
     curffi.SetOperationType("max")
     curffi.SetLogicalVolume(vol0)
     curffi.AddFieldFunction(fflist[19])
-    curffi.Initialize()
     curffi.Execute()
     maxval = curffi.GetValue()
     if rank == 0:
@@ -135,5 +133,4 @@ if __name__ == "__main__":
     line.SetFinalPoint(Vector3(0.0, 1.0, 0.5))
     line.SetNumberOfPoints(1000)
     line.AddFieldFunction(fflist[1])
-    line.Initialize()
     line.Execute()

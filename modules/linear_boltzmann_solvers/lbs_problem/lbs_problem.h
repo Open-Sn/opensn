@@ -27,6 +27,7 @@ class GridFaceHistogram;
 class AGSLinearSolver;
 class WGSLinearSolver;
 class LinearSolver;
+class FieldFunctionGridBased;
 struct WGSContext;
 class TotalXSCarrier;
 class OutflowCarrier;
