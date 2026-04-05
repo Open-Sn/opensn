@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "framework/runtime.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/multi_group_xs/xsfile.h"
 #include <pybind11/stl.h>
@@ -41,9 +40,7 @@ WrapMultiGroupXS(py::module& xs)
     py::init(
       []()
       {
-        std::shared_ptr<MultiGroupXS> xs = std::make_shared<MultiGroupXS>();
-        multigroup_xs_stack.push_back(xs);
-        return xs;
+        return std::make_shared<MultiGroupXS>();
       }),
     "Create an empty multi-group cross section."
   );

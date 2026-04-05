@@ -21,7 +21,6 @@ static const std::string program = "OpenSn";
 
 class FieldFunctionInterpolation;
 class Solver;
-class MultiGroupXS;
 class FieldFunction;
 class SpatialDiscretization;
 class Timer;
@@ -38,7 +37,6 @@ extern std::filesystem::path input_path;
 
 /// Global stack of handlers
 extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
-extern std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
 extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 
