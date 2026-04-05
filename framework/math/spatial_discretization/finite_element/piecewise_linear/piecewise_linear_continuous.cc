@@ -23,35 +23,8 @@ PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<MeshC
 
 std::shared_ptr<PieceWiseLinearContinuous>
 PieceWiseLinearContinuous::New(const std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order)
-
 {
-  const auto PWLC = SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS;
-
-  // First try to find an existing spatial discretization that matches the one requested.
-  for (auto& sdm : sdm_stack)
-    if (sdm->GetType() == PWLC and sdm->GetGrid() == grid and
-        sdm->GetGrid()->GetCoordinateSystem() == grid->GetCoordinateSystem())
-    {
-      auto fe_ptr = std::dynamic_pointer_cast<FiniteElementBase>(sdm);
-
-      OpenSnLogicalErrorIf(not fe_ptr, "Casting failure to FE");
-
-      if (fe_ptr->GetQuadratureOrder() != q_order)
-        break;
-
-      auto sdm_ptr = std::dynamic_pointer_cast<PieceWiseLinearContinuous>(fe_ptr);
-
-      OpenSnLogicalErrorIf(not sdm_ptr, "Casting failure");
-
-      return sdm_ptr;
-    }
-
-  auto new_sdm =
-    std::shared_ptr<PieceWiseLinearContinuous>(new PieceWiseLinearContinuous(grid, q_order));
-
-  sdm_stack.push_back(new_sdm);
-
-  return new_sdm;
+  return std::shared_ptr<PieceWiseLinearContinuous>(new PieceWiseLinearContinuous(grid, q_order));
 }
 
 void
