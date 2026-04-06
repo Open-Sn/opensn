@@ -109,6 +109,8 @@ public:
 
   void SetSaveAngularFlux(bool save) override;
 
+  void SetBlockID2XSMap(const BlockID2XSMap& xs_map) override;
+
   void SetBoundaryOptions(const InputParameters& params) override;
   void ClearBoundaries() override;
 

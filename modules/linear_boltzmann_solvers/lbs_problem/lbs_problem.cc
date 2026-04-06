@@ -294,8 +294,48 @@ LBSProblem::GetBlockID2XSMap() const
 void
 LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 {
+  const BlockID2XSMap old_xs_map = block_id_to_xs_map_;
+  const size_t old_max_precursors_per_material = max_precursors_per_material_;
+  const auto old_precursor_state = precursor_new_local_;
+
   block_id_to_xs_map_ = xs_map;
   InitializeMaterials();
+
+  if (initialized_)
+  {
+    if (options_.use_precursors)
+    {
+      const size_t num_cells = grid_->local_cells.size();
+      const size_t new_max_precursors_per_material = max_precursors_per_material_;
+      const size_t num_precursor_dofs = num_cells * new_max_precursors_per_material;
+
+      std::vector<double> remapped_precursors(num_precursor_dofs, 0.0);
+      if (old_precursor_state.size() == num_cells * old_max_precursors_per_material)
+      {
+        for (const auto& cell : grid_->local_cells)
+        {
+          unsigned int old_num_precursors = 0;
+          if (const auto old_xs_it = old_xs_map.find(cell.block_id); old_xs_it != old_xs_map.end())
+            old_num_precursors = old_xs_it->second->GetNumPrecursors();
+
+          const unsigned int new_num_precursors =
+            block_id_to_xs_map_.at(cell.block_id)->GetNumPrecursors();
+          const unsigned int num_precursors_to_copy =
+            std::min(old_num_precursors, new_num_precursors);
+
+          const size_t old_base = cell.local_id * old_max_precursors_per_material;
+          const size_t new_base = cell.local_id * new_max_precursors_per_material;
+          for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
+            remapped_precursors[new_base + j] = old_precursor_state[old_base + j];
+        }
+      }
+
+      precursor_new_local_ = std::move(remapped_precursors);
+    }
+    else
+      precursor_new_local_.clear();
+  }
+
   ResetGPUCarriers();
   InitializeGPUExtras();
 }

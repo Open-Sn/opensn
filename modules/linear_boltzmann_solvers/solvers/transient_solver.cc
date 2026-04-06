@@ -18,6 +18,21 @@ namespace opensn
 {
 OpenSnRegisterObjectInNamespace(lbs, TransientSolver);
 
+namespace
+{
+
+bool
+HasFissionableMaterial(const DiscreteOrdinatesProblem& do_problem)
+{
+  for (const auto& [_, xs] : do_problem.GetBlockID2XSMap())
+    if (xs->IsFissionable())
+      return true;
+
+  return false;
+}
+
+} // namespace
+
 InputParameters
 TransientSolver::GetInputParameters()
 {
@@ -78,22 +93,6 @@ TransientSolver::TransientSolver(const InputParameters& params)
 }
 
 void
-TransientSolver::RefreshLocalViews()
-{
-  phi_new_local_ = &do_problem_->GetPhiNewLocal();
-  precursor_new_local_ = &do_problem_->GetPrecursorsNewLocal();
-  psi_new_local_ = &do_problem_->GetPsiNewLocal();
-}
-
-void
-TransientSolver::UpdateHasFissionableMaterial()
-{
-  has_fissionable_material_ = false;
-  for (const auto& [_, xs] : do_problem_->GetBlockID2XSMap())
-    has_fissionable_material_ = has_fissionable_material_ or xs->IsFissionable();
-}
-
-void
 TransientSolver::Initialize()
 {
   log.Log() << "Initializing " << GetName() << ".";
@@ -101,8 +100,13 @@ TransientSolver::Initialize()
 
   const auto& options = do_problem_->GetOptions();
   bool restart_successful = false;
-  RefreshLocalViews();
-  OpenSnLogicalErrorIf(not phi_new_local_ or phi_new_local_->empty(),
+  do_problem_->SetTime(current_time_);
+
+  const std::string& init_state = initial_state_;
+  auto& phi_new_local = do_problem_->GetPhiNewLocal();
+  auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
+  auto& psi_new_local = do_problem_->GetPsiNewLocal();
+  OpenSnLogicalErrorIf(phi_new_local.empty(),
                        GetName() + ": Problem must be fully constructed before "
                                    "TransientSolver initialization.");
 
@@ -116,22 +120,19 @@ TransientSolver::Initialize()
   if (not restart_successful)
     do_problem_->SetTime(current_time_);
 
-  RefreshLocalViews();
-
   if (initial_state_ == "zero" and not restart_successful)
   {
     do_problem_->ZeroPhi();
     do_problem_->ZeroPrecursors();
-    for (auto& psi : *psi_new_local_)
+    for (auto& psi : psi_new_local)
       std::fill(psi.begin(), psi.end(), 0.0);
   }
 
-  ags_solver_ = do_problem_->GetAGSSolver();
-  UpdateHasFissionableMaterial();
-  if (options.use_precursors and not has_fissionable_material_)
+  const bool has_fissionable_material = HasFissionableMaterial(*do_problem_);
+  if (options.use_precursors and not has_fissionable_material)
     log.Log0Warning() << GetName()
                       << ": use_precursors is enabled but no fissionable material is present.";
-  if ((not options.use_precursors) and has_fissionable_material_)
+  if ((not options.use_precursors) and has_fissionable_material)
     log.Log0Warning() << GetName()
                       << ": fissionable material is present but use_precursors is disabled. "
                          "Running prompt-only transient.";
@@ -148,8 +149,8 @@ TransientSolver::Initialize()
 
   // Sync with the current solution
   current_time_ = do_problem_->GetTime();
-  phi_prev_local_ = *phi_new_local_;
-  precursor_prev_local_ = *precursor_new_local_;
+  phi_prev_local_ = phi_new_local;
+  precursor_prev_local_ = precursor_new_local;
 
   initialized_ = true;
 }
@@ -237,6 +238,14 @@ TransientSolver::Advance()
   }
   const double dt = do_problem_->GetTimeStep();
   const double theta = do_problem_->GetTheta();
+  auto& phi_new_local = do_problem_->GetPhiNewLocal();
+  auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
+  const bool has_fissionable_material = HasFissionableMaterial(*do_problem_);
+  phi_prev_local_ = phi_new_local;
+  if (options.use_precursors)
+    precursor_prev_local_ = precursor_new_local;
+  else
+    precursor_prev_local_.clear();
 
   // Ensure RHS time term is enabled for transient sweeps
   std::vector<std::shared_ptr<SweepWGSContext>> transient_sweep_contexts;
@@ -266,15 +275,11 @@ TransientSolver::Advance()
 
   // Solve
   do_problem_->SetPhiOldFrom(phi_prev_local_);
-  {
-    auto current_solver = do_problem_->GetAGSSolver();
-    if (current_solver.get() != ags_solver_.get())
-      ags_solver_ = std::move(current_solver);
-  }
-  OpenSnLogicalErrorIf(not ags_solver_, GetName() + ": AGS solver not available.");
+  auto ags_solver = do_problem_->GetAGSSolver();
+  OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
   try
   {
-    ags_solver_->Solve();
+    ags_solver->Solve();
   }
   catch (...)
   {
@@ -288,26 +293,22 @@ TransientSolver::Advance()
 
   // Compute t^{n+1}
   const double inv_theta = 1.0 / theta;
-  auto& phi = *phi_new_local_;
   const auto& phi_prev = phi_prev_local_;
-  for (size_t i = 0; i < phi.size(); ++i)
-    phi[i] = inv_theta * (phi[i] + (theta - 1.0) * phi_prev[i]);
+  for (size_t i = 0; i < phi_new_local.size(); ++i)
+    phi_new_local[i] = inv_theta * (phi_new_local[i] + (theta - 1.0) * phi_prev[i]);
 
   if (options.use_precursors)
     StepPrecursors();
 
-  if (verbose_ and (has_fissionable_material_ or options.use_precursors))
+  if (verbose_ and (has_fissionable_material or options.use_precursors))
   {
-    const double FP_new = ComputeFissionProduction(*do_problem_, *phi_new_local_);
+    const double FP_new = ComputeFissionProduction(*do_problem_, phi_new_local);
     log.Log() << GetName() << " FP = " << std::scientific << std::setprecision(6) << FP_new;
   }
 
   current_time_ += dt;
   do_problem_->SetTime(current_time_);
-  phi_prev_local_ = *phi_new_local_;
   do_problem_->UpdatePsiOld();
-  if (options.use_precursors)
-    precursor_prev_local_ = *precursor_new_local_;
   ++step_;
 }
 
@@ -317,6 +318,8 @@ TransientSolver::StepPrecursors()
   const double theta = do_problem_->GetTheta();
   const double eff_dt = theta * do_problem_->GetTimeStep();
   do_problem_->ZeroPrecursors();
+  auto& phi_new_local = do_problem_->GetPhiNewLocal();
+  auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
 
   // Uses phi_new and precursor_prev_local to compute precursor_new_local (theta-flavor)
   auto& transport_views = do_problem_->GetCellTransportViews();
@@ -336,7 +339,7 @@ TransientSolver::StepPrecursors()
       const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
 
       for (int g = 0; g < do_problem_->GetNumGroups(); ++g)
-        delayed_fission += nu_delayed_sigma_f[g] * (*phi_new_local_)[uk_map + g] * node_V_fraction;
+        delayed_fission += nu_delayed_sigma_f[g] * phi_new_local[uk_map + g] * node_V_fraction;
     }
 
     // Loop over precursors
@@ -348,20 +351,18 @@ TransientSolver::StepPrecursors()
       const double coeff = 1.0 / (1.0 + eff_dt * precursor.decay_constant);
 
       // Contribute last time step precursors
-      (*precursor_new_local_)[dof_map] = coeff * precursor_prev_local_[dof_map];
+      precursor_new_local[dof_map] = coeff * precursor_prev_local_[dof_map];
 
       // Contribute delayed fission production
-      (*precursor_new_local_)[dof_map] +=
-        coeff * eff_dt * precursor.fractional_yield * delayed_fission;
+      precursor_new_local[dof_map] += coeff * eff_dt * precursor.fractional_yield * delayed_fission;
     }
   }
 
   // Compute t^{n+1} value
-  auto& Cj = *precursor_new_local_;
-  const auto& Cj_prev = precursor_prev_local_;
   const double inv_theta = 1.0 / theta;
-  for (size_t i = 0; i < Cj.size(); ++i)
-    Cj[i] = inv_theta * (Cj[i] + (theta - 1.0) * Cj_prev[i]);
+  for (size_t i = 0; i < precursor_new_local.size(); ++i)
+    precursor_new_local[i] =
+      inv_theta * (precursor_new_local[i] + (theta - 1.0) * precursor_prev_local_[i]);
 }
 
 bool
