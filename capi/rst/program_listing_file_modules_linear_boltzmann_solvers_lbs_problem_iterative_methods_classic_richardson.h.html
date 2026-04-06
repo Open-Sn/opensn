@@ -121,6 +121,8 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">saved_q_moments_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">psi_new_</span><span class="p">,</span><span class="w"> </span><span class="n">psi_old_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SyncLaggedStateToLatestIterate</span><span class="p">(</span><span class="n">WGSContext</span><span class="o">&amp;</span><span class="w"> </span><span class="n">gs_context</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
