@@ -393,7 +393,6 @@
     <span class="n">cline</span><span class="o">.</span><span class="n">SetFinalPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">L_slab</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">))</span>
     <span class="n">cline</span><span class="o">.</span><span class="n">SetNumberOfPoints</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
     <span class="n">cline</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">cline</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
     <span class="n">cline</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
     <span class="n">csv_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;flux_g099_P</span><span class="si">{</span><span class="n">L</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">cline</span><span class="o">.</span><span class="n">ExportToCSV</span><span class="p">(</span><span class="n">csv_base</span><span class="p">)</span>

@@ -197,6 +197,10 @@ integrate to this total power.</p></li>
 <p class="rubric">Notes</p>
 <p>The returned field function is created on demand from the current scalar-flux iterate.
 For ordinary XS names this computes <code class="docutils literal notranslate"><span class="pre">sum_g</span> <span class="pre">xs[g]</span> <span class="pre">*</span> <span class="pre">phi_g</span></code> at each node.</p>
+<p>The returned field function is a snapshot. If the solver state changes,
+call <code class="docutils literal notranslate"><span class="pre">CreateFieldFunction(...)</span></code> again to obtain a new field function.</p>
+<p>To obtain a field function from a newer solver state, call
+<code class="docutils literal notranslate"><span class="pre">CreateFieldFunction(...)</span></code> again.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">xs_name</span> <span class="pre">==</span> <span class="pre">&quot;power&quot;</span></code>, the same power-generation formula used elsewhere by the solver
 is applied on demand.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the returned field function is scaled using the power
@@ -255,8 +259,12 @@ If False, returns all moment field functions for each group.</p>
 <p class="rubric">Notes</p>
 <p>Field functions are created on demand from the current solver state. The solver does
 not retain or continuously update scalar-flux field functions between calls.</p>
+<p>These returned field functions are snapshots. If the solver state changes,
+previously returned field functions are not refreshed in place.</p>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(only_scalar_flux=False)</span></code> creates all requested
 moments from the current <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterate at the time of the call.</p>
+<p>To obtain field functions from a newer solver state, call
+<code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(...)</span></code> again.</p>
 <p>In the nested form (<code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>), the moment index varies fastest
 within each group (inner index = moment, outer index = group).</p>
 </dd></dl>

@@ -115,18 +115,36 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.fieldfunc.</span></span><span class="sig-name descname"><span class="pre">FieldFunctionInterpolationVolume</span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="Link to this definition"></a></dt>
-<dd><p>A line based interpolation function.</p>
+<dd><p>Volume based interpolation function.</p>
+<p>Configure the logical volume and operation, assign a field function, then
+call <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>. <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> rebuilds the cell set from the current
+configuration before evaluating the field.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_field_function_interpolation_volume.html#_CPPv4N6opensn32FieldFunctionInterpolationVolumeE" title="opensn::FieldFunctionInterpolationVolume"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::FieldFunctionInterpolationVolume</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.AddFieldFunction">
 <span class="sig-name descname"><span class="pre">AddFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation" title="pyopensn.fieldfunc.FieldFunctionInterpolation"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunction.html#pyopensn.fieldfunc.FieldFunction" title="pyopensn.fieldfunc.FieldFunction"><span class="pre">pyopensn.fieldfunc.FieldFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.AddFieldFunction" title="Link to this definition"></a></dt>
-<dd><p>Add a field function to the list.</p>
+<dd><p>Add a field function to this interpolator.</p>
+<p>Current point/line/volume interpolators support exactly one field function.
+This method only succeeds when no field function is currently assigned.
+It raises an error if one is already present. Use <code class="docutils literal notranslate"><span class="pre">SetFieldFunction</span></code> to
+replace the current one or <code class="docutils literal notranslate"><span class="pre">ClearFieldFunctions</span></code> to remove it first.</p>
+<p>Changing the assigned field function affects subsequent <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>
+calls; no separate initialization step is required.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.ClearFieldFunctions">
+<span class="sig-name descname"><span class="pre">ClearFieldFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation" title="pyopensn.fieldfunc.FieldFunctionInterpolation"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.ClearFieldFunctions" title="Link to this definition"></a></dt>
+<dd><p>Remove all field functions from this interpolator.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Execute()</span></code> will raise an error until a new field function is assigned.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.Execute">
 <span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation" title="pyopensn.fieldfunc.FieldFunctionInterpolation"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.Execute" title="Link to this definition"></a></dt>
-<dd><p>Execute field function interpolator.</p>
+<dd><p>Execute the field function interpolator using the current configuration.</p>
+<p>This method rebuilds any required internal interpolation state each time it
+is called. No separate <code class="docutils literal notranslate"><span class="pre">Initialize()</span></code> step is required.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -141,28 +159,20 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.GetFieldFunctionByName">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GetFieldFunctionByName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ff_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.GetFieldFunctionByName" title="Link to this definition"></a></dt>
-<dd><p>Get the list of field functions matching a given name.</p>
-<p>This function returns a list of field functions whose names match the given argument. The list
-may be empty or contain multiple elements.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ff_name</strong> (<em>str</em>) – Field function name</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.GetValue">
 <span class="sig-name descname"><span class="pre">GetValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.GetValue" title="Link to this definition"></a></dt>
-<dd><p>Returns the value of the field function interpolation.</p>
+<dd><p>Return the most recently computed interpolation value.</p>
+<p>Call <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> after changing the logical volume, operation, operation
+function, or field function to refresh the stored result.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.Initialize">
-<span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation" title="pyopensn.fieldfunc.FieldFunctionInterpolation"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.Initialize" title="Link to this definition"></a></dt>
-<dd><p>Initialize field function interpolator.</p>
+<dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationVolume.SetFieldFunction">
+<span class="sig-name descname"><span class="pre">SetFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation" title="pyopensn.fieldfunc.FieldFunctionInterpolation"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunction.html#pyopensn.fieldfunc.FieldFunction" title="pyopensn.fieldfunc.FieldFunction"><span class="pre">pyopensn.fieldfunc.FieldFunction</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationVolume.SetFieldFunction" title="Link to this definition"></a></dt>
+<dd><p>Replace the current field function with <code class="docutils literal notranslate"><span class="pre">ff</span></code>.</p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">AddFieldFunction</span></code>, this method does not require the interpolator
+to be empty first.</p>
+<p>The next call to <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> uses this field function.</p>
 </dd></dl>
 
 <dl class="py method">

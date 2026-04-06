@@ -101,8 +101,8 @@
 <span class="cm"> * Volume-wise field function interpolation.</span>
 <span class="cm"> *</span>
 <span class="cm"> * This interpolator allows the user to obtain quantities by logical</span>
-<span class="cm"> * volume. If no logical volume is assigned to the method it will</span>
-<span class="cm"> * default to operating over the entire volume.</span>
+<span class="cm"> * volume. A logical volume must be explicitly assigned before</span>
+<span class="cm"> * execution.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionInterpolationVolume</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FieldFunctionInterpolation</span>
 <span class="p">{</span>
@@ -125,17 +125,17 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetOperationType</span><span class="p">(</span><span class="n">FieldFunctionInterpolationOperation</span><span class="w"> </span><span class="n">op_type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">op_type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">op_type</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetOpValue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">op_value_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">GetOpValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">op_value_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">GetValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">op_value_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetOperationFunction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ScalarMaterialFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">function</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">oper_function_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">function</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Initialize</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">RebuildVolumeCellList</span><span class="p">();</span>
+
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LogicalVolume</span><span class="o">&gt;</span><span class="w"> </span><span class="n">logical_volume_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">FieldFunctionInterpolationOperation</span><span class="w"> </span><span class="n">op_type_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">op_value_</span><span class="p">;</span>

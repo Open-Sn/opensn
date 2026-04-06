@@ -343,7 +343,6 @@
     <span class="n">ffi</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
     <span class="n">ffi</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">logvol_whole_domain</span><span class="p">)</span>
     <span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="n">g</span><span class="p">])</span>
-    <span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
     <span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
     <span class="n">flux</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
 

@@ -106,10 +106,6 @@
 
 <span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">program</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;OpenSn&quot;</span><span class="p">;</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionInterpolation</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Solver</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">FieldFunction</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Timer</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Logger</span><span class="p">;</span>
 
@@ -121,10 +117,6 @@
 <span class="k">extern</span><span class="w"> </span><span class="n">cali</span><span class="o">::</span><span class="n">ConfigManager</span><span class="w"> </span><span class="n">cali_mgr</span><span class="p">;</span>
 <span class="k">extern</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">suppress_color</span><span class="p">;</span>
 <span class="k">extern</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="n">input_path</span><span class="p">;</span>
-
-<span class="c1">/// Global stack of handlers</span>
-<span class="k">extern</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FieldFunctionInterpolation</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">field_func_interpolation_stack</span><span class="p">;</span>
-<span class="k">extern</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FieldFunction</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">field_function_stack</span><span class="p">;</span>
 
 <span class="c1">/// Initializes all necessary items</span>
 <span class="kt">int</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">();</span>

@@ -85,10 +85,6 @@ Variables
 
 - :ref:`exhale_variable_namespaceopensn_1a99745646867c77a0acbcdb81b78612b9`
 
-- :ref:`exhale_variable_namespaceopensn_1a96c2eeb2c8b472b24980f1cc1f70ac64`
-
-- :ref:`exhale_variable_namespaceopensn_1a533a5f72b6b44523f2b5feecf759fb48`
-
 - :ref:`exhale_variable_namespaceopensn_1a003f0f0d5097c689b4920a514cee5bce`
 
 - :ref:`exhale_variable_namespaceopensn_1aa0e28d1f14e9035faab80fc1ecd1cbb9`

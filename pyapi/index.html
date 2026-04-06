@@ -443,6 +443,15 @@
 </section>
 <section id="interpolation">
 <h3>Interpolation<a class="headerlink" href="#interpolation" title="Link to this heading"></a></h3>
+<p>Field functions returned by solver methods such as
+<code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">CreateFieldFunction(...)</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList(...)</span></code> are snapshots of the solver state at the
+time of the call. To obtain field functions from a newer solver state, call the
+corresponding solver method again.</p>
+<p>Field-function interpolators are configured by assigning a field function and
+any geometry- or operation-specific settings, then calling <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Execute()</span></code> rebuilds any required internal interpolation state each time it is
+called; no separate initialization step is required.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation" title="pyopensn.fieldfunc.FieldFunctionInterpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolation</span></code></a></p></td>
@@ -455,7 +464,7 @@
 <td><p>Line based interpolation function.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fieldfunc.FieldFunctionInterpolationVolume</span></code></a></p></td>
-<td><p>A line based interpolation function.</p></td>
+<td><p>Volume based interpolation function.</p></td>
 </tr>
 </tbody>
 </table>

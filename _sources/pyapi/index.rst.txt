@@ -157,6 +157,17 @@ Grid-based
 Interpolation
 ^^^^^^^^^^^^^
 
+Field functions returned by solver methods such as
+``GetScalarFluxFieldFunction(...)``, ``CreateFieldFunction(...)``, and
+``GetAngularFieldFunctionList(...)`` are snapshots of the solver state at the
+time of the call. To obtain field functions from a newer solver state, call the
+corresponding solver method again.
+
+Field-function interpolators are configured by assigning a field function and
+any geometry- or operation-specific settings, then calling ``Execute()``.
+``Execute()`` rebuilds any required internal interpolation state each time it is
+called; no separate initialization step is required.
+
 .. autosummary::
    :toctree: generated
    :nosignatures:
