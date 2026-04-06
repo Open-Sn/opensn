@@ -27,6 +27,7 @@ protected:
   void SetFunction() override;
   void SetJacobian() override;
   void SetInitialGuess() override;
+  void PreSolveCallback() override;
   void PostSolveCallback() override;
 };
 

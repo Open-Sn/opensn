@@ -35,7 +35,7 @@ DiscreteOrdinatesProblem::CreateAAHD_FLUDS(unsigned int num_groups,
                                            const FLUDSCommonData& common_data)
 {
   return std::make_shared<AAHD_FLUDS>(
-    num_groups, num_angles, dynamic_cast<const AAHD_FLUDSCommonData&>(common_data));
+    num_groups, num_angles, dynamic_cast<const AAHD_FLUDSCommonData&>(common_data), *this);
 }
 
 std::shared_ptr<AngleSet>

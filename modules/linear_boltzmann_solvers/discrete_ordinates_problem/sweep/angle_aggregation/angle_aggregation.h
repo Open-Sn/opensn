@@ -101,6 +101,12 @@ public:
    */
   std::pair<size_t, size_t> GetNumDelayedAngularDOFs();
 
+  /// Allocates device memory.
+  void AllocateDeviceMemory(bool save_angular_flux);
+
+  /// Deallocates device memory.
+  void DeallocateDeviceMemory();
+
   /// Assembles angular unknowns into the reference vector.
   void AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref);
 

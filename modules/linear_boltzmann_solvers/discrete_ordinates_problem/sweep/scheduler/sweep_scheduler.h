@@ -33,6 +33,8 @@ public:
 
   void PrepareForSweep(bool use_boundary_source, bool zero_incoming_delayed_psi);
 
+  AngleAggregation& GetAngleAggregation() { return angle_agg_; }
+
 private:
   /// Applies a first-in-first-out sweep scheduling.
   void ScheduleAlgoFIFO(SweepChunk& sweep_chunk);

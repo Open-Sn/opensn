@@ -179,6 +179,24 @@ AngleAggregation::GetNumDelayedAngularDOFs()
 }
 
 void
+AngleAggregation::AllocateDeviceMemory(bool save_angular_flux)
+{
+  for (auto& angle_set : angle_set_groups_)
+  {
+    angle_set->GetFLUDS().AllocateDeviceMemory(save_angular_flux);
+  }
+}
+
+void
+AngleAggregation::DeallocateDeviceMemory()
+{
+  for (auto& angle_set : angle_set_groups_)
+  {
+    angle_set->GetFLUDS().DeallocateDeviceMemory();
+  }
+}
+
+void
 AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_ref)
 {
   CALI_CXX_MARK_SCOPE("AngleAggregation::AppendNewDelayedAngularDOFsToArray");
