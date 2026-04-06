@@ -24,9 +24,6 @@ Timer program_timer;
 bool suppress_color = false;
 std::filesystem::path input_path;
 
-std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
-std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
-
 int
 Initialize()
 {
@@ -49,9 +46,6 @@ Initialize()
 void
 Finalize()
 {
-  field_func_interpolation_stack.clear();
-  field_function_stack.clear();
-
   // Flush standard streams
   std::cout.flush();
   std::cerr.flush();

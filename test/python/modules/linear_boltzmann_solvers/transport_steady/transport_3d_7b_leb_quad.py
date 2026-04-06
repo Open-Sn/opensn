@@ -95,7 +95,6 @@ if __name__ == "__main__":
     ffi.SetOperationType("avg")
     ffi.SetLogicalVolume(logvol)
     ffi.AddFieldFunction(fflist[0][0])
-    ffi.Initialize()
     ffi.Execute()
     val = ffi.GetValue()
     if rank == 0:
@@ -105,7 +104,6 @@ if __name__ == "__main__":
     ffi.SetOperationType("max")
     ffi.SetLogicalVolume(logvol_whole_domain)
     ffi.AddFieldFunction(fflist[0][0])
-    ffi.Initialize()
     ffi.Execute()
     val_whole = ffi.GetValue()
     if rank == 0:

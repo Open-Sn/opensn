@@ -9,6 +9,8 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include <cmath>
+#include <limits>
 
 namespace opensn
 {
@@ -16,26 +18,24 @@ namespace opensn
 std::shared_ptr<FieldFunctionInterpolationVolume>
 FieldFunctionInterpolationVolume::Create()
 {
-  auto ffi = std::make_shared<FieldFunctionInterpolationVolume>();
-  field_func_interpolation_stack.emplace_back(ffi);
-  return ffi;
+  return std::make_shared<FieldFunctionInterpolationVolume>();
 }
 
 void
-FieldFunctionInterpolationVolume::Initialize()
+FieldFunctionInterpolationVolume::RebuildVolumeCellList()
 {
   log.Log0Verbose1() << "Initializing volume interpolator.";
 
-  // Check grid available
-  if (field_functions_.empty())
+  if (not field_function_)
     throw std::logic_error("Unassigned field function in volume field function interpolator.");
 
   if (logical_volume_ == nullptr)
     throw std::logic_error("Unassigned logical volume in volume field function interpolator.");
 
-  const auto& grid = field_functions_.front()->GetSpatialDiscretization().GetGrid();
+  const auto& grid = field_function_->GetSpatialDiscretization().GetGrid();
 
   // Find cells inside volume
+  cell_local_ids_inside_logvol_.clear();
   for (const auto& cell : grid->local_cells)
     if (logical_volume_->Inside(cell.centroid))
       cell_local_ids_inside_logvol_.push_back(cell.local_id);
@@ -44,7 +44,9 @@ FieldFunctionInterpolationVolume::Initialize()
 void
 FieldFunctionInterpolationVolume::Execute()
 {
-  const auto& ref_ff = *field_functions_.front();
+  RebuildVolumeCellList();
+
+  const auto& ref_ff = *field_function_;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
 
@@ -56,8 +58,8 @@ FieldFunctionInterpolationVolume::Execute()
 
   double local_volume = 0.0;
   double local_sum = 0.0;
-  double local_max = 0.0;
-  double local_min = 0.0;
+  double local_max = -std::numeric_limits<double>::infinity();
+  double local_min = std::numeric_limits<double>::infinity();
   for (const uint64_t cell_local_id : cell_local_ids_inside_logvol_)
   {
     const auto& cell = grid->local_cells[cell_local_id];
@@ -116,17 +118,26 @@ FieldFunctionInterpolationVolume::Execute()
     mpi_comm.all_reduce(local_data, 2, global_data, mpi::op::sum<double>());
     double global_volume = global_data[0];
     double global_sum = global_data[1];
+    OpenSnLogicalErrorIf(global_volume <= 0.0,
+                         "FieldFunctionInterpolationVolume::Execute: Logical volume contains "
+                         "no cells or has zero integrated volume.");
     op_value_ = global_sum / global_volume;
   }
   else if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX or
            op_type_ == FieldFunctionInterpolationOperation::OP_MAX_FUNC)
   {
     mpi_comm.all_reduce(local_max, op_value_, mpi::op::max<double>());
+    OpenSnLogicalErrorIf(not std::isfinite(op_value_),
+                         "FieldFunctionInterpolationVolume::Execute: Logical volume contains "
+                         "no cells.");
   }
   else if (op_type_ == FieldFunctionInterpolationOperation::OP_MIN or
            op_type_ == FieldFunctionInterpolationOperation::OP_MIN_FUNC)
   {
     mpi_comm.all_reduce(local_min, op_value_, mpi::op::min<double>());
+    OpenSnLogicalErrorIf(not std::isfinite(op_value_),
+                         "FieldFunctionInterpolationVolume::Execute: Logical volume contains "
+                         "no cells.");
   }
 }
 

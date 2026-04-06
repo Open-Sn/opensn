@@ -14,8 +14,8 @@ namespace opensn
  * Volume-wise field function interpolation.
  *
  * This interpolator allows the user to obtain quantities by logical
- * volume. If no logical volume is assigned to the method it will
- * default to operating over the entire volume.
+ * volume. A logical volume must be explicitly assigned before
+ * execution.
  */
 class FieldFunctionInterpolationVolume : public FieldFunctionInterpolation
 {
@@ -38,17 +38,17 @@ public:
 
   void SetOperationType(FieldFunctionInterpolationOperation op_type) { op_type_ = op_type; }
 
-  double& GetOpValue() { return op_value_; }
+  double GetOpValue() const { return op_value_; }
 
   double GetValue() const { return op_value_; }
 
   void SetOperationFunction(const ScalarMaterialFunction& function) { oper_function_ = function; }
 
-  void Initialize() override;
-
   void Execute() override;
 
 private:
+  void RebuildVolumeCellList();
+
   std::shared_ptr<LogicalVolume> logical_volume_;
   FieldFunctionInterpolationOperation op_type_;
   double op_value_;

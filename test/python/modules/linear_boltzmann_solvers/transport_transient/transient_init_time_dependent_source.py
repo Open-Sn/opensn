@@ -34,7 +34,6 @@ def max_phi(phys):
     field_interp.SetOperationType("max")
     field_interp.SetLogicalVolume(monitor_volume)
     field_interp.AddFieldFunction(fflist[0])
-    field_interp.Initialize()
     field_interp.Execute()
     return field_interp.GetValue()
 

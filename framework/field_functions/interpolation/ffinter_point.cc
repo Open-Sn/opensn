@@ -15,21 +15,18 @@ namespace opensn
 std::shared_ptr<FieldFunctionInterpolationPoint>
 FieldFunctionInterpolationPoint::Create()
 {
-  auto ffi = std::make_shared<FieldFunctionInterpolationPoint>();
-  field_func_interpolation_stack.emplace_back(ffi);
-  return ffi;
+  return std::make_shared<FieldFunctionInterpolationPoint>();
 }
 
 void
-FieldFunctionInterpolationPoint::Initialize()
+FieldFunctionInterpolationPoint::RebuildPointLocationData()
 {
   log.Log0Verbose1() << "Initializing point interpolator.";
 
-  // Check for empty FF-list
-  if (field_functions_.empty())
+  if (not field_function_)
     throw std::logic_error("Unassigned field function in point field function interpolator.");
 
-  const auto& grid = field_functions_.front()->GetSpatialDiscretization().GetGrid();
+  const auto& grid = field_function_->GetSpatialDiscretization().GetGrid();
   std::vector<uint64_t> cells_potentially_owning_point;
   for (const auto& cell : grid->local_cells)
   {
@@ -62,15 +59,19 @@ FieldFunctionInterpolationPoint::Initialize()
       break;
     }
   }
+
+  point_value_ = 0.0;
 }
 
 void
 FieldFunctionInterpolationPoint::Execute()
 {
+  RebuildPointLocationData();
+
   if (not locally_owned_)
     return;
 
-  const auto& ref_ff = *field_functions_.front();
+  const auto& ref_ff = *field_function_;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
 

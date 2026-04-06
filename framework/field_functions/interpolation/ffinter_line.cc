@@ -9,8 +9,10 @@
 #include "framework/mesh/cell/cell.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include <cmath>
 #include <fstream>
 #include <limits>
+#include <cstdint>
 
 namespace opensn
 {
@@ -18,19 +20,19 @@ namespace opensn
 std::shared_ptr<FieldFunctionInterpolationLine>
 FieldFunctionInterpolationLine::Create()
 {
-  auto ffi = std::make_shared<FieldFunctionInterpolationLine>();
-  field_func_interpolation_stack.emplace_back(ffi);
-  return ffi;
+  return std::make_shared<FieldFunctionInterpolationLine>();
 }
 
 void
-FieldFunctionInterpolationLine::Initialize()
+FieldFunctionInterpolationLine::RebuildLineLocationData()
 {
   log.Log0Verbose1() << "Initializing line interpolator.";
 
-  // Check for empty FF-list
-  if (field_functions_.empty())
+  if (not field_function_)
     throw std::logic_error("Unassigned field function in line field function interpolator.");
+  if (number_of_points_ < 2)
+    throw std::logic_error(
+      "FieldFunctionInterpolationLine::Initialize: number_of_points must be at least 2.");
 
   // Create points;
   const Vector3 vif = pf_ - pi_;
@@ -41,24 +43,52 @@ FieldFunctionInterpolationLine::Initialize()
   for (int k = 1; k < number_of_points_; ++k)
     tmp_points[k] = pi_ + omega * delta_d * k;
 
-  ref_ff_ = field_functions_.front();
+  ref_ff_ = field_function_;
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
 
-  // Find local points and associated cells
+  // Assign each interpolation point to a single globally-determined owning cell.
   auto estimated_local_size = number_of_points_ / opensn::mpi_comm.size();
+  local_interpolation_points_.clear();
+  local_cells_.clear();
+  local_interpolation_values_.clear();
   local_interpolation_points_.reserve(estimated_local_size);
   local_cells_.reserve(estimated_local_size);
+
+  const auto no_owner = std::numeric_limits<uint64_t>::max();
+  std::vector<uint64_t> local_owner_cell_gids(number_of_points_, no_owner);
+  std::vector<uint32_t> local_owner_cell_lids(number_of_points_,
+                                              std::numeric_limits<uint32_t>::max());
+
   for (const auto& cell : grid->local_cells)
   {
     for (int p = 0; p < number_of_points_; ++p)
     {
       auto& point = tmp_points[p];
-      if (grid->CheckPointInsideCell(cell, point))
+      if (grid->CheckPointInsideCell(cell, point) and cell.global_id < local_owner_cell_gids[p])
       {
-        local_interpolation_points_.push_back(point);
-        local_cells_.push_back(cell.local_id);
+        local_owner_cell_gids[p] = cell.global_id;
+        local_owner_cell_lids[p] = cell.local_id;
       }
+    }
+  }
+
+  std::vector<uint64_t> global_owner_cell_gids(number_of_points_, no_owner);
+  mpi_comm.all_reduce(local_owner_cell_gids.data(),
+                      number_of_points_,
+                      global_owner_cell_gids.data(),
+                      mpi::op::min<uint64_t>());
+
+  for (int p = 0; p < number_of_points_; ++p)
+  {
+    OpenSnLogicalErrorIf(global_owner_cell_gids[p] == no_owner,
+                         "FieldFunctionInterpolationLine::Execute: No cell identified "
+                         "containing interpolation point " +
+                           std::to_string(p) + ".");
+    if (local_owner_cell_gids[p] == global_owner_cell_gids[p])
+    {
+      local_interpolation_points_.push_back(tmp_points[p]);
+      local_cells_.push_back(local_owner_cell_lids[p]);
     }
   }
 
@@ -68,6 +98,8 @@ FieldFunctionInterpolationLine::Initialize()
 void
 FieldFunctionInterpolationLine::Execute()
 {
+  RebuildLineLocationData();
+
   log.Log0Verbose1() << "Executing line interpolator.";
 
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
@@ -77,10 +109,9 @@ FieldFunctionInterpolationLine::Execute()
   const auto cid = ref_component_;
   const auto field_data = ref_ff_->GetGhostedFieldVector();
 
-  double local_max = 0.0;
-  double local_min = std::numeric_limits<double>::max();
+  double local_max = -std::numeric_limits<double>::infinity();
+  double local_min = std::numeric_limits<double>::infinity();
   double local_sum = 0.0;
-  double local_avg = 0.0;
   size_t local_size = local_interpolation_points_.size();
   local_interpolation_values_.resize(local_size);
   for (size_t p = 0; p < local_size; ++p)
@@ -111,14 +142,27 @@ FieldFunctionInterpolationLine::Execute()
   {
     size_t global_size = 0;
     mpi_comm.all_reduce(local_size, global_size, mpi::op::sum<size_t>());
+    if (global_size == 0)
+      throw std::logic_error(
+        "FieldFunctionInterpolationLine::Execute: No interpolation points were found.");
     double global_sum = 0.0;
     mpi_comm.all_reduce(local_sum, global_sum, mpi::op::sum<double>());
     op_value_ = global_sum / static_cast<double>(global_size);
   }
   else if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX)
+  {
     mpi_comm.all_reduce(local_max, op_value_, mpi::op::max<double>());
+    OpenSnLogicalErrorIf(not std::isfinite(op_value_),
+                         "FieldFunctionInterpolationLine::Execute: No interpolation points were "
+                         "found.");
+  }
   else if (op_type_ == FieldFunctionInterpolationOperation::OP_MIN)
+  {
     mpi_comm.all_reduce(local_min, op_value_, mpi::op::min<double>());
+    OpenSnLogicalErrorIf(not std::isfinite(op_value_),
+                         "FieldFunctionInterpolationLine::Execute: No interpolation points were "
+                         "found.");
+  }
 }
 
 void

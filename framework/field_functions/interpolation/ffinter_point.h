@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-/// A line based interpolation function.
+/// A point based interpolation function.
 class FieldFunctionInterpolationPoint : public FieldFunctionInterpolation
 {
 public:
@@ -23,9 +23,9 @@ public:
 
   ~FieldFunctionInterpolationPoint() override = default;
 
-  Vector3& GetPointOfInterest() { return point_of_interest_; }
+  Vector3 GetPointOfInterest() const { return point_of_interest_; }
 
-  void Initialize() override;
+  void SetPointOfInterest(const Vector3& point) { point_of_interest_ = point; }
 
   void Execute() override;
 
@@ -33,6 +33,8 @@ public:
   double GetPointValue() const;
 
 protected:
+  void RebuildPointLocationData();
+
   Vector3 point_of_interest_;
   bool locally_owned_;
   uint64_t owning_cell_gid_;

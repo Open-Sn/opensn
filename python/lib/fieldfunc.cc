@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
-#include "framework/runtime.h"
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/field_functions/interpolation/ffinterpolation.h"
@@ -124,6 +123,11 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     R"(
     Base class for field-function interpolation objects.
 
+    Interpolators are configured by assigning a field function and any
+    geometry- or operation-specific settings, then calling ``Execute()``.
+    ``Execute()`` rebuilds any required internal state from the current
+    configuration each time it is called.
+
     Wrapper of :cpp:class:`opensn::FieldFunctionInterpolation`.
     )"
   );
@@ -131,22 +135,48 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "AddFieldFunction",
     &FieldFunctionInterpolation::AddFieldFunction,
     R"(
-    Add a field function to the list.
+    Add a field function to this interpolator.
+
+    Current point/line/volume interpolators support exactly one field function.
+    This method only succeeds when no field function is currently assigned.
+    It raises an error if one is already present. Use ``SetFieldFunction`` to
+    replace the current one or ``ClearFieldFunctions`` to remove it first.
+
+    Changing the assigned field function affects subsequent ``Execute()``
+    calls; no separate initialization step is required.
     )",
     py::arg("ff")
   );
   field_func_interp.def(
-    "Initialize",
-    &FieldFunctionInterpolation::Initialize,
+    "SetFieldFunction",
+    &FieldFunctionInterpolation::SetFieldFunction,
     R"(
-    Initialize field function interpolator.
+    Replace the current field function with ``ff``.
+
+    Unlike ``AddFieldFunction``, this method does not require the interpolator
+    to be empty first.
+
+    The next call to ``Execute()`` uses this field function.
+    )",
+    py::arg("ff")
+  );
+  field_func_interp.def(
+    "ClearFieldFunctions",
+    &FieldFunctionInterpolation::ClearFieldFunctions,
+    R"(
+    Remove all field functions from this interpolator.
+
+    ``Execute()`` will raise an error until a new field function is assigned.
     )"
   );
   field_func_interp.def(
     "Execute",
     &FieldFunctionInterpolation::Execute,
     R"(
-    Execute field function interpolator.
+    Execute the field function interpolator using the current configuration.
+
+    This method rebuilds any required internal interpolation state each time it
+    is called. No separate ``Initialize()`` step is required.
     )"
   );
   field_func_interp.def(
@@ -162,35 +192,6 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     )",
     py::arg("base_name")
   );
-  field_func_interp.def_static(
-    "GetFieldFunctionByName",
-    [](const std::string& ff_name)
-    {
-      // get list of suitable field functions
-      py::list matched_ff;
-      for (std::shared_ptr<FieldFunction>& ff_ptr : field_function_stack)
-      {
-        if (ff_ptr->GetName() == ff_name)
-        {
-          matched_ff.append(ff_ptr);
-        }
-      }
-      return matched_ff;
-    },
-    R"(
-    Get the list of field functions matching a given name.
-
-    This function returns a list of field functions whose names match the given argument. The list
-    may be empty or contain multiple elements.
-
-    Parameters
-    ----------
-    ff_name: str
-        Field function name
-    )",
-    py::arg("ff_name")
-  );
-
   // field function interpolation point
   auto field_func_interp_point = py::class_<FieldFunctionInterpolationPoint,
                                             std::shared_ptr<FieldFunctionInterpolationPoint>,
@@ -199,6 +200,10 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "FieldFunctionInterpolationPoint",
     R"(
     Interpolate the field function at a point.
+
+    Configure the point with ``SetPointOfInterest(...)``, assign a field
+    function, then call ``Execute()`` before reading the result with
+    ``GetPointValue()``.
 
     Wrapper of :cpp:class:`opensn::FieldFunctionInterpolationPoint`.
     )"
@@ -213,10 +218,26 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "Default constructor."
   );
   field_func_interp_point.def(
+    "SetPointOfInterest",
+    &FieldFunctionInterpolationPoint::SetPointOfInterest,
+    R"(
+    Set the point at which the field function will be evaluated.
+
+    Parameters
+    ----------
+    point: pyopensn.math.Vector3
+        Coordinates of the point of interest.
+    )",
+    py::arg("point")
+  );
+  field_func_interp_point.def(
     "GetPointValue",
     &FieldFunctionInterpolationPoint::GetPointValue,
     R"(
-    Get the value of the field function interpolation at the specified point.
+    Get the most recently computed point value.
+
+    Call ``Execute()`` after changing the point or field function to refresh
+    the stored result.
     )"
   );
 
@@ -228,6 +249,10 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "FieldFunctionInterpolationLine",
     R"(
     Line based interpolation function.
+
+    Configure the line segment and number of points, assign a field function,
+    then call ``Execute()``. ``Execute()`` rebuilds the line sampling data from
+    the current configuration before evaluating the field.
 
     Wrapper of :cpp:class:`opensn::FieldFunctionInterpolationLine`.
     )"
@@ -288,7 +313,11 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     ffunc,
     "FieldFunctionInterpolationVolume",
     R"(
-    A line based interpolation function.
+    Volume based interpolation function.
+
+    Configure the logical volume and operation, assign a field function, then
+    call ``Execute()``. ``Execute()`` rebuilds the cell set from the current
+    configuration before evaluating the field.
 
     Wrapper of :cpp:class:`opensn::FieldFunctionInterpolationVolume`.
     )"
@@ -349,7 +378,10 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     "GetValue",
     &FieldFunctionInterpolationVolume::GetValue,
     R"(
-    Returns the value of the field function interpolation.
+    Return the most recently computed interpolation value.
+
+    Call ``Execute()`` after changing the logical volume, operation, operation
+    function, or field function to refresh the stored result.
     )"
   );
   // clang-format on
