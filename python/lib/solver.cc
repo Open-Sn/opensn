@@ -561,6 +561,26 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
+    The problem is refreshed immediately after replacing the map. Material metadata,
+    precursor storage, GPU carriers, and derived solver state owned by the concrete
+    problem are rebuilt for the new cross sections.
+
+    If ``options.use_precursors=True``, this flag remains active across XS-map
+    changes even when the current map has no precursor-bearing material. In that
+    case delayed-neutron source terms are simply inactive until a later map provides
+    precursor data again.
+
+    Existing precursor concentrations are remapped by local cell and precursor-family
+    index. When the new material for a cell has fewer precursor families, extra old
+    families are dropped. When it has more families, newly introduced families are
+    initialized to zero. If a cell changes through a material with zero precursors,
+    the precursor history for that cell is discarded and any later reintroduced
+    precursor families start from zero.
+
+    If any fissionable material in the new map contains delayed-neutron precursor
+    data and ``options.use_precursors=True``, all fissionable materials in the map
+    must contain precursor data. Non-fissionable materials may have zero precursors.
+
     Forward/adjoint mode toggles via :meth:`LBSProblem.SetAdjoint` do not change this map.
     The ``MultiGroupXS`` objects themselves are mutable and shared by pointer. If the same
     ``MultiGroupXS`` handle is shared across multiple problems, toggling adjoint mode in one
@@ -756,6 +776,13 @@ WrapLBS(py::module& slv)
           - write_restart_time_interval: int, default=0
             (must be 0 or >=30)
           - use_precursors: bool, default=False
+            Enable delayed-neutron precursor treatment. This is treated as user intent and remains
+            active across later ``SetXSMap`` calls, even if the current XS map temporarily contains
+            no precursor-bearing material. When XS maps are swapped, existing precursor
+            concentrations are remapped by cell and precursor-family index; new families start at
+            zero and removed families are discarded. If any fissionable material in the active map
+            has precursor data, all fissionable materials in that map must have precursor data.
+            Non-fissionable materials may have zero precursors.
           - use_source_moments: bool, default=False
           - save_angular_flux: bool, default=False
           - adjoint: bool, default=False

@@ -995,12 +995,17 @@ LBSProblem::InitializeMaterials()
     max_precursors_per_material_ = std::max(xs->GetNumPrecursors(), max_precursors_per_material_);
   }
 
-  // if no precursors, turn off precursors
-  if (num_precursors_ == 0)
-    options_.use_precursors = false;
+  const bool has_fissionable_precursors =
+    std::any_of(block_id_to_xs_map_.begin(),
+                block_id_to_xs_map_.end(),
+                [](const auto& mat_id_xs)
+                {
+                  const auto& xs = mat_id_xs.second;
+                  return xs->IsFissionable() and xs->GetNumPrecursors() > 0;
+                });
 
-  // check compatibility when precursors are on
-  if (options_.use_precursors)
+  // check compatibility when at least one fissionable material has delayed-neutron data
+  if (options_.use_precursors and has_fissionable_precursors)
   {
     for (const auto& [mat_id, xs] : block_id_to_xs_map_)
     {

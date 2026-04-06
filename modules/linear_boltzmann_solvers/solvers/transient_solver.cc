@@ -329,6 +329,9 @@ TransientSolver::StepPrecursors()
     const double cell_volume = transport_views[cell.local_id].GetVolume();
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
     const auto& precursors = xs->GetPrecursors();
+    if (precursors.empty())
+      continue;
+
     const auto& nu_delayed_sigma_f = xs->GetNuDelayedSigmaF();
 
     // Compute delayed fission production
