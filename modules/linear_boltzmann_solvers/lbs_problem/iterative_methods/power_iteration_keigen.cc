@@ -41,10 +41,6 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   const auto& groupsets = lbs_problem.GetGroupsets();
   auto active_set_source_function = lbs_problem.GetActiveSetSourceFunction();
 
-  const auto& front_gs = groupsets.front();
-  auto front_wgs_solver = lbs_problem.GetWGSSolver(front_gs.id);
-  auto frons_wgs_context = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver->GetContext());
-
   k_eff = 1.0;
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
@@ -104,10 +100,19 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   } // for k iterations
 
   // Print summary
+  size_t total_sweeps = 0;
+  for (const auto& groupset : groupsets)
+  {
+    auto wgs_solver = lbs_problem.GetWGSSolver(groupset.id);
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
+    if (wgs_context)
+      total_sweeps += wgs_context->counter_applications_of_inv_op;
+  }
+
   log.Log() << "\n";
   log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
   log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
-            << " (Number of Sweeps:" << frons_wgs_context->counter_applications_of_inv_op << ")"
+            << " (Number of Sweeps:" << total_sweeps << ")"
             << "\n";
   log.Log() << "\n";
 }

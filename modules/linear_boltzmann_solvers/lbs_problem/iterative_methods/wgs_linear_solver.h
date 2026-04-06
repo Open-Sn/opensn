@@ -37,6 +37,7 @@ protected:
   void PostSolveCallback() override;
 
   std::vector<double> saved_q_moments_local_;
+  Vec rhs_preconditioned_work_;
 };
 
 } // namespace opensn

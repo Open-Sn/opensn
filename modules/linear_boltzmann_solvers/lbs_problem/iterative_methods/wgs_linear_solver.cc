@@ -19,7 +19,8 @@ namespace opensn
 {
 
 WGSLinearSolver::WGSLinearSolver(const std::shared_ptr<WGSContext>& gs_context_ptr)
-  : PETScLinearSolver(gs_context_ptr->groupset.iterative_method, gs_context_ptr)
+  : PETScLinearSolver(gs_context_ptr->groupset.iterative_method, gs_context_ptr),
+    rhs_preconditioned_work_(nullptr)
 {
   auto& groupset = gs_context_ptr->groupset;
   auto& solver_tol_options = this->GetToleranceOptions();
@@ -30,7 +31,7 @@ WGSLinearSolver::WGSLinearSolver(const std::shared_ptr<WGSContext>& gs_context_p
 
 WGSLinearSolver::~WGSLinearSolver()
 {
-  OpenSnPETScCall(MatDestroy(&A_));
+  OpenSnPETScCall(VecDestroy(&rhs_preconditioned_work_));
 }
 
 void
@@ -65,6 +66,7 @@ WGSLinearSolver::SetSystem()
 
   OpenSnPETScCall(VecSet(x_, 0.0));
   OpenSnPETScCall(VecDuplicate(x_, &b_));
+  OpenSnPETScCall(VecDuplicate(x_, &rhs_preconditioned_work_));
 
   // Create the matrix-shell
   OpenSnPETScCall(MatCreateShell(opensn::mpi_comm,
@@ -129,6 +131,7 @@ WGSLinearSolver::SetInitialGuess()
 
   double init_guess_norm = 0.0;
   OpenSnPETScCall(VecNorm(x_, NORM_2, &init_guess_norm));
+  OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
 
   if (init_guess_norm > 1.0e-10)
   {
@@ -180,11 +183,9 @@ WGSLinearSolver::SetRHS()
     // Compute precondition RHS norm
     PC pc = nullptr;
     OpenSnPETScCall(KSPGetPC(ksp_, &pc));
-    Vec temp_vec = nullptr;
-    OpenSnPETScCall(VecDuplicate(b_, &temp_vec));
-    OpenSnPETScCall(PCApply(pc, b_, temp_vec));
-    OpenSnPETScCall(VecNorm(temp_vec, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
-    OpenSnPETScCall(VecDestroy(&temp_vec));
+    OpenSnPETScCall(PCApply(pc, b_, rhs_preconditioned_work_));
+    OpenSnPETScCall(
+      VecNorm(rhs_preconditioned_work_, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
   }
   // If we have a single richardson iteration then the user probably wants
   // only a single sweep. Therefore, we are going to combine the scattering
@@ -208,11 +209,9 @@ WGSLinearSolver::SetRHS()
     // Compute precondition RHS norm
     PC pc = nullptr;
     OpenSnPETScCall(KSPGetPC(ksp_, &pc));
-    Vec temp_vec = nullptr;
-    OpenSnPETScCall(VecDuplicate(x_, &temp_vec));
-    OpenSnPETScCall(PCApply(pc, x_, temp_vec));
-    OpenSnPETScCall(VecNorm(temp_vec, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
-    OpenSnPETScCall(VecDestroy(&temp_vec));
+    OpenSnPETScCall(PCApply(pc, x_, rhs_preconditioned_work_));
+    OpenSnPETScCall(
+      VecNorm(rhs_preconditioned_work_, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
 
     SetKSPSolveSuppressionFlag(true);
   }

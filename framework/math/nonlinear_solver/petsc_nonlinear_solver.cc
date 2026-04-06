@@ -119,10 +119,6 @@ PETScNonLinearSolver::Setup()
   ApplyToleranceOptions();
 
   SetOptions();
-
-  SetSolverContext();
-  SetOptions();
-
   SetSolverContext();
   SetConvergenceTest();
   SetMonitor();
