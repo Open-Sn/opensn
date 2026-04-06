@@ -40,7 +40,6 @@ extern std::filesystem::path input_path;
 extern std::vector<std::shared_ptr<FieldFunctionInterpolation>> field_func_interpolation_stack;
 extern std::vector<std::shared_ptr<MultiGroupXS>> multigroup_xs_stack;
 extern std::vector<std::shared_ptr<FieldFunction>> field_function_stack;
-extern std::vector<std::shared_ptr<SpatialDiscretization>> sdm_stack;
 
 /// Initializes all necessary items
 int Initialize();
