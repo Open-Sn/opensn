@@ -107,6 +107,26 @@ WrapFieldFunctionGridBased(py::module& ffunc)
     )",
     py::arg("ff_list"), py::arg("base_name")
   );
+  field_func_grid_based.def(
+    "CanUpdate",
+    &FieldFunctionGridBased::CanUpdate,
+    R"(
+    Return whether this field function can currently refresh itself from its owning solver.
+
+    This returns ``False`` if the field function has no update callback or if the owning solver
+    has already been destroyed.
+    )"
+  );
+  field_func_grid_based.def(
+    "Update",
+    &FieldFunctionGridBased::Update,
+    R"(
+    Refresh this field function from its owning solver.
+
+    Raises an error if the field function is not refreshable or if its owning solver has already
+    been destroyed.
+    )"
+  );
   // clang-format on
 }
 

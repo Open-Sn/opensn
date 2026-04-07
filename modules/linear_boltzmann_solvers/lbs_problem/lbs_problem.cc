@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 #include <unordered_map>
 #include <functional>
+#include <utility>
 
 namespace opensn
 {
@@ -527,7 +528,19 @@ LBSProblem::CreateScalarFluxFieldFunction(unsigned int g, unsigned int m)
   OpenSnLogicalErrorIf(m >= num_moments_, GetName() + ": Moment index out of range.");
 
   auto ff_ptr = CreateEmptyFieldFunction(MakeScalarFluxFieldFunctionName(g, m));
-  ff_ptr->UpdateFieldVector(ComputeScalarFluxFieldFunctionData(g, m));
+  UpdateScalarFluxFieldFunction(*ff_ptr, g, m);
+
+  const std::weak_ptr<LBSProblem> weak_owner = weak_from_this();
+  ff_ptr->SetUpdateCallback(
+    [weak_owner, g, m](FieldFunctionGridBased& ff)
+    {
+      auto owner = weak_owner.lock();
+      OpenSnLogicalErrorIf(not owner,
+                           "Cannot update field function after its owning problem has "
+                           "been destroyed.");
+      owner->UpdateScalarFluxFieldFunction(ff, g, m);
+    },
+    [weak_owner]() { return not weak_owner.expired(); });
   return ff_ptr;
 }
 
@@ -539,24 +552,21 @@ LBSProblem::CreateFieldFunction(const std::string& name,
   const std::string ff_name = MakeFieldFunctionName(name);
   auto ff_ptr = CreateEmptyFieldFunction(ff_name);
 
-  std::vector<double> data_vector_local;
-  if (xs_name == "power")
-  {
-    double local_total_power = 0.0;
-    data_vector_local = ComputePowerFieldFunctionData(local_total_power);
-  }
-  else
-  {
-    data_vector_local = ComputeXSFieldFunctionData(xs_name);
-  }
+  UpdateDerivedFieldFunction(*ff_ptr, xs_name, power_normalization_target);
 
-  if (power_normalization_target > 0.0)
-  {
-    const double scale_factor = ComputeFieldFunctionPowerScaleFactor(power_normalization_target);
-    Scale(data_vector_local, scale_factor);
-  }
-
-  ff_ptr->UpdateFieldVector(data_vector_local);
+  const std::weak_ptr<LBSProblem> weak_owner = weak_from_this();
+  auto xs_name_copy = xs_name;
+  ff_ptr->SetUpdateCallback(
+    [weak_owner, xs_name = std::move(xs_name_copy), power_normalization_target](
+      FieldFunctionGridBased& ff)
+    {
+      auto owner = weak_owner.lock();
+      OpenSnLogicalErrorIf(not owner,
+                           "Cannot update field function after its owning problem has "
+                           "been destroyed.");
+      owner->UpdateDerivedFieldFunction(ff, xs_name, power_normalization_target);
+    },
+    [weak_owner]() { return not weak_owner.expired(); });
   return ff_ptr;
 }
 
@@ -1222,6 +1232,39 @@ LBSProblem::CreateEmptyFieldFunction(const std::string& name) const
   auto discretization = discretization_;
   return std::make_shared<FieldFunctionGridBased>(
     name, discretization, Unknown(UnknownType::SCALAR));
+}
+
+void
+LBSProblem::UpdateScalarFluxFieldFunction(FieldFunctionGridBased& ff,
+                                          const unsigned int g,
+                                          const unsigned int m)
+{
+  ff.UpdateFieldVector(ComputeScalarFluxFieldFunctionData(g, m));
+}
+
+void
+LBSProblem::UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
+                                       const std::string& xs_name,
+                                       const double power_normalization_target)
+{
+  std::vector<double> data_vector_local;
+  if (xs_name == "power")
+  {
+    double local_total_power = 0.0;
+    data_vector_local = ComputePowerFieldFunctionData(local_total_power);
+  }
+  else
+  {
+    data_vector_local = ComputeXSFieldFunctionData(xs_name);
+  }
+
+  if (power_normalization_target > 0.0)
+  {
+    const double scale_factor = ComputeFieldFunctionPowerScaleFactor(power_normalization_target);
+    Scale(data_vector_local, scale_factor);
+  }
+
+  ff.UpdateFieldVector(data_vector_local);
 }
 
 std::vector<double>

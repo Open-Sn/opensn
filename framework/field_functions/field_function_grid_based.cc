@@ -135,6 +135,29 @@ FieldFunctionGridBased::UpdateFieldVector(const Vec& field_vector)
   ghosted_field_vector_->CommunicateGhostEntries();
 }
 
+bool
+FieldFunctionGridBased::CanUpdate() const
+{
+  return static_cast<bool>(update_callback_) and
+         (not can_update_callback_ or can_update_callback_());
+}
+
+void
+FieldFunctionGridBased::Update()
+{
+  OpenSnLogicalErrorIf(not CanUpdate(),
+                       "Field function \"" + GetName() + "\" is not currently updateable.");
+  update_callback_(*this);
+}
+
+void
+FieldFunctionGridBased::SetUpdateCallback(UpdateCallback callback,
+                                          CanUpdateCallback can_update_callback)
+{
+  update_callback_ = std::move(callback);
+  can_update_callback_ = std::move(can_update_callback);
+}
+
 std::vector<double>
 FieldFunctionGridBased::GetPointValue(const Vector3& point) const
 {

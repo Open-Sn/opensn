@@ -108,6 +108,19 @@ if __name__ == "__main__":
     solver.SetTheta(theta)
 
     monitor_volume = RPPLogicalVolume(infx=True, infy=True, infz=True)
+    fflist = phys.GetScalarFluxFieldFunction()
+
+    # Group 0
+    ff_interp_g0 = FieldFunctionInterpolationVolume()
+    ff_interp_g0.SetOperationType("max")
+    ff_interp_g0.SetLogicalVolume(monitor_volume)
+    ff_interp_g0.AddFieldFunction(fflist[0])
+
+    # Group 1
+    ff_interp_g1 = FieldFunctionInterpolationVolume()
+    ff_interp_g1.SetOperationType("max")
+    ff_interp_g1.SetLogicalVolume(monitor_volume)
+    ff_interp_g1.AddFieldFunction(fflist[1])
 
     phi0 = []
     phi1 = []
@@ -130,22 +143,13 @@ if __name__ == "__main__":
 
         # Advance the solution from current_time to target_time
         solver.Advance()
-        fflist = phys.GetScalarFluxFieldFunction()
+        fflist[0].Update()
+        fflist[1].Update()
 
-        # Group 0
-        ff_interp_g0 = FieldFunctionInterpolationVolume()
-        ff_interp_g0.SetOperationType("max")
-        ff_interp_g0.SetLogicalVolume(monitor_volume)
-        ff_interp_g0.AddFieldFunction(fflist[0])
         ff_interp_g0.Execute()
         flux_max_g0 = ff_interp_g0.GetValue()
         phi0.append(flux_max_g0)
 
-        # Group 1
-        ff_interp_g1 = FieldFunctionInterpolationVolume()
-        ff_interp_g1.SetOperationType("max")
-        ff_interp_g1.SetLogicalVolume(monitor_volume)
-        ff_interp_g1.AddFieldFunction(fflist[1])
         ff_interp_g1.Execute()
         flux_max_g1 = ff_interp_g1.GetValue()
         phi1.append(flux_max_g1)

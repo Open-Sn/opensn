@@ -84,6 +84,12 @@ if __name__ == "__main__":
     current_time = 0.0
     flux_max = 0.0
     step = 0
+    fflist = phys.GetScalarFluxFieldFunction()
+    field_interp = FieldFunctionInterpolationVolume()
+    field_interp.SetOperationType("max")
+    field_interp.SetLogicalVolume(monitor_volume)
+    field_interp.AddFieldFunction(fflist[3])
+
     while current_time < stop_time - 1.0e-14:
         target_time = min(current_time + dt, stop_time)
         solver.SetTimeStep(target_time - current_time)
@@ -91,12 +97,7 @@ if __name__ == "__main__":
         solver.SetTheta(theta_step)
         solver.Advance()
         current_time = target_time
-        fflist = phys.GetScalarFluxFieldFunction()
-
-        field_interp = FieldFunctionInterpolationVolume()
-        field_interp.SetOperationType("max")
-        field_interp.SetLogicalVolume(monitor_volume)
-        field_interp.AddFieldFunction(fflist[3])
+        fflist[3].Update()
         field_interp.Execute()
         flux_max = field_interp.GetValue()
         step += 1

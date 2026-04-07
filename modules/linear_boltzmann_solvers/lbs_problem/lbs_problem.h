@@ -36,7 +36,7 @@ template <typename T>
 class MemoryPinner;
 
 /// Base class for all Linear Boltzmann Solvers.
-class LBSProblem : public Problem
+class LBSProblem : public Problem, public std::enable_shared_from_this<LBSProblem>
 {
 public:
   LBSProblem(const LBSProblem&) = delete;
@@ -321,6 +321,10 @@ protected:
 
   std::shared_ptr<FieldFunctionGridBased> CreateEmptyFieldFunction(const std::string& name) const;
   std::string MakeFieldFunctionName(const std::string& base_name) const;
+  void UpdateScalarFluxFieldFunction(FieldFunctionGridBased& ff, unsigned int g, unsigned int m);
+  void UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
+                                  const std::string& xs_name,
+                                  double power_normalization_target);
 
   LBSOptions options_;
   double time_ = 0.0;
