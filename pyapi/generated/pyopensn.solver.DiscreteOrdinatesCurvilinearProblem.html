@@ -221,10 +221,10 @@ integrate to this total power.</p></li>
 <p class="rubric">Notes</p>
 <p>The returned field function is created on demand from the current scalar-flux iterate.
 For ordinary XS names this computes <code class="docutils literal notranslate"><span class="pre">sum_g</span> <span class="pre">xs[g]</span> <span class="pre">*</span> <span class="pre">phi_g</span></code> at each node.</p>
-<p>The returned field function is a snapshot. If the solver state changes,
-call <code class="docutils literal notranslate"><span class="pre">CreateFieldFunction(...)</span></code> again to obtain a new field function.</p>
-<p>To obtain a field function from a newer solver state, call
-<code class="docutils literal notranslate"><span class="pre">CreateFieldFunction(...)</span></code> again.</p>
+<p>The returned field function is a snapshot of the solver state at creation time; it is not
+refreshed automatically if the solver state changes. It supports <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning solver is still alive. Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly
+recomputes the same field function from the solver’s latest state.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">xs_name</span> <span class="pre">==</span> <span class="pre">&quot;power&quot;</span></code>, the same power-generation formula used elsewhere by the solver
 is applied on demand.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the returned field function is scaled using the power
@@ -277,19 +277,14 @@ FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, “angular_flux_t”)</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Field functions for the requested (group, angle) pairs.</p>
+<dd class="field-even"><p>Field functions for the requested <code class="docutils literal notranslate"><span class="pre">(group,</span> <span class="pre">angle)</span></code> pairs. Each returned field function
+is a snapshot, but supports <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning solver is
+alive.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>]</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Field functions are created on demand from the currently stored angular flux. The solver does
-not retain or continuously update angular field functions between calls.</p>
-<p>The returned field functions are snapshots. If the solver state changes,
-previously returned angular field functions are not refreshed in place.</p>
-<p>To obtain angular field functions from a newer solver state, call
-<code class="docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList(...)</span></code> again.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -348,14 +343,16 @@ If False, returns all moment field functions for each group.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Field functions are created on demand from the current solver state. The solver does
-not retain or continuously update scalar-flux field functions between calls.</p>
-<p>These returned field functions are snapshots. If the solver state changes,
-previously returned field functions are not refreshed in place.</p>
+<p>Field functions are created on demand from the current solver state.</p>
+<p>The returned field functions are snapshots of the solver state at creation time; they are not
+refreshed automatically if the solver state changes.</p>
+<p>They support <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while their owning solver is still alive.
+Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly refreshes the same field-function object from the solver’s
+latest state.</p>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(only_scalar_flux=False)</span></code> creates all requested
 moments from the current <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterate at the time of the call.</p>
-<p>To obtain field functions from a newer solver state, call
-<code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(...)</span></code> again.</p>
+<p>To obtain independent field functions from a newer solver state, call
+<code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(...)</span></code> again instead of updating the existing objects.</p>
 <p>In the nested form (<code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>), the moment index varies fastest
 within each group (inner index = moment, outer index = group).</p>
 </dd></dl>

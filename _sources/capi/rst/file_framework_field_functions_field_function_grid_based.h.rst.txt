@@ -36,6 +36,8 @@ Includes
 
 - ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
 
+- ``functional``
+
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)

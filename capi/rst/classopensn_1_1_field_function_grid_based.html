@@ -113,6 +113,16 @@
 <span class="target" id="classopensn_1_1_field_function_grid_based_1ac9d72c1413adb0bfc025d2b3549babb0"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FFList</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn22FieldFunctionGridBasedE" title="opensn::FieldFunctionGridBased"><span class="n"><span class="pre">FieldFunctionGridBased</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn22FieldFunctionGridBased6FFListE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn22FieldFunctionGridBased14UpdateCallbackE">
+<span class="target" id="classopensn_1_1_field_function_grid_based_1ae850d649e653c2bef7226a595a405263"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N6opensn22FieldFunctionGridBasedE" title="opensn::FieldFunctionGridBased"><span class="n"><span class="pre">FieldFunctionGridBased</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn22FieldFunctionGridBased14UpdateCallbackE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn22FieldFunctionGridBased17CanUpdateCallbackE">
+<span class="target" id="classopensn_1_1_field_function_grid_based_1a10dd10caa6ce542a619269b2b8c910ea"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CanUpdateCallback</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn22FieldFunctionGridBased17CanUpdateCallbackE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -182,6 +192,24 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn22FieldFunctionGridBased9CanUpdateEv">
+<span class="target" id="classopensn_1_1_field_function_grid_based_1ac7e2bccbf053f5552171271955a2a1ec"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CanUpdate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn22FieldFunctionGridBased9CanUpdateEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns true if the field function can currently refresh itself from an owner callback. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn22FieldFunctionGridBased6UpdateEv">
+<span class="target" id="classopensn_1_1_field_function_grid_based_1a9ba9fbe1cb8e150b7c7f5e6867d1c813"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Update</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn22FieldFunctionGridBased6UpdateEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Refreshes the field function by invoking its owner callback. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn22FieldFunctionGridBased17SetUpdateCallbackE14UpdateCallback17CanUpdateCallback">
+<span class="target" id="classopensn_1_1_field_function_grid_based_1aa84aadfb373e9f41a8111642580506e0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetUpdateCallback</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn22FieldFunctionGridBased14UpdateCallbackE" title="opensn::FieldFunctionGridBased::UpdateCallback"><span class="n"><span class="pre">UpdateCallback</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">callback</span></span>, <a class="reference internal" href="#_CPPv4N6opensn22FieldFunctionGridBased17CanUpdateCallbackE" title="opensn::FieldFunctionGridBased::CanUpdateCallback"><span class="n"><span class="pre">CanUpdateCallback</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">can_update_callback</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn22FieldFunctionGridBased17SetUpdateCallbackE14UpdateCallback17CanUpdateCallback" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets the callback used to refresh this field function. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn22FieldFunctionGridBased13GetPointValueERK7Vector3">
 <span class="target" id="classopensn_1_1_field_function_grid_based_1a82ddd8bc9f970caa935f1c32e10bf6d6"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPointValue</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">point</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn22FieldFunctionGridBased13GetPointValueERK7Vector3" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns the component values at requested point. </p>
@@ -218,6 +246,16 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn22FieldFunctionGridBased21ghosted_field_vector_E">
 <span class="target" id="classopensn_1_1_field_function_grid_based_1af1c88af12d4ac2bdf761c6b711a847f2"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_ghosted_parallel_s_t_l_vector.html#_CPPv4N6opensn24GhostedParallelSTLVectorE" title="opensn::GhostedParallelSTLVector"><span class="n"><span class="pre">GhostedParallelSTLVector</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ghosted_field_vector_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn22FieldFunctionGridBased21ghosted_field_vector_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn22FieldFunctionGridBased16update_callback_E">
+<span class="target" id="classopensn_1_1_field_function_grid_based_1a99642ca7c4eb1ce5d364082e426aec8c"></span><a class="reference internal" href="#_CPPv4N6opensn22FieldFunctionGridBased14UpdateCallbackE" title="opensn::FieldFunctionGridBased::UpdateCallback"><span class="n"><span class="pre">UpdateCallback</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_callback_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn22FieldFunctionGridBased16update_callback_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn22FieldFunctionGridBased20can_update_callback_E">
+<span class="target" id="classopensn_1_1_field_function_grid_based_1a06f7ea102ab561c2523ca0b1da0ac1ca"></span><a class="reference internal" href="#_CPPv4N6opensn22FieldFunctionGridBased17CanUpdateCallbackE" title="opensn::FieldFunctionGridBased::CanUpdateCallback"><span class="n"><span class="pre">CanUpdateCallback</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">can_update_callback_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn22FieldFunctionGridBased20can_update_callback_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

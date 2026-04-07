@@ -93,6 +93,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/field_functions/field_function.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
@@ -108,6 +109,8 @@
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">BoundingBox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">FFList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">UpdateCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">FieldFunctionGridBased</span><span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">CanUpdateCallback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">()</span><span class="o">&gt;</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">FieldFunctionGridBased</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
@@ -151,6 +154,15 @@
 <span class="w">  </span><span class="c1">/// Updates the field vector with a PETSc vector. This only operates locally.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateFieldVector</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vec</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field_vector</span><span class="p">);</span>
 
+<span class="w">  </span><span class="c1">/// Returns true if the field function can currently refresh itself from an owner callback.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">CanUpdate</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Refreshes the field function by invoking its owner callback.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Update</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Sets the callback used to refresh this field function.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetUpdateCallback</span><span class="p">(</span><span class="n">UpdateCallback</span><span class="w"> </span><span class="n">callback</span><span class="p">,</span><span class="w"> </span><span class="n">CanUpdateCallback</span><span class="w"> </span><span class="n">can_update_callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
 <span class="w">  </span><span class="c1">/// Returns the component values at requested point.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetPointValue</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
@@ -160,6 +172,8 @@
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SpatialDiscretization</span><span class="o">&gt;</span><span class="w"> </span><span class="n">discretization_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">GhostedParallelSTLVector</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ghosted_field_vector_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">UpdateCallback</span><span class="w"> </span><span class="n">update_callback_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">CanUpdateCallback</span><span class="w"> </span><span class="n">can_update_callback_</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">BoundingBox</span><span class="w"> </span><span class="n">local_grid_bounding_box_</span><span class="p">;</span>

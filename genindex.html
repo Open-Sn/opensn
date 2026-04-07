@@ -286,6 +286,8 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.CanUpdate">CanUpdate() (pyopensn.fieldfunc.FieldFunctionGridBased method)</a>
+</li>
       <li><a href="pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.chi">chi (pyopensn.xs.MultiGroupXS property)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation.ClearFieldFunctions">ClearFieldFunctions() (pyopensn.fieldfunc.FieldFunctionInterpolation method)</a>
@@ -3074,6 +3076,12 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased11BoundingBoxE">opensn::FieldFunctionGridBased::BoundingBox (C++ type)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased20can_update_callback_E">opensn::FieldFunctionGridBased::can_update_callback_ (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4NK6opensn22FieldFunctionGridBased9CanUpdateEv">opensn::FieldFunctionGridBased::CanUpdate (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased17CanUpdateCallbackE">opensn::FieldFunctionGridBased::CanUpdateCallback (C++ type)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased15discretization_E">opensn::FieldFunctionGridBased::discretization_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4NK6opensn22FieldFunctionGridBased8EvaluateERK4CellRK7Vector3i">opensn::FieldFunctionGridBased::Evaluate (C++ function)</a>
@@ -3095,6 +3103,14 @@
       <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4NK6opensn22FieldFunctionGridBased24GetSpatialDiscretizationEv">opensn::FieldFunctionGridBased::GetSpatialDiscretization (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased21ghosted_field_vector_E">opensn::FieldFunctionGridBased::ghosted_field_vector_ (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased17SetUpdateCallbackE14UpdateCallback17CanUpdateCallback">opensn::FieldFunctionGridBased::SetUpdateCallback (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased6UpdateEv">opensn::FieldFunctionGridBased::Update (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased16update_callback_E">opensn::FieldFunctionGridBased::update_callback_ (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased14UpdateCallbackE">opensn::FieldFunctionGridBased::UpdateCallback (C++ type)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased17UpdateFieldVectorERK3Vec">opensn::FieldFunctionGridBased::UpdateFieldVector (C++ function)</a>, <a href="capi/rst/classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBased17UpdateFieldVectorERKNSt6vectorIdEE">[1]</a>
 </li>
@@ -4260,9 +4276,13 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem25unit_ghost_cell_matrices_E">opensn::LBSProblem::unit_ghost_cell_matrices_ (C++ member)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem26UpdateDerivedFieldFunctionER22FieldFunctionGridBasedRKNSt6stringEd">opensn::LBSProblem::UpdateDerivedFieldFunction (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem12UpdatePsiOldEv">opensn::LBSProblem::UpdatePsiOld (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem22UpdateRestartWriteTimeEv">opensn::LBSProblem::UpdateRestartWriteTime (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem29UpdateScalarFluxFieldFunctionER22FieldFunctionGridBasedjj">opensn::LBSProblem::UpdateScalarFluxFieldFunction (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem9use_gpus_E">opensn::LBSProblem::use_gpus_ (C++ member)</a>
 </li>
@@ -4534,6 +4554,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_logical_volume.html#_CPPv4N6opensn13LogicalVolumeE">opensn::LogicalVolume (C++ class)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_logical_volume.html#_CPPv4N6opensn13LogicalVolume18GetInputParametersEv">opensn::LogicalVolume::GetInputParameters (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_logical_volume.html#_CPPv4NK6opensn13LogicalVolume6InsideERK7Vector3">opensn::LogicalVolume::Inside (C++ function)</a>
@@ -4544,8 +4566,6 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_logical_volume_interface.html#_CPPv4N6opensn22LogicalVolumeInterfaceE">opensn::LogicalVolumeInterface (C++ class)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_logical_volume_interface.html#_CPPv4N6opensn22LogicalVolumeInterface18GetInputParametersEv">opensn::LogicalVolumeInterface::GetInputParameters (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_logical_volume_interface.html#_CPPv4NK6opensn22LogicalVolumeInterface16GetLogicalVolumeEv">opensn::LogicalVolumeInterface::GetLogicalVolume (C++ function)</a>
@@ -8549,6 +8569,10 @@
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.Update">Update() (pyopensn.fieldfunc.FieldFunctionGridBased method)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pyapi/generated/pyopensn.context.UseColor.html#pyopensn.context.UseColor">UseColor() (in module pyopensn.context)</a>
 </li>

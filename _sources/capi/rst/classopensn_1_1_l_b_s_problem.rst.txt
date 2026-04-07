@@ -9,10 +9,11 @@ Class LBSProblem
 Inheritance Relationships
 -------------------------
 
-Base Type
-*********
+Base Types
+**********
 
 - ``public opensn::Problem`` (:ref:`exhale_class_classopensn_1_1_problem`)
+- ``public std::enable_shared_from_this< LBSProblem >``
 
 
 Derived Type
