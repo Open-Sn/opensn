@@ -6,6 +6,7 @@
 #include "framework/field_functions/field_function.h"
 #include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
 #include "framework/mesh/mesh.h"
+#include <functional>
 #include <string>
 #include <memory>
 #include <vector>
@@ -21,6 +22,8 @@ class FieldFunctionGridBased : public FieldFunction
 public:
   using BoundingBox = std::pair<Vector3, Vector3>;
   using FFList = std::vector<std::shared_ptr<const FieldFunctionGridBased>>;
+  using UpdateCallback = std::function<void(FieldFunctionGridBased&)>;
+  using CanUpdateCallback = std::function<bool()>;
 
   explicit FieldFunctionGridBased(const InputParameters& params);
 
@@ -64,6 +67,15 @@ public:
   /// Updates the field vector with a PETSc vector. This only operates locally.
   void UpdateFieldVector(const Vec& field_vector);
 
+  /// Returns true if the field function can currently refresh itself from an owner callback.
+  bool CanUpdate() const;
+
+  /// Refreshes the field function by invoking its owner callback.
+  void Update();
+
+  /// Sets the callback used to refresh this field function.
+  void SetUpdateCallback(UpdateCallback callback, CanUpdateCallback can_update_callback = nullptr);
+
   /// Returns the component values at requested point.
   virtual std::vector<double> GetPointValue(const Vector3& point) const;
 
@@ -73,6 +85,8 @@ public:
 protected:
   std::shared_ptr<SpatialDiscretization> discretization_;
   std::unique_ptr<GhostedParallelSTLVector> ghosted_field_vector_;
+  UpdateCallback update_callback_;
+  CanUpdateCallback can_update_callback_;
 
 private:
   const BoundingBox local_grid_bounding_box_;

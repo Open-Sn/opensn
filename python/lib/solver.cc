@@ -141,17 +141,20 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
-    Field functions are created on demand from the current solver state. The solver does
-    not retain or continuously update scalar-flux field functions between calls.
+    Field functions are created on demand from the current solver state.
 
-    These returned field functions are snapshots. If the solver state changes,
-    previously returned field functions are not refreshed in place.
+    The returned field functions are snapshots of the solver state at creation time; they are not
+    refreshed automatically if the solver state changes.
+
+    They support ``CanUpdate()`` and ``Update()`` while their owning solver is still alive.
+    Calling ``Update()`` explicitly refreshes the same field-function object from the solver's
+    latest state.
 
     Calling ``GetScalarFluxFieldFunction(only_scalar_flux=False)`` creates all requested
     moments from the current ``phi`` iterate at the time of the call.
 
-    To obtain field functions from a newer solver state, call
-    ``GetScalarFluxFieldFunction(...)`` again.
+    To obtain independent field functions from a newer solver state, call
+    ``GetScalarFluxFieldFunction(...)`` again instead of updating the existing objects.
 
     In the nested form (``only_scalar_flux=False``), the moment index varies fastest
     within each group (inner index = moment, outer index = group).
@@ -180,11 +183,10 @@ WrapLBS(py::module& slv)
     The returned field function is created on demand from the current scalar-flux iterate.
     For ordinary XS names this computes ``sum_g xs[g] * phi_g`` at each node.
 
-    The returned field function is a snapshot. If the solver state changes,
-    call ``CreateFieldFunction(...)`` again to obtain a new field function.
-
-    To obtain a field function from a newer solver state, call
-    ``CreateFieldFunction(...)`` again.
+    The returned field function is a snapshot of the solver state at creation time; it is not
+    refreshed automatically if the solver state changes. It supports ``CanUpdate()`` and
+    ``Update()`` while its owning solver is still alive. Calling ``Update()`` explicitly
+    recomputes the same field function from the solver's latest state.
 
     If ``xs_name == "power"``, the same power-generation formula used elsewhere by the solver
     is applied on demand.
@@ -949,18 +951,9 @@ WrapLBS(py::module& slv)
     Returns
     -------
     List[pyopensn.fieldfunc.FieldFunctionGridBased]
-        Field functions for the requested (group, angle) pairs.
-
-    Notes
-    -----
-    Field functions are created on demand from the currently stored angular flux. The solver does
-    not retain or continuously update angular field functions between calls.
-
-    The returned field functions are snapshots. If the solver state changes,
-    previously returned angular field functions are not refreshed in place.
-
-    To obtain angular field functions from a newer solver state, call
-    ``GetAngularFieldFunctionList(...)`` again.
+        Field functions for the requested ``(group, angle)`` pairs. Each returned field function
+        is a snapshot, but supports ``CanUpdate()`` and ``Update()`` while its owning solver is
+        alive.
     )",
     py::arg("groups"),
     py::arg("angles")

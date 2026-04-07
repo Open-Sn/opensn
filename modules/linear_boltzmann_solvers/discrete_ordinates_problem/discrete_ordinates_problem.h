@@ -232,6 +232,10 @@ private:
                             GeometryType lbs_geo_type);
 
   void UpdateAngularFluxStorage();
+  void UpdateAngularFluxFieldFunction(FieldFunctionGridBased& ff,
+                                      size_t groupset_id,
+                                      unsigned int group,
+                                      size_t angle);
 
 public:
   static InputParameters GetInputParameters();

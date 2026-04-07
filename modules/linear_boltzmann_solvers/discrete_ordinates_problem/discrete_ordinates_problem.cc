@@ -880,7 +880,22 @@ DiscreteOrdinatesProblem::CreateAngularFluxFieldFunctionList(
                              std::to_string(gs_id) + ".");
 
       auto ff_ptr = CreateEmptyFieldFunction(MakeAngularFieldFunctionName(gs_id, g, a));
-      ff_ptr->UpdateFieldVector(ComputeAngularFieldFunctionData(gs_id, g, a));
+      UpdateAngularFluxFieldFunction(*ff_ptr, gs_id, g, a);
+      const std::weak_ptr<LBSProblem> weak_owner = weak_from_this();
+      ff_ptr->SetUpdateCallback(
+        [weak_owner, gs_id, g, a](FieldFunctionGridBased& ff)
+        {
+          auto owner = weak_owner.lock();
+          OpenSnLogicalErrorIf(not owner,
+                               "Cannot update field function after its owning problem has "
+                               "been destroyed.");
+          auto do_owner = std::dynamic_pointer_cast<DiscreteOrdinatesProblem>(owner);
+          OpenSnLogicalErrorIf(not do_owner,
+                               "Angular flux field function owner is not a "
+                               "DiscreteOrdinatesProblem.");
+          do_owner->UpdateAngularFluxFieldFunction(ff, gs_id, g, a);
+        },
+        [weak_owner]() { return not weak_owner.expired(); });
       result.push_back(ff_ptr);
     }
   }
@@ -932,6 +947,15 @@ DiscreteOrdinatesProblem::ComputeAngularFieldFunctionData(const size_t groupset_
   }
 
   return data_vector_local;
+}
+
+void
+DiscreteOrdinatesProblem::UpdateAngularFluxFieldFunction(FieldFunctionGridBased& ff,
+                                                         const size_t groupset_id,
+                                                         const unsigned int group,
+                                                         const size_t angle)
+{
+  ff.UpdateFieldVector(ComputeAngularFieldFunctionData(groupset_id, group, angle));
 }
 
 void
