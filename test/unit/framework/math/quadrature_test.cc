@@ -3,7 +3,12 @@
 #include "framework/math/quadratures/gausschebyshev_quadrature.h"
 #include "framework/math/quadratures/spatial/line_quadrature.h"
 #include "framework/math/quadratures/spatial/triangle_quadrature.h"
+#include "framework/math/quadratures/angular/lebedev_quadrature.h"
+#include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
+#include "framework/math/quadratures/angular/product_quadrature.h"
+#include "framework/math/quadratures/angular/triangular_quadrature.h"
 #include <gtest/gtest.h>
+#include <numeric>
 
 using namespace opensn;
 
@@ -126,4 +131,302 @@ TEST(QuadratureTest, TriangleQuadrature)
       (void)bad_quad;
     },
     std::invalid_argument);
+}
+
+// Angular quadrature unit tests
+
+TEST(QuadratureTest, LebedevQuadrature3DXYZ)
+{
+  // Order 3: 6-point set, scattering_order=1 -> 4 moments
+  LebedevQuadrature3DXYZ quad(3, 1);
+  ASSERT_EQ(quad.omegas.size(), 6);
+  EXPECT_EQ(quad.GetDimension(), 3u);
+  EXPECT_EQ(quad.GetNumMoments(), 4u);
+
+  // Check weight sum = 1.0
+  const double weight_sum = std::accumulate(quad.weights.begin(), quad.weights.end(), 0.0);
+  EXPECT_NEAR(weight_sum, 1.0, 1e-10);
+
+  // Check point-wise values
+  const double w = 1.0 / 6.0;
+  EXPECT_NEAR(quad.omegas[0].x, 1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[0].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[0].z, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].x, -1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].z, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].x, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].y, 1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].z, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].x, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].y, -1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].z, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[4].x, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[4].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[4].z, 1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[5].x, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[5].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[5].z, -1.0, 1e-12);
+
+  // Check point-wise weights
+  for (size_t i = 0; i < 6; ++i)
+    EXPECT_NEAR(quad.weights[i], w, 1e-12);
+}
+
+TEST(QuadratureTest, LebedevQuadrature2DXY)
+{
+  // Order 3 upper hemisphere: 5 points, scattering_order=1 -> 3 moments
+  LebedevQuadrature2DXY quad(3, 1);
+  ASSERT_EQ(quad.omegas.size(), 5);
+  EXPECT_EQ(quad.GetDimension(), 2u);
+  EXPECT_EQ(quad.GetNumMoments(), 3u);
+
+  // Check weight sum = 1.0
+  const double weight_sum = std::accumulate(quad.weights.begin(), quad.weights.end(), 0.0);
+  EXPECT_NEAR(weight_sum, 1.0, 1e-10);
+
+  // Check point-wise values
+  EXPECT_NEAR(quad.omegas[0].x, 1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[0].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[0].z, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].x, -1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].z, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].x, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].y, 1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].z, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].x, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].y, -1.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].z, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[4].x, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[4].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[4].z, 1.0, 1e-12);
+
+  // Check point-wise weights
+  const double w_eq = 1.0 / 6.0;
+  const double w_pole = 1.0 / 3.0;
+  EXPECT_NEAR(quad.weights[0], w_eq, 1e-12);
+  EXPECT_NEAR(quad.weights[1], w_eq, 1e-12);
+  EXPECT_NEAR(quad.weights[2], w_eq, 1e-12);
+  EXPECT_NEAR(quad.weights[3], w_eq, 1e-12);
+  EXPECT_NEAR(quad.weights[4], w_pole, 1e-12);
+}
+
+TEST(QuadratureTest, SLDFEsqQuadrature3DXYZ)
+{
+  // Level 0: 24 spherical quadrilaterals × 4 sub-points = 96 directions
+  // scattering_order=1 -> 4 moments (3D)
+  SLDFEsqQuadrature3DXYZ quad(0, 1);
+  ASSERT_EQ(quad.omegas.size(), 96);
+  EXPECT_EQ(quad.GetDimension(), 3u);
+  EXPECT_EQ(quad.GetNumMoments(), 4u);
+
+  // Check weight sum = 1.0
+  const double weight_sum = std::accumulate(quad.weights.begin(), quad.weights.end(), 0.0);
+  EXPECT_NEAR(weight_sum, 1.0, 1e-10);
+
+  // Reference values for the first face (4 points)
+  const double tol = 1e-10;
+  const std::array<std::array<double, 4>, 4> ref = {{
+    {0.0160210613009911, 0.9581267809141927, 0.2024760130176001, 0.2024760130176001},
+    {0.0101028063271445, 0.7745966692417845, 0.6109051323703643, 0.1636915368706672},
+    {0.0054399927113861, 0.6675548182224416, 0.5264838861104881, 0.5264838861104881},
+    {0.0101028063271445, 0.7745966692417845, 0.1636915368706672, 0.6109051323703643},
+  }};
+
+  // Checks point-wise values and weights
+  for (size_t i = 0; i < 4; ++i)
+  {
+    EXPECT_NEAR(quad.weights[i], ref[i][0], tol);
+    EXPECT_NEAR(quad.omegas[i].x, ref[i][1], tol);
+    EXPECT_NEAR(quad.omegas[i].y, ref[i][2], tol);
+    EXPECT_NEAR(quad.omegas[i].z, ref[i][3], tol);
+  }
+}
+
+TEST(QuadratureTest, GLProductQuadrature1DSlab)
+{
+  // n_polar=4: 4 directions along the slab axis (phi=0), scattering_order=1 -> 2 moments (1D)
+  GLProductQuadrature1DSlab quad(4, 1);
+  ASSERT_EQ(quad.omegas.size(), 4);
+  EXPECT_EQ(quad.GetDimension(), 1u);
+  EXPECT_EQ(quad.GetNumMoments(), 2u);
+
+  // Check weight sum = 1.0
+  const double weight_sum = std::accumulate(quad.weights.begin(), quad.weights.end(), 0.0);
+  EXPECT_NEAR(weight_sum, 1.0, 1e-12);
+
+  // Check point-wise values
+  const double mu0 = 0.86113631159405;
+  const double mu1 = 0.33998104358486;
+  const double x0 = std::sqrt(1.0 - mu0 * mu0);
+  const double x1 = std::sqrt(1.0 - mu1 * mu1);
+  EXPECT_NEAR(quad.omegas[0].x, x0, 1e-12);
+  EXPECT_NEAR(quad.omegas[0].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[0].z, mu0, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].x, x1, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].z, mu1, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].x, x1, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].z, -mu1, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].x, x0, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].y, 0.0, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].z, -mu0, 1e-12);
+
+  // Check point-wise weights
+  const double w0 = 0.34785484513745 / 2.0;
+  const double w1 = 0.65214515486255 / 2.0;
+  EXPECT_NEAR(quad.weights[0], w0, 1e-12);
+  EXPECT_NEAR(quad.weights[1], w1, 1e-12);
+  EXPECT_NEAR(quad.weights[2], w1, 1e-12);
+  EXPECT_NEAR(quad.weights[3], w0, 1e-12);
+}
+
+TEST(QuadratureTest, GLCProductQuadrature2DXY)
+{
+  // n_polar=2, n_azim=4: upper hemisphere only -> 1 polar × 4 azimuthal = 4 directions
+  // scattering_order=1 -> 3 moments (2D)
+  GLCProductQuadrature2DXY quad(2, 4, 1);
+  ASSERT_EQ(quad.omegas.size(), 4);
+  EXPECT_EQ(quad.GetDimension(), 2u);
+  EXPECT_EQ(quad.GetNumMoments(), 3u);
+
+  // Check weight sum = 1.0
+  const double weight_sum = std::accumulate(quad.weights.begin(), quad.weights.end(), 0.0);
+  EXPECT_NEAR(weight_sum, 1.0, 1e-12);
+
+  // Check pointwise values
+  const double v = 1.0 / std::sqrt(3.0);
+  const double w = 0.25;
+  EXPECT_NEAR(quad.omegas[0].x, v, 1e-12);
+  EXPECT_NEAR(quad.omegas[0].y, v, 1e-12);
+  EXPECT_NEAR(quad.omegas[0].z, v, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].x, -v, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].y, v, 1e-12);
+  EXPECT_NEAR(quad.omegas[1].z, v, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].x, -v, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].y, -v, 1e-12);
+  EXPECT_NEAR(quad.omegas[2].z, v, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].x, v, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].y, -v, 1e-12);
+  EXPECT_NEAR(quad.omegas[3].z, v, 1e-12);
+
+  // Check point-wise weights
+  for (size_t i = 0; i < 4; ++i)
+    EXPECT_NEAR(quad.weights[i], w, 1e-12);
+}
+
+TEST(QuadratureTest, GLCProductQuadrature3DXYZ)
+{
+  // n_polar=2, n_azim=4: full sphere -> 2 polar × 4 azimuthal = 8 directions
+  // scattering_order=1 -> 4 moments (3D)
+  GLCProductQuadrature3DXYZ quad(2, 4, 1);
+  ASSERT_EQ(quad.omegas.size(), 8);
+  EXPECT_EQ(quad.GetDimension(), 3u);
+  EXPECT_EQ(quad.GetNumMoments(), 4u);
+
+  // Check weight sum = 1.0
+  const double weight_sum = std::accumulate(quad.weights.begin(), quad.weights.end(), 0.0);
+  EXPECT_NEAR(weight_sum, 1.0, 1e-12);
+
+  // Check point-wise values and weights
+  const double v = 1.0 / std::sqrt(3.0);
+  const double s = std::sqrt(2.0 / 3.0);
+  const double w = 0.125;
+  const std::array<double, 4> phi_vals = {
+    M_PI / 4.0, 3.0 * M_PI / 4.0, 5.0 * M_PI / 4.0, 7.0 * M_PI / 4.0};
+  for (size_t i = 0; i < 4; ++i)
+  {
+    const double cx = s * std::cos(phi_vals[i]);
+    const double cy = s * std::sin(phi_vals[i]);
+    EXPECT_NEAR(quad.omegas[2 * i + 0].x, cx, 1e-12);
+    EXPECT_NEAR(quad.omegas[2 * i + 0].y, cy, 1e-12);
+    EXPECT_NEAR(quad.omegas[2 * i + 0].z, v, 1e-12);
+    EXPECT_NEAR(quad.omegas[2 * i + 1].x, cx, 1e-12);
+    EXPECT_NEAR(quad.omegas[2 * i + 1].y, cy, 1e-12);
+    EXPECT_NEAR(quad.omegas[2 * i + 1].z, -v, 1e-12);
+    EXPECT_NEAR(quad.weights[2 * i + 0], w, 1e-12);
+    EXPECT_NEAR(quad.weights[2 * i + 1], w, 1e-12);
+  }
+}
+
+TEST(QuadratureTest, GLCTriangularQuadrature2DXY)
+{
+  // n_polar=4, upper hemisphere only: 4+8=12 directions
+  // scattering_order=1 -> 3 moments (2D)
+  GLCTriangularQuadrature2DXY quad(4, 1);
+  ASSERT_EQ(quad.omegas.size(), 12);
+  EXPECT_EQ(quad.GetDimension(), 2u);
+  EXPECT_EQ(quad.GetNumMoments(), 3u);
+
+  // Check weight sum = 1.0
+  const double weight_sum = std::accumulate(quad.weights.begin(), quad.weights.end(), 0.0);
+  EXPECT_NEAR(weight_sum, 1.0, 1e-12);
+
+  // Reference values (W, X, Y, Z)
+  const double tol = 5e-4;
+  const std::array<std::array<double, 4>, 12> ref = {{
+    {0.0870, 0.3595, 0.3595, 0.8611},
+    {0.0870, -0.3595, 0.3595, 0.8611},
+    {0.0870, -0.3595, -0.3595, 0.8611},
+    {0.0870, 0.3595, -0.3595, 0.8611},
+    {0.0815, 0.8688, 0.3599, 0.3400},
+    {0.0815, 0.3599, 0.8688, 0.3400},
+    {0.0815, -0.3599, 0.8688, 0.3400},
+    {0.0815, -0.8688, 0.3599, 0.3400},
+    {0.0815, -0.8688, -0.3599, 0.3400},
+    {0.0815, -0.3599, -0.8688, 0.3400},
+    {0.0815, 0.3599, -0.8688, 0.3400},
+    {0.0815, 0.8688, -0.3599, 0.3400},
+  }};
+
+  // Check point-wise values and weights
+  for (size_t i = 0; i < 12; ++i)
+  {
+    EXPECT_NEAR(quad.weights[i], ref[i][0], tol);
+    EXPECT_NEAR(quad.omegas[i].x, ref[i][1], tol);
+    EXPECT_NEAR(quad.omegas[i].y, ref[i][2], tol);
+    EXPECT_NEAR(quad.omegas[i].z, ref[i][3], tol);
+  }
+}
+
+TEST(QuadratureTest, GLCTriangularQuadrature3DXYZ)
+{
+  // n_polar=4, full sphere: 4+8+8+4=24 directions
+  // scattering_order=1 -> 4 moments (3D)
+  GLCTriangularQuadrature3DXYZ quad(4, 1);
+  ASSERT_EQ(quad.omegas.size(), 24);
+  EXPECT_EQ(quad.GetDimension(), 3u);
+  EXPECT_EQ(quad.GetNumMoments(), 4u);
+
+  // Check weight sum = 1.0
+  const double weight_sum = std::accumulate(quad.weights.begin(), quad.weights.end(), 0.0);
+  EXPECT_NEAR(weight_sum, 1.0, 1e-12);
+
+  // Reference values (W, X, Y, Z)
+  const double tol = 5e-4;
+  const std::array<std::array<double, 4>, 24> ref = {{
+    {0.0435, 0.3595, 0.3595, 0.8611},    {0.0435, -0.3595, 0.3595, 0.8611},
+    {0.0435, -0.3595, -0.3595, 0.8611},  {0.0435, 0.3595, -0.3595, 0.8611},
+    {0.0408, 0.8688, 0.3599, 0.3400},    {0.0408, 0.3599, 0.8688, 0.3400},
+    {0.0408, -0.3599, 0.8688, 0.3400},   {0.0408, -0.8688, 0.3599, 0.3400},
+    {0.0408, -0.8688, -0.3599, 0.3400},  {0.0408, -0.3599, -0.8688, 0.3400},
+    {0.0408, 0.3599, -0.8688, 0.3400},   {0.0408, 0.8688, -0.3599, 0.3400},
+    {0.0408, 0.8688, 0.3599, -0.3400},   {0.0408, 0.3599, 0.8688, -0.3400},
+    {0.0408, -0.3599, 0.8688, -0.3400},  {0.0408, -0.8688, 0.3599, -0.3400},
+    {0.0408, -0.8688, -0.3599, -0.3400}, {0.0408, -0.3599, -0.8688, -0.3400},
+    {0.0408, 0.3599, -0.8688, -0.3400},  {0.0408, 0.8688, -0.3599, -0.3400},
+    {0.0435, 0.3595, 0.3595, -0.8611},   {0.0435, -0.3595, 0.3595, -0.8611},
+    {0.0435, -0.3595, -0.3595, -0.8611}, {0.0435, 0.3595, -0.3595, -0.8611},
+  }};
+
+  // Check point-wise values and weights
+  for (size_t i = 0; i < 24; ++i)
+  {
+    EXPECT_NEAR(quad.weights[i], ref[i][0], tol) << "weight mismatch at index " << i;
+    EXPECT_NEAR(quad.omegas[i].x, ref[i][1], tol) << "omega.x mismatch at index " << i;
+    EXPECT_NEAR(quad.omegas[i].y, ref[i][2], tol) << "omega.y mismatch at index " << i;
+    EXPECT_NEAR(quad.omegas[i].z, ref[i][3], tol) << "omega.z mismatch at index " << i;
+  }
 }
