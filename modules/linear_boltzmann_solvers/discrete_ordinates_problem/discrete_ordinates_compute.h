@@ -35,6 +35,7 @@ void ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor 
 
 /**
  * Computes the angular flux based leakage from boundary surfaces.
+ * \param do_problem The discrete ordinates problem supplying the current angular flux state.
  * \param groupset_id The groupset for which to compute the leakage.
  * \param boundary_id The boundary id for which to perform the integration.
  *
@@ -47,6 +48,7 @@ std::vector<double> ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
 /**
  * Computes the group-wise angular flux-based leakage from the specified boundaries.
  *
+ * \param do_problem The discrete ordinates problem supplying the current angular flux state.
  * \param boundary_ids The boundary ids to compute leakages on.
  * \return A map of boundary ids to group-wise leakages.
  */

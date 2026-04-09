@@ -111,9 +111,9 @@ WrapFieldFunctionGridBased(py::module& ffunc)
     "CanUpdate",
     &FieldFunctionGridBased::CanUpdate,
     R"(
-    Return whether this field function can currently refresh itself from its owning solver.
+    Return whether this field function can currently refresh itself from its owning problem.
 
-    This returns ``False`` if the field function has no update callback or if the owning solver
+    This returns ``False`` if the field function has no update callback or if the owning problem
     has already been destroyed.
     )"
   );
@@ -121,9 +121,9 @@ WrapFieldFunctionGridBased(py::module& ffunc)
     "Update",
     &FieldFunctionGridBased::Update,
     R"(
-    Refresh this field function from its owning solver.
+    Refresh this field function from its owning problem.
 
-    Raises an error if the field function is not refreshable or if its owning solver has already
+    Raises an error if the field function is not refreshable or if its owning problem has already
     been destroyed.
     )"
   );

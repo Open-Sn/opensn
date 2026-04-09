@@ -23,6 +23,7 @@ public:
   /**
    * Constructor.
    * \param gs_context_ptr Context Pointer to abstract context.
+   * \param verbose If true, print per-iteration convergence information.
    */
   explicit ClassicRichardson(const std::shared_ptr<WGSContext>& gs_context_ptr, bool verbose);
 

@@ -73,6 +73,7 @@ public:
   /// \param Npolar Number of polar angles.
   /// \param scattering_order Scattering order for moment calculations.
   /// \param verbose Enable verbose output.
+  /// \param method Harmonic operator construction method used to build the moment operators.
   explicit GLCTriangularQuadrature3DXYZ(
     unsigned int Npolar,
     unsigned int scattering_order,
@@ -101,6 +102,7 @@ public:
   /// \param Npolar Number of polar angles.
   /// \param scattering_order Scattering order for moment calculations.
   /// \param verbose Enable verbose output.
+  /// \param method Harmonic operator construction method used to build the moment operators.
   explicit GLCTriangularQuadrature2DXY(
     unsigned int Npolar,
     unsigned int scattering_order,

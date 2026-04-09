@@ -2,8 +2,6 @@
 OpenSn User Guide (Draft)
 =========================
 
-Welcome to the OpenSn user guide!
-
 .. toctree::
    :maxdepth: 2
    :numbered:
@@ -19,7 +17,8 @@ Welcome to the OpenSn user guide!
    Boundary Conditions and Sources <boundary_conditions_sources>
    Discrete-Ordinates Problems <discrete_ordinates_problems>
    Solvers <solvers>
-   Post Processing <post_processing>
+   Example Problems <example_problems>
+   Post Processors <post_processors>
    Visualization <visualization>
    Running Problems <running_problems>
    Iterative Best Practices <iterative_best_practices>

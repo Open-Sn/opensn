@@ -23,6 +23,7 @@ public:
   /// \param quadrature_order Order of the Lebedev quadrature set to load.
   /// \param scattering_order Scattering order for moment calculations.
   /// \param verbose Enable verbose output.
+  /// \param method Harmonic operator construction method used to build the moment operators.
   LebedevQuadrature3DXYZ(unsigned int quadrature_order,
                          unsigned int scattering_order,
                          bool verbose = false,
@@ -45,6 +46,7 @@ public:
   /// \param quadrature_order Order of the Lebedev quadrature set to load.
   /// \param scattering_order Scattering order for moment calculations.
   /// \param verbose Enable verbose output.
+  /// \param method Harmonic operator construction method used to build the moment operators.
   LebedevQuadrature2DXY(unsigned int quadrature_order,
                         unsigned int scattering_order,
                         bool verbose = false,
