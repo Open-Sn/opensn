@@ -83,7 +83,7 @@ public:
   size_t GetMaxAngleSetSize() const;
 
   /// Copy psi_new to psi_old
-  void UpdatePsiOld() override;
+  void UpdatePsiOld();
 
   void PrintSimHeader() override;
 
@@ -94,6 +94,10 @@ public:
 
   /// Reorient an adjoint solution to account for backwards streaming.
   void ReorientAdjointSolution() override;
+
+  BalanceTable ComputeBalanceTable(double scaling_factor = 1.0) override;
+
+  void ComputeBalance(double scaling_factor = 1.0) override;
 
   /// Zeroes all the outflow data-structures required to compute balance.
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
@@ -107,7 +111,7 @@ public:
   CreateAngularFluxFieldFunctionList(const std::vector<unsigned int>& groups,
                                      const std::vector<size_t>& angles);
 
-  void SetSaveAngularFlux(bool save) override;
+  void SetSaveAngularFlux(bool save);
 
   void SetBlockID2XSMap(const BlockID2XSMap& xs_map) override;
 

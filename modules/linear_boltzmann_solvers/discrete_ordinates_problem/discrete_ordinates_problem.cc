@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/vacuum_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h"
@@ -18,7 +19,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/math/functions/function.h"
 #include "framework/data_types/allowable_range.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_linear_solver.h"
@@ -26,8 +27,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/transient_source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -792,7 +793,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 void
 DiscreteOrdinatesProblem::SetSaveAngularFlux(bool save)
 {
-  LBSProblem::SetSaveAngularFlux(save);
+  options_.save_angular_flux = save;
 
   if (initialized_)
     UpdateAngularFluxStorage();
@@ -1870,6 +1871,18 @@ bool
 DiscreteOrdinatesProblem::WriteProblemRestartData(hid_t file_id) const
 {
   return DiscreteOrdinatesProblemIO::WriteRestartData(*this, file_id);
+}
+
+BalanceTable
+DiscreteOrdinatesProblem::ComputeBalanceTable(double scaling_factor)
+{
+  return opensn::ComputeBalanceTable(*this, scaling_factor);
+}
+
+void
+DiscreteOrdinatesProblem::ComputeBalance(double scaling_factor)
+{
+  opensn::ComputeBalance(*this, scaling_factor);
 }
 
 } // namespace opensn

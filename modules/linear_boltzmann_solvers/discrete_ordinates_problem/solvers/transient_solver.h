@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_compute.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "framework/object_factory.h"
 #include <memory>
 #include <string>

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/nl_keigen_acc_context.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/nl_keigen_acc_context.h"
 #include "framework/math/nonlinear_solver/petsc_nonlinear_solver.h"
 #include <petscsnes.h>
 

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
@@ -825,8 +824,7 @@ void
 LBSProblem::ValidateRuntimeModeConfiguration() const
 {
   if (options_.adjoint)
-    if (const auto* do_problem = dynamic_cast<const DiscreteOrdinatesProblem*>(this);
-        do_problem and do_problem->IsTimeDependent())
+    if (IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
 }
 
@@ -1288,12 +1286,6 @@ LBSProblem::~LBSProblem()
 }
 
 void
-LBSProblem::SetSaveAngularFlux(bool save)
-{
-  options_.save_angular_flux = save;
-}
-
-void
 LBSProblem::ZeroPhi()
 {
   std::fill(phi_old_local_.begin(), phi_old_local_.end(), 0.0);
@@ -1389,8 +1381,7 @@ LBSProblem::SetAdjoint(bool adjoint)
     not initialized_, GetName() + ": Problem must be fully constructed before calling SetAdjoint.");
 
   if (adjoint)
-    if (const auto* do_problem = dynamic_cast<const DiscreteOrdinatesProblem*>(this);
-        do_problem and do_problem->IsTimeDependent())
+    if (IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
 
   const bool mode_changed = (adjoint != options_.adjoint);
@@ -1423,6 +1414,23 @@ bool
 LBSProblem::IsAdjoint() const
 {
   return options_.adjoint;
+}
+
+BalanceTable
+LBSProblem::ComputeBalanceTable(double scaling_factor)
+{
+  (void)scaling_factor;
+  OpenSnInvalidArgument(GetName() + ": Balance table computation is not implemented for this "
+                                    "problem type.");
+  return {};
+}
+
+void
+LBSProblem::ComputeBalance(double scaling_factor)
+{
+  (void)scaling_factor;
+  OpenSnInvalidArgument(GetName() + ": Balance computation is not implemented for this problem "
+                                    "type.");
 }
 
 } // namespace opensn

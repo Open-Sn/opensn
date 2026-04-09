@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
@@ -96,8 +97,6 @@ public:
 
   /// Returns true if the problem is in adjoint mode.
   bool IsAdjoint() const;
-
-  virtual void SetSaveAngularFlux(bool save);
 
   void ZeroPhi();
   void CopyPhiNewToOld();
@@ -291,14 +290,16 @@ public:
   /// Makes a source-moments vector from scattering and fission based on the latest phi-solution.
   std::vector<double> MakeSourceMomentsFromPhi();
 
+  virtual BalanceTable ComputeBalanceTable(double scaling_factor = 1.0);
+
+  virtual void ComputeBalance(double scaling_factor = 1.0);
+
   /**
    * A method for post-processing an adjoint solution.
    *
    * @note This does nothing for diffusion-based solvers.
    */
   virtual void ReorientAdjointSolution() {};
-
-  virtual void UpdatePsiOld() {};
 
 protected:
   /// Input parameters based construction.
