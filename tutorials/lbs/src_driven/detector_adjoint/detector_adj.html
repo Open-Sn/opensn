@@ -54,7 +54,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../../mesh/index.html">1. Meshing and Partitioning</a></li>
@@ -72,6 +72,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../glovebox_adjoint/glovebox_adj.html">5.3.5. Adjoint Method with Multiple Detector Responses</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../transient/index.html">5.4. Transient</a></li>
 </ul>
 </li>
 </ul>
@@ -111,7 +112,7 @@
              
   <section id="A-Multigroup-Adjoint-Response">
 <h1><span class="section-number">5.3.4. </span>A Multigroup Adjoint Response<a class="headerlink" href="#A-Multigroup-Adjoint-Response" title="Link to this heading"></a></h1>
-<p>In this example, we explore the use of an adjoint formulation of the linear Boltzmann equation to compute response functions in a specified region of interest (RoI). This problem builds on the corresponding example in <a class="reference external" href="../detector/detector_1d.ipynb">A Multigroup 1D Detector</a>. Additional information on the adjoint formalism can be found in the <a class="reference external" href="../../../theory/adjoint.rst">theory manual</a>.</p>
+<p>In this example, we explore the use of an adjoint formulation of the linear Boltzmann equation to compute response functions in a specified region of interest (RoI). This problem builds on the corresponding example in <a class="reference internal" href="../detector_forward/detector.html"><span class="doc">A Multigroup 1D Detector</span></a>. Additional information on the adjoint formalism can be found in the <a class="reference external" href="../../../theory/adjoint.html">theory manual</a>.</p>
 <p>The following is a complete transport simulation example. Each element of the simulation can be described in the sections below:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#Prerequisites"><span class="std std-ref">Prerequisites</span></a></p></li>
@@ -221,7 +222,7 @@ OpenSn version 0.0.1
 <section id="Geometry">
 <h2><span class="section-number">5.3.4.2. </span><strong>Geometry</strong><a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 1D multi-group, source-driven detector response problem using the WIMS69 energy group structure. The neutron source is modeled as a 0.4 cm slab of Cf-252 encased in 0.1 cm slabs of stainless steel (SS-316). The detector is modeled as a 2.4 cm region of He-3 enclosed in a 0.07 cm SS-316 sleeve and surrounded by high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="b44f7ddf79ae4d8d832f523e07773a57" src="../../../../_images/detector_geom.png" /></p>
+<p><img alt="df337de58bae4637a8c6afef8f1dc833" src="../../../../_images/detector_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -714,7 +715,7 @@ OpenSn version 0.0.1
 [0]  Reading flux moments from /home/jason/Documents/Work/OpenSn/opensn-jay/doc/source/tutorials/lbs/src_driven/detector_adjoint/Data/adjphi_p
 </pre></div></div>
 </div>
-<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a buffer name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger,}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference external" href="../../../theory/adjoint.rst">duality principle</a> such that:</p>
+<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a buffer name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger,}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference external" href="../../../theory/adjoint.html">duality principle</a> such that:</p>
 <div class="math notranslate nohighlight">
 \[\text{QoI} =  \sum^G_g \, \text{RR}^g = \sum^G_g \, \int_\mathcal{D} d^3r \, \int_{(4\pi)}   d\Omega  \, q^g(\vec{r},\vec\Omega) \psi^{\dagger,g}(\vec{r},\vec\Omega) = \sum^G_g \, \int_\mathcal{D}  d^3r  \, q^g(\vec{r}) \phi^{\dagger,g}(\vec{r})\]</div>
 <div class="nbinput docutils container">

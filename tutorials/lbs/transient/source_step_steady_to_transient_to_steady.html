@@ -1,0 +1,639 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.4.2. Switching From Steady-State to Transient to Steady-State in OpenSn &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="C++ API" href="../../../capi/rst/index.html" />
+    <link rel="prev" title="5.4.1. Switching From Steady-State Mode to Transient Mode in OpenSn" href="keigen_to_transient.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../aquad/index.html">3. Angular Quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">5. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../primer/index.html">5.1. Primer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../keigen/index.html">5.2. KEigen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../src_driven/index.html">5.3. Source Driven</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">5.4. Transient</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="keigen_to_transient.html">5.4.1. Switching From Steady-State Mode to Transient Mode in OpenSn</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.4.2. Switching From Steady-State to Transient to Steady-State in OpenSn</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.4. </span>Transient</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.4.2. </span>Switching From Steady-State to Transient to Steady-State in OpenSn</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Switching-From-Steady-State-to-Transient-to-Steady-State-in-OpenSn">
+<h1><span class="section-number">5.4.2. </span>Switching From Steady-State to Transient to Steady-State in OpenSn<a class="headerlink" href="#Switching-From-Steady-State-to-Transient-to-Steady-State-in-OpenSn" title="Link to this heading"></a></h1>
+<section id="Using-this-Notebook">
+<h2><span class="section-number">5.4.2.1. </span>Using this Notebook<a class="headerlink" href="#Using-this-Notebook" title="Link to this heading"></a></h2>
+<p>Before running this example, make sure the <strong>Python module of OpenSn</strong> is available in your environment.</p>
+<section id="Converting-and-Running-this-Notebook-from-the-Terminal">
+<h3><span class="section-number">5.4.2.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
+<p>To run this notebook from the terminal, use:</p>
+<p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">source_step_steady_to_transient_to_steady.ipynb</span></code></p>
+<p>To run in parallel (for example, 4 ranks):</p>
+<p><code class="docutils literal notranslate"><span class="pre">mpiexec</span> <span class="pre">-n</span> <span class="pre">4</span> <span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">source_step_steady_to_transient_to_steady.ipynb</span></code></p>
+</section>
+</section>
+<section id="Import-Requirements">
+<h2><span class="section-number">5.4.2.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h2>
+<p>Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python’s PATH.</p>
+<section id="Disable-colorized-output">
+<h3><span class="section-number">5.4.2.2.1. </span>Disable colorized output<a class="headerlink" href="#Disable-colorized-output" title="Link to this heading"></a></h3>
+<p>For notebook rendering, plain (non-colorized) output is typically easier to read.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+    <span class="c1"># In notebooks, __file__ is typically undefined. Prefer cwd as the tutorial dir.</span>
+    <span class="n">tutorial_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="k">if</span> <span class="s2">&quot;__file__&quot;</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">else</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
+    <span class="c1"># If launched from repo root (or another directory), recover the tutorial directory.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">tutorial_dir</span> <span class="o">/</span> <span class="s2">&quot;xs1g_prompt_crit.cxs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;doc/source/tutorials/lbs/transient&quot;</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">tutorial_dir</span> <span class="o">=</span> <span class="n">candidate</span>
+    <span class="n">repo_root</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">build_dir</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Prefer normal environment import (e.g., site-packages), then fall back to local build.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyopensn</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="c1"># Find repo root robustly by walking upward.</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="n">tutorial_dir</span><span class="p">,</span> <span class="o">*</span><span class="n">tutorial_dir</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+            <span class="n">has_src_pyopensn</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">&quot;pyopensn&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">&quot;CMakeLists.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="n">has_bld_pyopensn</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s2">&quot;build&quot;</span> <span class="o">/</span> <span class="s2">&quot;pyopensn&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">has_bld_pyopensn</span> <span class="ow">or</span> <span class="n">has_src_pyopensn</span><span class="p">:</span>
+                <span class="n">repo_root</span> <span class="o">=</span> <span class="n">p</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="n">repo_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">repo_root</span> <span class="o">=</span> <span class="n">tutorial_dir</span>
+        <span class="n">build_dir</span> <span class="o">=</span> <span class="n">repo_root</span> <span class="o">/</span> <span class="s2">&quot;build&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">build_dir</span> <span class="o">/</span> <span class="s2">&quot;pyopensn&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="c1"># Avoid stale module path order issues.</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">build_dir</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">repo_root</span><span class="p">))]</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">build_dir</span><span class="p">))</span>
+        <span class="c1"># Preload local libopensn if available (Linux/macOS).</span>
+        <span class="n">lib_candidates</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">build_dir</span> <span class="o">/</span> <span class="s2">&quot;libopensn.so&quot;</span><span class="p">,</span>
+            <span class="n">build_dir</span> <span class="o">/</span> <span class="s2">&quot;libopensn.dylib&quot;</span><span class="p">,</span>
+            <span class="n">build_dir</span> <span class="o">/</span> <span class="s2">&quot;lib&quot;</span> <span class="o">/</span> <span class="s2">&quot;libopensn.so&quot;</span><span class="p">,</span>
+            <span class="n">build_dir</span> <span class="o">/</span> <span class="s2">&quot;lib&quot;</span> <span class="o">/</span> <span class="s2">&quot;libopensn.dylib&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">lib_path</span> <span class="ow">in</span> <span class="n">lib_candidates</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lib_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">lib_path</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">RTLD_GLOBAL</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pyopensn</span>
+        <span class="c1"># If we used fallback import, ensure we loaded from local build.</span>
+        <span class="n">pyopensn_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pyopensn</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">expected_parent</span> <span class="o">=</span> <span class="p">(</span><span class="n">build_dir</span> <span class="o">/</span> <span class="s2">&quot;pyopensn&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">expected_parent</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">expected_parent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pyopensn_path</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Imported pyopensn from unexpected location: </span><span class="si">{</span><span class="n">pyopensn_path</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected under </span><span class="si">{</span><span class="n">expected_parent</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSlab</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span>
+        <span class="n">SteadyStateSourceSolver</span><span class="p">,</span>
+        <span class="n">TransientSolver</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationVolume</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># In opensn_console mode, solver symbols are preloaded by the runtime.</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">max_phi</span><span class="p">(</span><span class="n">problem</span><span class="p">):</span>
+    <span class="n">fflist</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">(</span><span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">monitor_volume</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">infx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">field_interp</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+    <span class="n">field_interp</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
+    <span class="n">field_interp</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">monitor_volume</span><span class="p">)</span>
+    <span class="n">field_interp</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">fflist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">field_interp</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+    <span class="n">field_interp</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">field_interp</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+<br/><br/></pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Mesh">
+<h2><span class="section-number">5.4.2.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
+<p>We construct a 1D Cartesian mesh (10 cells on ([0,1])) so this tutorial focuses on workflow behavior rather than geometry complexity.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_cells_1d</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">L</span> <span class="o">/</span> <span class="n">num_cells_1d</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">dx</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cells_1d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">])</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+OpenSn version 0.0.1
+2026-03-03 09:59:46 Running OpenSn with 1 processes.
+
+[0]  Done checking cell-center-to-face orientations
+[0]  00:00:00.0 Establishing cell connectivity.
+[0]  00:00:00.0 Vertex cell subscriptions complete.
+[0]  00:00:00.0 Surpassing cell 1 of 10 (10%)
+[0]  00:00:00.0 Surpassing cell 2 of 10 (20%)
+[0]  00:00:00.0 Surpassing cell 4 of 10 (30%)
+[0]  00:00:00.0 Surpassing cell 5 of 10 (40%)
+[0]  00:00:00.0 Surpassing cell 6 of 10 (50%)
+[0]  00:00:00.0 Surpassing cell 7 of 10 (60%)
+[0]  00:00:00.0 Surpassing cell 8 of 10 (70%)
+[0]  00:00:00.0 Surpassing cell 9 of 10 (80%)
+[0]  00:00:00.0 Surpassing cell 10 of 10 (90%)
+[0]  00:00:00.0 Establishing cell boundary connectivity.
+[0]  00:00:00.0 Done establishing cell connectivity.
+[0]  Number of cells per partition (max,min,avg) = 10,10,10
+[0]
+[0]  Mesh statistics:
+[0]    Global cell count             : 10
+[0]    Local cell count (avg,max,min): 10,10,10
+[0]    Ghost-to-local ratio (avg)    : 0
+[0]
+</pre></div></div>
+</div>
+</section>
+<section id="Material-IDs">
+<h2><span class="section-number">5.4.2.4. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h2>
+<p>Assign a single material ID (<code class="docutils literal notranslate"><span class="pre">0</span></code>) to all cells.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  00:00:00.0 Done setting block id 0 to all cells
+</pre></div></div>
+</div>
+</section>
+<section id="Cross-Sections">
+<h2><span class="section-number">5.4.2.5. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h2>
+<p>Use a one-group pure absorber model:</p>
+<div class="math notranslate nohighlight">
+\[\Sigma_t = 1.0\]</div>
+<div class="math notranslate nohighlight">
+\[\Sigma_s = 0.0\]</div>
+<p>For this setup, the steady source-driven solution is</p>
+<div class="math notranslate nohighlight">
+\[\phi_{ss} = Q / \Sigma_t\]</div>
+<p>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sigma_t</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">sigma_s</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">q0</span> <span class="o">=</span> <span class="mf">2.0</span>  <span class="c1"># initial steady-state source strength</span>
+<span class="n">q1</span> <span class="o">=</span> <span class="mf">3.0</span>  <span class="c1"># post-step source strength</span>
+
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">t_end</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="p">,</span> <span class="n">sigma_s</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">src0</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="n">q0</span><span class="p">],</span> <span class="n">start_time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="mf">1.0e9</span><span class="p">)</span>
+<span class="n">src1</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="n">q1</span><span class="p">],</span> <span class="n">start_time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="mf">1.0e9</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Angular-Quadrature">
+<h2><span class="section-number">5.4.2.6. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
+<p>Use a low-order 1D slab quadrature.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pquad</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSlab</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Using 1D Slab Gauss–Legendre product quadrature with 4 angles and weight sum of 1.00
+</pre></div></div>
+</div>
+</section>
+<section id="Linear-Boltzmann-Solver">
+<h2><span class="section-number">5.4.2.7. </span>Linear Boltzmann Solver<a class="headerlink" href="#Linear-Boltzmann-Solver" title="Link to this heading"></a></h2>
+<p>Create one <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code> object that is reused across all three phases:</p>
+<ol class="arabic simple">
+<li><p>steady-state source solve with <code class="docutils literal notranslate"><span class="pre">Q0</span></code>,</p></li>
+<li><p>transient with source stepped to <code class="docutils literal notranslate"><span class="pre">Q1</span></code>,</p></li>
+<li><p>final steady-state source solve at <code class="docutils literal notranslate"><span class="pre">Q1</span></code>.</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">pquad</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_richardson&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">src0</span><span class="p">],</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_outer_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_ags_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]
+[0]  Initializing DiscreteOrdinatesProblem
+[0]
+[0]  Scattering order    : 0
+[0]  Number of moments   : 1
+[0]  Number of groups    : 1
+[0]  Number of groupsets : 1
+[0]
+[0]  ***** Groupset 0 *****
+[0]  Number of angles: 4
+[0]  Groups:
+[0]      0
+[0]
+[0]  Initializing spatial discretization metadata.
+[0]  Computing unit integrals.
+[0]  Ghost cell unit cell-matrix ratio: 0%
+[0]  Cell matrices computed.
+[0]  Initializing parallel arrays. G=1 M=1
+[0]  Done with parallel arrays.
+[0]  Volumetric source #0 has 10 total subscribing cells.
+[0]  00:00:00.0 Initializing sweep datastructures.
+[0]  00:00:00.0 Done initializing sweep datastructures.
+</pre></div></div>
+</div>
+</section>
+<section id="Steady-State-Solve-(Initial-Source-(Q_0))">
+<h2><span class="section-number">5.4.2.8. </span>Steady-State Solve (Initial Source (Q_0))<a class="headerlink" href="#Steady-State-Solve-(Initial-Source-(Q_0))" title="Link to this heading"></a></h2>
+<p>Solve a source-driven steady-state problem and compare against</p>
+<div class="math notranslate nohighlight">
+\[\phi_{ss,0} = Q_0 / \Sigma_t\]</div>
+<p>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">steady0</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">steady0</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">steady0</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">phi_ss0_num</span> <span class="o">=</span> <span class="n">max_phi</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">phi_ss0_ana</span> <span class="o">=</span> <span class="n">q0</span> <span class="o">/</span> <span class="n">sigma_t</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial steady numeric phi_ss0 = </span><span class="si">{</span><span class="n">phi_ss0_num</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial steady analytic phi_ss0 = </span><span class="si">{</span><span class="n">phi_ss0_ana</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initial steady numeric phi_ss0 = 2.00000000e+00
+Initial steady analytic phi_ss0 = 2.00000000e+00
+</pre></div></div>
+</div>
+</section>
+<section id="Transition-to-Transient-Mode-and-Step-Source-to-(Q_1)">
+<h2><span class="section-number">5.4.2.9. </span>Transition to Transient Mode and Step Source to (Q_1)<a class="headerlink" href="#Transition-to-Transient-Mode-and-Step-Source-to-(Q_1)" title="Link to this heading"></a></h2>
+<p>Switch to time-dependent mode, initialize from the existing steady state, and replace the volumetric source with the stepped value <code class="docutils literal notranslate"><span class="pre">Q1</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetTimeDependentMode</span><span class="p">()</span>
+<span class="n">transient_solver</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">initial_state</span><span class="o">=</span><span class="s2">&quot;existing&quot;</span><span class="p">)</span>
+<span class="n">transient_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+
+<span class="n">phys</span><span class="o">.</span><span class="n">SetVolumetricSources</span><span class="p">(</span><span class="n">clear_volumetric_sources</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">phys</span><span class="o">.</span><span class="n">SetVolumetricSources</span><span class="p">(</span><span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">src1</span><span class="p">])</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[12]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> phys.SetTimeDependentMode()
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> transient_solver = TransientSolver(problem=phys, dt=dt, theta=<span class="ansi-green-fg">1.0</span>, verbose=<span class="ansi-yellow-bg">false</span>, initial_state=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">existing</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      3</span> transient_solver.Initialize()
+<span class="ansi-green-fg">      5</span> phys.SetVolumetricSources(clear_volumetric_sources=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;false&#39; is not defined
+</pre></div></div>
+</div>
+</section>
+<section id="Advance-in-Time-(Transient-Solve)">
+<h2><span class="section-number">5.4.2.10. </span>Advance in Time (Transient Solve)<a class="headerlink" href="#Advance-in-Time-(Transient-Solve)" title="Link to this heading"></a></h2>
+<p>Advance from (t=0) to (t=t_{end}) using backward Euler.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">t_end</span><span class="p">:</span>
+    <span class="n">t_before</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span>
+    <span class="n">transient_solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
+    <span class="n">t_after</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span>
+    <span class="n">phi_now</span> <span class="o">=</span> <span class="n">max_phi</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;step=</span><span class="si">{</span><span class="n">step</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">, t=</span><span class="si">{</span><span class="n">t_before</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">-&gt;</span><span class="si">{</span><span class="n">t_after</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, phi_max=</span><span class="si">{</span><span class="n">phi_now</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">phi_td_num</span> <span class="o">=</span> <span class="n">max_phi</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="n">step</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+step=000, t=0.0000-&gt;0.1000, phi_max=2.09090909e+00[0]  TransientSolver dt = 1.0e-01 time = 0.1000
+
+step=001, t=0.1000-&gt;0.2000, phi_max=2.17355372e+00
+step=002, t=0.2000-&gt;0.3000, phi_max=2.24868520e+00
+step=003, t=0.3000-&gt;0.4000, phi_max=2.31698654e+00
+step=004, t=0.4000-&gt;0.5000, phi_max=2.37907868e+00
+[0]  TransientSolver dt = 1.0e-01 time = 0.2000
+[0]  TransientSolver dt = 1.0e-01 time = 0.3000
+[0]  TransientSolver dt = 1.0e-01 time = 0.4000
+[0]  TransientSolver dt = 1.0e-01 time = 0.5000
+</pre></div></div>
+</div>
+</section>
+<section id="Return-to-Steady-State-Mode-(Final-Source-(Q_1))">
+<h2><span class="section-number">5.4.2.11. </span>Return to Steady-State Mode (Final Source (Q_1))<a class="headerlink" href="#Return-to-Steady-State-Mode-(Final-Source-(Q_1))" title="Link to this heading"></a></h2>
+<p>Switch back to steady-state mode and solve again with the same final source <code class="docutils literal notranslate"><span class="pre">Q1</span></code>. The final steady solution should satisfy</p>
+<div class="math notranslate nohighlight">
+\[\phi_{ss,1} = Q_1/\Sigma_t\]</div>
+<p>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetSteadyStateMode</span><span class="p">()</span>
+<span class="n">steady1</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">steady1</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">steady1</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">phi_ss1_num</span> <span class="o">=</span> <span class="n">max_phi</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">phi_ss1_ana</span> <span class="o">=</span> <span class="n">q1</span> <span class="o">/</span> <span class="n">sigma_t</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Post-processing:-Analytic-Checks-for-the-Full-Workflow">
+<h2><span class="section-number">5.4.2.12. </span>Post-processing: Analytic Checks for the Full Workflow<a class="headerlink" href="#Post-processing:-Analytic-Checks-for-the-Full-Workflow" title="Link to this heading"></a></h2>
+<p>For backward Euler with constant source (Q_1), the transient update is</p>
+<div class="math notranslate nohighlight">
+\[\phi^{n+1} = \frac{\phi^n + \Delta t\,Q_1}{1 + \Sigma_t\,\Delta t}\]</div>
+<p>.</p>
+<p>With initial value</p>
+<div class="math notranslate nohighlight">
+\[\phi^0 = Q_0/\Sigma_t\]</div>
+<p>, after (N) steps:</p>
+<div class="math notranslate nohighlight">
+\[\phi^N = \phi_{ss,1} + \left(\phi^0-\phi_{ss,1}ight)
+\left(\frac{1}{1+\Sigma_t\Delta t}ight)^N,
+\quad \phi_{ss,1}=\frac{Q_1}{\Sigma_t}.\]</div>
+<p>We compare:</p>
+<ul class="simple">
+<li><p>transient numerical (<span class="math">\phi`^N) vs analytic (:nbsphinx-math:</span>phi`^N),</p></li>
+<li><p>final steady numerical (<span class="math">\phi</span>_{ss,1}) vs analytic (Q_1/<span class="math">\Sigma</span>_t).</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">sigma_t</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span>
+<span class="n">phi_td_ana</span> <span class="o">=</span> <span class="n">phi_ss1_ana</span> <span class="o">+</span> <span class="p">(</span><span class="n">phi_ss0_ana</span> <span class="o">-</span> <span class="n">phi_ss1_ana</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">**</span> <span class="n">n_steps</span><span class="p">)</span>
+
+<span class="n">err_td</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">phi_td_num</span> <span class="o">-</span> <span class="n">phi_td_ana</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">phi_td_ana</span><span class="p">),</span> <span class="mf">1.0e-16</span><span class="p">)</span>
+<span class="n">err_ss</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">phi_ss1_num</span> <span class="o">-</span> <span class="n">phi_ss1_ana</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">phi_ss1_ana</span><span class="p">),</span> <span class="mf">1.0e-16</span><span class="p">)</span>
+
+<span class="n">tol_td</span> <span class="o">=</span> <span class="mf">5.0e-3</span>
+<span class="n">tol_ss</span> <span class="o">=</span> <span class="mf">1.0e-3</span>
+<span class="n">ok</span> <span class="o">=</span> <span class="p">(</span><span class="n">err_td</span> <span class="o">&lt;</span> <span class="n">tol_td</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">err_ss</span> <span class="o">&lt;</span> <span class="n">tol_ss</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transient-end numeric phi = </span><span class="si">{</span><span class="n">phi_td_num</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transient-end analytic phi = </span><span class="si">{</span><span class="n">phi_td_ana</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final steady numeric phi = </span><span class="si">{</span><span class="n">phi_ss1_num</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final steady analytic phi = </span><span class="si">{</span><span class="n">phi_ss1_ana</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relative error (transient) = </span><span class="si">{</span><span class="n">err_td</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relative error (steady)    = </span><span class="si">{</span><span class="n">err_ss</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SOURCE_STEP_WORKFLOW_OK </span><span class="si">{</span><span class="mi">1</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">ok</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">ok</span><span class="p">,</span> <span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Workflow check failed: err_td=</span><span class="si">{</span><span class="n">err_td</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, err_ss=</span><span class="si">{</span><span class="n">err_ss</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;tol_td=</span><span class="si">{</span><span class="n">tol_td</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, tol_ss=</span><span class="si">{</span><span class="n">tol_ss</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Transient-end numeric phi = 2.37907868e+00
+Transient-end analytic phi = 2.37907868e+00
+Final steady numeric phi = 3.00000000e+00
+Final steady analytic phi = 3.00000000e+00
+Relative error (transient) = 2.326e-11
+Relative error (steady)    = 9.089e-11
+SOURCE_STEP_WORKFLOW_OK 1
+</pre></div></div>
+</div>
+</section>
+<section id="Finalize-(for-Jupyter-Notebook-only)">
+<h2><span class="section-number">5.4.2.13. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<p>In Python script mode, PyOpenSn usually handles environment termination automatically. In Jupyter notebook mode, finalize explicitly only if your runtime requires it.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="keigen_to_transient.html" class="btn btn-neutral float-left" title="5.4.1. Switching From Steady-State Mode to Transient Mode in OpenSn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../capi/rst/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1025 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>12. Solvers &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="13. Example Problems" href="example_problems.html" />
+    <link rel="prev" title="11. Discrete-Ordinates Problems" href="discrete_ordinates_problems.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">12. Solvers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">12.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#base-classes">12.2. Base Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lbs-problem">12.3. LBS Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discrete-ordinates-problem">12.4. Discrete Ordinates Problem</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#time-dependent-and-steady-state-modes">12.4.1. Time-Dependent and Steady-State Modes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#angular-flux-specific-features">12.4.2. Angular-Flux-Specific Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#discreteordinatescurvilinearproblem">12.4.3. DiscreteOrdinatesCurvilinearProblem</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#steady-state-source-solver">12.5. Steady-State Source Solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#constructor">12.5.1. Constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpu-support">12.5.2. GPU support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-it-operates">12.5.3. How It Operates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adjoint-steady-state-solves">12.5.4. Adjoint Steady-State Solves</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-solver">12.6. Transient Solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">12.6.1. GPU support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">12.6.2. Constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-execute">12.6.3. Using Execute</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-an-explicit-python-timestep-loop">12.6.4. Using an Explicit Python Timestep Loop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#balance-reporting">12.6.5. Balance Reporting</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#power-iteration-k-eigen-solver">12.7. Power Iteration k-Eigen Solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">12.7.1. Constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">12.7.2. GPU support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">12.7.3. How It Operates</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nonlinear-k-eigen-solver">12.8. Nonlinear k-Eigen Solver</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id6">12.8.1. Constructor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">12.8.2. GPU support</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#initialization-order-and-common-patterns">12.9. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#field-functions-and-solver-output">12.10. Field Functions and Solver Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">12. </span>Solvers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="solvers">
+<h1><span class="section-number">12. </span>Solvers<a class="headerlink" href="#solvers" title="Link to this heading"></a></h1>
+<p>The OpenSn solver interface is built around two components:</p>
+<ul class="simple">
+<li><p>a <em>problem</em> object that defines the transport model, mesh, groupsets,
+materials, sources, and boundary conditions, and</p></li>
+<li><p>a <em>solver</em> object that decides how that problem is advanced or iterated.</p></li>
+</ul>
+<p>For linear Boltzmann transport, the most important problem classes are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a></p></li>
+</ul>
+<p>The main solver classes are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver" title="pyopensn.solver.SteadyStateSourceSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.SteadyStateSourceSolver</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a></p></li>
+</ul>
+<p>This section describes what each solver does, how the problem and solver layers
+work together, which options belong where, and how transient problems can be
+run either with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code> or with an explicit Python timestep loop.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GPU support is chosen on the problem side with <code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code> together
+with a compatible sweep path. In practice, solver GPU support depends on
+whether the associated problem configuration supports GPU sweeps.</p>
+</div>
+<section id="overview">
+<h2><span class="section-number">12.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The usual workflow is:</p>
+<ol class="arabic simple">
+<li><p>Construct a problem.</p></li>
+<li><p>Construct a solver using that problem.</p></li>
+<li><p>Call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code>.</p></li>
+<li><p>Call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code>, or for transient problems, repeatedly call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code>.</p></li>
+</ol>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The problem owns the transport state. The solver owns the algorithm used to
+advance that state. This distinction matters because you can often reuse the
+same problem with different solvers or switch the problem between
+steady-state, time-dependent, or adjoint modes.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In practice, most user scripts spend more lines constructing the problem than
+constructing the solver. That is expected. The problem captures the physics
+model; the solver choice mainly determines how that model is driven.</p>
+</div>
+</section>
+<section id="base-classes">
+<h2><span class="section-number">12.2. </span>Base Classes<a class="headerlink" href="#base-classes" title="Link to this heading"></a></h2>
+<p>All solver objects derive from <a class="reference internal" href="../pyapi/generated/pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.Solver</span></code></a>, which
+provides:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></p></li>
+</ul>
+<p>All transport problems derive from <a class="reference internal" href="../pyapi/generated/pyopensn.solver.Problem.html#pyopensn.solver.Problem" title="pyopensn.solver.Problem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.Problem</span></code></a>, and all
+linear Boltzmann problems derive from <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem</span></code></a>.</p>
+<p>In practice, users usually work with the concrete classes rather than the base
+classes, but it is useful to remember that:</p>
+<ul class="simple">
+<li><p>problem methods operate on the transport model and solution state</p></li>
+<li><p>solver methods operate on how that state is computed</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If something sounds like “what problem am I solving?”, it probably belongs on
+the problem object. If it sounds like “how do I advance or iterate that
+problem?”, it probably belongs on the solver object.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This split is especially helpful when debugging. If results look physically
+wrong, inspect the problem configuration first. If results look physically
+reasonable but convergence or runtime is poor, inspect the solver and
+groupset iteration settings next.</p>
+</div>
+</section>
+<section id="lbs-problem">
+<h2><span class="section-number">12.3. </span>LBS Problem<a class="headerlink" href="#lbs-problem" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem</span></code></a> is the shared base for the linear
+Boltzmann problem classes. The Python API on this base class provides common
+operations such as:</p>
+<ul class="simple">
+<li><p>scalar flux field-function access with
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction" title="pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction()</span></code></a></p></li>
+<li><p>derived field-function access with
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.CreateFieldFunction" title="pyopensn.solver.LBSProblem.CreateFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.CreateFieldFunction()</span></code></a></p></li>
+<li><p>current time and timestep queries with <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetTime()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">GetTimeStep()</span></code></p></li>
+<li><p>fission diagnostics with <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeFissionRate()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeFissionProduction()</span></code></p></li>
+<li><p>direct access to local scalar-flux vectors with <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPhiOldLocal()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPhiNewLocal()</span></code></p></li>
+<li><p>flux/source I/O helpers</p></li>
+<li><p>source and material reassignment with <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetPointSources()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">SetVolumetricSources()</span></code>, and <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetXSMap()</span></code></p></li>
+<li><p>transport-mode changes with <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetAdjoint()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetForward()</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These common methods are available regardless of which specific LBS solver
+you pair with the problem. This is why postprocessing and source/material
+updates are usually described at the problem level rather than at the solver
+level.</p>
+</div>
+</section>
+<section id="discrete-ordinates-problem">
+<h2><span class="section-number">12.4. </span>Discrete Ordinates Problem<a class="headerlink" href="#discrete-ordinates-problem" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is the standard Cartesian
+discrete ordinates problem class.</p>
+<p>Its constructor takes the main transport-model inputs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_groups</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groupsets</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs_map</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">point_sources</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volumetric_sources</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code></p></li>
+</ul>
+<p>The most important constructor inputs are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">groupsets</span></code>: defines the angular quadrature and iterative behavior for
+ranges of energy groups</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs_map</span></code>: maps mesh block ids to cross sections</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code>: defines vacuum, reflecting, isotropic, or arbitrary
+inflow boundaries</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code>: controls restart behavior, verbosity, precursor usage, angular
+flux storage, AGS behavior, and other global settings</p></li>
+</ul>
+<p>Problem options available in Python include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_mpi_message_size</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restart_writes_enabled</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_delayed_psi_to_restart</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_restart_time_interval</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_precursors</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_source_moments</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adjoint</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_inner_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_outer_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_ags_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field_function_prefix_option</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field_function_prefix</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Restart read/write timing is solver-specific. Steady-state and
+power-iteration solvers support solver-managed restart reads and writes.
+Steady-state writes its restart dump only after the solve completes, while
+power iteration can also write timed dumps during the outer iteration loop.
+Restart reads occur during <code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code>. The nonlinear k-eigen and
+transient solvers do not currently provide a solver-managed restart-dump
+path.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most numerical iteration settings that control transport sweeps live in the
+<code class="docutils literal notranslate"><span class="pre">groupsets</span></code> entries, not on the outer solver object. The main exception is
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>, which has its own internal
+nonlinear and linear tolerance settings.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A good first mental split is:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">groupsets</span></code> control transport iteration and angular treatment,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs_map</span></code> and sources define the physics being solved,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code> control global problem behavior such as restarts, verbosity,
+precursor treatment, and stored output.</p></li>
+</ul>
+</div>
+<section id="time-dependent-and-steady-state-modes">
+<h3><span class="section-number">12.4.1. </span>Time-Dependent and Steady-State Modes<a class="headerlink" href="#time-dependent-and-steady-state-modes" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> can operate in either
+steady-state or time-dependent mode.</p>
+<p>Use:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetTimeDependentMode()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetSteadyStateMode()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">IsTimeDependent()</span></code></p></li>
+</ul>
+<p>Important behavior:</p>
+<ul class="simple">
+<li><p>transient solves require the problem to be in time-dependent mode</p></li>
+<li><p>steady-state and k-eigenvalue solves require the problem to be in steady-state
+mode</p></li>
+<li><p>switching modes preserves sources and boundary conditions, unlike
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">SetAdjoint()</span></code>, which performs a destructive mode reset</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are moving from a steady-state solve into a transient solve, a common
+pattern is:</p>
+<ol class="arabic simple">
+<li><p>solve the steady-state problem,</p></li>
+<li><p>call <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetTimeDependentMode()</span></code>,</p></li>
+<li><p>construct and initialize a <a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a>.</p></li>
+</ol>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Mode is part of the problem state, not part of the solver object. That is
+why a solver may reject a problem that is otherwise fully defined if the
+problem is currently in the wrong mode.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For time-dependent mode, the problem must have been created with
+<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>.</p>
+</div>
+</section>
+<section id="angular-flux-specific-features">
+<h3><span class="section-number">12.4.2. </span>Angular-Flux-Specific Features<a class="headerlink" href="#angular-flux-specific-features" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> also provides:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetBoundaryOptions()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPsi()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></p></li>
+</ul>
+<p>Important requirement:</p>
+<ul class="simple">
+<li><p>if you need stored angular fluxes or angular flux field functions, enable
+<code class="docutils literal notranslate"><span class="pre">options={&quot;save_angular_flux&quot;:</span> <span class="pre">True}</span></code> when creating the problem</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> is primarily a capability switch. It enables
+workflows such as transient solves, angular-field output, and leakage
+postprocessing, but it also increases memory use.</p>
+</div>
+</section>
+<section id="discreteordinatescurvilinearproblem">
+<h3><span class="section-number">12.4.3. </span>DiscreteOrdinatesCurvilinearProblem<a class="headerlink" href="#discreteordinatescurvilinearproblem" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a> is the
+curvilinear companion to the Cartesian problem class.</p>
+<p>It uses the same general structure as
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a>, but is intended for
+curvilinear geometry and currently requires:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">coord_system=2</span></code> for cylindrical coordinates</p></li>
+</ul>
+<p>This problem type is experimental, and it should be treated that way in
+production workflows.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The curvilinear problem class is best used when the mesh and quadrature are
+already being chosen with cylindrical geometry in mind. It is not just a
+cosmetic variant of the Cartesian problem.</p>
+</div>
+</section>
+</section>
+<section id="steady-state-source-solver">
+<h2><span class="section-number">12.5. </span>Steady-State Source Solver<a class="headerlink" href="#steady-state-source-solver" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver" title="pyopensn.solver.SteadyStateSourceSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.SteadyStateSourceSolver</span></code></a> is the standard source-driven
+steady-state transport solver.</p>
+<p>Use it when:</p>
+<ul class="simple">
+<li><p>the problem is not time-dependent, and</p></li>
+<li><p>you want the solution driven by fixed volumetric sources, point sources, and
+boundary conditions rather than an eigenvalue solve</p></li>
+</ul>
+<section id="constructor">
+<h3><span class="section-number">12.5.1. </span>Constructor<a class="headerlink" href="#constructor" title="Link to this heading"></a></h3>
+<p>The constructor takes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem</span></code></a></p></li>
+</ul>
+</section>
+<section id="gpu-support">
+<h3><span class="section-number">12.5.2. </span>GPU support<a class="headerlink" href="#gpu-support" title="Link to this heading"></a></h3>
+<p>This solver can run with GPU acceleration when the associated
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is configured for GPU
+sweeps. In practice, that means:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code> on the problem,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code>, and</p></li>
+<li><p>a non-curvilinear, non-time-dependent problem.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="how-it-operates">
+<h3><span class="section-number">12.5.3. </span>How It Operates<a class="headerlink" href="#how-it-operates" title="Link to this heading"></a></h3>
+<p>At a high level, the steady-state solver:</p>
+<ol class="arabic simple">
+<li><p>checks that the problem is in steady-state mode,</p></li>
+<li><p>optionally reads restart data,</p></li>
+<li><p>calls the AGS solver attached to the problem,</p></li>
+<li><p>optionally writes restart data,</p></li>
+<li><p>optionally computes precursor fields,</p></li>
+<li><p>reorients the solution if adjoint mode is active, and</p></li>
+<li><p>updates the completed transport state and balance information</p></li>
+</ol>
+<p>The corresponding balance summary is available from
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is the simplest outer solver in the LBS stack. Most of the numerical
+work is still being done by the groupset and AGS machinery configured on the
+problem.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a steady-state solve is unexpectedly slow, the most likely tuning targets
+are still the groupset iterative settings and acceleration options on the
+problem, not the steady-state solver object itself.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This solver is the standard baseline for source-driven transport. If the problem
+is not intrinsically an eigenvalue or transient problem, this is usually the
+first solver to reach for.</p>
+</div>
+</section>
+<section id="adjoint-steady-state-solves">
+<h3><span class="section-number">12.5.4. </span>Adjoint Steady-State Solves<a class="headerlink" href="#adjoint-steady-state-solves" title="Link to this heading"></a></h3>
+<p>The same steady-state solver is also used for adjoint transport solves.</p>
+<p>An adjoint solution answers a different question than a forward solution.
+Instead of computing the particle field produced by a physical source, it
+computes the importance of particles to a response of interest. That is why
+adjoint solves are useful in detector analysis, response calculations,
+importance studies, and related sensitivity workflows.</p>
+<p>In OpenSn, an adjoint solve is still a steady-state transport solve, but the
+problem is placed in adjoint mode so that the transport operator, materials,
+and source interpretation are all treated in the adjoint sense.</p>
+<p>There are two common ways to enable adjoint mode:</p>
+<ul class="simple">
+<li><p>set <code class="docutils literal notranslate"><span class="pre">options={&quot;adjoint&quot;:</span> <span class="pre">True}</span></code> when constructing the problem, or</p></li>
+<li><p>call <code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetAdjoint(True)()</span></code> before solving</p></li>
+</ul>
+<p>Typical pattern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;adjoint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">phys</span><span class="o">.</span><span class="n">SetAdjoint</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">phys</span><span class="o">.</span><span class="n">SetVolumetricSources</span><span class="p">(</span><span class="n">volumetric_sources</span><span class="o">=</span><span class="n">adjoint_sources</span><span class="p">)</span>
+<span class="n">phys</span><span class="o">.</span><span class="n">SetBoundaryOptions</span><span class="p">(</span><span class="n">boundary_conditions</span><span class="o">=</span><span class="n">adjoint_boundaries</span><span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Important behavior:</p>
+<ul class="simple">
+<li><p>adjoint mode is a property of the problem, not of the solver object</p></li>
+<li><p>if <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetAdjoint(True)()</span></code> changes the current mode, OpenSn performs a
+destructive mode reset</p></li>
+<li><p>that reset reinitializes materials in adjoint mode, clears sources and
+boundary conditions, and zeroes scalar and angular flux state</p></li>
+<li><p>after such a mode change, the desired adjoint sources and boundary conditions
+must be reapplied before solving</p></li>
+</ul>
+<p>At the end of the steady-state solve, OpenSn reorients the adjoint solution for
+the discrete-ordinates problem so the stored result is in the expected adjoint
+form.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Time-dependent adjoint problems are not supported. Adjoint mode is therefore
+a steady-state capability in the current solver stack.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A useful mental model is: the solver algorithm does not become a different
+object in adjoint mode. Instead, the same steady-state solve is applied to a
+problem whose transport data and source interpretation have been switched to
+the adjoint form.</p>
+</div>
+</section>
+</section>
+<section id="transient-solver">
+<h2><span class="section-number">12.6. </span>Transient Solver<a class="headerlink" href="#transient-solver" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a> advances a
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> in time.</p>
+<p>Use it when:</p>
+<ul class="simple">
+<li><p>the problem is in time-dependent mode, and</p></li>
+<li><p>you want backward Euler, Crank-Nicolson, or another theta-scheme transient
+update</p></li>
+</ul>
+<section id="id1">
+<h3><span class="section-number">12.6.1. </span>GPU support<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Transient solves do not currently support GPU acceleration.</p>
+</section>
+<section id="id2">
+<h3><span class="section-number">12.6.2. </span>Constructor<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>The transient solver constructor takes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: timestep size, default <code class="docutils literal notranslate"><span class="pre">2.0e-3</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop_time</span></code>: final execution time, default <code class="docutils literal notranslate"><span class="pre">0.1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">theta</span></code>: time differencing parameter, default <code class="docutils literal notranslate"><span class="pre">0.5</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">initial_state</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;existing&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;zero&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: enable or disable transient log output</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Transient problems require <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> in the problem
+options. Set this on the
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> before constructing the
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a>.</p>
+</div>
+<p>The module also exposes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pyopensn.solver.BackwardEuler</span> <span class="pre">=</span> <span class="pre">1.0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pyopensn.solver.CrankNicolson</span> <span class="pre">=</span> <span class="pre">0.5</span></code></p></li>
+</ul>
+<p>Meaning of <code class="docutils literal notranslate"><span class="pre">initial_state</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;existing&quot;</span></code>: start from the current problem state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;zero&quot;</span></code>: zero the scalar flux, precursor state, and stored angular fluxes
+before beginning the transient</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">initial_state=&quot;existing&quot;</span></code> is the usual choice when a transient begins
+from a previously computed steady-state or eigenvalue solution.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">initial_state=&quot;zero&quot;</span></code> is mostly useful for controlled studies where the
+transient should begin from a clean zero field rather than from whatever
+state the problem currently holds.</p>
+</div>
+</section>
+<section id="using-execute">
+<h3><span class="section-number">12.6.3. </span>Using Execute<a class="headerlink" href="#using-execute" title="Link to this heading"></a></h3>
+<p>The simplest transient pattern is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetTimeDependentMode</span><span class="p">()</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span>
+    <span class="n">stop_time</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">theta</span><span class="o">=</span><span class="n">BackwardEuler</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>During <code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code>, the solver repeatedly advances until the current time
+reaches <code class="docutils literal notranslate"><span class="pre">stop_time</span></code>.</p>
+<p>Important behavior:</p>
+<ul class="simple">
+<li><p>the last timestep is shortened automatically if needed so the solver lands
+exactly on <code class="docutils literal notranslate"><span class="pre">stop_time</span></code></p></li>
+<li><p>pre- and post-advance callbacks, if registered, are called around each
+internal timestep</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This transient path assumes the problem was created with
+<code class="docutils literal notranslate"><span class="pre">options={&quot;save_angular_flux&quot;:</span> <span class="pre">True}</span></code>. Without that option, transient
+setup is invalid.</p>
+</div>
+<p>Use:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetPreAdvanceCallback()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetPostAdvanceCallback()</span></code></p></li>
+</ul>
+<p>for work such as adaptive timestep changes, output, or diagnostics.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="n">stop_time</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">post_advance</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time =&quot;</span><span class="p">,</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">ff</span><span class="p">:</span>
+        <span class="n">field</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+
+<span class="n">solver</span><span class="o">.</span><span class="n">SetPostAdvanceCallback</span><span class="p">(</span><span class="n">post_advance</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The callback-based <code class="docutils literal notranslate"><span class="pre">Execute</span></code> path is the most convenient when the timestep
+loop is conceptually owned by the solver and Python is only observing or
+lightly adjusting the run.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A good rule is: if you can describe the transient as “run to this final time
+and do a little work each step,” use <code class="docutils literal notranslate"><span class="pre">Execute</span></code>. If you instead think “each
+next step depends on Python decisions made after the previous one,” use a
+manual loop.</p>
+</div>
+</section>
+<section id="using-an-explicit-python-timestep-loop">
+<h3><span class="section-number">12.6.4. </span>Using an Explicit Python Timestep Loop<a class="headerlink" href="#using-an-explicit-python-timestep-loop" title="Link to this heading"></a></h3>
+<p>You can also drive the transient manually with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code>.</p>
+<p>This is useful when:</p>
+<ul class="simple">
+<li><p>the timestep size depends on Python-side logic,</p></li>
+<li><p>material maps or sources are being changed between steps,</p></li>
+<li><p>output logic is easier to express directly in Python, or</p></li>
+<li><p>you want explicit control over exactly when each timestep is taken</p></li>
+</ul>
+<p>Pattern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetTimeDependentMode</span><span class="p">()</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">CrankNicolson</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">SetTimeStep</span><span class="p">(</span><span class="mf">1.0e-4</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">SetTimeStep</span><span class="p">(</span><span class="mf">5.0e-4</span><span class="p">)</span>
+
+    <span class="n">solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time =&quot;</span><span class="p">,</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fission production =&quot;</span><span class="p">,</span> <span class="n">phys</span><span class="o">.</span><span class="n">ComputeFissionProduction</span><span class="p">(</span><span class="s2">&quot;new&quot;</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">ff</span><span class="p">:</span>
+        <span class="n">field</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Important points:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code> must be called before the first <code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetTimeStep()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetTheta()</span></code> act on subsequent calls to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></p></li>
+<li><p>in a manual loop, <em>you</em> decide when to stop</p></li>
+<li><p>in a manual loop, <code class="docutils literal notranslate"><span class="pre">stop_time</span></code> is not the main control variable unless you
+choose to use it in your own Python logic</p></li>
+<li><p>transient problems still require <code class="docutils literal notranslate"><span class="pre">options={&quot;save_angular_flux&quot;:</span> <span class="pre">True}</span></code> on
+the problem object</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The explicit Python loop is usually the better design when the transient is
+being coupled to user logic, control rules, or parameter changes between
+timesteps. It keeps the sequencing visible in the script.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The two transient styles are complementary. <code class="docutils literal notranslate"><span class="pre">Execute</span></code> is better when the
+time march is conceptually fixed and Python only needs hooks. A manual
+<code class="docutils literal notranslate"><span class="pre">Advance</span></code> loop is better when Python is actively steering the run.</p>
+</div>
+</section>
+<section id="balance-reporting">
+<h3><span class="section-number">12.6.5. </span>Balance Reporting<a class="headerlink" href="#balance-reporting" title="Link to this heading"></a></h3>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">TransientSolver.ComputeBalanceTable()</span></code> returns a global timestep balance
+summary that includes:</p>
+<ul class="simple">
+<li><p>absorption, production, inflow, and outflow rates</p></li>
+<li><p>initial and final inventory</p></li>
+<li><p>predicted and actual inventory change</p></li>
+<li><p>inventory residual</p></li>
+</ul>
+<p>This is often the most direct way to check that a transient step is behaving
+sensibly.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a transient result looks suspicious, the balance table is often the
+fastest sanity check because it summarizes whether the step is behaving like
+a physically consistent inventory update.</p>
+</div>
+</section>
+</section>
+<section id="power-iteration-k-eigen-solver">
+<h2><span class="section-number">12.7. </span>Power Iteration k-Eigen Solver<a class="headerlink" href="#power-iteration-k-eigen-solver" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a> solves the k-eigenvalue
+problem with outer power iteration.</p>
+<p>Use it when:</p>
+<ul class="simple">
+<li><p>you need a standard k-eigenvalue solve, and</p></li>
+<li><p>the usual power-iteration convergence behavior is acceptable</p></li>
+</ul>
+<section id="id3">
+<h3><span class="section-number">12.7.1. </span>Constructor<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>The constructor takes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_iters</span></code>: maximum power iterations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code>: convergence tolerance on <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset_phi0</span></code>: whether to reset scalar fluxes to 1.0 before solving</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3><span class="section-number">12.7.2. </span>GPU support<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>This solver can run with GPU acceleration when the associated
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is configured for GPU
+sweeps. The same problem-side restrictions apply as for steady-state source
+solves: GPU use requires <code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code> with <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code> on a
+supported non-curvilinear problem.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">max_iters</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">k_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">GetEigenvalue</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3><span class="section-number">12.7.3. </span>How It Operates<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>At a high level, the solver:</p>
+<ol class="arabic simple">
+<li><p>optionally resets the starting scalar flux</p></li>
+<li><p>forms the fission source from the current iterate</p></li>
+<li><p>solves the transport problem with the problem’s AGS/groupset iteration</p></li>
+<li><p>updates <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
+<li><p>repeats until the eigenvalue change satisfies <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is
+reached</p></li>
+</ol>
+<p>This solver uses the groupset inner solver and AGS settings configured on the
+problem.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Power iteration is usually the first k-eigen method to try because it uses
+the same problem configuration style as steady-state source solves and is
+easy to reason about.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a power-iteration run converges too slowly, first look at the transport
+iteration quality on the problem and the quality of the starting state before
+reaching for a different eigen solver.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In many workflows, power iteration is also used as the “reference” eigen
+solve because its iteration history is easy to interpret and compare against
+other methods.</p>
+</div>
+<p>Balance reporting with <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code> uses
+<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">k_eff</span></code> scaling on the production term.</p>
+</section>
+</section>
+<section id="nonlinear-k-eigen-solver">
+<h2><span class="section-number">12.8. </span>Nonlinear k-Eigen Solver<a class="headerlink" href="#nonlinear-k-eigen-solver" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a> solves the k-eigenvalue
+problem with a nonlinear solve strategy rather than outer power iteration.</p>
+<p>Use it when:</p>
+<ul class="simple">
+<li><p>you want a nonlinear k-eigen solve,</p></li>
+<li><p>you need its convergence behavior, or</p></li>
+<li><p>you want a small number of initial power iterations before entering the
+nonlinear solve</p></li>
+</ul>
+<section id="id6">
+<h3><span class="section-number">12.8.1. </span>Constructor<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>The constructor takes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem</span></code></a></p></li>
+<li><p>nonlinear tolerances:
+<code class="docutils literal notranslate"><span class="pre">nl_abs_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">nl_rel_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">nl_sol_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">nl_max_its</span></code></p></li>
+<li><p>linear tolerances:
+<code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">l_rel_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">l_div_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">l_max_its</span></code></p></li>
+<li><p>GMRES controls:
+<code class="docutils literal notranslate"><span class="pre">l_gmres_restart_intvl</span></code>, <code class="docutils literal notranslate"><span class="pre">l_gmres_breakdown_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset_phi0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_initial_power_iterations</span></code></p></li>
+</ul>
+</section>
+<section id="id7">
+<h3><span class="section-number">12.8.2. </span>GPU support<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>This solver does not currently provide a supported GPU execution path.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonLinearKEigenSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">nl_abs_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">nl_max_its</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">l_abs_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">l_max_its</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">num_initial_power_iterations</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">GetEigenvalue</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Important distinction:</p>
+<ul class="simple">
+<li><p>this solver does <strong>not</strong> use the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> setting for
+its internal nonlinear linearizations</p></li>
+<li><p>instead, it uses its own solver-level nonlinear and linear tolerance
+parameters</p></li>
+<li><p>the Python API exposes GMRES-specific controls for those internal linear
+solves, but does not expose an alternative internal linear method choice</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This distinction is easy to miss. If a nonlinear k-eigen run needs tuning,
+look first at the <code class="docutils literal notranslate"><span class="pre">nl_*</span></code> and <code class="docutils literal notranslate"><span class="pre">l_*</span></code> options on
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>, not at the groupset inner
+solver method.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The nonlinear solver’s internal GMRES controls have the same memory tradeoff
+as groupset GMRES. Larger <code class="docutils literal notranslate"><span class="pre">l_gmres_restart_intvl</span></code> values retain more Krylov
+vectors and can materially increase memory usage on large problems.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A practical way to choose between the two k-eigen solvers is to start with
+power iteration unless you already know you need the nonlinear method’s
+behavior or controls. That keeps the initial setup simpler.</p>
+</div>
+<p>As with power iteration, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code> uses
+<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">k_eff</span></code> scaling on the production term.</p>
+</section>
+</section>
+<section id="initialization-order-and-common-patterns">
+<h2><span class="section-number">12.9. </span>Initialization Order and Common Patterns<a class="headerlink" href="#initialization-order-and-common-patterns" title="Link to this heading"></a></h2>
+<p>A few patterns are worth making explicit.</p>
+<p>Steady-state source solve:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Steady-state k-eigen solve:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Steady-state to transient handoff:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">ss</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">ss</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ss</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">phys</span><span class="o">.</span><span class="n">SetTimeDependentMode</span><span class="p">()</span>
+
+<span class="n">tr</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="n">initial_state</span><span class="o">=</span><span class="s2">&quot;existing&quot;</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Manual transient loop:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetTimeDependentMode</span><span class="p">()</span>
+<span class="n">tr</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">)</span>
+<span class="n">tr</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+
+<span class="k">while</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">:</span>
+    <span class="n">tr</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The most common initialization mistake is trying to use a solver against a
+problem that is in the wrong mode. Steady-state and k-eigen solvers require a
+steady-state problem; the transient solver requires a time-dependent problem.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The second most common mistake is forgetting that <code class="docutils literal notranslate"><span class="pre">Initialize()</span></code> is part of
+the contract. In OpenSn, initialization is not just a formality; it sets up
+solver state, restart behavior, and mode-dependent internals before the first
+solve step.</p>
+</div>
+</section>
+<section id="field-functions-and-solver-output">
+<h2><span class="section-number">12.10. </span>Field Functions and Solver Output<a class="headerlink" href="#field-functions-and-solver-output" title="Link to this heading"></a></h2>
+<p>Problem objects, not solver objects, own the field-function accessors.</p>
+<p>Common post-solve access patterns are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction" title="pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.CreateFieldFunction" title="pyopensn.solver.LBSProblem.CreateFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.CreateFieldFunction()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList" title="pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList()</span></code></a></p></li>
+</ul>
+<p>For transient problems:</p>
+<ul class="simple">
+<li><p>if you are using <code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code>, query or export field functions in a
+post-advance callback</p></li>
+<li><p>if you are using a manual Python loop, query or export them after each call to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></p></li>
+<li><p>if you reuse field-function objects across solves or timesteps, call
+<code class="docutils literal notranslate"><span class="pre">Update()</span></code> before exporting or interpolating them</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is another reason to keep the distinction between problem and solver
+clear: the solver advances the state, but the problem is where you inspect
+the resulting transport fields.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the API, these field functions are part of the problem-side output
+interface. That makes them easy to use from any solver, but it also means
+the decision to store certain outputs, such as angular flux, is made in the
+problem configuration.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="discrete_ordinates_problems.html" class="btn btn-neutral float-left" title="11. Discrete-Ordinates Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example_problems.html" class="btn btn-neutral float-right" title="13. Example Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

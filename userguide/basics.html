@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3. OpenSn Basics &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. Geometry and Mesh" href="geometry_mesh.html" />
+    <link rel="prev" title="2. Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3. OpenSn Basics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-core-model">3.1. The Core Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-typical-workflow">3.2. The Typical Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-usually-goes-where">3.3. What Usually Goes Where</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-three-most-important-practical-rules">3.4. The Three Most Important Practical Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#good-default-habits">3.5. Good Default Habits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-to-read-next">3.6. What To Read Next</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3. </span>OpenSn Basics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="opensn-basics">
+<h1><span class="section-number">3. </span>OpenSn Basics<a class="headerlink" href="#opensn-basics" title="Link to this heading"></a></h1>
+<p>This section is the short version of the user guide. If you only remember a few
+things about writing OpenSn inputs, remember these.</p>
+<section id="the-core-model">
+<h2><span class="section-number">3.1. </span>The Core Model<a class="headerlink" href="#the-core-model" title="Link to this heading"></a></h2>
+<p>An OpenSn transport input is usually built from six pieces:</p>
+<ol class="arabic simple">
+<li><p>a mesh,</p></li>
+<li><p>block ids and boundary names on that mesh,</p></li>
+<li><p>cross sections assigned to block ids,</p></li>
+<li><p>one or more groupsets,</p></li>
+<li><p>a problem object,</p></li>
+<li><p>a solver object.</p></li>
+</ol>
+<p>In other words:</p>
+<ul class="simple">
+<li><p>the mesh defines the geometry,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs_map</span></code> defines the materials,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groupsets</span></code> define the engery group structure and iteration parameters,</p></li>
+<li><p>the problem object defines the physics model,</p></li>
+<li><p>the solver object defines how that model is advanced.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The problem owns the physics model. The solver owns the algorithm. Keeping
+those roles separate makes most of the rest of the API easier to understand.</p>
+</div>
+</section>
+<section id="the-typical-workflow">
+<h2><span class="section-number">3.2. </span>The Typical Workflow<a class="headerlink" href="#the-typical-workflow" title="Link to this heading"></a></h2>
+<p>Most Python inputs follow this pattern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">groupsets</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=...</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">scalar_ffs</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the problem is transient, use <code class="xref py py-class docutils literal notranslate"><span class="pre">TransientSolver</span></code>.
+If it is a criticality problem, use one of the k-eigen solvers.</p>
+</section>
+<section id="what-usually-goes-where">
+<h2><span class="section-number">3.3. </span>What Usually Goes Where<a class="headerlink" href="#what-usually-goes-where" title="Link to this heading"></a></h2>
+<p>As a rule of thumb:</p>
+<ul class="simple">
+<li><p>boundary names and block ids belong on the mesh,</p></li>
+<li><p>materials belong in <code class="docutils literal notranslate"><span class="pre">xs_map</span></code>,</p></li>
+<li><p>angular quadrature and inner iteration parameters belong in <code class="docutils literal notranslate"><span class="pre">groupsets</span></code>,</p></li>
+<li><p>outer-iteration parameters belong in the solver.</p></li>
+</ul>
+<p>If you are not sure where an option belongs, ask whether it changes:</p>
+<ul class="simple">
+<li><p>a groupset solve,</p></li>
+<li><p>the whole problem, or</p></li>
+<li><p>the outer solve.</p></li>
+</ul>
+<p>That usually tells you the right place.</p>
+</section>
+<section id="the-three-most-important-practical-rules">
+<h2><span class="section-number">3.4. </span>The Three Most Important Practical Rules<a class="headerlink" href="#the-three-most-important-practical-rules" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p>Start simple.</p>
+<p>Start with one groupset, simple boundaries, and a small mesh if possible.</p>
+</li>
+<li><p>Converge the transport solve properly.</p>
+<p>If you have multiple groupsets and there is across-groupset upscatter, enable
+and converge the across-groupset solver (AGS). Do not rely on loose inner
+solves to be corrected by outer iterations later.</p>
+</li>
+<li><p>Postprocess through field functions.</p>
+<p>The usual output path is to solve first, then get scalar or power field
+functions and export or interpolate them.</p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Many user problems are easier to diagnose if you first ask: is this a mesh
+issue, a material/block id issue, a groupset/iteration issue, or an outer
+solver issue?</p>
+</div>
+</section>
+<section id="good-default-habits">
+<h2><span class="section-number">3.5. </span>Good Default Habits<a class="headerlink" href="#good-default-habits" title="Link to this heading"></a></h2>
+<p>Good starting habits are:</p>
+<ul class="simple">
+<li><p>use one groupset unless you know why you need more,</p></li>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> as the default difficult-problem inner method,</p></li>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type=&quot;single&quot;</span></code> on unstructured meshes,</p></li>
+<li><p>keep inner tolerances tighter than outer tolerances,</p></li>
+<li><p>create power field functions only when you need them,</p></li>
+<li><p>inspect exported field functions or interpolated values early in a new model.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> is a strong default for difficult problems, but it stores
+Krylov basis vectors between restarts. On large problems, memory usage can
+become significant, so keep <code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code> only as large as the
+problem needs.</p>
+</div>
+</section>
+<section id="what-to-read-next">
+<h2><span class="section-number">3.6. </span>What To Read Next<a class="headerlink" href="#what-to-read-next" title="Link to this heading"></a></h2>
+<p>If you want the next level of detail:</p>
+<ul class="simple">
+<li><p>read <a class="reference internal" href="geometry_mesh.html"><span class="doc">Geometry and Mesh</span></a> for mesh creation and labeling,</p></li>
+<li><p>read <a class="reference internal" href="materials_xs.html"><span class="doc">Materials and Cross-Section Data</span></a> for materials and cross sections,</p></li>
+<li><p>read <a class="reference internal" href="groupsets.html"><span class="doc">Groupsets</span></a> and <a class="reference internal" href="iterative_methods.html"><span class="doc">Iterative Methods</span></a> for transport iteration,</p></li>
+<li><p>read <a class="reference internal" href="discrete_ordinates_problems.html"><span class="doc">Discrete-Ordinates Problems</span></a> and <a class="reference internal" href="solvers.html"><span class="doc">Solvers</span></a> for problem and
+solver setup,</p></li>
+<li><p>read <a class="reference internal" href="example_problems.html"><span class="doc">Example Problems</span></a> for complete input patterns,</p></li>
+<li><p>read <a class="reference internal" href="post_processors.html"><span class="doc">Post Processors</span></a> for field functions and interpolation.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="2. Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geometry_mesh.html" class="btn btn-neutral float-right" title="4. Geometry and Mesh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

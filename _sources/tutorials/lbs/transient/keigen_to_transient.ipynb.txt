@@ -280,8 +280,9 @@
     "- `save_angular_flux=True` for storing angular fluxes during the steady-state solve.\n",
     "- `use_precursors=False` for prompt-only transient behavior in this tutorial.\n",
     "\n",
-    "**Note:** It is not necessary to set `save_angular_flux=True` for the steady-state problem. If this option is not enabled,\n",
-    "OpenSn will attempt to reconstruct the angular flux from the converged steady-state flux moments."
+    "**Note:** `save_angular_flux=True` is required for the transient solve. In\n",
+    "this workflow, set it on the shared problem object before the steady-state\n",
+    "solve so the same problem can transition cleanly into transient mode."
    ]
   },
   {

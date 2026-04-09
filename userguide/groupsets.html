@@ -1,0 +1,669 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>8. Groupsets &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="9. Iterative Methods" href="iterative_methods.html" />
+    <link rel="prev" title="6. Angular Quadratures" href="angular_quadratures.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">8. Groupsets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">8.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-a-groupset-does">8.2. What a Groupset Does</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#required-core-fields">8.3. Required Core Fields</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#groups-from-to">8.3.1. <code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#angular-quadrature">8.3.2. <code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#writing-a-minimal-groupset">8.4. Writing a Minimal Groupset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-optional-groupset-controls">8.5. Common Optional Groupset Controls</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#angle-aggregation">8.5.1. Angle aggregation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inner-linear-method">8.5.2. Inner linear method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#allowing-cycles">8.5.3. Allowing cycles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wgdsa-and-tgdsa">8.5.4. WGDSA and TGDSA</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#single-groupset-vs-multiple-groupsets">8.6. Single Groupset vs Multiple Groupsets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#single-groupset">8.6.1. Single groupset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multiple-groupsets">8.6.2. Multiple groupsets</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#groupsets-and-ags">8.7. Groupsets and AGS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-patterns">8.8. Example Patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#single-groupset-for-all-groups">8.8.1. Single groupset for all groups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#two-groupsets-split-by-energy">8.8.2. Two groupsets split by energy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unstructured-mesh-groupset">8.8.3. Unstructured-mesh groupset</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">8.9. Practical Guidance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">8. </span>Groupsets</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="groupsets">
+<h1><span class="section-number">8. </span>Groupsets<a class="headerlink" href="#groupsets" title="Link to this heading"></a></h1>
+<p>Groupsets are the bridge between the energy-group structure and the transport
+iteration strategy. Each groupset:</p>
+<ul class="simple">
+<li><p>covers a contiguous range of energy groups,</p></li>
+<li><p>selects an angular quadrature,</p></li>
+<li><p>selects the inner linear iteration method for that range,</p></li>
+<li><p>controls angle aggregation for that range,</p></li>
+<li><p>optionally enables WGDSA and TGDSA for that range.</p></li>
+</ul>
+<p>This section explains what groupsets are, how to write them, when one groupset
+is enough, and when a multi-groupset split makes sense.</p>
+<section id="overview">
+<h2><span class="section-number">8.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>A groupset answers the question:</p>
+<p>“How should OpenSn sweep and iterate this subset of energy groups?”</p>
+<p>The main groupset fields exposed in the Python API are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angle_aggregation_type</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angle_aggregation_num_subsets</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">allow_cycles</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+</ul>
+<p>The simplest valid pattern is one groupset covering all groups:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are not sure how to start, start here. One groupset for all groups is
+still the safest first configuration for most problems.</p>
+</div>
+</section>
+<section id="what-a-groupset-does">
+<h2><span class="section-number">8.2. </span>What a Groupset Does<a class="headerlink" href="#what-a-groupset-does" title="Link to this heading"></a></h2>
+<p>A groupset defines the local transport-iteration behavior for a contiguous
+energy-group range.</p>
+<p>Conceptually, it bundles together:</p>
+<ul class="simple">
+<li><p>the group range,</p></li>
+<li><p>the angular discretization,</p></li>
+<li><p>the inner transport iteration,</p></li>
+<li><p>optional angle aggregation behavior,</p></li>
+<li><p>optional diffusion synthetic acceleration.</p></li>
+</ul>
+<p>That is why groupsets belong to the problem definition rather than to the outer
+solver object. They describe how the transport problem is partitioned in energy
+and how each energy range is swept and iterated.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A useful mental model is:</p>
+<ul class="simple">
+<li><p>the problem defines the physical model,</p></li>
+<li><p>the groupsets define how that model is partitioned and iterated in energy,</p></li>
+<li><p>the solver defines the outer algorithm that drives the whole calculation.</p></li>
+</ul>
+</div>
+</section>
+<section id="required-core-fields">
+<h2><span class="section-number">8.3. </span>Required Core Fields<a class="headerlink" href="#required-core-fields" title="Link to this heading"></a></h2>
+<section id="groups-from-to">
+<h3><span class="section-number">8.3.1. </span><code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code><a class="headerlink" href="#groups-from-to" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code> is required. It defines the first and last global group
+index in the groupset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This means the groupset contains groups 0 through 19, inclusive.</p>
+<p>Important rules:</p>
+<ul class="simple">
+<li><p>each groupset covers a contiguous energy range,</p></li>
+<li><p>groupsets should cover the intended group structure without overlap,</p></li>
+<li><p>groups within a groupset should be ordered from high energy to low energy,</p></li>
+<li><p>groupsets themselves should also be ordered from high energy to low energy.</p></li>
+</ul>
+</section>
+<section id="angular-quadrature">
+<h3><span class="section-number">8.3.2. </span><code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code><a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code> is also required. It defines the angular quadrature used
+for the groupset.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The quadrature determines:</p>
+<ul class="simple">
+<li><p>the discrete directions,</p></li>
+<li><p>the direction weights,</p></li>
+<li><p>the moment operators used with those directions.</p></li>
+</ul>
+<p>See <a class="reference internal" href="angular_quadratures.html"><span class="doc">Angular Quadratures</span></a> for the quadrature families and selection rules.</p>
+</section>
+</section>
+<section id="writing-a-minimal-groupset">
+<h2><span class="section-number">8.4. </span>Writing a Minimal Groupset<a class="headerlink" href="#writing-a-minimal-groupset" title="Link to this heading"></a></h2>
+<p>A minimal practical groupset often looks like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>This is a good starting point because it:</p>
+<ul class="simple">
+<li><p>keeps all groups together,</p></li>
+<li><p>uses one quadrature,</p></li>
+<li><p>makes the inner iteration choices explicit.</p></li>
+</ul>
+</section>
+<section id="common-optional-groupset-controls">
+<h2><span class="section-number">8.5. </span>Common Optional Groupset Controls<a class="headerlink" href="#common-optional-groupset-controls" title="Link to this heading"></a></h2>
+<section id="angle-aggregation">
+<h3><span class="section-number">8.5.1. </span>Angle aggregation<a class="headerlink" href="#angle-aggregation" title="Link to this heading"></a></h3>
+<p>The angle-aggregation keyword is:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">angle_aggregation_type</span></code></p></li>
+</ul>
+<p>Supported aggregation types exposed in OpenSn are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;polar&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;azimuthal&quot;</span></code></p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+    <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;single&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Practical interpretation:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code> keeps the angle treatment as simple as possible,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;polar&quot;</span></code> is a structured/product-quadrature-oriented choice,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;azimuthal&quot;</span></code> is available when azimuthal grouping is a better fit for the
+chosen structured workflow.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Angle aggregation is not just a performance knob. It is a sweep-organization
+choice that must remain compatible with both the mesh and the quadrature.
+In particular, unstructured meshes require
+<code class="docutils literal notranslate"><span class="pre">angle_aggregation_type=&quot;single&quot;</span></code>.</p>
+<p>See <a class="reference internal" href="angular_quadratures.html"><span class="doc">Angular Quadratures</span></a> for the detailed compatibility rules between
+quadrature family, mesh type, and aggregation type.</p>
+</div>
+</section>
+<section id="inner-linear-method">
+<h3><span class="section-number">8.5.2. </span>Inner linear method<a class="headerlink" href="#inner-linear-method" title="Link to this heading"></a></h3>
+<p>The groupset field <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> selects the transport inner solver
+for that groupset.</p>
+<p>Supported values are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;classic_richardson&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_richardson&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_gmres&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_bicgstab&quot;</span></code></p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+    <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+    <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>These methods are described in detail in <a class="reference internal" href="iterative_methods.html"><span class="doc">Iterative Methods</span></a>. The main
+point here is that the choice is made per groupset.</p>
+<section id="core-inner-solver-controls">
+<h4><span class="section-number">8.5.2.1. </span>Core inner-solver controls<a class="headerlink" href="#core-inner-solver-controls" title="Link to this heading"></a></h4>
+<p>The main groupset-level inner controls are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>: inner linear absolute tolerance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_max_its</span></code>: maximum inner iterations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code>: GMRES restart interval when GMRES is used; it
+also controls how many Krylov vectors are retained before restart and
+therefore affects memory usage</p></li>
+</ul>
+<p>These settings belong together. The method and the tolerances should be chosen
+as one configuration, not as unrelated toggles.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Inner tolerances should generally be tighter than the outer tolerances. A
+loose inner solve can make outer iteration look worse than it really is.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Be deliberate with <code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code>. Larger values can help some
+hard problems, but GMRES retains more Krylov vectors between restarts as the
+interval grows. On large transport solves this can consume substantial
+memory.</p>
+</div>
+</section>
+</section>
+<section id="allowing-cycles">
+<h3><span class="section-number">8.5.3. </span>Allowing cycles<a class="headerlink" href="#allowing-cycles" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">allow_cycles</span></code> controls whether the sweep construction is allowed to break
+cyclic dependencies where the chosen sweep path supports that behavior.</p>
+<p>Most users will not need to set this field explicitly, but it belongs to the
+groupset because it is part of the transport-sweep behavior for that energy
+range.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is not a routine tuning knob for most users. If you are not dealing
+with sweep-cycle behavior explicitly, leave it at the default.</p>
+</div>
+</section>
+<section id="wgdsa-and-tgdsa">
+<h3><span class="section-number">8.5.4. </span>WGDSA and TGDSA<a class="headerlink" href="#wgdsa-and-tgdsa" title="Link to this heading"></a></h3>
+<p>Within-Groupset Diffusion Synthetic Acceleration (WGDSA) and Two-Grid Diffusion
+Synthetic Acceleration (TGDSA) are auxiliary solves added to the groupset
+transport iteration. Their purpose is to reduce the number of transport
+iterations needed for convergence.</p>
+<p>The transport sweep is still the main operator. Acceleration does not replace
+the transport solve. Instead, it adds a lower-order correction that helps the
+iteration converge faster when the unaccelerated transport iteration would
+otherwise converge very slowly.</p>
+<p>The most common reason that acceleration is needed is diffusive behavior. In
+optically thick, strongly scattering problems, ordinary source iteration can
+converge very slowly because the remaining error behaves like a low-order,
+slowly decaying diffusive mode.</p>
+<p>DSA attacks that slow mode by solving an auxiliary diffusion problem for a
+correction to the scalar flux. That correction is then projected back into the
+transport iteration.</p>
+<p>In OpenSn, the DSA paths exposed at the groupset level act on the zeroth moment
+of the flux, not on the full angular flux.</p>
+<p>WGDSA and TGDSA are enabled per groupset:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code></p></li>
+</ul>
+<p>with associated controls:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+</ul>
+<section id="apply-wgdsa">
+<h4><span class="section-number">8.5.4.1. </span><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code><a class="headerlink" href="#apply-wgdsa" title="Link to this heading"></a></h4>
+<p>For WGSA, the idea is:</p>
+<ul class="simple">
+<li><p>perform the transport iteration for the groupset,</p></li>
+<li><p>estimate the remaining slow scalar-flux error,</p></li>
+<li><p>solve a diffusion problem for that correction over the same groupset,</p></li>
+<li><p>project the correction back into the transport iterate.</p></li>
+</ul>
+<p>This is most useful when the groupset itself has strongly diffusive behavior.
+If a single groupset covers the relevant energy range and the within-groupset
+source iteration is slow because of scattering, WGDSA is often the first DSA
+option to think about.</p>
+<p>The main WGDSA controls are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+</ul>
+</section>
+<section id="apply-tgdsa">
+<h4><span class="section-number">8.5.4.2. </span><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code><a class="headerlink" href="#apply-tgdsa" title="Link to this heading"></a></h4>
+<p>For TGDSA, the idea is similar, but the correction is built from a two-grid
+style thermal or low-energy collapse rather than from the full multigroup
+structure directly. This is intended to accelerate the slow low-energy diffusive
+behavior that is common in thermalized systems.</p>
+<p>In practice, TGDSA is the more specialized option. It is usually considered
+when the lower-energy part of the problem exhibits the classic slow diffusive
+convergence behavior and a plain within-group correction is not the whole
+story.</p>
+<p>The main TGDSA controls are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+</ul>
+</section>
+<section id="when-to-think-about-dsa">
+<h4><span class="section-number">8.5.4.3. </span>When to think about DSA<a class="headerlink" href="#when-to-think-about-dsa" title="Link to this heading"></a></h4>
+<p>DSA is most worth considering when:</p>
+<ul class="simple">
+<li><p>the problem is optically thick,</p></li>
+<li><p>scattering is strong,</p></li>
+<li><p>the inner groupset solve converges, but very slowly,</p></li>
+<li><p>the slow behavior looks diffusive.</p></li>
+</ul>
+<p>DSA is usually less useful as a first response to every difficult problem. If
+the groupset split is poor, the quadrature/aggregation combination is invalid,
+or the tolerances are inconsistent, adding DSA may only hide the actual setup
+problem.</p>
+<p>These are groupset-level algorithm choices, not problem-wide switches.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>DSA is usually something to add after the baseline groupset is already
+understood. If a problem is not converging, first make sure the groupset
+split, quadrature, aggregation choice, and inner tolerances all make sense.
+Then decide whether DSA is needed.</p>
+</div>
+</section>
+</section>
+</section>
+<section id="single-groupset-vs-multiple-groupsets">
+<h2><span class="section-number">8.6. </span>Single Groupset vs Multiple Groupsets<a class="headerlink" href="#single-groupset-vs-multiple-groupsets" title="Link to this heading"></a></h2>
+<section id="single-groupset">
+<h3><span class="section-number">8.6.1. </span>Single groupset<a class="headerlink" href="#single-groupset" title="Link to this heading"></a></h3>
+<p>Use a single groupset when:</p>
+<ul class="simple">
+<li><p>the problem is still being developed,</p></li>
+<li><p>the energy structure is modest,</p></li>
+<li><p>there is no strong performance reason to split groups,</p></li>
+<li><p>the user wants the simplest possible iteration structure.</p></li>
+</ul>
+<p>This is the recommended default starting point.</p>
+</section>
+<section id="multiple-groupsets">
+<h3><span class="section-number">8.6.2. </span>Multiple groupsets<a class="headerlink" href="#multiple-groupsets" title="Link to this heading"></a></h3>
+<p>Multiple groupsets are useful when:</p>
+<ul class="simple">
+<li><p>the energy structure is large enough to justify a split,</p></li>
+<li><p>the user wants different iteration behavior in different energy ranges,</p></li>
+<li><p>the problem is part of a workflow that intentionally uses AGS iteration.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">19</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">39</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;apply_tgdsa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;tgdsa_l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;tgdsa_l_max_its&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The main consequence of a groupset split is not just a longer input. It also
+introduces another iteration level.</p>
+</section>
+</section>
+<section id="groupsets-and-ags">
+<h2><span class="section-number">8.7. </span>Groupsets and AGS<a class="headerlink" href="#groupsets-and-ags" title="Link to this heading"></a></h2>
+<p>When there are multiple groupsets, the problem may need across-groupset
+iteration to converge the coupling between them.</p>
+<p>This is where AGS becomes important.</p>
+<p>Problem-level AGS controls live in the LBS options block:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_ags_iterations</span></code></p></li>
+</ul>
+<p>Practical rule:</p>
+<ul class="simple">
+<li><p>if multiple groupsets are used and there is upscatter coupling across
+groupset boundaries, AGS iteration must be enabled and converged.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is one of the most important groupset design rules in the code. A
+groupset split does not remove the underlying physical coupling. It only
+changes where that coupling is iterated. In general, multiple groupsets are
+not recommended.</p>
+</div>
+</section>
+<section id="example-patterns">
+<h2><span class="section-number">8.8. </span>Example Patterns<a class="headerlink" href="#example-patterns" title="Link to this heading"></a></h2>
+<section id="single-groupset-for-all-groups">
+<h3><span class="section-number">8.8.1. </span>Single groupset for all groups<a class="headerlink" href="#single-groupset-for-all-groups" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;single&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="two-groupsets-split-by-energy">
+<h3><span class="section-number">8.8.2. </span>Two groupsets split by energy<a class="headerlink" href="#two-groupsets-split-by-energy" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">fast_last</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">fast_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;apply_tgdsa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;tgdsa_l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;tgdsa_l_max_its&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="unstructured-mesh-groupset">
+<h3><span class="section-number">8.8.3. </span>Unstructured-mesh groupset<a class="headerlink" href="#unstructured-mesh-groupset" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;single&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="practical-guidance">
+<h2><span class="section-number">8.9. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<p>For most users:</p>
+<ul class="simple">
+<li><p>start with one groupset for all groups,</p></li>
+<li><p>use one quadrature per groupset,</p></li>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> as the default difficult-problem inner method,</p></li>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type=&quot;single&quot;</span></code> for unstructured meshes,</p></li>
+<li><p>add WGDSA or TGDSA only when convergence behavior suggests they are needed,</p></li>
+<li><p>add multiple groupsets only when there is a clear reason to split the energy
+structure,</p></li>
+<li><p>if multiple groupsets and cross-groupset upscatter are present, enable and
+converge AGS,</p></li>
+<li><p>keep inner tolerances explicit and tighter than outer tolerances.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code>, keep an eye on memory usage. The
+<code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code> is effectively the number of restart vectors GMRES
+retains, so large values should be chosen intentionally rather than copied
+from another case.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Groupsets are one of the highest-leverage parts of the input. A good groupset
+design makes the rest of the solver configuration easier. A bad groupset
+design can make even a correct problem look unstable or slow.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="angular_quadratures.html" class="btn btn-neutral float-left" title="6. Angular Quadratures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="iterative_methods.html" class="btn btn-neutral float-right" title="9. Iterative Methods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -455,7 +455,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "For computing the detector response we make use of `EvaluateResponse` which given a buffer name will compute an inner product of the adjoint flux $\\phi^{\\dagger}$ against the forward source $q$ using the [duality principle](../../../theory/adjoint.rst) such that:\n",
+    "For computing the detector response we make use of `EvaluateResponse` which given a buffer name will compute an inner product of the adjoint flux $\\phi^{\\dagger}$ against the forward source $q$ using the [duality principle](../../../theory/adjoint.html) such that:\n",
     "\n",
     "$$\n",
     "\\text{QoI} =  \\sum^G_g \\, \\text{RR}^g = \\sum^G_g \\, \\int_\\mathcal{D} d^3r \\, \\int_{(4\\pi)}   d\\Omega  \\, q^g(\\vec{r},\\vec\\Omega) \\psi^{\\dagger,g}(\\vec{r},\\vec\\Omega) = \\sum^G_g \\, \\int_\\mathcal{D}  d^3r  \\, q^g(\\vec{r}) \\phi^{\\dagger,g}(\\vec{r})\n",

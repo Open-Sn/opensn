@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>14. Post Processors &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="15. Visualization" href="visualization.html" />
+    <link rel="prev" title="13. Example Problems" href="example_problems.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">14. Post Processors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">14.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-existing-field-functions">14.2. Updating Existing Field Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scalar-flux-field-functions">14.3. Scalar Flux Field Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#getscalarfluxfieldfunction">14.3.1. <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#derived-field-functions">14.4. Derived Field Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#createfieldfunction">14.4.1. <code class="docutils literal notranslate"><span class="pre">CreateFieldFunction</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#angular-flux-field-functions">14.5. Angular Flux Field Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#getangularfieldfunctionlist">14.5.1. <code class="docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-field-functions">14.6. Exporting Field Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#field-function-interpolation">14.7. Field-Function Interpolation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#point-interpolation">14.7.1. Point Interpolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#line-interpolation">14.7.2. Line Interpolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#volume-interpolation">14.7.3. Volume Interpolation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#other-useful-post-processing-paths">14.8. Other Useful Post-Processing Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-workflows">14.9. Transient Workflows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">14.10. Practical Guidance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">14. </span>Post Processors</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="post-processors">
+<h1><span class="section-number">14. </span>Post Processors<a class="headerlink" href="#post-processors" title="Link to this heading"></a></h1>
+<p>For most OpenSn workflows, post processing starts with field functions. A field
+function is a mesh-based representation of transport data that can be exported
+or interpolated from Python.</p>
+<p>The important practical point is that field functions are created from the
+current solver state when requested. They are snapshots, not continuously
+updated solver-owned views. Some field functions can refresh that same
+snapshot object explicitly through
+<a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.Update" title="pyopensn.fieldfunc.FieldFunctionGridBased.Update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased.Update()</span></code></a>.</p>
+<section id="overview">
+<h2><span class="section-number">14.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The OpenSn field function interfaces are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction" title="pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.CreateFieldFunction" title="pyopensn.solver.LBSProblem.CreateFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.CreateFieldFunction()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList" title="pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU" title="pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationPoint.html#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationPoint</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationLine.html#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationLine</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></code></a></p></li>
+</ul>
+<p>In practice, most workflows are:</p>
+<ol class="arabic simple">
+<li><p>solve the problem,</p></li>
+<li><p>create the field functions needed from the current state,</p></li>
+<li><p>export them or evaluate them with interpolation objects.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the solver state changes, a field function created earlier does not
+update itself automatically after a later solve or timestep. Either create a
+new field function from the current state, or call <code class="docutils literal notranslate"><span class="pre">Update()</span></code> on the
+existing field function when <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> returns <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For LBS workflows, the important field-function creators are
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">CreateFieldFunction()</span></code>, and, for discrete ordinates problems,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList()</span></code>. These methods return fresh field
+functions from the current state; they do not rely on a persistent
+field-function cache.</p>
+</div>
+</section>
+<section id="updating-existing-field-functions">
+<h2><span class="section-number">14.2. </span>Updating Existing Field Functions<a class="headerlink" href="#updating-existing-field-functions" title="Link to this heading"></a></h2>
+<p>Field functions returned by LBS problem accessors are updateable snapshots.
+They hold their own field-vector data, but also know how to refresh that data
+from the owning problem while the owning problem is still alive.</p>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.CanUpdate" title="pyopensn.fieldfunc.FieldFunctionGridBased.CanUpdate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased.CanUpdate()</span></code></a> before
+refreshing a field function that may have outlived its problem:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scalar_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">scalar_ff</span><span class="o">.</span><span class="n">CanUpdate</span><span class="p">():</span>
+    <span class="n">scalar_ff</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> refreshes the same field-function object. Interpolators
+and export calls that already reference that object will see the refreshed data
+the next time they execute.</p>
+<p>This is mainly useful in timestep loops or repeated-solve workflows where
+reusing the same interpolation or export setup is clearer than reconstructing
+field functions each time.</p>
+</section>
+<section id="scalar-flux-field-functions">
+<h2><span class="section-number">14.3. </span>Scalar Flux Field Functions<a class="headerlink" href="#scalar-flux-field-functions" title="Link to this heading"></a></h2>
+<section id="getscalarfluxfieldfunction">
+<h3><span class="section-number">14.3.1. </span><code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction</span></code><a class="headerlink" href="#getscalarfluxfieldfunction" title="Link to this heading"></a></h3>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction" title="pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction()</span></code></a> to create
+scalar-flux or flux-moment field functions from the current scalar-flux state.</p>
+<p>The common case is scalar flux only:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scalar_ffs</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This returns one field function per energy group, each representing the zeroth
+moment of the flux.</p>
+<p>If higher moments are needed too:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ff_by_group_and_moment</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">(</span>
+    <span class="n">only_scalar_flux</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In that form:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">result[g][m]</span></code> is the field function for group <code class="docutils literal notranslate"><span class="pre">g</span></code> and moment <code class="docutils literal notranslate"><span class="pre">m</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most visualization and response workflows begin with scalar flux. Higher
+moments are mainly for diagnostics and specialized analysis.</p>
+</div>
+</section>
+</section>
+<section id="derived-field-functions">
+<h2><span class="section-number">14.4. </span>Derived Field Functions<a class="headerlink" href="#derived-field-functions" title="Link to this heading"></a></h2>
+<section id="createfieldfunction">
+<h3><span class="section-number">14.4.1. </span><code class="docutils literal notranslate"><span class="pre">CreateFieldFunction</span></code><a class="headerlink" href="#createfieldfunction" title="Link to this heading"></a></h3>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.CreateFieldFunction" title="pyopensn.solver.LBSProblem.CreateFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.CreateFieldFunction()</span></code></a> to create a named
+scalar field function derived from a 1D cross section or from the special case
+<code class="docutils literal notranslate"><span class="pre">&quot;power&quot;</span></code>.</p>
+<p>Examples:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fission_rate_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span><span class="s2">&quot;fission_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma_f&quot;</span><span class="p">)</span>
+<span class="n">power_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span><span class="s2">&quot;power_generation&quot;</span><span class="p">,</span> <span class="s2">&quot;power&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For a built-in or custom 1D XS name, this creates the field:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sum_g xs[g] * phi_g
+</pre></div>
+</div>
+<p>at each spatial point.</p>
+<p>If a power-normalized view is needed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">power_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span>
+    <span class="s2">&quot;power_generation_norm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;power&quot;</span><span class="p">,</span>
+    <span class="n">power_normalization_target</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Important points:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is the field-function name assigned to the returned object</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs_name</span></code> can be a built-in 1D XS name, a custom XS name, or <code class="docutils literal notranslate"><span class="pre">&quot;power&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">power_normalization_target</span></code> is optional and affects only the returned
+field function</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">power_normalization_target</span></code> applies a power-based scaling to the returned
+field function only. It does not rescale the solver’s internal flux vectors,
+and it does not change field functions created earlier. If you want a
+normalized power field, use
+<code class="docutils literal notranslate"><span class="pre">CreateFieldFunction(&quot;name&quot;,</span> <span class="pre">&quot;power&quot;,</span> <span class="pre">power_normalization_target=...)</span></code>.
+The same argument can also be used for other derived fields such as
+<code class="docutils literal notranslate"><span class="pre">sigma_f</span> <span class="pre">*</span> <span class="pre">phi</span></code> when a power-normalized post-processed view is desired.</p>
+</div>
+</section>
+</section>
+<section id="angular-flux-field-functions">
+<h2><span class="section-number">14.5. </span>Angular Flux Field Functions<a class="headerlink" href="#angular-flux-field-functions" title="Link to this heading"></a></h2>
+<section id="getangularfieldfunctionlist">
+<h3><span class="section-number">14.5.1. </span><code class="docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList</span></code><a class="headerlink" href="#getangularfieldfunctionlist" title="Link to this heading"></a></h3>
+<p>Use
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList" title="pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList()</span></code></a>
+to create field functions for selected angular-flux components.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ang_ffs</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetAngularFieldFunctionList</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Important requirements:</p>
+<ul class="simple">
+<li><p>this is available on <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
+<li><p>angular-flux storage must be enabled with <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code></p></li>
+<li><p>the returned field functions are snapshots created from the currently stored
+angular flux</p></li>
+<li><p>if the stored angular flux changes later, call <code class="docutils literal notranslate"><span class="pre">Update()</span></code> on the existing
+angular field functions or create new ones from the current state</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>For transient problems, <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> is not optional. It is
+required by the transient solver itself, and it is also required if you
+want to create angular-flux field functions or query <code class="docutils literal notranslate"><span class="pre">GetPsi()</span></code> during the
+transient run.</p>
+</div>
+<p>This is mainly useful for:</p>
+<ul class="simple">
+<li><p>angular diagnostics,</p></li>
+<li><p>leakage studies,</p></li>
+<li><p>checking directional structure in difficult problems.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Angular flux is much larger than scalar flux. Only enable angular-flux
+storage and create angular field functions when the workflow actually needs
+them.</p>
+</div>
+<p>Scalar-flux field functions use names based on group and moment, for example:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">phi_g000_m00</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">phi_g001_m00</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">phi_g000_m01</span></code></p></li>
+</ul>
+<p>If the problem uses a field-function prefix, that prefix is applied to these
+names as well.</p>
+</section>
+</section>
+<section id="exporting-field-functions">
+<h2><span class="section-number">14.6. </span>Exporting Field Functions<a class="headerlink" href="#exporting-field-functions" title="Link to this heading"></a></h2>
+<p>The main Python export routine is:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU" title="pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU()</span></code></a></p></li>
+</ul>
+<p>Export scalar flux:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
+
+<span class="n">scalar_ffs</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+    <span class="n">scalar_ffs</span><span class="p">,</span>
+    <span class="s2">&quot;scalar_flux&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Export a derived field:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
+
+<span class="n">power_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span><span class="s2">&quot;power_generation&quot;</span><span class="p">,</span> <span class="s2">&quot;power&quot;</span><span class="p">)</span>
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">power_ff</span><span class="p">],</span>
+    <span class="s2">&quot;power&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Export several fields together:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
+
+<span class="n">scalar_ffs</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+<span class="n">power_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span><span class="s2">&quot;power_generation&quot;</span><span class="p">,</span> <span class="s2">&quot;power&quot;</span><span class="p">)</span>
+
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+    <span class="n">scalar_ffs</span> <span class="o">+</span> <span class="p">[</span><span class="n">power_ff</span><span class="p">],</span>
+    <span class="s2">&quot;transport_outputs&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Export after the solve, not before. For transient problems, export after the
+completed timestep whose state you want to visualize.</p>
+</div>
+</section>
+<section id="field-function-interpolation">
+<h2><span class="section-number">14.7. </span>Field-Function Interpolation<a class="headerlink" href="#field-function-interpolation" title="Link to this heading"></a></h2>
+<section id="point-interpolation">
+<h3><span class="section-number">14.7.1. </span>Point Interpolation<a class="headerlink" href="#point-interpolation" title="Link to this heading"></a></h3>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationPoint.html#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationPoint</span></code></a> to evaluate a
+field function at a point.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationPoint</span>
+
+<span class="n">ffi</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationPoint</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetPointValue</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This is useful for detector-like spot checks or comparison against an analytic
+value.</p>
+</section>
+<section id="line-interpolation">
+<h3><span class="section-number">14.7.2. </span>Line Interpolation<a class="headerlink" href="#line-interpolation" title="Link to this heading"></a></h3>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationLine.html#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationLine</span></code></a> to sample a
+field function along a line.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationLine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector3</span>
+
+<span class="n">ffi</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationLine</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetInitialPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetFinalPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetNumberOfPoints</span><span class="p">(</span><span class="mi">101</span><span class="p">)</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">ExportToCSV</span><span class="p">(</span><span class="s2">&quot;centerline&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is useful for profiles, attenuation curves, and one-dimensional
+comparisons across runs.</p>
+</section>
+<section id="volume-interpolation">
+<h3><span class="section-number">14.7.3. </span>Volume Interpolation<a class="headerlink" href="#volume-interpolation" title="Link to this heading"></a></h3>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></code></a> for region
+averages, sums, maxima, and function-weighted variants over a logical volume.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationVolume</span>
+
+<span class="n">ffi</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">my_lv</span><span class="p">)</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">avg_value</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Available operation types are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;avg&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sum_func&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;avg_func&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;max_func&quot;</span></code></p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">*_func</span></code> variants use a scalar material function supplied with
+<code class="docutils literal notranslate"><span class="pre">SetOperationFunction</span></code>.</p>
+</section>
+</section>
+<section id="other-useful-post-processing-paths">
+<h2><span class="section-number">14.8. </span>Other Useful Post-Processing Paths<a class="headerlink" href="#other-useful-post-processing-paths" title="Link to this heading"></a></h2>
+<p>For discrete ordinates problems, other useful output paths include:</p>
+<ul class="simple">
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPsi()</span></code> for direct access to stored angular-flux arrays</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code> for boundary leakage</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">WriteAngularFluxes()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">ReadAngularFluxes()</span></code> for angular
+flux storage and restart-style workflows</p></li>
+</ul>
+<p>These are not field-function exports, but they are often part of the same
+post-processing workflow.</p>
+</section>
+<section id="transient-workflows">
+<h2><span class="section-number">14.9. </span>Transient Workflows<a class="headerlink" href="#transient-workflows" title="Link to this heading"></a></h2>
+<p>For transient problems, the usual pattern is:</p>
+<ol class="arabic simple">
+<li><p>advance the timestep,</p></li>
+<li><p>update or create the desired field functions,</p></li>
+<li><p>export or interpolate them,</p></li>
+<li><p>repeat as needed.</p></li>
+</ol>
+<p>If the transient workflow needs angular-flux output as well, the problem must
+have been created with <code class="docutils literal notranslate"><span class="pre">options={&quot;save_angular_flux&quot;:</span> <span class="pre">True}</span></code> from the start.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scalar_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">while</span> <span class="ow">not</span> <span class="n">solver</span><span class="o">.</span><span class="n">Finished</span><span class="p">():</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
+    <span class="n">scalar_ff</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>This keeps one field-function object and refreshes it from each completed
+timestep. Creating a new field function after each <code class="docutils literal notranslate"><span class="pre">Advance()</span></code> is also valid,
+but is usually unnecessary when the existing object supports <code class="docutils literal notranslate"><span class="pre">Update()</span></code>.</p>
+</section>
+<section id="practical-guidance">
+<h2><span class="section-number">14.10. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<p>For most workflows:</p>
+<ul class="simple">
+<li><p>use <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction()</span></code> for scalar flux,</p></li>
+<li><p>use <code class="xref py py-meth docutils literal notranslate"><span class="pre">CreateFieldFunction()</span></code> for power or XS-weighted derived outputs,</p></li>
+<li><p>use <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList()</span></code> only when angular information is
+actually needed,</p></li>
+<li><p>use <code class="xref py py-meth docutils literal notranslate"><span class="pre">ExportMultipleToPVTU()</span></code> for visualization output,</p></li>
+<li><p>use point interpolation for spot checks,</p></li>
+<li><p>use line interpolation for profiles,</p></li>
+<li><p>use volume interpolation for averages and integrated responses.</p></li>
+<li><p>call <code class="docutils literal notranslate"><span class="pre">Update()</span></code> before reusing a field function after the solver state
+changes, or create a fresh field function from the current state.</p></li>
+</ul>
+<p>If a script is becoming complicated, it is often worth separating the solve and
+the post-processing logic into different helper functions. That keeps the
+transport setup readable and makes the output workflow easier to reuse.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="example_problems.html" class="btn btn-neutral float-left" title="13. Example Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="visualization.html" class="btn btn-neutral float-right" title="15. Visualization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

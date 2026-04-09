@@ -49,7 +49,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
@@ -103,7 +103,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lbs_problem</strong> – LBS problem </p></li>
 <li><p><strong>file_base</strong> – File name base </p></li>
-<li><p><strong>per_material</strong> – Optional flux moments source vector </p></li>
+<li><p><strong>opt_src</strong> – Optional source vector to write instead of the problem-owned flux moments. </p></li>
 </ul>
 </dd>
 </dl>
@@ -119,7 +119,7 @@
 <li><p><strong>lbs_problem</strong> – LBS problem </p></li>
 <li><p><strong>file_base</strong> – File name base </p></li>
 <li><p><strong>single_file</strong> – Single data file or data file per rank? </p></li>
-<li><p><strong>per_material</strong> – Optional flux moments destination vector </p></li>
+<li><p><strong>opt_dest</strong> – Optional destination vector to populate instead of the problem-owned flux moments. </p></li>
 </ul>
 </dd>
 </dl>

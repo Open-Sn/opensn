@@ -1,0 +1,873 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>13. Example Problems &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="14. Post Processors" href="post_processors.html" />
+    <link rel="prev" title="12. Solvers" href="solvers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">13. Example Problems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-input-structure">13.1. Common Input Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">13.2. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-building-blocks">13.3. Common Building Blocks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mesh">13.3.1. Mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cross-sections">13.3.2. Cross Sections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#groupsets">13.3.3. Groupsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#boundary-conditions">13.3.4. Boundary Conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#volumetric-sources">13.3.5. Volumetric Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#point-sources">13.3.6. Point Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#problem-construction">13.3.7. Problem Construction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#example-1-source-driven-steady-state-problem">13.4. Example 1: Source-Driven Steady-State Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-2-multi-material-fixed-source-problem">13.5. Example 2: Multi-Material Fixed-Source Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-3-boundary-driven-problem">13.6. Example 3: Boundary-Driven Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-4-time-dependent-source-problem">13.7. Example 4: Time-Dependent Source Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-5-explicit-python-time-loop">13.8. Example 5: Explicit Python Time Loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-6-power-iteration-k-eigenvalue-problem">13.9. Example 6: Power-Iteration k-Eigenvalue Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-7-nonlinear-k-eigenvalue-problem">13.10. Example 7: Nonlinear k-Eigenvalue Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-8-curvilinear-problem">13.11. Example 8: Curvilinear Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-9-updating-a-problem-in-place">13.12. Example 9: Updating a Problem In Place</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-10-field-function-output">13.13. Example 10: Field-Function Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-11-balance-and-leakage-checks">13.14. Example 11: Balance and Leakage Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-12-reusing-flux-data">13.15. Example 12: Reusing Flux Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-13-writing-and-reading-restart-dumps">13.16. Example 13: Writing and Reading Restart Dumps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-a-template">13.17. Choosing a Template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">13. </span>Example Problems</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="example-problems">
+<h1><span class="section-number">13. </span>Example Problems<a class="headerlink" href="#example-problems" title="Link to this heading"></a></h1>
+<p>This section collects annotated example-input patterns for many of the
+problem-and-solver combinations used in OpenSn. The examples are intentionally
+verbose and repetitive. They are meant to show where each piece of an input
+belongs rather than to be as short as possible.</p>
+<p>The goal is that a user should be able to read this section and understand how
+to assemble a complete transport input from mesh generation through field-
+function output.</p>
+<section id="common-input-structure">
+<h2><span class="section-number">13.1. </span>Common Input Structure<a class="headerlink" href="#common-input-structure" title="Link to this heading"></a></h2>
+<p>Most OpenSn inputs follow the same high-level structure:</p>
+<ol class="arabic simple">
+<li><p>create or import the mesh,</p></li>
+<li><p>assign block ids and boundary names,</p></li>
+<li><p>create or load cross sections,</p></li>
+<li><p>define the <code class="docutils literal notranslate"><span class="pre">xs_map</span></code>,</p></li>
+<li><p>define one or more groupsets,</p></li>
+<li><p>define optional sources and boundary conditions,</p></li>
+<li><p>construct the problem object,</p></li>
+<li><p>construct the solver object,</p></li>
+<li><p>initialize and execute,</p></li>
+<li><p>retrieve or export field functions.</p></li>
+</ol>
+</section>
+<section id="overview">
+<h2><span class="section-number">13.2. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>In practice:</p>
+<ul class="simple">
+<li><p>the mesh section defines the geometry and ids used later,</p></li>
+<li><p>the material section defines what data lives on which block ids,</p></li>
+<li><p>groupsets hold the angular quadrature and iterative controls,</p></li>
+<li><p>sources and boundaries define the forcing and transport closure,</p></li>
+<li><p>the problem object collects the physical model,</p></li>
+<li><p>the solver object selects the algorithm,</p></li>
+<li><p>field functions provide the usual output path.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A useful way to read the examples below is to separate them into
+“physics-definition” blocks and “algorithm” blocks. The problem object holds
+the physical model; the solver object decides how that model is advanced.</p>
+</div>
+</section>
+<section id="common-building-blocks">
+<h2><span class="section-number">13.3. </span>Common Building Blocks<a class="headerlink" href="#common-building-blocks" title="Link to this heading"></a></h2>
+<p>Before looking at the full examples, it helps to identify the pieces that
+appear in almost every script.</p>
+<section id="mesh">
+<h3><span class="section-number">13.3.1. </span>Mesh<a class="headerlink" href="#mesh" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span>
+    <span class="n">node_sets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+    <span class="p">],</span>
+<span class="p">)</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetOrthogonalBoundaries</span><span class="p">()</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="cross-sections">
+<h3><span class="section-number">13.3.2. </span>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;material_2g.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">xs_map</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}]</span>
+</pre></div>
+</div>
+</section>
+<section id="groupsets">
+<h3><span class="section-number">13.3.3. </span>Groupsets<a class="headerlink" href="#groupsets" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+
+<span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+            <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="boundary-conditions">
+<h3><span class="section-number">13.3.4. </span>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="volumetric-sources">
+<h3><span class="section-number">13.3.5. </span>Volumetric Sources<a class="headerlink" href="#volumetric-sources" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+
+<span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">VolumetricSource</span><span class="p">(</span>
+        <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="point-sources">
+<h3><span class="section-number">13.3.6. </span>Point Sources<a class="headerlink" href="#point-sources" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">PointSource</span>
+
+<span class="n">point_sources</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">PointSource</span><span class="p">(</span>
+        <span class="n">location</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="n">strength</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="problem-construction">
+<h3><span class="section-number">13.3.7. </span>Problem Construction<a class="headerlink" href="#problem-construction" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="n">volumetric_sources</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_outer_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most user scripts spend more effort building the problem than building the
+solver. That is normal. The problem object captures the physical model.</p>
+</div>
+</section>
+</section>
+<section id="example-1-source-driven-steady-state-problem">
+<h2><span class="section-number">13.4. </span>Example 1: Source-Driven Steady-State Problem<a class="headerlink" href="#example-1-source-driven-steady-state-problem" title="Link to this heading"></a></h2>
+<p>This is the standard starting point for most users.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyopensn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span>
+    <span class="n">node_sets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span>
+    <span class="p">],</span>
+<span class="p">)</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetOrthogonalBoundaries</span><span class="p">()</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;material_2g.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="n">xs_map</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]),</span>
+<span class="p">]</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="n">volumetric_sources</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_outer_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">scalar_ffs</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+    <span class="n">scalar_ffs</span><span class="p">,</span>
+    <span class="s2">&quot;steady_state_flux&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>What goes where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh</span></code> contains the geometry and block/boundary labels,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs_map</span></code> assigns materials to block ids,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groupsets</span></code> define quadrature, sweep aggregation, and inner iteration,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code> define the transport behavior at the mesh boundary,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volumetric_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">point_sources</span></code> provide fixed driving terms,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code> contain problem-wide settings such as verbosity and AGS controls,</p></li>
+<li><p>the steady-state solver provides the outer solve algorithm.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When debugging a steady-state problem, it is usually best to start with a
+single groupset, low scattering order, and a simple vacuum or reflecting
+boundary setup. Once the baseline case behaves correctly, then add more
+detail.</p>
+</div>
+</section>
+<section id="example-2-multi-material-fixed-source-problem">
+<h2><span class="section-number">13.5. </span>Example 2: Multi-Material Fixed-Source Problem<a class="headerlink" href="#example-2-multi-material-fixed-source-problem" title="Link to this heading"></a></h2>
+<p>The next common step is assigning different cross sections to different mesh
+regions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fuel_xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">fuel_xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;fuel.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">moderator_xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">moderator_xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;moderator.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">fuel_lv</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">moderator_lv</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">xs_map</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">fuel_xs</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">moderator_xs</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The rest of the problem definition can remain unchanged.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A large fraction of practical “geometry work” in an OpenSn input is really
+about assigning the right block ids to the right cells. That is why block id
+checking is worth doing early.</p>
+</div>
+</section>
+<section id="example-3-boundary-driven-problem">
+<h2><span class="section-number">13.6. </span>Example 3: Boundary-Driven Problem<a class="headerlink" href="#example-3-boundary-driven-problem" title="Link to this heading"></a></h2>
+<p>Some problems are driven entirely or primarily by incoming boundary flux.</p>
+<p>Isotropic inflow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;isotropic&quot;</span><span class="p">,</span> <span class="s2">&quot;group_strength&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Arbitrary angular inflow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularFluxFunction</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">incident_flux</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">direction_num</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">group</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+    <span class="k">return</span> <span class="mf">0.0</span>
+
+<span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;arbitrary&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="n">AngularFluxFunction</span><span class="p">(</span><span class="n">incident_flux</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Boundary-condition dictionaries only affect boundaries whose ids already
+exist on the mesh.</p>
+</div>
+</section>
+<section id="example-4-time-dependent-source-problem">
+<h2><span class="section-number">13.7. </span>Example 4: Time-Dependent Source Problem<a class="headerlink" href="#example-4-time-dependent-source-problem" title="Link to this heading"></a></h2>
+<p>For a transient problem that does not require Python-side updates between
+timesteps, <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> is the simplest path.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransientSolver</span><span class="p">,</span> <span class="n">CrankNicolson</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="n">volumetric_sources</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">time_dependent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span>
+    <span class="n">stop_time</span><span class="o">=</span><span class="mf">1.0e-2</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">SetTheta</span><span class="p">(</span><span class="n">CrankNicolson</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Important changes relative to a steady-state solve:</p>
+<ul class="simple">
+<li><p>the problem is created with <code class="docutils literal notranslate"><span class="pre">time_dependent=True</span></code>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>,</p></li>
+<li><p>the outer solver becomes <code class="docutils literal notranslate"><span class="pre">TransientSolver</span></code>,</p></li>
+<li><p>timestep-related settings belong to the solver, not the problem.</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>For transient problems, <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> is required. It is not
+just an optional post-processing switch.</p>
+</div>
+</section>
+<section id="example-5-explicit-python-time-loop">
+<h2><span class="section-number">13.8. </span>Example 5: Explicit Python Time Loop<a class="headerlink" href="#example-5-explicit-python-time-loop" title="Link to this heading"></a></h2>
+<p>If the input needs to update the problem between timesteps, use <code class="docutils literal notranslate"><span class="pre">Advance()</span></code>
+directly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransientSolver</span><span class="p">,</span> <span class="n">BackwardEuler</span>
+
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0e-3</span>
+<span class="n">stop_time</span> <span class="o">=</span> <span class="mf">1.0e-2</span>
+<span class="n">t</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+    <span class="n">stop_time</span><span class="o">=</span><span class="n">stop_time</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">SetTheta</span><span class="p">(</span><span class="n">BackwardEuler</span><span class="p">)</span>
+<span class="n">scalar_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">stop_time</span><span class="p">:</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="n">dt</span>
+
+    <span class="n">scalar_ff</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mf">5.0e-3</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="mf">5.0e-4</span>
+        <span class="n">solver</span><span class="o">.</span><span class="n">SetTimeStep</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This pattern is useful when:</p>
+<ul class="simple">
+<li><p>timestep size changes during the run,</p></li>
+<li><p>a custom output cadence is needed,</p></li>
+<li><p>source or boundary data are updated from Python between steps.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The same transient requirement still applies in a manual loop:
+<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> must already be enabled on the problem before the
+transient solve begins.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Field functions are created from the current completed state when requested.
+If the state changes on a later step, call <code class="docutils literal notranslate"><span class="pre">Update()</span></code> on an updateable
+field function or create a fresh field function from the current state.</p>
+</div>
+</section>
+<section id="example-6-power-iteration-k-eigenvalue-problem">
+<h2><span class="section-number">13.9. </span>Example 6: Power-Iteration k-Eigenvalue Problem<a class="headerlink" href="#example-6-power-iteration-k-eigenvalue-problem" title="Link to this heading"></a></h2>
+<p>Power iteration is the usual first choice for a standard k-eigenvalue solve.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">PowerIterationKEigenSolver</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;power_default_kappa&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">max_iters</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">k_tol</span><span class="o">=</span><span class="mf">1.0e-10</span><span class="p">,</span>
+    <span class="n">reset_solution</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">reset_phi0</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">scalar_ffs</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+<span class="n">power_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span>
+    <span class="s2">&quot;power_generation_norm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;power&quot;</span><span class="p">,</span>
+    <span class="n">power_normalization_target</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the standard pattern for k-eigenvalue work when power iteration is the
+desired outer method and a power field is wanted for post processing.</p>
+</section>
+<section id="example-7-nonlinear-k-eigenvalue-problem">
+<h2><span class="section-number">13.10. </span>Example 7: Nonlinear k-Eigenvalue Problem<a class="headerlink" href="#example-7-nonlinear-k-eigenvalue-problem" title="Link to this heading"></a></h2>
+<p>The nonlinear solver is configured through its own solver-level tolerances.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonLinearKEigenSolver</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">NonLinearKEigenSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">nl_abs_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">nl_rel_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">nl_sol_tol</span><span class="o">=</span><span class="mf">1.0e-50</span><span class="p">,</span>
+    <span class="n">nl_max_its</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">l_abs_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">l_rel_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">l_div_tol</span><span class="o">=</span><span class="mf">1.0e6</span><span class="p">,</span>
+    <span class="n">l_max_its</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">l_gmres_restart_intvl</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">l_gmres_breakdown_tol</span><span class="o">=</span><span class="mf">1.0e6</span><span class="p">,</span>
+    <span class="n">reset_phi0</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">num_initial_power_iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The nonlinear k-eigen solver has its own linear solver controls. These are
+separate from the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> used in the standard
+transport solve path. Groupset linear solver options are not used with the
+nonlinear k-eigen solver.</p>
+</div>
+</section>
+<section id="example-8-curvilinear-problem">
+<h2><span class="section-number">13.11. </span>Example 8: Curvilinear Problem<a class="headerlink" href="#example-8-curvilinear-problem" title="Link to this heading"></a></h2>
+<p>Curvilinear problems follow the same general pattern, but use the curvilinear
+problem type and a compatible quadrature.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DRZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">,</span>
+    <span class="n">SteadyStateSourceSolver</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">coord_system</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="example-9-updating-a-problem-in-place">
+<h2><span class="section-number">13.12. </span>Example 9: Updating a Problem In Place<a class="headerlink" href="#example-9-updating-a-problem-in-place" title="Link to this heading"></a></h2>
+<p>Problem objects are mutable. An input can replace sources, boundaries, or
+adjoint mode without rebuilding the entire problem object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+
+<span class="n">phys</span><span class="o">.</span><span class="n">SetVolumetricSources</span><span class="p">(</span>
+    <span class="n">clear_volumetric_sources</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">VolumetricSource</span><span class="p">(</span>
+            <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">phys</span><span class="o">.</span><span class="n">SetBoundaryOptions</span><span class="p">(</span>
+    <span class="n">clear_boundary_conditions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">phys</span><span class="o">.</span><span class="n">SetAdjoint</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This kind of in-place update is useful for source studies, transient driver
+loops, and forward/adjoint comparison workflows.</p>
+</section>
+<section id="example-10-field-function-output">
+<h2><span class="section-number">13.13. </span>Example 10: Field-Function Output<a class="headerlink" href="#example-10-field-function-output" title="Link to this heading"></a></h2>
+<p>Post processing is often only a few lines, but it belongs at the end of the
+workflow after a successful solve.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
+
+<span class="n">scalar_ffs</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()</span>
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+    <span class="n">scalar_ffs</span><span class="p">,</span>
+    <span class="s2">&quot;phi&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">want_power</span><span class="p">:</span>
+    <span class="n">power_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span><span class="s2">&quot;power_generation&quot;</span><span class="p">,</span> <span class="s2">&quot;power&quot;</span><span class="p">)</span>
+    <span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">power_ff</span><span class="p">],</span>
+        <span class="s2">&quot;power&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also export both together:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">scalar_ffs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">power_ff</span><span class="p">],</span>
+    <span class="s2">&quot;phi_and_power&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-11-balance-and-leakage-checks">
+<h2><span class="section-number">13.14. </span>Example 11: Balance and Leakage Checks<a class="headerlink" href="#example-11-balance-and-leakage-checks" title="Link to this heading"></a></h2>
+<p>Post-solve diagnostics are often as important as the field export itself.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">ComputeBalance</span><span class="p">()</span>
+
+<span class="n">leakage</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">ComputeLeakage</span><span class="p">([</span><span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">leakage</span><span class="p">[</span><span class="s2">&quot;xmin&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This is especially useful in regression tests and in the early validation of a
+new physical model.</p>
+</section>
+<section id="example-12-reusing-flux-data">
+<h2><span class="section-number">13.15. </span>Example 12: Reusing Flux Data<a class="headerlink" href="#example-12-reusing-flux-data" title="Link to this heading"></a></h2>
+<p>Some workflows use saved flux moments or angular fluxes as inputs to later
+stages:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">WriteFluxMoments</span><span class="p">(</span><span class="s2">&quot;phi_dump&quot;</span><span class="p">)</span>
+<span class="n">phys</span><span class="o">.</span><span class="n">ReadFluxMoments</span><span class="p">(</span><span class="s2">&quot;phi_dump&quot;</span><span class="p">,</span> <span class="n">single_file_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or, when angular-flux storage is enabled:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">WriteAngularFluxes</span><span class="p">(</span><span class="s2">&quot;psi_dump&quot;</span><span class="p">)</span>
+<span class="n">phys</span><span class="o">.</span><span class="n">ReadAngularFluxes</span><span class="p">(</span><span class="s2">&quot;psi_dump&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-13-writing-and-reading-restart-dumps">
+<h2><span class="section-number">13.16. </span>Example 13: Writing and Reading Restart Dumps<a class="headerlink" href="#example-13-writing-and-reading-restart-dumps" title="Link to this heading"></a></h2>
+<p>Restart dumps are different from ad hoc flux or angular-flux I/O. They are a
+solver-driven way to save and later restore a restartable transport state.</p>
+<p>When restart data is read or written depends on the solver:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SteadyStateSourceSolver</span></code> reads restart data during
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code> and writes restart data only after the steady-state
+solve has completed.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver</span></code> reads restart data during
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code>, may write timed restart dumps during the outer
+iterations, and writes a final restart dump at the end when restart writes
+are enabled.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NonLinearKEigenSolver</span></code> does not currently provide a solver-managed
+restart-dump path.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TransientSolver</span></code> does not currently provide a solver-managed
+restart-dump path.</p></li>
+</ul>
+<p>To write restart dumps for a steady-state solve:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;restart_writes_enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;write_restart_path&quot;</span><span class="p">:</span> <span class="s2">&quot;restart_data/my_problem&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;write_delayed_psi_to_restart&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Important points:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">restart_writes_enabled=True</span></code> enables restart output,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code> is the file stem to write,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_delayed_psi_to_restart=True</span></code> includes delayed angular-flux state in
+the restart dump.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For <code class="xref py py-class docutils literal notranslate"><span class="pre">SteadyStateSourceSolver</span></code>, the restart dump is written after
+the transport solve has completed. It is not written mid-iteration.</p>
+</div>
+<p>For long-running problems, timed restart writes can also be enabled:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">options</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">&quot;restart_writes_enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;write_restart_path&quot;</span><span class="p">:</span> <span class="s2">&quot;restart_data/my_problem&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;write_restart_time_interval&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This timed path is relevant to
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>, which checks the time
+interval during the outer power iterations and still writes a final restart
+dump at the end when restart output is enabled.</p>
+<p>Then a later run can read that restart state:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;read_restart_path&quot;</span><span class="p">:</span> <span class="s2">&quot;restart_data/my_problem&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Restart reads happen during <code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code>, not during
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code>.</p>
+</div>
+<p>This is useful when:</p>
+<ul class="simple">
+<li><p>a large steady-state solve needs to be resumed,</p></li>
+<li><p>a k-eigen solve should restart from a previous state,</p></li>
+<li><p>or a workflow is split across multiple runs.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Restart reads and writes assume a compatible problem definition. In
+practice, that means the mesh, group structure, discretization, and related
+state layout must match the restart data being read.</p>
+</div>
+</section>
+<section id="choosing-a-template">
+<h2><span class="section-number">13.17. </span>Choosing a Template<a class="headerlink" href="#choosing-a-template" title="Link to this heading"></a></h2>
+<p>As a practical guide:</p>
+<ul class="simple">
+<li><p>start from Example 1 for a basic fixed-source calculation,</p></li>
+<li><p>use Example 3 if the transient has a fixed timestep structure,</p></li>
+<li><p>use Example 4 if Python must intervene between timesteps,</p></li>
+<li><p>use Example 5 for standard k-eigenvalue work,</p></li>
+<li><p>use Example 6 only when the nonlinear eigenvalue solve is specifically
+needed,</p></li>
+<li><p>use Example 13 when a workflow needs solver-managed restart dumps,</p></li>
+<li><p>add the post-processing patterns only after the solve itself is behaving
+correctly.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="solvers.html" class="btn btn-neutral float-left" title="12. Solvers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="post_processors.html" class="btn btn-neutral float-right" title="14. Post Processors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

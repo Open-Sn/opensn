@@ -29,7 +29,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="C++ API" href="../../../../capi/rst/index.html" />
+    <link rel="next" title="5.4. Transient" href="../../transient/index.html" />
     <link rel="prev" title="5.3.4. A Multigroup Adjoint Response" href="../detector_adjoint/detector_adj.html" /> 
 </head>
 
@@ -54,7 +54,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../../mesh/index.html">1. Meshing and Partitioning</a></li>
@@ -72,6 +72,7 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.5. Adjoint Method with Multiple Detector Responses</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../transient/index.html">5.4. Transient</a></li>
 </ul>
 </li>
 </ul>
@@ -198,7 +199,7 @@
 <section id="Geometry">
 <h2><span class="section-number">5.3.5.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="367d52afd5314572bb8c8eeb47713dd9" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="a2725c91e226426aa9babcad1654c708" src="../../../../_images/glovebox_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -217,9 +218,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="a9d150d8972e4da3b111e2376f7dfb24" src="../../../../_images/glovebox_mesh.png" /></p>
-<p><img alt="eaa5a7d1ee4c43079f4b231c25c1aea9" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
-<p><img alt="1a06bc88935348d3ba52a4895bbeacf4" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
+<p><img alt="49d556614cf145a494c0d64d78e23c4f" src="../../../../_images/glovebox_mesh.png" /></p>
+<p><img alt="5f3c6e573bd743a1a21cf3b5a4854507" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
+<p><img alt="2cfff635983341fda95ef1851e7a40cd" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">5.3.5.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -454,7 +455,7 @@
 </pre></div>
 </div>
 </div>
-<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a buffer name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference external" href="../../../theory/adjoint.rst">duality principle</a> such that:</p>
+<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a buffer name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference external" href="../../../theory/adjoint.html">duality principle</a> such that:</p>
 <div class="math notranslate nohighlight">
 \[\text{QoI} =  \sum^G_g \, \text{RR}^g = \sum^G_g \, \int_\mathcal{D} d^3r \, \int_{(4\pi)}   d\Omega  \, q^g(\vec{r},\vec\Omega) \psi^{\dagger,g}(\vec{r},\vec\Omega) = \sum^G_g \, \int_\mathcal{D}  d^3r  \, q^g(\vec{r}) \phi^{\dagger,g}(\vec{r})\]</div>
 <p>At each group the solution <span class="math notranslate nohighlight">\(\phi^g(\vec{r})\)</span> is multiplied by the detector response at that group <span class="math notranslate nohighlight">\(\sigma^{He3,g}_{a}\)</span>.</p>
@@ -490,14 +491,14 @@
 </div>
 <p>Detector 1:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="e7e2c20db85646db9355c48da86d9569" src="../../../../_images/det1_g3.png" /></p>
+<p><img alt="1d6efc20a9684c90a650ac42446435c3" src="../../../../_images/det1_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="4cf1e03b0b55405ba755237a077649ea" src="../../../../_images/det1_g52.png" /></p>
+<p><img alt="a3db6ef1f0f640eb94555ec23d678422" src="../../../../_images/det1_g52.png" /></p>
 <p>Detector 2:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="9150d2e7126045449b95cccffbdafc69" src="../../../../_images/det2_g3.png" /></p>
+<p><img alt="3b61cf980bd34aefb9cf3d5278a69660" src="../../../../_images/det2_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="2344e88fee894294ac7735b47a2e9fb0" src="../../../../_images/det2_g52.png" /></p>
+<p><img alt="c1db5901288640df8048caa5a142c4eb" src="../../../../_images/det2_g52.png" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
@@ -530,7 +531,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../detector_adjoint/detector_adj.html" class="btn btn-neutral float-left" title="5.3.4. A Multigroup Adjoint Response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../../../capi/rst/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../transient/index.html" class="btn btn-neutral float-right" title="5.4. Transient" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

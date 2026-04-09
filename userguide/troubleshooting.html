@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>18. Troubleshooting &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="19. FAQ" href="faq.html" />
+    <link rel="prev" title="17. Iterative Best Practices" href="iterative_best_practices.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">18. Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-with-the-simplest-question">18.1. Start with the simplest question</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-the-code-fails-immediately">18.2. If the code fails immediately</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-the-solution-does-not-converge">18.3. If the solution does not converge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-the-physics-looks-wrong">18.4. If the physics looks wrong</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-field-functions-are-confusing">18.5. If field functions are confusing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-parallel-behavior-looks-odd">18.6. If parallel behavior looks odd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-imported-cross-sections-behave-unexpectedly">18.7. If imported cross sections behave unexpectedly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#general-debugging-workflow">18.8. General debugging workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#when-to-look-elsewhere-in-the-manual">18.9. When to look elsewhere in the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">18. </span>Troubleshooting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="troubleshooting">
+<h1><span class="section-number">18. </span>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
+<p>This section collects common failure modes and the first things to check when a
+problem does not run or the results do not make sense.</p>
+<section id="start-with-the-simplest-question">
+<h2><span class="section-number">18.1. </span>Start with the simplest question<a class="headerlink" href="#start-with-the-simplest-question" title="Link to this heading"></a></h2>
+<p>When a problem fails, first decide which category the failure is in:</p>
+<ul class="simple">
+<li><p>input/setup problem</p></li>
+<li><p>convergence problem</p></li>
+<li><p>mesh or material-assignment problem</p></li>
+<li><p>post-processing or visualization problem</p></li>
+</ul>
+<p>That distinction usually determines where to look next.</p>
+</section>
+<section id="if-the-code-fails-immediately">
+<h2><span class="section-number">18.2. </span>If the code fails immediately<a class="headerlink" href="#if-the-code-fails-immediately" title="Link to this heading"></a></h2>
+<p>Immediate failures are often caused by one of the following:</p>
+<ul class="simple">
+<li><p>a missing required constructor argument</p></li>
+<li><p>a misspelled option name</p></li>
+<li><p>a mismatch between mesh block ids and the material <code class="docutils literal notranslate"><span class="pre">xs_map</span></code></p></li>
+<li><p>an invalid groupset definition</p></li>
+<li><p>a boundary condition applied to a boundary name that does not exist on the
+mesh</p></li>
+</ul>
+<p>The first debugging step should be to reduce the input to the smallest working
+case. For example, try:</p>
+<ol class="arabic simple">
+<li><p>one material</p></li>
+<li><p>one groupset</p></li>
+<li><p>a simple source</p></li>
+<li><p>vacuum boundaries</p></li>
+</ol>
+<p>If that runs, add complexity back one piece at a time.</p>
+</section>
+<section id="if-the-solution-does-not-converge">
+<h2><span class="section-number">18.3. </span>If the solution does not converge<a class="headerlink" href="#if-the-solution-does-not-converge" title="Link to this heading"></a></h2>
+<p>When iteration is slow or unstable, check the iteration hierarchy:</p>
+<ul class="simple">
+<li><p>inner iteration inside each groupset</p></li>
+<li><p>AGS iteration across groupsets</p></li>
+<li><p>outer solver iterations</p></li>
+</ul>
+<p>The most common issues are:</p>
+<ul class="simple">
+<li><p>inner tolerance too loose relative to outer tolerance</p></li>
+<li><p>multiple groupsets with upscatter, but AGS disabled</p></li>
+<li><p>missing WGDSA or TGDSA on a difficult diffusive problem</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A good default rule is to converge the inner solve for every outer iteration
+and to make the inner tolerance tighter than the outer tolerance.</p>
+</div>
+</section>
+<section id="if-the-physics-looks-wrong">
+<h2><span class="section-number">18.4. </span>If the physics looks wrong<a class="headerlink" href="#if-the-physics-looks-wrong" title="Link to this heading"></a></h2>
+<p>A run can converge cleanly and still be wrong. The usual causes are:</p>
+<ul class="simple">
+<li><p>wrong material assigned to one or more block ids</p></li>
+<li><p>source applied to the wrong block or logical volume</p></li>
+<li><p>incorrect units or normalization in source data</p></li>
+<li><p>wrong boundary condition type</p></li>
+<li><p>too few angular directions for the problem</p></li>
+<li><p>too few scattering moments or an inconsistent quadrature/moment choice</p></li>
+</ul>
+<p>For transport problems with higher scattering order, make sure the angular
+quadrature is high enough to integrate the moment expansion accurately.</p>
+</section>
+<section id="if-field-functions-are-confusing">
+<h2><span class="section-number">18.5. </span>If field functions are confusing<a class="headerlink" href="#if-field-functions-are-confusing" title="Link to this heading"></a></h2>
+<p>Field functions are now created from the current solver state when requested.
+They are not persistent solver-managed objects that keep themselves updated in
+the background, but LBS field functions can be refreshed explicitly while their
+owning problem is still alive.</p>
+<p>This means:</p>
+<ul class="simple">
+<li><p>after a steady-state or eigenvalue solve, create the field function you want</p></li>
+<li><p>in a transient loop, call <code class="docutils literal notranslate"><span class="pre">Update()</span></code> on existing field functions after each
+completed <code class="docutils literal notranslate"><span class="pre">Advance()</span></code> step, or create fresh field functions if that is
+clearer</p></li>
+<li><p>do not assume an older field-function object reflects a later solve unless
+you have explicitly refreshed it</p></li>
+</ul>
+</section>
+<section id="if-parallel-behavior-looks-odd">
+<h2><span class="section-number">18.6. </span>If parallel behavior looks odd<a class="headerlink" href="#if-parallel-behavior-looks-odd" title="Link to this heading"></a></h2>
+<p>Parallel transport problems are sensitive to mesh decomposition and sweep
+structure. If a problem behaves strangely in parallel:</p>
+<ul class="simple">
+<li><p>test it on one rank first</p></li>
+<li><p>confirm the mesh partitions are what you expect</p></li>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">AAH</span></code> sweep type unless there is a specific reason to use <code class="docutils literal notranslate"><span class="pre">CBC</span></code></p></li>
+<li><p>use only <code class="docutils literal notranslate"><span class="pre">single</span></code> angle aggregation on unstructured meshes</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">CBC</span></code> does not support cyclic sweep dependencies the way <code class="docutils literal notranslate"><span class="pre">AAH</span></code> does. If
+the mesh or partitioning can create sweep-graph cycles, stay with <code class="docutils literal notranslate"><span class="pre">AAH</span></code>.</p>
+</div>
+</section>
+<section id="if-imported-cross-sections-behave-unexpectedly">
+<h2><span class="section-number">18.7. </span>If imported cross sections behave unexpectedly<a class="headerlink" href="#if-imported-cross-sections-behave-unexpectedly" title="Link to this heading"></a></h2>
+<p>For imported OpenMC MGXS or native OpenSn cross sections, check:</p>
+<ul class="simple">
+<li><p>the number of groups</p></li>
+<li><p>scattering order</p></li>
+<li><p>fission data and delayed quantities if relevant</p></li>
+<li><p>custom XS names, if the input relies on them</p></li>
+<li><p>whether a scaling or combination step was applied later in the script</p></li>
+</ul>
+<p>If two materials were combined, remember that the combination is density
+weighted and only combines data that exists consistently across the input cross
+sections.</p>
+</section>
+<section id="general-debugging-workflow">
+<h2><span class="section-number">18.8. </span>General debugging workflow<a class="headerlink" href="#general-debugging-workflow" title="Link to this heading"></a></h2>
+<p>The most effective debugging sequence is usually:</p>
+<ol class="arabic simple">
+<li><p>run on one MPI rank</p></li>
+<li><p>simplify to one groupset</p></li>
+<li><p>use a simple mesh and one source</p></li>
+<li><p>verify block ids and material mapping</p></li>
+<li><p>verify boundary ids and boundary options</p></li>
+<li><p>check convergence settings</p></li>
+<li><p>only then add more physics, more groupsets, and more output</p></li>
+</ol>
+</section>
+<section id="when-to-look-elsewhere-in-the-manual">
+<h2><span class="section-number">18.9. </span>When to look elsewhere in the manual<a class="headerlink" href="#when-to-look-elsewhere-in-the-manual" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>If the issue is solver configuration, see <code class="docutils literal notranslate"><span class="pre">iterative_methods</span></code> and
+<code class="docutils literal notranslate"><span class="pre">iterative_best_practices</span></code>.</p></li>
+<li><p>If the issue is geometry or block ids, see <code class="docutils literal notranslate"><span class="pre">geometry_mesh</span></code>.</p></li>
+<li><p>If the issue is cross sections or <code class="docutils literal notranslate"><span class="pre">xs_map</span></code>, see <code class="docutils literal notranslate"><span class="pre">materials_xs</span></code>.</p></li>
+<li><p>If the issue is output creation and export, see <code class="docutils literal notranslate"><span class="pre">post_processors</span></code>.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="iterative_best_practices.html" class="btn btn-neutral float-left" title="17. Iterative Best Practices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="faq.html" class="btn btn-neutral float-right" title="19. FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

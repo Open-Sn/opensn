@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Switching From Steady-State Mode to Transient Mode in OpenSn &mdash; OpenSn 1.0.1 documentation</title>
+  <title>5.4.1. Switching From Steady-State Mode to Transient Mode in OpenSn &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -28,7 +28,9 @@
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="5.4.2. Switching From Steady-State to Transient to Steady-State in OpenSn" href="source_step_steady_to_transient_to_steady.html" />
+    <link rel="prev" title="5.4. Transient" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,11 +52,28 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../aquad/index.html">3. Angular Quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">5. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../primer/index.html">5.1. Primer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../keigen/index.html">5.2. KEigen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../src_driven/index.html">5.3. Source Driven</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">5.4. Transient</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.4.1. Switching From Steady-State Mode to Transient Mode in OpenSn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="source_step_steady_to_transient_to_steady.html">5.4.2. Switching From Steady-State to Transient to Steady-State in OpenSn</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
@@ -76,7 +95,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Switching From Steady-State Mode to Transient Mode in OpenSn</li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.4. </span>Transient</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.4.1. </span>Switching From Steady-State Mode to Transient Mode in OpenSn</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -86,12 +108,12 @@
            <div itemprop="articleBody">
              
   <section id="Switching-From-Steady-State-Mode-to-Transient-Mode-in-OpenSn">
-<h1>Switching From Steady-State Mode to Transient Mode in OpenSn<a class="headerlink" href="#Switching-From-Steady-State-Mode-to-Transient-Mode-in-OpenSn" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5.4.1. </span>Switching From Steady-State Mode to Transient Mode in OpenSn<a class="headerlink" href="#Switching-From-Steady-State-Mode-to-Transient-Mode-in-OpenSn" title="Link to this heading"></a></h1>
 <section id="Using-this-Notebook">
-<h2>Using this Notebook<a class="headerlink" href="#Using-this-Notebook" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.1. </span>Using this Notebook<a class="headerlink" href="#Using-this-Notebook" title="Link to this heading"></a></h2>
 <p>Before running this example, make sure the <strong>Python module of OpenSn</strong> is available in your environment.</p>
 <section id="Converting-and-Running-this-Notebook-from-the-Terminal">
-<h3>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.4.1.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
 <p>To run this notebook from the terminal, use:</p>
 <p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">keigen_to_transient_tutorial.ipynb</span></code></p>
 <p>To run in parallel (for example, 4 ranks):</p>
@@ -99,10 +121,10 @@
 </section>
 </section>
 <section id="Import-Requirements">
-<h2>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h2>
 <p>Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python’s PATH.</p>
 <section id="Disable-colorized-output">
-<h3>Disable colorized output<a class="headerlink" href="#Disable-colorized-output" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.4.1.2.1. </span>Disable colorized output<a class="headerlink" href="#Disable-colorized-output" title="Link to this heading"></a></h3>
 <p>For notebook rendering, plain (non-colorized) output is typically easier to read.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[38]:
@@ -187,7 +209,7 @@
 </section>
 </section>
 <section id="Mesh">
-<h2>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
 <p>We construct a simple 3D Cartesian mesh with 64 cells using the built-in orthogonal mesh generator. The dimensions of the mesh are 8cm in each dimension.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[39]:
@@ -234,7 +256,7 @@
 </div>
 </section>
 <section id="Material-IDs">
-<h2>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.4. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h2>
 <p>When using the built-in mesh generator, no material IDs are assigned. We assign a material ID with value 0 for each cell in the spatial domain.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[40]:
@@ -254,7 +276,7 @@
 </div>
 </section>
 <section id="Cross-Sections">
-<h2>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.5. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h2>
 <p>Load two one-group cross-section sets:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">xs_crit</span></code> for the steady-state k-eigen solve</p></li>
@@ -286,7 +308,7 @@
 </div>
 </section>
 <section id="Angular-Quadrature">
-<h2>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.6. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
 <p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the <strong>total</strong> number of polar cosines (here <code class="docutils literal notranslate"><span class="pre">n_polar</span> <span class="pre">=</span> <span class="pre">2</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">n_azimuthal</span> <span class="pre">=</span> <span class="pre">4</span></code>). This creates a 3D angular quadrature for XYZ geometry.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
@@ -306,14 +328,14 @@
 </div>
 </section>
 <section id="Linear-Boltzmann-Solver">
-<h2>Linear Boltzmann Solver<a class="headerlink" href="#Linear-Boltzmann-Solver" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.7. </span>Linear Boltzmann Solver<a class="headerlink" href="#Linear-Boltzmann-Solver" title="Link to this heading"></a></h2>
 <p>Create a single <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code> with reflecting boundaries, a single groupset, reasonable iterative options, and an initial <code class="docutils literal notranslate"><span class="pre">xs_map</span></code> that assigns our <code class="docutils literal notranslate"><span class="pre">xs_crit</span></code> material to all cells. This problem object will be reused across both the steady-state and transient solves.</p>
 <p>Two options are key here:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> for storing angular fluxes during the steady-state solve.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">use_precursors=False</span></code> for prompt-only transient behavior in this tutorial.</p></li>
 </ul>
-<p><strong>Note:</strong> It is not necessary to set <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> for the steady-state problem. If this option is not enabled, OpenSn will attempt to reconstruct the angular flux from the converged steady-state flux moments.</p>
+<p><strong>Note:</strong> <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> is required for the transient solve. In this workflow, set it on the shared problem object before the steady-state solve so the same problem can transition cleanly into transient mode.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>
@@ -380,7 +402,7 @@
 </div>
 </section>
 <section id="Steady-State-Solve">
-<h2>Steady-State Solve<a class="headerlink" href="#Steady-State-Solve" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.8. </span>Steady-State Solve<a class="headerlink" href="#Steady-State-Solve" title="Link to this heading"></a></h2>
 <p>Run a power-iteration k-eigenvalue solve to convergence. This converged state becomes the initial condition for the transient solve.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[44]:
@@ -408,7 +430,7 @@
 </div>
 </section>
 <section id="Transition-to-Transient-Mode">
-<h2>Transition to Transient Mode<a class="headerlink" href="#Transition-to-Transient-Mode" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.9. </span>Transition to Transient Mode<a class="headerlink" href="#Transition-to-Transient-Mode" title="Link to this heading"></a></h2>
 <p>Now, let’s switch the problem object to time-dependent mode and initialize the transient solver. We’ll pass the <code class="docutils literal notranslate"><span class="pre">initial_state=&quot;existing&quot;</span></code>option to the transient solver so that it uses the converged steady-state solution as its initial condition.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[45]:
@@ -431,7 +453,7 @@
 </div>
 </section>
 <section id="Update-Cross-Sections-and-Advance-in-Time-(Transient-Solve)">
-<h2>Update Cross Sections and Advance in Time (Transient Solve)<a class="headerlink" href="#Update-Cross-Sections-and-Advance-in-Time-(Transient-Solve)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.10. </span>Update Cross Sections and Advance in Time (Transient Solve)<a class="headerlink" href="#Update-Cross-Sections-and-Advance-in-Time-(Transient-Solve)" title="Link to this heading"></a></h2>
 <p>Swap from <code class="docutils literal notranslate"><span class="pre">xs_crit</span></code> to <code class="docutils literal notranslate"><span class="pre">xs_super</span></code>, then march with backward Euler (<code class="docutils literal notranslate"><span class="pre">theta=1.0</span></code>) using a Python time stepping loop.</p>
 <p>Diagnostic printouts show per-step time advancement and fission production.</p>
 <div class="nbinput docutils container">
@@ -496,7 +518,7 @@ Time step = 010, start time = 0.100000, end time = 0.110000, fission production 
 </div>
 </section>
 <section id="Post-processing:-Prompt-Only-Growth-Check">
-<h2>Post-processing: Prompt-Only Growth Check<a class="headerlink" href="#Post-processing:-Prompt-Only-Growth-Check" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.11. </span>Post-processing: Prompt-Only Growth Check<a class="headerlink" href="#Post-processing:-Prompt-Only-Growth-Check" title="Link to this heading"></a></h2>
 <p>For this simple one-group setup we compare the fission-production fraction to:</p>
 <div class="math notranslate nohighlight">
 \[\frac{P(t)}{P(0)} = e^{\alpha t}, \quad \alpha = \nu\Sigma_f - \Sigma_a\]</div>
@@ -568,10 +590,10 @@ Relative error        = 4.257e-05
 </div>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.4.1.12. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In script/console mode, PyOpenSn finalization is handled automatically. In notebook mode, finalize explicitly only if your runtime requires it.</p>
 <section id="Summary">
-<h3>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.4.1.12.1. </span>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Reused the same <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code> object for both steady-state and transient solves,</p></li>
 <li><p>solved steady-state k-eigen to convergence,</p></li>
@@ -586,7 +608,10 @@ Relative error        = 4.257e-05
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="5.4. Transient" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="source_step_steady_to_transient_to_steady.html" class="btn btn-neutral float-right" title="5.4.2. Switching From Steady-State to Transient to Steady-State in OpenSn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

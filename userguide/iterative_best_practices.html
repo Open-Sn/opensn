@@ -1,0 +1,532 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>17. Iterative Best Practices &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="18. Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="16. Running Problems" href="running_problems.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">17. Iterative Best Practices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">17.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-rules">17.2. Core Rules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#converge-the-inners-for-every-outer">17.2.1. Converge the Inners for Every Outer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inner-tolerances-should-usually-be-tighter-than-outer-tolerances">17.2.2. Inner Tolerances Should Usually Be Tighter Than Outer Tolerances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#if-you-have-multiple-groupsets-think-about-ags-explicitly">17.2.3. If You Have Multiple Groupsets, Think About AGS Explicitly</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#upscatter-across-groupsets-must-be-converged">17.3. Upscatter Across Groupsets Must Be Converged</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#single-groupset-first-then-split-deliberately">17.4. Single Groupset First, Then Split Deliberately</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choose-the-inner-method-pragmatically">17.5. Choose the Inner Method Pragmatically</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-dsa-when-the-physics-suggests-it">17.6. Use DSA When the Physics Suggests It</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#watch-maximum-iteration-counts">17.7. Watch Maximum Iteration Counts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#be-careful-with-nested-solver-expectations">17.8. Be Careful with Nested Solver Expectations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-best-practices">17.9. Transient Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eigenvalue-best-practices">17.10. Eigenvalue Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-to-check-first-when-convergence-looks-bad">17.11. What to Check First When Convergence Looks Bad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recommended-starting-habits">17.12. Recommended Starting Habits</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">17. </span>Iterative Best Practices</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="iterative-best-practices">
+<h1><span class="section-number">17. </span>Iterative Best Practices<a class="headerlink" href="#iterative-best-practices" title="Link to this heading"></a></h1>
+<p>This section is intentionally practical. It is about how to use the iterative
+controls in a way that produces trustworthy transport solutions, rather than
+just describing the various options.</p>
+<p>The central idea is simple:</p>
+<ul class="simple">
+<li><p>do not let a looser inner solve or a missing groupset-to-groupset iteration
+make the outer iteration look converged when the transport problem itself has
+not actually been solved accurately enough.</p></li>
+</ul>
+<section id="overview">
+<h2><span class="section-number">17.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>OpenSn has multiple iteration levels:</p>
+<ol class="arabic simple">
+<li><p>the inner groupset solve,</p></li>
+<li><p>the across-groupset solve, and</p></li>
+<li><p>any solver-specific outer iteration such as a transient timestep loop or a
+k-eigenvalue iteration.</p></li>
+</ol>
+<p>Good practice means respecting that hierarchy.</p>
+<p>At a minimum:</p>
+<ul class="simple">
+<li><p>each inner groupset solve should be converged for each outer iteration,</p></li>
+<li><p>if there is more than one groupset and the physics couples those groupsets,
+the groupset-to-groupset scattering must also be converged,</p></li>
+<li><p>outer convergence should not be used as a substitute for poor inner
+convergence.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A common mistake is to think of the outer solver as “the real solve” and the
+inner transport iterations as secondary details. In transport, that is often
+backwards. The outer solver is only as reliable as the transport solves it is
+built from.</p>
+</div>
+</section>
+<section id="core-rules">
+<h2><span class="section-number">17.2. </span>Core Rules<a class="headerlink" href="#core-rules" title="Link to this heading"></a></h2>
+<section id="converge-the-inners-for-every-outer">
+<h3><span class="section-number">17.2.1. </span>Converge the Inners for Every Outer<a class="headerlink" href="#converge-the-inners-for-every-outer" title="Link to this heading"></a></h3>
+<p>As a rule, the inner groupset solve should be converged on every outer
+iteration.</p>
+<p>This applies to:</p>
+<ul class="simple">
+<li><p>fixed-source steady-state solves,</p></li>
+<li><p>each timestep of a transient solve,</p></li>
+<li><p>each power iteration in a k-eigenvalue solve, and</p></li>
+<li><p>each nonlinear iteration in the nonlinear k-eigen solver.</p></li>
+</ul>
+<p>Why this matters:</p>
+<ul class="simple">
+<li><p>the outer iteration uses the result of the inner transport solve,</p></li>
+<li><p>if the inner solve is converged too loosely, the outer iteration is working
+with a poor approximation of the transport operator,</p></li>
+<li><p>this can make outer convergence slower, noisier, or misleading.</p></li>
+</ul>
+<p>In practice:</p>
+<ul class="simple">
+<li><p>do not intentionally run a very loose inner tolerance and hope the outer
+iterations will “clean it up”</p></li>
+<li><p>if an outer iteration looks unstable, first make sure the inner groupset
+solves are actually converged well enough</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A single-sweep or barely-converged inner solve may be useful for method
+studies or special reduced-accuracy workflows, but it should not be the
+default production strategy.</p>
+</div>
+</section>
+<section id="inner-tolerances-should-usually-be-tighter-than-outer-tolerances">
+<h3><span class="section-number">17.2.2. </span>Inner Tolerances Should Usually Be Tighter Than Outer Tolerances<a class="headerlink" href="#inner-tolerances-should-usually-be-tighter-than-outer-tolerances" title="Link to this heading"></a></h3>
+<p>As a general rule:</p>
+<ul class="simple">
+<li><p>inner tolerances should be tighter than outer tolerances</p></li>
+</ul>
+<p>Examples:</p>
+<ul class="simple">
+<li><p>if an outer k-eigen tolerance is around <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code> to <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code>, an inner
+groupset tolerance around <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> or tighter is often more appropriate
+than <code class="docutils literal notranslate"><span class="pre">1.0e-4</span></code></p></li>
+<li><p>if AGS tolerance is <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code>, the inner groupset solve should usually not
+be looser than that</p></li>
+</ul>
+<p>Why:</p>
+<ul class="simple">
+<li><p>the inner solve error becomes part of the effective residual seen by the
+outer solve,</p></li>
+<li><p>if the inner solve is looser than the outer target, the outer convergence
+check can stop for the wrong reason or stall near a noise floor set by the
+inner error.</p></li>
+</ul>
+<p>This is not a hard mathematical law with one universal ratio, but it is a good
+default discipline.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are unsure how to set tolerances, it is generally safer to start with
+tighter inner solves and relax later than to start loose and wonder whether
+the final answer is trustworthy.</p>
+</div>
+</section>
+<section id="if-you-have-multiple-groupsets-think-about-ags-explicitly">
+<h3><span class="section-number">17.2.3. </span>If You Have Multiple Groupsets, Think About AGS Explicitly<a class="headerlink" href="#if-you-have-multiple-groupsets-think-about-ags-explicitly" title="Link to this heading"></a></h3>
+<p>The moment a problem has more than one groupset, the groupset-to-groupset
+coupling becomes a real part of the solve.</p>
+<p>That means:</p>
+<ul class="simple">
+<li><p>do not treat AGS settings as optional background noise,</p></li>
+<li><p>decide whether the groupsets are materially coupled,</p></li>
+<li><p>if they are coupled, converge the AGS iteration.</p></li>
+</ul>
+<p>This matters especially when there is:</p>
+<ul class="simple">
+<li><p>strong scattering coupling between groupsets,</p></li>
+<li><p>fission coupling that materially connects one groupset to another.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A multi-groupset problem is not just “several independent inner solves.”
+Once the physics couples those groupsets, AGS is part of the transport solve.</p>
+</div>
+</section>
+</section>
+<section id="upscatter-across-groupsets-must-be-converged">
+<h2><span class="section-number">17.3. </span>Upscatter Across Groupsets Must Be Converged<a class="headerlink" href="#upscatter-across-groupsets-must-be-converged" title="Link to this heading"></a></h2>
+<p>If you have multiple groupsets and there is upscatter coupling from one
+groupset into another, you must enable and converge the groupset-to-groupset
+iteration.</p>
+<p>In practical terms:</p>
+<ul class="simple">
+<li><p>if upscatter crosses a groupset boundary, AGS iteration is required,</p></li>
+<li><p>the groupset solves alone are not enough,</p></li>
+<li><p>stopping after one pass through the groupsets is not a converged solve.</p></li>
+</ul>
+<p>This is one of the most important best-practice points in multi-groupset
+transport problems.</p>
+<p>Why:</p>
+<ul class="simple">
+<li><p>within a single groupset, the inner solve can account for coupling among the
+groups inside that groupset,</p></li>
+<li><p>but coupling between groupsets lives at the AGS level,</p></li>
+<li><p>if that coupling includes upscatter, then AGS is not optional bookkeeping; it
+is the mechanism by which the full multigroup problem is actually converged.</p></li>
+</ul>
+<p>Practical guidance:</p>
+<ul class="simple">
+<li><p>if there is significant upscatter and you are free to choose the groupset
+split, strongly consider keeping the coupled groups in the same groupset</p></li>
+<li><p>if you do split them across groupsets, set <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> deliberately and monitor convergence behavior</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A common failure mode is to split the group structure for convenience or
+performance, then forget that the split created a new iteration level that
+now has to be converged.</p>
+</div>
+</section>
+<section id="single-groupset-first-then-split-deliberately">
+<h2><span class="section-number">17.4. </span>Single Groupset First, Then Split Deliberately<a class="headerlink" href="#single-groupset-first-then-split-deliberately" title="Link to this heading"></a></h2>
+<p>If you are building a new problem and do not already know you need multiple
+groupsets, start with one groupset covering all groups.</p>
+<p>Reasons:</p>
+<ul class="simple">
+<li><p>it removes AGS from the picture,</p></li>
+<li><p>it makes it easier to diagnose the base transport behavior,</p></li>
+<li><p>it avoids introducing groupset-to-groupset artifacts before the baseline case
+is understood.</p></li>
+</ul>
+<p>Then split into multiple groupsets only when there is a clear reason, such as:</p>
+<ul class="simple">
+<li><p>a known performance benefit,</p></li>
+<li><p>a deliberate fast/thermal separation strategy,</p></li>
+<li><p>different solver treatment needed for different group ranges.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Many convergence problems become much easier to understand when you first ask
+whether the same case behaves correctly with one groupset.</p>
+</div>
+</section>
+<section id="choose-the-inner-method-pragmatically">
+<h2><span class="section-number">17.5. </span>Choose the Inner Method Pragmatically<a class="headerlink" href="#choose-the-inner-method-pragmatically" title="Link to this heading"></a></h2>
+<p>For most difficult production problems:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> is the strongest general starting choice</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GMRES robustness comes with a memory tradeoff. The method keeps Krylov
+vectors until restart, so larger restart intervals can noticeably increase
+memory usage. Tune <code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code> with the problem size in mind.</p>
+</div>
+<p>Use other inner methods intentionally:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> when you want a simple explicit source-iteration style
+method or a method-study baseline</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code> when a stationary PETSc iteration is specifically
+desired</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code> when GMRES memory or restart behavior is problematic and a
+nonsymmetric Krylov alternative is worth trying</p></li>
+</ul>
+<p>Practical rule:</p>
+<ul class="simple">
+<li><p>do not stay with <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> out of habit on a hard problem if
+GMRES is available and performs better</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>“Best” here means most robust for the problem at hand, not most elegant.
+The right solver is the one that converges reliably to the intended
+tolerance.</p>
+</div>
+</section>
+<section id="use-dsa-when-the-physics-suggests-it">
+<h2><span class="section-number">17.6. </span>Use DSA When the Physics Suggests It<a class="headerlink" href="#use-dsa-when-the-physics-suggests-it" title="Link to this heading"></a></h2>
+<p>WGDSA and TGDSA are most worth considering when:</p>
+<ul class="simple">
+<li><p>scattering is strong,</p></li>
+<li><p>the problem is optically thick,</p></li>
+<li><p>source iteration or Krylov convergence is slower than it should be.</p></li>
+</ul>
+<p>Practical guidance:</p>
+<ul class="simple">
+<li><p>if a strongly scattering problem converges poorly, try enabling WGDSA before
+spending too much time micro-tuning unrelated iteration settings</p></li>
+<li><p>if multigroup scattering structure is making convergence difficult across
+energy, TGDSA may also be worth enabling</p></li>
+</ul>
+<p>At the same time:</p>
+<ul class="simple">
+<li><p>do not assume DSA replaces the need for a sensible inner method or sensible
+tolerances</p></li>
+<li><p>do not enable every acceleration feature at once before understanding the
+baseline behavior</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A good workflow is: establish a working baseline, then add DSA when the
+transport convergence behavior indicates it is needed.</p>
+</div>
+</section>
+<section id="watch-maximum-iteration-counts">
+<h2><span class="section-number">17.7. </span>Watch Maximum Iteration Counts<a class="headerlink" href="#watch-maximum-iteration-counts" title="Link to this heading"></a></h2>
+<p>Iteration caps are safety limits, not convergence strategies.</p>
+<p>For example:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l_max_its</span></code> should be large enough that a properly configured inner solve
+can actually reach the desired tolerance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code> should be large enough that a coupled multi-groupset
+problem has room to converge</p></li>
+<li><p>k-eigen solver iteration caps should not be so small that they hide slow
+transport convergence underneath an outer-iteration failure</p></li>
+</ul>
+<p>If a solver hits an iteration cap often, do not just raise the cap blindly.
+First ask:</p>
+<ul class="simple">
+<li><p>is the problem physically difficult?</p></li>
+<li><p>is the inner method appropriate?</p></li>
+<li><p>are the groupset boundaries creating avoidable AGS work?</p></li>
+<li><p>is DSA needed?</p></li>
+<li><p>is the tolerance unrealistically tight for the chosen method?</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Raising an iteration cap is reasonable once you know the algorithm is
+converging correctly. It is a poor first response when the iteration pattern
+itself looks unhealthy.</p>
+</div>
+</section>
+<section id="be-careful-with-nested-solver-expectations">
+<h2><span class="section-number">17.8. </span>Be Careful with Nested Solver Expectations<a class="headerlink" href="#be-careful-with-nested-solver-expectations" title="Link to this heading"></a></h2>
+<p>A change at one iteration level does not automatically fix another level.</p>
+<p>Examples:</p>
+<ul class="simple">
+<li><p>tightening a k-eigen tolerance does not fix a poorly converged groupset solve</p></li>
+<li><p>tightening AGS tolerance does not help if the inner groupset solves are too
+loose</p></li>
+<li><p>changing the groupset inner method does not replace the need to converge a
+genuinely coupled multi-groupset upscatter problem</p></li>
+</ul>
+<p>The safe habit is:</p>
+<ul class="simple">
+<li><p>ask which iteration level is actually failing or dominating the error, then
+adjust that level first</p></li>
+</ul>
+</section>
+<section id="transient-best-practices">
+<h2><span class="section-number">17.9. </span>Transient Best Practices<a class="headerlink" href="#transient-best-practices" title="Link to this heading"></a></h2>
+<p>For transient problems:</p>
+<ul class="simple">
+<li><p>each timestep still contains a transport solve,</p></li>
+<li><p>the same inner/AGS discipline still applies,</p></li>
+<li><p>timestep size should not be used as a substitute for poor transport
+convergence.</p></li>
+</ul>
+<p>In practice:</p>
+<ul class="simple">
+<li><p>if timestep results are noisy or inconsistent, check the transport
+convergence first before assuming the time integrator is the problem</p></li>
+<li><p>if the transient uses multiple groupsets with cross-groupset upscatter, the
+AGS coupling still has to be converged at each step</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A transient is not “just time marching on top of a finished solver.” It is a
+sequence of transport solves, so the underlying transport iteration quality
+still matters at every step.</p>
+</div>
+</section>
+<section id="eigenvalue-best-practices">
+<h2><span class="section-number">17.10. </span>Eigenvalue Best Practices<a class="headerlink" href="#eigenvalue-best-practices" title="Link to this heading"></a></h2>
+<p>For k-eigenvalue problems:</p>
+<ul class="simple">
+<li><p>the inner transport solve quality affects the eigenvalue iteration,</p></li>
+<li><p>loose transport solves can distort both the flux shape and the reported
+convergence rate of <code class="docutils literal notranslate"><span class="pre">k_eff</span></code>,</p></li>
+<li><p>solver-level eigen tolerances should not be tighter than the transport solve
+can realistically support.</p></li>
+</ul>
+<p>Practical guidance:</p>
+<ul class="simple">
+<li><p>start with a well-converged transport solve discipline,</p></li>
+<li><p>then tighten eigenvalue tolerances as needed,</p></li>
+<li><p>if a k-eigen solve stalls or oscillates, check the underlying groupset and
+AGS convergence before blaming the outer eigen method.</p></li>
+</ul>
+<p>For the nonlinear k-eigen solver in particular:</p>
+<ul class="simple">
+<li><p>remember that its internal linear-solver settings are solver-level controls,
+not the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> configuration</p></li>
+</ul>
+</section>
+<section id="what-to-check-first-when-convergence-looks-bad">
+<h2><span class="section-number">17.11. </span>What to Check First When Convergence Looks Bad<a class="headerlink" href="#what-to-check-first-when-convergence-looks-bad" title="Link to this heading"></a></h2>
+<p>A practical troubleshooting order is:</p>
+<ol class="arabic simple">
+<li><p>Is the problem using one groupset or several?</p></li>
+<li><p>If several, is there across-groupset upscatter or other strong coupling?</p></li>
+<li><p>Are the inner groupset solves actually converged?</p></li>
+<li><p>Is AGS enabled and converged when it needs to be?</p></li>
+<li><p>Is the chosen inner method reasonable for the problem?</p></li>
+<li><p>Would WGDSA or TGDSA help?</p></li>
+<li><p>Are the iteration caps high enough to allow genuine convergence?</p></li>
+</ol>
+<p>This order is deliberately conservative. It focuses first on solve correctness,
+then on performance refinement.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The fastest wrong answer is still wrong. In transport, convergence discipline
+is part of solution quality, not just part of runtime tuning.</p>
+</div>
+</section>
+<section id="recommended-starting-habits">
+<h2><span class="section-number">17.12. </span>Recommended Starting Habits<a class="headerlink" href="#recommended-starting-habits" title="Link to this heading"></a></h2>
+<p>If you want a compact checklist, start here:</p>
+<ul class="simple">
+<li><p>Start with one groupset unless you already know why you need more.</p></li>
+<li><p>If you split into multiple groupsets and there is upscatter across the split,
+enable and converge AGS.</p></li>
+<li><p>Converge the inner groupset solves for every outer iteration.</p></li>
+<li><p>Keep inner tolerances tighter than outer tolerances in normal production use.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> as the default difficult-problem starting point.</p></li>
+<li><p>Enable DSA when strong scattering or optical thickness makes convergence
+sluggish.</p></li>
+<li><p>Treat iteration caps as safeguards, not as the primary convergence control.</p></li>
+</ul>
+<p>If those habits are followed, most iteration setups start from a sound place
+and only need problem-specific refinement afterward.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="running_problems.html" class="btn btn-neutral float-left" title="16. Running Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="18. Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

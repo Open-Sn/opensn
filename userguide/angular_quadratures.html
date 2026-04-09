@@ -1,0 +1,782 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6. Angular Quadratures &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8. Groupsets" href="groupsets.html" />
+    <link rel="prev" title="5. Materials and Cross-Section Data" href="materials_xs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">6. Angular Quadratures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">6.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-choose-a-quadrature">6.2. How to Choose a Quadrature</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#product-quadratures">7. Product Quadratures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#selecting-enough-angular-resolution">7.1. Selecting Enough Angular Resolution</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operator-construction-methods">7.1.1. Operator construction methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#angle-aggregation-compatibility">7.2. Angle Aggregation Compatibility</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#polar">7.2.1. <code class="docutils literal notranslate"><span class="pre">polar</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#single">7.2.2. <code class="docutils literal notranslate"><span class="pre">single</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#azimuthal">7.2.3. <code class="docutils literal notranslate"><span class="pre">azimuthal</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">7.3. Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#d-slab">7.3.1. 1D slab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-cartesian">7.3.2. 2D Cartesian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-cartesian-with-lebedev">7.3.3. 3D Cartesian with Lebedev</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-rz">7.3.4. 2D RZ</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inspecting-a-quadrature">7.4. Inspecting a Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recommendations">7.5. Recommendations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">6. </span>Angular Quadratures</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="angular-quadratures">
+<h1><span class="section-number">6. </span>Angular Quadratures<a class="headerlink" href="#angular-quadratures" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2><span class="section-number">6.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Angular quadratures define the discrete directions, direction weights, and the
+moment-to-discrete and discrete-to-moment operators used by the discrete
+ordinates solvers.</p>
+<p>In Python input files, a quadrature is constructed first and then attached to a
+groupset through the <code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code> entry:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Every groupset must have an angular quadrature. The solver will reject a
+groupset with no quadrature attached. The same quadrature object may be used in
+multiple groupsets.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>In OpenSn, quadrature weights are normalized so that the full quadrature set
+sums to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>. This is the convention used throughout the discrete
+ordinates implementation, including boundary-condition inputs and angular
+post-processing. In practical terms, users should work directly with
+OpenSn’s quadrature values and should not rescale inputs by factors such as
+<code class="docutils literal notranslate"><span class="pre">4*pi</span></code> or <code class="docutils literal notranslate"><span class="pre">2*pi</span></code> to compensate for a different weight convention.</p>
+</div>
+</section>
+<section id="how-to-choose-a-quadrature">
+<h2><span class="section-number">6.2. </span>How to Choose a Quadrature<a class="headerlink" href="#how-to-choose-a-quadrature" title="Link to this heading"></a></h2>
+<p>In practice, the selection of a quadrature is driven by three questions:</p>
+<ol class="arabic simple">
+<li><p>What geometry is being solved?</p></li>
+<li><p>What quadrature family is supported for that geometry?</p></li>
+<li><p>How many moments must be represented accurately?</p></li>
+</ol>
+<p>As a practical rule, most users should begin with a product quadrature. The
+other families are useful when there is a specific reason to prefer them, such
+as a more symmetric point set on the sphere, a reduced number of azimuthal
+angles away from the equator, or local directional refinement.</p>
+<p>The quickest selection guide is:</p>
+<ul class="simple">
+<li><p>1D slab problems:
+start with <a class="reference internal" href="../pyapi/generated/pyopensn.aquad.GLProductQuadrature1DSlab.html#pyopensn.aquad.GLProductQuadrature1DSlab" title="pyopensn.aquad.GLProductQuadrature1DSlab"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.aquad.GLProductQuadrature1DSlab</span></code></a>.</p></li>
+<li><p>2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> problems:
+start with <a class="reference internal" href="../pyapi/generated/pyopensn.aquad.GLCProductQuadrature2DXY.html#pyopensn.aquad.GLCProductQuadrature2DXY" title="pyopensn.aquad.GLCProductQuadrature2DXY"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.aquad.GLCProductQuadrature2DXY</span></code></a>.</p></li>
+<li><p>3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> problems:
+start with <a class="reference internal" href="../pyapi/generated/pyopensn.aquad.GLCProductQuadrature3DXYZ.html#pyopensn.aquad.GLCProductQuadrature3DXYZ" title="pyopensn.aquad.GLCProductQuadrature3DXYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.aquad.GLCProductQuadrature3DXYZ</span></code></a>.</p></li>
+<li><p>2D <code class="docutils literal notranslate"><span class="pre">RZ</span></code> curvilinear problems:
+use <a class="reference internal" href="../pyapi/generated/pyopensn.aquad.GLCProductQuadrature2DRZ.html#pyopensn.aquad.GLCProductQuadrature2DRZ" title="pyopensn.aquad.GLCProductQuadrature2DRZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.aquad.GLCProductQuadrature2DRZ</span></code></a>.</p></li>
+<li><p>If you want the simplest and most predictable choice:
+use a product quadrature.</p></li>
+<li><p>If you want fewer directions than a full product set while keeping more
+angles near the equator:
+consider a triangular quadrature.</p></li>
+<li><p>If you want a highly symmetric spherical point set:
+consider a Lebedev quadrature.</p></li>
+<li><p>If you want local angular refinement around selected directions:
+consider an SLDFE square quadrature.</p></li>
+</ul>
+</section>
+</section>
+<section id="product-quadratures">
+<h1><span class="section-number">7. </span>Product Quadratures<a class="headerlink" href="#product-quadratures" title="Link to this heading"></a></h1>
+<p>These are the standard tensor-product style quadratures used in most OpenSn
+transport examples.</p>
+<p>If there is no strong reason to do otherwise, this is the family to choose
+first. Product quadratures are the most common choice for OpenSn problems and
+have the most straightforward relationship between user input and angular
+resolution.</p>
+<p>Why users usually start here:</p>
+<ul class="simple">
+<li><p>product quadratures are the most familiar and easiest to reason about,</p></li>
+<li><p>they work naturally with the standard aggregation choices,</p></li>
+<li><p>their angular resolution is controlled directly through <code class="docutils literal notranslate"><span class="pre">n_polar</span></code> and, in
+2D and 3D, <code class="docutils literal notranslate"><span class="pre">n_azimuthal</span></code>,</p></li>
+<li><p>they are the best-covered family in standard regression inputs and examples.</p></li>
+</ul>
+<p>If a user wants a reliable baseline quadrature, product quadratures are usually
+the right answer.</p>
+<p>For 1D slab geometry.</p>
+<p>This is the standard choice for 1D slab transport. The main user decision is
+simply how many polar directions are needed.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_polar</span></code>: required, must be even.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required unless <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator_method</span></code>: optional, one of <code class="docutils literal notranslate"><span class="pre">'standard'</span></code>, <code class="docutils literal notranslate"><span class="pre">'galerkin_one'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'galerkin_three'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSlab</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSlab</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry.</p>
+<p>This is the standard 2D Cartesian choice. It is usually the first quadrature to
+try for ordinary <code class="docutils literal notranslate"><span class="pre">x-y</span></code> transport problems.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_polar</span></code>: required, must be even.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_azimuthal</span></code>: required, must be a multiple of 4.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required unless <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator_method</span></code>: optional.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For 3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> geometry.</p>
+<p>This is the standard 3D Cartesian choice. Most users solving a conventional 3D
+Cartesian problem should begin here unless they already know they want a
+different quadrature family.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_polar</span></code>: required, must be even.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_azimuthal</span></code>: required, must be a multiple of 4.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required unless <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator_method</span></code>: optional.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For 2D cylindrical <code class="docutils literal notranslate"><span class="pre">RZ</span></code> problems in
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a>.</p>
+<p>This is the product-quadrature path for axisymmetric <code class="docutils literal notranslate"><span class="pre">r-z</span></code> problems. If the
+problem is curvilinear and the geometry is naturally cylindrical, this is the
+normal starting point.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_polar</span></code>: required, must be even.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_azimuthal</span></code>: required, must be a multiple of 4.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required unless <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator_method</span></code>: optional.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DRZ</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Triangular quadratures reduce the number of azimuthal angles away from the
+equator. They are available only for Cartesian problems.</p>
+<p>One main reason to choose a triangular quadrature is efficiency. It can reduce
+the total number of directions relative to a full product quadrature while still
+keeping more angular resolution near the equator, where it is often most useful.</p>
+<p>In practice, triangular quadratures are most attractive when:</p>
+<ul class="simple">
+<li><p>a full product quadrature is more expensive than desired,</p></li>
+<li><p>the user still wants a direction set that looks broadly product-like,</p></li>
+<li><p>resolution near the equatorial region matters more than dense polar coverage
+near the axis.</p></li>
+</ul>
+<p>They are not usually the first quadrature to try, but they can be a good
+second choice when a product quadrature works but is more expensive than needed.</p>
+<p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_polar</span></code>: required, must be even.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required unless <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator_method</span></code>: optional.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>The maximum number of azimuthal angles at the equator is computed internally as
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">n_polar</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCTriangularQuadrature2DXY</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCTriangularQuadrature2DXY</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For 3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> geometry.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_polar</span></code>: required, must be even.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required unless <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator_method</span></code>: optional.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>The maximum number of azimuthal angles at the equator is computed internally as
+<code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">n_polar</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCTriangularQuadrature3DXYZ</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCTriangularQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Lebedev quadratures provide symmetric point sets on the sphere. They are
+available only for Cartesian problems.</p>
+<p>The main reason to choose a Lebedev quadrature is the symmetry and quality of
+the spherical point distribution. It is often attractive when the user wants a
+non-product set with good rotational balance.</p>
+<p>In practice, users choose a Lebedev quadrature when:</p>
+<ul class="simple">
+<li><p>rotational symmetry of the angular point set matters,</p></li>
+<li><p>they want a non-product angular set,</p></li>
+<li><p>they want a more isotropic spherical sampling than a tensor-product style
+layout naturally provides.</p></li>
+</ul>
+<p>Lebedev sets are often appealing for problems where the user wants a “balanced”
+spherical direction set rather than a polar/azimuthal construction.</p>
+<p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry. Only upper-hemisphere points are retained.</p>
+<p>This is the 2D Cartesian reduction of the Lebedev family.</p>
+<p>For 3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> geometry.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">quadrature_order</span></code>: required.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required unless <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator_method</span></code>: optional.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>Currently available Lebedev orders are:</p>
+<p><code class="docutils literal notranslate"><span class="pre">3,</span> <span class="pre">5,</span> <span class="pre">7,</span> <span class="pre">9,</span> <span class="pre">11,</span> <span class="pre">13,</span> <span class="pre">15,</span> <span class="pre">17,</span> <span class="pre">19,</span> <span class="pre">21,</span> <span class="pre">23,</span> <span class="pre">25,</span> <span class="pre">27,</span> <span class="pre">29,</span> <span class="pre">31,</span> <span class="pre">35,</span> <span class="pre">41,</span> <span class="pre">47,</span> <span class="pre">53,</span> <span class="pre">59,</span> <span class="pre">65,</span> <span class="pre">71,</span> <span class="pre">77,</span> <span class="pre">83,</span> <span class="pre">89,</span> <span class="pre">95,</span> <span class="pre">101,</span> <span class="pre">107,</span> <span class="pre">113,</span> <span class="pre">119,</span> <span class="pre">125,</span> <span class="pre">131</span></code></p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">LebedevQuadrature3DXYZ</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">LebedevQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">quadrature_order</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>These are non-product quadratures built from spherical quadrilateral
+subdivisions.</p>
+<p>The main reason to choose an SLDFE quadrature is directional adaptivity.
+Compared with the other built-in families, it is the one that most directly
+supports targeted local refinement in angle space.</p>
+<p>In practice, this family is most useful when:</p>
+<ul class="simple">
+<li><p>the user wants to concentrate angular resolution around specific directions,</p></li>
+<li><p>there is a strongly directional beam or streaming feature,</p></li>
+<li><p>a uniform increase in all directions would be too expensive.</p></li>
+</ul>
+<p>This is a more specialized choice than product or Lebedev quadratures, but it
+is the most flexible built-in family when local angular refinement is the main
+goal.</p>
+<p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry.</p>
+<p>For 3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> geometry.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">level</span></code>: required, must be non-negative.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required unless <code class="docutils literal notranslate"><span class="pre">operator_method='galerkin_one'</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator_method</span></code>: optional.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>Additional methods exposed in Python:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LocallyRefine(ref_dir,</span> <span class="pre">cone_size,</span> <span class="pre">dir_as_plane_normal=False)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PrintQuadratureToFile(file_base)</span></code></p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">SLDFEsqQuadrature3DXYZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">quad</span><span class="o">.</span><span class="n">LocallyRefine</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="mf">30.0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="selecting-enough-angular-resolution">
+<h2><span class="section-number">7.1. </span>Selecting Enough Angular Resolution<a class="headerlink" href="#selecting-enough-angular-resolution" title="Link to this heading"></a></h2>
+<p>This is the part that matters most in actual problem setup.</p>
+<p>The quadrature must be fine enough for the number of angular moments that the
+solver is expected to represent. In OpenSn, that means the quadrature must be
+able to support the requested <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> and the associated
+moment-to-discrete and discrete-to-moment operators.</p>
+<p>This is separate from spatial or energy resolution. A problem can be well
+resolved in space and energy and still be under-resolved angularly if the
+quadrature is too coarse for the chosen moment order.</p>
+<p>Moment counts for the standard operator construction are:</p>
+<ul class="simple">
+<li><p>1D: <code class="docutils literal notranslate"><span class="pre">L</span> <span class="pre">+</span> <span class="pre">1</span></code> moments</p></li>
+<li><p>2D: <code class="docutils literal notranslate"><span class="pre">(L</span> <span class="pre">+</span> <span class="pre">1)(L</span> <span class="pre">+</span> <span class="pre">2)/2</span></code> moments</p></li>
+<li><p>3D: <code class="docutils literal notranslate"><span class="pre">(L</span> <span class="pre">+</span> <span class="pre">1)^2</span></code> moments</p></li>
+</ul>
+<p>where <code class="docutils literal notranslate"><span class="pre">L</span></code> is <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>.</p>
+<p>Practical guidance:</p>
+<ul class="simple">
+<li><p>If your cross sections are isotropic, <code class="docutils literal notranslate"><span class="pre">scattering_order=0</span></code> is sufficient.</p></li>
+<li><p>If your cross sections include higher-order scattering moments, the quadrature
+should usually be refined when <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> is increased.</p></li>
+<li><p>A higher <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> with a very coarse quadrature is generally a
+poor choice, because the quadrature may not represent those moments well even
+if the input is formally accepted.</p></li>
+<li><p>In 2D and 3D, increasing only <code class="docutils literal notranslate"><span class="pre">n_polar</span></code> or only <code class="docutils literal notranslate"><span class="pre">n_azimuthal</span></code> is often
+not enough. Both angular resolutions should generally be increased together.</p></li>
+</ul>
+<p>For product quadratures, a good starting rule is:</p>
+<ul class="simple">
+<li><p>raise <code class="docutils literal notranslate"><span class="pre">n_polar</span></code> and <code class="docutils literal notranslate"><span class="pre">n_azimuthal</span></code> as you raise <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code></p></li>
+<li><p>verify convergence of problem outputs with respect to quadrature refinement</p></li>
+</ul>
+<p>For non-product quadratures such as Lebedev, triangular, and SLDFE sets, the
+same principle applies: increasing the supported moment order should be paired
+with a richer directional set.</p>
+<section id="operator-construction-methods">
+<h3><span class="section-number">7.1.1. </span>Operator construction methods<a class="headerlink" href="#operator-construction-methods" title="Link to this heading"></a></h3>
+<p>Each quadrature constructor accepts <code class="docutils literal notranslate"><span class="pre">operator_method</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'standard'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'galerkin_one'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'galerkin_three'</span></code></p></li>
+</ul>
+<p>A Galerkin quadrature is a quadrature whose angular moment operators are
+constructed so that the discrete angular space and the selected moment space are
+tied together more tightly than in the standard weighted projection. In the
+standard method, the quadrature is used to project between angular flux values
+and spherical-harmonic moments directly from the tabulated directions and
+weights. In the Galerkin methods, the moment set is chosen and the operators are
+constructed so that the mapping is better matched to the specific discrete
+angular set.</p>
+<p>Why use a Galerkin method:</p>
+<ul class="simple">
+<li><p>to make the discrete-to-moment and moment-to-discrete operators more
+consistent with the chosen angular set</p></li>
+<li><p>to build a square moment-direction system in <code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code></p></li>
+<li><p>to use an orthogonalized moment basis adapted to the quadrature in
+<code class="docutils literal notranslate"><span class="pre">galerkin_three</span></code></p></li>
+</ul>
+<p>Why not use it by default:</p>
+<ul class="simple">
+<li><p>it is less direct than the standard projection</p></li>
+<li><p>the effective moment set depends more strongly on the quadrature itself</p></li>
+<li><p>if the quadrature is too coarse, some requested harmonics may be unavailable
+or be removed during construction</p></li>
+</ul>
+<p>For most production input files, <code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code> is the simplest
+and most predictable choice. The Galerkin options are most useful when the user
+specifically wants a quadrature-adapted angular/moment representation.</p>
+<section id="standard">
+<h4><span class="section-number">7.1.1.1. </span><code class="docutils literal notranslate"><span class="pre">standard</span></code><a class="headerlink" href="#standard" title="Link to this heading"></a></h4>
+<p>This is the default and the simplest choice. The user supplies
+<code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>, and the quadrature builds the corresponding
+moment-to-discrete and discrete-to-moment operators directly from the selected
+spherical harmonics.</p>
+<p>For most users, this is the right starting point.</p>
+</section>
+<section id="galerkin-one">
+<h4><span class="section-number">7.1.1.2. </span><code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code><a class="headerlink" href="#galerkin-one" title="Link to this heading"></a></h4>
+<p>In this mode, <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> is optional. The implementation selects a
+harmonic set so that the number of moments equals the number of directions and
+then constructs <code class="docutils literal notranslate"><span class="pre">D2M</span></code> as the inverse of <code class="docutils literal notranslate"><span class="pre">M2D</span></code>.</p>
+<p>Important consequence:</p>
+<ul class="simple">
+<li><p>the effective maximum moment order is determined by the number of directions
+in the quadrature, not by an explicitly supplied <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code></p></li>
+</ul>
+<p>This is useful when the intent is to build a square angular-moment system from
+the chosen quadrature.</p>
+</section>
+<section id="galerkin-three">
+<h4><span class="section-number">7.1.1.3. </span><code class="docutils literal notranslate"><span class="pre">galerkin_three</span></code><a class="headerlink" href="#galerkin-three" title="Link to this heading"></a></h4>
+<p>This mode orthogonalizes the harmonic set on the chosen quadrature. If some
+harmonics are linearly dependent or unresolved on that directional set, they may
+be removed during construction.</p>
+<p>Important consequence:</p>
+<ul class="simple">
+<li><p>the requested <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> may not translate into a fully retained
+set of harmonics if the quadrature is too coarse</p></li>
+</ul>
+<p>For both Galerkin methods, the safest practice is still to choose a quadrature
+with enough directions to comfortably support the moments you intend to use.</p>
+<p>In other words, Galerkin methods do not remove the need for angular refinement.
+They change how the operators are constructed, but they do not make a coarse
+direction set behave like a fine one.</p>
+</section>
+</section>
+</section>
+<section id="angle-aggregation-compatibility">
+<h2><span class="section-number">7.2. </span>Angle Aggregation Compatibility<a class="headerlink" href="#angle-aggregation-compatibility" title="Link to this heading"></a></h2>
+<p>The quadrature choice is not independent of <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type</span></code>.
+Aggregation compatibility depends on both:</p>
+<ul class="simple">
+<li><p>the quadrature family, and</p></li>
+<li><p>the mesh structure.</p></li>
+</ul>
+<p>The available aggregation types are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'polar'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'single'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'azimuthal'</span></code></p></li>
+</ul>
+<p>The default groupset aggregation is <code class="docutils literal notranslate"><span class="pre">'polar'</span></code>.</p>
+<p>This matters because not every quadrature family supports every aggregation
+mode, and not every mesh type supports every aggregation mode.</p>
+<p>When a solver fails during setup with an angle-aggregation error, this is one of
+the first places to check. The issue is often not the quadrature alone, but the
+quadrature together with the requested aggregation mode.</p>
+<section id="polar">
+<h3><span class="section-number">7.2.1. </span><code class="docutils literal notranslate"><span class="pre">polar</span></code><a class="headerlink" href="#polar" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">polar</span></code> aggregation is only supported for product quadratures on Cartesian
+orthogonal meshes.</p>
+<p>It is therefore appropriate for:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DXY</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature3DXYZ</span></code></p></li>
+</ul>
+<p>It is not appropriate for:</p>
+<ul class="simple">
+<li><p>Lebedev quadratures</p></li>
+<li><p>triangular quadratures</p></li>
+<li><p>SLDFE quadratures</p></li>
+<li><p>unstructured meshes</p></li>
+</ul>
+<p>For those quadratures, and for unstructured meshes in general, set
+<code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code> explicitly.</p>
+</section>
+<section id="single">
+<h3><span class="section-number">7.2.2. </span><code class="docutils literal notranslate"><span class="pre">single</span></code><a class="headerlink" href="#single" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">single</span></code> aggregation treats each direction independently. It is the most
+generally compatible option and is the safe choice for non-product quadratures.
+Regardless of quadrature type, single angle aggregation is required on
+unstructured meshes.</p>
+<p>Use it with:</p>
+<ul class="simple">
+<li><p>Lebedev quadratures</p></li>
+<li><p>triangular quadratures</p></li>
+<li><p>SLDFE quadratures</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">LebedevQuadrature3DXYZ</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">LebedevQuadrature3DXYZ</span><span class="p">(</span><span class="n">quadrature_order</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+            <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;single&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="azimuthal">
+<h3><span class="section-number">7.2.3. </span><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code><a class="headerlink" href="#azimuthal" title="Link to this heading"></a></h3>
+<p>For Cartesian problems, <code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> aggregation is only valid for product
+quadratures on orthogonal meshes. The curvilinear implementation also uses
+<code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> where supported. It should not be used on unstructured meshes.</p>
+<p>For 2D RZ problems, the curvilinear solver accepts:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'azimuthal'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'single'</span></code></p></li>
+</ul>
+<p>For unstructured RZ meshes, the curvilinear problem may force <code class="docutils literal notranslate"><span class="pre">'single'</span></code> even
+if another aggregation mode was requested.</p>
+</section>
+</section>
+<section id="examples">
+<h2><span class="section-number">7.3. </span>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<section id="d-slab">
+<h3><span class="section-number">7.3.1. </span>1D slab<a class="headerlink" href="#d-slab" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSlab</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSlab</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="d-cartesian">
+<h3><span class="section-number">7.3.2. </span>2D Cartesian<a class="headerlink" href="#d-cartesian" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="d-cartesian-with-lebedev">
+<h3><span class="section-number">7.3.3. </span>3D Cartesian with Lebedev<a class="headerlink" href="#d-cartesian-with-lebedev" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">LebedevQuadrature3DXYZ</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">LebedevQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">quadrature_order</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">groupset</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+    <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;single&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="d-rz">
+<h3><span class="section-number">7.3.4. </span>2D RZ<a class="headerlink" href="#d-rz" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DRZ</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+            <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;azimuthal&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="inspecting-a-quadrature">
+<h2><span class="section-number">7.4. </span>Inspecting a Quadrature<a class="headerlink" href="#inspecting-a-quadrature" title="Link to this heading"></a></h2>
+<p>All angular quadrature objects expose:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">abscissae</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weights</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">omegas</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GetDiscreteToMomentOperator()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GetMomentToDiscreteOperator()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GetMomentToHarmonicsIndexMap()</span></code></p></li>
+</ul>
+<p>This is useful for debugging and for verifying that a chosen quadrature is fine
+enough for the intended moment order.</p>
+<p>It is also a good way to make sure the quadrature you created is actually the
+one you intended. In particular, it can be helpful to inspect the number of
+angles, the first few weights, and the operator sizes after changing
+<code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> or <code class="docutils literal notranslate"><span class="pre">operator_method</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">quad</span><span class="o">.</span><span class="n">weights</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">quad</span><span class="o">.</span><span class="n">abscissae</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">phi</span><span class="p">,</span> <span class="n">quad</span><span class="o">.</span><span class="n">abscissae</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">theta</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">quad</span><span class="o">.</span><span class="n">omegas</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">quad</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">quad</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="recommendations">
+<h2><span class="section-number">7.5. </span>Recommendations<a class="headerlink" href="#recommendations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>For standard 1D slab problems, start with <code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code>.</p></li>
+<li><p>For standard Cartesian 2D and 3D problems, start with
+<code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DXY</span></code> or <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature3DXYZ</span></code>.</p></li>
+<li><p>For Cartesian problems using Lebedev, triangular, or SLDFE quadratures, set
+<code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code> explicitly.</p></li>
+<li><p>For 2D RZ problems, use <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DRZ</span></code> with
+<code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesCurvilinearProblem</span></code>.</p></li>
+<li><p>When increasing <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>, also revisit the angular quadrature
+resolution. Do not assume that a quadrature that was adequate for
+<code class="docutils literal notranslate"><span class="pre">P0</span></code> or <code class="docutils literal notranslate"><span class="pre">P1</span></code> scattering remains adequate for higher moments.</p></li>
+<li><p>When in doubt, perform a quadrature refinement study and monitor the change in
+the quantities of interest.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="materials_xs.html" class="btn btn-neutral float-left" title="5. Materials and Cross-Section Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="groupsets.html" class="btn btn-neutral float-right" title="8. Groupsets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

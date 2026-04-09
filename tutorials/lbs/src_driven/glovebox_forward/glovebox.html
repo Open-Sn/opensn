@@ -54,7 +54,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../../mesh/index.html">1. Meshing and Partitioning</a></li>
@@ -72,6 +72,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../glovebox_adjoint/glovebox_adj.html">5.3.5. Adjoint Method with Multiple Detector Responses</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../transient/index.html">5.4. Transient</a></li>
 </ul>
 </li>
 </ul>
@@ -198,7 +199,7 @@
 <section id="Geometry">
 <h2><span class="section-number">5.3.3.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="2c60dabc4f004ce281e6fd5ab1f2e55e" src="../../../../_images/glovebox_geom1.png" /></p>
+<p><img alt="9e35d713de434ac8aefad4e15a3d011a" src="../../../../_images/glovebox_geom1.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -217,9 +218,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="732c6aed04e8470983f12afab6781608" src="../../../../_images/glovebox_mesh1.png" /></p>
-<p><img alt="e829d3ddc03245b7b0f4fc7b6642914c" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
-<p><img alt="be053d2d91a9484f9eecc4effaaf8070" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="b893b5c7b8cd4d83a6c34c3603a569e2" src="../../../../_images/glovebox_mesh1.png" /></p>
+<p><img alt="479ec11fb1cf4355a0977dcace7feef9" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="1f8a88ace482407780e747866b982d74" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">5.3.3.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -518,9 +519,9 @@
 </div>
 </div>
 <p>Group 3: [1.353, 2.231] MeV</p>
-<p><img alt="8a02cb4ce91249a091f5fc568d4b8e2f" src="../../../../_images/glovebox_g3.png" /></p>
+<p><img alt="f23c726c7abd43518e23b2c9422a7f45" src="../../../../_images/glovebox_g3.png" /></p>
 <p>Group 52: [2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="b3b3ffd004ef4776b8bdeadf4ba80fd8" src="../../../../_images/glovebox_g52.png" /></p>
+<p><img alt="eff22cadec4041348751f39ac9ee6147" src="../../../../_images/glovebox_g52.png" /></p>
 </section>
 <section id="Compute-Leakage">
 <h3><span class="section-number">5.3.3.5.2. </span>Compute Leakage<a class="headerlink" href="#Compute-Leakage" title="Link to this heading"></a></h3>
@@ -583,7 +584,7 @@
 <div class="line">Total Leakage YMax : 4.702092e-01</div>
 </div>
 <p>Total Leakage : 1.035658e+00</p>
-<p><img alt="2085f54ed92a43ef8cd021a412e7d0c9" src="../../../../_images/Lkg.png" /></p>
+<p><img alt="100e429e567546dd9e5237aa0f7d13bd" src="../../../../_images/Lkg.png" /></p>
 </section>
 <section id="Compute-Balance">
 <h3><span class="section-number">5.3.3.5.3. </span>Compute Balance<a class="headerlink" href="#Compute-Balance" title="Link to this heading"></a></h3>

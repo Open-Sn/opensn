@@ -51,7 +51,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
@@ -199,13 +199,15 @@ integrate to this total power.</p></li>
 For ordinary XS names this computes <code class="docutils literal notranslate"><span class="pre">sum_g</span> <span class="pre">xs[g]</span> <span class="pre">*</span> <span class="pre">phi_g</span></code> at each node.</p>
 <p>The returned field function is a snapshot of the solver state at creation time; it is not
 refreshed automatically if the solver state changes. It supports <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning solver is still alive. Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly
+<code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning problem is still alive. Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly
 recomputes the same field function from the solver’s latest state.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">xs_name</span> <span class="pre">==</span> <span class="pre">&quot;power&quot;</span></code>, the same power-generation formula used elsewhere by the solver
 is applied on demand.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the returned field function is scaled using the power
 implied by the current scalar flux. This scaling affects only the returned field function;
 it does not mutate the solver’s internal <code class="docutils literal notranslate"><span class="pre">phi</span></code> vectors.</p>
+<p>The returned field function is a fresh object created for this call. It is not
+automatically updated by later solves or timesteps.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -260,13 +262,11 @@ If False, returns all moment field functions for each group.</p>
 <p>Field functions are created on demand from the current solver state.</p>
 <p>The returned field functions are snapshots of the solver state at creation time; they are not
 refreshed automatically if the solver state changes.</p>
-<p>They support <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while their owning solver is still alive.
+<p>They support <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while their owning problem is still alive.
 Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly refreshes the same field-function object from the solver’s
 latest state.</p>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(only_scalar_flux=False)</span></code> creates all requested
 moments from the current <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterate at the time of the call.</p>
-<p>To obtain independent field functions from a newer solver state, call
-<code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(...)</span></code> again instead of updating the existing objects.</p>
 <p>In the nested form (<code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>), the moment index varies fastest
 within each group (inner index = moment, outer index = group).</p>
 </dd></dl>

@@ -51,7 +51,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
@@ -223,13 +223,15 @@ integrate to this total power.</p></li>
 For ordinary XS names this computes <code class="docutils literal notranslate"><span class="pre">sum_g</span> <span class="pre">xs[g]</span> <span class="pre">*</span> <span class="pre">phi_g</span></code> at each node.</p>
 <p>The returned field function is a snapshot of the solver state at creation time; it is not
 refreshed automatically if the solver state changes. It supports <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and
-<code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning solver is still alive. Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly
+<code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning problem is still alive. Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly
 recomputes the same field function from the solver’s latest state.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">xs_name</span> <span class="pre">==</span> <span class="pre">&quot;power&quot;</span></code>, the same power-generation formula used elsewhere by the solver
 is applied on demand.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the returned field function is scaled using the power
 implied by the current scalar flux. This scaling affects only the returned field function;
 it does not mutate the solver’s internal <code class="docutils literal notranslate"><span class="pre">phi</span></code> vectors.</p>
+<p>The returned field function is a fresh object created for this call. It is not
+automatically updated by later solves or timesteps.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -237,38 +239,47 @@ it does not mutate the solver’s internal <code class="docutils literal notrans
 <span class="sig-name descname"><span class="pre">GetAngularFieldFunctionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.GetAngularFieldFunctionList" title="Link to this definition"></a></dt>
 <dd><p>Create field functions for selected angular flux components.</p>
 <p>Note: You must enable angular flux storage (<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>) in
-the problem options, otherwise the returned field functions will remain zero.</p>
+the problem options. For transient problems this is required. Otherwise
+the returned field functions will remain zero.</p>
 <p class="rubric">Example</p>
-<p><code class="docutils literal notranslate"><span class="pre">`python</span>
-<span class="pre">solver.Initialize()</span>
-<span class="pre">solver.Execute()</span>
-<span class="pre">ang_ff</span> <span class="pre">=</span> <span class="pre">phys.GetAngularFieldFunctionList(groups=[0],</span> <span class="pre">angles=[0])</span>
-<span class="pre">`</span></code></p>
-<p>For transient/time-dependent runs, call this after each timestep. Two common
-patterns are:</p>
-<p>1) Use <cite>TransientSolver.Execute()</cite> with a post-advance callback:
-<a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python
-solver = TransientSolver(problem=phys)
-solver.Initialize()</p>
-<dl class="simple">
-<dt>def post_advance():</dt><dd><p>ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
-FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, “angular_flux_t”)</p>
-</dd>
-</dl>
-<p>solver.SetPostAdvanceCallback(post_advance)
-solver.Execute()
-<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
-<p>2) Use a custom Python loop with <cite>TransientSolver.Advance()</cite>:
-<a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>python
-solver = TransientSolver(problem=phys)
-solver.Initialize()
-for _ in range(num_steps):</p>
-<blockquote>
-<div><p>solver.Advance()
-ang_ff = phys.GetAngularFieldFunctionList(groups=[0], angles=[0])
-FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, “angular_flux_t”)</p>
-</div></blockquote>
-<p><a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">ang_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetAngularFieldFunctionList</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>For transient/time-dependent runs, each field function is still a snapshot. Either call
+this after each timestep to create a fresh object or keep the returned object and call
+<code class="docutils literal notranslate"><span class="pre">Update()</span></code> after each timestep before exporting or interpolating it. Two common patterns
+are:</p>
+<ol class="arabic simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">TransientSolver.Execute()</span></code> with a post-advance callback:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ang_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetAngularFieldFunctionList</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">post_advance</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">ang_ff</span><span class="p">:</span>
+        <span class="n">ff</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+    <span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span><span class="n">ang_ff</span><span class="p">,</span> <span class="s2">&quot;angular_flux_t&quot;</span><span class="p">)</span>
+
+<span class="n">solver</span><span class="o">.</span><span class="n">SetPostAdvanceCallback</span><span class="p">(</span><span class="n">post_advance</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Use a custom Python loop with <code class="docutils literal notranslate"><span class="pre">TransientSolver.Advance()</span></code>:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ang_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetAngularFieldFunctionList</span><span class="p">(</span><span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">angles</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">ang_ff</span><span class="p">:</span>
+        <span class="n">ff</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+    <span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span><span class="n">ang_ff</span><span class="p">,</span> <span class="s2">&quot;angular_flux_t&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -278,7 +289,7 @@ FieldFunctionGridBased.ExportMultipleToPVTU(ang_ff, “angular_flux_t”)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Field functions for the requested <code class="docutils literal notranslate"><span class="pre">(group,</span> <span class="pre">angle)</span></code> pairs. Each returned field function
-is a snapshot, but supports <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning solver is
+is a snapshot, but supports <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning problem is
 alive.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -346,13 +357,11 @@ If False, returns all moment field functions for each group.</p>
 <p>Field functions are created on demand from the current solver state.</p>
 <p>The returned field functions are snapshots of the solver state at creation time; they are not
 refreshed automatically if the solver state changes.</p>
-<p>They support <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while their owning solver is still alive.
+<p>They support <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while their owning problem is still alive.
 Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly refreshes the same field-function object from the solver’s
 latest state.</p>
 <p>Calling <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(only_scalar_flux=False)</span></code> creates all requested
 moments from the current <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterate at the time of the call.</p>
-<p>To obtain independent field functions from a newer solver state, call
-<code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(...)</span></code> again instead of updating the existing objects.</p>
 <p>In the nested form (<code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>), the moment index varies fastest
 within each group (inner index = moment, outer index = group).</p>
 </dd></dl>

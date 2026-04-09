@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>16. Running Problems &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="17. Iterative Best Practices" href="iterative_best_practices.html" />
+    <link rel="prev" title="15. Visualization" href="visualization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">16. Running Problems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-command-line-usage">16.1. Basic command-line usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-under-mpi">16.2. Running under MPI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-with-gpus">16.3. Running with GPUs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#typical-execution-pattern">16.4. Typical execution pattern</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inputs-logs-and-outputs">16.5. Inputs, logs, and outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#restart-and-repeated-solves">16.6. Restart and repeated solves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-advice">16.7. Practical advice</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">16. </span>Running Problems</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="running-problems">
+<h1><span class="section-number">16. </span>Running Problems<a class="headerlink" href="#running-problems" title="Link to this heading"></a></h1>
+<p>This section explains how to run OpenSn problems once an input is written.
+The examples here focus on the OpenSn console application.</p>
+<section id="basic-command-line-usage">
+<h2><span class="section-number">16.1. </span>Basic command-line usage<a class="headerlink" href="#basic-command-line-usage" title="Link to this heading"></a></h2>
+<p>An OpenSn Python input is typically run with the <code class="docutils literal notranslate"><span class="pre">opensn</span></code> executable and the
+<code class="docutils literal notranslate"><span class="pre">-i</span></code> option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>build/python/opensn<span class="w"> </span>-i<span class="w"> </span>my_input.py
+</pre></div>
+</div>
+<p>Most users run inputs this way during development and debugging. The input
+script creates meshes, materials, problems, and solvers, then calls the solver
+methods needed for the calculation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenSn inputs are Python scripts. This means a problem input can contain
+loops, helper functions, conditionals, and post-processing logic in addition
+to the solver setup itself.</p>
+</div>
+</section>
+<section id="running-under-mpi">
+<h2><span class="section-number">16.2. </span>Running under MPI<a class="headerlink" href="#running-under-mpi" title="Link to this heading"></a></h2>
+<p>Parallel runs are launched with <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> or the site-specific MPI launcher:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="m">4</span><span class="w"> </span>build/python/opensn<span class="w"> </span>-i<span class="w"> </span>my_input.py
+</pre></div>
+</div>
+<p>The number of MPI ranks should be chosen with the mesh partitioning and problem
+size in mind. Very small problems generally do not benefit from large MPI
+counts, while large three-dimensional transport problems are usually intended
+to run in parallel.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a mesh generator or imported mesh already contains partitioning
+information, make sure that the run configuration is compatible with the
+intended decomposition.</p>
+</div>
+</section>
+<section id="running-with-gpus">
+<h2><span class="section-number">16.3. </span>Running with GPUs<a class="headerlink" href="#running-with-gpus" title="Link to this heading"></a></h2>
+<p>GPU acceleration is requested in the problem definition with <code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code>.
+For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">use_gpus</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">sweep_type</span><span class="o">=</span><span class="s2">&quot;AAH&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This does not change the command-line launch pattern. A GPU-enabled input is
+still run with the normal OpenSn executable, either in serial or under MPI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="m">4</span><span class="w"> </span>build/python/opensn<span class="w"> </span>-i<span class="w"> </span>my_input.py
+</pre></div>
+</div>
+<p>Important restrictions:</p>
+<ul class="simple">
+<li><p>OpenSn must be built with GPU support.</p></li>
+<li><p>Curvilinear discrete ordinates problems do not support GPU acceleration.</p></li>
+<li><p>Time-dependent problems do not support GPU acceleration.</p></li>
+<li><p>OpenSn uses one GPU per MPI rank.</p></li>
+</ul>
+<p>Practical guidance:</p>
+<ul class="simple">
+<li><p>First make the problem work on the CPU path.</p></li>
+<li><p>Then enable <code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code> and keep the rest of the input as unchanged as
+possible.</p></li>
+<li><p>If a GPU run fails immediately, check the build configuration, and whether the
+problem is steady-state or transient.</p></li>
+<li><p>The batch system or manual GPU binding determines which GPU is associated
+with each MPI rank.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GPU acceleration is mainly a sweep-execution choice, not a different problem
+formulation. The same mesh, materials, groupsets, sources, and solver setup
+should usually be validated on CPU first.</p>
+</div>
+</section>
+<section id="typical-execution-pattern">
+<h2><span class="section-number">16.4. </span>Typical execution pattern<a class="headerlink" href="#typical-execution-pattern" title="Link to this heading"></a></h2>
+<p>Most inputs follow the same high-level structure:</p>
+<ol class="arabic simple">
+<li><p>Create or import the mesh.</p></li>
+<li><p>Create materials and cross sections.</p></li>
+<li><p>Define sources, boundaries, quadratures, and groupsets.</p></li>
+<li><p>Construct the problem object.</p></li>
+<li><p>Construct the solver object.</p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">Initialize()</span></code>.</p></li>
+<li><p>Run the solve with <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> or an explicit transient time loop.</p></li>
+<li><p>Create field functions or other outputs from the completed state.</p></li>
+</ol>
+<p>For steady-state and eigenvalue problems, a typical driver looks like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span><span class="n">groupset</span><span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">angular_quadrature</span><span class="o">=</span><span class="n">quadrature</span><span class="p">,</span>
+    <span class="n">boundary_options</span><span class="o">=</span><span class="n">boundary_options</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For transient problems, the driver can either call <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> directly or
+advance the state manually:</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Transient problems require <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> in the problem
+options. Set that on the problem before constructing the
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a>.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">TransientSolver</span><span class="p">(</span>
+    <span class="n">phys</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span>
+    <span class="n">time_end</span><span class="o">=</span><span class="mf">1.0e-1</span><span class="p">,</span>
+    <span class="n">initial_state</span><span class="o">=</span><span class="s2">&quot;zero&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+
+<span class="k">while</span> <span class="ow">not</span> <span class="n">solver</span><span class="o">.</span><span class="n">Finished</span><span class="p">():</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">Advance()</span></code> is useful when the input needs to update sources,
+boundaries, or other problem data between timesteps.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A manual transient loop is the right choice whenever the input itself needs
+to decide what happens next. If the timestep sequence is fixed and no
+mid-run updates are needed, <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> is usually simpler.</p>
+</div>
+</section>
+<section id="inputs-logs-and-outputs">
+<h2><span class="section-number">16.5. </span>Inputs, logs, and outputs<a class="headerlink" href="#inputs-logs-and-outputs" title="Link to this heading"></a></h2>
+<p>OpenSn writes its progress and solver information to standard output. During
+development, this is often enough. For production runs, users commonly redirect
+the output to a log file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="m">16</span><span class="w"> </span>build/python/opensn<span class="w"> </span>-i<span class="w"> </span>problem.py<span class="w"> </span>&gt;<span class="w"> </span>problem.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</pre></div>
+</div>
+<p>Field functions are created from the solved state after <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> or after
+an <code class="docutils literal notranslate"><span class="pre">Advance()</span></code> step in a transient loop. These can then be exported for
+visualization or evaluated with post-processing utilities.</p>
+<p>For transient problems, this includes the same requirement:
+<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> must already be enabled on the problem.</p>
+</section>
+<section id="restart-and-repeated-solves">
+<h2><span class="section-number">16.6. </span>Restart and repeated solves<a class="headerlink" href="#restart-and-repeated-solves" title="Link to this heading"></a></h2>
+<p>Because inputs are Python, it is natural to run multiple solves in one script.
+For example, a study may:</p>
+<ol class="arabic simple">
+<li><p>Build a base problem.</p></li>
+<li><p>Solve it once.</p></li>
+<li><p>Change a source or boundary condition.</p></li>
+<li><p>Solve again.</p></li>
+</ol>
+<p>This is a useful pattern, but it is important to keep the distinction between
+problem data and solver state in mind. If a change affects the transport
+operator or the source model, make sure the updated objects are set on the
+problem before executing the next solve.</p>
+</section>
+<section id="practical-advice">
+<h2><span class="section-number">16.7. </span>Practical advice<a class="headerlink" href="#practical-advice" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Start by running new inputs on one MPI rank before scaling out.</p></li>
+<li><p>Keep the first version of an input simple: one groupset, one source, one
+field-function export.</p></li>
+<li><p>Add post-processing only after the physics setup and solver convergence are
+behaving as expected.</p></li>
+<li><p>For transient problems, call <code class="docutils literal notranslate"><span class="pre">Update()</span></code> on existing field functions after
+each completed <code class="docutils literal notranslate"><span class="pre">Advance()</span></code> step, or create fresh field functions from the
+current state. Do not assume an earlier field-function object updates
+automatically.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Many input problems that look like “solver failures” are actually setup
+problems: wrong material assignment, an inconsistent groupset split, a
+missing source, or a boundary condition that does not match the intended
+physical model. When in doubt, reduce the input to the smallest case that
+should still work and build back up from there.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="visualization.html" class="btn btn-neutral float-left" title="15. Visualization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="iterative_best_practices.html" class="btn btn-neutral float-right" title="17. Iterative Best Practices" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

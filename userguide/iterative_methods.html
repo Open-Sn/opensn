@@ -1,0 +1,994 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9. Iterative Methods &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="10. Boundary Conditions and Sources" href="boundary_conditions_sources.html" />
+    <link rel="prev" title="8. Groupsets" href="groupsets.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">9. Iterative Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">9.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#where-the-iteration-controls-live">9.2. Where the Iteration Controls Live</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#groupset-controls">9.2.1. Groupset controls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#problem-level-controls">9.2.2. Problem-level controls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#solver-level-controls">9.2.3. Solver-level controls</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#inner-groupset-methods">9.3. Inner Groupset Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#what-these-methods-are-solving">9.3.1. What these methods are solving</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#classic-richardson">9.3.2. <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#petsc-richardson">9.3.3. <code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#petsc-gmres">9.3.4. <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#petsc-bicgstab">9.3.5. <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#convergence-controls">9.4. Convergence Controls</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#groupset-tolerance-and-iteration-count">9.4.1. Groupset tolerance and iteration count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#what-tolerance-to-choose">9.4.2. What tolerance to choose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gmres-restart-interval">9.4.3. GMRES restart interval</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#allow-cycles">9.4.4. <code class="docutils literal notranslate"><span class="pre">allow_cycles</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#across-groupset-iteration">9.5. Across-Groupset Iteration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#what-ags-does">9.5.1. What AGS does</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ags-convergence-check">9.5.2. <code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ags-tolerance">9.5.3. <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#max-ags-iterations">9.5.4. <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dsa-options">9.6. DSA Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#wgdsa">9.6.1. WGDSA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tgdsa">9.6.2. TGDSA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-guidance">9.6.3. Practical guidance</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#solver-specific-outer-iteration">9.7. Solver-Specific Outer Iteration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#steady-state-source-solves">9.7.1. Steady-state source solves</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transient-solves">9.7.2. Transient solves</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#power-iteration-k-eigen-solve">9.7.3. Power iteration k-eigen solve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nonlinear-k-eigen-solve">9.7.4. Nonlinear k-eigen solve</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-a-method">9.8. Choosing a Method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">9.9. Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#single-groupset-with-gmres">9.9.1. Single groupset with GMRES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#classic-richardson-with-wgdsa">9.9.2. Classic Richardson with WGDSA</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#two-groupsets-with-ags-control">9.9.3. Two groupsets with AGS control</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">9.9.4. Power iteration k-eigen solve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">9.9.5. Nonlinear k-eigen solve</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#recommendations">9.10. Recommendations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">9. </span>Iterative Methods</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="iterative-methods">
+<h1><span class="section-number">9. </span>Iterative Methods<a class="headerlink" href="#iterative-methods" title="Link to this heading"></a></h1>
+<section id="overview">
+<h2><span class="section-number">9.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>OpenSn’s linear Boltzmann solver uses several levels of iteration. The most
+important distinction for users is that not all iteration controls live in the
+same place.</p>
+<p>There are three levels to keep in mind:</p>
+<ol class="arabic simple">
+<li><p>inner groupset solves</p></li>
+<li><p>across-groupset iterations</p></li>
+<li><p>solver-specific outer iterations, such as k-eigenvalue iterations</p></li>
+</ol>
+<p>In an OpenSn input, the inner groupset solver is selected in each groupset block,
+while across-groupset controls are set in the problem <code class="docutils literal notranslate"><span class="pre">options</span></code> block.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+            <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">19</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+            <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;max_ags_iterations&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;ags_tolerance&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;ags_convergence_check&quot;</span><span class="p">:</span> <span class="s2">&quot;l2&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For most users, the practical questions are:</p>
+<ul class="simple">
+<li><p>which inner solver should be used in each groupset?</p></li>
+<li><p>should DSA be enabled?</p></li>
+<li><p>does the problem need multiple groupsets and AGS control?</p></li>
+<li><p>is the top-level solver a steady-state solve, a transient solve, a power
+iteration k-eigen solve, or a nonlinear k-eigen solve?</p></li>
+</ul>
+</section>
+<section id="where-the-iteration-controls-live">
+<h2><span class="section-number">9.2. </span>Where the Iteration Controls Live<a class="headerlink" href="#where-the-iteration-controls-live" title="Link to this heading"></a></h2>
+<section id="groupset-controls">
+<h3><span class="section-number">9.2.1. </span>Groupset controls<a class="headerlink" href="#groupset-controls" title="Link to this heading"></a></h3>
+<p>These are specified inside each entry of <code class="docutils literal notranslate"><span class="pre">groupsets=[...]</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">allow_cycles</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+</ul>
+<p>These settings control the solve performed within a single groupset.</p>
+</section>
+<section id="problem-level-controls">
+<h3><span class="section-number">9.2.2. </span>Problem-level controls<a class="headerlink" href="#problem-level-controls" title="Link to this heading"></a></h3>
+<p>These are specified in the problem <code class="docutils literal notranslate"><span class="pre">options</span></code> block:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_inner_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_ags_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_outer_iterations</span></code></p></li>
+</ul>
+<p>These settings control how the solver coordinates multiple groupsets and how
+much iteration information is printed.</p>
+</section>
+<section id="solver-level-controls">
+<h3><span class="section-number">9.2.3. </span>Solver-level controls<a class="headerlink" href="#solver-level-controls" title="Link to this heading"></a></h3>
+<p>Some solvers add their own iteration settings.</p>
+<p>For <a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_iters</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset_phi0</span></code></p></li>
+</ul>
+<p>For <a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_rel_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_sol_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_rel_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_div_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_gmres_restart_intvl</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_gmres_breakdown_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset_phi0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_initial_power_iterations</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="inner-groupset-methods">
+<h2><span class="section-number">9.3. </span>Inner Groupset Methods<a class="headerlink" href="#inner-groupset-methods" title="Link to this heading"></a></h2>
+<p>The available groupset inner methods are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;classic_richardson&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_richardson&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_gmres&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_bicgstab&quot;</span></code></p></li>
+</ul>
+<p>These are selected with <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> in each groupset.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupset</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+    <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+    <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+    <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="what-these-methods-are-solving">
+<h3><span class="section-number">9.3.1. </span>What these methods are solving<a class="headerlink" href="#what-these-methods-are-solving" title="Link to this heading"></a></h3>
+<p>For a discrete ordinates groupset, the inner iteration repeatedly applies the
+inverse transport sweep operator and updates the groupset flux moments until the
+chosen convergence criterion is met.</p>
+<p>The main difference between the available methods is how that fixed-point or
+linear solve is managed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> performs an explicit source iteration loop in OpenSn
+code</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">petsc_*</span></code> methods use PETSc Krylov solvers wrapped around the sweep
+operator</p></li>
+</ul>
+<p>As a practical rule, PETSc methods are usually the better starting point for
+difficult problems. <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> is simple and useful, but it is
+generally the least robust option on strongly scattering or otherwise difficult
+systems unless acceleration is also enabled.</p>
+</section>
+<section id="classic-richardson">
+<h3><span class="section-number">9.3.2. </span><code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code><a class="headerlink" href="#classic-richardson" title="Link to this heading"></a></h3>
+<p>This is OpenSn’s explicit source-iteration style method. On each iteration it:</p>
+<ul class="simple">
+<li><p>rebuilds the groupset source from the current iterate</p></li>
+<li><p>applies the inverse transport sweep</p></li>
+<li><p>optionally applies WGDSA and TGDSA corrections</p></li>
+<li><p>checks convergence using pointwise changes in <code class="docutils literal notranslate"><span class="pre">phi</span></code> and delayed angular flux</p></li>
+</ul>
+<p>Why use it:</p>
+<ul class="simple">
+<li><p>simple algorithmic behavior</p></li>
+<li><p>useful for debugging and method studies</p></li>
+<li><p>pairs naturally with DSA for source-iteration style solves</p></li>
+<li><p>by far the least memory-intensive of the groupset inner solver methods</p></li>
+</ul>
+<p>Why not use it by default:</p>
+<ul class="simple">
+<li><p>usually slower and less robust than Krylov methods on harder problems</p></li>
+<li><p>convergence can deteriorate badly for optically thick or highly scattering
+cases without acceleration</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+    <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;classic_richardson&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="petsc-richardson">
+<h3><span class="section-number">9.3.3. </span><code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code><a class="headerlink" href="#petsc-richardson" title="Link to this heading"></a></h3>
+<p>This uses PETSc’s Richardson iteration around the transport operator.</p>
+<p>Why use it:</p>
+<ul class="simple">
+<li><p>useful when a simple stationary iteration is desired but with PETSc-managed
+setup and convergence handling</p></li>
+</ul>
+<p>A special case worth knowing:</p>
+<ul class="simple">
+<li><p><strong>if ``inner_linear_method=”petsc_richardson”`` and ``l_max_its=1``, the code
+effectively performs a single sweep-style update</strong></p></li>
+</ul>
+<p>For most problems, this is not the first PETSc method to try. GMRES is usually
+the stronger default.</p>
+</section>
+<section id="petsc-gmres">
+<h3><span class="section-number">9.3.4. </span><code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code><a class="headerlink" href="#petsc-gmres" title="Link to this heading"></a></h3>
+<p>This uses PETSc GMRES around the transport operator.</p>
+<p>For most steady-state transport problems, this is the best general-purpose
+starting choice.</p>
+<p>Why use it:</p>
+<ul class="simple">
+<li><p>usually the most robust of the groupset solver methods</p></li>
+<li><p>often the best choice for difficult scattering-dominated problems</p></li>
+<li><p>works with DSA preconditioning</p></li>
+</ul>
+<p>Relevant control:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code> controls how many Krylov vectors GMRES keeps
+before it restarts</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>GMRES can incur substantial memory usage because it stores restart vectors.
+Increasing <code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code> increases the Krylov storage footprint,
+so use larger values only when the convergence benefit justifies the extra
+memory.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">19</span><span class="p">),</span>
+    <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+    <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+    <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="petsc-bicgstab">
+<h3><span class="section-number">9.3.5. </span><code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code><a class="headerlink" href="#petsc-bicgstab" title="Link to this heading"></a></h3>
+<p>This uses PETSc BiCGStab around the transport operator.</p>
+<p>Why use it:</p>
+<ul class="simple">
+<li><p>as an alternative to GMRES when memory or restart behavior is undesirable</p></li>
+<li><p>as a solver-choice experiment for problems where GMRES is not ideal</p></li>
+</ul>
+<p>In most common workflows, GMRES is still the more typical choice.</p>
+</section>
+</section>
+<section id="convergence-controls">
+<h2><span class="section-number">9.4. </span>Convergence Controls<a class="headerlink" href="#convergence-controls" title="Link to this heading"></a></h2>
+<section id="groupset-tolerance-and-iteration-count">
+<h3><span class="section-number">9.4.1. </span>Groupset tolerance and iteration count<a class="headerlink" href="#groupset-tolerance-and-iteration-count" title="Link to this heading"></a></h3>
+<p>Each groupset has:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>: default <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_max_its</span></code>: default <code class="docutils literal notranslate"><span class="pre">200</span></code></p></li>
+</ul>
+<p>These control the inner solve stopping behavior.</p>
+<p>For PETSc-based groupset methods, the residual printed in the log is the scaled
+residual used by OpenSn’s custom convergence test for WGS solves.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code>, the convergence test is based on pointwise changes
+in the solution, together with a spectral-radius estimate.</p>
+<section id="l-abs-tol">
+<h4><span class="section-number">9.4.1.1. </span><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code><a class="headerlink" href="#l-abs-tol" title="Link to this heading"></a></h4>
+<p>This is the main convergence tolerance for the groupset inner solve.</p>
+<p>What it tests:</p>
+<ul class="simple">
+<li><p>for PETSc-based groupset methods, it tests the scaled WGS residual used by
+the OpenSn convergence check</p></li>
+<li><p>for <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code>, it is the stopping tolerance for the pointwise
+flux-change test used by the Richardson iteration machinery</p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code> is a good default for most production runs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0e-4</span></code> to <code class="docutils literal notranslate"><span class="pre">1.0e-5</span></code> is often acceptable for setup, debugging, or quick
+parameter studies</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0e-7</span></code> to <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> is reasonable when eigenvalues, localized
+responses, or balance quantities need tighter transport convergence</p></li>
+</ul>
+<p>If the solve repeatedly reaches the outer iterations while the inner residual is
+still large, the inner tolerance is probably too loose for that problem.</p>
+</section>
+<section id="l-max-its">
+<h4><span class="section-number">9.4.1.2. </span><code class="docutils literal notranslate"><span class="pre">l_max_its</span></code><a class="headerlink" href="#l-max-its" title="Link to this heading"></a></h4>
+<p>This is the hard cap on the number of groupset inner iterations.</p>
+<p>What it tests:</p>
+<ul class="simple">
+<li><p>nothing by itself; it is a safeguard that stops the inner solve if the chosen
+convergence test is not met in time</p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">200</span></code> is a good default</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">100</span></code> to <code class="docutils literal notranslate"><span class="pre">300</span></code> is a normal range for most problems</p></li>
+<li><p>higher values can be justified for very difficult scattering-dominated
+problems, but routinely hitting the cap usually means the method, groupset
+structure, or acceleration setup needs attention</p></li>
+</ul>
+</section>
+</section>
+<section id="what-tolerance-to-choose">
+<h3><span class="section-number">9.4.2. </span>What tolerance to choose<a class="headerlink" href="#what-tolerance-to-choose" title="Link to this heading"></a></h3>
+<p>As a practical rule:</p>
+<ul class="simple">
+<li><p>use looser tolerances while setting up and debugging a model</p></li>
+<li><p>tighten tolerances when k-eigenvalues, localized responses, or balance
+quantities need to be resolved accurately</p></li>
+<li><p>if outer iterations are still moving substantially, over-solving the inner
+iterations may not be the best use of work</p></li>
+</ul>
+<p>This is especially important in multi-groupset and eigenvalue problems, where
+the inner solve is only one part of the total iteration process.</p>
+</section>
+<section id="gmres-restart-interval">
+<h3><span class="section-number">9.4.3. </span>GMRES restart interval<a class="headerlink" href="#gmres-restart-interval" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code> only matters for <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code>.</p>
+<p>Smaller restart values use less Krylov storage but may slow or degrade
+convergence. Larger restart values can improve robustness but cost more memory
+and work per restart cycle.</p>
+<p>What it tests:</p>
+<ul class="simple">
+<li><p>it does not change the convergence test directly</p></li>
+<li><p>it controls how many GMRES Krylov vectors are retained before restart</p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">30</span></code> is a good default</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">20</span></code> to <code class="docutils literal notranslate"><span class="pre">50</span></code> is a reasonable first range</p></li>
+<li><p>larger values such as <code class="docutils literal notranslate"><span class="pre">60</span></code> to <code class="docutils literal notranslate"><span class="pre">100</span></code> can help difficult problems if the
+extra memory is acceptable</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On large production cases, the memory cost of GMRES restart vectors can be a
+practical limiter. If memory grows too much, reduce
+<code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code> first before assuming the only fix is more
+hardware.</p>
+</div>
+</section>
+<section id="allow-cycles">
+<h3><span class="section-number">9.4.4. </span><code class="docutils literal notranslate"><span class="pre">allow_cycles</span></code><a class="headerlink" href="#allow-cycles" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">allow_cycles</span></code> controls whether sweep cycles are allowed in the groupset.</p>
+<p>For most users, this is not the first iterative-method parameter to tune, but it
+is part of the groupset solve setup and can matter on meshes whose sweep
+dependencies contain cycles.</p>
+</section>
+</section>
+<section id="across-groupset-iteration">
+<h2><span class="section-number">9.5. </span>Across-Groupset Iteration<a class="headerlink" href="#across-groupset-iteration" title="Link to this heading"></a></h2>
+<p>When a problem has multiple groupsets, OpenSn may perform across-groupset
+iterations, usually abbreviated AGS.</p>
+<p>The relevant problem options are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_ags_iterations</span></code></p></li>
+</ul>
+<section id="what-ags-does">
+<h3><span class="section-number">9.5.1. </span>What AGS does<a class="headerlink" href="#what-ags-does" title="Link to this heading"></a></h3>
+<p>AGS coordinates repeated solves of the groupsets until the full multigroup
+solution is consistent across groupset boundaries.</p>
+<p>In OpenSn, AGS:</p>
+<ul class="simple">
+<li><p>executes each WGS solver in sequence</p></li>
+<li><p>compares the new and previous full <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterate</p></li>
+<li><p>uses either an <code class="docutils literal notranslate"><span class="pre">l2</span></code> or <code class="docutils literal notranslate"><span class="pre">pointwise</span></code> convergence check</p></li>
+<li><p>stops when the AGS tolerance is satisfied or the iteration limit is reached</p></li>
+</ul>
+<p>Why this matters:</p>
+<ul class="simple">
+<li><p>if the problem has only one groupset, AGS is irrelevant</p></li>
+<li><p>if the problem has multiple groupsets, AGS is part of the main solve
+algorithm, not just a logging detail</p></li>
+</ul>
+</section>
+<section id="ags-convergence-check">
+<h3><span class="section-number">9.5.2. </span><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code><a class="headerlink" href="#ags-convergence-check" title="Link to this heading"></a></h3>
+<p>Allowed values are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;pointwise&quot;</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">l2</span></code> is the default and is usually the simplest first choice.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pointwise</span></code> is stricter in a different sense: it tracks the maximum local
+relative change in the flux vector. It can be useful when localized solution
+changes matter more than the global norm.</p>
+</section>
+<section id="ags-tolerance">
+<h3><span class="section-number">9.5.3. </span><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code><a class="headerlink" href="#ags-tolerance" title="Link to this heading"></a></h3>
+<p>This is the stopping tolerance for the AGS iteration.</p>
+<p>What it tests:</p>
+<ul class="simple">
+<li><p>the change between successive full multigroup <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterates across AGS
+passes, using either the <code class="docutils literal notranslate"><span class="pre">l2</span></code> or <code class="docutils literal notranslate"><span class="pre">pointwise</span></code> check selected by
+<code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code> is a good default</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0e-5</span></code> is often sufficient for debugging or coarse studies</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0e-7</span></code> to <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> may be appropriate when strong cross-groupset
+coupling must be converged tightly</p></li>
+</ul>
+<p>In general, the groupset inner solves should be at least as tight as the AGS
+solve, and usually somewhat tighter.</p>
+</section>
+<section id="max-ags-iterations">
+<h3><span class="section-number">9.5.4. </span><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code><a class="headerlink" href="#max-ags-iterations" title="Link to this heading"></a></h3>
+<p>This is the hard cap on AGS passes.</p>
+<p>What it tests:</p>
+<ul class="simple">
+<li><p>nothing by itself; it simply limits the total number of across-groupset
+iterations</p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">100</span></code> is a good default</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">20</span></code> to <code class="docutils literal notranslate"><span class="pre">50</span></code> is often enough for easier multi-groupset problems</p></li>
+<li><p>if this limit is reached regularly, the real issue is usually strong
+cross-groupset coupling, an overly aggressive groupset split, or the need for
+tighter inner solves</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;max_ags_iterations&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="s2">&quot;ags_tolerance&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+    <span class="s2">&quot;ags_convergence_check&quot;</span><span class="p">:</span> <span class="s2">&quot;l2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;verbose_ags_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="dsa-options">
+<h2><span class="section-number">9.6. </span>DSA Options<a class="headerlink" href="#dsa-options" title="Link to this heading"></a></h2>
+<p>The groupset-level acceleration toggles are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code></p></li>
+</ul>
+<p>with associated controls:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+</ul>
+<section id="wgdsa">
+<h3><span class="section-number">9.6.1. </span>WGDSA<a class="headerlink" href="#wgdsa" title="Link to this heading"></a></h3>
+<p>WGDSA stands for within-group diffusion synthetic acceleration. Enabling
+<code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> creates a diffusion MIP solve over the current groupset and
+applies the resulting correction to the updated flux.</p>
+<p>Why use it:</p>
+<ul class="simple">
+<li><p>to accelerate scattering-dominated inner iterations</p></li>
+<li><p>especially useful with Richardson-style iteration</p></li>
+<li><p>can also help PETSc-based inner solves when used as part of the transport
+solve workflow</p></li>
+</ul>
+<p>WGDSA controls:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code>: stopping tolerance for the diffusion correction solve</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code>: hard cap on WGDSA iterations</p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p>start with <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol=1.0e-4</span></code> and <code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its=30</span></code></p></li>
+<li><p>if WGDSA is clearly helping but not converging tightly enough, reduce the
+tolerance to <code class="docutils literal notranslate"><span class="pre">1.0e-5</span></code> or raise the iteration cap modestly</p></li>
+<li><p>it is usually not necessary to solve the DSA system more tightly than the
+transport problem itself</p></li>
+</ul>
+</section>
+<section id="tgdsa">
+<h3><span class="section-number">9.6.2. </span>TGDSA<a class="headerlink" href="#tgdsa" title="Link to this heading"></a></h3>
+<p>TGDSA stands for two-grid diffusion synthetic acceleration. Enabling
+<code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code> constructs a collapsed one-group diffusion correction using
+two-grid information derived from the groupset cross sections, then projects the
+correction back to the groupset spectrum.</p>
+<p>TGDSA controls:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code>: stopping tolerance for the two-grid diffusion solve</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code>: hard cap on TGDSA iterations</p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p>the same starting values as WGDSA are usually sensible:
+<code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol=1.0e-4</span></code> and <code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its=30</span></code></p></li>
+<li><p>TGDSA is a correction solve, so very tight tolerances are usually unnecessary</p></li>
+</ul>
+<p>Why use it:</p>
+<ul class="simple">
+<li><p>to accelerate multigroup error modes that are not well treated by within-group
+acceleration alone</p></li>
+</ul>
+</section>
+<section id="practical-guidance">
+<h3><span class="section-number">9.6.3. </span>Practical guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h3>
+<p>For many problems:</p>
+<ul class="simple">
+<li><p>start without DSA</p></li>
+<li><p>if convergence is too slow, try WGDSA first</p></li>
+<li><p>add TGDSA when multigroup coupling remains difficult</p></li>
+</ul>
+<p>DSA is most useful when there is an actual iteration problem to solve. It is
+not automatically beneficial for every easy case.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">39</span><span class="p">),</span>
+    <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+    <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+    <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="s2">&quot;apply_wgdsa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;wgdsa_l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-4</span><span class="p">,</span>
+    <span class="s2">&quot;wgdsa_l_max_its&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s2">&quot;wgdsa_verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="solver-specific-outer-iteration">
+<h2><span class="section-number">9.7. </span>Solver-Specific Outer Iteration<a class="headerlink" href="#solver-specific-outer-iteration" title="Link to this heading"></a></h2>
+<section id="steady-state-source-solves">
+<h3><span class="section-number">9.7.1. </span>Steady-state source solves<a class="headerlink" href="#steady-state-source-solves" title="Link to this heading"></a></h3>
+<p>For a standard steady-state source problem, the main iteration controls are the
+groupset inner method and, when multiple groupsets are present, AGS.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ss_solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">ss_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">ss_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="transient-solves">
+<h3><span class="section-number">9.7.2. </span>Transient solves<a class="headerlink" href="#transient-solves" title="Link to this heading"></a></h3>
+<p>For transient problems, each timestep calls into the same underlying transport
+iteration machinery. That means the groupset inner method and AGS settings still
+matter, but now they matter per timestep.</p>
+<p>If a transient run is unexpectedly expensive, the first iterative-method
+settings to examine are usually:</p>
+<ul class="simple">
+<li><p>the chosen groupset inner method</p></li>
+<li><p>the inner tolerance</p></li>
+<li><p>whether angular flux storage is enabled for the transient formulation</p></li>
+</ul>
+</section>
+<section id="power-iteration-k-eigen-solve">
+<h3><span class="section-number">9.7.3. </span>Power iteration k-eigen solve<a class="headerlink" href="#power-iteration-k-eigen-solve" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a> adds its own outer
+iteration on top of the transport solve.</p>
+<p>Relevant parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_iters</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset_phi0</span></code></p></li>
+</ul>
+<p>What it does:</p>
+<ul class="simple">
+<li><p>sets the fission source from the previous iterate</p></li>
+<li><p>performs the transport solve through AGS and the groupset inner solves</p></li>
+<li><p>updates <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
+<li><p>repeats until the eigenvalue change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is
+reached</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code> is the stopping tolerance on the eigenvalue change between successive
+power iterations. <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> to <code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> is a reasonable production range,
+with <code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> being common when a fairly tight <code class="docutils literal notranslate"><span class="pre">k_eff</span></code> is desired.</p>
+<p><code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is the hard cap on power iterations. <code class="docutils literal notranslate"><span class="pre">500</span></code> to <code class="docutils literal notranslate"><span class="pre">1000</span></code> is a
+reasonable starting range. If that cap is reached often, the issue is usually
+not the cap itself but the overall transport convergence strategy.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">keigen</span> <span class="o">=</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">max_iters</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">k_tol</span><span class="o">=</span><span class="mf">1.0e-10</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">keigen</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">keigen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="nonlinear-k-eigen-solve">
+<h3><span class="section-number">9.7.4. </span>Nonlinear k-eigen solve<a class="headerlink" href="#nonlinear-k-eigen-solve" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a> uses a separate nonlinear
+solve path.</p>
+<p>Relevant parameters:</p>
+<ul class="simple">
+<li><p>nonlinear tolerances: <code class="docutils literal notranslate"><span class="pre">nl_abs_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">nl_rel_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">nl_sol_tol</span></code>,
+<code class="docutils literal notranslate"><span class="pre">nl_max_its</span></code></p></li>
+<li><p>linear tolerances inside the nonlinear solve: <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">l_rel_tol</span></code>,
+<code class="docutils literal notranslate"><span class="pre">l_div_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">l_max_its</span></code></p></li>
+<li><p>GMRES controls for the nonlinear linearization solves:
+<code class="docutils literal notranslate"><span class="pre">l_gmres_restart_intvl</span></code> and <code class="docutils literal notranslate"><span class="pre">l_gmres_breakdown_tol</span></code></p></li>
+<li><p>optional warm start via <code class="docutils literal notranslate"><span class="pre">num_initial_power_iterations</span></code></p></li>
+</ul>
+<p>Why use it:</p>
+<ul class="simple">
+<li><p>when the nonlinear eigenvalue solve is preferred over plain power iteration</p></li>
+<li><p>when convergence behavior of the nonlinear method is better suited to the
+problem</p></li>
+</ul>
+<p>This is a different top-level algorithm from groupset WGS iteration. Its
+internal linear solves are controlled by the <code class="docutils literal notranslate"><span class="pre">l_*</span></code> parameters on
+<code class="docutils literal notranslate"><span class="pre">NonLinearKEigenSolver</span></code>, not by the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> or the
+groupset <code class="docutils literal notranslate"><span class="pre">l_*</span></code> settings.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This is different from the other solver paths discussed in this section.
+<code class="docutils literal notranslate"><span class="pre">NonLinearKEigenSolver</span></code> uses its own internal linear solve. If a nonlinear
+k-eigen run needs tuning, start with the solver-level <code class="docutils literal notranslate"><span class="pre">nl_*</span></code> and <code class="docutils literal notranslate"><span class="pre">l_*</span></code>
+parameters on <a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>, not with
+the groupset inner-solver settings.</p>
+</div>
+<p>What the main nonlinear controls do:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_abs_tol</span></code>: absolute nonlinear residual tolerance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_rel_tol</span></code>: relative nonlinear residual tolerance</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_sol_tol</span></code>: solution-update tolerance for the nonlinear solve</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_max_its</span></code>: hard cap on nonlinear iterations</p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> is a sensible starting point for <code class="docutils literal notranslate"><span class="pre">nl_abs_tol</span></code> and
+<code class="docutils literal notranslate"><span class="pre">nl_rel_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">25</span></code> to <code class="docutils literal notranslate"><span class="pre">50</span></code> is a reasonable starting range for <code class="docutils literal notranslate"><span class="pre">nl_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nl_sol_tol</span></code> is usually left at its default unless there is a specific
+reason to tune the solution-update criterion</p></li>
+</ul>
+<p>What the internal linear controls do:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>: absolute tolerance for the linear solve inside each nonlinear
+step</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_rel_tol</span></code>: relative tolerance for that same linear solve</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_div_tol</span></code>: divergence guard for the linear solve</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_max_its</span></code>: hard cap on linear iterations inside each nonlinear step</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_gmres_restart_intvl</span></code>: restart size for the internal GMRES solve</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_gmres_breakdown_tol</span></code>: breakdown guard for that GMRES solve</p></li>
+</ul>
+<p>Reasonable values:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> is a reasonable starting value for <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> and
+<code class="docutils literal notranslate"><span class="pre">l_rel_tol</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">50</span></code> is a reasonable first value for <code class="docutils literal notranslate"><span class="pre">l_max_its</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">30</span></code> is a good default for <code class="docutils literal notranslate"><span class="pre">l_gmres_restart_intvl</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">l_div_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">l_gmres_breakdown_tol</span></code> are usually left at their
+defaults unless the nonlinear linearization is clearly running into solver
+pathologies</p></li>
+</ul>
+</section>
+</section>
+<section id="choosing-a-method">
+<h2><span class="section-number">9.8. </span>Choosing a Method<a class="headerlink" href="#choosing-a-method" title="Link to this heading"></a></h2>
+<p>For most users, a sensible starting progression is:</p>
+<ol class="arabic simple">
+<li><p>Start with <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code>.</p></li>
+<li><p>Use the default AGS settings unless there is a clear need to change them.</p></li>
+<li><p>If convergence is slow on scattering-dominated problems, enable WGDSA.</p></li>
+<li><p>If multigroup convergence remains difficult, consider TGDSA and/or revisit
+groupset splitting.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> when a simple source-iteration style method is
+specifically desired.</p></li>
+</ol>
+<p>Keep in mind that <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> is not memory-free: the restart interval sets
+how many Krylov vectors are retained between restarts, so aggressive values can
+materially increase memory usage.</p>
+<p>If the problem is easy, these choices may not matter much. If the problem is
+difficult, the best improvements usually come from:</p>
+<ul class="simple">
+<li><p>a better inner method</p></li>
+<li><p>appropriate DSA</p></li>
+<li><p>sensible groupset decomposition</p></li>
+<li><p>tolerances that match the real accuracy target</p></li>
+</ul>
+</section>
+<section id="examples">
+<h2><span class="section-number">9.9. </span>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<section id="single-groupset-with-gmres">
+<h3><span class="section-number">9.9.1. </span>Single groupset with GMRES<a class="headerlink" href="#single-groupset-with-gmres" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="classic-richardson-with-wgdsa">
+<h3><span class="section-number">9.9.2. </span>Classic Richardson with WGDSA<a class="headerlink" href="#classic-richardson-with-wgdsa" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">19</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;classic_richardson&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;apply_wgdsa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;wgdsa_l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-4</span><span class="p">,</span>
+        <span class="s2">&quot;wgdsa_l_max_its&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="two-groupsets-with-ags-control">
+<h3><span class="section-number">9.9.3. </span>Two groupsets with AGS control<a class="headerlink" href="#two-groupsets-with-ags-control" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">19</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">39</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;max_ags_iterations&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">&quot;ags_tolerance&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
+        <span class="s2">&quot;ags_convergence_check&quot;</span><span class="p">:</span> <span class="s2">&quot;pointwise&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_ags_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h3><span class="section-number">9.9.4. </span>Power iteration k-eigen solve<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">keigen</span> <span class="o">=</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">max_iters</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">k_tol</span><span class="o">=</span><span class="mf">1.0e-10</span><span class="p">,</span>
+    <span class="n">reset_phi0</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3><span class="section-number">9.9.5. </span>Nonlinear k-eigen solve<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">keigen</span> <span class="o">=</span> <span class="n">NonLinearKEigenSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">nl_abs_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">nl_rel_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">nl_max_its</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">l_abs_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">l_rel_tol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
+    <span class="n">l_max_its</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">l_gmres_restart_intvl</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">num_initial_power_iterations</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="recommendations">
+<h2><span class="section-number">9.10. </span>Recommendations<a class="headerlink" href="#recommendations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> as the default first choice unless there is a specific
+reason to prefer another method.</p></li>
+<li><p>Remember that GMRES stores restart vectors, so aggressive restart sizes can
+significantly increase memory usage.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> when a simple source-iteration style solve is
+desired, especially for studies and debugging.</p></li>
+<li><p>Treat AGS settings as important only when the problem has multiple groupsets.</p></li>
+<li><p>Try WGDSA before TGDSA when the main issue is slow scattering convergence.</p></li>
+<li><p>Tighten tolerances only as far as the quantities of interest actually require.</p></li>
+<li><p>Revisit the iterative-method settings when changing problem difficulty,
+groupset structure, or solver type. A choice that is good for a fixed-source
+problem may not be the best one for a transient or k-eigen solve.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="groupsets.html" class="btn btn-neutral float-left" title="8. Groupsets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="boundary_conditions_sources.html" class="btn btn-neutral float-right" title="10. Boundary Conditions and Sources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,651 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5. Materials and Cross-Section Data &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. Angular Quadratures" href="angular_quadratures.html" />
+    <link rel="prev" title="4. Geometry and Mesh" href="geometry_mesh.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5. Materials and Cross-Section Data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">5.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#materials-block-ids-and-xs-map">5.2. Materials, Block IDs, and <code class="docutils literal notranslate"><span class="pre">xs_map</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-simple-one-group-cross-section">5.3. Creating a Simple One-Group Cross Section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspecting-a-multigroupxs-object">5.4. Inspecting a <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> Object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-opensn-cross-section-files">5.5. Loading OpenSn Cross-Section Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#minimal-opensn-format">5.5.1. Minimal OpenSn Format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fission-data-in-opensn-files">5.5.2. Fission Data in OpenSn Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-openmc-mgxs-files">5.6. Loading OpenMC MGXS Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#what-openmc-import-expects">5.6.1. What OpenMC Import Expects</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-cross-sections">5.7. Custom Cross Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#combining-cross-sections">5.8. Combining Cross Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scaling-cross-sections">5.9. Scaling Cross Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-between-opensn-and-openmc-inputs">5.10. Choosing Between OpenSn and OpenMC Inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-example">5.11. Practical Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cautions-and-best-practices">5.12. Cautions and Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5. </span>Materials and Cross-Section Data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="materials-and-cross-section-data">
+<h1><span class="section-number">5. </span>Materials and Cross-Section Data<a class="headerlink" href="#materials-and-cross-section-data" title="Link to this heading"></a></h1>
+<p>In OpenSn, a “material” is represented by assigning a multi-group cross-section
+object to one or more mesh block ids. The two main elements are:</p>
+<ul class="simple">
+<li><p>a <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a> object containing the macroscopic
+cross-section data, and</p></li>
+<li><p>an <code class="docutils literal notranslate"><span class="pre">xs_map</span></code> entry that associates that object with a list of <code class="docutils literal notranslate"><span class="pre">block_ids</span></code>.</p></li>
+</ul>
+<p>This section describes how to create and load cross-section data, how block id
+mapping works in transport inputs, how OpenMC and native OpenSn cross-section
+files are used, and how cross sections can be combined and inspected from
+Python.</p>
+<section id="overview">
+<h2><span class="section-number">5.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The Python <code class="docutils literal notranslate"><span class="pre">MuliGroupXS</span></code> API has the following methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenSn" title="pyopensn.xs.MultiGroupXS.LoadFromOpenSn"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenSn()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="pyopensn.xs.MultiGroupXS.LoadFromOpenMC"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenMC()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine" title="pyopensn.xs.MultiGroupXS.Combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Combine()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Scale" title="pyopensn.xs.MultiGroupXS.Scale"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Scale()</span></code></a></p></li>
+</ul>
+<p>The most common workflow is:</p>
+<ol class="arabic simple">
+<li><p>Create or load one or more <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a> objects.</p></li>
+<li><p>Assign them to mesh block ids with <code class="docutils literal notranslate"><span class="pre">xs_map</span></code>.</p></li>
+<li><p>Pass that mapping directly to a transport problem, or update the problem</p></li>
+<li><p>later using <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetXSMap" title="pyopensn.solver.LBSProblem.SetXSMap"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetXSMap()</span></code></a>.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenSn’s Python interface works with <em>macroscopic</em> multi-group cross
+sections. If you combine two cross sections, the resulting object is another
+macroscopic cross section with density-weighted data.</p>
+</div>
+</section>
+<section id="materials-block-ids-and-xs-map">
+<h2><span class="section-number">5.2. </span>Materials, Block IDs, and <code class="docutils literal notranslate"><span class="pre">xs_map</span></code><a class="headerlink" href="#materials-block-ids-and-xs-map" title="Link to this heading"></a></h2>
+<p>Mesh cells in OpenSn carry integer block ids. The transport problem uses those
+block ids to decide which cross section applies in each cell.</p>
+<p>Each entry in <code class="docutils literal notranslate"><span class="pre">xs_map</span></code> is a dictionary with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">block_ids</span></code>: a list of mesh block ids</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xs</span></code>: a <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a> object</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span>
+
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="c1"># Sets the block id for each cell to 0</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">xs_fuel</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_fuel</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+                <span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_fuel</span><span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>If multiple block ids should use the same material, put them in the same
+<code class="docutils literal notranslate"><span class="pre">block_ids</span></code> list:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs_map</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_fuel</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>If you need to replace the material assignment after problem construction, use
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetXSMap" title="pyopensn.solver.LBSProblem.SetXSMap"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetXSMap()</span></code></a> with the same <code class="docutils literal notranslate"><span class="pre">xs_map</span></code>
+structure.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">block_ids</span></code> are mesh labels, not material names. A common and simple
+pattern is to assign one block id per material region when building the
+mesh, then map each region to its corresponding
+<a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a> object.</p>
+</div>
+</section>
+<section id="creating-a-simple-one-group-cross-section">
+<h2><span class="section-number">5.3. </span>Creating a Simple One-Group Cross Section<a class="headerlink" href="#creating-a-simple-one-group-cross-section" title="Link to this heading"></a></h2>
+<p>For small tests, manufactured problems, and simple transients,
+<a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup()</span></code></a> is the quickest way to
+build a cross section.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This creates a one-group material with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sigma_t</span> <span class="pre">=</span> <span class="pre">1.0</span></code></p></li>
+<li><p>isotropic within-group scattering ratio <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">0.8</span></code></p></li>
+<li><p>absorption implied by <code class="docutils literal notranslate"><span class="pre">sigma_a</span> <span class="pre">=</span> <span class="pre">sigma_t</span> <span class="pre">*</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">c)</span></code></p></li>
+<li><p>inverse velocity populated from <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">velocity</span></code> when <code class="docutils literal notranslate"><span class="pre">velocity</span> <span class="pre">&gt;</span> <span class="pre">0</span></code></p></li>
+</ul>
+<p>This method is intentionally minimal. It is useful when you want a small,
+explicit test problem without maintaining a cross-section file.</p>
+</section>
+<section id="inspecting-a-multigroupxs-object">
+<h2><span class="section-number">5.4. </span>Inspecting a <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> Object<a class="headerlink" href="#inspecting-a-multigroupxs-object" title="Link to this heading"></a></h2>
+<p>The following properties and methods are available from Python for inspecting
+cross section data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">num_groups</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">num_precursors</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_fissionable</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GetScaleFactor()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigma_t</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigma_a</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigma_f</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chi</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nu_sigma_f</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nu_prompt_sigma_f</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nu_delayed_sigma_f</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inv_velocity</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">has_custom_xs(name)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_custom_xs(name)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">custom_xs_names()</span></code></p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">num_groups</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">inv_velocity</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Python getters expose the data that the solver will actually use. This
+makes them useful both for debugging file imports and for checking the
+results of operations such as <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine" title="pyopensn.xs.MultiGroupXS.Combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Combine()</span></code></a> and
+<a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Scale" title="pyopensn.xs.MultiGroupXS.Scale"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Scale()</span></code></a>.</p>
+</div>
+</section>
+<section id="loading-opensn-cross-section-files">
+<h2><span class="section-number">5.5. </span>Loading OpenSn Cross-Section Files<a class="headerlink" href="#loading-opensn-cross-section-files" title="Link to this heading"></a></h2>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenSn" title="pyopensn.xs.MultiGroupXS.LoadFromOpenSn"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenSn()</span></code></a> to load OpenSn’s native
+text cross-section format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;fuel.cxs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is often the most convenient format when:</p>
+<ul class="simple">
+<li><p>you want a small, readable input file under version control,</p></li>
+<li><p>you are defining benchmark or regression materials by hand, or</p></li>
+<li><p>you want direct control over prompt and delayed fission data.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The native OpenSn format is the best choice when you want an input file that
+can be edited and reviewed directly. OpenMC MGXS files are better when the
+data already exists in an HDF5 library and should be imported as-is.</p>
+</div>
+<section id="minimal-opensn-format">
+<h3><span class="section-number">5.5.1. </span>Minimal OpenSn Format<a class="headerlink" href="#minimal-opensn-format" title="Link to this heading"></a></h3>
+<p>At minimum, an OpenSn cross-section file defines the number of groups and one or
+more group-dependent cross sections. A small one-group example looks like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>NUM_GROUPS 1
+NUM_MOMENTS 1
+
+SIGMA_T_BEGIN
+0 1.0
+SIGMA_T_END
+
+SIGMA_A_BEGIN
+0 0.2
+SIGMA_A_END
+
+TRANSFER_MOMENTS_BEGIN
+M_GFROM_GTO_VAL 0 0 0 0.8
+TRANSFER_MOMENTS_END
+</pre></div>
+</div>
+<p>For most transport materials, the most important top-level sections are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">NUM_GROUPS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NUM_MOMENTS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GROUP_STRUCTURE_BEGIN</span></code> … <code class="docutils literal notranslate"><span class="pre">GROUP_STRUCTURE_END</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SIGMA_T_BEGIN</span></code> … <code class="docutils literal notranslate"><span class="pre">SIGMA_T_END</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SIGMA_A_BEGIN</span></code> … <code class="docutils literal notranslate"><span class="pre">SIGMA_A_END</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TRANSFER_MOMENTS_BEGIN</span></code> … <code class="docutils literal notranslate"><span class="pre">TRANSFER_MOMENTS_END</span></code> (optional)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">INV_VELOCITY_BEGIN</span></code> … <code class="docutils literal notranslate"><span class="pre">INV_VELOCITY_END</span></code> or
+<code class="docutils literal notranslate"><span class="pre">VELOCITY_BEGIN</span></code> … <code class="docutils literal notranslate"><span class="pre">VELOCITY_END</span></code> (optional)</p></li>
+</ul>
+<p>Important details:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">NUM_MOMENTS</span></code> is the number of scattering moments, not the maximum
+Legendre order. For example, <code class="docutils literal notranslate"><span class="pre">NUM_MOMENTS</span> <span class="pre">1</span></code> means isotropic scattering
+only.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">SIGMA_A</span></code> is omitted, OpenSn will infer absorption from the total cross
+section and the zeroth transfer matrix when possible.</p></li>
+<li><p>The transfer matrix entries use
+<code class="docutils literal notranslate"><span class="pre">M_GFROM_GTO_VAL</span> <span class="pre">moment</span> <span class="pre">g_from</span> <span class="pre">g_to</span> <span class="pre">value</span></code>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A practical rule is to keep the native file explicit when possible. Even if
+OpenSn can infer some quantities, files that provide the intended data
+directly are easier to review and less ambiguous.</p>
+</div>
+</section>
+<section id="fission-data-in-opensn-files">
+<h3><span class="section-number">5.5.2. </span>Fission Data in OpenSn Files<a class="headerlink" href="#fission-data-in-opensn-files" title="Link to this heading"></a></h3>
+<p>For fissionable materials, OpenSn supports two main styles of input.</p>
+<p>For prompt-only or steady-state fission data, the usual path is:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SIGMA_F</span></code></p></li>
+<li><p>either <code class="docutils literal notranslate"><span class="pre">NU</span></code> with <code class="docutils literal notranslate"><span class="pre">CHI</span></code>, or <code class="docutils literal notranslate"><span class="pre">NU_SIGMA_F</span></code> together with enough data to
+infer the remaining quantities</p></li>
+</ul>
+<p>For delayed-neutron problems, the file may additionally provide:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">NUM_PRECURSORS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NU_PROMPT</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NU_DELAYED</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CHI_PROMPT</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CHI_DELAYED</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PRECURSOR_DECAY_CONSTANTS</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PRECURSOR_FRACTIONAL_YIELDS</span></code></p></li>
+</ul>
+<p>OpenSn also supports an alternative <code class="docutils literal notranslate"><span class="pre">PRODUCTION_MATRIX</span></code> representation for
+fission production. This is useful for advanced data preparation, but most user
+inputs are clearer when written in terms of <code class="docutils literal notranslate"><span class="pre">SIGMA_F</span></code>, <code class="docutils literal notranslate"><span class="pre">NU</span></code> or
+<code class="docutils literal notranslate"><span class="pre">NU_PROMPT</span></code>/<code class="docutils literal notranslate"><span class="pre">NU_DELAYED</span></code>, and the corresponding spectra.</p>
+</section>
+</section>
+<section id="loading-openmc-mgxs-files">
+<h2><span class="section-number">5.6. </span>Loading OpenMC MGXS Files<a class="headerlink" href="#loading-openmc-mgxs-files" title="Link to this heading"></a></h2>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="pyopensn.xs.MultiGroupXS.LoadFromOpenMC"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenMC()</span></code></a> to load cross sections
+from an OpenMC multi-group HDF5 library.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs_uo2</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_uo2</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;mgxs.h5&quot;</span><span class="p">,</span>
+    <span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;set1&quot;</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">294.0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code>: the OpenMC MGXS HDF5 file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataset_name</span></code>: the material or dataset group to load</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code>: the requested temperature in kelvin</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extra_xs_names</span></code>: an optional list of additional named one-dimensional
+datasets to import as custom XS</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs_hdpe</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_hdpe</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;HDPE.h5&quot;</span><span class="p">,</span>
+    <span class="n">dataset_name</span><span class="o">=</span><span class="s2">&quot;set1&quot;</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">294.0</span><span class="p">,</span>
+    <span class="n">extra_xs_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;absorption&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When importing from OpenMC, OpenSn recomputes absorption from the imported
+total cross section and transfer matrix rather than trusting the OpenMC
+absorption dataset directly. This makes the imported data less sensitive to
+small inconsistencies or statistical noise.</p>
+</div>
+<section id="what-openmc-import-expects">
+<h3><span class="section-number">5.6.1. </span>What OpenMC Import Expects<a class="headerlink" href="#what-openmc-import-expects" title="Link to this heading"></a></h3>
+<p>The Python interface expects an OpenMC MGXS HDF5 file with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">filetype</span> <span class="pre">=</span> <span class="pre">&quot;mgxs&quot;</span></code></p></li>
+<li><p>a dataset group matching <code class="docutils literal notranslate"><span class="pre">dataset_name</span></code></p></li>
+<li><p>a temperature subgroup such as <code class="docutils literal notranslate"><span class="pre">294K</span></code></p></li>
+</ul>
+<p>The imported object may include:</p>
+<ul class="simple">
+<li><p>total cross section</p></li>
+<li><p>transfer matrices</p></li>
+<li><p>inverse velocity</p></li>
+<li><p>fission cross section</p></li>
+<li><p>fission production data</p></li>
+<li><p>fission spectrum</p></li>
+<li><p>any requested named custom one-dimensional XS in <code class="docutils literal notranslate"><span class="pre">extra_xs_names</span></code></p></li>
+</ul>
+<p>If the requested dataset or temperature is not present, the load fails with an
+error.</p>
+</section>
+</section>
+<section id="custom-cross-sections">
+<h2><span class="section-number">5.7. </span>Custom Cross Sections<a class="headerlink" href="#custom-cross-sections" title="Link to this heading"></a></h2>
+<p>OpenSn’s Python API supports named custom one-dimensional cross sections through
+OpenMC import. These are useful when a dataset should be carried alongside the
+standard transport data for later inspection, combination, scaling, or use in
+derived field functions.</p>
+<p>Load them by name with <code class="docutils literal notranslate"><span class="pre">extra_xs_names</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span>
+    <span class="s2">&quot;HDPE.h5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;set1&quot;</span><span class="p">,</span>
+    <span class="mf">294.0</span><span class="p">,</span>
+    <span class="n">extra_xs_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;absorption&quot;</span><span class="p">,</span> <span class="s2">&quot;heating&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Inspect them with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">custom_xs_names</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">has_custom_xs</span><span class="p">(</span><span class="s2">&quot;heating&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">get_custom_xs</span><span class="p">(</span><span class="s2">&quot;heating&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Important behavior:</p>
+<ul class="simple">
+<li><p>custom XS are stored as named one-dimensional vectors</p></li>
+<li><p>they are preserved by <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine" title="pyopensn.xs.MultiGroupXS.Combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Combine()</span></code></a></p></li>
+<li><p>they are scaled by <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Scale" title="pyopensn.xs.MultiGroupXS.Scale"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Scale()</span></code></a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Python API currently supports loading and reading custom XS, but it does
+not expose a direct Python method for creating or modifying custom XS entries
+by hand. In practice, custom XS are an import-and-use feature rather than a
+full custom-data authoring interface.</p>
+</div>
+</section>
+<section id="combining-cross-sections">
+<h2><span class="section-number">5.8. </span>Combining Cross Sections<a class="headerlink" href="#combining-cross-sections" title="Link to this heading"></a></h2>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine" title="pyopensn.xs.MultiGroupXS.Combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Combine()</span></code></a> to build a new cross section by
+combining existing ones with density weights.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs_1</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_1</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">xs_2</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_2</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">)</span>
+
+<span class="n">xs_mix</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="o">.</span><span class="n">Combine</span><span class="p">([</span>
+    <span class="p">(</span><span class="n">xs_1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">xs_2</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Combine</span></code> returns a new <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a> object and does
+not modify its inputs.</p>
+<p>Combination semantics are:</p>
+<ul class="simple">
+<li><p>standard one-dimensional XS such as total, absorption, and fission are added
+with the supplied densities as linear weights</p></li>
+<li><p>transfer matrices are combined with the same density weighting</p></li>
+<li><p>custom one-dimensional XS are combined with the same density weighting</p></li>
+<li><p>fission spectra and precursor fractional yields are weighted so that they
+remain normalized in the combined material</p></li>
+</ul>
+<p>Important restrictions:</p>
+<ul class="simple">
+<li><p>all inputs must have the same number of groups</p></li>
+<li><p>if inverse velocity is present, all inputs must have the same group-wise
+inverse velocity</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">Combine</span></code> is intended for macroscopic mixing. The density values are
+weights in the macroscopic combination formula, not a request to renormalize
+the final material back to unit density.</p>
+</div>
+<p>Combining is often useful in transient tests where a composite material needs to
+be built from two pre-existing macroscopic states.</p>
+</section>
+<section id="scaling-cross-sections">
+<h2><span class="section-number">5.9. </span>Scaling Cross Sections<a class="headerlink" href="#scaling-cross-sections" title="Link to this heading"></a></h2>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Scale" title="pyopensn.xs.MultiGroupXS.Scale"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Scale()</span></code></a> to scale the current cross
+section in place:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="mf">2.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Important behavior:</p>
+<ul class="simple">
+<li><p>scaling does not compound</p></li>
+<li><p>each call rescales from the original baseline data</p></li>
+<li><p>named custom XS are scaled together with the standard one-dimensional XS</p></li>
+</ul>
+<p>The current factor can be queried with <code class="docutils literal notranslate"><span class="pre">GetScaleFactor()</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Non-compounding scaling is deliberate. It makes repeated parameter studies
+easier because <code class="docutils literal notranslate"><span class="pre">Scale(0.5)</span></code> followed later by <code class="docutils literal notranslate"><span class="pre">Scale(2.0)</span></code> means “scale
+relative to the original material” each time, not “multiply the current
+state again.”</p>
+</div>
+</section>
+<section id="choosing-between-opensn-and-openmc-inputs">
+<h2><span class="section-number">5.10. </span>Choosing Between OpenSn and OpenMC Inputs<a class="headerlink" href="#choosing-between-opensn-and-openmc-inputs" title="Link to this heading"></a></h2>
+<p>As a practical guideline:</p>
+<ul class="simple">
+<li><p>use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup()</span></code></a> for very small
+analytic or regression-style problems</p></li>
+<li><p>use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenSn" title="pyopensn.xs.MultiGroupXS.LoadFromOpenSn"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenSn()</span></code></a> when you want a small,
+readable, hand-maintained transport file</p></li>
+<li><p>use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="pyopensn.xs.MultiGroupXS.LoadFromOpenMC"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenMC()</span></code></a> when the source data
+already exists in an OpenMC MGXS library</p></li>
+<li><p>use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine" title="pyopensn.xs.MultiGroupXS.Combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Combine()</span></code></a> when you need a new
+macroscopic material formed from existing macroscopic materials</p></li>
+</ul>
+</section>
+<section id="practical-example">
+<h2><span class="section-number">5.11. </span>Practical Example<a class="headerlink" href="#practical-example" title="Link to this heading"></a></h2>
+<p>The following example shows a common pattern with two materials and two mesh
+regions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span>
+
+<span class="c1"># Assume the mesh already has block ids 0 and 1 on its cells.</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="n">xs_air</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_air</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;Air.cxs&quot;</span><span class="p">)</span>
+
+<span class="n">xs_poly</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs_poly</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span><span class="s2">&quot;HDPE.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;set1&quot;</span><span class="p">,</span> <span class="mf">294.0</span><span class="p">,</span> <span class="n">extra_xs_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;absorption&quot;</span><span class="p">])</span>
+
+<span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">xs_air</span><span class="o">.</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xs_air</span><span class="o">.</span><span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+                <span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_air</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_poly</span><span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This pattern covers most transport inputs:</p>
+<ul class="simple">
+<li><p>each material region gets a block id</p></li>
+<li><p>each block id is mapped to a <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a></p></li>
+<li><p>the cross sections can come from either OpenSn files, OpenMC libraries, or a
+combined/simple source</p></li>
+</ul>
+</section>
+<section id="cautions-and-best-practices">
+<h2><span class="section-number">5.12. </span>Cautions and Best Practices<a class="headerlink" href="#cautions-and-best-practices" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Reuse the same <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a> object for multiple block
+ids when the material is truly identical.</p></li>
+<li><p>Use distinct objects when materials will be changed independently later with
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetXSMap" title="pyopensn.solver.LBSProblem.SetXSMap"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetXSMap()</span></code></a>.</p></li>
+<li><p>Keep the number of groups, scattering order, and fission model consistent
+with the solver setup.</p></li>
+<li><p>When combining cross sections, ensure that group-wise inverse velocities match
+exactly if they are present.</p></li>
+<li><p>When importing from OpenMC, request only the extra named datasets that you
+actually need as custom XS.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects are mutable Python handles to shared C++ objects.
+If the same object is reused in multiple places, later mutation of that
+object affects every place that shares it.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geometry_mesh.html" class="btn btn-neutral float-left" title="4. Geometry and Mesh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="angular_quadratures.html" class="btn btn-neutral float-right" title="6. Angular Quadratures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

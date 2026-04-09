@@ -51,7 +51,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../user_guide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
@@ -117,8 +117,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionGridBased.CanUpdate">
 <span class="sig-name descname"><span class="pre">CanUpdate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionGridBased.CanUpdate" title="Link to this definition"></a></dt>
-<dd><p>Return whether this field function can currently refresh itself from its owning solver.</p>
-<p>This returns <code class="docutils literal notranslate"><span class="pre">False</span></code> if the field function has no update callback or if the owning solver
+<dd><p>Return whether this field function can currently refresh itself from its owning problem.</p>
+<p>This returns <code class="docutils literal notranslate"><span class="pre">False</span></code> if the field function has no update callback or if the owning problem
 has already been destroyed.</p>
 </dd></dl>
 
@@ -139,8 +139,8 @@ has already been destroyed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionGridBased.Update">
 <span class="sig-name descname"><span class="pre">Update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionGridBased.Update" title="Link to this definition"></a></dt>
-<dd><p>Refresh this field function from its owning solver.</p>
-<p>Raises an error if the field function is not refreshable or if its owning solver has already
+<dd><p>Refresh this field function from its owning problem.</p>
+<p>Raises an error if the field function is not refreshable or if its owning problem has already
 been destroyed.</p>
 </dd></dl>
 
