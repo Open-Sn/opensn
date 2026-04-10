@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_residual_func_context.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/snes_k_residual_func_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/math/nonlinear_solver/nonlinear_solver_context.h"

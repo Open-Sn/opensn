@@ -15,6 +15,13 @@ namespace opensn
 class LBSProblem;
 class LBSGroupset;
 
+/**
+ * Shared vector operations.
+ *
+ * This utility is shared infrastructure. The phi/moment packing logic is
+ * generic, and the groupset operations also handle delayed-angular state
+ * when the supplied groupset carries it.
+ */
 class LBSVecOps
 {
 public:

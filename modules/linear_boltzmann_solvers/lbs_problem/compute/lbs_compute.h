@@ -3,27 +3,12 @@
 
 #pragma once
 
-#include <optional>
 #include <vector>
 
 namespace opensn
 {
 
 class LBSProblem;
-
-struct BalanceTable
-{
-  double absorption_rate = 0.0;
-  double production_rate = 0.0;
-  double inflow_rate = 0.0;
-  double outflow_rate = 0.0;
-  double balance = 0.0;
-  std::optional<double> initial_inventory;
-  std::optional<double> final_inventory;
-  std::optional<double> predicted_inventory_change;
-  std::optional<double> actual_inventory_change;
-  std::optional<double> inventory_residual;
-};
 
 /**
  * Compute the total fission production in the problem.

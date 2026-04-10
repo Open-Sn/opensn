@@ -15,6 +15,10 @@ namespace opensn
 {
 class FieldFunctionGridBased;
 class DiscreteOrdinatesProblemIO;
+class AGSLinearSolver;
+class LinearSolver;
+struct BalanceTable;
+struct WGSContext;
 
 /**
  * Base class for discrete ordinates solvers.
@@ -64,6 +68,13 @@ public:
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
 
+  std::shared_ptr<AGSLinearSolver> GetAGSSolver();
+
+  std::shared_ptr<LinearSolver> GetWGSSolver(size_t groupset_id);
+  size_t GetNumWGSSolvers();
+
+  WGSContext& GetWGSContext(int groupset_id);
+
   /// Read/write access to newest updated angular flux vector.
   std::vector<std::vector<double>>& GetPsiNewLocal();
 
@@ -76,6 +87,10 @@ public:
   /// Read access to previous angular flux vector.
   const std::vector<std::vector<double>>& GetPsiOldLocal() const;
 
+  void ZeroPsi();
+
+  bool SaveAngularFluxEnabled() const { return options_.save_angular_flux; }
+
   size_t GetMaxLevelSize() const;
 
   size_t GetMaxGroupsetSize() const;
@@ -84,6 +99,10 @@ public:
 
   /// Copy psi_new to psi_old
   void UpdatePsiOld();
+
+  BalanceTable ComputeBalanceTable(double scaling_factor = 1.0);
+
+  void ComputeBalance(double scaling_factor = 1.0);
 
   void PrintSimHeader() override;
 
@@ -94,10 +113,6 @@ public:
 
   /// Reorient an adjoint solution to account for backwards streaming.
   void ReorientAdjointSolution() override;
-
-  BalanceTable ComputeBalanceTable(double scaling_factor = 1.0) override;
-
-  void ComputeBalance(double scaling_factor = 1.0) override;
 
   /// Zeroes all the outflow data-structures required to compute balance.
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
@@ -130,10 +145,12 @@ protected:
 
   void InitializeBoundaries() override;
 
-  void InitializeWGSContexts() override;
+  void InitializeSolverSchemes();
+
+  void InitializeWGSContexts();
 
   /// Initializes Within-GroupSet solvers.
-  void InitializeWGSSolvers() override;
+  void InitializeWGSSolvers();
 
   /**
    * This routine initializes basic sweep datastructures that are agnostic of
@@ -158,9 +175,9 @@ protected:
   /// Sets up the sweek chunk for the given discretization method.
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
-  void ZeroPsi() override;
   bool ReadProblemRestartData(hid_t file_id) override;
   bool WriteProblemRestartData(hid_t file_id) const override;
+  void ResetDerivedSolutionVectors() override;
 
   BoundaryDefinition CreateBoundaryFromParams(const InputParameters& params) const;
   std::shared_ptr<SweepBoundary> CreateSweepBoundary(uint64_t boundary_id) const;
@@ -190,6 +207,9 @@ protected:
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<std::vector<double>> psi_old_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
+  std::shared_ptr<AGSLinearSolver> ags_solver_;
+  std::vector<std::shared_ptr<WGSContext>> wgs_contexts_;
+  std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
 
 private:
   std::string

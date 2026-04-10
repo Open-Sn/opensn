@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
@@ -483,72 +481,6 @@ void
 LBSProblem::SetActiveSetSourceFunction(SetSourceFunction source_function)
 {
   active_set_source_function_ = std::move(source_function);
-}
-
-std::shared_ptr<AGSLinearSolver>
-LBSProblem::GetAGSSolver()
-{
-  CheckAGSSolverInitialized();
-  return ags_solver_;
-}
-
-std::shared_ptr<LinearSolver>
-LBSProblem::GetWGSSolver(size_t groupset_id)
-{
-  CheckWGSSolversInitialized();
-  return wgs_solvers_.at(groupset_id);
-}
-
-size_t
-LBSProblem::GetNumWGSSolvers()
-{
-  CheckWGSSolversInitialized();
-  return wgs_solvers_.size();
-}
-
-WGSContext&
-LBSProblem::GetWGSContext(int groupset_id)
-{
-  CheckWGSContextsInitialized();
-  auto& wgs_context_ptr = wgs_contexts_.at(groupset_id);
-  OpenSnLogicalErrorIf(not wgs_context_ptr, GetName() + ": Null WGS context.");
-  return *wgs_context_ptr;
-}
-
-void
-LBSProblem::CheckWGSContextsInitialized()
-{
-  if (wgs_contexts_.empty())
-    InitializeWGSContexts();
-}
-
-void
-LBSProblem::CheckWGSSolversInitialized()
-{
-  CheckWGSContextsInitialized();
-  if (wgs_solvers_.empty())
-    InitializeWGSSolvers();
-}
-
-void
-LBSProblem::CheckAGSSolverInitialized()
-{
-  CheckWGSSolversInitialized();
-  if (ags_solver_)
-    return;
-
-  ags_solver_ = std::make_shared<AGSLinearSolver>(*this, wgs_solvers_);
-  if (groupsets_.size() == 1)
-  {
-    ags_solver_->SetMaxIterations(1);
-    ags_solver_->SetVerbosity(false);
-  }
-  else
-  {
-    ags_solver_->SetMaxIterations(options_.max_ags_iterations);
-    ags_solver_->SetVerbosity(options_.verbose_ags_iterations);
-  }
-  ags_solver_->SetTolerance(options_.ags_tolerance);
 }
 
 std::pair<size_t, size_t>
@@ -1233,16 +1165,6 @@ LBSProblem::InitializeParrays()
   log.Log() << "Done with parallel arrays." << std::endl;
 }
 
-void
-LBSProblem::InitializeSolverSchemes()
-{
-  CALI_CXX_MARK_SCOPE("LBSProblem::InitializeSolverSchemes");
-  ags_solver_.reset();
-  wgs_solvers_.clear();
-  wgs_contexts_.clear();
-  InitializeWGSContexts();
-}
-
 #ifndef __OPENSN_WITH_GPU__
 void
 LBSProblem::InitializeGPUExtras()
@@ -1400,7 +1322,7 @@ LBSProblem::SetAdjoint(bool adjoint)
 
   // Reset all solution vectors.
   ZeroPhi();
-  ZeroPsi();
+  ResetDerivedSolutionVectors();
   ZeroPrecursors();
 }
 
@@ -1414,23 +1336,6 @@ bool
 LBSProblem::IsAdjoint() const
 {
   return options_.adjoint;
-}
-
-BalanceTable
-LBSProblem::ComputeBalanceTable(double scaling_factor)
-{
-  (void)scaling_factor;
-  OpenSnInvalidArgument(GetName() + ": Balance table computation is not implemented for this "
-                                    "problem type.");
-  return {};
-}
-
-void
-LBSProblem::ComputeBalance(double scaling_factor)
-{
-  (void)scaling_factor;
-  OpenSnInvalidArgument(GetName() + ": Balance computation is not implemented for this problem "
-                                    "type.");
 }
 
 } // namespace opensn

@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/nl_keigen_acc_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/nl_keigen_acc_residual_func.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_monitor.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/snes_k_monitor.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"

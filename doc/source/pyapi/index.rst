@@ -359,34 +359,11 @@ Discrete ordinates problem
    - scalar flux moments (``phi_new``/``phi_old`` state).
 
    For ``SetTimeDependentMode()``, OpenSn needs angular fluxes
-   (``psi``) for the transient RHS time term. Mode transition behavior is as follows:
+   (``psi``) for the transient RHS time term. That means
+   ``save_angular_flux=True`` must already be enabled on the problem.
 
-   - If ``save_angular_flux`` is already enabled:
-     - the mode switch performs internal transient mode configuration only.
-   - If ``save_angular_flux`` is disabled:
-     - OpenSn enables angular flux storage,
-     - caches the scalar flux and performs a sweep to reconstruct ``psi``,
-     - restores the cached scalar flux,
-     - completes internal transient mode configuration.
-
-   For ``SetSteadyStateMode()``, transient-only internals are reset. If angular
-   flux saving had been temporarily forced for transient use, the original
-   ``save_angular_flux`` user setting is restored.
-
-   Practical implication:
-   - ``save_angular_flux=False`` is valid for steady-state solves that later
-     transition to transient; OpenSn will reconstruct ``psi`` needed by the
-     transient solver by performing a fixed-point iteration on the lagged angular
-     fluxes with phi/q held at the converged steady-state value.
-
-.. warning::
-
-   Reconstructed angular flux (``psi``) is consistent with the converged scalar
-   scalar flux moments, but it is not guaranteed to be identical to the angular
-   flux that would have been available if ``save_angular_flux=True`` had been
-   used during the steady-state solve. Small first-step transient differences
-   can therefore appear, especially for problems with reflecting boundaries or
-   lagged angular fluxes.
+   For ``SetSteadyStateMode()``, transient-only internals are reset, but the
+   configured angular-flux storage setting is otherwise unchanged.
 
 .. autosummary::
    :toctree: generated

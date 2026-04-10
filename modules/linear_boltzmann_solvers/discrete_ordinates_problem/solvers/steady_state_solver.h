@@ -4,12 +4,12 @@
 #pragma once
 
 #include "modules/solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 
 namespace opensn
 {
 
-class LBSProblem;
+class DiscreteOrdinatesProblem;
 
 class SteadyStateSourceSolver : public Solver
 {
@@ -23,7 +23,7 @@ public:
   BalanceTable ComputeBalanceTable() const;
 
 protected:
-  std::shared_ptr<LBSProblem> lbs_problem_;
+  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   bool initialized_ = false;
 
 public:

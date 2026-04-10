@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/power_iteration_keigen.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/power_iteration_keigen.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -21,10 +22,13 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
                            double& k_eff)
 {
   const std::string fname = "PowerIterationKEigenSolver";
+  auto* do_problem = dynamic_cast<DiscreteOrdinatesProblem*>(&lbs_problem);
+  if (not do_problem)
+    throw std::logic_error(fname + ": requires a DiscreteOrdinatesProblem.");
 
-  for (size_t gsid = 0; gsid < lbs_problem.GetNumWGSSolvers(); ++gsid)
+  for (size_t gsid = 0; gsid < do_problem->GetNumWGSSolvers(); ++gsid)
   {
-    auto wgs_solver = lbs_problem.GetWGSSolver(gsid);
+    auto wgs_solver = do_problem->GetWGSSolver(gsid);
     auto context = wgs_solver->GetContext();
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
 
@@ -37,7 +41,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
 
   const auto& phi_old_local = lbs_problem.GetPhiOldLocal();
   const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
-  auto ags_solver = lbs_problem.GetAGSSolver();
+  auto ags_solver = do_problem->GetAGSSolver();
   const auto& groupsets = lbs_problem.GetGroupsets();
   auto active_set_source_function = lbs_problem.GetActiveSetSourceFunction();
 
@@ -103,7 +107,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   size_t total_sweeps = 0;
   for (const auto& groupset : groupsets)
   {
-    auto wgs_solver = lbs_problem.GetWGSSolver(groupset.id);
+    auto wgs_solver = do_problem->GetWGSSolver(groupset.id);
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
     if (wgs_context)
       total_sweeps += wgs_context->counter_applications_of_inv_op;

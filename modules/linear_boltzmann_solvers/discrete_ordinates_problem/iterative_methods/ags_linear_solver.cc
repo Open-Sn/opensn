@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/convergence.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/convergence.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
@@ -17,7 +17,6 @@ void
 AGSLinearSolver::Solve()
 {
   CALI_CXX_MARK_SCOPE("AGSLinearSolver::Solve");
-
   const bool is_multi_groupset = wgs_solvers_.size() > 1;
   const bool does_ags_iterations = max_iterations_ > 1;
   const bool print_ags_stats = verbose_ and is_multi_groupset and does_ags_iterations;

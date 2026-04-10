@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/source_function.h"
 
 namespace opensn
 {
