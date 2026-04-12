@@ -17,6 +17,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk_td.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/spmd_threadpool.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
@@ -43,11 +44,13 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <atomic>
 #include <cassert>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
+#include <thread>
 
 namespace opensn
 {
@@ -1402,6 +1405,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
   }
   else if (sweep_type_ == "CBC")
   {
+    std::vector<std::shared_ptr<CBC_SPDS>> cbc_spds_list;
     // Build SPDS
     for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
     {
@@ -1416,7 +1420,91 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
         const auto new_swp_order =
           std::make_shared<CBC_SPDS>(omega, this->grid_, quadrature_allow_cycles_map_[quadrature]);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
+        cbc_spds_list.push_back(new_swp_order);
       }
+    }
+
+    if (cbc_spds_list.size() == 1)
+    {
+      auto start_time = std::chrono::steady_clock::now();
+      cbc_spds_list.front()->ComputeMaxNumLocalPsiSlots();
+      auto end_time = std::chrono::steady_clock::now();
+      std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+
+      const auto local_face_slots = cbc_spds_list.front()->GetMaxNumLocalPsiSlots();
+      log.Log() << program_timer.GetTimeString() << "CBC SPDS local cell-face psi slot summary\n"
+                << "   SPDS count  : 1\n"
+                << "   Elapsed     : " << elapsed_seconds.count() << " s\n"
+                << "   Max         : " << local_face_slots << "\n"
+                << "   Min         : " << local_face_slots << "\n"
+                << "   Median      : " << static_cast<double>(local_face_slots) << "\n"
+                << "   Average     : " << static_cast<double>(local_face_slots) << "\n";
+    }
+    else if (not cbc_spds_list.empty())
+    {
+      const auto hardware_threads = std::max<std::size_t>(1, std::thread::hardware_concurrency());
+      const auto num_workers = std::min(cbc_spds_list.size(), hardware_threads);
+
+      SPMD_ThreadPool pool(num_workers);
+      std::atomic<std::size_t> next_index{0};
+
+      log.Log() << program_timer.GetTimeString()
+                << " Compute max num local cell-face psi slots for " << cbc_spds_list.size()
+                << " CBC SPDS using " << num_workers << " worker threads.\n";
+
+      auto start_time = std::chrono::steady_clock::now();
+      pool.ExecuteBatch(
+        [&](std::size_t /* thread ID */)
+        {
+          std::size_t index;
+          // Atomically fetch the next index to work on
+          // std::memory_order_relaxed is sufficient here because we need atomicity only for the
+          // fetch_add operation, and there are no other synchronization requirements between
+          // threads for calculating max num local psi slots.
+          while ((index = next_index.fetch_add(1, std::memory_order_relaxed)) <
+                 cbc_spds_list.size())
+          {
+            cbc_spds_list[index]->ComputeMaxNumLocalPsiSlots();
+          }
+        });
+      auto end_time = std::chrono::steady_clock::now();
+      std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+      double elapsed_time = elapsed_seconds.count();
+
+      size_t max_local_psi_slots = 0;
+      size_t min_local_psi_slots = std::numeric_limits<size_t>::max();
+      std::vector<size_t> local_psi_slot_counts;
+      local_psi_slot_counts.reserve(cbc_spds_list.size());
+
+      for (const auto& spds : cbc_spds_list)
+      {
+        const auto local_psi_slots = spds->GetMaxNumLocalPsiSlots();
+        max_local_psi_slots = std::max(max_local_psi_slots, local_psi_slots);
+        min_local_psi_slots = std::min(min_local_psi_slots, local_psi_slots);
+        local_psi_slot_counts.push_back(local_psi_slots);
+      }
+
+      std::sort(local_psi_slot_counts.begin(), local_psi_slot_counts.end());
+      const auto num_counts = local_psi_slot_counts.size();
+      const double avg_local_psi_slots =
+        static_cast<double>(std::accumulate(
+          local_psi_slot_counts.begin(), local_psi_slot_counts.end(), std::size_t{0})) /
+        num_counts;
+      const double median_local_psi_slots =
+        (num_counts % 2 == 1)
+          ? static_cast<double>(local_psi_slot_counts[num_counts / 2])
+          : 0.5 * static_cast<double>(local_psi_slot_counts[num_counts / 2 - 1] +
+                                      local_psi_slot_counts[num_counts / 2]);
+
+      log.Log() << program_timer.GetTimeString()
+                << " CBC SPDS local cell-face psi slot statistics\n"
+                << "    SPDS count : " << cbc_spds_list.size() << "\n"
+                << "    Workers    : " << num_workers << "\n"
+                << "    Elapsed    : " << elapsed_time << " s\n"
+                << "    Max        : " << max_local_psi_slots << "\n"
+                << "    Min        : " << min_local_psi_slots << "\n"
+                << "    Median     : " << median_local_psi_slots << "\n"
+                << "    Average    : " << avg_local_psi_slots << "\n";
     }
   }
   else
