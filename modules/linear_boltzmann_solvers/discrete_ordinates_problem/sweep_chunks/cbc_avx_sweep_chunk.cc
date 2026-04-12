@@ -20,6 +20,19 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
 
   static_assert(NumNodes >= 2 and NumNodes <= 8);
 
+  struct IncomingFaceData
+  {
+    const FaceNodalMapping* face_nodal_mapping = nullptr;
+    double* psi_base = nullptr;
+  };
+
+  struct OutgoingFaceData
+  {
+    bool is_reflecting_boundary_face = false;
+    double* psi_base = nullptr;
+    const CBC_FLUDSCommonData::OutgoingNonlocalFaceInfo* outgoing_nonlocal_face_info = nullptr;
+  };
+
   const auto& groupset = data.groupset;
   const auto& m2d_op = groupset.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset.quadrature->GetDiscreteToMomentOperator();
@@ -28,7 +41,8 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
                           "CBC_Sweep_FixedN invoked for an incompatible cell topology.");
 
   const auto& face_orientations = angle_set.GetSPDS().GetCellFaceOrientations()[data.cell_local_id];
-  const auto& sigma_t = data.xs.at(data.cell.block_id)->GetSigmaTotal();
+  const auto& cell_xs = data.cell_transport_view.GetXS();
+  const auto& sigma_t = cell_xs.GetSigmaTotal();
 
   constexpr size_t matrix_size = static_cast<size_t>(NumNodes) * static_cast<size_t>(NumNodes);
   auto idx = [](size_t i, size_t j) -> size_t { return i * NumNodes + j; };
@@ -59,7 +73,7 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
   std::vector<double> tau_gsg;
   if constexpr (time_dependent)
   {
-    const auto& inv_velg = data.xs.at(data.cell.block_id)->GetInverseVelocity();
+    const auto& inv_velg = cell_xs.GetInverseVelocity();
     const double theta = data.problem.GetTheta();
     const double inv_theta = 1.0 / theta;
     const double dt = data.problem.GetTimeStep();
@@ -76,6 +90,57 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
       : nullptr;
 
   const auto& as_angle_indices = angle_set.GetAngleIndices();
+  const auto& cbc_common = dynamic_cast<const CBC_FLUDSCommonData&>(data.fluds.GetCommonData());
+  auto* const async_comm = dynamic_cast<CBC_AsynchronousCommunicator*>(angle_set.GetCommunicator());
+  std::vector<IncomingFaceData> incoming_face_data(data.cell_num_faces);
+  std::vector<OutgoingFaceData> outgoing_face_data(data.cell_num_faces);
+  for (size_t f = 0; f < data.cell_num_faces; ++f)
+  {
+    const auto& face = data.cell.faces[f];
+    const bool is_local_face = data.cell_transport_view.IsFaceLocal(f);
+    const bool is_boundary_face = not face.has_neighbor;
+    const auto* face_nodal_mapping =
+      &data.fluds.GetCommonData().GetFaceNodalMapping(data.cell_local_id, f);
+
+    if (face_orientations[f] == FaceOrientation::INCOMING)
+    {
+      auto& face_data = incoming_face_data[f];
+      face_data.face_nodal_mapping = face_nodal_mapping;
+      if (is_local_face)
+        face_data.psi_base =
+          data.fluds.GetLocalFacePsiPointer(data.cell_local_id, static_cast<unsigned int>(f));
+      else if (not is_boundary_face)
+        face_data.psi_base = data.fluds.GetIncomingNonlocalFacePsiPointer(
+          data.cell_local_id, static_cast<unsigned int>(f));
+    }
+
+    if (face_orientations[f] == FaceOrientation::OUTGOING)
+    {
+      auto& face_data = outgoing_face_data[f];
+      face_data.is_reflecting_boundary_face =
+        is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting();
+      if (is_local_face)
+        face_data.psi_base =
+          data.fluds.GetLocalFacePsiPointer(data.cell_local_id, static_cast<unsigned int>(f));
+      if (not is_local_face and not is_boundary_face)
+        face_data.outgoing_nonlocal_face_info =
+          &cbc_common.GetOutgoingNonlocalFaceInfo(data.cell_local_id, static_cast<unsigned int>(f));
+    }
+  }
+
+  double* psi_new_base = nullptr;
+  double theta = 1.0;
+  double inv_theta = 1.0;
+  if (data.save_angular_flux)
+  {
+    psi_new_base = &data.destination_psi[data.discretization.MapDOFLocal(
+      data.cell, 0, groupset.psi_uk_man_, 0, 0)];
+    if constexpr (time_dependent)
+    {
+      theta = data.problem.GetTheta();
+      inv_theta = 1.0 / theta;
+    }
+  }
 
   for (size_t as_ss_idx = 0; as_ss_idx < data.num_angles_in_as; ++as_ss_idx)
   {
@@ -102,10 +167,8 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
         continue;
 
       const auto& face = data.cell.faces[f];
-      const bool is_local_face = data.cell_transport_view.IsFaceLocal(f);
-      const bool is_boundary_face = not face.has_neighbor;
-      const auto* face_nodal_mapping =
-        &data.fluds.GetCommonData().GetFaceNodalMapping(data.cell_local_id, f);
+      const auto& face_data = incoming_face_data[f];
+      const auto* face_nodal_mapping = face_data.face_nodal_mapping;
 
       const auto& Ms_f = data.M_surf[f];
       const size_t num_face_nodes = data.cell_mapping.GetNumFaceNodes(f);
@@ -116,13 +179,11 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
         const int j = data.cell_mapping.MapFaceNode(f, fj);
 
         const double* psi = nullptr;
-        if (is_local_face)
-          psi = data.fluds.UpwindPsi(*data.cell_transport_view.FaceNeighbor(f),
-                                     face_nodal_mapping->cell_node_mapping_[fj],
-                                     as_ss_idx);
-        else if (not is_boundary_face)
-          psi = data.fluds.NLUpwindPsi(
-            data.cell.global_id, f, face_nodal_mapping->face_node_mapping_[fj], as_ss_idx);
+        if (face_data.psi_base != nullptr)
+          psi = face_data.psi_base +
+                static_cast<size_t>(face_nodal_mapping->face_node_mapping_[fj]) *
+                  data.group_angle_stride +
+                as_ss_idx * data.group_stride;
         else
           psi = angle_set.PsiBoundary(face.neighbor_id,
                                       direction_num,
@@ -271,27 +332,13 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
           const double w = d2m_row[m];
           PRAGMA_UNROLL
           for (size_t i = 0; i < NumNodes; ++i)
-          {
-            const size_t dof = data.cell_transport_view.MapDOF(i, m, data.gs_gi);
-            data.destination_phi[dof + gsg] += w * bg[i];
-          }
+            data.destination_phi[moment_dof_map[m][i] + gsg] += w * bg[i];
         }
       }
     }
 
     if (data.save_angular_flux)
     {
-      double* psi_new = &data.destination_psi[data.discretization.MapDOFLocal(
-        data.cell, 0, groupset.psi_uk_man_, 0, 0)];
-
-      double theta = 1.0;
-      double inv_theta = 1.0;
-      if constexpr (time_dependent)
-      {
-        theta = data.problem.GetTheta();
-        inv_theta = 1.0 / theta;
-      }
-
       PRAGMA_UNROLL
       for (size_t i = 0; i < NumNodes; ++i)
       {
@@ -304,10 +351,10 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
           if constexpr (time_dependent)
           {
             const double psi_old_val = psi_old ? psi_old[imap + gsg] : 0.0;
-            psi_new[imap + gsg] = inv_theta * (psi_sol + (theta - 1.0) * psi_old_val);
+            psi_new_base[imap + gsg] = inv_theta * (psi_sol + (theta - 1.0) * psi_old_val);
           }
           else
-            psi_new[imap + gsg] = psi_sol;
+            psi_new_base[imap + gsg] = psi_sol;
         }
       }
     }
@@ -318,28 +365,26 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
         continue;
 
       const auto& face = data.cell.faces[f];
-      const bool is_local_face = data.cell_transport_view.IsFaceLocal(f);
-      const bool is_boundary_face = not face.has_neighbor;
-      const bool is_reflecting_boundary_face =
-        (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
+      const auto& face_data = outgoing_face_data[f];
+      const bool is_reflecting_boundary_face = face_data.is_reflecting_boundary_face;
       const auto& IntF_shapeI = data.IntS_shapeI[f];
 
-      const int locality = data.cell_transport_view.FaceLocality(f);
       const size_t num_face_nodes = data.cell_mapping.GetNumFaceNodes(f);
-      const auto& face_nodal_mapping =
-        data.fluds.GetCommonData().GetFaceNodalMapping(data.cell_local_id, f);
-      std::vector<double>* psi_nonlocal_outgoing = nullptr;
+      double* psi_nonlocal_outgoing = nullptr;
 
-      if (not is_boundary_face and not is_local_face)
+      if (face_data.outgoing_nonlocal_face_info != nullptr)
       {
-        auto* async_comm = dynamic_cast<CBC_AsynchronousCommunicator*>(angle_set.GetCommunicator());
-        const size_t data_size_for_msg = num_face_nodes * data.group_angle_stride;
+        const auto& outgoing_nonlocal_face_info = *face_data.outgoing_nonlocal_face_info;
+        const size_t data_size_for_msg =
+          static_cast<size_t>(outgoing_nonlocal_face_info.num_face_nodes) * data.group_angle_stride;
         psi_nonlocal_outgoing =
-          &async_comm->InitGetDownwindMessageData(locality,
-                                                  face.neighbor_id,
-                                                  face_nodal_mapping.associated_face_,
-                                                  angle_set.GetID(),
-                                                  data_size_for_msg);
+          async_comm
+            ->InitGetDownwindMessageData(outgoing_nonlocal_face_info.locality,
+                                         outgoing_nonlocal_face_info.cell_global_id,
+                                         outgoing_nonlocal_face_info.associated_face,
+                                         angle_set.GetID(),
+                                         data_size_for_msg)
+            .data();
       }
 
       const double mu_wt_f = wt * face_mu_values[f];
@@ -348,7 +393,7 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
       {
         const int i = data.cell_mapping.MapFaceNode(f, fi);
 
-        if (is_boundary_face)
+        if (face_data.outgoing_nonlocal_face_info == nullptr and face_data.psi_base == nullptr)
         {
           const double flux_i = mu_wt_f * IntF_shapeI(i);
           for (size_t gsg = 0; gsg < data.gs_size; ++gsg)
@@ -357,9 +402,9 @@ CBC_Sweep_FixedN(CBCSweepData& data, AngleSet& angle_set)
         }
 
         double* psi = nullptr;
-        if (is_local_face)
-          psi = data.fluds.OutgoingPsi(data.cell, i, as_ss_idx);
-        else if (not is_boundary_face)
+        if (face_data.psi_base != nullptr)
+          psi = face_data.psi_base + fi * data.group_angle_stride + as_ss_idx * data.group_stride;
+        else if (face_data.outgoing_nonlocal_face_info != nullptr)
           psi = data.fluds.NLOutgoingPsi(psi_nonlocal_outgoing, fi, as_ss_idx);
         else if (is_reflecting_boundary_face)
           psi = angle_set.PsiReflected(face.neighbor_id, direction_num, data.cell_local_id, f, fi);
@@ -380,22 +425,7 @@ CBCSweepChunk::Sweep_FixedN(AngleSet& angle_set)
 {
   CALI_CXX_MARK_SCOPE("CBCSweepChunk::Sweep_FixedN");
 
-  auto data = MakeCBCSweepData(discretization_,
-                               source_moments_,
-                               groupset_,
-                               xs_,
-                               num_moments_,
-                               max_num_cell_dofs_,
-                               SaveAngularFluxEnabled(),
-                               groupset_angle_group_stride_,
-                               groupset_group_stride_,
-                               destination_phi_,
-                               destination_psi_,
-                               include_rhs_time_term_,
-                               problem_,
-                               nullptr,
-                               group_block_size_,
-                               ctx_);
+  auto data = MakeSweepData(nullptr);
 
   CBC_Sweep_FixedN<NumNodes, false>(data, angle_set);
 }

@@ -56,6 +56,7 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
   }
 
   group_block_size_ = ComputeGroupBlockSize(groupset_.GetNumGroups());
+  generic_scratch_.EnsureCapacity(max_num_cell_dofs_, groupset_.GetNumGroups(), 0);
 }
 
 void
@@ -63,14 +64,50 @@ CBCSweepChunk::SetAngleSet(AngleSet& angle_set)
 {
   CALI_CXX_MARK_SCOPE("CBCSweepChunk::SetAngleSet");
 
-  CBCBindAngleSetContext(ctx_, groupset_, IsSurfaceSourceActive(), angle_set);
+  ctx_.BindAngleSet(groupset_, IsSurfaceSourceActive(), angle_set);
 }
 
 void
 CBCSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
 {
   static_cast<void>(angle_set);
-  CBCBindCellContext(ctx_, discretization_, unit_cell_matrices_, cell_transport_views_, cell_ptr);
+  ctx_.BindCell(discretization_, unit_cell_matrices_, cell_transport_views_, cell_ptr);
+}
+
+CBCSweepData
+CBCSweepChunk::MakeSweepData(const std::vector<double>* psi_old)
+{
+  return CBCSweepData{discretization_,
+                      source_moments_,
+                      groupset_,
+                      num_moments_,
+                      max_num_cell_dofs_,
+                      SaveAngularFluxEnabled(),
+                      groupset_angle_group_stride_,
+                      groupset_group_stride_,
+                      destination_phi_,
+                      destination_psi_,
+                      ctx_.surface_source_active,
+                      include_rhs_time_term_,
+                      problem_,
+                      psi_old,
+                      group_block_size_,
+                      *ctx_.fluds,
+                      *ctx_.cell,
+                      ctx_.cell_local_id,
+                      *ctx_.cell_mapping,
+                      *ctx_.cell_transport_view,
+                      ctx_.cell_num_faces,
+                      ctx_.cell_num_nodes,
+                      ctx_.gs_size,
+                      ctx_.gs_gi,
+                      ctx_.num_angles_in_as,
+                      ctx_.group_stride,
+                      ctx_.group_angle_stride,
+                      *ctx_.G,
+                      *ctx_.M,
+                      *ctx_.M_surf,
+                      *ctx_.IntS_shapeI};
 }
 
 void
@@ -84,24 +121,9 @@ CBCSweepChunk::Sweep_Generic(AngleSet& angle_set)
 {
   CALI_CXX_MARK_SCOPE("CBCSweepChunk::Sweep_Generic");
 
-  auto data = MakeCBCSweepData(discretization_,
-                               source_moments_,
-                               groupset_,
-                               xs_,
-                               num_moments_,
-                               max_num_cell_dofs_,
-                               SaveAngularFluxEnabled(),
-                               groupset_angle_group_stride_,
-                               groupset_group_stride_,
-                               destination_phi_,
-                               destination_psi_,
-                               include_rhs_time_term_,
-                               problem_,
-                               nullptr,
-                               group_block_size_,
-                               ctx_);
+  auto data = MakeSweepData(nullptr);
 
-  CBC_Sweep_Generic<false>(data, angle_set);
+  CBC_Sweep_Generic<false>(data, generic_scratch_, angle_set);
 }
 
 } // namespace opensn

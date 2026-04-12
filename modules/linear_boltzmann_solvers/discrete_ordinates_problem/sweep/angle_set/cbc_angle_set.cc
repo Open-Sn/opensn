@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbc_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -10,6 +11,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <cassert>
 
 namespace opensn
 {
@@ -24,8 +26,27 @@ CBC_AngleSet::CBC_AngleSet(size_t id,
   : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
     ready_tasks_(),
-    async_comm_(id, *fluds, comm_set)
+    async_comm_(id, *fluds, comm_set),
+    cbc_fluds_(dynamic_cast<CBC_FLUDS&>(*fluds))
 {
+
+  const auto& task_list = cbc_spds_.GetTaskList();
+  const auto num_tasks = task_list.size();
+  initial_dependencies_.resize(num_tasks);
+  remaining_dependencies_.resize(num_tasks);
+  initial_ready_tasks_.reserve(num_tasks);
+  ready_tasks_.reserve(num_tasks);
+
+  for (std::uint32_t task_idx = 0; task_idx < num_tasks; ++task_idx)
+  {
+    const auto& task = task_list[task_idx];
+    const auto num_dependencies = task.num_dependencies;
+    initial_dependencies_[task_idx] = num_dependencies;
+    if (num_dependencies == 0)
+      initial_ready_tasks_.push_back(task_idx);
+  }
+
+  ResetTaskState();
 }
 
 AsynchronousCommunicator*
@@ -42,24 +63,15 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   if (executed_)
     return AngleSetStatus::FINISHED;
 
-  if (current_task_list_.empty())
-  {
-    current_task_list_ = cbc_spds_.GetTaskList();
-    // Build initial ready queue
-    ready_tasks_.reserve(current_task_list_.size());
-    for (size_t i = 0; i < current_task_list_.size(); ++i)
-      if ((current_task_list_[i].num_dependencies == 0) and (not current_task_list_[i].completed))
-        ready_tasks_.push_back(i);
-  }
-
+  const auto& task_list = cbc_spds_.GetTaskList();
   sweep_chunk.SetAngleSet(*this);
 
-  auto tasks_who_received_data = async_comm_.ReceiveData();
+  const auto tasks_who_received_data = async_comm_.ReceiveData();
 
-  for (const std::uint64_t task_number : tasks_who_received_data)
+  for (const auto& task_number : tasks_who_received_data)
   {
-    if ((--current_task_list_[task_number].num_dependencies == 0) and
-        (not current_task_list_[task_number].completed))
+    assert(remaining_dependencies_[task_number] > 0);
+    if (--remaining_dependencies_[task_number] == 0)
       ready_tasks_.push_back(task_number);
   }
 
@@ -74,24 +86,23 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   {
     const auto task_idx = ready_tasks_.back();
     ready_tasks_.pop_back();
-    auto& cell_task = current_task_list_[task_idx];
+    const auto& cell_task = task_list[task_idx];
 
     sweep_chunk.SetCell(cell_task.cell_ptr, *this);
     sweep_chunk.Sweep(*this);
 
     for (const auto& local_task_num : cell_task.successors)
     {
-      if ((--current_task_list_[local_task_num].num_dependencies == 0) and
-          (not current_task_list_[local_task_num].completed))
+      assert(remaining_dependencies_[local_task_num] > 0);
+      if (--remaining_dependencies_[local_task_num] == 0)
         ready_tasks_.push_back(local_task_num);
     }
 
-    cell_task.completed = true;
-    ++num_completed_tasks;
+    ++num_completed_tasks_;
     async_comm_.SendData();
   }
 
-  const bool all_tasks_completed = (num_completed_tasks == current_task_list_.size());
+  const bool all_tasks_completed = (num_completed_tasks_ == task_list.size());
   const bool all_messages_sent = async_comm_.SendData();
 
   if (all_tasks_completed and all_messages_sent)
@@ -109,12 +120,19 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
 void
 CBC_AngleSet::ResetSweepBuffers()
 {
-  current_task_list_.clear();
-  ready_tasks_.clear();
-  num_completed_tasks = 0;
+  ResetTaskState();
   async_comm_.Reset();
   fluds_->ClearLocalAndReceivePsi();
   executed_ = false;
+}
+
+void
+CBC_AngleSet::ResetTaskState()
+{
+  std::copy(
+    initial_dependencies_.begin(), initial_dependencies_.end(), remaining_dependencies_.begin());
+  ready_tasks_ = initial_ready_tasks_;
+  num_completed_tasks_ = 0;
 }
 
 const double*
@@ -126,12 +144,8 @@ CBC_AngleSet::PsiBoundary(uint64_t boundary_id,
                           unsigned int g,
                           bool surface_source_active)
 {
-  if (boundaries_[boundary_id]->IsReflecting())
-    return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
-
-  if (not surface_source_active)
+  if ((not boundaries_[boundary_id]->IsReflecting()) and (not surface_source_active))
     return boundaries_[boundary_id]->ZeroFlux(g);
-
   return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
 }
 
