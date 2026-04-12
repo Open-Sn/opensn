@@ -180,13 +180,14 @@ Problem options available in Python include:
 
 .. note::
 
-   Restart read/write timing is solver-specific. Steady-state and
-   power-iteration solvers support solver-managed restart reads and writes.
-   Steady-state writes its restart dump only after the solve completes, while
-   power iteration can also write timed dumps during the outer iteration loop.
-   Restart reads occur during :py:meth:`Initialize`. The nonlinear k-eigen and
-   transient solvers do not currently provide a solver-managed restart-dump
-   path.
+   Restart state is primarily problem-owned. The common restart payload stores
+   flux moments, time metadata, precursor data, and any required
+   discrete-ordinates angular state. Solver types can add only the small extra
+   pieces they need on top of that common payload. Restart reads occur during
+   :py:meth:`Initialize`. Timed restart dumps can be written by solvers that
+   execute over multiple outer iterations or timesteps, such as
+   :py:class:`pyopensn.solver.PowerIterationKEigenSolver` and
+   :py:class:`pyopensn.solver.TransientSolver`.
 
 .. note::
 

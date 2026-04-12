@@ -1239,8 +1239,14 @@ WrapSteadyState(py::module& slv)
 
     Parameters
     ----------
-    pyopensn.solver.LBSProblem : LBSProblem
+    problem : pyopensn.solver.LBSProblem
         Existing LBSProblem instance.
+
+    Notes
+    -----
+    If ``problem.options.read_restart_path`` is set, restart data is read
+    during :meth:`Initialize`. If ``problem.options.restart_writes_enabled`` is
+    true, a restart dump is written after :meth:`Execute` completes.
     )"
   );
   steady_state_solver.def(
@@ -1347,6 +1353,11 @@ WrapTransient(py::module& slv)
     -----
     The associated problem must have ``save_angular_flux=True`` enabled. This
     is required for transient problems.
+
+    If ``problem.options.read_restart_path`` is set, restart data is read
+    during :meth:`Initialize`. If ``problem.options.restart_writes_enabled`` is
+    true, timed restart dumps may be written during :meth:`Execute` and a final
+    restart dump is written when execution completes.
     )"
   );
   transient_solver.def(
@@ -1649,7 +1660,7 @@ WrapPIteration(py::module& slv)
 
     Parameters
     ----------
-    problem: pyopensn.solver.LBSProblem
+    problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
     acceleration: pyopensn.solver.DiscreteOrdinatesKEigenAcceleration
         Optional DiscreteOrdinatesKEigenAcceleration instance for acceleration.
@@ -1661,6 +1672,13 @@ WrapPIteration(py::module& slv)
         If true, initialize flux moments to 1.0.
     reset_phi0: bool, default=True
         If true, reinitializes scalar fluxes to 1.0.
+
+    Notes
+    -----
+    If ``problem.options.read_restart_path`` is set, restart data is read
+    during :meth:`Initialize`. If ``problem.options.restart_writes_enabled`` is
+    true, timed restart dumps may be written during the outer iteration loop
+    and a final restart dump is written when execution completes.
     )"
   );
   pi_k_eigen_solver.def(

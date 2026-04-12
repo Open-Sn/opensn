@@ -8,7 +8,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/object_factory.h"
-#include "framework/utils/hdf_utils.h"
 #include "framework/utils/error.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
@@ -70,7 +69,7 @@ SteadyStateSourceSolver::Initialize()
   initialized_ = true;
 
   if (not lbs_problem_->GetOptions().read_restart_path.empty())
-    ReadRestartData();
+    lbs_problem_->ReadRestartData();
 }
 
 void
@@ -86,7 +85,7 @@ SteadyStateSourceSolver::Execute()
   ags_solver.Solve();
 
   if (options.restart_writes_enabled)
-    WriteRestartData();
+    lbs_problem_->WriteRestartData();
 
   if (options.use_precursors)
     ComputePrecursors(*lbs_problem_);
@@ -103,92 +102,6 @@ BalanceTable
 SteadyStateSourceSolver::ComputeBalanceTable() const
 {
   return opensn::ComputeBalanceTable(GetDOSteadyProblem(*this, lbs_problem_));
-}
-
-bool
-SteadyStateSourceSolver::ReadRestartData()
-{
-  const auto& fname = lbs_problem_->GetOptions().read_restart_path;
-  auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
-  const auto& groupsets = lbs_problem_->GetGroupsets();
-
-  const H5FileHandle file(H5Fopen(fname.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
-  bool success = (file.Id() >= 0);
-  if (file.Id() >= 0)
-  {
-    // Read phi
-    success &= H5ReadDataset1D<double>(file.Id(), "phi_old", phi_old_local);
-
-    // Read psi
-    int gs_id = 0;
-    for (const auto& gs : groupsets)
-    {
-      if (gs.angle_agg)
-      {
-        std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
-        if (H5Has(file.Id(), name))
-        {
-          std::vector<double> psi;
-          success &= H5ReadDataset1D<double>(file.Id(), name, psi);
-          gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
-        }
-      }
-      ++gs_id;
-    }
-  }
-
-  if (success)
-    log.Log() << "Successfully read restart data." << std::endl;
-  else
-    log.Log() << "Failed to read restart data." << std::endl;
-
-  return success;
-}
-
-bool
-SteadyStateSourceSolver::WriteRestartData()
-{
-  const auto& options = lbs_problem_->GetOptions();
-  auto fname = options.write_restart_path;
-  auto& phi_old_local = lbs_problem_->GetPhiOldLocal();
-  const auto& groupsets = lbs_problem_->GetGroupsets();
-
-  const H5FileHandle file(H5Fcreate(fname.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
-  bool success = (file.Id() >= 0);
-  if (file.Id() >= 0)
-  {
-    // Write phi
-    success &= H5WriteDataset1D<double>(file.Id(), "phi_old", phi_old_local);
-
-    // Write psi
-    if (options.write_delayed_psi_to_restart)
-    {
-      int gs_id = 0;
-      for (const auto& gs : lbs_problem_->GetGroupsets())
-      {
-        if (gs.angle_agg)
-        {
-          auto psi = gs.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
-          if (not psi.empty())
-          {
-            std::string name = "delayed_psi_old_gs" + std::to_string(gs_id);
-            success &= H5WriteDataset1D<double>(file.Id(), name, psi);
-          }
-        }
-        ++gs_id;
-      }
-    }
-  }
-
-  if (success)
-  {
-    lbs_problem_->UpdateRestartWriteTime();
-    log.Log() << "Successfully wrote restart data." << std::endl;
-  }
-  else
-    log.Log() << "Failed to write restart data." << std::endl;
-
-  return success;
 }
 
 } // namespace opensn

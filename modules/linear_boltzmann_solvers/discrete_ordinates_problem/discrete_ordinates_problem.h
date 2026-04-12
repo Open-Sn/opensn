@@ -14,6 +14,7 @@
 namespace opensn
 {
 class FieldFunctionGridBased;
+class DiscreteOrdinatesProblemIO;
 
 /**
  * Base class for discrete ordinates solvers.
@@ -22,6 +23,7 @@ class DiscreteOrdinatesProblem : public LBSProblem
 {
 protected:
   using SweepOrderGroupingInfo = std::pair<UniqueSOGroupings, DirIDToSOMap>;
+  friend class DiscreteOrdinatesProblemIO;
 
 public:
   enum class SweepChunkMode
@@ -151,6 +153,8 @@ protected:
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
 
   void ZeroPsi() override;
+  bool ReadProblemRestartData(hid_t file_id) override;
+  bool WriteProblemRestartData(hid_t file_id) const override;
 
   BoundaryDefinition CreateBoundaryFromParams(const InputParameters& params) const;
   std::shared_ptr<SweepBoundary> CreateSweepBoundary(uint64_t boundary_id) const;

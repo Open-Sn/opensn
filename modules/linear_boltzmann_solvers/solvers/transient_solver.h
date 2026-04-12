@@ -41,6 +41,8 @@ public:
 private:
   void RefreshLocalViews();
   void UpdateHasFissionableMaterial();
+  bool ReadRestartData();
+  bool WriteRestartData();
 
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
   std::shared_ptr<AGSLinearSolver> ags_solver_;

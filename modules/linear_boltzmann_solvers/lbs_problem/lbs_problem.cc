@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -778,6 +779,30 @@ LBSProblem::BuildRestartPath(const std::string& path_stem)
   auto path = std::filesystem::path(path_stem);
   path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
   return path;
+}
+
+bool
+LBSProblem::ReadRestartData(const RestartDataHook& extra_reader)
+{
+  return LBSSolverIO::ReadRestartData(*this, extra_reader);
+}
+
+bool
+LBSProblem::WriteRestartData(const RestartDataHook& extra_writer)
+{
+  return LBSSolverIO::WriteRestartData(*this, extra_writer);
+}
+
+bool
+LBSProblem::ReadProblemRestartData(hid_t /*file_id*/)
+{
+  return true;
+}
+
+bool
+LBSProblem::WriteProblemRestartData(hid_t /*file_id*/) const
+{
+  return true;
 }
 
 void

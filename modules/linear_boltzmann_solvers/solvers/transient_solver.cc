@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
+#include "framework/utils/hdf_utils.h"
 #include "framework/runtime.h"
 #include <iomanip>
 #include <limits>
@@ -98,17 +99,26 @@ TransientSolver::Initialize()
   log.Log() << "Initializing " << GetName() << ".";
   enforce_stop_time_ = false;
 
-  // Ensure angular fluxes are available from the initial condition.
   const auto& options = do_problem_->GetOptions();
-  do_problem_->SetTime(current_time_);
-
-  const std::string& init_state = initial_state_;
+  bool restart_successful = false;
   RefreshLocalViews();
   OpenSnLogicalErrorIf(not phi_new_local_ or phi_new_local_->empty(),
                        GetName() + ": Problem must be fully constructed before "
                                    "TransientSolver initialization.");
 
-  if (init_state == "zero")
+  OpenSnInvalidArgumentIf(not do_problem_->IsTimeDependent(),
+                          GetName() + ": Problem is in steady-state mode. Call problem."
+                                      "SetTimeDependentMode() before initializing this solver.");
+
+  if (not options.read_restart_path.empty())
+    restart_successful = ReadRestartData();
+
+  if (not restart_successful)
+    do_problem_->SetTime(current_time_);
+
+  RefreshLocalViews();
+
+  if (initial_state_ == "zero" and not restart_successful)
   {
     do_problem_->ZeroPhi();
     do_problem_->ZeroPrecursors();
@@ -116,11 +126,6 @@ TransientSolver::Initialize()
       std::fill(psi.begin(), psi.end(), 0.0);
   }
 
-  OpenSnInvalidArgumentIf(not do_problem_->IsTimeDependent(),
-                          GetName() + ": Problem is in steady-state mode. Call problem."
-                                      "SetTimeDependentMode() before initializing this solver.");
-  do_problem_->SetTime(current_time_);
-  RefreshLocalViews();
   ags_solver_ = do_problem_->GetAGSSolver();
   UpdateHasFissionableMaterial();
   if (options.use_precursors and not has_fissionable_material_)
@@ -131,14 +136,18 @@ TransientSolver::Initialize()
                       << ": fissionable material is present but use_precursors is disabled. "
                          "Running prompt-only transient.";
 
-  // Sync psi_old with the steady-state angular flux before enabling RHS time term
-  do_problem_->UpdatePsiOld();
+  if (not restart_successful)
+  {
+    // Sync psi_old with the steady-state angular flux before enabling RHS time term
+    do_problem_->UpdatePsiOld();
 
-  // Keep initialization side-effect free: zero/existing differ only by
-  // initial-condition setup, not by additional sweeps.
-  do_problem_->CopyPhiNewToOld();
+    // Keep initialization side-effect free: zero/existing differ only by
+    // initial-condition setup, not by additional sweeps.
+    do_problem_->CopyPhiNewToOld();
+  }
 
   // Sync with the current solution
+  current_time_ = do_problem_->GetTime();
   phi_prev_local_ = *phi_new_local_;
   precursor_prev_local_ = *precursor_new_local_;
 
@@ -151,6 +160,7 @@ TransientSolver::Execute()
   log.Log() << "Executing " << GetName() << ".";
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
+  const auto& options = do_problem_->GetOptions();
   const double t0 = current_time_;
   const double tf = stop_time_;
   const double dt_nominal = do_problem_->GetTimeStep();
@@ -188,6 +198,9 @@ TransientSolver::Execute()
       if (post_advance_callback_)
         post_advance_callback_();
 
+      if (options.restart_writes_enabled and do_problem_->TriggerRestartDump())
+        WriteRestartData();
+
       if (std::abs(tf - current_time_) <= tol)
       {
         current_time_ = tf;
@@ -204,6 +217,10 @@ TransientSolver::Execute()
 
   do_problem_->SetTimeStep(dt_nominal);
   enforce_stop_time_ = false;
+
+  if (options.restart_writes_enabled)
+    WriteRestartData();
+
   log.Log() << "Done executing " << GetName() << ".";
 }
 
@@ -345,6 +362,32 @@ TransientSolver::StepPrecursors()
   const double inv_theta = 1.0 / theta;
   for (size_t i = 0; i < Cj.size(); ++i)
     Cj[i] = inv_theta * (Cj[i] + (theta - 1.0) * Cj_prev[i]);
+}
+
+bool
+TransientSolver::ReadRestartData()
+{
+  bool success = do_problem_->ReadRestartData(
+    [this](hid_t file_id)
+    {
+      if (H5Aexists(file_id, "transient_step") <= 0)
+        return true;
+      return H5ReadAttribute<unsigned int>(file_id, "transient_step", step_);
+    });
+
+  if (success)
+    current_time_ = do_problem_->GetTime();
+
+  return success;
+}
+
+bool
+TransientSolver::WriteRestartData()
+{
+  do_problem_->SetTime(current_time_);
+  return do_problem_->WriteRestartData(
+    [this](hid_t file_id)
+    { return H5CreateAttribute<unsigned int>(file_id, "transient_step", step_); });
 }
 
 void

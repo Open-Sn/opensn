@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "hdf5.h"
 #include <functional>
 #include <optional>
 #include <string>
@@ -16,6 +17,10 @@ class DiscreteOrdinatesProblem;
 class DiscreteOrdinatesProblemIO
 {
 public:
+  static bool ReadRestartData(DiscreteOrdinatesProblem& do_problem, hid_t file_id);
+
+  static bool WriteRestartData(const DiscreteOrdinatesProblem& do_problem, hid_t file_id);
+
   /**
    * Write an angular flux vector to a file.
    *

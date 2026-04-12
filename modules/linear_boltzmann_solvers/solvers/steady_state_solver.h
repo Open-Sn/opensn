@@ -26,11 +26,6 @@ protected:
   std::shared_ptr<LBSProblem> lbs_problem_;
   bool initialized_ = false;
 
-private:
-  bool ReadRestartData();
-
-  bool WriteRestartData();
-
 public:
   static InputParameters GetInputParameters();
 
