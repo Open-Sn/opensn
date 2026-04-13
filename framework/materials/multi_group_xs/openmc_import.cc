@@ -8,6 +8,7 @@
 #include "framework/utils/utils.h"
 #include <numeric>
 #include <algorithm>
+#include <cstdint>
 
 namespace opensn
 {
@@ -71,7 +72,11 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
     throw std::runtime_error(file_name + " has an unsupported scatter shape");
 
   // Number of precursors
-  mgxs.num_precursors_ = 0;
+  unsigned int delayed_groups = 0;
+  if (not H5ReadAttribute<unsigned int>(file.Id(), "delayed_groups", delayed_groups))
+    delayed_groups = 0;
+  OpenSnLogicalErrorIf(delayed_groups < 0, "OpenMC number of delayed_groups must be non-negative.");
+  mgxs.num_precursors_ = delayed_groups;
 
   // Inverse velocity
   H5ReadDataset1D<double>(file.Id(), path + "inverse-velocity", mgxs.inv_velocity_);
@@ -162,6 +167,96 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
       if (mgxs.sigma_f_[g] > 0.0)
         nu[g] /= mgxs.sigma_f_[g];
 
+    if (mgxs.num_precursors_ > 0)
+    {
+      std::vector<double> nu_prompt_sigma_f;
+      if (H5Has(file.Id(), path + "prompt-nu-fission"))
+        H5ReadDataset1D<double>(file.Id(), path + "prompt-nu-fission", nu_prompt_sigma_f);
+
+      std::vector<std::vector<double>> delayed_nu_sigma_f_by_prec;
+      if (not H5ReadDataset2D<double>(
+            file.Id(), path + "delayed-nu-fission", delayed_nu_sigma_f_by_prec))
+      {
+        std::vector<double> delayed_nu_sigma_f_1d;
+        OpenSnLogicalErrorIf(not H5ReadDataset1D<double>(
+                               file.Id(), path + "delayed-nu-fission", delayed_nu_sigma_f_1d),
+                             "Failed to read dataset \"" + path + "delayed-nu-fission\".");
+        OpenSnLogicalErrorIf(
+          mgxs.num_precursors_ != 1 or delayed_nu_sigma_f_1d.size() != mgxs.num_groups_,
+          "Dataset \"" + path + "delayed-nu-fission\" has incorrect dimensions.");
+        delayed_nu_sigma_f_by_prec.push_back(std::move(delayed_nu_sigma_f_1d));
+      }
+      std::vector<double> nu_delayed_sigma_f(mgxs.num_groups_, 0.0);
+      for (const auto& delayed_family : delayed_nu_sigma_f_by_prec)
+        for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
+          nu_delayed_sigma_f[g] += delayed_family[g];
+
+      if (nu_prompt_sigma_f.empty())
+      {
+        nu_prompt_sigma_f = mgxs.nu_sigma_f_;
+        for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
+          nu_prompt_sigma_f[g] -= nu_delayed_sigma_f[g];
+      }
+
+      OpenSnLogicalErrorIf(not IsNonNegative(nu_prompt_sigma_f),
+                           "OpenMC delayed fission data imply a negative prompt nu-sigma-f.");
+      OpenSnLogicalErrorIf(not IsNonNegative(nu_delayed_sigma_f),
+                           "OpenMC delayed nu-sigma-f must be non-negative.");
+
+      std::vector<double> precursor_decay_constants;
+      H5ReadDataset1D<double>(file.Id(), path + "decay-rate", precursor_decay_constants);
+      OpenSnLogicalErrorIf(precursor_decay_constants.size() != mgxs.num_precursors_,
+                           "OpenMC decay-rate data has incorrect size.");
+
+      std::vector<std::vector<double>> chi_delayed_by_prec;
+      if (not H5ReadDataset2D<double>(file.Id(), path + "chi-delayed", chi_delayed_by_prec))
+      {
+        std::vector<double> chi_delayed_1d;
+        OpenSnLogicalErrorIf(
+          not H5ReadDataset1D<double>(file.Id(), path + "chi-delayed", chi_delayed_1d),
+          "Failed to read dataset \"" + path + "chi-delayed\".");
+        OpenSnLogicalErrorIf(mgxs.num_precursors_ != 1 or chi_delayed_1d.size() != mgxs.num_groups_,
+                             "Dataset \"" + path + "chi-delayed\" has incorrect dimensions.");
+        chi_delayed_by_prec.push_back(std::move(chi_delayed_1d));
+      }
+
+      std::vector<double> chi_prompt = mgxs.chi_;
+      if (H5Has(file.Id(), path + "chi-prompt"))
+      {
+        H5ReadDataset1D<double>(file.Id(), path + "chi-prompt", chi_prompt);
+        OpenSnLogicalErrorIf(chi_prompt.size() != mgxs.num_groups_,
+                             "OpenMC chi-prompt data has incorrect size.");
+      }
+      else
+      {
+        log.Log0Warning() << "OpenMC delayed-neutron data found in \"" << file_name
+                          << "\" without chi-prompt. Using chi as the prompt spectrum.";
+      }
+
+      mgxs.nu_prompt_sigma_f_ = std::move(nu_prompt_sigma_f);
+      mgxs.nu_delayed_sigma_f_ = std::move(nu_delayed_sigma_f);
+      mgxs.precursors_.resize(mgxs.num_precursors_);
+
+      double delayed_total = 0.0;
+      for (const auto& delayed_family : delayed_nu_sigma_f_by_prec)
+        delayed_total += std::accumulate(delayed_family.begin(), delayed_family.end(), 0.0);
+
+      for (unsigned int j = 0; j < mgxs.num_precursors_; ++j)
+      {
+        auto& precursor = mgxs.precursors_[j];
+        precursor.decay_constant = precursor_decay_constants[j];
+        precursor.emission_spectrum = chi_delayed_by_prec[j];
+        const double family_total = std::accumulate(
+          delayed_nu_sigma_f_by_prec[j].begin(), delayed_nu_sigma_f_by_prec[j].end(), 0.0);
+        precursor.fractional_yield = delayed_total > 0.0 ? family_total / delayed_total : 0.0;
+      }
+
+      mgxs.production_matrix_.assign(mgxs.num_groups_, std::vector<double>(mgxs.num_groups_, 0.0));
+      for (unsigned int gp = 0; gp < mgxs.num_groups_; ++gp)
+        for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
+          mgxs.production_matrix_[g][gp] = chi_prompt[g] * mgxs.nu_prompt_sigma_f_[gp];
+    }
+
     // Production matrix (computed)
     // TODO: This path uses chi * nu_sigma_f (total production). If delayed-neutron data is
     // introduced here in the future, ensure LBS source/fission-production routines remain
@@ -189,6 +284,7 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
   else
   {
     // Clear fission data if not fissionable
+    mgxs.num_precursors_ = 0;
     mgxs.sigma_f_.clear();
     mgxs.nu_sigma_f_.clear();
     mgxs.nu_prompt_sigma_f_.clear();
