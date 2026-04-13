@@ -4,16 +4,30 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_structs.h"
+#include <array>
+#include <cstddef>
+#include <functional>
 
 namespace opensn
 {
 
+class SweepBoundary;
+
 /**
- * Node index specific to CBCD FLUDS.
+ * Packed 64-bit angular flux buffer index for CBCD FLUDS.
+ *
+ * Encodes the buffer type (local/boundary/non-lcaol, incoming/outgoing) and
+ * address into a single 64-bit value.
  * Does not support delayed nodes. Reclaims the delayed bit for indices.
- * - Bit 63: Incoming/outgoing bit.
- * - Bit 62: Boundary bit.
- * - Bit 61: Local bit.
+ *
+ * Bit layout:
+ * - Bit 63: incoming (0) / outgoing (1).
+ * - Bit 62: boundary (1) / non-boundary (0).
+ * - Bit 61: local (1) / non-local (0).
+ * - For local non-boundary nodes:
+ *   - Bits 0-60: flat local-face-slot node bank index.
+ * - For boundary or non-local nodes:
+ *   - Bits 0-60: flat bank index.
  * - Bits 0-60: Index bits (capacity ~2.3e18).
  */
 class CBCD_NodeIndex : public NodeIndex
@@ -162,24 +176,66 @@ struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
  */
 struct BoundaryNodeInfo
 {
-  std::uint64_t cell_local_id;
-  unsigned int face_id;
-  size_t face_node;
-  std::uint64_t storage_index;
-  std::uint64_t boundary_id;
+  std::uint64_t boundary_id = 0;
+  std::uint32_t cell_local_id = 0;
+  unsigned int face_id = 0;
+  std::uint32_t storage_index = 0;
+  std::uint16_t face_node = 0;
 };
 
-/**
- * Metadata for non-local face nodes.
- */
-struct NonlocalNodeInfo
+/// Grouped incoming-boundary face copy plan.
+struct IncomingBoundaryFacePlan
 {
-  std::uint64_t cell_local_id;
-  std::uint64_t cell_global_id;
-  unsigned int face_id;
-  size_t face_node;
-  short face_node_mapped;
-  std::uint64_t storage_index;
+  std::uint64_t boundary_id = 0;
+  std::uint32_t cell_local_id = 0;
+  unsigned int face_id = 0;
+  std::uint16_t first_face_node = 0;
+  std::uint32_t base_storage_index = 0;
+  std::uint16_t num_nodes = 0;
+};
+
+/// Grouped incoming non-local face.
+struct GroupedIncomingNonlocalFace
+{
+  std::uint32_t cell_local_id = 0;
+  std::uint32_t base_storage_index = 0;
+  std::uint32_t source_slot = 0;
+  std::uint16_t num_nodes = 0;
+};
+
+/// Outgoing node-copy descriptor
+struct OutgoingNodeCopy
+{
+  std::uint32_t storage_index = 0;
+  std::uint16_t face_node = 0;
+};
+
+/// Grouped outgoing non-local face.
+struct GroupedOutgoingNonlocalFace
+{
+  std::uint32_t dest_slot = 0;
+  std::uint32_t remote_face_index = 0;
+  std::uint32_t node_copy_offset = 0;
+  std::uint16_t num_face_nodes = 0;
+  std::uint16_t num_node_copies = 0;
+};
+
+/// Reflecting-boundary face copy plan.
+struct ReflectingBoundaryFacePlan
+{
+  SweepBoundary* boundary = nullptr;
+  std::uint32_t cell_local_id = 0;
+  unsigned int face_id = 0;
+  std::uint16_t first_face_node = 0;
+  std::size_t src_base_offset = 0;
+  std::uint16_t num_nodes = 0;
+};
+
+/// Outgoing node-copy plan entry.
+struct OutgoingNodeMemcpy
+{
+  std::size_t src_offset = 0;
+  std::size_t dest_offset = 0;
 };
 
 } // namespace opensn

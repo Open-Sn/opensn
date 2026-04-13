@@ -71,7 +71,7 @@ struct CBCSweepData
   /// Number of nodes on the current cell.
   size_t cell_num_nodes;
 
-  /// Number of energy groups in the groupset.
+  /// Number of groups in the groupset.
   size_t gs_size;
   /// First group index in the groupset.
   unsigned int gs_gi;
@@ -481,7 +481,7 @@ CBC_Sweep_Generic(CBCSweepData& data, CBCGenericSweepScratch& scratch, AngleSet&
  *
  * Specialized in cbc_avx_sweep_chunk.cc for compile-time-known node counts
  * (4, 8, etc.), enabling stack-allocated matrices, loop unrolling, and SIMD
- * batch Gauss elimination across multiple energy groups simultaneously.
+ * batch Gauss elimination across multiple groups simultaneously.
  *
  * \tparam NumNodes compile-time number of cell nodes
  * \tparam time_dependent if true, include the time-derivative source term

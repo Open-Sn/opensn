@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/arbitrary_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbc_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
@@ -48,6 +49,7 @@
 #include <cassert>
 #include <cmath>
 #include <iomanip>
+#include <numeric>
 #include <sstream>
 #include <stdexcept>
 #include <thread>
@@ -1432,13 +1434,10 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
       std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
       const auto local_face_slots = cbc_spds_list.front()->GetMaxNumLocalPsiSlots();
-      log.Log() << program_timer.GetTimeString() << "CBC SPDS local cell-face psi slot summary\n"
-                << "   SPDS count  : 1\n"
-                << "   Elapsed     : " << elapsed_seconds.count() << " s\n"
-                << "   Max         : " << local_face_slots << "\n"
-                << "   Min         : " << local_face_slots << "\n"
-                << "   Median      : " << static_cast<double>(local_face_slots) << "\n"
-                << "   Average     : " << static_cast<double>(local_face_slots) << "\n";
+      log.Log() << "CBC SPDS cell-face slot plan calculated in " << elapsed_seconds.count()
+                << " s with 1 thread.\n"
+                << "  (max, min, avg) = (" << local_face_slots << ", " << local_face_slots << ", "
+                << static_cast<double>(local_face_slots) << ").\n";
     }
     else if (not cbc_spds_list.empty())
     {
@@ -1448,15 +1447,14 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
       SPMD_ThreadPool pool(num_workers);
       std::atomic<std::size_t> next_index{0};
 
-      log.Log() << program_timer.GetTimeString()
-                << " Compute max num local cell-face psi slots for " << cbc_spds_list.size()
-                << " CBC SPDS using " << num_workers << " worker threads.\n";
+      log.Log() << "Computing cell-face slot plans for " << cbc_spds_list.size()
+                << " CBC SPDS with " << num_workers << " threads.\n";
 
       auto start_time = std::chrono::steady_clock::now();
       pool.ExecuteBatch(
         [&](std::size_t /* thread ID */)
         {
-          std::size_t index;
+          std::size_t index = 0;
           // Atomically fetch the next index to work on
           // std::memory_order_relaxed is sufficient here because we need atomicity only for the
           // fetch_add operation, and there are no other synchronization requirements between
@@ -1469,42 +1467,26 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
         });
       auto end_time = std::chrono::steady_clock::now();
       std::chrono::duration<double> elapsed_seconds = end_time - start_time;
-      double elapsed_time = elapsed_seconds.count();
 
       size_t max_local_psi_slots = 0;
       size_t min_local_psi_slots = std::numeric_limits<size_t>::max();
-      std::vector<size_t> local_psi_slot_counts;
-      local_psi_slot_counts.reserve(cbc_spds_list.size());
+      std::uint64_t total_local_psi_slots = 0;
 
       for (const auto& spds : cbc_spds_list)
       {
         const auto local_psi_slots = spds->GetMaxNumLocalPsiSlots();
         max_local_psi_slots = std::max(max_local_psi_slots, local_psi_slots);
         min_local_psi_slots = std::min(min_local_psi_slots, local_psi_slots);
-        local_psi_slot_counts.push_back(local_psi_slots);
+        total_local_psi_slots += local_psi_slots;
       }
 
-      std::sort(local_psi_slot_counts.begin(), local_psi_slot_counts.end());
-      const auto num_counts = local_psi_slot_counts.size();
       const double avg_local_psi_slots =
-        static_cast<double>(std::accumulate(
-          local_psi_slot_counts.begin(), local_psi_slot_counts.end(), std::size_t{0})) /
-        num_counts;
-      const double median_local_psi_slots =
-        (num_counts % 2 == 1)
-          ? static_cast<double>(local_psi_slot_counts[num_counts / 2])
-          : 0.5 * static_cast<double>(local_psi_slot_counts[num_counts / 2 - 1] +
-                                      local_psi_slot_counts[num_counts / 2]);
+        static_cast<double>(total_local_psi_slots) / static_cast<double>(cbc_spds_list.size());
 
-      log.Log() << program_timer.GetTimeString()
-                << " CBC SPDS local cell-face psi slot statistics\n"
-                << "    SPDS count : " << cbc_spds_list.size() << "\n"
-                << "    Workers    : " << num_workers << "\n"
-                << "    Elapsed    : " << elapsed_time << " s\n"
-                << "    Max        : " << max_local_psi_slots << "\n"
-                << "    Min        : " << min_local_psi_slots << "\n"
-                << "    Median     : " << median_local_psi_slots << "\n"
-                << "    Average    : " << avg_local_psi_slots << "\n";
+      log.Log() << "CBC SPDS cell-face slot plans calculated in " << elapsed_seconds.count()
+                << " s.\n"
+                << "  (avg, max, min) = (" << avg_local_psi_slots << " slots, "
+                << max_local_psi_slots << " slots, " << min_local_psi_slots << " slots).";
     }
   }
   else
@@ -1842,6 +1824,12 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg =
     std::make_shared<AngleAggregation>(sweep_boundaries_, groupset.quadrature, grid_);
 
+  std::vector<std::size_t> cbc_fluds_local_psi_bytes;
+  std::vector<std::size_t> cbc_fluds_boundary_nonlocal_bytes;
+  const auto num_local_spatial_dofs = discretization_->GetNumLocalDOFs(groupset.psi_uk_man_) /
+                                      groupset.psi_uk_man_.GetNumberOfUnknowns() / gs_num_grps;
+  std::uint64_t full_local_psi_storage_bytes = 0;
+
   size_t angle_set_id = 0;
   for (const auto& so_grouping : unique_so_groupings)
   {
@@ -1910,8 +1898,11 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
       else if (sweep_type_ == "CBC")
       {
         std::shared_ptr<FLUDS> fluds;
+        std::size_t boundary_nonlocal_bytes = 0;
         if (use_gpus_)
         {
+          const auto& cbcd_common_data =
+            dynamic_cast<const CBCD_FLUDSCommonData&>(fluds_common_data);
           fluds = CreateCBCD_FLUDS(gs_num_grps,
                                    angle_indices.size(),
                                    grid_->local_cells.size(),
@@ -1919,6 +1910,13 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                    groupset.psi_uk_man_,
                                    *discretization_,
                                    (not GetPsiNewLocal()[groupset.id].empty()));
+
+          const auto num_groups_and_angles = gs_num_grps * angle_indices.size();
+          boundary_nonlocal_bytes = (cbcd_common_data.GetNumIncomingBoundaryNodes() +
+                                     cbcd_common_data.GetNumOutgoingBoundaryNodes() +
+                                     cbcd_common_data.GetNumIncomingNonlocalNodes() +
+                                     cbcd_common_data.GetNumOutgoingNonlocalNodes()) *
+                                    num_groups_and_angles * sizeof(double);
         }
         else
         {
@@ -1926,7 +1924,46 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
             gs_num_grps,
             angle_indices.size(),
             dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data));
+
+          const auto& cbc_common_data = dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data);
+          const auto num_groups_and_angles = gs_num_grps * angle_indices.size();
+          constexpr std::size_t local_psi_alignment = 64;
+          constexpr std::size_t doubles_per_cache_line = local_psi_alignment / sizeof(double);
+          const auto round_up_to_cache_line_multiple = [](std::size_t value)
+          {
+            return ((value + doubles_per_cache_line - 1) / doubles_per_cache_line) *
+                   doubles_per_cache_line;
+          };
+
+          for (std::size_t face_storage_index = 0;
+               face_storage_index < cbc_common_data.GetNumCellFaces();
+               ++face_storage_index)
+          {
+            const auto& face_info =
+              cbc_common_data.GetIncomingNonlocalFaceInfoByStorageIndex(face_storage_index);
+            if (face_info.num_face_nodes == 0)
+              continue;
+            boundary_nonlocal_bytes +=
+              round_up_to_cache_line_multiple(static_cast<std::size_t>(face_info.num_face_nodes) *
+                                              num_groups_and_angles) *
+              sizeof(double);
+          }
         }
+
+        if (use_gpus_)
+        {
+          const auto& cbc_spds = dynamic_cast<const CBC_SPDS&>(fluds_common_data.GetSPDS());
+          cbc_fluds_local_psi_bytes.push_back(cbc_spds.GetMaxNumLocalPsiSlots() *
+                                              cbc_spds.GetMaxLocalFaceNodeCount() * gs_num_grps *
+                                              angle_indices.size() * sizeof(double));
+        }
+        else
+          cbc_fluds_local_psi_bytes.push_back(
+            dynamic_cast<const CBC_FLUDS&>(*fluds).GetLocalPsiBufferSize());
+        cbc_fluds_boundary_nonlocal_bytes.push_back(boundary_nonlocal_bytes);
+
+        full_local_psi_storage_bytes +=
+          num_local_spatial_dofs * gs_num_grps * angle_indices.size() * sizeof(double);
 
         std::shared_ptr<AngleSet> angle_set;
         if (use_gpus_)
@@ -1956,6 +1993,61 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     } // for an_ss
   } // for so_grouping
+
+  if (sweep_type_ == "CBC" and not cbc_fluds_local_psi_bytes.empty())
+  {
+    const auto [min_it, max_it] =
+      std::minmax_element(cbc_fluds_local_psi_bytes.begin(), cbc_fluds_local_psi_bytes.end());
+    const auto [boundary_nonlocal_min_it, boundary_nonlocal_max_it] = std::minmax_element(
+      cbc_fluds_boundary_nonlocal_bytes.begin(), cbc_fluds_boundary_nonlocal_bytes.end());
+    const auto total_local_psi_storage = std::accumulate(
+      cbc_fluds_local_psi_bytes.begin(), cbc_fluds_local_psi_bytes.end(), std::uint64_t{0});
+    const auto total_boundary_nonlocal_storage =
+      std::accumulate(cbc_fluds_boundary_nonlocal_bytes.begin(),
+                      cbc_fluds_boundary_nonlocal_bytes.end(),
+                      std::uint64_t{0});
+    const auto total_managed_psi_storage =
+      total_local_psi_storage + total_boundary_nonlocal_storage;
+    std::ostringstream savings_out;
+    if (full_local_psi_storage_bytes > 0)
+      savings_out << 100.0 * (1.0 - (static_cast<double>(total_local_psi_storage) /
+                                     static_cast<double>(full_local_psi_storage_bytes)))
+                  << "%.";
+    else
+      savings_out << "N/A.";
+    const auto format_bytes = [](const std::uint64_t bytes)
+    {
+      constexpr std::pair<double, const char*> units[] = {
+        {1024.0 * 1024.0 * 1024.0, "GiB"}, {1024.0 * 1024.0, "MiB"}, {1024.0, "KiB"}, {1.0, "B"}};
+      const auto bytes_as_double = static_cast<double>(bytes);
+
+      for (const auto& [scale, suffix] : units)
+      {
+        if (bytes_as_double >= scale || scale == 1.0)
+        {
+          std::ostringstream out;
+          const double value = bytes_as_double / scale;
+          const int precision = (scale == 1.0 || value >= 100.0) ? 0 : (value >= 10.0 ? 1 : 2);
+          out << std::fixed << std::setprecision(precision) << value << ' ' << suffix;
+          return out.str();
+        }
+      }
+
+      return std::string("0 B");
+    };
+
+    log.Log() << (use_gpus_ ? "CBCD FLUDS" : "CBC FLUDS") << " psi storage usage across "
+              << cbc_fluds_local_psi_bytes.size() << " FLUDS instances.\n"
+              << "  Total local psi storage and savings: (" << format_bytes(total_local_psi_storage)
+              << ", " << savings_out.str() << ")\n"
+              << "  Total boundary/non-local storage: "
+              << format_bytes(total_boundary_nonlocal_storage) << ".\n"
+              << "  Total managed local/boundary/non-local psi storage: "
+              << format_bytes(total_managed_psi_storage) << ".\n";
+  }
+
+  if (options_.verbose_inner_iterations)
+    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
 
   opensn::mpi_comm.barrier();
 }
