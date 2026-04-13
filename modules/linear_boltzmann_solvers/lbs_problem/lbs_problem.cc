@@ -583,8 +583,7 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter("write_restart_time_interval",
                               0,
                               "Time interval in seconds at which restart data is to be written.");
-  params.AddOptionalParameter(
-    "use_precursors", false, "Flag for using delayed neutron precursors.");
+  params.AddOptionalParameter("use_precursors", true, "Flag for using delayed neutron precursors.");
   params.AddOptionalParameter("use_source_moments",
                               false,
                               "Flag for ignoring fixed sources and selectively using source "
@@ -1004,16 +1003,30 @@ LBSProblem::InitializeMaterials()
                   return xs->IsFissionable() and xs->GetNumPrecursors() > 0;
                 });
 
+  const bool has_any_precursor_data =
+    std::any_of(block_id_to_xs_map_.begin(),
+                block_id_to_xs_map_.end(),
+                [](const auto& mat_id_xs) { return mat_id_xs.second->GetNumPrecursors() > 0; });
+
+  if (options_.use_precursors and not has_any_precursor_data)
+  {
+    log.Log0Warning() << GetName()
+                      << ": options.use_precursors is enabled, but no precursor data was found "
+                         "in the active cross-section map. Running without delayed-neutron "
+                         "precursor coupling.";
+  }
+
   // check compatibility when at least one fissionable material has delayed-neutron data
   if (options_.use_precursors and has_fissionable_precursors)
   {
     for (const auto& [mat_id, xs] : block_id_to_xs_map_)
     {
-      OpenSnLogicalErrorIf(xs->IsFissionable() and xs->GetNumPrecursors() == 0,
-                           "Incompatible cross-section data encountered for material id " +
-                             std::to_string(mat_id) + ". When delayed neutron data is present " +
-                             "for one fissionable material, it must be present for all fissionable "
-                             "materials.");
+      OpenSnInvalidArgumentIf(xs->IsFissionable() and xs->GetNumPrecursors() == 0,
+                              GetName() + ": incompatible cross-section data for material id " +
+                                std::to_string(mat_id) +
+                                ". When options.use_precursors=true and "
+                                "delayed-neutron precursor data is present for one fissionable "
+                                "material, it must be present for all fissionable materials.");
     }
   }
 
