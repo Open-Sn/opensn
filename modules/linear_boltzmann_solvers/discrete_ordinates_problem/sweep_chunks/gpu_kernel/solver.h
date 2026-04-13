@@ -68,6 +68,7 @@ ComputeSurfaceIntegral(double* sweep_matrix,
                        DirectionView& direction,
                        const std::uint64_t* cell_edge_data,
                        const unsigned int& angle_group_idx,
+                       const unsigned int& group_idx,
                        const Arguments<t>& args)
 {
   // loop over each face
@@ -96,9 +97,18 @@ ComputeSurfaceIntegral(double* sweep_matrix,
         std::uint32_t j = face.cell_mapping_data[fj];
         double mu_Nij = -mu * face.M_surf_data[fi * face.num_face_nodes + fj];
         Ai[j] += mu_Nij;
-        double* upwind_psi =
-          args.flud_data.GetIncomingFluxPointer(cell_edge_data[face_node_counter + fj]);
-        psi[i] += upwind_psi[angle_group_idx] * mu_Nij;
+        double* upwind_psi;
+        if constexpr (t == SweepType::AAH)
+          upwind_psi = args.flud_data.GetIncomingFluxPointer(cell_edge_data[face_node_counter + fj],
+                                                             angle_group_idx,
+                                                             group_idx,
+                                                             args.boundary,
+                                                             args.boundary_offset,
+                                                             args.is_surface_source_active);
+        else
+          upwind_psi = args.flud_data.GetIncomingFluxPointer(cell_edge_data[face_node_counter + fj],
+                                                             angle_group_idx);
+        psi[i] += *upwind_psi * mu_Nij;
       }
     }
     // update face node counter
@@ -182,9 +192,16 @@ WritePsiToFludsAndOutflow(double* psi,
     {
       std::uint32_t i = face.cell_mapping_data[fi];
       // put copy psi to FLUDS
-      double* downwind_psi =
-        args.flud_data.GetOutgoingFluxPointer(cell_edge_data[face_node_counter + fi]);
-      downwind_psi[angle_group_idx] = psi[i];
+      double* downwind_psi;
+      if constexpr (t == SweepType::AAH)
+        downwind_psi = args.flud_data.GetOutgoingFluxPointer(cell_edge_data[face_node_counter + fi],
+                                                             angle_group_idx,
+                                                             args.boundary,
+                                                             args.boundary_offset);
+      else
+        downwind_psi = args.flud_data.GetOutgoingFluxPointer(cell_edge_data[face_node_counter + fi],
+                                                             angle_group_idx);
+      *downwind_psi = psi[i];
       // compute ouflow for boundary face
       if (face.outflow != nullptr)
       {
@@ -252,7 +269,7 @@ Sweep(const Arguments<t>& args,
   ComputeGMS<ndofs, t>(
     buffer.A(), buffer.b(), buffer.s(), cell, direction, group_idx, num_moments, args);
   ComputeSurfaceIntegral<ndofs, t>(
-    buffer.A(), buffer.b(), cell, direction, cell_edge_data, angle_group_idx, args);
+    buffer.A(), buffer.b(), cell, direction, cell_edge_data, angle_group_idx, group_idx, args);
   // solve for the angular flux
   GaussianElimination<ndofs>(buffer.A(), buffer.b());
   // save the result

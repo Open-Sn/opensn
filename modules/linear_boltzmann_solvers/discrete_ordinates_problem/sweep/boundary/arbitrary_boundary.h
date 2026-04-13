@@ -6,7 +6,9 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "framework/math/functions/function.h"
 #include "framework/data_types/ndarray.h"
+#include <map>
 #include <memory>
+#include <vector>
 
 namespace opensn
 {
@@ -19,63 +21,33 @@ namespace opensn
 class ArbitraryBoundary : public SweepBoundary
 {
 public:
-  ArbitraryBoundary(unsigned int num_groups,
-                    std::shared_ptr<AngularFluxFunction> angular_flux_function,
-                    CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(LBSBoundaryType::ARBITRARY, num_groups, coord_type),
-      angular_flux_function_(std::move(angular_flux_function)),
-      boundary_flux_()
-  {
-  }
+  ArbitraryBoundary(BoundaryBank& bank,
+                    const std::vector<LBSGroupset>& groupsets,
+                    std::shared_ptr<AngularFluxFunction> angular_flux_function);
 
   double* PsiIncoming(std::uint32_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,
-                      unsigned int group_num) override
-  {
-    AllocateSpace(angle_num);
-    UpdateBoundaryFlux();
-    return &boundary_flux_(angle_num, group_num);
-  }
+                      int groupset_id,
+                      unsigned int group_idx) override;
 
-  void ResetAnglesReadyStatus() override { boundary_flux_ready_ = false; }
+  void InitializeAngleDependent(const std::vector<LBSGroupset>& groupsets) override;
+  std::uint64_t
+  GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing) override;
 
 private:
+  /// Function that dictates the angular flux.
   std::shared_ptr<AngularFluxFunction> angular_flux_function_;
-  NDArray<double, 2> boundary_flux_;
-  std::size_t num_angles_ = 0;
-  bool boundary_flux_ready_ = false;
 
-  void AllocateSpace(unsigned int angle_num)
+  /// Additional data specific to arbitrary boundary for each groupset.
+  struct ExtraData
   {
-    const auto required_angles = angle_num + 1;
-    if (required_angles <= num_angles_ or not angular_flux_function_)
-      return;
-
-    num_angles_ = required_angles;
-    boundary_flux_.resize(std::array<size_t, 2>{num_angles_, num_groups_});
-    boundary_flux_ready_ = false;
-  }
-
-  void UpdateBoundaryFlux()
-  {
-    if (not angular_flux_function_)
-      return;
-    if (boundary_flux_ready_)
-      return;
-
-    boundary_flux_ready_ = true;
-    for (std::size_t angle = 0; angle < num_angles_; ++angle)
-    {
-      for (unsigned int group = 0; group < num_groups_; ++group)
-      {
-        const double value =
-          (*angular_flux_function_)(static_cast<int>(group), static_cast<int>(angle));
-        boundary_flux_(angle, group) = value;
-      }
-    }
-  }
+    /// Map from angle number in a quadrature to the internal angle index per groupset.
+    std::vector<std::uint64_t> map_dirnum;
+  };
+  /// List of data per groupset.
+  std::vector<ExtraData> extra_data_;
 };
 
 } // namespace opensn

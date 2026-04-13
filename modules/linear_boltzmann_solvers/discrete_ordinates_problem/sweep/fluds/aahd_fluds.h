@@ -60,14 +60,6 @@ struct AAHD_DelayedLocalBank : public AAHD_Bank
   }
 };
 
-/// Boundary bank storage structure.
-struct AAHD_BoundaryBank : public AAHD_Bank
-{
-  AAHD_BoundaryBank() = default;
-  /// Member constructor.
-  AAHD_BoundaryBank(std::size_t size, std::size_t stride_size) : AAHD_Bank(size * stride_size) {}
-};
-
 /// Non-local bank storage structure.
 struct AAHD_NonLocalBank : public AAHD_Bank
 {
@@ -182,19 +174,12 @@ public:
   /// \{
   /// Copy delayed local and delayed non-local incoming psi to device.
   void CopyDelayedPsiToDevice();
-  /// Copy boundary psi from angle set to device boundary storage.
-  void CopyBoundaryToDevice(MeshContinuum& grid,
-                            AngleSet& angle_set,
-                            const LBSGroupset& groupset,
-                            bool is_surface_source_active);
   /// Copy non-local incoming psi to device.
   void CopyNonLocalIncomingPsiToDevice();
   /// Get device pointers for each bank in FLUDS.
   AAHD_FLUDSPointerSet GetDevicePointerSet();
-  /// Copy boundary psi, non-local outgoing and delayed local psi from device to host.
+  /// Copy non-local outgoing and delayed local psi from device to host.
   void CopyPsiFromDevice();
-  /// Copy boundary psi from contiguous boundary storage to angle set.
-  void CopyBoundaryPsiToAngleSet(MeshContinuum& grid, AngleSet& angle_set);
   /// Copy save angular flux from device to host.
   void CopySaveAngularFluxFromDevice();
   /// Copy save angular flux from host contiguous buffer to destination psi.
@@ -231,14 +216,11 @@ protected:
   /// Non-local bank for outgoing angular fluxes.
   AAHD_NonLocalBank nonlocal_outgoing_psi_bank_;
 
-  /// Storage for boundary angular fluxes.
-  AAHD_BoundaryBank boundary_psi_;
-
   /// Storage for saved angular fluxes.
   AAHD_Bank save_angular_flux_;
 
   /// Stream for asynchronous operations.
-  crb::Stream stream_;
+  crb::Stream stream_ = crb::Stream::get_null_stream();
 };
 
 } // namespace opensn

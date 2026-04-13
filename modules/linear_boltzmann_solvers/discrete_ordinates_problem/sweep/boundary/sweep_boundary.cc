@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 
@@ -13,7 +14,8 @@ SweepBoundary::PsiIncoming(std::uint32_t cell_local_id,
                            unsigned int face_num,
                            unsigned int fi,
                            unsigned int angle_num,
-                           unsigned int group_num)
+                           int groupset_id,
+                           unsigned int group_idx)
 {
   throw std::runtime_error(
     "SweepBoundary: PsiIncoming call made to boundary that has no such information.");
@@ -24,7 +26,8 @@ double*
 SweepBoundary::PsiOutgoing(uint64_t cell_local_id,
                            unsigned int face_num,
                            unsigned int fi,
-                           unsigned int angle_num)
+                           unsigned int angle_num,
+                           int groupset_id)
 {
   throw std::runtime_error(
     "SweepBoundary: PsiOutgoing call made to boundary that has no such information.");

@@ -8,21 +8,15 @@ namespace opensn
 {
 
 void
-LBSGroupset::InitializeGPUCarriers()
+LBSGroupset::InitializeQuadratureCarrier()
 {
-  auto* quad = new QuadratureCarrier(*this);
-  quad_carrier = quad;
+  quad_carrier = std::make_shared<QuadratureCarrier>(*this);
 }
 
 void
-LBSGroupset::ResetGPUCarriers()
+LBSGroupset::ResetQuadratureCarrier()
 {
-  if (quad_carrier)
-  {
-    auto* quad = reinterpret_cast<QuadratureCarrier*>(quad_carrier);
-    delete quad;
-    quad_carrier = nullptr;
-  }
+  quad_carrier.reset();
 }
 
 } // namespace opensn

@@ -178,7 +178,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
                                           cell_local_id,
                                           f,
                                           fj,
-                                          gs_gi,
+                                          0,
                                           data.surface_source_active);
 
             if (not psi)

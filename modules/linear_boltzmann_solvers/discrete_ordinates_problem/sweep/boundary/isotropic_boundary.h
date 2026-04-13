@@ -15,25 +15,22 @@ namespace opensn
 class IsotropicBoundary : public SweepBoundary
 {
 public:
-  explicit IsotropicBoundary(unsigned int num_groups,
-                             std::vector<double> boundary_flux,
-                             CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(LBSBoundaryType::ISOTROPIC, num_groups, coord_type),
-      boundary_flux_(std::move(boundary_flux))
-  {
-  }
+  explicit IsotropicBoundary(BoundaryBank& bank,
+                             const std::vector<LBSGroupset>& groupsets,
+                             std::vector<double>& boundary_flux);
 
   double* PsiIncoming(std::uint32_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,
-                      unsigned int group_num) override
+                      int groupset_id,
+                      unsigned int group_idx) override
   {
-    return &boundary_flux_[group_num];
+    return GetBoundaryFlux(groupset_id) + group_idx;
   }
 
-private:
-  std::vector<double> boundary_flux_;
+  std::uint64_t
+  GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing) override;
 };
 
 } // namespace opensn

@@ -4,6 +4,8 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_bank.h"
+#include <limits>
 #include <map>
 #include <memory>
 #include <set>
@@ -14,27 +16,30 @@ namespace opensn
 
 class AngleSet;
 class AngleAggregation;
+class FaceNode;
 class MeshContinuum;
+class LBSGroupset;
 
 /// Base class for sweep related boundaries.
 class SweepBoundary
 {
 public:
-  explicit SweepBoundary(LBSBoundaryType bndry_type,
-                         unsigned int num_groups,
-                         CoordinateSystemType coord_type)
-    : num_groups_(num_groups), type_(bndry_type), coord_type_(coord_type)
+  explicit SweepBoundary(BoundaryBank& bank, LBSBoundaryType bndry_type)
+    : bank_(bank), type_(bndry_type)
   {
-    zero_boundary_flux_.resize(num_groups_, 0.0);
+    offset_.reserve(bank_.GetSize());
+    offset_.resize(bank_.GetSize());
   }
 
   virtual ~SweepBoundary() = default;
 
   LBSBoundaryType GetType() const { return type_; }
 
-  CoordinateSystemType GetCoordType() const { return coord_type_; }
-
   bool IsReflecting() const { return type_ == LBSBoundaryType::REFLECTING; }
+  bool IsAngleDependent() const
+  {
+    return type_ == LBSBoundaryType::REFLECTING || type_ == LBSBoundaryType::ARBITRARY;
+  }
 
   double GetEvaluationTime() const { return evaluation_time_; }
 
@@ -42,23 +47,20 @@ public:
 
   virtual bool HasDelayedAngularFlux() const { return false; }
 
-  virtual void InitializeDelayedAngularFlux(const std::shared_ptr<MeshContinuum>& grid,
-                                            const AngularQuadrature& quadrature)
-  {
-  }
-
   /**
    * Get the list of anglesets that depend on a given angleset.
    * This function can only be applied to reflecting boundary and AAHD anglesets.
    */
-  virtual void GetFollowingAngleSets(std::set<AngleSet*>& following_angle_sets,
+  virtual void GetFollowingAngleSets(int groupset_id,
+                                     std::set<AngleSet*>& following_angle_sets,
                                      const AngleAggregation& angle_agg,
                                      const AngleSet& angleset)
   {
   }
 
-  virtual void FinalizeDelayedAngularFluxSetup(
-    uint64_t boundary_id, const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
+  virtual void
+  SetOpposingReflected(std::uint64_t boundary_id,
+                       const std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
   {
   }
 
@@ -92,41 +94,82 @@ public:
 
   virtual void CopyDelayedAngularFluxNewToOld() {}
 
-  virtual void ResetAnglesReadyStatus() {}
-
   virtual const Vector3* GetNormalForReflection() const { return nullptr; }
 
-  /// Returns a pointer to the location of the incoming flux.
+  virtual void GetReflectedMap(int groupset_id,
+                               std::vector<std::vector<std::uint32_t>>& reflected_maps)
+  {
+  }
+
+  /// Return a pointer to the location of the incoming flux.
   virtual double* PsiIncoming(std::uint32_t cell_local_id,
                               unsigned int face_num,
                               unsigned int fi,
                               unsigned int angle_num,
-                              unsigned int group_num);
+                              int groupset_id,
+                              unsigned int group_idx);
 
-  /// Returns a pointer to the location of the outgoing flux.
+  /// Return a pointer to the location of the outgoing flux.
   virtual double* PsiOutgoing(uint64_t cell_local_id,
                               unsigned int face_num,
                               unsigned int fi,
-                              unsigned int angle_num);
-
-  virtual void UpdateAnglesReadyStatus(const std::vector<std::uint32_t>& angles) {}
-
-  virtual bool CheckAnglesReadyStatus(const std::vector<std::uint32_t>& angles) { return true; }
+                              unsigned int angle_num,
+                              int groupset_id);
 
   virtual void Setup(const std::shared_ptr<MeshContinuum>& grid,
                      const AngularQuadrature& quadrature)
   {
   }
 
-  double* ZeroFlux(unsigned int group_num) { return &zero_boundary_flux_[group_num]; }
+  virtual void InitializeReflectingMap(const std::vector<LBSGroupset>& groupsets) {}
+
+  /**
+   * Perform additional setup required by angle-dependent boundaries.
+   * Angle-dependent boundaries require an extra initialization step after flux data structures are
+   * initialized. This phase cannot be executed in the constructor, which happens before the
+   * initialization of flux data structures.
+   */
+  virtual void InitializeAngleDependent(const std::vector<LBSGroupset>& groupsets) {}
+
+  /// Get pointer to the boundary flux section in the contigous bank for a given groupset.
+  double* GetBoundaryFlux(int groupset_id, std::uint64_t extra_offset = 0)
+  {
+    auto& data = bank_[groupset_id];
+    return data.boundary_flux.data() + (offset_[groupset_id] + extra_offset) * data.groupset_size;
+  }
+
+  /// Get pointer to the boundary flux section in the contigous bank for a given groupset.
+  const double* GetBoundaryFlux(int groupset_id, std::uint64_t extra_offset = 0) const
+  {
+    auto& data = bank_[groupset_id];
+    return data.boundary_flux.data() + (offset_[groupset_id] + extra_offset) * data.groupset_size;
+  }
+
+  /// Get offset to the data region of a given angleset.
+  virtual std::uint64_t
+  GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing)
+  {
+    return std::numeric_limits<std::uint64_t>::max();
+  }
+
+  double* ZeroFlux(int groupset_id, unsigned int group_num)
+  {
+    auto& data = bank_[groupset_id];
+    return data.boundary_flux.data() + group_num;
+  }
 
 protected:
-  std::vector<double> zero_boundary_flux_;
-  unsigned int num_groups_;
+  BoundaryBank& bank_;
+
+  /**
+   * Offset used to access boundary flux data for each groupset.
+   * Boundary fluxes for a given boundary start at offset * groupset.GetNumGroups().
+   */
+  std::vector<std::uint64_t> offset_;
 
 private:
-  const LBSBoundaryType type_;
-  const CoordinateSystemType coord_type_;
+  /// Boundary type.
+  LBSBoundaryType type_;
   /// Time value passed to boundary functions
   double evaluation_time_ = 0.0;
 };

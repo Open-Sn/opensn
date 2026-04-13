@@ -53,6 +53,68 @@ namespace opensn
 
 OpenSnRegisterObjectParametersOnlyInNamespace(lbs, DiscreteOrdinatesProblem);
 
+namespace
+{
+
+std::set<std::uint64_t>
+GetGlobalUniqueBoundaryIDs(const std::shared_ptr<MeshContinuum>& grid, mpi::Communicator& mpi_comm)
+{
+  std::set<std::uint64_t> local_unique_bids_set;
+  for (const auto& cell : grid->local_cells)
+    for (const auto& face : cell.faces)
+      if (not face.has_neighbor)
+        local_unique_bids_set.insert(face.neighbor_id);
+
+  const std::vector<std::uint64_t> local_unique_bids(local_unique_bids_set.begin(),
+                                                     local_unique_bids_set.end());
+
+  std::vector<std::uint64_t> recvbuf;
+  mpi_comm.all_gather(local_unique_bids, recvbuf);
+
+  std::set<std::uint64_t> global_unique_bids_set = local_unique_bids_set;
+  global_unique_bids_set.insert(recvbuf.begin(), recvbuf.end());
+
+  return global_unique_bids_set;
+}
+
+void
+RecursiveAngleSort(AngleSet* angleset,
+                   AngleAggregation& angle_agg,
+                   const std::vector<std::vector<std::uint32_t>>& reflected_maps,
+                   std::set<AngleSet*>& unsorted,
+                   std::set<AngleSet*>& sorted)
+{
+  sorted.insert(angleset);
+  std::uint32_t angle_zero = angleset->GetAngleIndices()[0];
+  for (const auto& reflected_map : reflected_maps)
+  {
+    auto reflected_angle_zero = reflected_map[angle_zero];
+    auto* reflected_angleset = angle_agg.GetAngleSetForAngleIndex(reflected_angle_zero);
+    if (sorted.contains(reflected_angleset))
+    {
+      bool is_coherent = std::equal(angleset->GetAngleIndices().begin(),
+                                    angleset->GetAngleIndices().end(),
+                                    reflected_angleset->GetAngleIndices().begin(),
+                                    [&](std::uint32_t angle, std::uint32_t reflected)
+                                    { return reflected_map[angle] == reflected; });
+      if (not is_coherent)
+        throw std::logic_error("Cannot find an unanimous sort order for the angle set.\n");
+    }
+    else
+    {
+      std::transform(angleset->GetAngleIndices().begin(),
+                     angleset->GetAngleIndices().end(),
+                     reflected_angleset->GetAngleIndices().begin(),
+                     [&](std::uint32_t angle) { return reflected_map[angle]; });
+      reflected_angleset->SyncDeviceAngleIndices();
+      unsorted.erase(reflected_angleset);
+      RecursiveAngleSort(reflected_angleset, angle_agg, reflected_maps, unsorted, sorted);
+    }
+  }
+}
+
+} // namespace
+
 InputParameters
 DiscreteOrdinatesProblem::GetInputParameters()
 {
@@ -206,13 +268,15 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
 
     if (use_gpus_)
-      groupset.InitializeGPUCarriers();
+      groupset.InitializeQuadratureCarrier();
   }
 }
 
 DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem()
 {
   CALI_CXX_MARK_FUNCTION;
+
+  ResetBoundaryCarrier();
 
   for (auto& groupset : groupsets_)
   {
@@ -293,7 +357,7 @@ DiscreteOrdinatesProblem::GetSweepBoundaries() const
   return sweep_boundaries_;
 }
 
-const std::map<uint64_t, DiscreteOrdinatesProblem::BoundaryDefinition>&
+const std::map<uint64_t, BoundaryDefinition>&
 DiscreteOrdinatesProblem::GetBoundaryDefinitions() const
 {
   return boundary_definitions_;
@@ -331,135 +395,16 @@ DiscreteOrdinatesProblem::SetBoundaryOptions(const InputParameters& params)
   const auto it = bnd_name_map.find(lookup_name);
   if (it == bnd_name_map.end())
   {
-    std::ostringstream names;
-    bool first = true;
-    for (const auto& [name, _] : bnd_name_map)
-    {
-      if (not first)
-        names << ", ";
-      names << name;
-      first = false;
-    }
-    throw std::runtime_error(GetName() + ": Boundary name '" + boundary_name +
-                             "' not found in mesh. Available boundaries: [" + names.str() + "].");
+    throw std::runtime_error("Boundary name \"" + boundary_name + "\" not found in mesh.");
   }
   const auto bid = it->second;
-  boundary_definitions_[bid] = CreateBoundaryFromParams(params);
+  boundary_definitions_.emplace(bid, BoundaryDefinition(params, GetNumGroups()));
 }
 
 void
 DiscreteOrdinatesProblem::ClearBoundaries()
 {
   boundary_definitions_.clear();
-}
-
-DiscreteOrdinatesProblem::BoundaryDefinition
-DiscreteOrdinatesProblem::CreateBoundaryFromParams(const InputParameters& params) const
-{
-  const auto boundary_name = params.GetParamValue<std::string>("name");
-  const auto bndry_type = params.GetParamValue<std::string>("type");
-  const std::map<std::string, LBSBoundaryType> type_list = {
-    {"vacuum", LBSBoundaryType::VACUUM},
-    {"isotropic", LBSBoundaryType::ISOTROPIC},
-    {"reflecting", LBSBoundaryType::REFLECTING},
-    {"arbitrary", LBSBoundaryType::ARBITRARY}};
-
-  const auto type_it = type_list.find(bndry_type);
-  if (type_it == type_list.end())
-  {
-    std::ostringstream types;
-    bool first = true;
-    for (const auto& [name, _] : type_list)
-    {
-      if (not first)
-        types << ", ";
-      types << name;
-      first = false;
-    }
-    throw std::runtime_error("Boundary '" + boundary_name + "' has unknown type='" + bndry_type +
-                             "'. Allowed types: [" + types.str() + "].");
-  }
-
-  const auto type = type_it->second;
-  if (type == LBSBoundaryType::ISOTROPIC)
-  {
-    if (not params.Has("group_strength"))
-      throw std::runtime_error("Boundary '" + boundary_name +
-                               "' with type=\"isotropic\" "
-                               "requires parameter \"group_strength\"");
-    if (params.IsParameterValid("function"))
-      throw std::runtime_error("Boundary '" + boundary_name +
-                               "' with type=\"isotropic\" does "
-                               "not support \"function\".");
-    params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
-    const auto group_strength = params.GetParamVectorValue<double>("group_strength");
-    if (group_strength.size() != GetNumGroups())
-      throw std::runtime_error(GetName() + ": Boundary '" + boundary_name +
-                               "' with type=\"isotropic\" requires \"group_strength\" to match "
-                               "the solver group count.");
-    return {type,
-            std::make_shared<IsotropicBoundary>(
-              GetNumGroups(), group_strength, MapGeometryTypeToCoordSys(geometry_type_))};
-  }
-  else if (type == LBSBoundaryType::ARBITRARY)
-  {
-    if (params.IsParameterValid("group_strength"))
-      throw std::runtime_error("Boundary '" + boundary_name +
-                               "' with type=\"arbitrary\" does "
-                               "not support \"group_strength\".");
-    if (not params.Has("function"))
-      throw std::runtime_error("Boundary '" + boundary_name +
-                               "' with type=\"arbitrary\" "
-                               "requires parameter \"function\"");
-    auto angular_flux_function = params.GetSharedPtrParam<AngularFluxFunction>("function", false);
-    if (not angular_flux_function)
-      throw std::runtime_error("Boundary '" + boundary_name +
-                               "' with type=\"arbitrary\" "
-                               "requires a non-null AngularFluxFunction passed via \"function\".");
-    return {type,
-            std::make_shared<ArbitraryBoundary>(
-              GetNumGroups(), angular_flux_function, MapGeometryTypeToCoordSys(geometry_type_))};
-  }
-
-  if (params.IsParameterValid("group_strength"))
-    throw std::runtime_error("Boundary '" + boundary_name + "' with type=" + bndry_type +
-                             " does not support group_strength.");
-  if (params.IsParameterValid("function"))
-    throw std::runtime_error("Boundary '" + boundary_name + "' with type=" + bndry_type +
-                             " does not support function.");
-
-  return {type, nullptr};
-}
-
-std::shared_ptr<SweepBoundary>
-DiscreteOrdinatesProblem::CreateSweepBoundary(uint64_t boundary_id) const
-{
-  auto it = boundary_definitions_.find(boundary_id);
-  if (it == boundary_definitions_.end())
-    return std::make_shared<VacuumBoundary>(num_groups_);
-
-  const auto& [type, boundary_ptr] = it->second;
-  if (type == LBSBoundaryType::VACUUM)
-    return std::make_shared<VacuumBoundary>(num_groups_);
-  if (type == LBSBoundaryType::ISOTROPIC)
-  {
-    if (not boundary_ptr)
-      throw std::runtime_error(
-        GetName() + ": Isotropic boundary specified without an associated boundary object.");
-    return boundary_ptr;
-  }
-  if (type == LBSBoundaryType::REFLECTING)
-    throw std::logic_error(GetName() +
-                           ": Reflecting boundaries must be initialized via InitializeBoundaries");
-  if (type == LBSBoundaryType::ARBITRARY)
-  {
-    if (not boundary_ptr)
-      throw std::runtime_error(
-        GetName() + ": Arbitrary boundary specified without an associated boundary object.");
-    return boundary_ptr;
-  }
-
-  throw std::logic_error(GetName() + ": Unknown boundary type requested.");
 }
 
 std::vector<std::vector<double>>&
@@ -602,6 +547,22 @@ DiscreteOrdinatesProblem::BuildRuntime()
     TGDSA::Init(*this, groupset);
   }
   log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
+
+  // Initialize angle-dependent boundary
+  for (auto& [bid, boundary] : sweep_boundaries_)
+    boundary->InitializeReflectingMap(groupsets_);
+  if (use_gpus_)
+    SortAngleSetsAngleIndices(); // DO NOT sort in RZ geometry
+  for (auto& [bid, boundary] : sweep_boundaries_)
+    boundary->InitializeAngleDependent(groupsets_);
+  boundary_bank_.ShrinkToFit();
+  boundary_bank_.DisableAllocation();
+  InitializeBoundaryCarrier();
+  if (sweep_type_ == "AAH" and use_gpus_)
+    UpdateAAHD_FLUDSCommonDataWithBoundary();
+  for (auto& groupset : groupsets_)
+    groupset.angle_agg->SetupAngleSetDependencies();
+
   InitializeSolverSchemes();
 }
 
@@ -941,7 +902,7 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
       const uint64_t bid = it->second;
       const auto bndry_it = boundary_definitions_.find(bid);
       if (bndry_it != boundary_definitions_.end() &&
-          bndry_it->second.first == LBSBoundaryType::REFLECTING)
+          bndry_it->second.type == LBSBoundaryType::REFLECTING)
       {
         std::ostringstream oss;
         oss << GetName() << ":\n"
@@ -953,85 +914,105 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
   }
 
   // Determine boundary-ids involved in the problem
-  std::set<uint64_t> global_unique_bids_set;
+  const auto unique_bids_set = GetGlobalUniqueBoundaryIDs(grid_, mpi_comm);
+  for (const auto bid : unique_bids_set)
   {
-    std::set<uint64_t> local_unique_bids_set;
-    for (const auto& cell : grid_->local_cells)
-      for (const auto& face : cell.faces)
-        if (not face.has_neighbor)
-          local_unique_bids_set.insert(face.neighbor_id);
-
-    std::vector<uint64_t> local_unique_bids(local_unique_bids_set.begin(),
-                                            local_unique_bids_set.end());
-    std::vector<uint64_t> recvbuf;
-    mpi_comm.all_gather(local_unique_bids, recvbuf);
-
-    global_unique_bids_set = local_unique_bids_set; // give it a head start
-
-    for (uint64_t bid : recvbuf)
-      global_unique_bids_set.insert(bid);
+    if (boundary_definitions_.find(bid) == boundary_definitions_.end())
+      boundary_definitions_.emplace(bid, BoundaryDefinition());
   }
+  boundary_bank_ = BoundaryBank(groupsets_);
 
   sweep_boundaries_.clear();
-  for (uint64_t bid : global_unique_bids_set)
+  const auto coord_sys = MapGeometryTypeToCoordSys(geometry_type_);
+  for (auto bid : unique_bids_set)
   {
-    const auto bndry_it = boundary_definitions_.find(bid);
-    const auto bndry_type =
-      bndry_it == boundary_definitions_.end() ? LBSBoundaryType::VACUUM : bndry_it->second.first;
+    auto& bndry_def = boundary_definitions_.find(bid)->second;
 
-    if (bndry_type == LBSBoundaryType::REFLECTING)
+    switch (bndry_def.type)
     {
-      const double EPSILON = 1.0e-12;
-      std::unique_ptr<Vector3> n_ptr = nullptr;
-      for (const auto& cell : grid_->local_cells)
-        for (const auto& face : cell.faces)
-          if (not face.has_neighbor and face.neighbor_id == bid)
-          {
-            if (not n_ptr)
-              n_ptr = std::make_unique<Vector3>(face.normal);
-            if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
-              throw std::logic_error(
-                GetName() +
-                ": Not all face normals are, within tolerance, locally the same for the "
-                "reflecting boundary condition requested");
-          }
-
-      const int local_has_bid = n_ptr != nullptr ? 1 : 0;
-      const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
-
-      std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
-      std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3L, 0.0);
-
-      mpi_comm.all_gather(local_has_bid, locJ_has_bid);
-      std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
-      mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
-
-      Vector3 global_normal;
-      for (int j = 0; j < opensn::mpi_comm.size(); ++j)
+      case LBSBoundaryType::VACUUM:
       {
-        if (locJ_has_bid[j])
-        {
-          int offset = 3 * j;
-          const double* n = &locJ_n_val[offset];
-          const Vector3 locJ_normal(n[0], n[1], n[2]);
-
-          if (local_has_bid)
-            if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
-              throw std::logic_error(
-                GetName() +
-                ": Not all face normals are, within tolerance, globally the same for the "
-                "reflecting boundary condition requested");
-
-          global_normal = locJ_normal;
-        }
+        sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(boundary_bank_);
+        break;
       }
+      case LBSBoundaryType::ISOTROPIC:
+      {
+        sweep_boundaries_[bid] =
+          std::make_shared<IsotropicBoundary>(boundary_bank_, groupsets_, bndry_def.group_strength);
+        break;
+      }
+      case LBSBoundaryType::ARBITRARY:
+      {
+        sweep_boundaries_[bid] = std::make_shared<ArbitraryBoundary>(
+          boundary_bank_, groupsets_, bndry_def.angular_flux_function);
+        break;
+      }
+      case LBSBoundaryType::REFLECTING:
+      {
+        const double EPSILON = 1.0e-12;
+        std::unique_ptr<Vector3> n_ptr = nullptr;
+        for (const auto& cell : grid_->local_cells)
+        {
+          for (const auto& face : cell.faces)
+          {
+            if (not face.has_neighbor and face.neighbor_id == bid)
+            {
+              if (not n_ptr)
+                n_ptr = std::make_unique<Vector3>(face.normal);
+              if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
+                throw std::logic_error(
+                  GetName() +
+                  ": Not all face normals are, within tolerance, locally the same for the "
+                  "reflecting boundary condition requested");
+            }
+          }
+        }
 
-      sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
-        num_groups_, global_normal, MapGeometryTypeToCoordSys(geometry_type_));
-      continue;
+        const int local_has_bid = n_ptr != nullptr ? 1 : 0;
+        const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
+
+        std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
+        std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3L, 0.0);
+
+        mpi_comm.all_gather(local_has_bid, locJ_has_bid);
+        std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
+        mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
+
+        Vector3 global_normal;
+        for (int j = 0; j < opensn::mpi_comm.size(); ++j)
+        {
+          if (locJ_has_bid[j])
+          {
+            int offset = 3 * j;
+            const double* n = &locJ_n_val[offset];
+            const Vector3 locJ_normal(n[0], n[1], n[2]);
+
+            if (local_has_bid)
+              if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
+                throw std::logic_error(
+                  GetName() +
+                  ": Not all face normals are, within tolerance, globally the same for the "
+                  "reflecting boundary condition requested");
+
+            global_normal = locJ_normal;
+          }
+        }
+
+        sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
+          boundary_bank_, bid, grid_, groupsets_, global_normal, coord_sys);
+        has_reflecting_boundaries_ = true;
+        break;
+      }
+      default:
+      {
+        throw std::logic_error("Boundary type not implemented.");
+      }
     }
+  }
 
-    sweep_boundaries_[bid] = CreateSweepBoundary(bid);
+  for (auto& [bid, bndry] : sweep_boundaries_)
+  {
+    bndry->SetOpposingReflected(bid, sweep_boundaries_);
   }
 }
 
@@ -1462,10 +1443,32 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
 
 #ifndef __OPENSN_WITH_GPU__
 void
+DiscreteOrdinatesProblem::InitializeBoundaryCarrier()
+{
+}
+
+void
+DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id, bool host_to_device)
+{
+}
+
+void
+DiscreteOrdinatesProblem::ResetBoundaryCarrier()
+{
+}
+
+void
 DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
 {
   throw std::runtime_error(
     "DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData : OPENSN_WITH_CUDA not enabled.");
+}
+
+void
+DiscreteOrdinatesProblem::UpdateAAHD_FLUDSCommonDataWithBoundary()
+{
+  throw std::runtime_error("DiscreteOrdinatesProblem::UpdateAAHD_FLUDSCommonDataWithBoundary : "
+                           "OPENSN_WITH_CUDA not enabled.");
 }
 
 std::shared_ptr<FLUDS>
@@ -1481,7 +1484,7 @@ DiscreteOrdinatesProblem::CreateAAHD_FLUDS(unsigned int num_groups,
 std::shared_ptr<AngleSet>
 DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
   size_t id,
-  unsigned int num_groups,
+  const LBSGroupset& groupset,
   const SPDS& spds,
   std::shared_ptr<FLUDS>& fluds,
   std::vector<size_t>& angle_indices,
@@ -1536,7 +1539,7 @@ DiscreteOrdinatesProblem::CreateCBCD_FLUDS(std::size_t num_groups,
 std::shared_ptr<AngleSet>
 DiscreteOrdinatesProblem::CreateCBCD_AngleSet(
   size_t id,
-  size_t num_groups,
+  const LBSGroupset& groupset,
   const SPDS& spds,
   std::shared_ptr<FLUDS>& fluds,
   std::vector<size_t>& angle_indices,
@@ -1751,7 +1754,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
 
   // Passing the sweep boundaries to the angle aggregation
   groupset.angle_agg =
-    std::make_shared<AngleAggregation>(sweep_boundaries_, groupset.quadrature, grid_);
+    std::make_shared<AngleAggregation>(groupset, sweep_boundaries_, groupset.quadrature, grid_);
 
   size_t angle_set_id = 0;
   for (const auto& so_grouping : unique_so_groupings)
@@ -1797,7 +1800,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         if (use_gpus_)
         {
           angle_set = CreateAAHD_AngleSet(angle_set_id++,
-                                          gs_num_grps,
+                                          groupset,
                                           *sweep_ordering,
                                           fluds,
                                           angle_indices,
@@ -1808,7 +1811,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         else
         {
           angle_set = std::make_shared<AAH_AngleSet>(angle_set_id++,
-                                                     gs_num_grps,
+                                                     groupset,
                                                      *sweep_ordering,
                                                      fluds,
                                                      angle_indices,
@@ -1845,7 +1848,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         if (use_gpus_)
         {
           angle_set = CreateCBCD_AngleSet(angle_set_id++,
-                                          gs_num_grps,
+                                          groupset,
                                           *sweep_ordering,
                                           fluds,
                                           angle_indices,
@@ -1855,7 +1858,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         else
         {
           angle_set = std::make_shared<CBC_AngleSet>(angle_set_id++,
-                                                     gs_num_grps,
+                                                     groupset,
                                                      *sweep_ordering,
                                                      fluds,
                                                      angle_indices,
@@ -1869,6 +1872,11 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     } // for an_ss
   } // for so_grouping
+
+  groupset.angle_agg->BuildDirnumToAnglesetMap();
+
+  if (options_.verbose_inner_iterations)
+    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
 
   opensn::mpi_comm.barrier();
 }
@@ -1902,6 +1910,59 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
   }
   else
     OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");
+}
+
+void
+DiscreteOrdinatesProblem::SortAngleSetsAngleIndices()
+{
+  for (auto& groupset : groupsets_)
+  {
+    // build the total reflected map
+    std::vector<std::vector<std::uint32_t>> reflected_maps;
+    for (auto& [bid, boundary] : sweep_boundaries_)
+      boundary->GetReflectedMap(groupset.id, reflected_maps);
+
+    // check for each map and angle set that the mapped angle indices is also another angleset
+    auto& angle_agg = *(groupset.angle_agg);
+    std::list<std::set<std::uint32_t>> angle_indices_list;
+    for (const auto& angleset : angle_agg)
+    {
+      const auto& angle_indices = angleset->GetAngleIndices();
+      angle_indices_list.emplace_back(angle_indices.begin(), angle_indices.end());
+    }
+    for (const auto& reflected_map : reflected_maps)
+    {
+      std::list<std::set<std::uint32_t>> angle_indices_list_copy(angle_indices_list);
+      for (auto it_in = angle_indices_list_copy.begin(); it_in != angle_indices_list_copy.end();)
+      {
+        std::set<std::uint32_t> reflected;
+        std::transform(it_in->begin(),
+                       it_in->end(),
+                       std::inserter(reflected, reflected.end()),
+                       [&](std::uint32_t n) { return reflected_map[n]; });
+        auto it_out =
+          std::find(angle_indices_list_copy.begin(), angle_indices_list_copy.end(), reflected);
+        if (it_out == it_in or it_out == angle_indices_list_copy.end())
+          throw std::logic_error("Angleset parity was broken for one of the reflected boundaries.");
+        angle_indices_list_copy.erase(it_out);
+        it_in = angle_indices_list_copy.erase(it_in);
+      }
+    }
+    angle_indices_list.clear();
+
+    // sort angle indices in anglesets
+    std::set<AngleSet*> sorted_anglesets, unsorted_anglesets;
+    std::transform(angle_agg.begin(),
+                   angle_agg.end(),
+                   std::inserter(unsorted_anglesets, unsorted_anglesets.end()),
+                   [](auto& angleset) { return angleset.get(); });
+    while (not unsorted_anglesets.empty())
+    {
+      AngleSet* angleset = *unsorted_anglesets.begin();
+      unsorted_anglesets.erase(unsorted_anglesets.begin());
+      RecursiveAngleSort(angleset, angle_agg, reflected_maps, unsorted_anglesets, sorted_anglesets);
+    }
+  }
 }
 
 void

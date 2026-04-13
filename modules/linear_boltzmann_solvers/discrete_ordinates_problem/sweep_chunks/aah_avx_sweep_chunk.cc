@@ -361,7 +361,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
                                         cell_local_id,
                                         f,
                                         fj,
-                                        gs_gi,
+                                        0,
                                         data.surface_source_active);
 
           for (size_t fi = 0; fi < num_face_nodes; ++fi)

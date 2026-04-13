@@ -7,7 +7,19 @@
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include <iomanip>
 #include <set>
+
+std::ostream&
+std::operator<<(std::ostream& out, const opensn::FaceNode& n)
+{
+  out << "FaceNode(";
+  out << "c=" << std::setw(5) << n.GetCellIndex() << ", ";
+  out << "f=" << std::setw(2) << n.GetFaceIndex() << ", ";
+  out << "fn=" << std::setw(2) << n.GetFaceNodeIndex();
+  out << ")";
+  return out;
+}
 
 namespace opensn
 {

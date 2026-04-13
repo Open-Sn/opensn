@@ -4,21 +4,27 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_definition.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_bank.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/parameters/parameter_block.h"
 #include <memory>
 #include <optional>
 #include <tuple>
+#include <vector>
 
 namespace opensn
 {
+
 class FieldFunctionGridBased;
 class DiscreteOrdinatesProblemIO;
 class AGSLinearSolver;
 class LinearSolver;
 struct BalanceTable;
 struct WGSContext;
+class AngularFluxFunction;
+class BoundaryCarrier;
 
 /**
  * Base class for discrete ordinates solvers.
@@ -61,8 +67,6 @@ public:
   void ReinitializeSolverSchemes();
 
   ~DiscreteOrdinatesProblem() override;
-
-  using BoundaryDefinition = std::pair<LBSBoundaryType, std::shared_ptr<SweepBoundary>>;
 
   const std::string& GetSweepType() const { return sweep_type_; }
 
@@ -132,9 +136,17 @@ public:
 
   void SetBoundaryOptions(const InputParameters& params) override;
   void ClearBoundaries() override;
+  BoundaryCarrier* GetBoundaryCarrier() { return boundary_carrier_.get(); }
+  const BoundaryCarrier* GetBoundaryCarrier() const { return boundary_carrier_.get(); }
 
   void CopyPhiAndSrcToDevice();
   void CopyPhiAndOutflowBackToHost();
+  /**
+   * Transfer data in boundary to device or vice-versa.
+   * \param groupset_id Groupset ID.
+   * \param host_to_device Flag indicating the direction of transfer.
+   */
+  void TransferDeviceBoundaryData(int groupset_id, bool host_to_device);
 
 protected:
   /// Factory-only constructor.
@@ -151,6 +163,16 @@ protected:
 
   /// Initializes Within-GroupSet solvers.
   void InitializeWGSSolvers();
+
+  void InitializeBoundaryCarrier();
+
+  /**
+   * Sort the angle indices within each angle set so that one set maps exactly to another under all
+   * reflected angle mappings.
+   */
+  void SortAngleSetsAngleIndices();
+
+  void ResetBoundaryCarrier();
 
   /**
    * This routine initializes basic sweep datastructures that are agnostic of
@@ -179,9 +201,6 @@ protected:
   bool WriteProblemRestartData(hid_t file_id) const override;
   void ResetDerivedSolutionVectors() override;
 
-  BoundaryDefinition CreateBoundaryFromParams(const InputParameters& params) const;
-  std::shared_ptr<SweepBoundary> CreateSweepBoundary(uint64_t boundary_id) const;
-
   std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
     quadrature_unq_so_grouping_map_;
   std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::shared_ptr<SPDS>>>
@@ -193,7 +212,9 @@ protected:
   const std::string sweep_type_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
   std::map<uint64_t, BoundaryDefinition> boundary_definitions_;
+  std::shared_ptr<BoundaryCarrier> boundary_carrier_ = nullptr;
   std::optional<ParameterBlock> boundary_conditions_block_;
+  bool has_reflecting_boundaries_ = false;
 
   /// Max level size.
   std::size_t max_level_size_ = 0;
@@ -210,6 +231,7 @@ protected:
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   std::vector<std::shared_ptr<WGSContext>> wgs_contexts_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
+  BoundaryBank boundary_bank_;
 
 private:
   std::string
@@ -218,12 +240,13 @@ private:
   ComputeAngularFieldFunctionData(size_t groupset_id, unsigned int group, size_t angle) const;
 
   void CreateAAHD_FLUDSCommonData();
+  void UpdateAAHD_FLUDSCommonDataWithBoundary();
   std::shared_ptr<FLUDS> CreateAAHD_FLUDS(unsigned int num_groups,
                                           std::size_t num_angles,
                                           const FLUDSCommonData& common_data);
   std::shared_ptr<AngleSet>
   CreateAAHD_AngleSet(size_t id,
-                      unsigned int num_groups,
+                      const LBSGroupset& groupset,
                       const SPDS& spds,
                       std::shared_ptr<FLUDS>& fluds,
                       std::vector<size_t>& angle_indices,
@@ -243,7 +266,7 @@ private:
 
   std::shared_ptr<AngleSet>
   CreateCBCD_AngleSet(size_t id,
-                      size_t num_groups,
+                      const LBSGroupset& groupset,
                       const SPDS& spds,
                       std::shared_ptr<FLUDS>& fluds,
                       std::vector<size_t>& angle_indices,

@@ -34,7 +34,8 @@ CBCDSweepChunk::CBCDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
     angle_sets_.push_back(angle_set);
     fluds_list_.push_back(fluds);
     streams_list_.push_back(angle_set->GetStream());
-    gpu_kernel::Arguments<gpu_kernel::SweepType::CBC> args(problem_, groupset_, *angle_set, *fluds);
+    gpu_kernel::Arguments<gpu_kernel::SweepType::CBC> args(
+      problem_, groupset_, *angle_set, *fluds, surface_source_active_);
     kernel_args_list_.push_back(args);
     unsigned int stride_size =
       gpu_kernel::RoundUp(static_cast<unsigned int>(args.flud_data.stride_size));

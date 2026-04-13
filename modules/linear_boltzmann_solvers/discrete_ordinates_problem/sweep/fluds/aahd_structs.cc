@@ -5,17 +5,6 @@
 #include <iomanip>
 
 std::ostream&
-std::operator<<(std::ostream& out, const opensn::AAHD_FaceNode& n)
-{
-  out << "AAHD_FaceNode(";
-  out << "c=" << std::setw(5) << n.GetCellIndex() << ", ";
-  out << "f=" << std::setw(2) << n.GetFaceIndex() << ", ";
-  out << "fn=" << std::setw(2) << n.GetFaceNodeIndex();
-  out << ")";
-  return out;
-}
-
-std::ostream&
 std::operator<<(std::ostream& out, const opensn::AAHD_NonLocalFaceNode& n)
 {
   out << "NLEdgeNode(";

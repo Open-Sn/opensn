@@ -15,7 +15,9 @@
 namespace opensn
 {
 
+class AAHD_AngleSet;
 class SpatialDiscretization;
+class SweepBoundary;
 
 /**
  * Random-access stack based FLUDS.
@@ -33,7 +35,7 @@ public:
                        const SpatialDiscretization& sdm);
 
   /// Get constant reference to the face node tracker map.
-  const std::map<AAHD_FaceNode, AAHD_NodeIndex>& GetNodeTracker() const { return node_tracker_; }
+  const std::map<FaceNode, AAHD_NodeIndex>& GetNodeTracker() const { return node_tracker_; }
 
   /// \name Size getters
   /// \{
@@ -41,8 +43,6 @@ public:
   std::size_t GetLocalNodeStackSize() const { return local_node_stack_size_; }
   /// Get size of the delayed local face node stack.
   std::size_t GetNumDelayedLocalNodes() const { return delayed_local_node_stack_size_; }
-  /// Get size of the boundary face node bank.
-  std::size_t GetNumBoundaryNodes() const { return boundary_node_size_; }
   /// Get sizes of the incoming non-local face node banks.
   const std::vector<std::size_t>& GetNumNonLocalIncomingNodes() const
   {
@@ -78,12 +78,22 @@ public:
   /// Get pointer to indexes on device.
   const std::uint64_t* GetDeviceIndex() const { return device_node_indexes_; }
 
+  /// Append an associated angle set pointer.
+  void AddAssociatedAngleSet(AAHD_AngleSet* as) const { associated_anglesets_.push_back(as); }
+
+  /// Update node tarcker with boundary data and transfer all data to device.
+  void UpdateBoundaryAndSyncWithDevice(
+    const SpatialDiscretization& sdm,
+    const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries);
+
   /// Destructor.
   ~AAHD_FLUDSCommonData() override;
 
 protected:
   /// Map face node to its associated index in the corresponding bank.
-  std::map<AAHD_FaceNode, AAHD_NodeIndex> node_tracker_;
+  std::map<FaceNode, AAHD_NodeIndex> node_tracker_;
+  /// List of anglesets associated to this sweep ordering.
+  mutable std::vector<AAHD_AngleSet*> associated_anglesets_;
 
   /// \name Allocation sizes
   /// \{
@@ -91,8 +101,6 @@ protected:
   std::size_t local_node_stack_size_ = 0;
   /// Size of the delayed local face node vector.
   std::size_t delayed_local_node_stack_size_ = 0;
-  /// Size of the boundary.
-  std::size_t boundary_node_size_ = 0;
   /// Size of the incoming non-local face nodes.
   std::vector<std::size_t> nonlocal_incoming_node_sizes_;
   /// Offset of each location to its incoming non-local face nodes.
@@ -122,9 +130,13 @@ protected:
   /// Compute the indexes for FAS face nodes.
   void ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscretization& sdm);
   /// Compute the indexes for non-local face nodes.
-  void ComputeNodeIndexForBoundaryAndNonLocalFaces(const SpatialDiscretization& sdm);
+  void ComputeNodeIndexForNonLocalFaces(const SpatialDiscretization& sdm);
   /// Compute the index for parallel faces.
   void ComputeNodeIndexForParallelFaces(const SpatialDiscretization& sdm);
+  /// Compute the indexes for boundary face nodes.
+  void ComputeNodeIndexForBoundaryFaces(
+    const SpatialDiscretization& sdm,
+    const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries);
   /// \}
 
   /// Deallocate memory for flatten node indexes on device.

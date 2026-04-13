@@ -149,13 +149,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
             psi = fluds_->NLUpwindPsi(
               cell_->global_id, f, face_nodal_mapping->face_node_mapping_[fj], as_ss_idx);
           else
-            psi = angle_set.PsiBoundary(face.neighbor_id,
-                                        direction_num,
-                                        cell_local_id_,
-                                        f,
-                                        fj,
-                                        gs_gi_,
-                                        surface_source_active_);
+            psi = angle_set.PsiBoundary(
+              face.neighbor_id, direction_num, cell_local_id_, f, fj, 0, surface_source_active_);
 
           if (psi != nullptr)
             for (size_t gsg = 0; gsg < gs_size_; ++gsg)

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
+#include "framework/mesh/cell/cell.h"
 #include <vector>
 #include <limits>
 namespace opensn
@@ -13,21 +14,18 @@ namespace opensn
 class ReflectingBoundary : public SweepBoundary
 {
 public:
-  ReflectingBoundary(unsigned int num_groups,
+  ReflectingBoundary(BoundaryBank& bank,
+                     std::uint64_t bid,
+                     const std::shared_ptr<MeshContinuum>& grid,
+                     const std::vector<LBSGroupset>& groupsets,
                      const Vector3& normal,
-                     CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(LBSBoundaryType::REFLECTING, num_groups, coord_type), normal_(normal)
-  {
-  }
+                     CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN);
 
   const Vector3& GetNormal() const { return normal_; }
 
   const Vector3* GetNormalForReflection() const override { return &normal_; }
 
   bool HasDelayedAngularFlux() const override { return true; }
-
-  void InitializeDelayedAngularFlux(const std::shared_ptr<MeshContinuum>& grid,
-                                    const AngularQuadrature& quadrature) override;
 
   /**
    * Get the list of anglesets that depend on a given angleset.
@@ -37,13 +35,14 @@ public:
    * \param angle_agg Angle aggregation containing all anglesets.
    * \param angleset Angleset for which dependent anglesets are sought.
    */
-  void GetFollowingAngleSets(std::set<AngleSet*>& following_angle_sets,
+  void GetFollowingAngleSets(int groupset_id,
+                             std::set<AngleSet*>& following_angle_sets,
                              const AngleAggregation& angle_agg,
                              const AngleSet& angleset) override;
 
-  void FinalizeDelayedAngularFluxSetup(
-    uint64_t boundary_id,
-    const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries) override;
+  void SetOpposingReflected(
+    std::uint64_t boundary_id,
+    const std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries) override;
 
   void ZeroOpposingDelayedAngularFluxOld() override;
 
@@ -73,43 +72,77 @@ public:
 
   void CopyDelayedAngularFluxNewToOld() override;
 
+  void GetReflectedMap(int groupset_id,
+                       std::vector<std::vector<std::uint32_t>>& reflected_maps) override
+  {
+    reflected_maps.push_back(extra_data_[groupset_id].reflected_anglenum);
+  }
+
   double* PsiIncoming(std::uint32_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,
-                      unsigned int group_num) override;
+                      int groupset_id,
+                      unsigned int group_idx) override;
 
   double* PsiOutgoing(uint64_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
-                      unsigned int angle_num) override;
+                      unsigned int angle_num,
+                      int groupset_id) override;
 
-  void UpdateAnglesReadyStatus(const std::vector<std::uint32_t>& angles) override;
+  std::uint64_t
+  GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing) override;
 
-  bool CheckAnglesReadyStatus(const std::vector<std::uint32_t>& angles) override;
+  void InitializeReflectingMap(const std::vector<LBSGroupset>& groupsets) override;
+  void InitializeAngleDependent(const std::vector<LBSGroupset>& groupsets) override;
 
-  void ResetAnglesReadyStatus() override;
+  /// Stride for computing psi pointer.
+  struct Stride
+  {
+    std::uint64_t facenode_stride = 0;
+    std::uint64_t angle_stride = 0;
+  };
 
 protected:
   const Vector3 normal_;
+  CoordinateSystemType coord_type_;
   bool opposing_reflected_ = false;
 
-  // Populated by angle aggregation
-  // AngularFluxData indices are: angle, cell per angle, faces per cell, DOFs per face, groups per
-  // DOF
-  using AngularFluxData = std::vector<std::vector<std::vector<std::vector<std::vector<double>>>>>;
-  AngularFluxData boundary_flux_;
-  AngularFluxData boundary_flux_old_;
+  /// Map from face node to internal node-index.
+  std::map<FaceNode, std::uint64_t> facenode_to_index_;
 
-  std::vector<int> reflected_anglenum_;
-  std::vector<bool> angle_readyflags_;
+  /// Additional data specific to reflecting boundary for each groupset.
+  struct ExtraData
+  {
+    /// Map from angle direction number in a quadrature to internal angle index
+    std::vector<std::uint64_t> map_dirnum;
+    /// Map from angle direction number in a quadrature to reflected angle index.
+    std::vector<std::uint32_t> reflected_anglenum;
+    /**
+     * Number of angles recorded in the boundary, which is also the stride of the face node.
+     * If the boundary is opposing reflected, all angles are recorded. Otherwise, only outgoing ones
+     * are counted.
+     */
+    std::uint64_t node_stride = 0;
+    /// Offset separating current and old boundary flux.
+    std::uint64_t old_stride = 0;
+  };
+  /// List of data per groupset.
+  std::vector<ExtraData> extra_data_;
 
 private:
-  template <typename Fn>
-  void ForEachDelayedAngularFlux(bool use_old_store, Fn&& fn);
+  template <bool ApplyOnOldFlux, typename Fn>
+  void ForEachGroupset(Fn&& fn);
 
-  template <typename Fn>
-  void ForEachDelayedAngularFluxConst(bool use_old_store, Fn&& fn) const;
+  template <bool ApplyOnOldFlux, typename Fn>
+  void ForEachGroupset(Fn&& fn) const;
+
+  template <bool ApplyOnOldFlux, typename Fn>
+  void ForEachDelayedAngularFlux(Fn&& fn);
+
+  template <bool ApplyOnOldFlux, typename Fn>
+  void ForEachDelayedAngularFlux(Fn&& fn) const;
 
 private:
   static constexpr double epsilon_ = 1.0e-8;

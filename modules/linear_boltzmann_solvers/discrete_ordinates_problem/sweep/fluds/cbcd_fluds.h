@@ -123,7 +123,7 @@ private:
   crb::MappedHostVector<double> incoming_nonlocal_psi_;
   crb::MappedHostVector<double> outgoing_nonlocal_psi_;
   /// Associated angleset's stream.
-  crb::Stream stream_;
+  crb::Stream stream_  = crb::Stream::get_null_stream();
   crb::MappedHostVector<std::uint32_t> local_cell_ids_;
   bool save_angular_flux_;
   /// Device storage for local angular fluxes.

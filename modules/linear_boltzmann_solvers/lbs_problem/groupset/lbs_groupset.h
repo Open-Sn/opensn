@@ -11,12 +11,14 @@
 #include "framework/math/linear_solver/linear_system_solver.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/utils/utils.h"
+#include <memory>
 
 namespace opensn
 {
 
 class DiffusionMIPSolver;
 class LBSProblem;
+class QuadratureCarrier;
 
 /**
  * Shared groupset state.
@@ -40,10 +42,10 @@ public:
   void PrintSweepInfoFile(size_t ev_tag, const std::string& file_name);
 
   /// Initialize carrier for copying quadrature data to GPU.
-  void InitializeGPUCarriers();
+  void InitializeQuadratureCarrier();
 
   /// Delete carrier and deallocate memory on GPU.
-  void ResetGPUCarriers();
+  void ResetQuadratureCarrier();
 
   ~LBSGroupset();
 
@@ -55,6 +57,8 @@ public:
   unsigned int first_group;
   /// Last energy-group index in the groupset.
   unsigned int last_group;
+  /// Number of groups in the groupset.
+  unsigned int size;
 
   // Sweep/discrete-ordinates data kept in the shared groupset by design.
   // This avoids duplicating generic groupset data.
@@ -84,7 +88,7 @@ public:
   std::string wgdsa_string;
   std::string tgdsa_string;
 
-  void* quad_carrier = nullptr;
+  std::shared_ptr<QuadratureCarrier> quad_carrier = nullptr;
 
   std::shared_ptr<DiffusionMIPSolver> wgdsa_solver = nullptr;
   std::shared_ptr<DiffusionMIPSolver> tgdsa_solver = nullptr;
