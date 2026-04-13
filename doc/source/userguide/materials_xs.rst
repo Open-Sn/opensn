@@ -271,7 +271,8 @@ Loading OpenMC MGXS Files
 =========================
 
 Use :py:meth:`pyopensn.xs.MultiGroupXS.LoadFromOpenMC` to load cross sections
-from an OpenMC multi-group HDF5 library.
+from an OpenMC multi-group HDF5 library. Delayed-neutron data is imported when
+it is present in the OpenMC file.
 
 .. code-block:: python
 
@@ -309,6 +310,12 @@ Example:
    absorption dataset directly. This makes the imported data less sensitive to
    small inconsistencies or statistical noise.
 
+   When delayed-neutron data is present, OpenSn also imports precursor-group
+   information, prompt and delayed fission production, precursor decay
+   constants, and delayed emission spectra. If ``chi-prompt`` is not present,
+   OpenSn falls back to the steady fission spectrum ``chi`` as the prompt
+   spectrum.
+
 What OpenMC Import Expects
 --------------------------
 
@@ -326,6 +333,14 @@ The imported object may include:
 * fission cross section
 * fission production data
 * fission spectrum
+* delayed-neutron data, including:
+
+  - ``prompt-nu-fission``
+  - ``delayed-nu-fission``
+  - ``decay-rate``
+  - ``chi-delayed``
+  - optional ``chi-prompt``
+
 * any requested named custom one-dimensional XS in ``extra_xs_names``
 
 If the requested dataset or temperature is not present, the load fails with an
