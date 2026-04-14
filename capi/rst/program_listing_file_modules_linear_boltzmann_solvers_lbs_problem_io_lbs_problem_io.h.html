@@ -90,6 +90,7 @@
 
 <span class="cp">#pragma once</span>
 
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hdf5.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
@@ -103,6 +104,12 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSSolverIO</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">ReadRestartData</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
+<span class="w">                              </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="n">hid_t</span><span class="p">)</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">extra_reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteRestartData</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="n">hid_t</span><span class="p">)</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">extra_writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Write a flux moments vector to a file.</span>
 <span class="cm">   *</span>
@@ -110,7 +117,7 @@
 <span class="cm">   * \param file_base File name base</span>
 <span class="cm">   * \param opt_src Optional source vector to write instead of the problem-owned flux moments.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">WriteFluxMoments</span><span class="p">(</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">WriteFluxMoments</span><span class="p">(</span>
 <span class="w">    </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">);</span>

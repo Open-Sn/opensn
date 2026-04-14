@@ -64,6 +64,9 @@ Program Listing for File hdf_utils.h
    template <typename T>
    hid_t get_datatype();
    
+   template <typename T>
+   bool H5ReadAttribute(hid_t id, const std::string& name, T& value);
+   
    template <>
    inline hid_t
    get_datatype<char>()
@@ -160,6 +163,15 @@ Program Listing for File hdf_utils.h
    get_datatype<bool>()
    {
      return H5T_NATIVE_UCHAR;
+   }
+   
+   template <typename T>
+   bool
+   H5ReadOptionalAttribute(hid_t id, const std::string& name, T& value)
+   {
+     if (H5Aexists(id, name.c_str()) <= 0)
+       return true;
+     return H5ReadAttribute<T>(id, name, value);
    }
    
    inline bool

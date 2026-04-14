@@ -101,6 +101,7 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionGridBased</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblemIO</span><span class="p">;</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Base class for discrete ordinates solvers.</span>
@@ -109,6 +110,7 @@
 <span class="p">{</span>
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">SweepOrderGroupingInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">UniqueSOGroupings</span><span class="p">,</span><span class="w"> </span><span class="n">DirIDToSOMap</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblemIO</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SweepChunkMode</span>
@@ -238,6 +240,8 @@
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepChunk</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SetSweepChunk</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPsi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReadProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">BoundaryDefinition</span><span class="w"> </span><span class="nf">CreateBoundaryFromParams</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateSweepBoundary</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">boundary_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>

@@ -183,7 +183,7 @@ Rate balance,
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><em>pyopensn.solver.LBSProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
+<li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
 <li><p><strong>acceleration</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesKEigenAcceleration.html#pyopensn.solver.DiscreteOrdinatesKEigenAcceleration" title="pyopensn.solver.DiscreteOrdinatesKEigenAcceleration"><em>pyopensn.solver.DiscreteOrdinatesKEigenAcceleration</em></a>) – Optional DiscreteOrdinatesKEigenAcceleration instance for acceleration.</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default = 1000</em>) – Maximum power iterations allowed.</p></li>
 <li><p><strong>k_tol</strong> (<em>float</em><em>, </em><em>default = 1.0e-10</em>) – Tolerance on the k-eigenvalue.</p></li>
@@ -192,6 +192,11 @@ Rate balance,
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">problem.options.read_restart_path</span></code> is set, restart data is read
+during <a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver.Initialize" title="pyopensn.solver.PowerIterationKEigenSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">problem.options.restart_writes_enabled</span></code> is
+true, timed restart dumps may be written during the outer iteration loop
+and a final restart dump is written when execution completes.</p>
 </dd></dl>
 
 </dd></dl>

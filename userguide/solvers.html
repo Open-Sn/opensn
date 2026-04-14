@@ -319,13 +319,14 @@ flux storage, AGS behavior, and other global settings</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Restart read/write timing is solver-specific. Steady-state and
-power-iteration solvers support solver-managed restart reads and writes.
-Steady-state writes its restart dump only after the solve completes, while
-power iteration can also write timed dumps during the outer iteration loop.
-Restart reads occur during <code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code>. The nonlinear k-eigen and
-transient solvers do not currently provide a solver-managed restart-dump
-path.</p>
+<p>Restart state is primarily problem-owned. The common restart payload stores
+flux moments, time metadata, precursor data, and any required
+discrete-ordinates angular state. Solver types can add only the small extra
+pieces they need on top of that common payload. Restart reads occur during
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code>. Timed restart dumps can be written by solvers that
+execute over multiple outer iterations or timesteps, such as
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a> and
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a>.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

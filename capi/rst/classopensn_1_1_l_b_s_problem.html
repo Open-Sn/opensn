@@ -111,6 +111,14 @@
 <dd><p>Base class for all Linear Boltzmann Solvers. </p>
 <p>Subclassed by <a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#classopensn_1_1_discrete_ordinates_problem"><span class="std std-ref">opensn::DiscreteOrdinatesProblem</span></a></p>
 <div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem15RestartDataHookE">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a659857eea4182344eb1e012e28895efc"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RestartDataHook</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">hid_t</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem15RestartDataHookE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem10LBSProblemERK10LBSProblem">
@@ -621,6 +629,16 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem15ReadRestartDataERK15RestartDataHook">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a86e5a9eda30630b9d3e5eaa9976d4f62"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadRestartData</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn10LBSProblem15RestartDataHookE" title="opensn::LBSProblem::RestartDataHook"><span class="n"><span class="pre">RestartDataHook</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">extra_reader</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem15ReadRestartDataERK15RestartDataHook" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem16WriteRestartDataERK15RestartDataHook">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a41f9033499bc73c9d1d243c4aa094072"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteRestartData</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn10LBSProblem15RestartDataHookE" title="opensn::LBSProblem::RestartDataHook"><span class="n"><span class="pre">RestartDataHook</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">extra_writer</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem16WriteRestartDataERK15RestartDataHook" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem18TriggerRestartDumpEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a74f8f4b277298ec42d2d0fe624f8619c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TriggerRestartDump</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem18TriggerRestartDumpEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -774,6 +792,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem26UpdateDerivedFieldFunctionER22FieldFunctionGridBasedRKNSt6stringEd">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1ac098c032da3fe1a046987652b8b5e11e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateDerivedFieldFunction</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBasedE" title="opensn::FieldFunctionGridBased"><span class="n"><span class="pre">FieldFunctionGridBased</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ff</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xs_name</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">power_normalization_target</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem26UpdateDerivedFieldFunctionER22FieldFunctionGridBasedRKNSt6stringEd" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem22ReadProblemRestartDataE5hid_t">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1ae9739dd3b8ec74344f75a22ab0cd7816"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadProblemRestartData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">hid_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">file_id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem22ReadProblemRestartDataE5hid_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem23WriteProblemRestartDataE5hid_t">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1ac1983225907f0a15fb5b7938afa5b5b6"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteProblemRestartData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">hid_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">file_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem23WriteProblemRestartDataE5hid_t" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -991,6 +1019,14 @@
 <span class="target" id="classopensn_1_1_l_b_s_problem_1aeef65ee41c90d9af29ff3926a5ea2079"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_gpus_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem9use_gpus_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Flag indicating if GPU acceleration is enabled. </p>
 </dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">LBSSolverIO</span></dt>
+</dl>
 
 </div>
 </dd></dl>

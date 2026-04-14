@@ -26,6 +26,7 @@ Program Listing for File discrete_ordinates_problem.h
    namespace opensn
    {
    class FieldFunctionGridBased;
+   class DiscreteOrdinatesProblemIO;
    
    /**
     * Base class for discrete ordinates solvers.
@@ -34,6 +35,7 @@ Program Listing for File discrete_ordinates_problem.h
    {
    protected:
      using SweepOrderGroupingInfo = std::pair<UniqueSOGroupings, DirIDToSOMap>;
+     friend class DiscreteOrdinatesProblemIO;
    
    public:
      enum class SweepChunkMode
@@ -163,6 +165,8 @@ Program Listing for File discrete_ordinates_problem.h
      virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
    
      void ZeroPsi() override;
+     bool ReadProblemRestartData(hid_t file_id) override;
+     bool WriteProblemRestartData(hid_t file_id) const override;
    
      BoundaryDefinition CreateBoundaryFromParams(const InputParameters& params) const;
      std::shared_ptr<SweepBoundary> CreateSweepBoundary(uint64_t boundary_id) const;

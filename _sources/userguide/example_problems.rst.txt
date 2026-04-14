@@ -642,22 +642,19 @@ or, when angular-flux storage is enabled:
 Example 13: Writing and Reading Restart Dumps
 =============================================
 
-Restart dumps are different from ad hoc flux or angular-flux I/O. They are a
-solver-driven way to save and later restore a restartable transport state.
+Restart dumps are different from regular field-function or angular i/o. They
+save a restartable state owned primarily by the problem, with small
+solver-specific data added only when needed:
 
-When restart data is read or written depends on the solver:
-
-* :py:class:`SteadyStateSourceSolver` reads restart data during
-  :py:meth:`Initialize` and writes restart data only after the steady-state
-  solve has completed.
-* :py:class:`PowerIterationKEigenSolver` reads restart data during
-  :py:meth:`Initialize`, may write timed restart dumps during the outer
-  iterations, and writes a final restart dump at the end when restart writes
-  are enabled.
-* :py:class:`NonLinearKEigenSolver` does not currently provide a solver-managed
-  restart-dump path.
-* :py:class:`TransientSolver` does not currently provide a solver-managed
-  restart-dump path.
+* common problem-owned state includes flux moments, time-integration metadata,
+  precursor state, and any discrete-ordinates angular restart data required by
+  the active problem mode,
+* :py:class:`SteadyStateSourceSolver` uses only the common problem-owned
+  restart state,
+* :py:class:`PowerIterationKEigenSolver` adds k-eigenvalue-specific quantities
+  such as ``k_eff`` and the previous fission-production normalization,
+* :py:class:`TransientSolver` uses the common problem-owned restart state and
+  adds the transient step counter.
 
 To write restart dumps for a steady-state solve:
 
@@ -701,10 +698,12 @@ For long-running problems, timed restart writes can also be enabled:
        "write_restart_time_interval": 60,
    }
 
-This timed path is relevant to
-:py:class:`pyopensn.solver.PowerIterationKEigenSolver`, which checks the time
-interval during the outer power iterations and still writes a final restart
-dump at the end when restart output is enabled.
+This timed path is relevant to solver types that execute over multiple outer
+iterations or time steps, including:
+:py:class:`pyopensn.solver.PowerIterationKEigenSolver` and
+:py:class:`pyopensn.solver.TransientSolver`. They check the elapsed wall-clock
+time against ``write_restart_time_interval`` during execution and still write a
+final restart dump at the end when restart output is enabled.
 
 Then a later run can read that restart state:
 
@@ -733,6 +732,7 @@ This is useful when:
 
 * a large steady-state solve needs to be resumed,
 * a k-eigen solve should restart from a previous state,
+* a transient solve should continue from a previously written time step,
 * or a workflow is split across multiple runs.
 
 .. note::
@@ -752,6 +752,6 @@ As a practical guide:
 * use Example 5 for standard k-eigenvalue work,
 * use Example 6 only when the nonlinear eigenvalue solve is specifically
   needed,
-* use Example 13 when a workflow needs solver-managed restart dumps,
+* use Example 13 when a workflow needs restartable transport state across runs,
 * add the post-processing patterns only after the solve itself is behaving
   correctly.

@@ -32,6 +32,8 @@ Includes
 
 - ``functional``
 
+- ``hdf5.h``
+
 - ``optional``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)

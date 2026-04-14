@@ -272,6 +272,10 @@ In “zero” mode, scalar flux vectors are reset to zero.</p></li>
 <p class="rubric">Notes</p>
 <p>The associated problem must have <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> enabled. This
 is required for transient problems.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">problem.options.read_restart_path</span></code> is set, restart data is read
+during <a class="reference internal" href="#pyopensn.solver.TransientSolver.Initialize" title="pyopensn.solver.TransientSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">problem.options.restart_writes_enabled</span></code> is
+true, timed restart dumps may be written during <a class="reference internal" href="#pyopensn.solver.TransientSolver.Execute" title="pyopensn.solver.TransientSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> and a final
+restart dump is written when execution completes.</p>
 </dd></dl>
 
 </dd></dl>

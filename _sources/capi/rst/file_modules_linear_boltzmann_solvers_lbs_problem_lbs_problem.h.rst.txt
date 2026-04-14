@@ -42,6 +42,10 @@ Includes
 
 - ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
 
+- ``framework/utils/hdf_utils.h`` (:ref:`file_framework_utils_hdf_utils.h`)
+
+- ``functional``
+
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)

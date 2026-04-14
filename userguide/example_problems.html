@@ -730,21 +730,19 @@ stages:</p>
 </section>
 <section id="example-13-writing-and-reading-restart-dumps">
 <h2><span class="section-number">13.16. </span>Example 13: Writing and Reading Restart Dumps<a class="headerlink" href="#example-13-writing-and-reading-restart-dumps" title="Link to this heading"></a></h2>
-<p>Restart dumps are different from ad hoc flux or angular-flux I/O. They are a
-solver-driven way to save and later restore a restartable transport state.</p>
-<p>When restart data is read or written depends on the solver:</p>
+<p>Restart dumps are different from regular field-function or angular i/o. They
+save a restartable state owned primarily by the problem, with small
+solver-specific data added only when needed:</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SteadyStateSourceSolver</span></code> reads restart data during
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code> and writes restart data only after the steady-state
-solve has completed.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver</span></code> reads restart data during
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code>, may write timed restart dumps during the outer
-iterations, and writes a final restart dump at the end when restart writes
-are enabled.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NonLinearKEigenSolver</span></code> does not currently provide a solver-managed
-restart-dump path.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TransientSolver</span></code> does not currently provide a solver-managed
-restart-dump path.</p></li>
+<li><p>common problem-owned state includes flux moments, time-integration metadata,
+precursor state, and any discrete-ordinates angular restart data required by
+the active problem mode,</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SteadyStateSourceSolver</span></code> uses only the common problem-owned
+restart state,</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver</span></code> adds k-eigenvalue-specific quantities
+such as <code class="docutils literal notranslate"><span class="pre">k_eff</span></code> and the previous fission-production normalization,</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TransientSolver</span></code> uses the common problem-owned restart state and
+adds the transient step counter.</p></li>
 </ul>
 <p>To write restart dumps for a steady-state solve:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
@@ -784,10 +782,12 @@ the transport solve has completed. It is not written mid-iteration.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>This timed path is relevant to
-<a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>, which checks the time
-interval during the outer power iterations and still writes a final restart
-dump at the end when restart output is enabled.</p>
+<p>This timed path is relevant to solver types that execute over multiple outer
+iterations or time steps, including:
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a> and
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a>. They check the elapsed wall-clock
+time against <code class="docutils literal notranslate"><span class="pre">write_restart_time_interval</span></code> during execution and still write a
+final restart dump at the end when restart output is enabled.</p>
 <p>Then a later run can read that restart state:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
     <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
@@ -813,6 +813,7 @@ dump at the end when restart output is enabled.</p>
 <ul class="simple">
 <li><p>a large steady-state solve needs to be resumed,</p></li>
 <li><p>a k-eigen solve should restart from a previous state,</p></li>
+<li><p>a transient solve should continue from a previously written time step,</p></li>
 <li><p>or a workflow is split across multiple runs.</p></li>
 </ul>
 <div class="admonition note">
@@ -832,7 +833,7 @@ state layout must match the restart data being read.</p>
 <li><p>use Example 5 for standard k-eigenvalue work,</p></li>
 <li><p>use Example 6 only when the nonlinear eigenvalue solve is specifically
 needed,</p></li>
-<li><p>use Example 13 when a workflow needs solver-managed restart dumps,</p></li>
+<li><p>use Example 13 when a workflow needs restartable transport state across runs,</p></li>
 <li><p>add the post-processing patterns only after the solve itself is behaving
 correctly.</p></li>
 </ul>

@@ -102,9 +102,11 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/linear_solver/linear_solver.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/spatial_discretization/finite_element/unit_cell_matrices.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/geometry.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/utils/hdf_utils.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscksp.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -119,6 +121,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TotalXSCarrier</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OutflowCarrier</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshCarrier</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LBSSolverIO</span><span class="p">;</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MemoryPinner</span><span class="p">;</span>
 
@@ -126,6 +129,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Problem</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">enable_shared_from_this</span><span class="o">&lt;</span><span class="n">LBSProblem</span><span class="o">&gt;</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">RestartDataHook</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="n">hid_t</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">LBSSolverIO</span><span class="p">;</span>
+
 <span class="w">  </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
@@ -351,6 +358,9 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FieldFunctionGridBased</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateFieldFunction</span><span class="p">(</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_name</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">power_normalization_target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">);</span>
 
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReadRestartData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RestartDataHook</span><span class="o">&amp;</span><span class="w"> </span><span class="n">extra_reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteRestartData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RestartDataHook</span><span class="o">&amp;</span><span class="w"> </span><span class="n">extra_writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
+
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">TriggerRestartDump</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">options_</span><span class="p">.</span><span class="n">write_restart_time_interval</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
@@ -412,6 +422,8 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateDerivedFieldFunction</span><span class="p">(</span><span class="n">FieldFunctionGridBased</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ff</span><span class="p">,</span>
 <span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_name</span><span class="p">,</span>
 <span class="w">                                  </span><span class="kt">double</span><span class="w"> </span><span class="n">power_normalization_target</span><span class="p">);</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReadProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">);</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">LBSOptions</span><span class="w"> </span><span class="n">options_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">time_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
