@@ -15,9 +15,11 @@
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/math/geometry.h"
+#include "framework/utils/hdf_utils.h"
 #include <memory>
 #include <petscksp.h>
 #include <chrono>
+#include <functional>
 
 namespace opensn
 {
@@ -32,6 +34,7 @@ struct WGSContext;
 class TotalXSCarrier;
 class OutflowCarrier;
 class MeshCarrier;
+class LBSSolverIO;
 template <typename T>
 class MemoryPinner;
 
@@ -39,6 +42,10 @@ class MemoryPinner;
 class LBSProblem : public Problem, public std::enable_shared_from_this<LBSProblem>
 {
 public:
+  using RestartDataHook = std::function<bool(hid_t)>;
+
+  friend class LBSSolverIO;
+
   LBSProblem(const LBSProblem&) = delete;
 
   LBSProblem& operator=(const LBSProblem&) = delete;
@@ -264,6 +271,9 @@ public:
   std::shared_ptr<FieldFunctionGridBased> CreateFieldFunction(
     const std::string& name, const std::string& xs_name, double power_normalization_target = -1.0);
 
+  bool ReadRestartData(const RestartDataHook& extra_reader = {});
+  bool WriteRestartData(const RestartDataHook& extra_writer = {});
+
   bool TriggerRestartDump() const
   {
     if (options_.write_restart_time_interval <= std::chrono::seconds(0))
@@ -325,6 +335,8 @@ protected:
   void UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
                                   const std::string& xs_name,
                                   double power_normalization_target);
+  virtual bool ReadProblemRestartData(hid_t file_id);
+  virtual bool WriteProblemRestartData(hid_t file_id) const;
 
   LBSOptions options_;
   double time_ = 0.0;

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "hdf5.h"
 #include <string>
 #include <optional>
 #include <vector>
@@ -16,6 +17,12 @@ class LBSProblem;
 class LBSSolverIO
 {
 public:
+  static bool ReadRestartData(LBSProblem& lbs_problem,
+                              const std::function<bool(hid_t)>& extra_reader = {});
+
+  static bool WriteRestartData(LBSProblem& lbs_problem,
+                               const std::function<bool(hid_t)>& extra_writer = {});
+
   /**
    * Write a flux moments vector to a file.
    *

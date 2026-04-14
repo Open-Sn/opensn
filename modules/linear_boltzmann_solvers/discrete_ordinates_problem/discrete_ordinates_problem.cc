@@ -16,6 +16,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "framework/math/functions/function.h"
@@ -1959,6 +1960,18 @@ DiscreteOrdinatesProblem::UpdatePsiOld()
     assert(psi_old_local_[gs].size() == psi_new_local_[gs].size());
     std::copy(psi_new_local_[gs].begin(), psi_new_local_[gs].end(), psi_old_local_[gs].begin());
   }
+}
+
+bool
+DiscreteOrdinatesProblem::ReadProblemRestartData(hid_t file_id)
+{
+  return DiscreteOrdinatesProblemIO::ReadRestartData(*this, file_id);
+}
+
+bool
+DiscreteOrdinatesProblem::WriteProblemRestartData(hid_t file_id) const
+{
+  return DiscreteOrdinatesProblemIO::WriteRestartData(*this, file_id);
 }
 
 } // namespace opensn

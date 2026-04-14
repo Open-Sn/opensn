@@ -42,6 +42,20 @@
     ]
   },
   {
+    "file": "transient_zero_1d_restart.py",
+    "comment": "1D 2-group scattered transient restart reproduces a continuous four-step solve",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TRANSIENT_RESTART_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_init_time_dependent_source.py",
     "comment": "Time-dependent source init: 1D absorber step consistency",
     "num_procs": 4,
