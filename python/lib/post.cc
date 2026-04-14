@@ -4,6 +4,7 @@
 #include "python/lib/py_wrappers.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/postprocessors/volume_postprocessor.h"
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 
 namespace opensn
 {
@@ -55,7 +56,15 @@ WrapPostprocessors(py::module& post)
     "GetValue",
     [](VolumePostprocessor& self)
     {
-      return self.GetValue();
+      const auto& arr = self.GetValue();
+      auto dims = arr.dimension();
+
+      return py::array_t<double>(
+        {dims[0], dims[1]},
+        {dims[1] * sizeof(double), sizeof(double)},
+        arr.data(),
+        py::cast(self)
+      );
     },
     R"(
     Returns the value of the postprocessor.

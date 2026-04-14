@@ -27,7 +27,7 @@ public:
 
   void Execute();
 
-  std::vector<std::vector<double>> GetValue() const;
+  const NDArray<double, 2>& GetValue() const;
 
 private:
   void CreateSpatialRestriction();
@@ -48,7 +48,7 @@ private:
   /// Type of value to compute
   ValueType value_type_;
   /// Computed postprocessed values
-  std::vector<std::vector<double>> values_;
+  NDArray<double, 2> values_;
   /// Selected group
   std::optional<unsigned int> selected_group_;
   /// Selected groupset

@@ -103,9 +103,7 @@ VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
   CreateMultipliers();
 
   auto n_lvs = std::max(static_cast<std::size_t>(1), logical_volumes_.size());
-  values_.resize(n_lvs);
-  for (auto& vals : values_)
-    vals.resize(groups_.size());
+  values_.resize({n_lvs, groups_.size()});
 }
 
 void
@@ -233,16 +231,16 @@ VolumePostprocessor::Execute()
     switch (value_type_)
     {
       case ValueType::INTEGRAL:
-        values_[i] = ComputeIntegral(cell_local_ids_[i]);
+        MemCopyRow(values_, i, ComputeIntegral(cell_local_ids_[i]));
         break;
       case ValueType::MAX:
-        values_[i] = ComputeMax(cell_local_ids_[i]);
+        MemCopyRow(values_, i, ComputeMax(cell_local_ids_[i]));
         break;
       case ValueType::MIN:
-        values_[i] = ComputeMin(cell_local_ids_[i]);
+        MemCopyRow(values_, i, ComputeMin(cell_local_ids_[i]));
         break;
       case ValueType::AVERAGE:
-        values_[i] = ComputeVolumeWeightedAverage(cell_local_ids_[i]);
+        MemCopyRow(values_, i, ComputeVolumeWeightedAverage(cell_local_ids_[i]));
         break;
     }
   }
@@ -415,7 +413,7 @@ VolumePostprocessor::ComputeVolumeWeightedAverage(const std::vector<uint32_t>& c
   return values;
 }
 
-std::vector<std::vector<double>>
+const NDArray<double, 2>&
 VolumePostprocessor::GetValue() const
 {
   return values_;
