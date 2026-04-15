@@ -189,6 +189,12 @@ is populated with 1.0/velocity.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.LoadFromCEPXS">
+<span class="sig-name descname"><span class="pre">LoadFromCEPXS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.LoadFromCEPXS" title="Link to this definition"></a></dt>
+<dd><p>Load multi-group cross sections from a CEPXS cross-section file.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.LoadFromOpenMC">
 <span class="sig-name descname"><span class="pre">LoadFromOpenMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_xs_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="Link to this definition"></a></dt>
 <dd><p>Load multi-group cross sections from an OpenMC cross-section file into this
@@ -260,6 +266,12 @@ Named custom 1D XS are scaled along with the standard 1D cross-section data.</p>
 <dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.custom_xs_names">
 <span class="sig-name descname"><span class="pre">custom_xs_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><span class="pre">pyopensn.xs.MultiGroupXS</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.custom_xs_names" title="Link to this definition"></a></dt>
 <dd><p>Get a list of custom XS entries.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.xs.MultiGroupXS.energy_deposition">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">energy_deposition</span></span><a class="headerlink" href="#pyopensn.xs.MultiGroupXS.energy_deposition" title="Link to this definition"></a></dt>
+<dd><p>Get energy deposition cross section.</p>
 </dd></dl>
 
 <dl class="py method">
