@@ -91,6 +91,8 @@ MultiGroupXS::Combine(
   mgxs.sigma_t_.assign(n_grps, 0.0);
   mgxs.sigma_a_.assign(n_grps, 0.0);
   std::map<std::string, std::vector<double>> combined_custom_xs;
+  mgxs.energy_deposition_.assign(n_grps, 0.0);
+  bool has_energy_deposition = false;
 
   // Init transfer matrices only if at least one exists
   if (std::any_of(xsecs.begin(),
@@ -150,6 +152,11 @@ MultiGroupXS::Combine(
         if (combined_xs.empty())
           combined_xs.assign(n_grps, 0.0);
         combined_xs[g] += density * xs->GetCustomXS(xs_name)[g];
+      }
+      if (not xsecs[x]->GetEnergyDeposition().empty())
+      {
+        has_energy_deposition = true;
+        mgxs.energy_deposition_[g] += density * xsecs[x]->GetEnergyDeposition()[g];
       }
 
       if (xs->IsFissionable())
@@ -225,6 +232,8 @@ MultiGroupXS::Combine(
   } // for cross sections
 
   mgxs.custom_xs_ = std::move(combined_custom_xs);
+  if (not has_energy_deposition)
+    mgxs.energy_deposition_.clear();
   mgxs.ComputeDiffusionParameters();
 
   return mgxs;
@@ -242,6 +251,7 @@ MultiGroupXS::Reset()
 
   sigma_t_.clear();
   sigma_a_.clear();
+  energy_deposition_.clear();
   transfer_matrices_.clear();
   transposed_transfer_matrices_.clear();
 
@@ -431,6 +441,8 @@ MultiGroupXS::Scale(const double factor)
   {
     sigma_t_[g] *= scaling_factor_;
     sigma_a_[g] *= scaling_factor_;
+    if (not energy_deposition_.empty())
+      energy_deposition_[g] *= scaling_factor_;
 
     if (is_fissionable_)
     {
