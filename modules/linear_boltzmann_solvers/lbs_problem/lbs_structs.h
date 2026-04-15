@@ -43,7 +43,6 @@ struct LBSOptions
 
   bool use_precursors = true;
   bool use_src_moments = false;
-
   bool save_angular_flux = false;
 
   bool adjoint = false;

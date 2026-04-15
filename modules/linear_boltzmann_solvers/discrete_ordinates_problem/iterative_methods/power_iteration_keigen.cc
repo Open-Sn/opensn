@@ -1,0 +1,124 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/power_iteration_keigen.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
+#include "framework/runtime.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
+#include <iomanip>
+
+namespace opensn
+{
+
+void
+PowerIterationKEigenSolver(LBSProblem& lbs_problem,
+                           double tolerance,
+                           unsigned int max_iterations,
+                           double& k_eff)
+{
+  const std::string fname = "PowerIterationKEigenSolver";
+  auto* do_problem = dynamic_cast<DiscreteOrdinatesProblem*>(&lbs_problem);
+  if (not do_problem)
+    throw std::logic_error(fname + ": requires a DiscreteOrdinatesProblem.");
+
+  for (size_t gsid = 0; gsid < do_problem->GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_solver = do_problem->GetWGSSolver(gsid);
+    auto context = wgs_solver->GetContext();
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
+
+    if (not wgs_context)
+      throw std::logic_error(fname + ": Cast failed.");
+
+    wgs_context->lhs_src_scope = APPLY_WGS_SCATTER_SOURCES;
+    wgs_context->rhs_src_scope = APPLY_AGS_SCATTER_SOURCES | APPLY_FIXED_SOURCES;
+  }
+
+  const auto& phi_old_local = lbs_problem.GetPhiOldLocal();
+  const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
+  auto ags_solver = do_problem->GetAGSSolver();
+  const auto& groupsets = lbs_problem.GetGroupsets();
+  auto active_set_source_function = lbs_problem.GetActiveSetSourceFunction();
+
+  k_eff = 1.0;
+  double k_eff_prev = 1.0;
+  double k_eff_change = 1.0;
+  double F_prev = ComputeFissionProduction(lbs_problem, phi_old_local);
+
+  // Start power iterations
+  const bool print_ags_iters = lbs_problem.GetOptions().verbose_ags_iterations and
+                               groupsets.size() > 1 and
+                               lbs_problem.GetOptions().max_ags_iterations > 1;
+  ags_solver->SetVerbosity(print_ags_iters);
+  unsigned int nit = 0;
+  bool converged = false;
+  while (nit < max_iterations)
+  {
+    lbs_problem.ZeroQMoments();
+    for (const auto& groupset : groupsets)
+      active_set_source_function(groupset,
+                                 lbs_problem.GetQMomentsLocal(),
+                                 phi_old_local,
+                                 APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+
+    lbs_problem.ScaleQMoments(1.0 / k_eff);
+
+    // This solves the inners for transport
+    ags_solver->Solve();
+
+    // Recompute k-eigenvalue
+    double F_new = ComputeFissionProduction(lbs_problem, phi_new_local);
+    k_eff = F_new / F_prev * k_eff;
+    double reactivity = (k_eff - 1.0) / k_eff;
+
+    // Check convergence, bookkeeping
+    k_eff_change = fabs(k_eff - k_eff_prev) / k_eff;
+    k_eff_prev = k_eff;
+    F_prev = F_new;
+    nit += 1;
+
+    if (k_eff_change < std::max(tolerance, 1.0e-12))
+      converged = true;
+
+    // Print iteration summary
+    if (lbs_problem.GetOptions().verbose_outer_iterations)
+    {
+      std::stringstream k_iter_info;
+      k_iter_info << program_timer.GetTimeString() << " "
+                  << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
+                  << std::setprecision(7) << k_eff << "  k_eff change " << std::setw(12)
+                  << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
+      if (converged)
+        k_iter_info << " CONVERGED\n";
+
+      log.Log() << k_iter_info.str();
+    }
+
+    if (converged)
+      break;
+  } // for k iterations
+
+  // Print summary
+  size_t total_sweeps = 0;
+  for (const auto& groupset : groupsets)
+  {
+    auto wgs_solver = do_problem->GetWGSSolver(groupset.id);
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
+    if (wgs_context)
+      total_sweeps += wgs_context->counter_applications_of_inv_op;
+  }
+
+  log.Log() << "\n";
+  log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
+  log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
+            << " (Number of Sweeps:" << total_sweeps << ")"
+            << "\n";
+  log.Log() << "\n";
+}
+
+} // namespace opensn

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
@@ -26,11 +27,7 @@ namespace opensn
 
 class MPICommunicatorSet;
 class GridFaceHistogram;
-class AGSLinearSolver;
-class WGSLinearSolver;
-class LinearSolver;
 class FieldFunctionGridBased;
-struct WGSContext;
 class TotalXSCarrier;
 class OutflowCarrier;
 class MeshCarrier;
@@ -97,8 +94,6 @@ public:
   /// Returns true if the problem is in adjoint mode.
   bool IsAdjoint() const;
 
-  virtual void SetSaveAngularFlux(bool save);
-
   void ZeroPhi();
   void CopyPhiNewToOld();
   void SetPhiOldFrom(const std::vector<double>& phi_old);
@@ -112,8 +107,6 @@ public:
   void ZeroPrecursors();
   void ZeroExtSrcMoments();
   void ScaleExtSrcMoments(double factor);
-  virtual void ZeroPsi() = 0;
-
   GeometryType GetGeometryType() const;
 
   /// Returns the number of moments for the solver.
@@ -246,13 +239,6 @@ public:
 
   SetSourceFunction GetActiveSetSourceFunction() const;
 
-  std::shared_ptr<AGSLinearSolver> GetAGSSolver();
-
-  std::shared_ptr<LinearSolver> GetWGSSolver(size_t groupset_id);
-  size_t GetNumWGSSolvers();
-
-  WGSContext& GetWGSContext(int groupset_id);
-
   /**
    * Gets the local and global number of iterative unknowns. This normally is only the flux moments,
    * however, the sweep based solvers might include delayed angular fluxes in this number.
@@ -298,8 +284,6 @@ public:
    */
   virtual void ReorientAdjointSolution() {};
 
-  virtual void UpdatePsiOld() {};
-
 protected:
   /// Input parameters based construction.
   explicit LBSProblem(const InputParameters& params);
@@ -308,6 +292,8 @@ protected:
   void BuildRuntime();
 
   virtual void PrintSimHeader();
+
+  virtual void ResetDerivedSolutionVectors() {}
 
   void ComputeUnitIntegrals();
 
@@ -318,14 +304,6 @@ protected:
 
   /// Derived problems handle boundary options.
   virtual void SetBoundaryOptions(const InputParameters& params) = 0;
-
-  void InitializeSolverSchemes();
-
-  virtual void InitializeWGSContexts() {};
-  virtual void InitializeWGSSolvers() {};
-  void CheckWGSContextsInitialized();
-  void CheckWGSSolversInitialized();
-  void CheckAGSSolverInitialized();
 
   void SetActiveSetSourceFunction(SetSourceFunction source_function);
 
@@ -379,9 +357,6 @@ protected:
 
   SetSourceFunction active_set_source_function_;
 
-  std::shared_ptr<AGSLinearSolver> ags_solver_;
-  std::vector<std::shared_ptr<WGSContext>> wgs_contexts_;
-  std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
   bool initialized_ = false;
 
   /// Data carriers needed to run the sweep on GPU.

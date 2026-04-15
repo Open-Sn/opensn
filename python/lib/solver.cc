@@ -11,14 +11,13 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_compute.h"
-#include "modules/linear_boltzmann_solvers/solvers/transient_solver.h"
-#include "modules/linear_boltzmann_solvers/solvers/steady_state_solver.h"
-#include "modules/linear_boltzmann_solvers/solvers/nl_keigen_solver.h"
-#include "modules/linear_boltzmann_solvers/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/transient_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/steady_state_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/nl_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/solver.h"
 #include <pybind11/numpy.h>
 #include <algorithm>
@@ -598,16 +597,6 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
-    "ZeroPsi",
-    [](LBSProblem& self)
-    {
-      self.ZeroPsi();
-    },
-    R"(
-    Zero the angular-flux storage (if present for this problem type).
-    )"
-  );
-  lbs_problem.def(
     "SetAdjoint",
     [](LBSProblem& self, bool adjoint)
     {
@@ -785,6 +774,8 @@ WrapLBS(py::module& slv)
             must have precursor data. Non-fissionable materials may have zero precursors.
           - use_source_moments: bool, default=False
           - save_angular_flux: bool, default=False
+            Store angular flux state (`psi`) for transient mode, angular-flux
+            field functions, and angular-flux I/O.
           - adjoint: bool, default=False
           - verbose_inner_iterations: bool, default=True
           - verbose_outer_iterations: bool, default=True
@@ -886,6 +877,16 @@ WrapLBS(py::module& slv)
     -----
     Mode transitions via :meth:`LBSProblem.SetAdjoint` clear all boundary conditions.
     Reapply boundaries with this method before solving in the new mode.
+    )"
+  );
+  do_problem.def(
+    "ZeroPsi",
+    [](DiscreteOrdinatesProblem& self)
+    {
+      self.ZeroPsi();
+    },
+    R"(
+    Zero the angular-flux storage.
     )"
   );
   do_problem.def(
@@ -1206,6 +1207,8 @@ WrapLBS(py::module& slv)
             are discarded.
           - use_source_moments: bool, default=False
           - save_angular_flux: bool, default=False
+            Store angular flux state (`psi`) for transient mode, angular-flux
+            field functions, and angular-flux I/O.
           - verbose_inner_iterations: bool, default=True
           - verbose_outer_iterations: bool, default=True
           - max_ags_iterations: int, default=100
@@ -1279,6 +1282,8 @@ WrapSteadyState(py::module& slv)
     If ``problem.options.read_restart_path`` is set, restart data is read
     during :meth:`Initialize`. If ``problem.options.restart_writes_enabled`` is
     true, a restart dump is written after :meth:`Execute` completes.
+    problem : pyopensn.solver.DiscreteOrdinatesProblem
+        Existing discrete ordinates problem instance.
     )"
   );
   steady_state_solver.def(
@@ -1569,8 +1574,8 @@ WrapNLKEigen(py::module& slv)
 
     Parameters
     ----------
-    lbs_problem: pyopensn.solver.LBSProblem
-        Existing LBSProblem instance.
+    problem: pyopensn.solver.DiscreteOrdinatesProblem
+        Existing discrete ordinates problem instance.
     nl_abs_tol: float, default=1.0e-8
         Non-linear absolute tolerance.
     nl_rel_tol: float, default=1.0e-8
@@ -1800,7 +1805,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 
     Parameters
     ----------
-    problem: pyopensn.solver.LBSProblem
+    problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
     l_abs_tol: float, defauilt=1.0e-10
         Absolute residual tolerance.
@@ -1849,7 +1854,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 
     Parameters
     ----------
-    problem: pyopensn.solver.LBSProblem
+    problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
     l_abs_tol: float, defauilt=1.0e-10
         Absolute residual tolerance.

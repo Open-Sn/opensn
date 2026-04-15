@@ -1,0 +1,290 @@
+// SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
+#include "framework/logging/log.h"
+#include "framework/utils/timer.h"
+#include "framework/utils/hdf_utils.h"
+#include "framework/utils/error.h"
+#include "framework/object_factory.h"
+#include "framework/runtime.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include <cmath>
+#include <iomanip>
+
+namespace opensn
+{
+
+OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSolver);
+
+InputParameters
+PowerIterationKEigenSolver::GetInputParameters()
+{
+  InputParameters params = Solver::GetInputParameters();
+
+  params.SetGeneralDescription("Implementation of a k-Eigenvalue solver using Power Iteration");
+  params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
+  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
+                                                        "An existing discrete ordinates problem");
+  params.AddOptionalParameter<std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
+    "acceleration", {}, "The acceleration method");
+  params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
+  params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
+  params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
+  return params;
+}
+
+std::shared_ptr<PowerIterationKEigenSolver>
+PowerIterationKEigenSolver::Create(const ParameterBlock& params)
+{
+  auto& factory = opensn::ObjectFactory::GetInstance();
+  return factory.Create<PowerIterationKEigenSolver>("lbs::PowerIterationKEigenSolver", params);
+}
+
+PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
+  : Solver(params),
+    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
+    acceleration_(
+      params.GetSharedPtrParam<DiscreteOrdinatesKEigenAcceleration>("acceleration", false)),
+    max_iters_(params.GetParamValue<unsigned int>("max_iters")),
+    k_eff_(1.0),
+    k_tolerance_(params.GetParamValue<double>("k_tol")),
+    F_prev_(1.0),
+    reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
+    q_moments_local_(do_problem_->GetQMomentsLocal()),
+    phi_old_local_(do_problem_->GetPhiOldLocal()),
+    phi_new_local_(do_problem_->GetPhiNewLocal()),
+    groupsets_(do_problem_->GetGroupsets())
+{
+}
+
+void
+PowerIterationKEigenSolver::Initialize()
+{
+  OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
+                          GetName() + ": Problem is in time-dependent mode. Call problem."
+                                      "SetSteadyStateMode() before initializing this solver.");
+
+  const auto& options = do_problem_->GetOptions();
+  active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
+
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
+    auto context = wgs_solver->GetContext();
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
+
+    OpenSnLogicalErrorIf(not wgs_context, ": Cast failed");
+
+    wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES); // lhs_scope
+    wgs_context->rhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
+  }
+
+  const bool print_ags_iters = options.verbose_ags_iterations and
+                               do_problem_->GetNumGroupsets() > 1 and
+                               options.max_ags_iterations > 1;
+  auto ags_solver = do_problem_->GetAGSSolver();
+  OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
+  ags_solver->SetVerbosity(print_ags_iters);
+
+  bool restart_successful = false;
+  if (not options.read_restart_path.empty())
+    restart_successful = ReadRestartData();
+
+  if (reset_phi0_ and not restart_successful)
+    LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
+
+  F_prev_ = ComputeFissionProduction(*do_problem_, phi_old_local_);
+
+  if (acceleration_)
+    acceleration_->Initialize(*this);
+  initialized_ = true;
+}
+
+void
+PowerIterationKEigenSolver::Execute()
+{
+  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
+
+  if (acceleration_)
+    acceleration_->PreExecute();
+
+  const auto& options = do_problem_->GetOptions();
+  double k_eff_prev = 1.0;
+  double k_eff_change = 1.0;
+
+  // Start power iterations
+  unsigned int nit = 0;
+  bool converged = false;
+  while (nit < max_iters_)
+  {
+    OpenSnLogicalErrorIf(k_eff_ <= 0.0 or not std::isfinite(k_eff_),
+                         GetName() + ": invalid k_eff encountered: " + std::to_string(k_eff_));
+
+    // Set the fission source
+    SetLBSFissionSource(phi_old_local_, false);
+    do_problem_->ScaleQMoments(1.0 / k_eff_);
+
+    if (acceleration_)
+      acceleration_->PrePowerIteration();
+
+    // This solves the inners for transport
+    auto ags_solver = do_problem_->GetAGSSolver();
+    OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
+    ags_solver->Solve();
+
+    // Get k-eigenvalue from the acceleration method
+    if (acceleration_)
+    {
+      k_eff_ = acceleration_->PostPowerIteration();
+    }
+    // Recompute k-eigenvalue
+    else
+    {
+      const auto F_new = ComputeFissionProduction(*do_problem_, phi_new_local_);
+      OpenSnLogicalErrorIf(
+        F_prev_ == 0.0, GetName() + ": previous fission production is zero. Cannot update k_eff.");
+      k_eff_ = F_new / F_prev_ * k_eff_;
+      F_prev_ = F_new;
+    }
+
+    OpenSnLogicalErrorIf(k_eff_ <= 0.0 or not std::isfinite(k_eff_),
+                         GetName() + ": invalid k_eff computed: " + std::to_string(k_eff_));
+
+    const double reactivity = (k_eff_ - 1.0) / k_eff_;
+
+    // Check convergence, bookkeeping
+    k_eff_change = std::fabs(k_eff_ - k_eff_prev) / k_eff_;
+    k_eff_prev = k_eff_;
+    nit += 1;
+
+    converged = k_eff_change < std::max(k_tolerance_, 1.0e-12);
+
+    // Print iteration summary
+    if (options.verbose_outer_iterations)
+    {
+      std::stringstream k_iter_info;
+      k_iter_info << program_timer.GetTimeString() << " "
+                  << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
+                  << std::setprecision(7) << k_eff_ << "  k_eff change " << std::setw(12)
+                  << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
+      if (converged)
+        k_iter_info << " CONVERGED\n";
+
+      log.Log() << k_iter_info.str();
+    }
+
+    if (options.restart_writes_enabled and do_problem_->TriggerRestartDump())
+      WriteRestartData();
+
+    if (converged)
+      break;
+  } // for k iterations
+
+  // If restarts are enabled, always write a restart dump upon convergence or
+  // when we reach the iteration limit
+  if (options.restart_writes_enabled)
+    WriteRestartData();
+
+  // Print summary
+  std::size_t total_num_sweeps = 0;
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
+    auto context = wgs_solver->GetContext();
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
+    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
+    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
+  }
+
+  log.Log() << "\n";
+  log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
+  log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
+            << " (Total number of sweeps:" << total_num_sweeps << ")"
+            << "\n\n";
+
+  if (options.use_precursors)
+  {
+    ComputePrecursors(*do_problem_);
+    do_problem_->ScalePrecursors(1.0 / k_eff_);
+  }
+
+  if (IsBalanceEnabled())
+  {
+    ComputeBalance(*do_problem_, 1.0 / k_eff_);
+    log.Log() << "Balance table uses k-eigenvalue normalization (production scaled by 1/k_eff)";
+  }
+
+  log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
+}
+
+BalanceTable
+PowerIterationKEigenSolver::ComputeBalanceTable() const
+{
+  return opensn::ComputeBalanceTable(*do_problem_, 1.0 / k_eff_);
+}
+
+void
+PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input,
+                                                const bool additive)
+{
+  if (not additive)
+    do_problem_->ZeroQMoments();
+
+  for (const auto& groupset : groupsets_)
+  {
+    active_set_source_function_(
+      groupset, q_moments_local_, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+  }
+}
+
+void
+PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<double>& input,
+                                                const bool additive,
+                                                const bool suppress_wg_scat)
+{
+  if (not additive)
+    do_problem_->ZeroQMoments();
+
+  SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
+  if (suppress_wg_scat)
+    source_flags |= SUPPRESS_WG_SCATTER;
+
+  for (const auto& groupset : groupsets_)
+  {
+    active_set_source_function_(groupset, q_moments_local_, input, source_flags);
+  }
+}
+
+bool
+PowerIterationKEigenSolver::ReadRestartData()
+{
+  return do_problem_->ReadRestartData(
+    [this](hid_t file_id)
+    {
+      bool success = true;
+      if (H5Aexists(file_id, "keff") > 0)
+        success &= H5ReadAttribute<double>(file_id, "keff", k_eff_);
+      if (H5Aexists(file_id, "Fprev") > 0)
+        success &= H5ReadAttribute<double>(file_id, "Fprev", F_prev_);
+      return success;
+    });
+}
+
+bool
+PowerIterationKEigenSolver::WriteRestartData()
+{
+  return do_problem_->WriteRestartData(
+    [this](hid_t file_id)
+    {
+      return H5CreateAttribute<double>(file_id, "keff", k_eff_) and
+             H5CreateAttribute<double>(file_id, "Fprev", F_prev_);
+    });
+}
+
+} // namespace opensn

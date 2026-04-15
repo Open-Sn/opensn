@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/vacuum_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h"
@@ -17,17 +18,18 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/math/functions/function.h"
 #include "framework/data_types/allowable_range.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/classic_richardson.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_function.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/transient_source_function.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/classic_richardson.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/source_function.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/transient_source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/wgdsa.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/acceleration/tgdsa.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -40,6 +42,7 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <iomanip>
 #include <numeric>
@@ -244,6 +247,45 @@ DiscreteOrdinatesProblem::GetNumPhiIterativeUnknowns()
   const size_t num_global_dofs = num_global_phi_dofs + num_global_psi_dofs;
 
   return {num_local_dofs, num_global_dofs};
+}
+
+std::shared_ptr<AGSLinearSolver>
+DiscreteOrdinatesProblem::GetAGSSolver()
+{
+  assert(ags_solver_ and "AGS solver requested before solver schemes were initialized.");
+  return ags_solver_;
+}
+
+std::shared_ptr<LinearSolver>
+DiscreteOrdinatesProblem::GetWGSSolver(size_t groupset_id)
+{
+  assert(not wgs_solvers_.empty() and
+         "WGS solver requested before solver schemes were initialized.");
+  assert(wgs_solvers_.size() == groupsets_.size() and
+         "WGS solver count does not match groupset count.");
+  return wgs_solvers_.at(groupset_id);
+}
+
+size_t
+DiscreteOrdinatesProblem::GetNumWGSSolvers()
+{
+  assert(not wgs_solvers_.empty() and
+         "WGS solver count requested before solver schemes were initialized.");
+  assert(wgs_solvers_.size() == groupsets_.size() and
+         "WGS solver count does not match groupset count.");
+  return wgs_solvers_.size();
+}
+
+WGSContext&
+DiscreteOrdinatesProblem::GetWGSContext(int groupset_id)
+{
+  assert(not wgs_contexts_.empty() and
+         "WGS context requested before solver schemes were initialized.");
+  assert(wgs_contexts_.size() == groupsets_.size() and
+         "WGS context count does not match groupset count.");
+  auto& wgs_context_ptr = wgs_contexts_.at(groupset_id);
+  assert(wgs_context_ptr and "Null WGS context.");
+  return *wgs_context_ptr;
 }
 
 const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&
@@ -573,6 +615,30 @@ DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
 }
 
 void
+DiscreteOrdinatesProblem::InitializeSolverSchemes()
+{
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeSolverSchemes");
+  ags_solver_.reset();
+  wgs_solvers_.clear();
+  wgs_contexts_.clear();
+  InitializeWGSContexts();
+  InitializeWGSSolvers();
+
+  ags_solver_ = std::make_shared<AGSLinearSolver>(*this, wgs_solvers_);
+  if (groupsets_.size() == 1)
+  {
+    ags_solver_->SetMaxIterations(1);
+    ags_solver_->SetVerbosity(false);
+  }
+  else
+  {
+    ags_solver_->SetMaxIterations(options_.max_ags_iterations);
+    ags_solver_->SetVerbosity(options_.verbose_ags_iterations);
+  }
+  ags_solver_->SetTolerance(options_.ags_tolerance);
+}
+
+void
 DiscreteOrdinatesProblem::SetTimeDependentMode()
 {
   OpenSnLogicalErrorIf(
@@ -792,7 +858,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 void
 DiscreteOrdinatesProblem::SetSaveAngularFlux(bool save)
 {
-  LBSProblem::SetSaveAngularFlux(save);
+  options_.save_angular_flux = save;
 
   if (initialized_)
     UpdateAngularFluxStorage();
@@ -1014,10 +1080,8 @@ DiscreteOrdinatesProblem::InitializeWGSSolvers()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeWGSSolvers");
 
-  if (not wgs_solvers_.empty())
-    return;
-
-  CheckWGSContextsInitialized();
+  OpenSnLogicalErrorIf(wgs_contexts_.empty(),
+                       GetName() + ": Cannot initialize WGS solvers before WGS contexts.");
   OpenSnLogicalErrorIf(wgs_contexts_.size() != groupsets_.size(),
                        GetName() + ": WGS context count does not match groupset count.");
 
@@ -1851,6 +1915,12 @@ DiscreteOrdinatesProblem::ZeroPsi()
 }
 
 void
+DiscreteOrdinatesProblem::ResetDerivedSolutionVectors()
+{
+  ZeroPsi();
+}
+
+void
 DiscreteOrdinatesProblem::UpdatePsiOld()
 {
   for (size_t gs = 0; gs < psi_new_local_.size(); ++gs)
@@ -1872,4 +1942,15 @@ DiscreteOrdinatesProblem::WriteProblemRestartData(hid_t file_id) const
   return DiscreteOrdinatesProblemIO::WriteRestartData(*this, file_id);
 }
 
+BalanceTable
+DiscreteOrdinatesProblem::ComputeBalanceTable(double scaling_factor)
+{
+  return opensn::ComputeBalanceTable(*this, scaling_factor);
+}
+
+void
+DiscreteOrdinatesProblem::ComputeBalance(double scaling_factor)
+{
+  opensn::ComputeBalance(*this, scaling_factor);
+}
 } // namespace opensn
