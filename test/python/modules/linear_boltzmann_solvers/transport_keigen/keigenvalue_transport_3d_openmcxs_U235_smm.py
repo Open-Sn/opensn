@@ -52,7 +52,7 @@ if __name__ == "__main__":
     # Load cross section data using the OpenMC MGXS library
     num_groups = 84
     xs_u235 = MultiGroupXS()
-    xs_u235.LoadFromOpenMC("u235_84g.h5", "set1", 294.0)
+    xs_u235.LoadFromOpenMC("../../../../assets/xs/u235_84g.h5", "set1", 294.0)
 
     # Solver Setup
     phys = DiscreteOrdinatesProblem(

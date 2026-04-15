@@ -7,9 +7,9 @@ if "opensn_console" not in globals():
 
 xss = []
 xss.append(MultiGroupXS())
-xss[0].LoadFromOpenSn("../transport_keigen/xs_water_g2.xs")
+xss[0].LoadFromOpenSn("../../../../assets/xs/xs_water_g2.xs")
 xss.append(MultiGroupXS())
-xss[1].LoadFromOpenSn("../transport_keigen/xs_fuel_g2.xs")
+xss[1].LoadFromOpenSn("../../../../assets/xs/xs_fuel_g2.xs")
 num_groups = xss[0].num_groups
 
 # Create materials

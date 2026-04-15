@@ -37,7 +37,7 @@ if __name__ == "__main__":
     grid.SetBlockIDFromLogicalVolume(vol, 0, True)
 
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn("transport_2d_cyl_2g_2.xs")
+    xs.LoadFromOpenSn("../../../../assets/xs/transport_2d_cyl_2g_2.xs")
 
     src = VolumetricSource(block_ids=[0], group_strength=[1.5, 0.8])
 

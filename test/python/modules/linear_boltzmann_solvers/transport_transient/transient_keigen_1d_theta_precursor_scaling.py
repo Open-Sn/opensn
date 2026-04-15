@@ -81,7 +81,10 @@ def run_case(theta, use_precursors, xs):
 
 if __name__ == "__main__":
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_delayed_crit_1p.cxs"))
+    xs.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_delayed_crit_1p.cxs")
+    )
 
     ratio_delayed_t1 = run_case(1.0, True, xs)
     ratio_prompt_t1 = run_case(1.0, False, xs)

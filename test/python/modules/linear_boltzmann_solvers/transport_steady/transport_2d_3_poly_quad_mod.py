@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     num_groups = 168
     xs_3_170 = MultiGroupXS()
-    xs_3_170.LoadFromOpenSn("xs_168g.xs")
+    xs_3_170.LoadFromOpenSn("../../../../assets/xs/xs_168g.xs")
 
     strength = [0.0 for _ in range(num_groups)]
     mg_src1 = VolumetricSource(block_ids=[1], group_strength=strength)

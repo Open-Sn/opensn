@@ -37,7 +37,7 @@ if __name__ == "__main__":
     grid.SetBlockIDFromLogicalVolume(vol, 0, True)
 
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn("transport_2d_cyl_2g_2.xs")
+    xs.LoadFromOpenSn("../../../../assets/xs/transport_2d_cyl_2g_2.xs")
 
     # q0 = sigma_a0 * phi0 = 1.5 * 1.0
     # q1 = sigma_a1 * phi1 - sigma_s(0->1) * phi0 = 2.5 * 0.4 - 0.2 * 1.0

@@ -38,7 +38,10 @@ if __name__ == "__main__":
     xs_list = []
     for i in range(5):
         xs = MultiGroupXS()
-        xs.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), f"xs1g_prompt_ramp_{i}.cxs"))
+        xs.LoadFromOpenSn(os.path.join(
+            os.path.dirname(__file__),
+            f"../../../../assets/xs/xs1g_prompt_ramp_{i}.cxs")
+        )
         xs_list.append(xs)
 
     pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=4, scattering_order=0)

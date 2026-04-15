@@ -14,7 +14,7 @@ if "opensn_console" not in globals():
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.xs import MultiGroupXS
 
-xs_file = "../../modules/linear_boltzmann_solvers/transport_steady/HDPE.h5"
+xs_file = "../../../assets/xs/HDPE.h5"
 dataset = "set1"
 temperature = 294.0
 custom_xs = "absorption"

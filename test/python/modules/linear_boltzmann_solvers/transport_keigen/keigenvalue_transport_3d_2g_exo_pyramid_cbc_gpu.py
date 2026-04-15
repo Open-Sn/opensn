@@ -37,7 +37,7 @@ if __name__ == "__main__":
     # Set Materials (Fuel)
     num_groups = 2
     xs_fuel_g2 = MultiGroupXS()
-    xs_fuel_g2.LoadFromOpenSn("xs_fuel_g2.xs")
+    xs_fuel_g2.LoadFromOpenSn("../../../../assets/xs/xs_fuel_g2.xs")
 
     # Initialize the LBSProblem
     phys = DiscreteOrdinatesProblem(

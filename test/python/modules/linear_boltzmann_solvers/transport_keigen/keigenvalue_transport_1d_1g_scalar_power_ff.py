@@ -31,7 +31,7 @@ grid.SetUniformBlockID(0)
 
 # XS
 xs_simple_fissile = MultiGroupXS()
-xs_simple_fissile.LoadFromOpenSn("simple_fissile.xs")
+xs_simple_fissile.LoadFromOpenSn("../../../../assets/xs/simple_fissile.xs")
 
 # Problem
 phys = DiscreteOrdinatesProblem(

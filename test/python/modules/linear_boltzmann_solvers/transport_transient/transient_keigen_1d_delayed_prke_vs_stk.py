@@ -80,10 +80,16 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_delayed_crit_1p.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_delayed_crit_1p.cxs")
+    )
 
     xs_super = MultiGroupXS()
-    xs_super.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_delayed_super_1p.cxs"))
+    xs_super.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_delayed_super_1p.cxs")
+    )
 
     pquad = GLProductQuadrature1DSlab(n_polar=4, scattering_order=0)
 
@@ -136,11 +142,11 @@ if __name__ == "__main__":
     rho = (k_eff - 1.0) / k_eff
 
     beta = read_precursor_value(
-        os.path.join(os.path.dirname(__file__), "xs1g_delayed_super_1p.cxs"),
+        os.path.join(os.path.dirname(__file__), "../../../../assets/xs/xs1g_delayed_super_1p.cxs"),
         "PRECURSOR_FRACTIONAL_YIELDS",
     )
     lam = read_precursor_value(
-        os.path.join(os.path.dirname(__file__), "xs1g_delayed_super_1p.cxs"),
+        os.path.join(os.path.dirname(__file__), "../../../../assets/xs/xs1g_delayed_super_1p.cxs"),
         "PRECURSOR_DECAY_CONSTANTS",
     )
     Lambda = 1.0 / (v * nu_sigma_f)

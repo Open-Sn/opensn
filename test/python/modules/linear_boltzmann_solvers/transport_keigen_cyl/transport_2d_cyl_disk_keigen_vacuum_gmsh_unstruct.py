@@ -37,7 +37,7 @@ if __name__ == "__main__":
     zmax = 0.1
 
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn("simple_fissile_1g.xs")
+    xs.LoadFromOpenSn("../../../../assets/xs/simple_fissile_1g.xs")
 
     quad = GLCProductQuadrature2DRZ(n_polar=16, n_azimuthal=32, scattering_order=0)
     bcs = [

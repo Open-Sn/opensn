@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # Energy groups and cross-section data
     num_groups = 168
     xs_3_170 = MultiGroupXS()
-    xs_3_170.LoadFromOpenSn("xs_168g.xs")
+    xs_3_170.LoadFromOpenSn("../../../../assets/xs/xs_168g.xs")
 
     # Sources
     strength = [0.0 for _ in range(num_groups)]

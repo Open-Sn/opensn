@@ -39,7 +39,7 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn("simple_fissile_1g.xs")
+    xs.LoadFromOpenSn("../../../../assets/xs/simple_fissile_1g.xs")
 
     quad = GLCProductQuadrature2DRZ(n_polar=8, n_azimuthal=8, scattering_order=0)
     bcs = [
