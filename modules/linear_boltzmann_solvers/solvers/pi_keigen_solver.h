@@ -12,7 +12,6 @@ namespace opensn
 
 class DiscreteOrdinatesProblem;
 class DiscreteOrdinatesKEigenAcceleration;
-class AGSLinearSolver;
 
 class PowerIterationKEigenSolver : public Solver
 {
@@ -49,7 +48,6 @@ protected:
   std::vector<double>& phi_new_local_;
 
   const std::vector<LBSGroupset>& groupsets_;
-  std::shared_ptr<AGSLinearSolver> ags_solver_;
   SetSourceFunction active_set_source_function_;
 
   bool initialized_ = false;

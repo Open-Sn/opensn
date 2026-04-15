@@ -58,7 +58,7 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
         // contributions are prompt-only and adds delayed production separately via
         // nu_delayed_sigma_f. If the production matrix changes to include delayed
         // production, adjust this sum to prevent double counting.
-        if (options.use_precursors)
+        if (options.use_precursors and xs.GetNumPrecursors() > 0)
           local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
     } // for node

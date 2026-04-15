@@ -805,6 +805,25 @@ DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
 }
 
 void
+DiscreteOrdinatesProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
+{
+  LBSProblem::SetBlockID2XSMap(xs_map);
+
+  if (not initialized_)
+    return;
+
+  for (auto& groupset : groupsets_)
+  {
+    WGDSA::CleanUp(groupset);
+    TGDSA::CleanUp(groupset);
+    WGDSA::Init(*this, groupset);
+    TGDSA::Init(*this, groupset);
+  }
+
+  ReinitializeSolverSchemes();
+}
+
+void
 DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
 {
   psi_new_local_.resize(groupsets_.size());

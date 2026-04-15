@@ -308,6 +308,34 @@
     ]
   },
   {
+    "file": "transient_keigen_1d_precursor_count_xs_swap.py",
+    "comment": "1D delayed transient XS swap across fissionability and precursor counts",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRECURSOR_SWAP_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_init_precursor_count_xs_swap.py",
+    "comment": "1D prompt-to-delayed transient XS swap from 0 to 2 precursor families",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRECURSOR_INTRO_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_keigen_2d_delayed_prke_vs_stk_2p.py",
     "comment": "2D delayed homogeneous step: PRKE vs space-time kinetics",
     "num_procs": 4,

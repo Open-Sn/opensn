@@ -72,7 +72,6 @@ PowerIterationKEigenSolver::Initialize()
 
   const auto& options = do_problem_->GetOptions();
   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
-  ags_solver_ = do_problem_->GetAGSSolver();
 
   for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
   {
@@ -89,7 +88,9 @@ PowerIterationKEigenSolver::Initialize()
   const bool print_ags_iters = options.verbose_ags_iterations and
                                do_problem_->GetNumGroupsets() > 1 and
                                options.max_ags_iterations > 1;
-  ags_solver_->SetVerbosity(print_ags_iters);
+  auto ags_solver = do_problem_->GetAGSSolver();
+  OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
+  ags_solver->SetVerbosity(print_ags_iters);
 
   bool restart_successful = false;
   if (not options.read_restart_path.empty())
@@ -133,7 +134,9 @@ PowerIterationKEigenSolver::Execute()
       acceleration_->PrePowerIteration();
 
     // This solves the inners for transport
-    ags_solver_->Solve();
+    auto ags_solver = do_problem_->GetAGSSolver();
+    OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
+    ags_solver->Solve();
 
     // Get k-eigenvalue from the acceleration method
     if (acceleration_)
