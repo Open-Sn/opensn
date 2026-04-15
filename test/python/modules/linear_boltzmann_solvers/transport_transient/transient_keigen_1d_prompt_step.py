@@ -35,10 +35,16 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_prompt_crit.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_prompt_crit.cxs")
+    )
 
     xs_dense = MultiGroupXS()
-    xs_dense.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_prompt_density_up.cxs"))
+    xs_dense.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_prompt_density_up.cxs")
+    )
 
     pquad = GLProductQuadrature1DSlab(n_polar=4, scattering_order=0)
 

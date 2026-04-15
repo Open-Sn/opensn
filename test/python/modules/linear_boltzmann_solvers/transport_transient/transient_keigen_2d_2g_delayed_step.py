@@ -38,11 +38,15 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs2g_delayed_crit_1p.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs2g_delayed_crit_1p.cxs")
+    )
 
     xs_dense = MultiGroupXS()
-    xs_dense.LoadFromOpenSn(
-        os.path.join(os.path.dirname(__file__), "xs2g_delayed_density_up_1p.cxs")
+    xs_dense.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs2g_delayed_density_up_1p.cxs")
     )
 
     pquad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=4, scattering_order=0)

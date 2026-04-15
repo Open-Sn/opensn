@@ -44,9 +44,9 @@ if __name__ == "__main__":
     # Cross-section data
     xss = {}
     xss["0"] = MultiGroupXS()
-    xss["0"].LoadFromOpenSn("xs_water_g2.xs")
+    xss["0"].LoadFromOpenSn("../../../../assets/xs/xs_water_g2.xs")
     xss["1"] = MultiGroupXS()
-    xss["1"].LoadFromOpenSn("xs_fuel_g2.xs")
+    xss["1"].LoadFromOpenSn("../../../../assets/xs/xs_fuel_g2.xs")
     num_groups = xss["0"].num_groups
 
     # Angular quadrature

@@ -6,26 +6,26 @@
 Test: Max-value=0.49903 and 7.18243e-4
 """
 
+import math
 import os
 import sys
-import math
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
+
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator
-    from pyopensn.xs import MultiGroupXS
-    from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLProductQuadrature1DSlab
-    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationLine, FieldFunctionInterpolationVolume
-    from pyopensn.math import Vector3
     from pyopensn.logvol import RPPLogicalVolume
+    from pyopensn.math import Vector3
+    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
+    from pyopensn.source import VolumetricSource
+    from pyopensn.xs import MultiGroupXS
 
 if __name__ == "__main__":
-
     # Check number of processors
     num_procs = 3
     if size != num_procs:
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     num_groups = 168
     grid.SetUniformBlockID(0)
     xs_3_170 = MultiGroupXS()
-    xs_3_170.LoadFromOpenSn("xs_168g.xs")
+    xs_3_170.LoadFromOpenSn("../../../../assets/xs/xs_168g.xs")
 
     # Volumetric sources
     strength = []
@@ -87,19 +87,12 @@ if __name__ == "__main__":
                 "gmres_restart_interval": 100,
             },
         ],
-        xs_map=[
-            {
-                "block_ids": [0],
-                "xs": xs_3_170
-            }
-        ],
+        xs_map=[{"block_ids": [0], "xs": xs_3_170}],
         volumetric_sources=[mg_src],
         boundary_conditions=[
             {"name": "zmin", "type": "isotropic", "group_strength": bsrc},
         ],
-        options={
-            "max_ags_iterations": 1
-        }
+        options={"max_ags_iterations": 1},
     )
     ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()

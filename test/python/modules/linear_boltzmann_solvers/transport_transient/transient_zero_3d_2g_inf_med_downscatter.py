@@ -45,7 +45,7 @@ if __name__ == "__main__":
     xs_diag.LoadFromOpenSn(
         os.path.join(
             os.path.dirname(__file__),
-            "simple_2g_downscatter_td.cxs",
+            "../../../../assets/xs/simple_2g_downscatter_td.cxs",
         )
     )
     num_groups = xs_diag.num_groups

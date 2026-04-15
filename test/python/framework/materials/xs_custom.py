@@ -16,7 +16,7 @@ if "opensn_console" not in globals():
 
 
 def main():
-    xs_file = "../../modules/linear_boltzmann_solvers/transport_steady/HDPE.h5"
+    xs_file = "../../../assets/xs/HDPE.h5"
     dataset = "set1"
     temperature = 294.0
     custom_xs = "absorption"

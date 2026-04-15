@@ -72,8 +72,8 @@ def solve_and_get_fission_prod(xs_path):
 
 if __name__ == "__main__":
     base_dir = os.path.dirname(__file__)
-    xs_1p = os.path.join(base_dir, "xs1g_delayed_crit_1p.cxs")
-    xs_2p = os.path.join(base_dir, "xs1g_delayed_crit_2p.cxs")
+    xs_1p = os.path.join(base_dir, "../../../../assets/xs/xs1g_delayed_crit_1p.cxs")
+    xs_2p = os.path.join(base_dir, "../../../../assets/xs/xs1g_delayed_crit_2p.cxs")
 
     fp_1p = solve_and_get_fission_prod(xs_1p)
     fp_2p = solve_and_get_fission_prod(xs_2p)

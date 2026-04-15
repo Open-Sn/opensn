@@ -104,8 +104,8 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     base_dir = os.path.dirname(__file__)
-    xs_crit_2p_path = os.path.join(base_dir, "xs1g_delayed_crit_2p.cxs")
-    xs_super_1p_path = os.path.join(base_dir, "xs1g_delayed_super_1p.cxs")
+    xs_crit_2p_path = os.path.join(base_dir, "../../../../assets/xs/xs1g_delayed_crit_2p.cxs")
+    xs_super_1p_path = os.path.join(base_dir, "../../../../assets/xs/xs1g_delayed_super_1p.cxs")
 
     xs_crit_2p = MultiGroupXS()
     xs_crit_2p.LoadFromOpenSn(xs_crit_2p_path)

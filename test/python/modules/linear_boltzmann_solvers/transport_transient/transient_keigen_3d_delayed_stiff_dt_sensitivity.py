@@ -99,10 +99,16 @@ def run_transient(dt, t_end, xs_crit, xs_super):
 
 if __name__ == "__main__":
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_delayed_stiff_crit.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_delayed_stiff_crit.cxs")
+    )
 
     xs_super = MultiGroupXS()
-    xs_super.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_delayed_stiff_super.cxs"))
+    xs_super.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_delayed_stiff_super.cxs")
+    )
 
     t_end = 0.2
     dt_small = 5.0e-3

@@ -95,10 +95,16 @@ def run_case(bc_type, xs_crit, xs_super):
 
 if __name__ == "__main__":
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_prompt_crit.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_prompt_crit.cxs")
+    )
 
     xs_super = MultiGroupXS()
-    xs_super.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs1g_prompt_super.cxs"))
+    xs_super.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_prompt_super.cxs")
+    )
 
     ratio_reflect, fp_ratio_reflect = run_case("reflecting", xs_crit, xs_super)
     ratio_vacuum, fp_ratio_vacuum = run_case("vacuum", xs_crit, xs_super)
