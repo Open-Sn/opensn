@@ -48,6 +48,8 @@ Includes
 
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
+- ``modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_compute_lbs_compute.h`)
+
 - ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
@@ -72,6 +74,10 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_ags_linear_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_nonlinear_keigen_ags_context.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h`
@@ -79,10 +85,6 @@ Included By
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_total_xs_carrier.h`
-
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_ags_linear_solver.h`
-
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
 

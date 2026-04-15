@@ -91,7 +91,7 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/quadratures/angular/legendre_poly/legendrepoly.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/quadratures/angular/angular_quadrature.h&quot;</span>
@@ -105,11 +105,19 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">DiffusionMIPSolver</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="p">;</span>
 
-<span class="c1">/// Group set functioning as a collection of groups</span>
+<span class="cm">/**</span>
+<span class="cm"> * Shared groupset state.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This class is not specific to LBSProblem. It is shared infrastructure used across</span>
+<span class="cm"> * problem implementations, including discrete ordinates, to carry both generic</span>
+<span class="cm"> * group-iteration settings and groupset-scoped transport data.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This class remains the sole groupset representation used by the transport</span>
+<span class="cm"> * solvers, so method-specific groupset data continues to live here.</span>
+<span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSGroupset</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Input parameters based constructor.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
@@ -126,14 +134,17 @@
 
 <span class="w">  </span><span class="o">~</span><span class="n">LBSGroupset</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Return number of groups in the groupset</span>
+<span class="w">  </span><span class="c1">/// Return number of energy groups in the groupset.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// First group number</span>
+<span class="w">  </span><span class="c1">/// First energy-group index in the groupset.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">first_group</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Last groups number</span>
+<span class="w">  </span><span class="c1">/// Last energy-group index in the groupset.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Sweep/discrete-ordinates data kept in the shared groupset by design.</span>
+<span class="w">  </span><span class="c1">// This avoids duplicating generic groupset data.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngularQuadrature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngleAggregation</span><span class="o">&gt;</span><span class="w"> </span><span class="n">angle_agg</span><span class="p">;</span>
 <span class="w">  </span><span class="n">UniqueSOGroupings</span><span class="w"> </span><span class="n">unique_so_groupings</span><span class="p">;</span>

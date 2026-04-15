@@ -1,0 +1,52 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_source_functions_transient_source_function.h:
+
+File transient_source_function.h
+================================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_source_functions>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/transient_source_function.h``)
+-------------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_source_functions_transient_source_function.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/source_function.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_source_functions_source_function.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_transient_source_function`
+

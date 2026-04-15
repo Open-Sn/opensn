@@ -2053,12 +2053,32 @@ Directories
 .. toctree::
    :maxdepth: 1
 
+   dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_compute.rst
+
+.. toctree::
+   :maxdepth: 1
+
    dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_io.rst
 
 .. toctree::
    :maxdepth: 1
 
    dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_preconditioning.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_source_functions.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2118,7 +2138,7 @@ Directories
 .. toctree::
    :maxdepth: 1
 
-   dir_modules_linear_boltzmann_solvers_lbs_problem_acceleration.rst
+   dir_modules_linear_boltzmann_solvers_lbs_problem_compute.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2153,22 +2173,17 @@ Directories
 .. toctree::
    :maxdepth: 1
 
-   dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods.rst
-
-.. toctree::
-   :maxdepth: 1
-
    dir_modules_linear_boltzmann_solvers_lbs_problem_point_source.rst
 
 .. toctree::
    :maxdepth: 1
 
-   dir_modules_linear_boltzmann_solvers_lbs_problem_preconditioning.rst
+   dir_modules_linear_boltzmann_solvers_lbs_problem_source_functions.rst
 
 .. toctree::
    :maxdepth: 1
 
-   dir_modules_linear_boltzmann_solvers_lbs_problem_source_functions.rst
+   dir_modules_linear_boltzmann_solvers_lbs_problem_vecops.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2179,11 +2194,6 @@ Directories
    :maxdepth: 1
 
    dir_modules_linear_boltzmann_solvers_response_evaluator.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   dir_modules_linear_boltzmann_solvers_solvers.rst
 
 Files
 *****
@@ -2272,12 +2282,12 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_ags_linear_solver.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_ags_linear_solver.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2402,12 +2412,12 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_classic_richardson.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_classic_richardson.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_convergence.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_convergence.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2437,7 +2447,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_compute.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_compute_discrete_ordinates_compute.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2632,7 +2642,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h.rst
+   file_modules_linear_boltzmann_solvers_lbs_problem_compute_lbs_compute.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2652,7 +2662,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_preconditioning_lbs_shell_operations.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_preconditioning_lbs_shell_operations.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2662,7 +2672,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h.rst
+   file_modules_linear_boltzmann_solvers_lbs_problem_vecops_lbs_vecops.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2842,37 +2852,37 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_context.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_nl_keigen_acc_context.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_residual_func.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_nl_keigen_acc_residual_func.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_solver.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_nl_keigen_acc_solver.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_solvers_nl_keigen_solver.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_nl_keigen_solver.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_context.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_nonlinear_keigen_ags_context.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_residual_func.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_nonlinear_keigen_ags_residual_func.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_nonlinear_keigen_ags_solver.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_nonlinear_keigen_ags_solver.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2942,7 +2952,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_solvers_pi_keigen_solver.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_pi_keigen_solver.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2992,7 +3002,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_power_iteration_keigen.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_power_iteration_keigen.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3097,12 +3107,12 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_monitor.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_snes_k_monitor.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_snes_k_residual_func_context.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_snes_k_residual_func_context.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3122,7 +3132,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_source_functions_source_function.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3167,7 +3177,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_solvers_steady_state_solver.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_steady_state_solver.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3222,7 +3232,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_tgdsa.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_tgdsa.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3237,12 +3247,12 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_solvers_transient_solver.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_transient_solver.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_transient_source_function.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_source_functions_transient_source_function.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3307,22 +3317,22 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_wgdsa.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_wgdsa.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_convergence_test.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_convergence_test.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_linear_solver.h.rst
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_linear_solver.h.rst
 
 .. toctree::
    :maxdepth: 1

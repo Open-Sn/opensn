@@ -1,0 +1,46 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_power_iteration_keigen.h:
+
+File power_iteration_keigen.h
+=============================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/power_iteration_keigen.h``)
+-----------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_power_iteration_keigen.h.rst
+
+
+
+
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ab417388b7303220280cdc5b909321247`
+

@@ -40,7 +40,7 @@ Included By
 -----------
 
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_ags_linear_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_ags_linear_solver.h`
 
 
 

@@ -3,7 +3,7 @@
 Class LBSVecOps
 ===============
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_vecops_lbs_vecops.h`
 
 
 Class Documentation

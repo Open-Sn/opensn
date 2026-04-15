@@ -15,24 +15,21 @@ Directory lbs_problem
 Subdirectories
 --------------
 
-- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_acceleration`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_compute`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_device`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_groupset`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_io`
-- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_point_source`
-- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_preconditioning`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_source_functions`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_vecops`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source`
 
 
 Files
 -----
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_compute.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h`
 
 

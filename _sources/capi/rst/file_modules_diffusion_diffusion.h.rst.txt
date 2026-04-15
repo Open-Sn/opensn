@@ -32,7 +32,7 @@ Includes
 
 - ``framework/math/unknown_manager/unknown_manager.h`` (:ref:`file_framework_math_unknown_manager_unknown_manager.h`)
 
-- ``modules/linear_boltzmann_solvers/lbs_problem/acceleration/acceleration.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`)
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h`)
 
 - ``petscksp.h``
 

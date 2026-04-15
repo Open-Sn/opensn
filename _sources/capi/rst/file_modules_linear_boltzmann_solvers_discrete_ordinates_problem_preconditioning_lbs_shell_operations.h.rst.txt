@@ -1,0 +1,58 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_preconditioning_lbs_shell_operations.h:
+
+File lbs_shell_operations.h
+===========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_preconditioning>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/preconditioning``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/preconditioning/lbs_shell_operations.h``)
+-------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_preconditioning_lbs_shell_operations.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h`)
+
+- ``petscksp.h``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a226c429ee6072808bb5477115d9095e5`
+
+- :ref:`exhale_function_namespaceopensn_1aeb8e1f0e619646e3e0935f309be9ae64`
+
+- :ref:`exhale_function_namespaceopensn_1a6090b20e22ebb8aa4c54f5998cc2b0c1`
+

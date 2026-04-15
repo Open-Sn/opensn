@@ -19,7 +19,6 @@ Subdirectories
 - :ref:`dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem`
 - :ref:`dir_modules_linear_boltzmann_solvers_response_evaluator`
-- :ref:`dir_modules_linear_boltzmann_solvers_solvers`
 
 
 

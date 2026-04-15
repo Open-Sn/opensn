@@ -91,6 +91,7 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/problem.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h&quot;</span>
@@ -113,11 +114,7 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MPICommunicatorSet</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">GridFaceHistogram</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">AGSLinearSolver</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">WGSLinearSolver</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">LinearSolver</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionGridBased</span><span class="p">;</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">WGSContext</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TotalXSCarrier</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OutflowCarrier</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshCarrier</span><span class="p">;</span>
@@ -184,8 +181,6 @@
 <span class="w">  </span><span class="c1">/// Returns true if the problem is in adjoint mode.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjoint</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSaveAngularFlux</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">save</span><span class="p">);</span>
-
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPhi</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyPhiNewToOld</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetPhiOldFrom</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_old</span><span class="p">);</span>
@@ -199,8 +194,6 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPrecursors</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroExtSrcMoments</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScaleExtSrcMoments</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">factor</span><span class="p">);</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPsi</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-
 <span class="w">  </span><span class="n">GeometryType</span><span class="w"> </span><span class="nf">GetGeometryType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns the number of moments for the solver.</span>
@@ -333,13 +326,6 @@
 
 <span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="nf">GetActiveSetSourceFunction</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AGSLinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetAGSSolver</span><span class="p">();</span>
-
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetWGSSolver</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">);</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumWGSSolvers</span><span class="p">();</span>
-
-<span class="w">  </span><span class="n">WGSContext</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetWGSContext</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">);</span>
-
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Gets the local and global number of iterative unknowns. This normally is only the flux moments,</span>
 <span class="cm">   * however, the sweep based solvers might include delayed angular fluxes in this number.</span>
@@ -385,8 +371,6 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdatePsiOld</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
-
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Input parameters based construction.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
@@ -395,6 +379,8 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntime</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetDerivedSolutionVectors</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeUnitIntegrals</span><span class="p">();</span>
 
@@ -405,14 +391,6 @@
 
 <span class="w">  </span><span class="c1">/// Derived problems handle boundary options.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolverSchemes</span><span class="p">();</span>
-
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeWGSContexts</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeWGSSolvers</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckWGSContextsInitialized</span><span class="p">();</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckWGSSolversInitialized</span><span class="p">();</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckAGSSolverInitialized</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetActiveSetSourceFunction</span><span class="p">(</span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="n">source_function</span><span class="p">);</span>
 
@@ -466,9 +444,6 @@
 
 <span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="n">active_set_source_function_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AGSLinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ags_solver_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">WGSContext</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_contexts_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_solvers_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">initialized_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Data carriers needed to run the sweep on GPU.</span>

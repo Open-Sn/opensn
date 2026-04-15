@@ -332,10 +332,10 @@
 <p>Create a single <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code> with reflecting boundaries, a single groupset, reasonable iterative options, and an initial <code class="docutils literal notranslate"><span class="pre">xs_map</span></code> that assigns our <code class="docutils literal notranslate"><span class="pre">xs_crit</span></code> material to all cells. This problem object will be reused across both the steady-state and transient solves.</p>
 <p>Two options are key here:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> for storing angular fluxes during the steady-state solve.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> for storing the angular flux state needed by the transient solve.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">use_precursors=False</span></code> for prompt-only transient behavior in this tutorial.</p></li>
 </ul>
-<p><strong>Note:</strong> <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> is required for the transient solve. In this workflow, set it on the shared problem object before the steady-state solve so the same problem can transition cleanly into transient mode.</p>
+<p><strong>Note:</strong> In this workflow, set <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> on the shared problem object before the steady-state solve so the same problem can transition cleanly into transient mode.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[43]:
 </pre></div>

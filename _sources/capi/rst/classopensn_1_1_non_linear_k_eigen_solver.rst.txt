@@ -3,7 +3,7 @@
 Class NonLinearKEigenSolver
 ===========================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_solvers_nl_keigen_solver.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_nl_keigen_solver.h`
 
 
 Inheritance Relationships

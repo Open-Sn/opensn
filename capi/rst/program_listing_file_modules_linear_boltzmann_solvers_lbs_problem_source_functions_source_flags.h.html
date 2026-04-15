@@ -110,10 +110,18 @@
 <span class="w">  </span><span class="n">ZERO_INCOMING_DELAYED_PSI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span>
 <span class="p">};</span>
 
-<span class="c1">/// SourceFlags is a combination of `SourceType`s</span>
+<span class="cm">/**</span>
+<span class="cm"> * Shared source flags and callbacks.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Although the concrete source-function implementations now live under the</span>
+<span class="cm"> * discrete ordinates problem, the source flag set and callback function</span>
+<span class="cm"> * signature  remain shared because `LBSProblem` still owns the active</span>
+<span class="cm"> * source-function interface.</span>
+<span class="cm"> */</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">SourceFlags</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="n">SourceFlags</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">flags_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="c1">/// SourceFlags is a combination of `SourceType`s</span>
 <span class="w">  </span><span class="n">SourceFlags</span><span class="p">(</span><span class="n">SourceType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">flags_</span><span class="p">(</span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 
 <span class="w">  </span><span class="n">SourceFlags</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">|=</span><span class="p">(</span><span class="n">SourceType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span>

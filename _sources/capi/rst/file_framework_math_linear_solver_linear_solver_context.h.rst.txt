@@ -46,7 +46,7 @@ Included By
 
 - :ref:`file_framework_math_linear_solver_petsc_linear_system_solver.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h`
 
 
 

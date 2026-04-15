@@ -64,7 +64,7 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_vecops.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_vecops_lbs_vecops.h`
 
 
 

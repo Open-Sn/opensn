@@ -3,7 +3,7 @@
 Function opensn::ComputePointwisePhiChange(LBSProblem&, int, std::optional<const std::reference_wrapper<std::vector<double>>>)
 ==============================================================================================================================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_convergence.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_convergence.h`
 
 
 Function Documentation

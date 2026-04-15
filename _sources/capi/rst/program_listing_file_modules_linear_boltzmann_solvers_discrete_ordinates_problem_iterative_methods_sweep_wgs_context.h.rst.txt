@@ -17,7 +17,7 @@ Program Listing for File sweep_wgs_context.h
    
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h"
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-   #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
+   #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
    
    namespace opensn

@@ -3,7 +3,7 @@
 Function opensn::NLKEigenAccResidualFunction
 ============================================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_nl_keigen_acc_residual_func.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_nl_keigen_acc_residual_func.h`
 
 
 Function Documentation

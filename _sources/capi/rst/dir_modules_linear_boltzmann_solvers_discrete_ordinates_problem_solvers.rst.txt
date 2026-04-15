@@ -1,0 +1,24 @@
+.. _dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers:
+
+
+Directory solvers
+=================
+
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers``
+
+
+Files
+-----
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_nl_keigen_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_pi_keigen_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_steady_state_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_transient_solver.h`
+
+

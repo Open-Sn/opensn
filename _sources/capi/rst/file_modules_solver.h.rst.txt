@@ -42,13 +42,13 @@ Included By
 -----------
 
 
-- :ref:`file_modules_linear_boltzmann_solvers_solvers_nl_keigen_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_nl_keigen_solver.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_solvers_pi_keigen_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_pi_keigen_solver.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_solvers_steady_state_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_steady_state_solver.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_solvers_transient_solver.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_transient_solver.h`
 
 
 

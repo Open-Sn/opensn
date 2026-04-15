@@ -42,11 +42,11 @@ Included By
 -----------
 
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_context.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_source_functions_source_function.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
-
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_function.h`
 
 
 

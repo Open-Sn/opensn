@@ -3,7 +3,7 @@
 Function opensn::PackGroupsetXS
 ===============================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_acceleration_acceleration.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h`
 
 
 Function Documentation

@@ -665,35 +665,10 @@ Calling <code class="docutils literal notranslate"><span class="pre">SetTimeDepe
 <li><p>scalar flux moments (<code class="docutils literal notranslate"><span class="pre">phi_new</span></code>/<code class="docutils literal notranslate"><span class="pre">phi_old</span></code> state).</p></li>
 </ul>
 <p>For <code class="docutils literal notranslate"><span class="pre">SetTimeDependentMode()</span></code>, OpenSn needs angular fluxes
-(<code class="docutils literal notranslate"><span class="pre">psi</span></code>) for the transient RHS time term. Mode transition behavior is as follows:</p>
-<ul class="simple">
-<li><p>If <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> is already enabled:
-- the mode switch performs internal transient mode configuration only.</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> is disabled:
-- OpenSn enables angular flux storage,
-- caches the scalar flux and performs a sweep to reconstruct <code class="docutils literal notranslate"><span class="pre">psi</span></code>,
-- restores the cached scalar flux,
-- completes internal transient mode configuration.</p></li>
-</ul>
-<p>For <code class="docutils literal notranslate"><span class="pre">SetSteadyStateMode()</span></code>, transient-only internals are reset. If angular
-flux saving had been temporarily forced for transient use, the original
-<code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> user setting is restored.</p>
-<p>Practical implication:
-- <code class="docutils literal notranslate"><span class="pre">save_angular_flux=False</span></code> is valid for steady-state solves that later</p>
-<blockquote>
-<div><p>transition to transient; OpenSn will reconstruct <code class="docutils literal notranslate"><span class="pre">psi</span></code> needed by the
-transient solver by performing a fixed-point iteration on the lagged angular
-fluxes with phi/q held at the converged steady-state value.</p>
-</div></blockquote>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Reconstructed angular flux (<code class="docutils literal notranslate"><span class="pre">psi</span></code>) is consistent with the converged scalar
-scalar flux moments, but it is not guaranteed to be identical to the angular
-flux that would have been available if <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> had been
-used during the steady-state solve. Small first-step transient differences
-can therefore appear, especially for problems with reflecting boundaries or
-lagged angular fluxes.</p>
+(<code class="docutils literal notranslate"><span class="pre">psi</span></code>) for the transient RHS time term. That means
+<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> must already be enabled on the problem.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">SetSteadyStateMode()</span></code>, transient-only internals are reset, but the
+configured angular-flux storage setting is otherwise unchanged.</p>
 </div>
 <table class="autosummary longtable docutils align-default">
 <tbody>

@@ -3,7 +3,7 @@
 Class WGSLinearSolver
 =====================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_wgs_linear_solver.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_linear_solver.h`
 
 
 Inheritance Relationships

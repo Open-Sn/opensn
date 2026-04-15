@@ -3,7 +3,7 @@
 Function opensn::WGDSA_TGDSA_PreConditionerMult
 ===============================================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_preconditioning_lbs_shell_operations.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_preconditioning_lbs_shell_operations.h`
 
 
 Function Documentation

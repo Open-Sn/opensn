@@ -3,7 +3,7 @@
 Function opensn::PowerIterationKEigenSolver
 ===========================================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_power_iteration_keigen.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_power_iteration_keigen.h`
 
 
 Function Documentation

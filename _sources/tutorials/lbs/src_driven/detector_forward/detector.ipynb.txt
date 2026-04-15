@@ -482,6 +482,7 @@
     "        {\"name\": \"zmin\", \"type\": \"vacuum\"},\n",
     "        {\"name\": \"zmax\", \"type\": \"vacuum\"}\n",
     "    ],\n",
+    "    # Needed because this tutorial later works with angular fluxes.\n",
     "    options = {\"save_angular_flux\": True},\n",
     ")"
    ]

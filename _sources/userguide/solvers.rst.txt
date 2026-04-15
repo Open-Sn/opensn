@@ -320,7 +320,7 @@ Constructor
 
 The constructor takes:
 
-* ``problem``: an existing :py:class:`pyopensn.solver.LBSProblem`
+* ``problem``: an existing :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`
 
 GPU support
 -----------
@@ -754,7 +754,7 @@ Constructor
 
 The constructor takes:
 
-* ``problem``: an existing :py:class:`pyopensn.solver.LBSProblem`
+* ``problem``: an existing :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`
 * nonlinear tolerances:
   ``nl_abs_tol``, ``nl_rel_tol``, ``nl_sol_tol``, ``nl_max_its``
 * linear tolerances:

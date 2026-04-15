@@ -35,10 +35,18 @@ Program Listing for File source_flags.h
      ZERO_INCOMING_DELAYED_PSI = (1 << 6)
    };
    
-   /// SourceFlags is a combination of `SourceType`s
+   /**
+    * Shared source flags and callbacks.
+    *
+    * Although the concrete source-function implementations now live under the
+    * discrete ordinates problem, the source flag set and callback function
+    * signature  remain shared because `LBSProblem` still owns the active
+    * source-function interface.
+    */
    struct SourceFlags
    {
      SourceFlags() : flags_(0) {}
+     /// SourceFlags is a combination of `SourceType`s
      SourceFlags(SourceType type) : flags_(type) {}
    
      SourceFlags& operator|=(SourceType type)
