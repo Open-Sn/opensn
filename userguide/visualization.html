@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>15. Visualization &mdash; OpenSn 1.0.1 documentation</title>
+  <title>25. Visualization &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="16. Running Problems" href="running_problems.html" />
-    <link rel="prev" title="14. Post Processors" href="post_processors.html" /> 
+    <link rel="next" title="26. Running Problems" href="running_problems.html" />
+    <link rel="prev" title="24. Post Processors" href="post_processors.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -64,22 +64,32 @@
 <li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">15. Visualization</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">15.1. Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#visualizing-the-mesh">15.2. Visualizing the Mesh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#visualizing-scalar-flux">15.3. Visualizing Scalar Flux</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#visualizing-power">15.4. Visualizing Power</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#exporting-several-fields-together">15.5. Exporting Several Fields Together</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#transient-visualization">15.6. Transient Visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#practical-advice">15.7. Practical Advice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">25. Visualization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">25.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualizing-the-mesh">25.2. Visualizing the Mesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualizing-scalar-flux">25.3. Visualizing Scalar Flux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualizing-power">25.4. Visualizing Power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-several-fields-together">25.5. Exporting Several Fields Together</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-visualization">25.6. Transient Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-advice">25.7. Practical Advice</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -106,7 +116,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">15. </span>Visualization</li>
+      <li class="breadcrumb-item active"><span class="section-number">25. </span>Visualization</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -116,7 +126,7 @@
            <div itemprop="articleBody">
              
   <section id="visualization">
-<h1><span class="section-number">15. </span>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h1>
+<h1><span class="section-number">25. </span>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h1>
 <p>Visualization in OpenSn usually means exporting field functions or meshes to
 VTK-family files and then opening those files in a compatible viewer (VisIt,
 ParaView, etc.).</p>
@@ -124,7 +134,7 @@ ParaView, etc.).</p>
 the field-function and mesh APIs themselves. The aim here is to show a typical
 visualization workflow.</p>
 <section id="overview">
-<h2><span class="section-number">15.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>The OpenSn export methods are:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU" title="pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU()</span></code></a></p></li>
@@ -137,7 +147,7 @@ visualization workflow.</p>
 </ul>
 </section>
 <section id="visualizing-the-mesh">
-<h2><span class="section-number">15.2. </span>Visualizing the Mesh<a class="headerlink" href="#visualizing-the-mesh" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.2. </span>Visualizing the Mesh<a class="headerlink" href="#visualizing-the-mesh" title="Link to this heading"></a></h2>
 <p>Before solving a transport problem, it is often useful to export the mesh:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span><span class="o">.</span><span class="n">ExportToPVTU</span><span class="p">(</span><span class="s2">&quot;mesh_check&quot;</span><span class="p">)</span>
 </pre></div>
@@ -156,7 +166,7 @@ become more trustworthy later.</p>
 </div>
 </section>
 <section id="visualizing-scalar-flux">
-<h2><span class="section-number">15.3. </span>Visualizing Scalar Flux<a class="headerlink" href="#visualizing-scalar-flux" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.3. </span>Visualizing Scalar Flux<a class="headerlink" href="#visualizing-scalar-flux" title="Link to this heading"></a></h2>
 <p>The most common field-function export is scalar flux:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
 
@@ -171,7 +181,7 @@ become more trustworthy later.</p>
 field in the output set.</p>
 </section>
 <section id="visualizing-power">
-<h2><span class="section-number">15.4. </span>Visualizing Power<a class="headerlink" href="#visualizing-power" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.4. </span>Visualizing Power<a class="headerlink" href="#visualizing-power" title="Link to this heading"></a></h2>
 <p>Power can also be exported by creating a power field function on demand:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
 
@@ -186,7 +196,7 @@ field in the output set.</p>
 power-like field is part of the desired output.</p>
 </section>
 <section id="exporting-several-fields-together">
-<h2><span class="section-number">15.5. </span>Exporting Several Fields Together<a class="headerlink" href="#exporting-several-fields-together" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.5. </span>Exporting Several Fields Together<a class="headerlink" href="#exporting-several-fields-together" title="Link to this heading"></a></h2>
 <p>It is often convenient to export several related field functions in one file
 set:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
@@ -203,7 +213,7 @@ set:</p>
 <p>This keeps the outputs together in one visualization dataset.</p>
 </section>
 <section id="transient-visualization">
-<h2><span class="section-number">15.6. </span>Transient Visualization<a class="headerlink" href="#transient-visualization" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.6. </span>Transient Visualization<a class="headerlink" href="#transient-visualization" title="Link to this heading"></a></h2>
 <p>For transient problems, the usual pattern is:</p>
 <ol class="arabic simple">
 <li><p>advance the timestep,</p></li>
@@ -233,7 +243,7 @@ timestep:</p>
 not necessary when the existing objects support <code class="docutils literal notranslate"><span class="pre">Update()</span></code>.</p>
 </section>
 <section id="practical-advice">
-<h2><span class="section-number">15.7. </span>Practical Advice<a class="headerlink" href="#practical-advice" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.7. </span>Practical Advice<a class="headerlink" href="#practical-advice" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Export the mesh first when debugging geometry or labeling.</p></li>
 <li><p>Export scalar flux first when debugging transport behavior.</p></li>
@@ -255,8 +265,8 @@ generate plots.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="post_processors.html" class="btn btn-neutral float-left" title="14. Post Processors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="running_problems.html" class="btn btn-neutral float-right" title="16. Running Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="post_processors.html" class="btn btn-neutral float-left" title="24. Post Processors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="running_problems.html" class="btn btn-neutral float-right" title="26. Running Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

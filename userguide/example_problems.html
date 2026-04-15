@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>13. Example Problems &mdash; OpenSn 1.0.1 documentation</title>
+  <title>23. Example Problems &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,7 +26,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="14. Post Processors" href="post_processors.html" />
+    <link rel="next" title="24. Post Processors" href="post_processors.html" />
     <link rel="prev" title="12. Solvers" href="solvers.html" /> 
 </head>
 
@@ -64,41 +64,51 @@
 <li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">13. Example Problems</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#common-input-structure">13.1. Common Input Structure</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#overview">13.2. Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#common-building-blocks">13.3. Common Building Blocks</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#mesh">13.3.1. Mesh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#cross-sections">13.3.2. Cross Sections</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#groupsets">13.3.3. Groupsets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#boundary-conditions">13.3.4. Boundary Conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#volumetric-sources">13.3.5. Volumetric Sources</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#point-sources">13.3.6. Point Sources</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#problem-construction">13.3.7. Problem Construction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">23. Example Problems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-input-structure">23.1. Common Input Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#overview">23.2. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-building-blocks">23.3. Common Building Blocks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mesh">23.3.1. Mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cross-sections">23.3.2. Cross Sections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#groupsets">23.3.3. Groupsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#boundary-conditions">23.3.4. Boundary Conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#volumetric-sources">23.3.5. Volumetric Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#point-sources">23.3.6. Point Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#problem-construction">23.3.7. Problem Construction</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#example-1-source-driven-steady-state-problem">13.4. Example 1: Source-Driven Steady-State Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-2-multi-material-fixed-source-problem">13.5. Example 2: Multi-Material Fixed-Source Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-3-boundary-driven-problem">13.6. Example 3: Boundary-Driven Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-4-time-dependent-source-problem">13.7. Example 4: Time-Dependent Source Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-5-explicit-python-time-loop">13.8. Example 5: Explicit Python Time Loop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-6-power-iteration-k-eigenvalue-problem">13.9. Example 6: Power-Iteration k-Eigenvalue Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-7-nonlinear-k-eigenvalue-problem">13.10. Example 7: Nonlinear k-Eigenvalue Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-8-curvilinear-problem">13.11. Example 8: Curvilinear Problem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-9-updating-a-problem-in-place">13.12. Example 9: Updating a Problem In Place</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-10-field-function-output">13.13. Example 10: Field-Function Output</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-11-balance-and-leakage-checks">13.14. Example 11: Balance and Leakage Checks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-12-reusing-flux-data">13.15. Example 12: Reusing Flux Data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-13-writing-and-reading-restart-dumps">13.16. Example 13: Writing and Reading Restart Dumps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#choosing-a-template">13.17. Choosing a Template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-1-source-driven-steady-state-problem">23.4. Example 1: Source-Driven Steady-State Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-2-multi-material-fixed-source-problem">23.5. Example 2: Multi-Material Fixed-Source Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-3-boundary-driven-problem">23.6. Example 3: Boundary-Driven Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-4-time-dependent-source-problem">23.7. Example 4: Time-Dependent Source Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-5-explicit-python-time-loop">23.8. Example 5: Explicit Python Time Loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-6-power-iteration-k-eigenvalue-problem">23.9. Example 6: Power-Iteration k-Eigenvalue Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-7-nonlinear-k-eigenvalue-problem">23.10. Example 7: Nonlinear k-Eigenvalue Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-8-curvilinear-problem">23.11. Example 8: Curvilinear Problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-9-updating-a-problem-in-place">23.12. Example 9: Updating a Problem In Place</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-10-field-function-output">23.13. Example 10: Field-Function Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-11-balance-and-leakage-checks">23.14. Example 11: Balance and Leakage Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-12-reusing-flux-data">23.15. Example 12: Reusing Flux Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-13-writing-and-reading-restart-dumps">23.16. Example 13: Writing and Reading Restart Dumps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-a-template">23.17. Choosing a Template</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -125,7 +135,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">13. </span>Example Problems</li>
+      <li class="breadcrumb-item active"><span class="section-number">23. </span>Example Problems</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -135,7 +145,7 @@
            <div itemprop="articleBody">
              
   <section id="example-problems">
-<h1><span class="section-number">13. </span>Example Problems<a class="headerlink" href="#example-problems" title="Link to this heading"></a></h1>
+<h1><span class="section-number">23. </span>Example Problems<a class="headerlink" href="#example-problems" title="Link to this heading"></a></h1>
 <p>This section collects annotated example-input patterns for many of the
 problem-and-solver combinations used in OpenSn. The examples are intentionally
 verbose and repetitive. They are meant to show where each piece of an input
@@ -144,7 +154,7 @@ belongs rather than to be as short as possible.</p>
 to assemble a complete transport input from mesh generation through field-
 function output.</p>
 <section id="common-input-structure">
-<h2><span class="section-number">13.1. </span>Common Input Structure<a class="headerlink" href="#common-input-structure" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.1. </span>Common Input Structure<a class="headerlink" href="#common-input-structure" title="Link to this heading"></a></h2>
 <p>Most OpenSn inputs follow the same high-level structure:</p>
 <ol class="arabic simple">
 <li><p>create or import the mesh,</p></li>
@@ -160,7 +170,7 @@ function output.</p>
 </ol>
 </section>
 <section id="overview">
-<h2><span class="section-number">13.2. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.2. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>In practice:</p>
 <ul class="simple">
 <li><p>the mesh section defines the geometry and ids used later,</p></li>
@@ -179,11 +189,11 @@ the physical model; the solver object decides how that model is advanced.</p>
 </div>
 </section>
 <section id="common-building-blocks">
-<h2><span class="section-number">13.3. </span>Common Building Blocks<a class="headerlink" href="#common-building-blocks" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.3. </span>Common Building Blocks<a class="headerlink" href="#common-building-blocks" title="Link to this heading"></a></h2>
 <p>Before looking at the full examples, it helps to identify the pieces that
 appear in almost every script.</p>
 <section id="mesh">
-<h3><span class="section-number">13.3.1. </span>Mesh<a class="headerlink" href="#mesh" title="Link to this heading"></a></h3>
+<h3><span class="section-number">23.3.1. </span>Mesh<a class="headerlink" href="#mesh" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
 
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span>
@@ -198,7 +208,7 @@ appear in almost every script.</p>
 </div>
 </section>
 <section id="cross-sections">
-<h3><span class="section-number">13.3.2. </span>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h3>
+<h3><span class="section-number">23.3.2. </span>Cross Sections<a class="headerlink" href="#cross-sections" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
 
 <span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
@@ -209,7 +219,7 @@ appear in almost every script.</p>
 </div>
 </section>
 <section id="groupsets">
-<h3><span class="section-number">13.3.3. </span>Groupsets<a class="headerlink" href="#groupsets" title="Link to this heading"></a></h3>
+<h3><span class="section-number">23.3.3. </span>Groupsets<a class="headerlink" href="#groupsets" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
 
 <span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
@@ -230,7 +240,7 @@ appear in almost every script.</p>
 </div>
 </section>
 <section id="boundary-conditions">
-<h3><span class="section-number">13.3.4. </span>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h3>
+<h3><span class="section-number">23.3.4. </span>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
     <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
@@ -241,7 +251,7 @@ appear in almost every script.</p>
 </div>
 </section>
 <section id="volumetric-sources">
-<h3><span class="section-number">13.3.5. </span>Volumetric Sources<a class="headerlink" href="#volumetric-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">23.3.5. </span>Volumetric Sources<a class="headerlink" href="#volumetric-sources" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
 
 <span class="n">volumetric_sources</span> <span class="o">=</span> <span class="p">[</span>
@@ -254,7 +264,7 @@ appear in almost every script.</p>
 </div>
 </section>
 <section id="point-sources">
-<h3><span class="section-number">13.3.6. </span>Point Sources<a class="headerlink" href="#point-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">23.3.6. </span>Point Sources<a class="headerlink" href="#point-sources" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">PointSource</span>
 
 <span class="n">point_sources</span> <span class="o">=</span> <span class="p">[</span>
@@ -267,7 +277,7 @@ appear in almost every script.</p>
 </div>
 </section>
 <section id="problem-construction">
-<h3><span class="section-number">13.3.7. </span>Problem Construction<a class="headerlink" href="#problem-construction" title="Link to this heading"></a></h3>
+<h3><span class="section-number">23.3.7. </span>Problem Construction<a class="headerlink" href="#problem-construction" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span>
 
 <span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
@@ -292,7 +302,7 @@ solver. That is normal. The problem object captures the physical model.</p>
 </section>
 </section>
 <section id="example-1-source-driven-steady-state-problem">
-<h2><span class="section-number">13.4. </span>Example 1: Source-Driven Steady-State Problem<a class="headerlink" href="#example-1-source-driven-steady-state-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.4. </span>Example 1: Source-Driven Steady-State Problem<a class="headerlink" href="#example-1-source-driven-steady-state-problem" title="Link to this heading"></a></h2>
 <p>This is the standard starting point for most users.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyopensn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
@@ -388,7 +398,7 @@ detail.</p>
 </div>
 </section>
 <section id="example-2-multi-material-fixed-source-problem">
-<h2><span class="section-number">13.5. </span>Example 2: Multi-Material Fixed-Source Problem<a class="headerlink" href="#example-2-multi-material-fixed-source-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.5. </span>Example 2: Multi-Material Fixed-Source Problem<a class="headerlink" href="#example-2-multi-material-fixed-source-problem" title="Link to this heading"></a></h2>
 <p>The next common step is assigning different cross sections to different mesh
 regions.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fuel_xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
@@ -415,7 +425,7 @@ checking is worth doing early.</p>
 </div>
 </section>
 <section id="example-3-boundary-driven-problem">
-<h2><span class="section-number">13.6. </span>Example 3: Boundary-Driven Problem<a class="headerlink" href="#example-3-boundary-driven-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.6. </span>Example 3: Boundary-Driven Problem<a class="headerlink" href="#example-3-boundary-driven-problem" title="Link to this heading"></a></h2>
 <p>Some problems are driven entirely or primarily by incoming boundary flux.</p>
 <p>Isotropic inflow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
@@ -451,7 +461,7 @@ exist on the mesh.</p>
 </div>
 </section>
 <section id="example-4-time-dependent-source-problem">
-<h2><span class="section-number">13.7. </span>Example 4: Time-Dependent Source Problem<a class="headerlink" href="#example-4-time-dependent-source-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.7. </span>Example 4: Time-Dependent Source Problem<a class="headerlink" href="#example-4-time-dependent-source-problem" title="Link to this heading"></a></h2>
 <p>For a transient problem that does not require Python-side updates between
 timesteps, <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> is the simplest path.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransientSolver</span><span class="p">,</span> <span class="n">CrankNicolson</span>
@@ -493,7 +503,7 @@ just an optional post-processing switch.</p>
 </div>
 </section>
 <section id="example-5-explicit-python-time-loop">
-<h2><span class="section-number">13.8. </span>Example 5: Explicit Python Time Loop<a class="headerlink" href="#example-5-explicit-python-time-loop" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.8. </span>Example 5: Explicit Python Time Loop<a class="headerlink" href="#example-5-explicit-python-time-loop" title="Link to this heading"></a></h2>
 <p>If the input needs to update the problem between timesteps, use <code class="docutils literal notranslate"><span class="pre">Advance()</span></code>
 directly.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransientSolver</span><span class="p">,</span> <span class="n">BackwardEuler</span>
@@ -542,7 +552,7 @@ field function or create a fresh field function from the current state.</p>
 </div>
 </section>
 <section id="example-6-power-iteration-k-eigenvalue-problem">
-<h2><span class="section-number">13.9. </span>Example 6: Power-Iteration k-Eigenvalue Problem<a class="headerlink" href="#example-6-power-iteration-k-eigenvalue-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.9. </span>Example 6: Power-Iteration k-Eigenvalue Problem<a class="headerlink" href="#example-6-power-iteration-k-eigenvalue-problem" title="Link to this heading"></a></h2>
 <p>Power iteration is the usual first choice for a standard k-eigenvalue solve.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">PowerIterationKEigenSolver</span>
 
@@ -578,7 +588,7 @@ field function or create a fresh field function from the current state.</p>
 desired outer method and a power field is wanted for post processing.</p>
 </section>
 <section id="example-7-nonlinear-k-eigenvalue-problem">
-<h2><span class="section-number">13.10. </span>Example 7: Nonlinear k-Eigenvalue Problem<a class="headerlink" href="#example-7-nonlinear-k-eigenvalue-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.10. </span>Example 7: Nonlinear k-Eigenvalue Problem<a class="headerlink" href="#example-7-nonlinear-k-eigenvalue-problem" title="Link to this heading"></a></h2>
 <p>The nonlinear solver is configured through its own solver-level tolerances.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">NonLinearKEigenSolver</span>
 
@@ -610,7 +620,7 @@ nonlinear k-eigen solver.</p>
 </div>
 </section>
 <section id="example-8-curvilinear-problem">
-<h2><span class="section-number">13.11. </span>Example 8: Curvilinear Problem<a class="headerlink" href="#example-8-curvilinear-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.11. </span>Example 8: Curvilinear Problem<a class="headerlink" href="#example-8-curvilinear-problem" title="Link to this heading"></a></h2>
 <p>Curvilinear problems follow the same general pattern, but use the curvilinear
 problem type and a compatible quadrature.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DRZ</span>
@@ -645,7 +655,7 @@ problem type and a compatible quadrature.</p>
 </div>
 </section>
 <section id="example-9-updating-a-problem-in-place">
-<h2><span class="section-number">13.12. </span>Example 9: Updating a Problem In Place<a class="headerlink" href="#example-9-updating-a-problem-in-place" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.12. </span>Example 9: Updating a Problem In Place<a class="headerlink" href="#example-9-updating-a-problem-in-place" title="Link to this heading"></a></h2>
 <p>Problem objects are mutable. An input can replace sources, boundaries, or
 adjoint mode without rebuilding the entire problem object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
@@ -675,7 +685,7 @@ adjoint mode without rebuilding the entire problem object.</p>
 loops, and forward/adjoint comparison workflows.</p>
 </section>
 <section id="example-10-field-function-output">
-<h2><span class="section-number">13.13. </span>Example 10: Field-Function Output<a class="headerlink" href="#example-10-field-function-output" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.13. </span>Example 10: Field-Function Output<a class="headerlink" href="#example-10-field-function-output" title="Link to this heading"></a></h2>
 <p>Post processing is often only a few lines, but it belongs at the end of the
 workflow after a successful solve.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
@@ -703,7 +713,7 @@ workflow after a successful solve.</p>
 </div>
 </section>
 <section id="example-11-balance-and-leakage-checks">
-<h2><span class="section-number">13.14. </span>Example 11: Balance and Leakage Checks<a class="headerlink" href="#example-11-balance-and-leakage-checks" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.14. </span>Example 11: Balance and Leakage Checks<a class="headerlink" href="#example-11-balance-and-leakage-checks" title="Link to this heading"></a></h2>
 <p>Post-solve diagnostics are often as important as the field export itself.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">ComputeBalance</span><span class="p">()</span>
 
@@ -715,7 +725,7 @@ workflow after a successful solve.</p>
 new physical model.</p>
 </section>
 <section id="example-12-reusing-flux-data">
-<h2><span class="section-number">13.15. </span>Example 12: Reusing Flux Data<a class="headerlink" href="#example-12-reusing-flux-data" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.15. </span>Example 12: Reusing Flux Data<a class="headerlink" href="#example-12-reusing-flux-data" title="Link to this heading"></a></h2>
 <p>Some workflows use saved flux moments or angular fluxes as inputs to later
 stages:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">WriteFluxMoments</span><span class="p">(</span><span class="s2">&quot;phi_dump&quot;</span><span class="p">)</span>
@@ -729,7 +739,7 @@ stages:</p>
 </div>
 </section>
 <section id="example-13-writing-and-reading-restart-dumps">
-<h2><span class="section-number">13.16. </span>Example 13: Writing and Reading Restart Dumps<a class="headerlink" href="#example-13-writing-and-reading-restart-dumps" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.16. </span>Example 13: Writing and Reading Restart Dumps<a class="headerlink" href="#example-13-writing-and-reading-restart-dumps" title="Link to this heading"></a></h2>
 <p>Restart dumps are different from regular field-function or angular i/o. They
 save a restartable state owned primarily by the problem, with small
 solver-specific data added only when needed:</p>
@@ -824,7 +834,7 @@ state layout must match the restart data being read.</p>
 </div>
 </section>
 <section id="choosing-a-template">
-<h2><span class="section-number">13.17. </span>Choosing a Template<a class="headerlink" href="#choosing-a-template" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.17. </span>Choosing a Template<a class="headerlink" href="#choosing-a-template" title="Link to this heading"></a></h2>
 <p>As a practical guide:</p>
 <ul class="simple">
 <li><p>start from Example 1 for a basic fixed-source calculation,</p></li>
@@ -845,7 +855,7 @@ correctly.</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="solvers.html" class="btn btn-neutral float-left" title="12. Solvers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="post_processors.html" class="btn btn-neutral float-right" title="14. Post Processors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="post_processors.html" class="btn btn-neutral float-right" title="24. Post Processors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

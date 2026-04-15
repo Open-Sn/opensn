@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>17. Iterative Best Practices &mdash; OpenSn 1.0.1 documentation</title>
+  <title>27. Iterative Best Practices &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="18. Troubleshooting" href="troubleshooting.html" />
-    <link rel="prev" title="16. Running Problems" href="running_problems.html" /> 
+    <link rel="next" title="28. Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="26. Running Problems" href="running_problems.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -64,32 +64,42 @@
 <li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">17. Iterative Best Practices</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">17.1. Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#core-rules">17.2. Core Rules</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#converge-the-inners-for-every-outer">17.2.1. Converge the Inners for Every Outer</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#inner-tolerances-should-usually-be-tighter-than-outer-tolerances">17.2.2. Inner Tolerances Should Usually Be Tighter Than Outer Tolerances</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#if-you-have-multiple-groupsets-think-about-ags-explicitly">17.2.3. If You Have Multiple Groupsets, Think About AGS Explicitly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">27. Iterative Best Practices</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">27.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-rules">27.2. Core Rules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#converge-the-inners-for-every-outer">27.2.1. Converge the Inners for Every Outer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inner-tolerances-should-usually-be-tighter-than-outer-tolerances">27.2.2. Inner Tolerances Should Usually Be Tighter Than Outer Tolerances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#if-you-have-multiple-groupsets-think-about-ags-explicitly">27.2.3. If You Have Multiple Groupsets, Think About AGS Explicitly</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#upscatter-across-groupsets-must-be-converged">17.3. Upscatter Across Groupsets Must Be Converged</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#single-groupset-first-then-split-deliberately">17.4. Single Groupset First, Then Split Deliberately</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#choose-the-inner-method-pragmatically">17.5. Choose the Inner Method Pragmatically</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#use-dsa-when-the-physics-suggests-it">17.6. Use DSA When the Physics Suggests It</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#watch-maximum-iteration-counts">17.7. Watch Maximum Iteration Counts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#be-careful-with-nested-solver-expectations">17.8. Be Careful with Nested Solver Expectations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#transient-best-practices">17.9. Transient Best Practices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#eigenvalue-best-practices">17.10. Eigenvalue Best Practices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#what-to-check-first-when-convergence-looks-bad">17.11. What to Check First When Convergence Looks Bad</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#recommended-starting-habits">17.12. Recommended Starting Habits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#upscatter-across-groupsets-must-be-converged">27.3. Upscatter Across Groupsets Must Be Converged</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#single-groupset-first-then-split-deliberately">27.4. Single Groupset First, Then Split Deliberately</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choose-the-inner-method-pragmatically">27.5. Choose the Inner Method Pragmatically</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-dsa-when-the-physics-suggests-it">27.6. Use DSA When the Physics Suggests It</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#watch-maximum-iteration-counts">27.7. Watch Maximum Iteration Counts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#be-careful-with-nested-solver-expectations">27.8. Be Careful with Nested Solver Expectations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-best-practices">27.9. Transient Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eigenvalue-best-practices">27.10. Eigenvalue Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-to-check-first-when-convergence-looks-bad">27.11. What to Check First When Convergence Looks Bad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recommended-starting-habits">27.12. Recommended Starting Habits</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -116,7 +126,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">17. </span>Iterative Best Practices</li>
+      <li class="breadcrumb-item active"><span class="section-number">27. </span>Iterative Best Practices</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -126,7 +136,7 @@
            <div itemprop="articleBody">
              
   <section id="iterative-best-practices">
-<h1><span class="section-number">17. </span>Iterative Best Practices<a class="headerlink" href="#iterative-best-practices" title="Link to this heading"></a></h1>
+<h1><span class="section-number">27. </span>Iterative Best Practices<a class="headerlink" href="#iterative-best-practices" title="Link to this heading"></a></h1>
 <p>This section is intentionally practical. It is about how to use the iterative
 controls in a way that produces trustworthy transport solutions, rather than
 just describing the various options.</p>
@@ -137,7 +147,7 @@ make the outer iteration look converged when the transport problem itself has
 not actually been solved accurately enough.</p></li>
 </ul>
 <section id="overview">
-<h2><span class="section-number">17.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>OpenSn has multiple iteration levels:</p>
 <ol class="arabic simple">
 <li><p>the inner groupset solve,</p></li>
@@ -163,9 +173,9 @@ built from.</p>
 </div>
 </section>
 <section id="core-rules">
-<h2><span class="section-number">17.2. </span>Core Rules<a class="headerlink" href="#core-rules" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.2. </span>Core Rules<a class="headerlink" href="#core-rules" title="Link to this heading"></a></h2>
 <section id="converge-the-inners-for-every-outer">
-<h3><span class="section-number">17.2.1. </span>Converge the Inners for Every Outer<a class="headerlink" href="#converge-the-inners-for-every-outer" title="Link to this heading"></a></h3>
+<h3><span class="section-number">27.2.1. </span>Converge the Inners for Every Outer<a class="headerlink" href="#converge-the-inners-for-every-outer" title="Link to this heading"></a></h3>
 <p>As a rule, the inner groupset solve should be converged on every outer
 iteration.</p>
 <p>This applies to:</p>
@@ -197,7 +207,7 @@ default production strategy.</p>
 </div>
 </section>
 <section id="inner-tolerances-should-usually-be-tighter-than-outer-tolerances">
-<h3><span class="section-number">17.2.2. </span>Inner Tolerances Should Usually Be Tighter Than Outer Tolerances<a class="headerlink" href="#inner-tolerances-should-usually-be-tighter-than-outer-tolerances" title="Link to this heading"></a></h3>
+<h3><span class="section-number">27.2.2. </span>Inner Tolerances Should Usually Be Tighter Than Outer Tolerances<a class="headerlink" href="#inner-tolerances-should-usually-be-tighter-than-outer-tolerances" title="Link to this heading"></a></h3>
 <p>As a general rule:</p>
 <ul class="simple">
 <li><p>inner tolerances should be tighter than outer tolerances</p></li>
@@ -228,7 +238,7 @@ the final answer is trustworthy.</p>
 </div>
 </section>
 <section id="if-you-have-multiple-groupsets-think-about-ags-explicitly">
-<h3><span class="section-number">17.2.3. </span>If You Have Multiple Groupsets, Think About AGS Explicitly<a class="headerlink" href="#if-you-have-multiple-groupsets-think-about-ags-explicitly" title="Link to this heading"></a></h3>
+<h3><span class="section-number">27.2.3. </span>If You Have Multiple Groupsets, Think About AGS Explicitly<a class="headerlink" href="#if-you-have-multiple-groupsets-think-about-ags-explicitly" title="Link to this heading"></a></h3>
 <p>The moment a problem has more than one groupset, the groupset-to-groupset
 coupling becomes a real part of the solve.</p>
 <p>That means:</p>
@@ -250,7 +260,7 @@ Once the physics couples those groupsets, AGS is part of the transport solve.</p
 </section>
 </section>
 <section id="upscatter-across-groupsets-must-be-converged">
-<h2><span class="section-number">17.3. </span>Upscatter Across Groupsets Must Be Converged<a class="headerlink" href="#upscatter-across-groupsets-must-be-converged" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.3. </span>Upscatter Across Groupsets Must Be Converged<a class="headerlink" href="#upscatter-across-groupsets-must-be-converged" title="Link to this heading"></a></h2>
 <p>If you have multiple groupsets and there is upscatter coupling from one
 groupset into another, you must enable and converge the groupset-to-groupset
 iteration.</p>
@@ -285,7 +295,7 @@ now has to be converged.</p>
 </div>
 </section>
 <section id="single-groupset-first-then-split-deliberately">
-<h2><span class="section-number">17.4. </span>Single Groupset First, Then Split Deliberately<a class="headerlink" href="#single-groupset-first-then-split-deliberately" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.4. </span>Single Groupset First, Then Split Deliberately<a class="headerlink" href="#single-groupset-first-then-split-deliberately" title="Link to this heading"></a></h2>
 <p>If you are building a new problem and do not already know you need multiple
 groupsets, start with one groupset covering all groups.</p>
 <p>Reasons:</p>
@@ -308,7 +318,7 @@ whether the same case behaves correctly with one groupset.</p>
 </div>
 </section>
 <section id="choose-the-inner-method-pragmatically">
-<h2><span class="section-number">17.5. </span>Choose the Inner Method Pragmatically<a class="headerlink" href="#choose-the-inner-method-pragmatically" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.5. </span>Choose the Inner Method Pragmatically<a class="headerlink" href="#choose-the-inner-method-pragmatically" title="Link to this heading"></a></h2>
 <p>For most difficult production problems:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> is the strongest general starting choice</p></li>
@@ -341,7 +351,7 @@ tolerance.</p>
 </div>
 </section>
 <section id="use-dsa-when-the-physics-suggests-it">
-<h2><span class="section-number">17.6. </span>Use DSA When the Physics Suggests It<a class="headerlink" href="#use-dsa-when-the-physics-suggests-it" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.6. </span>Use DSA When the Physics Suggests It<a class="headerlink" href="#use-dsa-when-the-physics-suggests-it" title="Link to this heading"></a></h2>
 <p>WGDSA and TGDSA are most worth considering when:</p>
 <ul class="simple">
 <li><p>scattering is strong,</p></li>
@@ -369,7 +379,7 @@ transport convergence behavior indicates it is needed.</p>
 </div>
 </section>
 <section id="watch-maximum-iteration-counts">
-<h2><span class="section-number">17.7. </span>Watch Maximum Iteration Counts<a class="headerlink" href="#watch-maximum-iteration-counts" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.7. </span>Watch Maximum Iteration Counts<a class="headerlink" href="#watch-maximum-iteration-counts" title="Link to this heading"></a></h2>
 <p>Iteration caps are safety limits, not convergence strategies.</p>
 <p>For example:</p>
 <ul class="simple">
@@ -397,7 +407,7 @@ itself looks unhealthy.</p>
 </div>
 </section>
 <section id="be-careful-with-nested-solver-expectations">
-<h2><span class="section-number">17.8. </span>Be Careful with Nested Solver Expectations<a class="headerlink" href="#be-careful-with-nested-solver-expectations" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.8. </span>Be Careful with Nested Solver Expectations<a class="headerlink" href="#be-careful-with-nested-solver-expectations" title="Link to this heading"></a></h2>
 <p>A change at one iteration level does not automatically fix another level.</p>
 <p>Examples:</p>
 <ul class="simple">
@@ -414,7 +424,7 @@ adjust that level first</p></li>
 </ul>
 </section>
 <section id="transient-best-practices">
-<h2><span class="section-number">17.9. </span>Transient Best Practices<a class="headerlink" href="#transient-best-practices" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.9. </span>Transient Best Practices<a class="headerlink" href="#transient-best-practices" title="Link to this heading"></a></h2>
 <p>For transient problems:</p>
 <ul class="simple">
 <li><p>each timestep still contains a transport solve,</p></li>
@@ -437,7 +447,7 @@ still matters at every step.</p>
 </div>
 </section>
 <section id="eigenvalue-best-practices">
-<h2><span class="section-number">17.10. </span>Eigenvalue Best Practices<a class="headerlink" href="#eigenvalue-best-practices" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.10. </span>Eigenvalue Best Practices<a class="headerlink" href="#eigenvalue-best-practices" title="Link to this heading"></a></h2>
 <p>For k-eigenvalue problems:</p>
 <ul class="simple">
 <li><p>the inner transport solve quality affects the eigenvalue iteration,</p></li>
@@ -460,7 +470,7 @@ not the groupset <code class="docutils literal notranslate"><span class="pre">in
 </ul>
 </section>
 <section id="what-to-check-first-when-convergence-looks-bad">
-<h2><span class="section-number">17.11. </span>What to Check First When Convergence Looks Bad<a class="headerlink" href="#what-to-check-first-when-convergence-looks-bad" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.11. </span>What to Check First When Convergence Looks Bad<a class="headerlink" href="#what-to-check-first-when-convergence-looks-bad" title="Link to this heading"></a></h2>
 <p>A practical troubleshooting order is:</p>
 <ol class="arabic simple">
 <li><p>Is the problem using one groupset or several?</p></li>
@@ -480,7 +490,7 @@ is part of solution quality, not just part of runtime tuning.</p>
 </div>
 </section>
 <section id="recommended-starting-habits">
-<h2><span class="section-number">17.12. </span>Recommended Starting Habits<a class="headerlink" href="#recommended-starting-habits" title="Link to this heading"></a></h2>
+<h2><span class="section-number">27.12. </span>Recommended Starting Habits<a class="headerlink" href="#recommended-starting-habits" title="Link to this heading"></a></h2>
 <p>If you want a compact checklist, start here:</p>
 <ul class="simple">
 <li><p>Start with one groupset unless you already know why you need more.</p></li>
@@ -502,8 +512,8 @@ and only need problem-specific refinement afterward.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="running_problems.html" class="btn btn-neutral float-left" title="16. Running Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="18. Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="running_problems.html" class="btn btn-neutral float-left" title="26. Running Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="28. Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

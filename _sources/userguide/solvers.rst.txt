@@ -1,4 +1,3 @@
-=======
 Solvers
 =======
 
@@ -177,6 +176,23 @@ Problem options available in Python include:
 * ``verbose_ags_iterations``
 * ``field_function_prefix_option``
 * ``field_function_prefix``
+
+``use_precursors`` controls whether delayed-neutron precursor treatment is kept
+active for the problem. The default is ``True``. This should usually stay
+enabled for transient and k-eigen workflows unless you explicitly want a
+prompt-only model.
+
+The setting is treated as user intent and persists across later
+:py:meth:`SetXSMap` calls, even if the current cross-section map temporarily has
+no precursor-bearing material. If cross sections are swapped, existing
+precursor concentrations are remapped by local cell and precursor-family index;
+new families start at zero and removed families are discarded. If a cell passes
+through a material with zero precursors, its precursor history is dropped and
+any later reintroduced precursor families restart from zero.
+
+If any fissionable material in the active map contains precursor data and
+``use_precursors=True``, then all fissionable materials in that map must
+contain precursor data. Non-fissionable materials may have zero precursors.
 
 .. note::
 

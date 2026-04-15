@@ -830,14 +830,14 @@ groupset. Each dictionary supports:</p>
 <li><p>write_restart_path: str, default=’’</p></li>
 <li><p>write_restart_time_interval: int, default=0
 (must be 0 or &gt;=30)</p></li>
-<li><p>use_precursors: bool, default=False
+<li><p>use_precursors: bool, default=True
 Enable delayed-neutron precursor treatment. This is treated as user intent and remains
 active across later <code class="docutils literal notranslate"><span class="pre">SetXSMap</span></code> calls, even if the current XS map temporarily contains
 no precursor-bearing material. When XS maps are swapped, existing precursor
 concentrations are remapped by cell and precursor-family index; new families start at
 zero and removed families are discarded. If any fissionable material in the active map
-has precursor data, all fissionable materials in that map must have precursor data.
-Non-fissionable materials may have zero precursors.</p></li>
+has precursor data and <code class="docutils literal notranslate"><span class="pre">use_precursors=True</span></code>, all fissionable materials in that map
+must have precursor data. Non-fissionable materials may have zero precursors.</p></li>
 <li><p>use_source_moments: bool, default=False</p></li>
 <li><p>save_angular_flux: bool, default=False</p></li>
 <li><p>adjoint: bool, default=False</p></li>

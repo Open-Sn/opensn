@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>18. Troubleshooting &mdash; OpenSn 1.0.1 documentation</title>
+  <title>28. Troubleshooting &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="19. FAQ" href="faq.html" />
-    <link rel="prev" title="17. Iterative Best Practices" href="iterative_best_practices.html" /> 
+    <link rel="next" title="29. FAQ" href="faq.html" />
+    <link rel="prev" title="27. Iterative Best Practices" href="iterative_best_practices.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -64,24 +64,34 @@
 <li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">14. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">18. Troubleshooting</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#start-with-the-simplest-question">18.1. Start with the simplest question</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#if-the-code-fails-immediately">18.2. If the code fails immediately</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#if-the-solution-does-not-converge">18.3. If the solution does not converge</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#if-the-physics-looks-wrong">18.4. If the physics looks wrong</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#if-field-functions-are-confusing">18.5. If field functions are confusing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#if-parallel-behavior-looks-odd">18.6. If parallel behavior looks odd</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#if-imported-cross-sections-behave-unexpectedly">18.7. If imported cross sections behave unexpectedly</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#general-debugging-workflow">18.8. General debugging workflow</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#when-to-look-elsewhere-in-the-manual">18.9. When to look elsewhere in the manual</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">28. Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-with-the-simplest-question">28.1. Start with the simplest question</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-the-code-fails-immediately">28.2. If the code fails immediately</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-the-solution-does-not-converge">28.3. If the solution does not converge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-the-physics-looks-wrong">28.4. If the physics looks wrong</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-field-functions-are-confusing">28.5. If field functions are confusing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-parallel-behavior-looks-odd">28.6. If parallel behavior looks odd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#if-imported-cross-sections-behave-unexpectedly">28.7. If imported cross sections behave unexpectedly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#general-debugging-workflow">28.8. General debugging workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#when-to-look-elsewhere-in-the-manual">28.9. When to look elsewhere in the manual</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -108,7 +118,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">18. </span>Troubleshooting</li>
+      <li class="breadcrumb-item active"><span class="section-number">28. </span>Troubleshooting</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -118,11 +128,11 @@
            <div itemprop="articleBody">
              
   <section id="troubleshooting">
-<h1><span class="section-number">18. </span>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
+<h1><span class="section-number">28. </span>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
 <p>This section collects common failure modes and the first things to check when a
 problem does not run or the results do not make sense.</p>
 <section id="start-with-the-simplest-question">
-<h2><span class="section-number">18.1. </span>Start with the simplest question<a class="headerlink" href="#start-with-the-simplest-question" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.1. </span>Start with the simplest question<a class="headerlink" href="#start-with-the-simplest-question" title="Link to this heading"></a></h2>
 <p>When a problem fails, first decide which category the failure is in:</p>
 <ul class="simple">
 <li><p>input/setup problem</p></li>
@@ -133,7 +143,7 @@ problem does not run or the results do not make sense.</p>
 <p>That distinction usually determines where to look next.</p>
 </section>
 <section id="if-the-code-fails-immediately">
-<h2><span class="section-number">18.2. </span>If the code fails immediately<a class="headerlink" href="#if-the-code-fails-immediately" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.2. </span>If the code fails immediately<a class="headerlink" href="#if-the-code-fails-immediately" title="Link to this heading"></a></h2>
 <p>Immediate failures are often caused by one of the following:</p>
 <ul class="simple">
 <li><p>a missing required constructor argument</p></li>
@@ -154,7 +164,7 @@ case. For example, try:</p>
 <p>If that runs, add complexity back one piece at a time.</p>
 </section>
 <section id="if-the-solution-does-not-converge">
-<h2><span class="section-number">18.3. </span>If the solution does not converge<a class="headerlink" href="#if-the-solution-does-not-converge" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.3. </span>If the solution does not converge<a class="headerlink" href="#if-the-solution-does-not-converge" title="Link to this heading"></a></h2>
 <p>When iteration is slow or unstable, check the iteration hierarchy:</p>
 <ul class="simple">
 <li><p>inner iteration inside each groupset</p></li>
@@ -174,7 +184,7 @@ and to make the inner tolerance tighter than the outer tolerance.</p>
 </div>
 </section>
 <section id="if-the-physics-looks-wrong">
-<h2><span class="section-number">18.4. </span>If the physics looks wrong<a class="headerlink" href="#if-the-physics-looks-wrong" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.4. </span>If the physics looks wrong<a class="headerlink" href="#if-the-physics-looks-wrong" title="Link to this heading"></a></h2>
 <p>A run can converge cleanly and still be wrong. The usual causes are:</p>
 <ul class="simple">
 <li><p>wrong material assigned to one or more block ids</p></li>
@@ -188,7 +198,7 @@ and to make the inner tolerance tighter than the outer tolerance.</p>
 quadrature is high enough to integrate the moment expansion accurately.</p>
 </section>
 <section id="if-field-functions-are-confusing">
-<h2><span class="section-number">18.5. </span>If field functions are confusing<a class="headerlink" href="#if-field-functions-are-confusing" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.5. </span>If field functions are confusing<a class="headerlink" href="#if-field-functions-are-confusing" title="Link to this heading"></a></h2>
 <p>Field functions are now created from the current solver state when requested.
 They are not persistent solver-managed objects that keep themselves updated in
 the background, but LBS field functions can be refreshed explicitly while their
@@ -204,7 +214,7 @@ you have explicitly refreshed it</p></li>
 </ul>
 </section>
 <section id="if-parallel-behavior-looks-odd">
-<h2><span class="section-number">18.6. </span>If parallel behavior looks odd<a class="headerlink" href="#if-parallel-behavior-looks-odd" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.6. </span>If parallel behavior looks odd<a class="headerlink" href="#if-parallel-behavior-looks-odd" title="Link to this heading"></a></h2>
 <p>Parallel transport problems are sensitive to mesh decomposition and sweep
 structure. If a problem behaves strangely in parallel:</p>
 <ul class="simple">
@@ -220,7 +230,7 @@ the mesh or partitioning can create sweep-graph cycles, stay with <code class="d
 </div>
 </section>
 <section id="if-imported-cross-sections-behave-unexpectedly">
-<h2><span class="section-number">18.7. </span>If imported cross sections behave unexpectedly<a class="headerlink" href="#if-imported-cross-sections-behave-unexpectedly" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.7. </span>If imported cross sections behave unexpectedly<a class="headerlink" href="#if-imported-cross-sections-behave-unexpectedly" title="Link to this heading"></a></h2>
 <p>For imported OpenMC MGXS or native OpenSn cross sections, check:</p>
 <ul class="simple">
 <li><p>the number of groups</p></li>
@@ -234,7 +244,7 @@ weighted and only combines data that exists consistently across the input cross
 sections.</p>
 </section>
 <section id="general-debugging-workflow">
-<h2><span class="section-number">18.8. </span>General debugging workflow<a class="headerlink" href="#general-debugging-workflow" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.8. </span>General debugging workflow<a class="headerlink" href="#general-debugging-workflow" title="Link to this heading"></a></h2>
 <p>The most effective debugging sequence is usually:</p>
 <ol class="arabic simple">
 <li><p>run on one MPI rank</p></li>
@@ -247,7 +257,7 @@ sections.</p>
 </ol>
 </section>
 <section id="when-to-look-elsewhere-in-the-manual">
-<h2><span class="section-number">18.9. </span>When to look elsewhere in the manual<a class="headerlink" href="#when-to-look-elsewhere-in-the-manual" title="Link to this heading"></a></h2>
+<h2><span class="section-number">28.9. </span>When to look elsewhere in the manual<a class="headerlink" href="#when-to-look-elsewhere-in-the-manual" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>If the issue is solver configuration, see <code class="docutils literal notranslate"><span class="pre">iterative_methods</span></code> and
 <code class="docutils literal notranslate"><span class="pre">iterative_best_practices</span></code>.</p></li>
@@ -262,8 +272,8 @@ sections.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="iterative_best_practices.html" class="btn btn-neutral float-left" title="17. Iterative Best Practices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="faq.html" class="btn btn-neutral float-right" title="19. FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="iterative_best_practices.html" class="btn btn-neutral float-left" title="27. Iterative Best Practices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="faq.html" class="btn btn-neutral float-right" title="29. FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

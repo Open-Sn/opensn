@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>14. Post Processors &mdash; OpenSn 1.0.1 documentation</title>
+  <title>24. Post Processors &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="15. Visualization" href="visualization.html" />
-    <link rel="prev" title="13. Example Problems" href="example_problems.html" /> 
+    <link rel="next" title="25. Visualization" href="visualization.html" />
+    <link rel="prev" title="23. Example Problems" href="example_problems.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -64,39 +64,49 @@
 <li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">13. Example Problems</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">14. Post Processors</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">14.1. Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#updating-existing-field-functions">14.2. Updating Existing Field Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#scalar-flux-field-functions">14.3. Scalar Flux Field Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#getscalarfluxfieldfunction">14.3.1. <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">24. Post Processors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">24.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-existing-field-functions">24.2. Updating Existing Field Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scalar-flux-field-functions">24.3. Scalar Flux Field Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#getscalarfluxfieldfunction">24.3.1. <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#derived-field-functions">14.4. Derived Field Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#createfieldfunction">14.4.1. <code class="docutils literal notranslate"><span class="pre">CreateFieldFunction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#derived-field-functions">24.4. Derived Field Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#createfieldfunction">24.4.1. <code class="docutils literal notranslate"><span class="pre">CreateFieldFunction</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#angular-flux-field-functions">14.5. Angular Flux Field Functions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#getangularfieldfunctionlist">14.5.1. <code class="docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#angular-flux-field-functions">24.5. Angular Flux Field Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#getangularfieldfunctionlist">24.5.1. <code class="docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#exporting-field-functions">14.6. Exporting Field Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#field-function-interpolation">14.7. Field-Function Interpolation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#point-interpolation">14.7.1. Point Interpolation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#line-interpolation">14.7.2. Line Interpolation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#volume-interpolation">14.7.3. Volume Interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exporting-field-functions">24.6. Exporting Field Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#field-function-interpolation">24.7. Field-Function Interpolation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#point-interpolation">24.7.1. Point Interpolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#line-interpolation">24.7.2. Line Interpolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#volume-interpolation">24.7.3. Volume Interpolation</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#other-useful-post-processing-paths">14.8. Other Useful Post-Processing Paths</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#transient-workflows">14.9. Transient Workflows</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">14.10. Practical Guidance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-useful-post-processing-paths">24.8. Other Useful Post-Processing Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-workflows">24.9. Transient Workflows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">24.10. Practical Guidance</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">15. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">16. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">17. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">18. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">19. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -123,7 +133,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">14. </span>Post Processors</li>
+      <li class="breadcrumb-item active"><span class="section-number">24. </span>Post Processors</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -133,7 +143,7 @@
            <div itemprop="articleBody">
              
   <section id="post-processors">
-<h1><span class="section-number">14. </span>Post Processors<a class="headerlink" href="#post-processors" title="Link to this heading"></a></h1>
+<h1><span class="section-number">24. </span>Post Processors<a class="headerlink" href="#post-processors" title="Link to this heading"></a></h1>
 <p>For most OpenSn workflows, post processing starts with field functions. A field
 function is a mesh-based representation of transport data that can be exported
 or interpolated from Python.</p>
@@ -143,7 +153,7 @@ updated solver-owned views. Some field functions can refresh that same
 snapshot object explicitly through
 <a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.Update" title="pyopensn.fieldfunc.FieldFunctionGridBased.Update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased.Update()</span></code></a>.</p>
 <section id="overview">
-<h2><span class="section-number">14.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>The OpenSn field function interfaces are:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction" title="pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction()</span></code></a></p></li>
@@ -178,7 +188,7 @@ field-function cache.</p>
 </div>
 </section>
 <section id="updating-existing-field-functions">
-<h2><span class="section-number">14.2. </span>Updating Existing Field Functions<a class="headerlink" href="#updating-existing-field-functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.2. </span>Updating Existing Field Functions<a class="headerlink" href="#updating-existing-field-functions" title="Link to this heading"></a></h2>
 <p>Field functions returned by LBS problem accessors are updateable snapshots.
 They hold their own field-vector data, but also know how to refresh that data
 from the owning problem while the owning problem is still alive.</p>
@@ -199,9 +209,9 @@ reusing the same interpolation or export setup is clearer than reconstructing
 field functions each time.</p>
 </section>
 <section id="scalar-flux-field-functions">
-<h2><span class="section-number">14.3. </span>Scalar Flux Field Functions<a class="headerlink" href="#scalar-flux-field-functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.3. </span>Scalar Flux Field Functions<a class="headerlink" href="#scalar-flux-field-functions" title="Link to this heading"></a></h2>
 <section id="getscalarfluxfieldfunction">
-<h3><span class="section-number">14.3.1. </span><code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction</span></code><a class="headerlink" href="#getscalarfluxfieldfunction" title="Link to this heading"></a></h3>
+<h3><span class="section-number">24.3.1. </span><code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction</span></code><a class="headerlink" href="#getscalarfluxfieldfunction" title="Link to this heading"></a></h3>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction" title="pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.GetScalarFluxFieldFunction()</span></code></a> to create
 scalar-flux or flux-moment field functions from the current scalar-flux state.</p>
 <p>The common case is scalar flux only:</p>
@@ -228,9 +238,9 @@ moments are mainly for diagnostics and specialized analysis.</p>
 </section>
 </section>
 <section id="derived-field-functions">
-<h2><span class="section-number">14.4. </span>Derived Field Functions<a class="headerlink" href="#derived-field-functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.4. </span>Derived Field Functions<a class="headerlink" href="#derived-field-functions" title="Link to this heading"></a></h2>
 <section id="createfieldfunction">
-<h3><span class="section-number">14.4.1. </span><code class="docutils literal notranslate"><span class="pre">CreateFieldFunction</span></code><a class="headerlink" href="#createfieldfunction" title="Link to this heading"></a></h3>
+<h3><span class="section-number">24.4.1. </span><code class="docutils literal notranslate"><span class="pre">CreateFieldFunction</span></code><a class="headerlink" href="#createfieldfunction" title="Link to this heading"></a></h3>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.CreateFieldFunction" title="pyopensn.solver.LBSProblem.CreateFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.CreateFieldFunction()</span></code></a> to create a named
 scalar field function derived from a 1D cross section or from the special case
 <code class="docutils literal notranslate"><span class="pre">&quot;power&quot;</span></code>.</p>
@@ -272,9 +282,9 @@ The same argument can also be used for other derived fields such as
 </section>
 </section>
 <section id="angular-flux-field-functions">
-<h2><span class="section-number">14.5. </span>Angular Flux Field Functions<a class="headerlink" href="#angular-flux-field-functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.5. </span>Angular Flux Field Functions<a class="headerlink" href="#angular-flux-field-functions" title="Link to this heading"></a></h2>
 <section id="getangularfieldfunctionlist">
-<h3><span class="section-number">14.5.1. </span><code class="docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList</span></code><a class="headerlink" href="#getangularfieldfunctionlist" title="Link to this heading"></a></h3>
+<h3><span class="section-number">24.5.1. </span><code class="docutils literal notranslate"><span class="pre">GetAngularFieldFunctionList</span></code><a class="headerlink" href="#getangularfieldfunctionlist" title="Link to this heading"></a></h3>
 <p>Use
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList" title="pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList()</span></code></a>
 to create field functions for selected angular-flux components.</p>
@@ -321,7 +331,7 @@ names as well.</p>
 </section>
 </section>
 <section id="exporting-field-functions">
-<h2><span class="section-number">14.6. </span>Exporting Field Functions<a class="headerlink" href="#exporting-field-functions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.6. </span>Exporting Field Functions<a class="headerlink" href="#exporting-field-functions" title="Link to this heading"></a></h2>
 <p>The main Python export routine is:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU" title="pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU()</span></code></a></p></li>
@@ -365,9 +375,9 @@ completed timestep whose state you want to visualize.</p>
 </div>
 </section>
 <section id="field-function-interpolation">
-<h2><span class="section-number">14.7. </span>Field-Function Interpolation<a class="headerlink" href="#field-function-interpolation" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.7. </span>Field-Function Interpolation<a class="headerlink" href="#field-function-interpolation" title="Link to this heading"></a></h2>
 <section id="point-interpolation">
-<h3><span class="section-number">14.7.1. </span>Point Interpolation<a class="headerlink" href="#point-interpolation" title="Link to this heading"></a></h3>
+<h3><span class="section-number">24.7.1. </span>Point Interpolation<a class="headerlink" href="#point-interpolation" title="Link to this heading"></a></h3>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationPoint.html#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationPoint</span></code></a> to evaluate a
 field function at a point.</p>
 <p>Example:</p>
@@ -384,7 +394,7 @@ field function at a point.</p>
 value.</p>
 </section>
 <section id="line-interpolation">
-<h3><span class="section-number">14.7.2. </span>Line Interpolation<a class="headerlink" href="#line-interpolation" title="Link to this heading"></a></h3>
+<h3><span class="section-number">24.7.2. </span>Line Interpolation<a class="headerlink" href="#line-interpolation" title="Link to this heading"></a></h3>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationLine.html#pyopensn.fieldfunc.FieldFunctionInterpolationLine" title="pyopensn.fieldfunc.FieldFunctionInterpolationLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationLine</span></code></a> to sample a
 field function along a line.</p>
 <p>Example:</p>
@@ -405,7 +415,7 @@ field function along a line.</p>
 comparisons across runs.</p>
 </section>
 <section id="volume-interpolation">
-<h3><span class="section-number">14.7.3. </span>Volume Interpolation<a class="headerlink" href="#volume-interpolation" title="Link to this heading"></a></h3>
+<h3><span class="section-number">24.7.3. </span>Volume Interpolation<a class="headerlink" href="#volume-interpolation" title="Link to this heading"></a></h3>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolationVolume.html#pyopensn.fieldfunc.FieldFunctionInterpolationVolume" title="pyopensn.fieldfunc.FieldFunctionInterpolationVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationVolume</span></code></a> for region
 averages, sums, maxima, and function-weighted variants over a logical volume.</p>
 <p>Example:</p>
@@ -434,7 +444,7 @@ averages, sums, maxima, and function-weighted variants over a logical volume.</p
 </section>
 </section>
 <section id="other-useful-post-processing-paths">
-<h2><span class="section-number">14.8. </span>Other Useful Post-Processing Paths<a class="headerlink" href="#other-useful-post-processing-paths" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.8. </span>Other Useful Post-Processing Paths<a class="headerlink" href="#other-useful-post-processing-paths" title="Link to this heading"></a></h2>
 <p>For discrete ordinates problems, other useful output paths include:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPsi()</span></code> for direct access to stored angular-flux arrays</p></li>
@@ -446,7 +456,7 @@ flux storage and restart-style workflows</p></li>
 post-processing workflow.</p>
 </section>
 <section id="transient-workflows">
-<h2><span class="section-number">14.9. </span>Transient Workflows<a class="headerlink" href="#transient-workflows" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.9. </span>Transient Workflows<a class="headerlink" href="#transient-workflows" title="Link to this heading"></a></h2>
 <p>For transient problems, the usual pattern is:</p>
 <ol class="arabic simple">
 <li><p>advance the timestep,</p></li>
@@ -470,7 +480,7 @@ timestep. Creating a new field function after each <code class="docutils literal
 but is usually unnecessary when the existing object supports <code class="docutils literal notranslate"><span class="pre">Update()</span></code>.</p>
 </section>
 <section id="practical-guidance">
-<h2><span class="section-number">14.10. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.10. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
 <p>For most workflows:</p>
 <ul class="simple">
 <li><p>use <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction()</span></code> for scalar flux,</p></li>
@@ -494,8 +504,8 @@ transport setup readable and makes the output workflow easier to reuse.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="example_problems.html" class="btn btn-neutral float-left" title="13. Example Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="visualization.html" class="btn btn-neutral float-right" title="15. Visualization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="example_problems.html" class="btn btn-neutral float-left" title="23. Example Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="visualization.html" class="btn btn-neutral float-right" title="25. Visualization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
