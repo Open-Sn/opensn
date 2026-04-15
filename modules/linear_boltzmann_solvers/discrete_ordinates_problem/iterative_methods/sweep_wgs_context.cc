@@ -50,7 +50,8 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
     sweep_chunk(std::move(swp_chnk)),
     sweep_scheduler(GetSchedulingAlgorithm(do_problem.GetSweepType(), do_problem.UseGPUs()),
                     *groupset.angle_agg,
-                    *sweep_chunk)
+                    *sweep_chunk),
+    device_memory_allocated(false)
 {
 }
 
@@ -123,6 +124,12 @@ void
 SweepWGSContext::PreSolveCallback()
 {
   sweep_times.clear();
+  if (not device_memory_allocated)
+  {
+    bool save_angular_flux = not do_problem.GetPsiNewLocal()[groupset.id].empty();
+    sweep_scheduler.GetAngleAggregation().AllocateDeviceMemory(save_angular_flux);
+    device_memory_allocated = true;
+  }
 }
 
 void
@@ -186,6 +193,11 @@ SweepWGSContext::PostSolveCallback()
   }
 
   sweep_times.clear();
+  if (device_memory_allocated)
+  {
+    sweep_scheduler.GetAngleAggregation().DeallocateDeviceMemory();
+    device_memory_allocated = false;
+  }
 }
 
 } // namespace opensn

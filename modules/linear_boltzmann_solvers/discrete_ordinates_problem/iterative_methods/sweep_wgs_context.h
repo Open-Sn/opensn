@@ -35,6 +35,7 @@ struct SweepWGSContext : public WGSContext
   std::shared_ptr<SweepChunk> sweep_chunk;
   SweepScheduler sweep_scheduler;
   std::vector<double> sweep_times;
+  bool device_memory_allocated;
 };
 
 } // namespace opensn

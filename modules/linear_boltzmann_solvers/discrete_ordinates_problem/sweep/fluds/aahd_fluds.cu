@@ -60,13 +60,6 @@ AAHD_Bank::Clear()
   device_storage.reset();
 }
 
-void
-AAHD_Bank::Clear(crb::Stream& stream)
-{
-  host_storage.clear();
-  device_storage.async_free(stream);
-}
-
 AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
                                      const std::vector<std::size_t>& loc_offsets,
                                      std::size_t stride)
@@ -74,16 +67,6 @@ AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
 {
   host_storage = crb::HostVector<double>(loc_offsets.back() * stride_size, 0.0);
   device_storage = crb::DeviceMemory<double>(loc_offsets.back() * stride_size);
-}
-
-AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
-                                     const std::vector<std::size_t>& loc_offsets,
-                                     std::size_t stride,
-                                     crb::Stream& stream)
-  : location_sizes(&loc_sizes), location_offsets(&loc_offsets), stride_size(stride)
-{
-  host_storage = crb::HostVector<double>(loc_offsets.back() * stride_size, 0.0);
-  device_storage = crb::DeviceMemory<double>(loc_offsets.back() * stride_size, stream);
 }
 
 void
@@ -138,20 +121,42 @@ AAHD_NonLocalDelayedBank::SetNewToOld()
 
 AAHD_FLUDS::AAHD_FLUDS(unsigned int num_groups,
                        std::size_t num_angles,
-                       const AAHD_FLUDSCommonData& common_data)
-  : FLUDS(num_groups, num_angles, common_data.GetSPDS()),
-    common_data_(common_data),
-    local_psi_(common_data_.GetLocalNodeStackSize() * num_groups_and_angles_),
-    nonlocal_incoming_psi_bank_(common_data_.GetNumNonLocalIncomingNodes(),
-                                common_data_.GetNonLocalIncomingNodeOffsets(),
-                                num_groups_and_angles_),
-    nonlocal_outgoing_psi_bank_(common_data_.GetNumNonLocalOutgoingNodes(),
-                                common_data_.GetNonLocalOutgoingNodeOffsets(),
-                                num_groups_and_angles_),
-    boundary_psi_(common_data_.GetNumBoundaryNodes(), num_groups_and_angles_)
+                       const AAHD_FLUDSCommonData& common_data,
+                       DiscreteOrdinatesProblem& problem)
+  : FLUDS(num_groups, num_angles, common_data.GetSPDS()), common_data_(common_data)
 {
-  nonlocal_outgoing_psi_bank_.UpdateViews(deplocI_outgoing_psi_view_);
+  auto* mesh_carrier_ptr = problem.GetMeshCarrier();
+  save_angular_flux_size_ = mesh_carrier_ptr->num_nodes_total * num_groups_and_angles_;
+}
+
+void
+AAHD_FLUDS::AllocateDeviceMemory(bool save_angular_flux)
+{
+  local_psi_ =
+    crb::DeviceMemory<double>(common_data_.GetLocalNodeStackSize() * num_groups_and_angles_);
+  nonlocal_incoming_psi_bank_ = AAHD_NonLocalBank(common_data_.GetNumNonLocalIncomingNodes(),
+                                                  common_data_.GetNonLocalIncomingNodeOffsets(),
+                                                  num_groups_and_angles_);
   nonlocal_incoming_psi_bank_.UpdateViews(prelocI_outgoing_psi_view_);
+  nonlocal_outgoing_psi_bank_ = AAHD_NonLocalBank(common_data_.GetNumNonLocalOutgoingNodes(),
+                                                  common_data_.GetNonLocalOutgoingNodeOffsets(),
+                                                  num_groups_and_angles_);
+  nonlocal_outgoing_psi_bank_.UpdateViews(deplocI_outgoing_psi_view_);
+  boundary_psi_ = AAHD_BoundaryBank(common_data_.GetNumBoundaryNodes(), num_groups_and_angles_);
+  if (save_angular_flux)
+  {
+    save_angular_flux_ = AAHD_Bank(save_angular_flux_size_);
+  }
+}
+
+void
+AAHD_FLUDS::DeallocateDeviceMemory()
+{
+  local_psi_.reset();
+  nonlocal_incoming_psi_bank_.Clear();
+  nonlocal_outgoing_psi_bank_.Clear();
+  boundary_psi_.Clear();
+  save_angular_flux_.Clear();
 }
 
 void
@@ -174,17 +179,6 @@ AAHD_FLUDS::AllocateDelayedPrelocIOutgoingPsi()
                              num_groups_and_angles_);
   nonlocal_delayed_incoming_psi_bank_.UpdateViews(delayed_prelocI_outgoing_psi_view_,
                                                   delayed_prelocI_outgoing_psi_old_view_);
-}
-
-void
-AAHD_FLUDS::AllocateSaveAngularFlux(DiscreteOrdinatesProblem& problem, const LBSGroupset& groupset)
-{
-  if (not problem.GetPsiNewLocal()[groupset.id].empty() && save_angular_flux_.IsNotInitialized())
-  {
-    auto* mesh_carrier_ptr = problem.GetMeshCarrier();
-    save_angular_flux_ =
-      AAHD_Bank(mesh_carrier_ptr->num_nodes_total * num_groups_and_angles_, stream_);
-  }
 }
 
 void

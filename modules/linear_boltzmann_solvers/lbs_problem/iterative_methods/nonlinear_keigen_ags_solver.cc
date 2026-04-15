@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/snes_k_monitor.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/nonlinear_keigen_ags_residual_func.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_compute.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
@@ -44,6 +45,18 @@ NLKEigenvalueAGSSolver::PreSetupCallback()
         std::string(__PRETTY_FUNCTION__) +
         ": Preconditioning currently only supports single groupset simulations.");
     nl_context_ptr->groupset_ids.push_back(groupset.id);
+  }
+}
+
+void
+NLKEigenvalueAGSSolver::PreSolveCallback()
+{
+  auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_, __PRETTY_FUNCTION__);
+  auto& lbs_problem = nl_context_ptr->lbs_problem;
+  for (const auto& groupset : lbs_problem->GetGroupsets())
+  {
+    auto& wgs_context = lbs_problem->GetWGSContext(groupset.id);
+    wgs_context.PreSolveCallback();
   }
 }
 
@@ -132,6 +145,13 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
 
   PetscInt number_of_func_evals = 0;
   OpenSnPETScCall(SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals));
+
+  // Destroy WGS contexts
+  for (const auto& groupset : lbs_problem->GetGroupsets())
+  {
+    auto& wgs_context = lbs_problem->GetWGSContext(groupset.id);
+    wgs_context.PostSolveCallback();
+  }
 
   // Print summary
   log.Log() << "\n"

@@ -37,6 +37,9 @@ public:
   virtual void AllocatePrelocIOutgoingPsi() {}
   virtual void AllocateDelayedPrelocIOutgoingPsi() {}
 
+  virtual void AllocateDeviceMemory(bool save_angular_flux) {}
+  virtual void DeallocateDeviceMemory() {}
+
   std::span<double>& DelayedLocalPsi() { return delayed_local_psi_view_; }
   std::span<double>& DelayedLocalPsiOld() { return delayed_local_psi_old_view_; }
   virtual void SetDelayedLocalPsiOldToNew() {}
