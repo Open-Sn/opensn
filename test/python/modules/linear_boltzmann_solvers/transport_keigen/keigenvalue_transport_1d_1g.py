@@ -63,6 +63,7 @@ if __name__ == "__main__":
             }
         ],
         options={
+            "use_precursors": False,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,
         }

@@ -67,6 +67,7 @@ if __name__ == "__main__":
             {"block_ids": [0], "xs": xs_simple_fissile},
         ],
         options={
+            "use_precursors": False,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True
         },

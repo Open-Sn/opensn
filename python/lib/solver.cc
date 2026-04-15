@@ -775,14 +775,14 @@ WrapLBS(py::module& slv)
           - write_restart_path: str, default=''
           - write_restart_time_interval: int, default=0
             (must be 0 or >=30)
-          - use_precursors: bool, default=False
+          - use_precursors: bool, default=True
             Enable delayed-neutron precursor treatment. This is treated as user intent and remains
             active across later ``SetXSMap`` calls, even if the current XS map temporarily contains
             no precursor-bearing material. When XS maps are swapped, existing precursor
             concentrations are remapped by cell and precursor-family index; new families start at
             zero and removed families are discarded. If any fissionable material in the active map
-            has precursor data, all fissionable materials in that map must have precursor data.
-            Non-fissionable materials may have zero precursors.
+            has precursor data and ``use_precursors=True``, all fissionable materials in that map
+            must have precursor data. Non-fissionable materials may have zero precursors.
           - use_source_moments: bool, default=False
           - save_angular_flux: bool, default=False
           - adjoint: bool, default=False
@@ -1198,7 +1198,12 @@ WrapLBS(py::module& slv)
           - read_restart_path: str, default=''
           - write_restart_path: str, default=''
           - write_restart_time_interval: int, default=0
-          - use_precursors: bool, default=False
+          - use_precursors: bool, default=True
+            Enable delayed-neutron precursor treatment. This remains active across later
+            ``SetXSMap`` calls, even if the current map temporarily has no precursor-bearing
+            material. When XS maps change, precursor concentrations are remapped by cell and
+            precursor-family index; newly introduced families start at zero and removed families
+            are discarded.
           - use_source_moments: bool, default=False
           - save_angular_flux: bool, default=False
           - verbose_inner_iterations: bool, default=True

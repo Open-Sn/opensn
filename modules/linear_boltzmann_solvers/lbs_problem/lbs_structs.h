@@ -41,7 +41,7 @@ struct LBSOptions
   std::chrono::time_point<std::chrono::system_clock> last_restart_write_time;
   std::chrono::seconds write_restart_time_interval = std::chrono::seconds(0);
 
-  bool use_precursors = false;
+  bool use_precursors = true;
   bool use_src_moments = false;
 
   bool save_angular_flux = false;
