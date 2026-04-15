@@ -448,6 +448,22 @@ to avoid hidden coupling between forward and adjoint setups.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
+<p>The problem is refreshed immediately after replacing the map. Material metadata,
+precursor storage, GPU carriers, and derived solver state owned by the concrete
+problem are rebuilt for the new cross sections.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">options.use_precursors=True</span></code>, this flag remains active across XS-map
+changes even when the current map has no precursor-bearing material. In that
+case delayed-neutron source terms are simply inactive until a later map provides
+precursor data again.</p>
+<p>Existing precursor concentrations are remapped by local cell and precursor-family
+index. When the new material for a cell has fewer precursor families, extra old
+families are dropped. When it has more families, newly introduced families are
+initialized to zero. If a cell changes through a material with zero precursors,
+the precursor history for that cell is discarded and any later reintroduced
+precursor families start from zero.</p>
+<p>If any fissionable material in the new map contains delayed-neutron precursor
+data and <code class="docutils literal notranslate"><span class="pre">options.use_precursors=True</span></code>, all fissionable materials in the map
+must contain precursor data. Non-fissionable materials may have zero precursors.</p>
 <p>Forward/adjoint mode toggles via <a class="reference internal" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code></a> do not change this map.
 The <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves are mutable and shared by pointer. If the same
 <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> handle is shared across multiple problems, toggling adjoint mode in one
