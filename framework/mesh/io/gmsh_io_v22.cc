@@ -34,7 +34,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   std::getline(file, file_line);
   iss = std::istringstream(file_line);
   double gmsh_version = 0.0;
-  if (!(iss >> gmsh_version) || gmsh_version != 2.2)
+  if (!(iss >> gmsh_version) or gmsh_version != 2.2)
     throw std::logic_error(fname + ": Only Gmsh version 4.1 format is supported.");
 
   auto mesh = std::make_shared<UnpartitionedMesh>();
@@ -115,9 +115,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   }
 
   auto IsElementType1D = [](int type) { return type == 1; };
-  auto IsElementType2D = [](int type) { return type == 2 || type == 3; };
-  auto IsElementType3D = [](int type) { return type >= 4 && type <= 7; };
-  auto IsElementSupported = [](int type) { return type >= 1 && type <= 7; };
+  auto IsElementType2D = [](int type) { return type == 2 or type == 3; };
+  auto IsElementType3D = [](int type) { return type >= 4 and type <= 7; };
+  auto IsElementSupported = [](int type) { return type >= 1 and type <= 7; };
   auto CellTypeFromMSHTypeID = [](int type)
   {
     switch (type)

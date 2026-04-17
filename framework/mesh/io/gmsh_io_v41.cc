@@ -77,10 +77,48 @@ ReadBinaryString(std::ifstream& file, int data_size)
 bool
 NextIsAsciiNumeric(std::ifstream& file)
 {
-  const int c = file.peek();
-  if (c == '-' || c == '+')
-    return true;
-  return std::isdigit(c);
+  const auto start_pos = file.tellg();
+  if (start_pos == std::ifstream::pos_type(-1))
+    return false;
+
+  bool saw_numeric = false;
+  constexpr std::streamsize max_probe_bytes = 64;
+  for (std::streamsize i = 0; i < max_probe_bytes; ++i)
+  {
+    const int c = file.get();
+    if (c == EOF)
+      break;
+
+    if (c == '\n')
+      break;
+
+    if (c == '\r')
+      continue;
+
+    if (c == '-' or c == '+' or std::isdigit(c))
+    {
+      saw_numeric = true;
+      continue;
+    }
+
+    if (std::isspace(c))
+      continue;
+
+    if (std::isprint(c))
+    {
+      file.clear();
+      file.seekg(start_pos);
+      return false;
+    }
+
+    file.clear();
+    file.seekg(start_pos);
+    return false;
+  }
+
+  file.clear();
+  file.seekg(start_pos);
+  return saw_numeric;
 }
 
 } // namespace
@@ -107,7 +145,7 @@ MeshIO::FromGmshV41(const UnpartitionedMesh::Options& options)
   double gmsh_version = 0.0;
   int file_type = 0;
   int data_size = 0;
-  if (!(iss >> gmsh_version >> file_type >> data_size) || gmsh_version != 4.1)
+  if (!(iss >> gmsh_version >> file_type >> data_size) or gmsh_version != 4.1)
     throw std::logic_error(fname + ": Only Gmsh version 4.1 format is supported.");
 
   file.close();
@@ -279,9 +317,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   }
 
   auto IsElementType1D = [](int type) { return type == 1; };
-  auto IsElementType2D = [](int type) { return type == 2 || type == 3; };
-  auto IsElementType3D = [](int type) { return type >= 4 && type <= 7; };
-  auto IsElementSupported = [](int type) { return type >= 1 && type <= 7; };
+  auto IsElementType2D = [](int type) { return type == 2 or type == 3; };
+  auto IsElementType3D = [](int type) { return type >= 4 and type <= 7; };
+  auto IsElementSupported = [](int type) { return type >= 1 and type <= 7; };
   auto CellTypeFromMSHTypeID = [](int type)
   {
     switch (type)
@@ -682,8 +720,8 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
         num_surfaces = ReadSize(file);
         num_volumes = ReadSize(file);
         const size_t max_reasonable = 10'000'000;
-        if (num_points > max_reasonable || num_curves > max_reasonable ||
-            num_surfaces > max_reasonable || num_volumes > max_reasonable)
+        if (num_points > max_reasonable or num_curves > max_reasonable or
+            num_surfaces > max_reasonable or num_volumes > max_reasonable)
           throw std::logic_error(fname + ": $Entities binary counts are invalid.");
 
         auto read_entity_bin = [&](std::map<int, int>& entity_map, size_t num_entities)
@@ -779,9 +817,9 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
 
       (void)num_elements;
       auto IsElementType1D = [](int type) { return type == 1; };
-      auto IsElementType2D = [](int type) { return type == 2 || type == 3; };
-      auto IsElementType3D = [](int type) { return type >= 4 && type <= 7; };
-      auto IsElementSupported = [](int type) { return type >= 1 && type <= 7; };
+      auto IsElementType2D = [](int type) { return type == 2 or type == 3; };
+      auto IsElementType3D = [](int type) { return type >= 4 and type <= 7; };
+      auto IsElementSupported = [](int type) { return type >= 1 and type <= 7; };
       auto CellTypeFromMSHTypeID = [](int type)
       {
         switch (type)
@@ -832,7 +870,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           num_cell_nodes = 2;
         else if (element_type == 2)
           num_cell_nodes = 3;
-        else if (element_type == 3 || element_type == 4)
+        else if (element_type == 3 or element_type == 4)
           num_cell_nodes = 4;
         else if (element_type == 5)
           num_cell_nodes = 8;
