@@ -17,13 +17,16 @@
 namespace opensn
 {
 
+namespace
+{
+
 // Dictionary for Sn Scattering Source Representation
-static std::map<std::string, OperatorConstructionMethod> op_cons_type_map{
+std::map<std::string, OperatorConstructionMethod> op_cons_type_map{
   {"standard", OperatorConstructionMethod::STANDARD},
   {"galerkin_one", OperatorConstructionMethod::GALERKIN_ONE},
   {"galerkin_three", OperatorConstructionMethod::GALERKIN_THREE}};
 
-static unsigned int
+unsigned int
 GetScatteringOrder(py::kwargs& params)
 {
   std::string method_str = "standard";
@@ -34,6 +37,17 @@ GetScatteringOrder(py::kwargs& params)
   else
     return pop_cast(params, "scattering_order").cast<unsigned int>();
 }
+
+// Wrap harmonic indices
+void
+WrapHarmonicIndices(py::module& aquad)
+{
+  py::class_<AngularQuadrature::HarmonicIndices> harmonic_indices(aquad, "HarmonicIndices");
+  harmonic_indices.def_readonly("ell", &AngularQuadrature::HarmonicIndices::ell);
+  harmonic_indices.def_readonly("m", &AngularQuadrature::HarmonicIndices::m);
+}
+
+} // namespace
 
 // Wrap quadrature point
 void
@@ -68,15 +82,6 @@ WrapQuadraturePointPhiTheta(py::module& aquad)
     }
   );
   // clang-format on
-}
-
-// Wrap harmonic indices
-static void
-WrapHarmonicIndices(py::module& aquad)
-{
-  py::class_<AngularQuadrature::HarmonicIndices> harmonic_indices(aquad, "HarmonicIndices");
-  harmonic_indices.def_readonly("ell", &AngularQuadrature::HarmonicIndices::ell);
-  harmonic_indices.def_readonly("m", &AngularQuadrature::HarmonicIndices::m);
 }
 
 // Wrap angular quadrature

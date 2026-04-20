@@ -19,8 +19,11 @@
 namespace opensn
 {
 
+namespace
+{
+
 // dictionary to field function interpolation operation type
-static std::map<std::string, FieldFunctionInterpolationOperation> ff_op_type_map{
+std::map<std::string, FieldFunctionInterpolationOperation> ff_op_type_map{
   {"sum", FieldFunctionInterpolationOperation::OP_SUM},
   {"avg", FieldFunctionInterpolationOperation::OP_AVG},
   {"max", FieldFunctionInterpolationOperation::OP_MAX},
@@ -30,7 +33,7 @@ static std::map<std::string, FieldFunctionInterpolationOperation> ff_op_type_map
   {"max_func", FieldFunctionInterpolationOperation::OP_MAX_FUNC},
   {"min_func", FieldFunctionInterpolationOperation::OP_MIN_FUNC}};
 
-static std::string
+std::string
 OpToString()
 {
   std::vector<std::string> keys;
@@ -47,6 +50,8 @@ OpToString()
   }
   return oss.str();
 }
+
+} // namespace
 
 // Wrap field functions
 void
