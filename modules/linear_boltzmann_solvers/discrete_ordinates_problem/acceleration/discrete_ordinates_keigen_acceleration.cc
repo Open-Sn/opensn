@@ -136,7 +136,7 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
 
   const size_t num_unknowns = uk_man.unknowns.size();
 
-  const size_t num_cfem_local_dofs = pwlc_sdm.GetNumLocalAndGhostDOFs(uk_man);
+  const auto num_cfem_local_dofs = pwlc_sdm.GetNumLocalAndGhostDOFs(uk_man);
 
   std::vector<double> cont_input(num_cfem_local_dofs, 0.0);
   std::vector<double> cont_input_ctr(num_cfem_local_dofs, 0.0);
@@ -257,8 +257,8 @@ DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi
   const auto& phi_uk_man = do_problem_.GetUnknownManager();
   const auto gsi = front_gs_.first_group;
   const auto gss = front_gs_.GetNumGroups();
-  const size_t diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                               : diff_sdm.GetNumLocalDOFs(diff_uk_man);
+  const auto diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
+                                             : diff_sdm.GetNumLocalDOFs(diff_uk_man);
 
   if (pwlc_ptr_)
     NodallyAveragedPWLDVector(phi_in, copy_only_phi0_tmp_);
@@ -296,8 +296,8 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
   const auto& phi_uk_man = do_problem_.GetUnknownManager();
   const auto gsi = front_gs_.first_group;
   const auto gss = front_gs_.GetNumGroups();
-  const size_t diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
-                                               : diff_sdm.GetNumLocalDOFs(diff_uk_man);
+  const auto diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
+                                             : diff_sdm.GetNumLocalDOFs(diff_uk_man);
 
   OpenSnLogicalErrorIf(input.size() != diff_num_local_dofs, "Input vector size mismatch");
 
