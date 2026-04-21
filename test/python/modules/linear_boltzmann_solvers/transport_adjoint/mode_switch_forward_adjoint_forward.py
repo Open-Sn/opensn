@@ -95,7 +95,6 @@ if __name__ == "__main__":
         options={
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
-            "verbose_ags_iterations": False,
         },
     )
 

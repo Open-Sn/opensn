@@ -185,6 +185,8 @@ public:
                          OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~SLDFEsqQuadrature3DXYZ() override = default;
+
+  std::string GetName() const override { return "3D XYZ SLDFE square"; }
 };
 
 class SLDFEsqQuadrature2DXY : public SLDFEsqQuadrature
@@ -196,6 +198,8 @@ public:
                         OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~SLDFEsqQuadrature2DXY() override = default;
+
+  std::string GetName() const override { return "2D XY SLDFE square"; }
 
 protected:
   bool FilterQuadraturePoint(const Vector3& omega) const override;

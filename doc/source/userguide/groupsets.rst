@@ -438,7 +438,6 @@ Problem-level AGS controls live in the LBS options block:
 * ``max_ags_iterations``
 * ``ags_tolerance``
 * ``ags_convergence_check``
-* ``verbose_ags_iterations``
 
 Practical rule:
 

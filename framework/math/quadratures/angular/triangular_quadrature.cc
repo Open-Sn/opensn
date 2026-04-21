@@ -6,8 +6,6 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <cmath>
-#include <sstream>
-#include <iomanip>
 
 namespace opensn
 {
@@ -167,27 +165,6 @@ GLCTriangularQuadrature3DXYZ::GLCTriangularQuadrature3DXYZ(unsigned int Npolar,
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
-
-  // Count total number of angles
-  size_t total_angles = 0;
-  for (unsigned int j = 0; j < Npolar; ++j)
-    total_angles += num_azimuthal_per_level[j];
-
-  log.Log() << "Using 3D XYZ Triangular quadrature with " << total_angles << " angles (" << Npolar
-            << " polar levels, " << Nazimuthal << " max azimuthal)"
-            << " and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_;
-
-  // Log the number of azimuthal angles at each polar level
-  std::stringstream ss;
-  ss << "Azimuthal angles per polar level: [";
-  for (unsigned int j = 0; j < Npolar; ++j)
-  {
-    if (j > 0)
-      ss << ", ";
-    ss << num_azimuthal_per_level[j];
-  }
-  ss << "]";
-  log.Log() << ss.str();
 }
 
 void
@@ -335,27 +312,6 @@ GLCTriangularQuadrature2DXY::GLCTriangularQuadrature2DXY(unsigned int Npolar,
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
-
-  // Count total number of angles
-  size_t total_angles = 0;
-  for (unsigned int j = 0; j < half; ++j)
-    total_angles += num_azimuthal_per_level[j];
-
-  log.Log() << "Using 2D XY Triangular quadrature with " << total_angles << " angles (" << half
-            << " polar levels, " << Nazimuthal << " max azimuthal)"
-            << " and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_;
-
-  // Log the number of azimuthal angles at each polar level
-  std::stringstream ss;
-  ss << "Azimuthal angles per polar level: [";
-  for (unsigned int j = 0; j < half; ++j)
-  {
-    if (j > 0)
-      ss << ", ";
-    ss << num_azimuthal_per_level[j];
-  }
-  ss << "]";
-  log.Log() << ss.str();
 }
 
 } // namespace opensn

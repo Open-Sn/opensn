@@ -352,27 +352,27 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] Iteration    28",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [0-62] iteration = 28",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    39",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [63-167] iteration = 39",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [0-62] Iteration    28",
-        "wordnum": 8,
+        "key": "WGS groups [0-62] iteration = 28",
+        "wordnum": 13,
         "gold": 6.74299e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    39",
-        "wordnum": 8,
+        "key": "WGS groups [63-167] iteration = 39",
+        "wordnum": 13,
         "gold": 8.73816e-07,
         "abs_tol": 1e-09
       }
@@ -501,27 +501,27 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] Iteration    53",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [0-62] iteration = 53",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    60",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [63-167] iteration = 60",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [0-62] Iteration    53",
-        "wordnum": 8,
+        "key": "WGS groups [0-62] iteration = 53",
+        "wordnum": 13,
         "gold": 7.78662e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    60",
-        "wordnum": 8,
+        "key": "WGS groups [63-167] iteration = 60",
+        "wordnum": 13,
         "gold": 4.83429e-07,
         "abs_tol": 1e-09
       },
@@ -546,27 +546,27 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] Iteration    54",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [0-62] iteration = 54",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    58",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [63-167] iteration = 58",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [0-62] Iteration    54",
-        "wordnum": 8,
+        "key": "WGS groups [0-62] iteration = 54",
+        "wordnum": 13,
         "gold": 6.24484e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    58",
-        "wordnum": 8,
+        "key": "WGS groups [63-167] iteration = 58",
+        "wordnum": 13,
         "gold": 6.25993e-07,
         "abs_tol": 1e-09
       },
@@ -842,27 +842,27 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] Iteration    54",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [0-62] iteration = 54",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    57",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [63-167] iteration = 57",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [0-62] Iteration    54",
-        "wordnum": 8,
+        "key": "WGS groups [0-62] iteration = 54",
+        "wordnum": 13,
         "gold": 5.47188e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    57",
-        "wordnum": 8,
+        "key": "WGS groups [63-167] iteration = 57",
+        "wordnum": 13,
         "gold": 6.98369e-07,
         "abs_tol": 1e-09
       },
@@ -1189,27 +1189,27 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] Iteration    22",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [0-62] iteration = 22",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    59",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [63-167] iteration = 59",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [0-62] Iteration    22",
-        "wordnum": 8,
+        "key": "WGS groups [0-62] iteration = 22",
+        "wordnum": 13,
         "gold": 9.6079e-08,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    59",
-        "wordnum": 8,
+        "key": "WGS groups [63-167] iteration = 59",
+        "wordnum": 13,
         "gold": 4.73732e-07,
         "abs_tol": 1e-09
       }

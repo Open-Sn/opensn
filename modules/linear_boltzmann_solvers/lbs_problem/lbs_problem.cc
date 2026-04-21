@@ -524,9 +524,11 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter(
     "adjoint", false, "Flag for toggling whether the solver is in adjoint mode.");
   params.AddOptionalParameter(
-    "verbose_inner_iterations", true, "Flag to control verbosity of inner iterations.");
+    "verbose_inner_iterations",
+    true,
+    "Flag to control verbosity of inner iterations, including WGS and AGS iterations.");
   params.AddOptionalParameter(
-    "verbose_outer_iterations", true, "Flag to control verbosity of across-groupset iterations.");
+    "verbose_outer_iterations", true, "Flag to control verbosity of outer iterations.");
   params.AddOptionalParameter(
     "max_ags_iterations", 100, "Maximum number of across-groupset iterations.");
   params.AddOptionalParameter("ags_tolerance", 1.0e-6, "Across-groupset iterations tolerance.");
@@ -534,8 +536,6 @@ LBSProblem::GetOptionsBlock()
                               "l2",
                               "Type of convergence check for AGS iterations. Valid values are "
                               "`\"l2\"` and '\"pointwise\"'");
-  params.AddOptionalParameter(
-    "verbose_ags_iterations", true, "Flag to control verbosity of across-groupset iterations.");
   params.AddOptionalParameter("power_default_kappa",
                               3.20435e-11,
                               "Default `kappa` value (Energy released per fission) to use for "
@@ -624,9 +624,6 @@ LBSProblem::ParseOptions(const InputParameters& input)
     {"ags_convergence_check",
      [this](const ParameterBlock& spec)
      { options_.ags_pointwise_convergence = (spec.GetValue<std::string>() == "pointwise"); }},
-    {"verbose_ags_iterations",
-     [this](const ParameterBlock& spec)
-     { options_.verbose_ags_iterations = spec.GetValue<bool>(); }},
     {"verbose_outer_iterations",
      [this](const ParameterBlock& spec)
      { options_.verbose_outer_iterations = spec.GetValue<bool>(); }},

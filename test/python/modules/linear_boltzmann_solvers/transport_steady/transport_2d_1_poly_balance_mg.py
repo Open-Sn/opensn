@@ -95,7 +95,6 @@ if __name__ == "__main__":
             },
         ],
         options={
-            "verbose_ags_iterations": True,
             "max_ags_iterations": 100,
             "ags_tolerance": 1.0e-6,
         },

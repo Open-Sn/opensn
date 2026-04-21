@@ -3,9 +3,10 @@
 
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/data_types/parallel_vector/parallel_vector.h"
+#include "framework/logging/log_format.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include <iomanip>
+#include "framework/utils/timer.h"
 #include <sstream>
 #include <limits>
 
@@ -23,6 +24,53 @@ ToPetscInt(const int64_t value, const char* name)
   return static_cast<PetscInt>(value);
 }
 } // namespace
+
+PETScSolverStatus
+KSPReasonToPETScSolverStatus(const KSPConvergedReason reason)
+{
+  if (reason > 0)
+    return PETScSolverStatus::CONVERGED;
+  if (reason == KSP_DIVERGED_ITS)
+    return PETScSolverStatus::LIMIT;
+  if (reason < 0)
+    return PETScSolverStatus::FAILED;
+  if (reason == KSP_CONVERGED_ITERATING)
+    return PETScSolverStatus::ITERATING;
+  return PETScSolverStatus::NONE;
+}
+
+PETScSolverStatus
+SNESReasonToPETScSolverStatus(const SNESConvergedReason reason)
+{
+  if (reason > 0)
+    return PETScSolverStatus::CONVERGED;
+  if (reason == SNES_DIVERGED_MAX_IT or reason == SNES_DIVERGED_FUNCTION_COUNT)
+    return PETScSolverStatus::LIMIT;
+  if (reason < 0)
+    return PETScSolverStatus::FAILED;
+  if (reason == SNES_CONVERGED_ITERATING)
+    return PETScSolverStatus::ITERATING;
+  return PETScSolverStatus::NONE;
+}
+
+const char*
+PETScSolverStatusName(const PETScSolverStatus status)
+{
+  switch (status)
+  {
+    case PETScSolverStatus::CONVERGED:
+      return "converged";
+    case PETScSolverStatus::LIMIT:
+      return "iteration_limit";
+    case PETScSolverStatus::FAILED:
+      return "failed";
+    case PETScSolverStatus::ITERATING:
+      return "iterating";
+    case PETScSolverStatus::NONE:
+    default:
+      return "not_run";
+  }
+}
 
 [[noreturn]] void
 ThrowPETScError(int ierr, const char* expr, const char* file, int line)
@@ -213,8 +261,8 @@ KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* /* context *
 
   // Print message
   std::stringstream buff;
-  buff << ksp_name << " iteration " << std::setw(4) << n << " - Residual " << std::scientific
-       << std::setprecision(7) << rnorm / rhs_norm << std::endl;
+  buff << program_timer.GetTimeString() << " " << ksp_name << " iteration = " << n;
+  AppendNumericField(buff, "residual", rnorm / rhs_norm, Scientific(6));
 
   log.Log() << buff.str();
 
@@ -401,7 +449,6 @@ GetPETScConvergedReasonstring(KSPConvergedReason reason)
     case KSP_CONVERGED_HAPPY_BREAKDOWN:
       ostr << "KSP_CONVERGED_HAPPY_BREAKDOWN";
       break;
-      /* diverged */
     case KSP_DIVERGED_NULL:
       ostr << "KSP_DIVERGED_NULL";
       break;
@@ -429,7 +476,73 @@ GetPETScConvergedReasonstring(KSPConvergedReason reason)
     case KSP_DIVERGED_INDEFINITE_MAT:
       ostr << "KSP_DIVERGED_INDEFINITE_MAT";
       break;
+    default:
+      ostr << "Unknown convergence reason.";
+  }
 
+  return ostr.str();
+}
+
+std::string
+GetPETScConvergedReasonstring(SNESConvergedReason reason)
+{
+  std::stringstream ostr;
+  switch (reason)
+  {
+    case SNES_CONVERGED_FNORM_ABS:
+      ostr << "SNES_CONVERGED_FNORM_ABS";
+      break;
+    case SNES_CONVERGED_FNORM_RELATIVE:
+      ostr << "SNES_CONVERGED_FNORM_RELATIVE";
+      break;
+    case SNES_CONVERGED_SNORM_RELATIVE:
+      ostr << "SNES_CONVERGED_SNORM_RELATIVE";
+      break;
+    case SNES_CONVERGED_ITS:
+      ostr << "SNES_CONVERGED_ITS";
+      break;
+    case SNES_CONVERGED_USER:
+      ostr << "SNES_CONVERGED_USER";
+      break;
+    case SNES_DIVERGED_FUNCTION_DOMAIN:
+      ostr << "SNES_DIVERGED_FUNCTION_DOMAIN";
+      break;
+    case SNES_DIVERGED_FUNCTION_COUNT:
+      ostr << "SNES_DIVERGED_FUNCTION_COUNT";
+      break;
+    case SNES_DIVERGED_LINEAR_SOLVE:
+      ostr << "SNES_DIVERGED_LINEAR_SOLVE";
+      break;
+    case SNES_DIVERGED_FNORM_NAN:
+      ostr << "SNES_DIVERGED_FNORM_NAN";
+      break;
+    case SNES_DIVERGED_MAX_IT:
+      ostr << "SNES_DIVERGED_MAX_IT";
+      break;
+    case SNES_DIVERGED_LINE_SEARCH:
+      ostr << "SNES_DIVERGED_LINE_SEARCH";
+      break;
+    case SNES_DIVERGED_INNER:
+      ostr << "SNES_DIVERGED_INNER";
+      break;
+    case SNES_DIVERGED_LOCAL_MIN:
+      ostr << "SNES_DIVERGED_LOCAL_MIN";
+      break;
+    case SNES_DIVERGED_DTOL:
+      ostr << "SNES_DIVERGED_DTOL";
+      break;
+    case SNES_DIVERGED_JACOBIAN_DOMAIN:
+      ostr << "SNES_DIVERGED_JACOBIAN_DOMAIN";
+      break;
+    case SNES_DIVERGED_TR_DELTA:
+      ostr << "SNES_DIVERGED_TR_DELTA";
+      break;
+    case SNES_DIVERGED_USER:
+      ostr << "SNES_DIVERGED_USER";
+      break;
+    case SNES_CONVERGED_ITERATING:
+      ostr << "SNES_CONVERGED_ITERATING";
+      break;
     default:
       ostr << "Unknown convergence reason.";
   }

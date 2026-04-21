@@ -9,6 +9,7 @@
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
+#include "framework/utils/timer.h"
 #include "framework/runtime.h"
 
 namespace opensn
@@ -81,6 +82,8 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
 void
 NonLinearKEigenSolver::Initialize()
 {
+  log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
+
   OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
                           GetName() + ": Problem is in time-dependent mode. Call problem."
                                       "SetSteadyStateMode() before initializing this solver.");
@@ -90,6 +93,8 @@ NonLinearKEigenSolver::Initialize()
 void
 NonLinearKEigenSolver::Execute()
 {
+  log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
+
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   if (reset_phi0_)
@@ -117,7 +122,7 @@ NonLinearKEigenSolver::Execute()
     log.Log() << "Balance table uses k-eigenvalue normalization (production scaled by 1/k_eff)";
   }
 
-  log.Log() << "LinearBoltzmann::NonLinearKEigenvalueSolver execution completed\n\n";
+  log.Log() << program_timer.GetTimeString() << " Finished solver execution " << GetName() << ".";
 }
 
 double

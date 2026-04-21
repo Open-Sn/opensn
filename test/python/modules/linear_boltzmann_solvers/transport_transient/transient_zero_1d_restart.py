@@ -71,7 +71,6 @@ def make_problem(xs_path, restart_read="", restart_write=""):
         "save_angular_flux": True,
         "verbose_inner_iterations": True,
         "verbose_outer_iterations": False,
-        "verbose_ags_iterations": False,
     }
     if restart_read:
         options["read_restart_path"] = restart_read

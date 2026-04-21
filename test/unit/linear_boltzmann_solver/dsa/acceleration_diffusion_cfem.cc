@@ -116,5 +116,5 @@ TEST(LBS_DSA_Test, CFEM)
   opensn::mpi_comm.barrier();
 
   auto out = testing::internal::GetCapturedStdout();
-  EXPECT_THAT(out, testing::HasSubstr("Convergence Reason: KSP_CONVERGED_RTOL"));
+  EXPECT_THAT(out, testing::HasSubstr("SimTest92b_DSA_PWLC final, status = converged"));
 }

@@ -80,6 +80,8 @@ public:
     bool verbose = false,
     OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
+  std::string GetName() const override { return "3D XYZ Triangular"; }
+
 private:
   /// Assemble quadrature points and weights for the varying azimuthal angles per polar level.
   void AssembleTriangularCosines(const std::vector<std::vector<double>>& azimuthal_per_polar,
@@ -108,6 +110,8 @@ public:
     unsigned int scattering_order,
     bool verbose = false,
     OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
+
+  std::string GetName() const override { return "2D XY Triangular"; }
 
 private:
   /// Assemble quadrature points and weights for the varying azimuthal angles per polar level.

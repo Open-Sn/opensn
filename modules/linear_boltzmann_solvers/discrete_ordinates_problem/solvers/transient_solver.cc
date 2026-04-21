@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
@@ -95,7 +96,7 @@ TransientSolver::TransientSolver(const InputParameters& params)
 void
 TransientSolver::Initialize()
 {
-  log.Log() << "Initializing " << GetName() << ".";
+  log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
   enforce_stop_time_ = false;
 
   const auto& options = do_problem_->GetOptions();
@@ -158,7 +159,7 @@ TransientSolver::Initialize()
 void
 TransientSolver::Execute()
 {
-  log.Log() << "Executing " << GetName() << ".";
+  log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   const auto& options = do_problem_->GetOptions();
@@ -222,7 +223,7 @@ TransientSolver::Execute()
   if (options.restart_writes_enabled)
     WriteRestartData();
 
-  log.Log() << "Done executing " << GetName() << ".";
+  log.Log() << program_timer.GetTimeString() << " Finished solver execution " << GetName() << ".";
 }
 
 void
@@ -264,12 +265,6 @@ TransientSolver::Advance()
 
   do_problem_->SetTime(current_time_);
 
-  if (verbose_)
-  {
-    log.Log() << GetName() << " dt = " << std::scientific << std::setprecision(1) << dt
-              << " time = " << std::fixed << std::setprecision(4) << (current_time_ + dt);
-  }
-
   // Zero source moments before recomputing sources for this step
   do_problem_->ZeroQMoments();
 
@@ -291,6 +286,24 @@ TransientSolver::Advance()
   for (const auto& sweep_context : transient_sweep_contexts)
     sweep_context->sweep_chunk->IncludeRHSTimeTerm(false);
 
+  if (verbose_)
+  {
+    std::vector<IterationSummary> wgs_summaries;
+    wgs_summaries.reserve(do_problem_->GetNumWGSSolvers());
+    for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
+    {
+      auto wgs_context =
+        std::dynamic_pointer_cast<WGSContext>(do_problem_->GetWGSSolver(gsid)->GetContext());
+      if (wgs_context and HasIterationStatus(wgs_context->last_solve))
+        wgs_summaries.emplace_back(wgs_context->last_solve);
+    }
+
+    const auto ags_summary = ags_solver->GetLastSolveSummary();
+    log.Log() << program_timer.GetTimeString() << " "
+              << FormatTransientStepSummary(
+                   "TS", step_ + 1, dt, current_time_ + dt, ags_summary, wgs_summaries);
+  }
+
   // Compute t^{n+1}
   const double inv_theta = 1.0 / theta;
   const auto& phi_prev = phi_prev_local_;
@@ -300,7 +313,7 @@ TransientSolver::Advance()
   if (options.use_precursors)
     StepPrecursors();
 
-  if (verbose_ and (has_fissionable_material or options.use_precursors))
+  if (verbose_ and has_fissionable_material and options.use_precursors)
   {
     const double FP_new = ComputeFissionProduction(*do_problem_, phi_new_local);
     log.Log() << GetName() << " FP = " << std::scientific << std::setprecision(6) << FP_new;

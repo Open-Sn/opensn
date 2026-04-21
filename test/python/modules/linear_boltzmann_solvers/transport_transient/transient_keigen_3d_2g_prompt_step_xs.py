@@ -70,7 +70,6 @@ if __name__ == "__main__":
             "use_precursors": False,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
-            "verbose_ags_iterations": False,
         },
     )
 

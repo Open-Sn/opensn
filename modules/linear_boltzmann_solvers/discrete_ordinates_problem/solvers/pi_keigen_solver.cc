@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -66,6 +67,8 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
 void
 PowerIterationKEigenSolver::Initialize()
 {
+  log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
+
   OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
                           GetName() + ": Problem is in time-dependent mode. Call problem."
                                       "SetSteadyStateMode() before initializing this solver.");
@@ -85,9 +88,8 @@ PowerIterationKEigenSolver::Initialize()
     wgs_context->rhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
   }
 
-  const bool print_ags_iters = options.verbose_ags_iterations and
-                               do_problem_->GetNumGroupsets() > 1 and
-                               options.max_ags_iterations > 1;
+  const bool print_ags_iters =
+    options.verbose_inner_iterations and do_problem_->GetNumGroupsets() > 1;
   auto ags_solver = do_problem_->GetAGSSolver();
   OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
   ags_solver->SetVerbosity(print_ags_iters);
@@ -109,6 +111,8 @@ PowerIterationKEigenSolver::Initialize()
 void
 PowerIterationKEigenSolver::Execute()
 {
+  log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
+
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   if (acceleration_)
@@ -168,15 +172,33 @@ PowerIterationKEigenSolver::Execute()
     // Print iteration summary
     if (options.verbose_outer_iterations)
     {
-      std::stringstream k_iter_info;
-      k_iter_info << program_timer.GetTimeString() << " "
-                  << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
-                  << std::setprecision(7) << k_eff_ << "  k_eff change " << std::setw(12)
-                  << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
-      if (converged)
-        k_iter_info << " CONVERGED\n";
+      std::vector<IterationSummary> wgs_summaries;
+      wgs_summaries.reserve(do_problem_->GetNumWGSSolvers());
+      for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
+      {
+        auto context =
+          std::dynamic_pointer_cast<WGSContext>(do_problem_->GetWGSSolver(gsid)->GetContext());
+        OpenSnLogicalErrorIf(not context, GetName() + ": Cast to WGSContext failed.");
+        if (HasIterationStatus(context->last_solve))
+          wgs_summaries.emplace_back(context->last_solve);
+      }
 
-      log.Log() << k_iter_info.str();
+      const auto ags_summary = ags_solver->GetLastSolveSummary();
+      const auto ags_status =
+        HasIterationStatus(ags_summary) ? ags_summary.status : IterationStatus::NONE;
+      const auto inner_status =
+        MostSevereIterationStatus(ags_status, MostSevereIterationStatus(wgs_summaries));
+      const auto outer_status =
+        IterationStatusFromSolve(converged, nit >= max_iters_, inner_status);
+      log.Log() << program_timer.GetTimeString() << " "
+                << FormatKEigenOuterIteration("PI",
+                                              nit,
+                                              k_eff_,
+                                              k_eff_change,
+                                              reactivity * 1.0e5,
+                                              ags_summary,
+                                              wgs_summaries,
+                                              outer_status);
     }
 
     if (options.restart_writes_enabled and do_problem_->TriggerRestartDump())
@@ -202,11 +224,13 @@ PowerIterationKEigenSolver::Execute()
     total_num_sweeps += wgs_context->counter_applications_of_inv_op;
   }
 
-  log.Log() << "\n";
-  log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff_;
-  log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
-            << " (Total number of sweeps:" << total_num_sweeps << ")"
-            << "\n\n";
+  log.Log() << program_timer.GetTimeString() << " "
+            << FormatKEigenFinalSummary("PI",
+                                        k_eff_,
+                                        k_eff_change,
+                                        total_num_sweeps,
+                                        "sweeps",
+                                        IterationStatusFromSolve(converged, true));
 
   if (options.use_precursors)
   {
@@ -220,7 +244,7 @@ PowerIterationKEigenSolver::Execute()
     log.Log() << "Balance table uses k-eigenvalue normalization (production scaled by 1/k_eff)";
   }
 
-  log.Log() << "LinearBoltzmann::KEigenvalueSolver execution completed\n\n";
+  log.Log() << program_timer.GetTimeString() << " Finished solver execution " << GetName() << ".";
 }
 
 BalanceTable

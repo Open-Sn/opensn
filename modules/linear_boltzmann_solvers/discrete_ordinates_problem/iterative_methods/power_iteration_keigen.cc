@@ -6,11 +6,11 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
-#include <iomanip>
 
 namespace opensn
 {
@@ -51,9 +51,8 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   double F_prev = ComputeFissionProduction(lbs_problem, phi_old_local);
 
   // Start power iterations
-  const bool print_ags_iters = lbs_problem.GetOptions().verbose_ags_iterations and
-                               groupsets.size() > 1 and
-                               lbs_problem.GetOptions().max_ags_iterations > 1;
+  const bool print_ags_iters =
+    lbs_problem.GetOptions().verbose_inner_iterations and groupsets.size() > 1;
   ags_solver->SetVerbosity(print_ags_iters);
   unsigned int nit = 0;
   bool converged = false;
@@ -88,15 +87,32 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
     // Print iteration summary
     if (lbs_problem.GetOptions().verbose_outer_iterations)
     {
-      std::stringstream k_iter_info;
-      k_iter_info << program_timer.GetTimeString() << " "
-                  << "  Iteration " << std::setw(5) << nit << "  k_eff " << std::setw(11)
-                  << std::setprecision(7) << k_eff << "  k_eff change " << std::setw(12)
-                  << k_eff_change << "  reactivity " << std::setw(10) << reactivity * 1e5;
-      if (converged)
-        k_iter_info << " CONVERGED\n";
+      std::vector<IterationSummary> wgs_summaries;
+      wgs_summaries.reserve(do_problem->GetNumWGSSolvers());
+      for (size_t gsid = 0; gsid < do_problem->GetNumWGSSolvers(); ++gsid)
+      {
+        auto wgs_context =
+          std::dynamic_pointer_cast<WGSContext>(do_problem->GetWGSSolver(gsid)->GetContext());
+        if (wgs_context and HasIterationStatus(wgs_context->last_solve))
+          wgs_summaries.emplace_back(wgs_context->last_solve);
+      }
 
-      log.Log() << k_iter_info.str();
+      const auto ags_summary = ags_solver->GetLastSolveSummary();
+      const auto ags_status =
+        HasIterationStatus(ags_summary) ? ags_summary.status : IterationStatus::NONE;
+      const auto inner_status =
+        MostSevereIterationStatus(ags_status, MostSevereIterationStatus(wgs_summaries));
+      const auto outer_status =
+        IterationStatusFromSolve(converged, nit >= max_iterations, inner_status);
+      log.Log() << program_timer.GetTimeString() << " "
+                << FormatKEigenOuterIteration("PI",
+                                              nit,
+                                              k_eff,
+                                              k_eff_change,
+                                              reactivity * 1.0e5,
+                                              ags_summary,
+                                              wgs_summaries,
+                                              outer_status);
     }
 
     if (converged)
@@ -113,12 +129,13 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
       total_sweeps += wgs_context->counter_applications_of_inv_op;
   }
 
-  log.Log() << "\n";
-  log.Log() << "        Final k-eigenvalue    :        " << std::setprecision(7) << k_eff;
-  log.Log() << "        Final change          :        " << std::setprecision(6) << k_eff_change
-            << " (Number of Sweeps:" << total_sweeps << ")"
-            << "\n";
-  log.Log() << "\n";
+  log.Log() << program_timer.GetTimeString() << " "
+            << FormatKEigenFinalSummary("PI",
+                                        k_eff,
+                                        k_eff_change,
+                                        total_sweeps,
+                                        "sweeps",
+                                        IterationStatusFromSolve(converged, true));
 }
 
 } // namespace opensn

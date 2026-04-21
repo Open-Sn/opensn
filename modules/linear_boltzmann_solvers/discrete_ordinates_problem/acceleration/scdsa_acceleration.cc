@@ -4,6 +4,7 @@
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/runtime.h"
+#include "framework/utils/timer.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "modules/diffusion/diffusion_pwlc_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
@@ -11,6 +12,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
+#include <sstream>
 namespace opensn
 {
 OpenSnRegisterObjectInNamespace(lbs, SCDSAAcceleration);
@@ -210,11 +213,20 @@ SCDSAAcceleration::PostPowerIteration()
     lambda_kp1 = production_kp1 / (production_k / lambda_k);
 
     const double lambda_change = std::fabs(lambda_kp1 / lambda_k - 1.0);
+    const bool converged = lambda_change < pi_k_tol_;
+    const auto status = IterationStatusFromSolve(converged, k + 1 == pi_max_its_);
     if (verbose_ >= 1)
-      log.Log() << "PISCDSA iteration " << k << " lambda " << lambda_kp1 << " lambda change "
-                << lambda_change;
+    {
+      std::ostringstream out;
+      out << "PISCDSA iteration = " << k;
+      AppendNumericField(out, "lambda", lambda_kp1, Fixed(7));
+      AppendNumericField(out, "lambda_change", lambda_change, Scientific(6));
+      if (status != IterationStatus::NONE)
+        out << ", status = " << IterationStatusName(status);
+      log.Log() << program_timer.GetTimeString() << " " << out.str();
+    }
 
-    if (lambda_change < pi_k_tol_)
+    if (converged)
       break;
 
     lambda_k = lambda_kp1;

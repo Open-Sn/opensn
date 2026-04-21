@@ -68,7 +68,6 @@ def run_case(bc_type, xs_crit, xs_super):
             "use_precursors": False,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
-            "verbose_ags_iterations": False,
         },
     )
 

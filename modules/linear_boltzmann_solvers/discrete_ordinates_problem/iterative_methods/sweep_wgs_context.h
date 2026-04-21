@@ -13,6 +13,12 @@ namespace opensn
 
 struct SweepWGSContext : public WGSContext
 {
+  struct SweepStats
+  {
+    double total_sweep_time = 0.0;
+    size_t num_sweeps = 0;
+  };
+
   SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
                   LBSGroupset& groupset,
                   const SetSourceFunction& set_source_function,
@@ -31,10 +37,12 @@ struct SweepWGSContext : public WGSContext
 
   void PostSolveCallback() override;
   void RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term);
+  SweepStats GetAccumulatedSweepStats() const { return sweep_stats_; }
+  void ResetAccumulatedSweepStats() { sweep_stats_ = {}; }
 
   std::shared_ptr<SweepChunk> sweep_chunk;
   SweepScheduler sweep_scheduler;
-  std::vector<double> sweep_times;
+  SweepStats sweep_stats_;
 };
 
 } // namespace opensn

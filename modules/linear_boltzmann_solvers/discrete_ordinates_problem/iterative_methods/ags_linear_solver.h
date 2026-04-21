@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "framework/math/linear_solver/linear_system_solver.h"
 #include "framework/utils/timer.h"
 #include <vector>
@@ -42,6 +43,8 @@ public:
 
   void SetMaxIterations(unsigned int max_iterations) { max_iterations_ = max_iterations; }
 
+  const IterationSummary& GetLastSolveSummary() const { return last_solve_; }
+
 private:
   LBSProblem& lbs_problem_; // NOLINT(clang-diagnostic-unused-private-field)
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
@@ -49,6 +52,7 @@ private:
   unsigned int max_iterations_;
   double tolerance_;
   bool verbose_;
+  IterationSummary last_solve_;
 };
 
 } // namespace opensn

@@ -6,6 +6,7 @@
 #include "framework/data_types/vector3.h"
 #include "framework/data_types/ndarray.h"
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace opensn
@@ -132,6 +133,12 @@ public:
   unsigned int GetNumMoments() const { return m_to_ell_em_map_.size(); }
 
   AngularQuadratureType GetType() const { return type_; }
+
+  /// Return a user-facing quadrature name.
+  virtual std::string GetName() const = 0;
+
+  /// Return the sum of all quadrature weights.
+  virtual double GetWeightSum() const;
 
   /// Set the quadrature-specific order parameter.
   /// For Lebedev: Lebedev order {3, 5, 7, ...}; for SLDFESQ: uniform refinement level.

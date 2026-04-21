@@ -5,6 +5,7 @@
 
 #include "framework/utils/error.h"
 #include <petscksp.h>
+#include <petscsnes.h>
 #include <vector>
 
 namespace opensn
@@ -25,6 +26,19 @@ struct PETScSolverSetup
   double relative_residual_tol = 1.0e-6;
   int maximum_iterations = 100;
 };
+
+enum class PETScSolverStatus
+{
+  NONE,
+  ITERATING,
+  CONVERGED,
+  LIMIT,
+  FAILED,
+};
+
+PETScSolverStatus KSPReasonToPETScSolverStatus(KSPConvergedReason reason);
+PETScSolverStatus SNESReasonToPETScSolverStatus(SNESConvergedReason reason);
+const char* PETScSolverStatusName(PETScSolverStatus status);
 
 /**
  * Creates a general vector.
@@ -227,5 +241,8 @@ void RestoreGhostVectorLocalViewRead(Vec x, GhostVecLocalRaw& local_data);
 
 /// Gets the string value of a converged reason.
 std::string GetPETScConvergedReasonstring(KSPConvergedReason reason);
+
+/// Gets the string value of a converged reason.
+std::string GetPETScConvergedReasonstring(SNESConvergedReason reason);
 
 } // namespace opensn

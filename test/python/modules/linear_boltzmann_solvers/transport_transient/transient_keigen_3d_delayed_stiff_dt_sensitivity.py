@@ -71,7 +71,6 @@ def run_transient(dt, t_end, xs_crit, xs_super):
             "use_precursors": True,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
-            "verbose_ags_iterations": False,
         },
     )
 

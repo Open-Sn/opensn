@@ -17,6 +17,12 @@
 namespace opensn
 {
 
+double
+AngularQuadrature::GetWeightSum() const
+{
+  return std::accumulate(weights.begin(), weights.end(), 0.0);
+}
+
 void
 AngularQuadrature::MakeHarmonicIndices()
 {

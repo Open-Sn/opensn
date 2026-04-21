@@ -778,11 +778,12 @@ WrapLBS(py::module& slv)
             field functions, and angular-flux I/O.
           - adjoint: bool, default=False
           - verbose_inner_iterations: bool, default=True
+            Print inner iteration details, including WGS and AGS iterations.
           - verbose_outer_iterations: bool, default=True
+            Print outer solver progress, including PI/NLKE iterations and transient steps.
           - max_ags_iterations: int, default=100
           - ags_tolerance: float, default=1.0e-6
           - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
-          - verbose_ags_iterations: bool, default=True
           - power_default_kappa: float, default=3.20435e-11
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
@@ -1210,11 +1211,12 @@ WrapLBS(py::module& slv)
             Store angular flux state (`psi`) for transient mode, angular-flux
             field functions, and angular-flux I/O.
           - verbose_inner_iterations: bool, default=True
+            Print inner iteration details, including WGS and AGS iterations.
           - verbose_outer_iterations: bool, default=True
+            Print outer solver progress, including PI/NLKE iterations and transient steps.
           - max_ags_iterations: int, default=100
           - ags_tolerance: float, default=1.0e-6
           - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
-          - verbose_ags_iterations: bool, default=True
           - power_default_kappa: float, default=3.20435e-11
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
