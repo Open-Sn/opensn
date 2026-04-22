@@ -37,6 +37,7 @@ G = 3
 E_BOUNDS = [3.0, 2.0, 1.0, 0.0]
 SIGMA_T = [1.0, 1.2, 1.5]
 SIGMA_EDEP = [0.5, 0.35, 0.2]
+SIGMA_CDEP = [0.05, 0.03, 0.01]
 STOPPING = [0.4, 0.3, 0.2]
 Q = [1.0, 0.0, 0.0]
 
@@ -56,46 +57,52 @@ def write_fortran_record(f, payload):
 
 
 def ensure_synthetic_cepxs(path):
-    if os.path.exists(path):
-        return
+    from mpi4py import MPI
 
-    n_groups = G
-    n_materials = 1
-    n_entries = 11
-    total_xs_row_1b = 8
-    self_scatter_row_1b = 9
-    n_moments = 1
-    n_tables = n_materials * n_moments
+    if rank == 0:
+        if os.path.exists(path):
+            os.remove(path)
 
-    meta = struct.pack(
-        "<8i",
-        n_groups,
-        n_materials,
-        n_entries,
-        total_xs_row_1b,
-        self_scatter_row_1b,
-        n_moments,
-        0,
-        n_tables,
-    )
+        n_groups = G
+        n_materials = 1
+        n_entries = 11
+        total_xs_row_1b = 8
+        self_scatter_row_1b = 9
+        n_moments = 1
+        n_tables = n_materials * n_moments
 
-    table = [0.0] * (n_groups * n_entries)
-    for g_to in range(n_groups):
-        base = g_to * n_entries
-        table[base + 2] = SIGMA_EDEP[g_to]   # row 3
-        table[base + 4] = STOPPING[g_to]     # row 5
-        table[base + 7] = SIGMA_T[g_to]      # row 8 total
-        table[base + 8] = S0[g_to][g_to]     # row 9 self
-        if g_to >= 1:
-            table[base + 9] = S0[g_to][g_to - 1]   # row 10 from g-1
-        if g_to >= 2:
-            table[base + 10] = S0[g_to][g_to - 2]  # row 11 from g-2
+        meta = struct.pack(
+            "<8i",
+            n_groups,
+            n_materials,
+            n_entries,
+            total_xs_row_1b,
+            self_scatter_row_1b,
+            n_moments,
+            0,
+            n_tables,
+        )
 
-    with open(path, "wb") as f:
-        write_fortran_record(f, b"SYNTHETIC 3G CSDA TEST")
-        write_fortran_record(f, meta)
-        write_fortran_record(f, struct.pack(f"<{len(E_BOUNDS)}d", *E_BOUNDS))
-        write_fortran_record(f, struct.pack(f"<{len(table)}d", *table))
+        table = [0.0] * (n_groups * n_entries)
+        for g_to in range(n_groups):
+            base = g_to * n_entries
+            table[base + 1] = SIGMA_CDEP[g_to]  # row 2
+            table[base + 2] = SIGMA_EDEP[g_to]  # row 3
+            table[base + 4] = STOPPING[g_to]    # row 5
+            table[base + 7] = SIGMA_T[g_to]     # row 8 total
+            table[base + 8] = S0[g_to][g_to]    # row 9 self
+            if g_to >= 1:
+                table[base + 9] = S0[g_to][g_to - 1]   # row 10 from g-1
+            if g_to >= 2:
+                table[base + 10] = S0[g_to][g_to - 2]  # row 11 from g-2
+
+        with open(path, "wb") as f:
+            write_fortran_record(f, b"SYNTHETIC 3G CSDA TEST")
+            write_fortran_record(f, meta)
+            write_fortran_record(f, struct.pack(f"<{len(E_BOUNDS)}d", *E_BOUNDS))
+            write_fortran_record(f, struct.pack(f"<{len(table)}d", *table))
+
+    MPI.COMM_WORLD.Barrier()
 
 
 def solve_dense(A, b):
@@ -147,8 +154,13 @@ def compute_reference():
 
     sol = solve_dense(A, b)
     phi = sol[:G]
-    edep = sum(SIGMA_EDEP[g] * phi[g] for g in range(G))
-    return phi, edep
+    phi_e = sol[G:]
+    raw_edep = sum(SIGMA_EDEP[g] * phi[g] for g in range(G))
+    raw_cdep = sum(SIGMA_CDEP[g] * phi[g] for g in range(G))
+    csda_edep = raw_edep + sum(phi[g] / delta_e[g] - phi_e[g] * STOPPING[g] for g in range(G))
+    g_last = G - 1
+    csda_cdep = raw_cdep + STOPPING[g_last] * (phi[g_last] / delta_e[g_last] - phi_e[g_last])
+    return phi, raw_edep, csda_edep, raw_cdep, csda_cdep
 
 
 def volume_value(ff, op_type, logical_volume):
@@ -205,11 +217,12 @@ if __name__ == "__main__":
         },
     )
 
-    solver = SteadyStateSourceSolver(problem=problem)
+    solver = SteadyStateSourceSolver(problem=problem, compute_balance=True)
     solver.Initialize()
     solver.Execute()
+    solver.ComputeBalanceTable()
 
-    phi_ref, edep_ref = compute_reference()
+    phi_ref, edep_ref, csda_edep_ref, cdep_ref, csda_cdep_ref = compute_reference()
 
     vol = RPPLogicalVolume(infx=True, infy=True, infz=True)
     ff_list = problem.GetScalarFluxFieldFunction(only_scalar_flux=False)
@@ -227,8 +240,23 @@ if __name__ == "__main__":
     edep_min = volume_value(edep_ff, "min", vol)
     edep_max = volume_value(edep_ff, "max", vol)
 
+    cdep_ff = problem.CreateFieldFunction("charge_deposition", "charge_deposition")
+    cdep_avg = volume_value(cdep_ff, "avg", vol)
+
+    csda_edep_ff = problem.CreateFieldFunction("csda_energy_deposition", "csda_energy_deposition")
+    csda_edep_avg = volume_value(csda_edep_ff, "avg", vol)
+
+    csda_cdep_ff = problem.CreateFieldFunction("csda_charge_deposition", "csda_charge_deposition")
+    csda_cdep_avg = volume_value(csda_cdep_ff, "avg", vol)
+
     if rank == 0:
         print(f"EDEP_AVG={edep_avg:.12e}")
         print(f"EDEP_MIN={edep_min:.12e}")
         print(f"EDEP_MAX={edep_max:.12e}")
         print(f"EDEP_REF={edep_ref:.12e}")
+        print(f"CDEP_AVG={cdep_avg:.12e}")
+        print(f"CDEP_REF={cdep_ref:.12e}")
+        print(f"CSDA_EDEP_AVG={csda_edep_avg:.12e}")
+        print(f"CSDA_EDEP_REF={csda_edep_ref:.12e}")
+        print(f"CSDA_CDEP_AVG={csda_cdep_avg:.12e}")
+        print(f"CSDA_CDEP_REF={csda_cdep_ref:.12e}")

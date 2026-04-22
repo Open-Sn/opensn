@@ -12,10 +12,38 @@
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
+#include <utility>
 #include <unordered_set>
 
 namespace opensn
 {
+namespace
+{
+
+std::vector<std::pair<unsigned int, unsigned int>>
+FindChargedGroupRangesForBalance(const std::vector<double>& stopping_power)
+{
+  constexpr double tol = 1.0e-12;
+  std::vector<std::pair<unsigned int, unsigned int>> ranges;
+
+  unsigned int g = 0;
+  while (g < stopping_power.size())
+  {
+    while (g < stopping_power.size() and std::abs(stopping_power[g]) <= tol)
+      ++g;
+    if (g >= stopping_power.size())
+      break;
+
+    const unsigned int g_begin = g;
+    while (g < stopping_power.size() and std::abs(stopping_power[g]) > tol)
+      ++g;
+    ranges.emplace_back(g_begin, g);
+  }
+
+  return ranges;
+}
+
+} // namespace
 
 namespace
 {
@@ -76,7 +104,10 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   const auto& cell_outflow_views = do_problem.GetCellOutflowViews();
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
   const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
+  const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
   const auto num_groups = do_problem.GetNumGroups();
+  const auto& options = do_problem.GetOptions();
+  const auto& phi_e_new_local = do_problem.GetPhiENewLocal();
   const auto time_dependent = do_problem.IsTimeDependent();
   const auto dt = time_dependent ? do_problem.GetTimeStep() : 0.0;
   const auto& psi_new_local = do_problem.GetPsiNewLocal();
@@ -109,6 +140,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   double local_production = 0.0;
   double local_initial = 0.0;
   double local_final = 0.0;
+  double local_csda_charge_deposition = 0.0;
+  double local_csda_energy_deposition = 0.0;
   for (const auto& cell : grid->GetLocalCells())
   {
     const auto& cell_mapping = discretization.GetCellMapping(*cell);
@@ -118,6 +151,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     const size_t num_nodes = transport_view.GetNumNodes();
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
     const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
+    const auto& xs_data = block_id_to_xs_map.at(cell->block_id);
 
     // Inflow: This is essentially an integration over all faces, all angles, and all groups. For
     // non-reflective boundaries, only the cosines that are negative are added to the inflow
@@ -177,6 +211,10 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     const auto& xs = transport_view.GetXS();
     const auto& sigma_a = xs.GetSigmaAbsorption();
     const auto& inv_vel = xs.GetInverseVelocity();
+    const auto& stopping_power = xs_data->GetStoppingPower();
+    const auto charged_ranges = stopping_power.empty()
+                                  ? std::vector<std::pair<unsigned int, unsigned int>>{}
+                                  : FindChargedGroupRangesForBalance(stopping_power);
     for (size_t i = 0; i < num_nodes; ++i)
     {
       for (unsigned int g = 0; g < num_groups; ++g)
@@ -187,10 +225,55 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
         if (do_problem.HasUncollidedFlux())
           q_0g -= first_collision_source[imap];
 
-        local_absorption += sigma_a[g] * phi_0g * IntV_shapeI(i);
+        const double abs_contrib = sigma_a[g] * phi_0g * IntV_shapeI(i);
+        local_absorption += abs_contrib;
         local_production += q_0g * IntV_shapeI(i);
       } // for g
     } // for i
+
+    if (options.csda_enabled)
+    {
+      if (not stopping_power.empty())
+      {
+        const auto delta_e = xs_data->GetDeltaE();
+        const auto& energy_bounds = xs_data->GetEnergyBounds();
+        double cell_volume = 0.0;
+        for (size_t i = 0; i < num_nodes; ++i)
+          cell_volume += IntV_shapeI(i);
+
+        if (cell_volume > 0.0)
+        {
+          const size_t cell_g_offset = cell->local_id * static_cast<size_t>(num_groups);
+          for (size_t r = 0; r < charged_ranges.size(); ++r)
+          {
+            const auto [g_begin, g_end] = charged_ranges[r];
+            const int sign = (r == 0) ? +1 : -1;
+            for (unsigned int g = g_begin; g < g_end; ++g)
+            {
+              double phi_integral = 0.0;
+              for (size_t i = 0; i < num_nodes; ++i)
+              {
+                const auto imap = transport_view.MapDOF(i, 0, g);
+                phi_integral += IntV_shapeI(i) * phi_new_local[imap];
+              }
+              const double phi_avg = phi_integral / cell_volume;
+              const double Sg = stopping_power[g];
+
+              local_csda_energy_deposition += Sg * phi_integral;
+
+              if (g + 1 == g_end)
+              {
+                const double terminal_charge_current =
+                  Sg * (phi_avg / delta_e[g] - phi_e_new_local[cell_g_offset + g]);
+                local_csda_energy_deposition +=
+                  energy_bounds[g + 1] * terminal_charge_current * cell_volume;
+                local_csda_charge_deposition += sign * terminal_charge_current * cell_volume;
+              }
+            }
+          }
+        }
+      }
+    }
 
     if (time_dependent)
     {
@@ -258,10 +341,22 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   }
   double global_initial = 0.0;
   double global_final = 0.0;
+  double global_csda_charge_deposition = 0.0;
+  double global_csda_energy_deposition = 0.0;
+  mpi_comm.all_reduce(
+    &local_csda_charge_deposition, 1, &global_csda_charge_deposition, mpi::op::sum<double>());
+  mpi_comm.all_reduce(
+    &local_csda_energy_deposition, 1, &global_csda_energy_deposition, mpi::op::sum<double>());
+  double global_csda_particle_balance =
+    global_production + global_in_flow -
+    (global_absorption + global_out_flow + global_csda_charge_deposition);
   if (scaling_factor != 1.0)
   {
     global_production *= scaling_factor;
     global_balance = global_production + global_in_flow - (global_absorption + global_out_flow);
+    global_csda_particle_balance =
+      global_production + global_in_flow -
+      (global_absorption + global_out_flow + global_csda_charge_deposition);
   }
 
   if (time_dependent)
@@ -287,6 +382,9 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
                              global_in_flow,
                              global_out_flow,
                              global_balance,
+                             global_csda_charge_deposition,
+                             global_csda_particle_balance,
+                             global_csda_energy_deposition,
                              global_initial,
                              global_final,
                              predicted_inventory_change,
@@ -299,6 +397,12 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
               << " Absorption rate             = " << table.absorption_rate << "\n"
               << " Out-flow rate               = " << table.outflow_rate << "\n"
               << " Balance                     = " << table.balance << "\n"
+              << " CSDA charge deposition      = "
+              << table.csda_charge_deposition_rate.value_or(0.0) << "\n"
+              << " CSDA particle balance       = "
+              << table.csda_particle_balance.value_or(0.0) << "\n"
+              << " CSDA energy deposition      = "
+              << table.csda_energy_deposition_rate.value_or(0.0) << "\n"
               << " Initial inventory           = " << table.initial_inventory.value() << "\n"
               << " Final inventory             = " << table.final_inventory.value() << "\n"
               << " Predicted inventory change  = " << table.predicted_inventory_change.value()
@@ -316,6 +420,9 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
           global_in_flow,
           global_out_flow,
           global_balance,
+          global_csda_charge_deposition,
+          global_csda_particle_balance,
+          global_csda_energy_deposition,
           std::nullopt,
           std::nullopt,
           std::nullopt,
@@ -342,6 +449,12 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
               << " Absorption rate             = " << table.absorption_rate << "\n"
               << " Out-flow rate               = " << table.outflow_rate << "\n"
               << " Balance                     = " << table.balance << "\n"
+              << " CSDA charge deposition      = "
+              << table.csda_charge_deposition_rate.value_or(0.0) << "\n"
+              << " CSDA particle balance       = "
+              << table.csda_particle_balance.value_or(0.0) << "\n"
+              << " CSDA energy deposition      = "
+              << table.csda_energy_deposition_rate.value_or(0.0) << "\n"
               << " Initial inventory           = " << table.initial_inventory.value_or(0.0) << "\n"
               << " Final inventory             = " << table.final_inventory.value_or(0.0) << "\n"
               << " Predicted inventory change  = " << table.predicted_inventory_change.value_or(0.0)
@@ -359,7 +472,13 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
               << " Production rate             = " << table.production_rate << "\n"
               << " In-flow rate                = " << table.inflow_rate << "\n"
               << " Out-flow rate               = " << table.outflow_rate << "\n"
-              << " Balance                     = " << table.balance << "\n\n";
+              << " Balance                     = " << table.balance << "\n"
+              << " CSDA charge deposition      = "
+              << table.csda_charge_deposition_rate.value_or(0.0) << "\n"
+              << " CSDA particle balance       = "
+              << table.csda_particle_balance.value_or(0.0) << "\n"
+              << " CSDA energy deposition      = "
+              << table.csda_energy_deposition_rate.value_or(0.0) << "\n\n";
   }
 }
 

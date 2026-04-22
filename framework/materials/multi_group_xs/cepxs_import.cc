@@ -429,6 +429,7 @@ MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id, bool c
   // Derive absorption from total and transfer matrices
   mgxs.sigma_a_.clear();
   mgxs.energy_deposition_ = parsed.energy_deposition;
+  mgxs.custom_xs_["charge_deposition"] = parsed.charge_deposition;
   mgxs.stopping_power_ = parsed.stopping_power;
   mgxs.transfer_matrices_ = parsed.transfer_matrices;
 

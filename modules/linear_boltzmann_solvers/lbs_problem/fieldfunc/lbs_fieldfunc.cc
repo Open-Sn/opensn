@@ -118,6 +118,10 @@ LBSProblem::UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
     double local_total_power = 0.0;
     data_vector_local = ComputePowerFieldFunctionData(local_total_power);
   }
+  else if (const auto specialized_data = ComputeDerivedFieldFunctionData(xs_name))
+  {
+    data_vector_local = *specialized_data;
+  }
   else
   {
     data_vector_local = ComputeXSFieldFunctionData(xs_name);
@@ -172,6 +176,12 @@ LBSProblem::ComputeFieldFunctionPowerScaleFactor(const double power_normalizatio
     GetName() + ": Power normalization requested, but global total power is non-positive.");
 
   return power_normalization_target / global_total_power;
+}
+
+std::optional<std::vector<double>>
+LBSProblem::ComputeDerivedFieldFunctionData(const std::string& /*xs_name*/) const
+{
+  return std::nullopt;
 }
 
 std::vector<double>
