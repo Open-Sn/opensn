@@ -1636,6 +1636,12 @@ WrapSteadyState(py::module& slv)
     values["inflow_rate"] = table.inflow_rate;
     values["outflow_rate"] = table.outflow_rate;
     values["balance"] = table.balance;
+    if (table.csda_charge_deposition_rate.has_value())
+      values["csda_charge_deposition_rate"] = table.csda_charge_deposition_rate.value();
+    if (table.csda_particle_balance.has_value())
+      values["csda_particle_balance"] = table.csda_particle_balance.value();
+    if (table.csda_energy_deposition_rate.has_value())
+      values["csda_energy_deposition_rate"] = table.csda_energy_deposition_rate.value();
     if (table.initial_inventory.has_value())
       values["initial_inventory"] = table.initial_inventory.value();
     if (table.final_inventory.has_value())
@@ -1718,6 +1724,13 @@ WrapSteadyState(py::module& slv)
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
+        - ``csda_charge_deposition_rate``:
+          Optional CSDA terminal charge-deposition tally for charged-particle runs.
+        - ``csda_particle_balance``:
+          Optional balance with the CSDA terminal charge-deposition tally treated as
+          an additional sink term.
+        - ``csda_energy_deposition_rate``:
+          Optional CSDA deposited-energy tally for charged-particle runs.
 
     Notes
     -----
@@ -1739,6 +1752,12 @@ WrapTransient(py::module& slv)
     values["inflow_rate"] = table.inflow_rate;
     values["outflow_rate"] = table.outflow_rate;
     values["balance"] = table.balance;
+    if (table.csda_charge_deposition_rate.has_value())
+      values["csda_charge_deposition_rate"] = table.csda_charge_deposition_rate.value();
+    if (table.csda_particle_balance.has_value())
+      values["csda_particle_balance"] = table.csda_particle_balance.value();
+    if (table.csda_energy_deposition_rate.has_value())
+      values["csda_energy_deposition_rate"] = table.csda_energy_deposition_rate.value();
     if (table.initial_inventory.has_value())
       values["initial_inventory"] = table.initial_inventory.value();
     if (table.final_inventory.has_value())
@@ -1911,6 +1930,13 @@ WrapTransient(py::module& slv)
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
+        - ``csda_charge_deposition_rate``:
+          Optional CSDA terminal charge-deposition tally for charged-particle runs.
+        - ``csda_particle_balance``:
+          Optional balance with the CSDA terminal charge-deposition tally treated as
+          an additional sink term.
+        - ``csda_energy_deposition_rate``:
+          Optional CSDA deposited-energy tally for charged-particle runs.
         - ``initial_inventory``:
           Total particle inventory at the start of the timestep, computed as
           ``integral (1 / v_g) * phi_old dV`` summed over groups and the full domain.
@@ -1953,6 +1979,12 @@ WrapNLKEigen(py::module& slv)
     values["inflow_rate"] = table.inflow_rate;
     values["outflow_rate"] = table.outflow_rate;
     values["balance"] = table.balance;
+    if (table.csda_charge_deposition_rate.has_value())
+      values["csda_charge_deposition_rate"] = table.csda_charge_deposition_rate.value();
+    if (table.csda_particle_balance.has_value())
+      values["csda_particle_balance"] = table.csda_particle_balance.value();
+    if (table.csda_energy_deposition_rate.has_value())
+      values["csda_energy_deposition_rate"] = table.csda_energy_deposition_rate.value();
     if (table.initial_inventory.has_value())
       values["initial_inventory"] = table.initial_inventory.value();
     if (table.final_inventory.has_value())
@@ -2068,6 +2100,13 @@ WrapNLKEigen(py::module& slv)
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
+        - ``csda_charge_deposition_rate``:
+          Optional CSDA terminal charge-deposition tally for charged-particle runs.
+        - ``csda_particle_balance``:
+          Optional balance with the CSDA terminal charge-deposition tally treated as
+          an additional sink term.
+        - ``csda_energy_deposition_rate``:
+          Optional CSDA deposited-energy tally for charged-particle runs.
 
     Notes
     -----
@@ -2090,6 +2129,12 @@ WrapPIteration(py::module& slv)
     values["inflow_rate"] = table.inflow_rate;
     values["outflow_rate"] = table.outflow_rate;
     values["balance"] = table.balance;
+    if (table.csda_charge_deposition_rate.has_value())
+      values["csda_charge_deposition_rate"] = table.csda_charge_deposition_rate.value();
+    if (table.csda_particle_balance.has_value())
+      values["csda_particle_balance"] = table.csda_particle_balance.value();
+    if (table.csda_energy_deposition_rate.has_value())
+      values["csda_energy_deposition_rate"] = table.csda_energy_deposition_rate.value();
     if (table.initial_inventory.has_value())
       values["initial_inventory"] = table.initial_inventory.value();
     if (table.final_inventory.has_value())
@@ -2199,6 +2244,13 @@ WrapPIteration(py::module& slv)
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
+        - ``csda_charge_deposition_rate``:
+          Optional CSDA terminal charge-deposition tally for charged-particle runs.
+        - ``csda_particle_balance``:
+          Optional balance with the CSDA terminal charge-deposition tally treated as
+          an additional sink term.
+        - ``csda_energy_deposition_rate``:
+          Optional CSDA deposited-energy tally for charged-particle runs.
 
     Notes
     -----

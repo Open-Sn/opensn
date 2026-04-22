@@ -20,6 +20,9 @@ struct BalanceTable
   double inflow_rate = 0.0;
   double outflow_rate = 0.0;
   double balance = 0.0;
+  std::optional<double> csda_charge_deposition_rate;
+  std::optional<double> csda_particle_balance;
+  std::optional<double> csda_energy_deposition_rate;
   std::optional<double> initial_inventory;
   std::optional<double> final_inventory;
   std::optional<double> predicted_inventory_change;

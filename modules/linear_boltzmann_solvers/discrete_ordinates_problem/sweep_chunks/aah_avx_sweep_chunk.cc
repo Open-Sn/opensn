@@ -443,6 +443,14 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         }
       }
 
+      if (csda_enabled)
+      {
+        const double w = d2m_row[0];
+        const size_t cell_g_map = cell_local_id * static_cast<size_t>(data.problem.GetNumGroups()) + gs_gi;
+        for (size_t gsg = 0; gsg < gs_size; ++gsg)
+          data.destination_phi_e[cell_g_map + gsg] += w * psiE_gsg[gsg];
+      }
+
       if (data.save_angular_flux)
       {
         double* cell_psi_data =
@@ -552,6 +560,7 @@ AAHSweepChunk::Sweep_FixedN(AngleSet& angle_set)
                     groupset_angle_group_stride_,
                     groupset_group_stride_,
                     destination_phi_,
+                    destination_phi_e_,
                     destination_psi_,
                     surface_source_active_,
                     include_rhs_time_term_,
