@@ -67,6 +67,9 @@ def remove_matching(paths):
 def resolve_xs_filename(xs_filename):
     if os.path.exists(xs_filename):
         return xs_filename
+    local_path = os.path.join(os.path.dirname(__file__), xs_filename)
+    if os.path.exists(local_path):
+        return local_path
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../"))
     build_path = os.path.join(repo_root, "build", xs_filename)
     if os.path.exists(build_path):
@@ -91,7 +94,7 @@ def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3):
                 "angular_quadrature": pquad,
                 "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-7,
+                "l_abs_tol": 1.0e-11,
                 "l_max_its": 50000,
             },
         ],
@@ -106,9 +109,10 @@ def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3):
         },
     )
 
-    solver = SteadyStateSourceSolver(problem=problem)
+    solver = SteadyStateSourceSolver(problem=problem, compute_balance=csda_enabled)
     solver.Initialize()
     solver.Execute()
+    balance = solver.ComputeBalanceTable() if csda_enabled else None
 
     ff_name = "energy_deposition"
     ff_csv_name = f"{label}_energy_deposition"
@@ -145,6 +149,7 @@ def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3):
         "label": label,
         "fmr": [z / length_cm for z in z_vals],
         "dose": [v / rho_g_cm3 for v in model_vals],
+        "balance": balance,
     }
 
 
@@ -160,6 +165,14 @@ def interpolate(xs, ys, x):
             t = (x - x0) / (x1 - x0)
             return y0 + t * (y1 - y0)
     raise RuntimeError(f"Interpolation point {x} not bracketed")
+
+
+def write_csv(path, columns):
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([name for name, _ in columns])
+        for row in zip(*[values for _, values in columns]):
+            writer.writerow(row)
 
 
 if __name__ == "__main__":
@@ -191,6 +204,15 @@ if __name__ == "__main__":
     sample_fmrs = [0.02, 0.10, 0.25, 0.50, 0.75]
 
     if rank == 0:
+        write_csv(
+            "transport_1d_cepxs_ii3d_edep.csv",
+            [
+                ("fmr", standard_case["fmr"]),
+                ("standard_dose", standard_case["dose"]),
+                ("csda_dose", csda_case["dose"]),
+            ],
+        )
+
         for fmr in sample_fmrs:
             fmr_key = str(fmr).replace(".", "p")
             print(
@@ -201,6 +223,16 @@ if __name__ == "__main__":
                 f"II3D_CSDA_FMR_{fmr_key}="
                 f"{interpolate(csda_case['fmr'], csda_case['dose'], fmr):.12e}"
             )
+        print(f"II3D_CSDA_BALANCE_STANDARD={csda_case['balance']['balance']:.12e}")
+        print(
+            f"II3D_CSDA_BALANCE_CHARGE_DEP={csda_case['balance']['csda_charge_deposition_rate']:.12e}"
+        )
+        print(
+            f"II3D_CSDA_BALANCE_PARTICLE={csda_case['balance']['csda_particle_balance']:.12e}"
+        )
+        print(
+            f"II3D_CSDA_BALANCE_ENERGY_DEP={csda_case['balance']['csda_energy_deposition_rate']:.12e}"
+        )
         try:
             import matplotlib.pyplot as plt
 
@@ -225,7 +257,7 @@ if __name__ == "__main__":
             plt.grid(True, alpha=0.3)
             plt.legend()
             plt.tight_layout()
-            plt.savefig("ii3d_dose.png", dpi=180)
+            plt.savefig("transport_1d_cepxs_ii3d_edep.png", dpi=180)
             plt.close()
         except Exception as exc:
             raise RuntimeError(f"Failed to create plot: {exc}") from exc

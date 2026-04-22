@@ -24,6 +24,8 @@ struct CSDAMaterialData
   std::vector<double> delta_e;
 };
 
+inline constexpr double kCSDATolerance = 1.0e-12;
+
 /// Context for one coupled local CSDA solve:
 /// N nodal angular-flux unknowns plus one cellwise slope unknown.
 struct CSDALocalSolveContext
@@ -53,8 +55,12 @@ inline CSDAMaterialData
 MakeCSDAMaterialData(const MultiGroupXS& xs)
 {
   CSDAMaterialData data;
+  const auto& stopping_power = xs.GetStoppingPower();
+  if (stopping_power.empty())
+    return data;
+
   data.enabled = true;
-  data.stopping_power = &xs.GetStoppingPower();
+  data.stopping_power = &stopping_power;
   data.delta_e = xs.GetDeltaE();
   return data;
 }
@@ -62,7 +68,9 @@ MakeCSDAMaterialData(const MultiGroupXS& xs)
 inline bool
 IsCSDAActive(const CSDAMaterialData& data, const size_t global_g)
 {
-  return data.enabled and data.stopping_power and std::abs((*data.stopping_power)[global_g]) > 0.0;
+  return data.enabled and data.stopping_power and global_g < data.stopping_power->size() and
+         global_g < data.delta_e.size() and
+         std::abs((*data.stopping_power)[global_g]) > kCSDATolerance;
 }
 
 template <class PsiEPtrAt>

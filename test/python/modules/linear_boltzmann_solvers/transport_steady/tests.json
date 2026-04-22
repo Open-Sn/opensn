@@ -1641,19 +1641,37 @@
       {
         "type": "KeyValuePair",
         "key": "EDEP_AVG=",
-        "goldvalue": 5.281949303125e-01,
+        "goldvalue": 9.624347014524e-01,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "EDEP_MIN=",
-        "goldvalue": 5.281949303120e-01,
+        "goldvalue": 9.624347014516e-01,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "EDEP_MAX=",
-        "goldvalue": 5.281949303125e-01,
+        "goldvalue": 9.624347014525e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CDEP_AVG=",
+        "goldvalue": 4.989853630876e-02,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_EDEP_AVG=",
+        "goldvalue": 9.624347014524e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_CDEP_AVG=",
+        "goldvalue": 6.069393988893e-02,
         "abs_tol": 1e-10
       }
     ]
@@ -1684,19 +1702,37 @@
       {
         "type": "KeyValuePair",
         "key": "EDEP_AVG=",
-        "goldvalue": 5.281949303126e-01,
+        "goldvalue": 9.624347014527e-01,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "EDEP_MIN=",
-        "goldvalue": 5.281949303122e-01,
+        "goldvalue": 9.624347014520e-01,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "EDEP_MAX=",
-        "goldvalue": 5.281949303126e-01,
+        "goldvalue": 9.624347014527e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CDEP_AVG=",
+        "goldvalue": 4.989853630877e-02,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_EDEP_AVG=",
+        "goldvalue": 9.624347014527e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_CDEP_AVG=",
+        "goldvalue": 6.069393988893e-02,
         "abs_tol": 1e-10
       }
     ]
@@ -1708,62 +1744,62 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "II3C1_STANDARD_FMR_0p0165=",
-        "goldvalue": 1.886731927503e+00,
+        "key": "II3C2_STANDARD_ENERGY_RAW_FMR_0p0165=",
+        "goldvalue": 1.886737692382e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_CSDA_FMR_0p0165=",
-        "goldvalue": 1.910257661846e+00,
+        "key": "II3C2_CSDA_ENERGY_RAW_FMR_0p0165=",
+        "goldvalue": 1.974472387755e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_STANDARD_FMR_0p0987=",
-        "goldvalue": 2.699827907716e+00,
+        "key": "II3C2_STANDARD_ENERGY_RAW_FMR_0p0987=",
+        "goldvalue": 2.699841848658e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_CSDA_FMR_0p0987=",
-        "goldvalue": 2.734477896523e+00,
+        "key": "II3C2_CSDA_ENERGY_RAW_FMR_0p0987=",
+        "goldvalue": 2.804084130624e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_STANDARD_FMR_0p253=",
-        "goldvalue": 3.346818528187e+00,
+        "key": "II3C2_STANDARD_ENERGY_RAW_FMR_0p253=",
+        "goldvalue": 3.346842360236e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_CSDA_FMR_0p253=",
-        "goldvalue": 3.383347466798e+00,
+        "key": "II3C2_CSDA_ENERGY_RAW_FMR_0p253=",
+        "goldvalue": 3.398137089270e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_STANDARD_FMR_0p511=",
-        "goldvalue": 2.013676725433e+00,
+        "key": "II3C2_STANDARD_ENERGY_RAW_FMR_0p511=",
+        "goldvalue": 2.013710799507e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_CSDA_FMR_0p511=",
-        "goldvalue": 1.988059708370e+00,
+        "key": "II3C2_CSDA_ENERGY_RAW_FMR_0p511=",
+        "goldvalue": 1.934524776022e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_STANDARD_FMR_0p736=",
-        "goldvalue": 4.460737486225e-01,
+        "key": "II3C2_STANDARD_ENERGY_RAW_FMR_0p736=",
+        "goldvalue": 4.460911823725e-01,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "II3C1_CSDA_FMR_0p736=",
-        "goldvalue": 4.619672179717e-01,
+        "key": "II3C2_CSDA_ENERGY_RAW_FMR_0p736=",
+        "goldvalue": 3.024106119770e-01,
         "abs_tol": 1e-10
       }
     ]
@@ -1776,61 +1812,140 @@
       {
         "type": "KeyValuePair",
         "key": "II3D_STANDARD_FMR_0p02=",
-        "goldvalue": 2.454043058150e+00,
+        "goldvalue": 2.454039709935e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_CSDA_FMR_0p02=",
-        "goldvalue": 2.487214127824e+00,
+        "goldvalue": 2.903436584724e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_STANDARD_FMR_0p1=",
-        "goldvalue": 3.764882171688e+00,
+        "goldvalue": 3.764876591331e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_CSDA_FMR_0p1=",
-        "goldvalue": 3.806548245246e+00,
+        "goldvalue": 4.088202322832e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_STANDARD_FMR_0p25=",
-        "goldvalue": 3.040890115185e+00,
+        "goldvalue": 3.040882302685e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_CSDA_FMR_0p25=",
-        "goldvalue": 3.057423048517e+00,
+        "goldvalue": 3.278801604824e+00,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_STANDARD_FMR_0p5=",
-        "goldvalue": 7.665862723214e-01,
+        "goldvalue": 7.665810267857e-01,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_CSDA_FMR_0p5=",
-        "goldvalue": 7.657714843750e-01,
+        "goldvalue": 8.293417968750e-01,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_STANDARD_FMR_0p75=",
-        "goldvalue": 2.029196088473e-02,
+        "goldvalue": 2.029201110770e-02,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "II3D_CSDA_FMR_0p75=",
-        "goldvalue": 3.757285659509e-02,
+        "goldvalue": 4.103977191306e-02,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_cepxs_iii1a.py",
+    "comment": "1D plastic CEPXS benchmark with CSDA charge deposition and balance outputs",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_STANDARD_DEPOSITED_ELECTRONS=",
+        "goldvalue": 9.814879686351e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_DEPOSITED_ELECTRONS=",
+        "goldvalue": 9.775572676834e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_AUG_TOTAL=",
+        "goldvalue": 9.775572842385e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_TERM_TOTAL=",
+        "goldvalue": 5.988448427667e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_BALANCE_PARTICLE=",
+        "goldvalue": -1.655507120280e-08,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_BALANCE_ENERGY_DEP=",
+        "goldvalue": 1.082315743299e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_AUG_NORM_AT_0p05_GCM2=",
+        "goldvalue": 4.011264986758e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_AUG_NORM_AT_0p1_GCM2=",
+        "goldvalue": 9.737449186507e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_AUG_NORM_AT_0p2_GCM2=",
+        "goldvalue": 2.836725797961e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_AUG_NORM_AT_0p3_GCM2=",
+        "goldvalue": 4.499440202489e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_AUG_NORM_AT_0p4_GCM2=",
+        "goldvalue": 1.719037205904e+00,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "III1A_CSDA_AUG_NORM_AT_0p5_GCM2=",
+        "goldvalue": 5.177471699191e-02,
         "abs_tol": 1e-10
       }
     ]

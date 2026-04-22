@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/csda_sweep_helper.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/solver_scheme.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
@@ -319,6 +320,18 @@ DiscreteOrdinatesProblem::GetPsiOldLocal() const
   return psi_old_local_;
 }
 
+std::vector<double>&
+DiscreteOrdinatesProblem::GetPhiENewLocal()
+{
+  return phi_e_new_local_;
+}
+
+const std::vector<double>&
+DiscreteOrdinatesProblem::GetPhiENewLocal() const
+{
+  return phi_e_new_local_;
+}
+
 size_t
 DiscreteOrdinatesProblem::GetMaxLevelSize() const
 {
@@ -410,26 +423,35 @@ DiscreteOrdinatesProblem::BuildRuntime()
   }
 
   LBSProblem::BuildRuntime();
+  phi_e_new_local_.assign(grid_->local_cells.size() * static_cast<size_t>(num_groups_), 0.0);
   InitializeFCS();
 
   if (options_.csda_enabled)
   {
     std::vector<bool> csda_active_by_group(num_groups_, false);
-    constexpr double csda_tol = 1.0e-12;
     for (const auto& [_, xs] : block_id_to_xs_map_)
     {
       const auto& stopping_power = xs->GetStoppingPower();
       if (stopping_power.empty())
         continue;
 
-      OpenSnLogicalErrorIf(stopping_power.size() < num_groups_,
+      OpenSnLogicalErrorIf(stopping_power.size() != num_groups_,
                            GetName() +
                              ": CSDA stopping power data is incompatible with the configured "
+                             "number of groups.");
+      OpenSnLogicalErrorIf(xs->GetEnergyBounds().size() != num_groups_ + 1,
+                           GetName() +
+                             ": CSDA requires energy-bin boundaries for each material with "
+                             "stopping power data.");
+      const auto delta_e = xs->GetDeltaE();
+      OpenSnLogicalErrorIf(delta_e.size() != num_groups_,
+                           GetName() +
+                             ": CSDA energy-bin widths are incompatible with the configured "
                              "number of groups.");
 
       for (size_t g = 0; g < num_groups_; ++g)
         csda_active_by_group[g] =
-          csda_active_by_group[g] or std::abs(stopping_power[g]) > csda_tol;
+          csda_active_by_group[g] or std::abs(stopping_power[g]) > kCSDATolerance;
     }
 
     std::vector<std::pair<size_t, size_t>> charged_ranges;
@@ -1075,6 +1097,7 @@ void
 DiscreteOrdinatesProblem::ResetDerivedSolutionVectors()
 {
   ZeroPsi();
+  ZeroPhiE();
 }
 
 void
@@ -1111,5 +1134,11 @@ void
 DiscreteOrdinatesProblem::ComputeBalance(double scaling_factor)
 {
   opensn::ComputeBalance(*this, scaling_factor);
+}
+
+void
+DiscreteOrdinatesProblem::ZeroPhiE()
+{
+  std::fill(phi_e_new_local_.begin(), phi_e_new_local_.end(), 0.0);
 }
 } // namespace opensn

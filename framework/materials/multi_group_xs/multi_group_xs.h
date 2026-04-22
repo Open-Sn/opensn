@@ -120,6 +120,7 @@ public:
 
   const std::vector<double>& GetSigmaSGtoG() const { return sigma_s_gtog_; }
   std::vector<double> GetDeltaE() const;
+  const std::vector<double>& GetEnergyBounds() const { return e_bounds_; }
 
   bool HasCustomXS(const std::string& name) const;
   const std::vector<double>& GetCustomXS(const std::string& name) const;

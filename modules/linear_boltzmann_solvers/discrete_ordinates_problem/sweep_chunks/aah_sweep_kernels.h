@@ -37,6 +37,7 @@ struct AAHSweepData
   const size_t groupset_angle_group_stride;
   const size_t groupset_group_stride;
   std::vector<double>& destination_phi;
+  std::vector<double>& destination_phi_e;
   std::vector<double>& destination_psi;
   bool surface_source_active;
   bool include_rhs_time_term;
@@ -300,6 +301,14 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           for (size_t gsg = 0; gsg < gs_size; ++gsg)
             data.destination_phi[ir + gsg] += wn_d2m * b[gsg](i);
         }
+      }
+
+      if (csda_enabled)
+      {
+        const double wn_d2m = d2m_row[0];
+        const size_t cell_g_map = cell_local_id * static_cast<size_t>(data.problem.GetNumGroups()) + gs_gi;
+        for (size_t gsg = 0; gsg < gs_size; ++gsg)
+          data.destination_phi_e[cell_g_map + gsg] += wn_d2m * psiE_gsg[gsg];
       }
 
       if (data.save_angular_flux)
