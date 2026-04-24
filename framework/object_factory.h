@@ -18,12 +18,18 @@
  * \endcode
  * \note Remember to include the header "framework/object_factory.h".*/
 #define OpenSnRegisterObjectInNamespace(namespace_name, object_name)                               \
-  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
-    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#namespace_name, #object_name)
+  namespace                                                                                        \
+  {                                                                                                \
+  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \
+    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#namespace_name, #object_name);        \
+  }
 
 #define OpenSnRegisterObject(object_name)                                                          \
-  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
-    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#object_name)
+  namespace                                                                                        \
+  {                                                                                                \
+  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \
+    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#object_name);                         \
+  }
 
 /**
  * Macro for registering an object alias within the ObjectFactory
@@ -36,8 +42,11 @@
  * `namespace_name.alias`
  */
 #define OpenSnRegisterObjectAliasInNamespace(namespace_name, alias, object_name)                   \
-  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
-    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#namespace_name, #object_name)
+  namespace                                                                                        \
+  {                                                                                                \
+  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \
+    opensn::ObjectFactory::AddObjectToRegistry<object_name>(#namespace_name, #object_name);        \
+  }
 
 /**
  * Macro for registering an object (parameters only) within the
@@ -51,13 +60,19 @@
  *
  * \note Remember to include the header "framework/object_factory.h"*/
 #define OpenSnRegisterObjectParametersOnlyInNamespace(namespace_name, object_name)                 \
-  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
+  namespace                                                                                        \
+  {                                                                                                \
+  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \
     opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#namespace_name,             \
-                                                                      #object_name)
+                                                                      #object_name);               \
+  }
 
 #define OpenSnRegisterObjectParametersOnly(object_name)                                            \
-  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \
-    opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#object_name)
+  namespace                                                                                        \
+  {                                                                                                \
+  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \
+    opensn::ObjectFactory::AddObjectToRegistryParamsOnly<object_name>(#object_name);               \
+  }
 
 namespace opensn
 {

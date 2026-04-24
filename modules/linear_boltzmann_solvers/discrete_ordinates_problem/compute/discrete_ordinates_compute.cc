@@ -15,6 +15,48 @@
 namespace opensn
 {
 
+namespace
+{
+
+double
+GetInflow(const Cell& cell,
+          const CellMapping& cell_mapping,
+          const std::vector<UnitCellMatrices>& unit_cell_matrices,
+          const CellFace& face,
+          const std::shared_ptr<AngularQuadrature> quadrature,
+          SweepBoundary& boundary,
+          unsigned int f,
+          unsigned int g)
+{
+  const auto& fe_vals = unit_cell_matrices.at(cell.local_id);
+  const auto& int_f_shape_i = fe_vals.intS_shapeI[f];
+  const unsigned int num_face_nodes = cell_mapping.GetNumFaceNodes(f);
+  const size_t num_angles = quadrature->omegas.size();
+
+  double inflow = 0.0;
+  for (size_t n = 0; n < num_angles; ++n)
+  {
+    const auto& omega = quadrature->omegas[n];
+    const auto& weight = quadrature->weights[n];
+    const double mu = omega.Dot(face.normal);
+
+    if (mu >= 0.0)
+      continue;
+
+    for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
+    {
+      const unsigned int i = cell_mapping.MapFaceNode(f, fi);
+      const double* psi_ptr = boundary.PsiIncoming(cell.local_id, f, fi, n, g);
+      const double psi_inc = (psi_ptr != nullptr) ? *psi_ptr : 0.0;
+      inflow += mu * weight * int_f_shape_i(i) * psi_inc;
+    }
+  }
+
+  return inflow;
+}
+
+} // namespace
+
 BalanceTable
 ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 {
@@ -301,43 +343,6 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
               << " Out-flow rate               = " << table.outflow_rate << "\n"
               << " Balance                     = " << table.balance << "\n\n";
   }
-}
-
-static double
-GetInflow(const Cell& cell,
-          const CellMapping& cell_mapping,
-          const std::vector<UnitCellMatrices>& unit_cell_matrices,
-          const CellFace& face,
-          const std::shared_ptr<AngularQuadrature> quadrature,
-          SweepBoundary& boundary,
-          unsigned int f,
-          unsigned int g)
-{
-  const auto& fe_vals = unit_cell_matrices.at(cell.local_id);
-  const auto& int_f_shape_i = fe_vals.intS_shapeI[f];
-  const unsigned int num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-  const size_t num_angles = quadrature->omegas.size();
-
-  double inflow = 0.0;
-  for (size_t n = 0; n < num_angles; ++n)
-  {
-    const auto& omega = quadrature->omegas[n];
-    const auto& weight = quadrature->weights[n];
-    const double mu = omega.Dot(face.normal);
-
-    if (mu >= 0.0)
-      continue;
-
-    for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
-    {
-      const unsigned int i = cell_mapping.MapFaceNode(f, fi);
-      const double* psi_ptr = boundary.PsiIncoming(cell.local_id, f, fi, n, g);
-      const double psi_inc = (psi_ptr != nullptr) ? *psi_ptr : 0.0;
-      inflow += mu * weight * int_f_shape_i(i) * psi_inc;
-    }
-  }
-
-  return inflow;
 }
 
 std::vector<double>

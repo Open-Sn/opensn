@@ -13,8 +13,11 @@
 namespace opensn
 {
 
+namespace
+{
+
 // Wrap Finalize
-static void
+void
 WrapFinalize(py::module& context)
 {
   // clang-format off
@@ -57,7 +60,7 @@ WrapFinalize(py::module& context)
 }
 
 // Wrap settings
-static void
+void
 WrapSettings(py::module& context)
 {
   // clang-format off
@@ -137,7 +140,7 @@ WrapSettings(py::module& context)
 }
 
 // Wrap sys.argv translator
-static void
+void
 WrapSysArgv(py::module& context)
 {
   // clang-format off
@@ -223,6 +226,8 @@ WrapSysArgv(py::module& context)
   );
   // clang-format on
 }
+
+} // namespace
 
 // Wrap the context components of OpenSn
 void

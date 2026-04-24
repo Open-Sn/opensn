@@ -11,7 +11,10 @@
 namespace opensn
 {
 
-static inline void
+namespace
+{
+
+inline void
 UpdateRange(std::vector<std::vector<double>>& target, std::vector<std::span<double>>& view)
 {
   view.resize(target.size());
@@ -20,6 +23,8 @@ UpdateRange(std::vector<std::vector<double>>& target, std::vector<std::span<doub
     view[i] = std::span<double>(target[i]);
   }
 }
+
+} // namespace
 
 AAH_FLUDS::AAH_FLUDS(unsigned int num_groups,
                      size_t num_angles,

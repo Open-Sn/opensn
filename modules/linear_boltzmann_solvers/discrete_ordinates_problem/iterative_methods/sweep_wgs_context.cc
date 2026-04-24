@@ -18,7 +18,10 @@ namespace opensn
 using PCShellPtr = PetscErrorCode (*)(PC, Vec, Vec);
 using namespace std::chrono;
 
-static inline SchedulingAlgorithm
+namespace
+{
+
+inline SchedulingAlgorithm
 GetSchedulingAlgorithm(const std::string& sweep_type, bool use_gpu)
 {
   if (sweep_type == "AAH")
@@ -38,6 +41,8 @@ GetSchedulingAlgorithm(const std::string& sweep_type, bool use_gpu)
   else
     throw std::runtime_error("Unsupported sweep scheduling algorithm: " + sweep_type + "\n");
 }
+
+} // namespace
 
 SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
                                  LBSGroupset& groupset,

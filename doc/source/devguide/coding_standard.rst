@@ -54,6 +54,18 @@ Namespace names should use `snake` style:
    ...
    } // ns_one
 
+Use anonymous namespace for variables with internal linkage:
+
+.. code-block:: c++
+
+   namespace opensn {
+   namespace {
+   ...
+   // internal variables, functions, etc.
+   ...
+   }
+   } // opensn
+
 Enums
 ~~~~~
 

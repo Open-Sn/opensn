@@ -8,7 +8,24 @@
 namespace opensn
 {
 
-static InputParameters BooleanLogicalVolumeArgumentPair();
+namespace
+{
+
+InputParameters
+BooleanLogicalVolumeArgumentPair()
+{
+  InputParameters params;
+
+  params.AddRequiredParameter<bool>(
+    "op",
+    "Boolean value indicating the volume sense. True means inside, False means "
+    "outside");
+  params.AddRequiredParameter<std::shared_ptr<LogicalVolume>>("lv", "Logical volume.");
+
+  return params;
+}
+
+} // namespace
 
 OpenSnRegisterObjectInNamespace(logvol, BooleanLogicalVolume);
 
@@ -51,20 +68,6 @@ BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : Logi
     auto lv = part_params.GetSharedPtrParam<LogicalVolume>("lv", false);
     parts.emplace_back(part_params.GetParamValue<bool>("op"), lv);
   }
-}
-
-InputParameters
-BooleanLogicalVolumeArgumentPair()
-{
-  InputParameters params;
-
-  params.AddRequiredParameter<bool>(
-    "op",
-    "Boolean value indicating the volume sense. True means inside, False means "
-    "outside");
-  params.AddRequiredParameter<std::shared_ptr<LogicalVolume>>("lv", "Logical volume.");
-
-  return params;
 }
 
 bool
