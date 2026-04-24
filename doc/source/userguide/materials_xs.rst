@@ -33,6 +33,7 @@ The Python ``MultiGroupXS`` API has the following methods:
 * :py:meth:`pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup`
 * :py:meth:`pyopensn.xs.MultiGroupXS.LoadFromOpenSn`
 * :py:meth:`pyopensn.xs.MultiGroupXS.LoadFromOpenMC`
+* :py:meth:`pyopensn.xs.MultiGroupXS.LoadFromCEPXS`
 * :py:meth:`pyopensn.xs.MultiGroupXS.Combine`
 * :py:meth:`pyopensn.xs.MultiGroupXS.Scale`
 
@@ -343,6 +344,36 @@ The imported object may include:
 If the requested dataset or temperature is not present, the load fails with an
 error.
 
+Loading CEPXS-BFP Files
+=======================
+
+Use :py:meth:`pyopensn.xs.MultiGroupXS.LoadFromCEPXS` to load a material from a
+Fortran-record binary CEPXS-BFP library:
+
+.. code-block:: python
+
+   xs = MultiGroupXS()
+   xs.LoadFromCEPXS("plastic.bxslib", material_id=0)
+
+Parameters:
+
+* ``file_name``: the CEPXS binary library
+* ``material_id``: the material id to load from the library
+* ``csda_format``: whether to use OpenSn's CSDA CEPXS row convention
+
+For ordinary CEPXS transport data, leave ``csda_format`` at its default value of
+``False``. For charged-particle CSDA transport, load the library with:
+
+.. code-block:: python
+
+   xs.LoadFromCEPXS("plastic_csda.bxslib", material_id=0, csda_format=True)
+
+With ``csda_format=True``, OpenSn imports stopping power, energy deposition, and
+the named custom cross section ``charge_deposition`` used by the CSDA field
+functions and balance table.
+
+See :doc:`csda` for the full CSDA workflow and solver restrictions.
+
 Custom Cross Sections
 =====================
 
@@ -466,6 +497,8 @@ As a practical guideline:
   readable, hand-maintained transport file
 * use :py:meth:`pyopensn.xs.MultiGroupXS.LoadFromOpenMC` when the source data
   already exists in an OpenMC MGXS library
+* use :py:meth:`pyopensn.xs.MultiGroupXS.LoadFromCEPXS` when the source data is
+  a CEPXS-BFP binary library, including CSDA charged-particle data
 * use :py:meth:`pyopensn.xs.MultiGroupXS.Combine` when you need a new
   macroscopic material formed from existing macroscopic materials
 
@@ -529,6 +562,8 @@ Cautions and Best Practices
   exactly if they are present.
 * When importing from OpenMC, request only the extra named datasets that you
   actually need as custom XS.
+* When importing CEPXS data for CSDA, use ``csda_format=True`` and keep each
+  contiguous charged-particle group range inside one groupset.
 
 .. note::
 

@@ -367,6 +367,8 @@ MultiGroupXS::GetByName(const std::string& xs_name) const
     return GetSigmaFission().empty() ? nullptr : &GetSigmaFission();
   if (xs_name == "nu_sigma_f")
     return GetNuSigmaF().empty() ? nullptr : &GetNuSigmaF();
+  if (xs_name == "energy_deposition")
+    return GetEnergyDeposition().empty() ? nullptr : &GetEnergyDeposition();
   if (xs_name == "chi")
     return GetChi().empty() ? nullptr : &GetChi();
   if (xs_name == "inv_velocity")

@@ -130,17 +130,7 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   else
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
-  if (options_.csda_enabled)
-  {
-    if (use_gpus_)
-      throw std::runtime_error(GetName() + ": CSDA is not supported on GPUs.");
-    if (options_.adjoint)
-      throw std::runtime_error(GetName() + ": CSDA is not supported for adjoint problems.");
-    if (sweep_type_ == "CBC")
-      throw std::runtime_error(GetName() + ": CSDA is not supported with CBC sweeps.");
-    if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
-      throw std::runtime_error(GetName() + ": CSDA is not supported for RZ problems.");
-  }
+  ValidateOptions();
 
   if (params.Has("boundary_conditions"))
   {
@@ -152,6 +142,8 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   uncollided_flux_file_ = params.GetParamValue<std::string>("uncollided_flux");
   if (not uncollided_flux_file_.empty())
   {
+    OpenSnInvalidArgumentIf(options_.csda_enabled,
+                            GetName() + ": CSDA is not supported with an uncollided flux file.");
     OpenSnInvalidArgumentIf(params.GetParamValue<bool>("time_dependent"),
                             GetName() + ": uncollided flux is only supported for steady-state "
                                         "fixed-source calculations.");
@@ -394,13 +386,110 @@ DiscreteOrdinatesProblem::ValidateTimeDependentModeAllowed() const
     throw std::runtime_error(GetName() + ": Time-dependent problems are not supported on GPUs.");
   if (options_.adjoint)
     throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
-  if (options_.csda_enabled)
-    throw std::runtime_error(GetName() + ": CSDA is not supported in time-dependent mode.");
   if (not SupportsTimeDependentMode())
     throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
   OpenSnInvalidArgumentIf(not options_.save_angular_flux,
                           GetName() +
                             ": Time-dependent mode requires `options.save_angular_flux=true`.");
+}
+
+void
+DiscreteOrdinatesProblem::ValidateOptions(std::optional<SweepChunkMode> mode) const
+{
+  if (not options_.csda_enabled)
+    return;
+
+  const auto validation_mode = mode.value_or(sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT));
+  OpenSnInvalidArgumentIf(validation_mode == SweepChunkMode::TIME_DEPENDENT,
+                          GetName() + ": CSDA is only supported for steady-state source "
+                                      "problems and cannot be used in time-dependent mode.");
+  OpenSnInvalidArgumentIf(use_gpus_, GetName() + ": CSDA is not supported on GPUs.");
+  OpenSnInvalidArgumentIf(options_.adjoint,
+                          GetName() + ": CSDA is not supported for adjoint problems.");
+  OpenSnInvalidArgumentIf(sweep_type_ == "CBC",
+                          GetName() + ": CSDA is not supported with CBC sweeps.");
+  OpenSnInvalidArgumentIf(geometry_type_ == GeometryType::TWOD_CYLINDRICAL,
+                          GetName() + ": CSDA is not supported for RZ problems.");
+}
+
+void
+DiscreteOrdinatesProblem::ValidateCSDAGroupConfiguration() const
+{
+  if (not options_.csda_enabled)
+    return;
+
+  std::vector<bool> csda_active_by_group(num_groups_, false);
+  for (const auto& [_, xs] : block_id_to_xs_map_)
+  {
+    const auto& stopping_power = xs->GetStoppingPower();
+    if (stopping_power.empty())
+      continue;
+
+    OpenSnLogicalErrorIf(stopping_power.size() != num_groups_,
+                         GetName() +
+                           ": CSDA stopping power data is incompatible with the configured "
+                           "number of groups.");
+    OpenSnLogicalErrorIf(xs->GetEnergyBounds().size() != num_groups_ + 1,
+                         GetName() + ": CSDA requires energy-bin boundaries for each material with "
+                                     "stopping power data.");
+    const auto delta_e = xs->GetDeltaE();
+    OpenSnLogicalErrorIf(delta_e.size() != num_groups_,
+                         GetName() +
+                           ": CSDA energy-bin widths are incompatible with the configured "
+                           "number of groups.");
+    OpenSnInvalidArgumentIf(
+      std::any_of(stopping_power.begin(),
+                  stopping_power.end(),
+                  [](const double value) { return not std::isfinite(value) or value < 0.0; }),
+      GetName() + ": CSDA stopping power must contain finite, nonnegative values.");
+    OpenSnInvalidArgumentIf(
+      std::any_of(delta_e.begin(),
+                  delta_e.end(),
+                  [](const double value) { return not std::isfinite(value) or value <= 0.0; }),
+      GetName() + ": CSDA energy-bin widths must contain finite, positive values.");
+    OpenSnInvalidArgumentIf(
+      FindCSDAChargedGroupRanges(stopping_power).size() > 2,
+      GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron).");
+
+    for (size_t g = 0; g < num_groups_; ++g)
+      csda_active_by_group[g] =
+        csda_active_by_group[g] or std::abs(stopping_power[g]) > kCSDATolerance;
+  }
+
+  std::vector<std::pair<size_t, size_t>> charged_ranges;
+  size_t g = 0;
+  while (g < csda_active_by_group.size())
+  {
+    while (g < csda_active_by_group.size() and not csda_active_by_group[g])
+      ++g;
+    if (g >= csda_active_by_group.size())
+      break;
+
+    const size_t g_begin = g;
+    while (g < csda_active_by_group.size() and csda_active_by_group[g])
+      ++g;
+    charged_ranges.emplace_back(g_begin, g);
+  }
+
+  for (const auto& [g_begin, g_end] : charged_ranges)
+  {
+    bool covered_by_one_groupset = false;
+    for (const auto& groupset : groupsets_)
+    {
+      if (groupset.first_group <= g_begin and groupset.last_group + 1 >= g_end)
+      {
+        covered_by_one_groupset = true;
+        break;
+      }
+    }
+
+    OpenSnInvalidArgumentIf(
+      not covered_by_one_groupset,
+      GetName() + ": CSDA charged-particle group range [" + std::to_string(g_begin) + ", " +
+        std::to_string(g_end - 1) +
+        "] is split across groupsets. Current CSDA implementation requires each contiguous "
+        "charged-particle block to be fully contained within a single groupset.");
+  }
 }
 
 void
@@ -423,72 +512,14 @@ DiscreteOrdinatesProblem::BuildRuntime()
   }
 
   LBSProblem::BuildRuntime();
-  phi_e_new_local_.assign(grid_->local_cells.size() * static_cast<size_t>(num_groups_), 0.0);
+  if (options_.csda_enabled)
+    phi_e_new_local_.assign(grid_->local_cells.size() * static_cast<size_t>(num_groups_), 0.0);
+  else
+    phi_e_new_local_.clear();
   InitializeFCS();
 
-  if (options_.csda_enabled)
-  {
-    std::vector<bool> csda_active_by_group(num_groups_, false);
-    for (const auto& [_, xs] : block_id_to_xs_map_)
-    {
-      const auto& stopping_power = xs->GetStoppingPower();
-      if (stopping_power.empty())
-        continue;
-
-      OpenSnLogicalErrorIf(stopping_power.size() != num_groups_,
-                           GetName() +
-                             ": CSDA stopping power data is incompatible with the configured "
-                             "number of groups.");
-      OpenSnLogicalErrorIf(xs->GetEnergyBounds().size() != num_groups_ + 1,
-                           GetName() +
-                             ": CSDA requires energy-bin boundaries for each material with "
-                             "stopping power data.");
-      const auto delta_e = xs->GetDeltaE();
-      OpenSnLogicalErrorIf(delta_e.size() != num_groups_,
-                           GetName() +
-                             ": CSDA energy-bin widths are incompatible with the configured "
-                             "number of groups.");
-
-      for (size_t g = 0; g < num_groups_; ++g)
-        csda_active_by_group[g] =
-          csda_active_by_group[g] or std::abs(stopping_power[g]) > kCSDATolerance;
-    }
-
-    std::vector<std::pair<size_t, size_t>> charged_ranges;
-    size_t g = 0;
-    while (g < csda_active_by_group.size())
-    {
-      while (g < csda_active_by_group.size() and not csda_active_by_group[g])
-        ++g;
-      if (g >= csda_active_by_group.size())
-        break;
-
-      const size_t g_begin = g;
-      while (g < csda_active_by_group.size() and csda_active_by_group[g])
-        ++g;
-      charged_ranges.emplace_back(g_begin, g);
-    }
-
-    for (const auto& [g_begin, g_end] : charged_ranges)
-    {
-      bool covered_by_one_groupset = false;
-      for (const auto& groupset : groupsets_)
-      {
-        if (groupset.first_group <= g_begin and groupset.last_group + 1 >= g_end)
-        {
-          covered_by_one_groupset = true;
-          break;
-        }
-      }
-
-      OpenSnInvalidArgumentIf(
-        not covered_by_one_groupset,
-        GetName() + ": CSDA charged-particle group range [" + std::to_string(g_begin) + ", " +
-          std::to_string(g_end - 1) +
-          "] is split across groupsets. Current CSDA implementation requires each contiguous "
-          "charged-particle block to be fully contained within a single groupset.");
-    }
-  }
+  ValidateOptions();
+  ValidateCSDAGroupConfiguration();
 
   UpdateAngularFluxStorage();
 
@@ -801,6 +832,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 
   // True when the requested target mode is time-dependent.
   const bool switching_to_transient = target_mode == SweepChunkMode::TIME_DEPENDENT;
+  ValidateOptions(target_mode);
 
   if (switching_to_transient)
     ValidateTimeDependentModeAllowed();

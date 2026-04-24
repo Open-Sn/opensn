@@ -67,9 +67,11 @@ def remove_matching(paths):
 def resolve_xs_filename(xs_filename):
     if os.path.exists(xs_filename):
         return xs_filename
-    local_path = os.path.join(os.path.dirname(__file__), xs_filename)
-    if os.path.exists(local_path):
-        return local_path
+    asset_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../../assets/xs", xs_filename)
+    )
+    if os.path.exists(asset_path):
+        return asset_path
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../"))
     build_path = os.path.join(repo_root, "build", xs_filename)
     if os.path.exists(build_path):
@@ -77,7 +79,45 @@ def resolve_xs_filename(xs_filename):
     raise RuntimeError(f"Could not find CEPXS file '{xs_filename}'")
 
 
-def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3):
+def sample_field_function(problem, label, base_name, xs_name, length_cm, rho_g_cm3, num_cells):
+    ff_csv_name = f"{label}_{base_name}"
+    ff = problem.CreateFieldFunction(base_name, xs_name)
+    dz = length_cm / num_cells
+
+    remove_matching(glob.glob(f"{label}_{base_name}_line_*.csv"))
+
+    line = FieldFunctionInterpolationLine()
+    line.SetInitialPoint(Vector3(0.0, 0.0, 0.5 * dz))
+    line.SetFinalPoint(Vector3(0.0, 0.0, length_cm - 0.5 * dz))
+    line.SetNumberOfPoints(num_cells)
+    line.AddFieldFunction(ff)
+    line.Execute()
+    line.ExportToCSV(f"{label}_{base_name}_line")
+
+    if rank != 0:
+        return None
+
+    line_csv = sorted(glob.glob(f"{label}_{base_name}_line_*.csv"))
+    if not line_csv:
+        raise RuntimeError(f"No CSV output found for field '{base_name}' in case '{label}'")
+
+    z_vals = []
+    model_vals = []
+    with open(line_csv[0], "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            z_vals.append(float(row["z"]))
+            model_vals.append(float(row[ff_csv_name]))
+
+    remove_matching(line_csv)
+
+    return {
+        "fmr": [z / length_cm for z in z_vals],
+        "dose": [v / rho_g_cm3 for v in model_vals],
+    }
+
+
+def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3, num_cells):
     xs = MultiGroupXS()
     xs.LoadFromCEPXS(resolve_xs_filename(xs_filename), material_id=0, csda_format=csda_enabled)
     num_groups = xs.num_groups
@@ -114,43 +154,39 @@ def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3):
     solver.Execute()
     balance = solver.ComputeBalanceTable() if csda_enabled else None
 
-    ff_name = "energy_deposition"
-    ff_csv_name = f"{label}_energy_deposition"
-    ff_edep = problem.CreateFieldFunction(ff_name, "energy_deposition")
+    sampled_fields = {
+        "energy_deposition": sample_field_function(
+            problem, label, "energy_deposition", "energy_deposition", length_cm, rho_g_cm3, num_cells
+        ),
+        "charge_raw": sample_field_function(
+            problem, label, "charge_deposition", "charge_deposition", length_cm, rho_g_cm3, num_cells
+        ),
+    }
 
-    remove_matching(glob.glob(f"{label}_edep_line_*.csv"))
-
-    edep_line = FieldFunctionInterpolationLine()
-    edep_line.SetInitialPoint(Vector3(0.0, 0.0, 1.0e-8))
-    edep_line.SetFinalPoint(Vector3(0.0, 0.0, length_cm - 1.0e-8))
-    edep_line.SetNumberOfPoints(300)
-    edep_line.AddFieldFunction(ff_edep)
-    edep_line.Execute()
-    edep_line.ExportToCSV(f"{label}_edep_line")
+    if csda_enabled:
+        sampled_fields["charge_csda"] = sample_field_function(
+            problem,
+            label,
+            "csda_charge_deposition",
+            "csda_charge_deposition",
+            length_cm,
+            rho_g_cm3,
+            num_cells,
+        )
 
     if rank != 0:
         return None
 
-    line_csv = sorted(glob.glob(f"{label}_edep_line_*.csv"))
-    if not line_csv:
-        raise RuntimeError(f"No CSV output found for case '{label}'")
-
-    z_vals = []
-    model_vals = []
-    with open(line_csv[0], "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            z_vals.append(float(row["z"]))
-            model_vals.append(float(row[ff_csv_name]))
-
-    remove_matching(line_csv)
-
-    return {
+    result = {
         "label": label,
-        "fmr": [z / length_cm for z in z_vals],
-        "dose": [v / rho_g_cm3 for v in model_vals],
+        "fields": sampled_fields,
         "balance": balance,
     }
+
+    for field in result["fields"].values():
+        field["plot"] = make_plot_profile(field["fmr"], field["dose"], num_cells)
+
+    return result
 
 
 def interpolate(xs, ys, x):
@@ -165,6 +201,15 @@ def interpolate(xs, ys, x):
             t = (x - x0) / (x1 - x0)
             return y0 + t * (y1 - y0)
     raise RuntimeError(f"Interpolation point {x} not bracketed")
+
+
+def make_plot_profile(fmr, values, num_cells):
+    num_plot_points = 6 * num_cells
+    plot_fmr = [i / (num_plot_points - 1) for i in range(num_plot_points)]
+    return {
+        "fmr": plot_fmr,
+        "values": [interpolate(fmr, values, x) for x in plot_fmr],
+    }
 
 
 def write_csv(path, columns):
@@ -192,6 +237,7 @@ if __name__ == "__main__":
         grid,
         slab_thickness_cm,
         rho_g_cm3,
+        num_cells,
     )
     csda_case = run_case(
         "ii3d_csda",
@@ -200,16 +246,31 @@ if __name__ == "__main__":
         grid,
         slab_thickness_cm,
         rho_g_cm3,
+        num_cells,
     )
     sample_fmrs = [0.02, 0.10, 0.25, 0.50, 0.75]
 
     if rank == 0:
+        case_colors = {
+            "standard": "tab:blue",
+            "csda": "tab:orange",
+        }
+
         write_csv(
             "transport_1d_cepxs_ii3d_edep.csv",
             [
-                ("fmr", standard_case["fmr"]),
-                ("standard_dose", standard_case["dose"]),
-                ("csda_dose", csda_case["dose"]),
+                ("fmr", standard_case["fields"]["energy_deposition"]["fmr"]),
+                ("standard_dose", standard_case["fields"]["energy_deposition"]["dose"]),
+                ("csda_dose", csda_case["fields"]["energy_deposition"]["dose"]),
+            ],
+        )
+        write_csv(
+            "transport_1d_cepxs_ii3d_cdep.csv",
+            [
+                ("fmr", standard_case["fields"]["charge_raw"]["fmr"]),
+                ("standard_charge", standard_case["fields"]["charge_raw"]["dose"]),
+                ("csda_raw_charge", csda_case["fields"]["charge_raw"]["dose"]),
+                ("csda_aug_charge", csda_case["fields"]["charge_csda"]["dose"]),
             ],
         )
 
@@ -217,11 +278,11 @@ if __name__ == "__main__":
             fmr_key = str(fmr).replace(".", "p")
             print(
                 f"II3D_STANDARD_FMR_{fmr_key}="
-                f"{interpolate(standard_case['fmr'], standard_case['dose'], fmr):.12e}"
+                f"{interpolate(standard_case['fields']['energy_deposition']['fmr'], standard_case['fields']['energy_deposition']['dose'], fmr):.12e}"
             )
             print(
                 f"II3D_CSDA_FMR_{fmr_key}="
-                f"{interpolate(csda_case['fmr'], csda_case['dose'], fmr):.12e}"
+                f"{interpolate(csda_case['fields']['energy_deposition']['fmr'], csda_case['fields']['energy_deposition']['dose'], fmr):.12e}"
             )
         print(f"II3D_CSDA_BALANCE_STANDARD={csda_case['balance']['balance']:.12e}")
         print(
@@ -238,16 +299,18 @@ if __name__ == "__main__":
 
             plt.figure(figsize=(7.2, 4.8))
             plt.plot(
-                standard_case["fmr"],
-                standard_case["dose"],
+                standard_case["fields"]["energy_deposition"]["plot"]["fmr"],
+                standard_case["fields"]["energy_deposition"]["plot"]["values"],
                 "-",
+                color=case_colors["standard"],
                 lw=2.0,
                 label="OpenSn Standard CEPXS",
             )
             plt.plot(
-                csda_case["fmr"],
-                csda_case["dose"],
+                csda_case["fields"]["energy_deposition"]["plot"]["fmr"],
+                csda_case["fields"]["energy_deposition"]["plot"]["values"],
                 "-",
+                color=case_colors["csda"],
                 lw=2.0,
                 label="OpenSn CSDA CEPXS",
             )
@@ -259,5 +322,54 @@ if __name__ == "__main__":
             plt.tight_layout()
             plt.savefig("transport_1d_cepxs_ii3d_edep.png", dpi=180)
             plt.close()
+
+            fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.6))
+            axes[0].plot(
+                standard_case["fields"]["energy_deposition"]["plot"]["fmr"],
+                standard_case["fields"]["energy_deposition"]["plot"]["values"],
+                "-",
+                color=case_colors["standard"],
+                lw=2.0,
+                label="Standard CEPXS",
+            )
+            axes[0].plot(
+                csda_case["fields"]["energy_deposition"]["plot"]["fmr"],
+                csda_case["fields"]["energy_deposition"]["plot"]["values"],
+                "-",
+                color=case_colors["csda"],
+                lw=2.0,
+                label="CSDA CEPXS",
+            )
+            axes[0].set_xlabel("Fraction of Slab Thickness")
+            axes[0].set_ylabel("Dose [MeV cm$^2$/g]")
+            axes[0].set_title("Energy Deposition")
+            axes[0].grid(True, alpha=0.3)
+            axes[0].legend()
+
+            axes[1].plot(
+                standard_case["fields"]["charge_raw"]["plot"]["fmr"],
+                standard_case["fields"]["charge_raw"]["plot"]["values"],
+                "-",
+                color=case_colors["standard"],
+                lw=2.0,
+                label="Standard CEPXS",
+            )
+            axes[1].plot(
+                csda_case["fields"]["charge_csda"]["plot"]["fmr"],
+                csda_case["fields"]["charge_csda"]["plot"]["values"],
+                "-",
+                color=case_colors["csda"],
+                lw=2.0,
+                label="CSDA CEPXS",
+            )
+            axes[1].set_xlabel("Fraction of Slab Thickness")
+            axes[1].set_ylabel("Charge deposition [1 cm$^2$/g]")
+            axes[1].set_title("Charge Deposition")
+            axes[1].grid(True, alpha=0.3)
+            axes[1].legend()
+            fig.suptitle("II.3.D Copper Slab")
+            fig.tight_layout()
+            fig.savefig("transport_1d_cepxs_ii3d_compare.png", dpi=180)
+            plt.close(fig)
         except Exception as exc:
             raise RuntimeError(f"Failed to create plot: {exc}") from exc

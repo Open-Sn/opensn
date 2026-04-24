@@ -373,6 +373,11 @@ At a high level, the steady-state solver:
 The corresponding balance summary is available from
 :py:meth:`ComputeBalanceTable`.
 
+For CSDA charged-particle steady-state source solves, the balance table also includes
+``csda_charge_deposition_rate``, ``csda_particle_deposition_rate``,
+``csda_particle_balance``, and ``csda_energy_deposition_rate``. See :doc:`csda`
+for the CSDA balance definition and convergence guidance.
+
 .. note::
 
    This is the simplest outer solver in the LBS stack. Most of the numerical

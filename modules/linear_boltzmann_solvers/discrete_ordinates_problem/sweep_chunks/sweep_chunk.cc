@@ -47,12 +47,6 @@ SweepChunk::ZeroDestinationPhi()
       } // for moment
     } // for dof
 
-    if (csda_enabled_)
-    {
-      const auto mapping = cell.local_id * static_cast<size_t>(total_num_groups_) + gsi;
-      for (unsigned int g = 0; g < gss; ++g)
-        destination_phi_e_[mapping + g] = 0.0;
-    }
   } // for cell
 }
 

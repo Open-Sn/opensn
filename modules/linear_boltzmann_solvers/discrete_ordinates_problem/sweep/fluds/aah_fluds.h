@@ -17,7 +17,12 @@ public:
    * This constructor initializes an auxiliary FLUDS based on a primary FLUDS. The restriction here
    * is that the auxiliary FLUDS has the exact same sweep ordering as the primary FLUDS.
    */
-  AAH_FLUDS(unsigned int num_groups, size_t num_angles, const AAH_FLUDSCommonData& common_data);
+  AAH_FLUDS(unsigned int num_groups,
+            size_t num_angles,
+            const AAH_FLUDSCommonData& common_data,
+            bool csda_enabled);
+
+  bool CSDASlopeEnabled() const { return csda_enabled_; }
 
   /**
    * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
@@ -83,6 +88,7 @@ public:
 
 private:
   const AAH_FLUDSCommonData& common_data_;
+  const bool csda_enabled_;
 
   // local_psi_n_block_stride[fc]. Given face category fc, the value is
   // total number of faces that store information in this category's buffer
