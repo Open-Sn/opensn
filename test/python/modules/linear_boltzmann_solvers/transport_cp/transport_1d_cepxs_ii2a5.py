@@ -71,9 +71,11 @@ def make_cosine_current_bc(quadrature, source_group=0, inward_current=1.0):
 def resolve_xs_filename(xs_filename):
     if os.path.exists(xs_filename):
         return xs_filename
-    local_path = os.path.join(os.path.dirname(__file__), xs_filename)
-    if os.path.exists(local_path):
-        return local_path
+    asset_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../../../../assets/xs", xs_filename)
+    )
+    if os.path.exists(asset_path):
+        return asset_path
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../"))
     build_path = os.path.join(repo_root, "build", xs_filename)
     if os.path.exists(build_path):

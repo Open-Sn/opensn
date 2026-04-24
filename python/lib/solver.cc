@@ -175,6 +175,11 @@ WrapLBS(py::module& slv)
         Name to assign to the returned field function.
     xs_name : str
         Built-in 1D XS name, custom XS name, or the special value ``power``.
+        CSDA-enabled discrete-ordinates problems also support
+        ``csda_energy_deposition``, ``csda_charge_deposition``,
+        ``csda_charge_deposition_term``, and
+        ``csda_charge_deposition_term_cellavg``. When CSDA is enabled,
+        ``energy_deposition`` is an alias for ``csda_energy_deposition``.
     power_normalization_target : float, default=-1.0
         If positive, scale the derived field function so that the raw power field would
         integrate to this total power.
@@ -191,6 +196,10 @@ WrapLBS(py::module& slv)
 
     If ``xs_name == "power"``, the same power-generation formula used elsewhere by the solver
     is applied on demand.
+
+    CSDA deposition fields are derived from the current scalar flux and terminal
+    charged-particle current information. They should normally be created after the
+    CSDA solve has converged.
 
     If ``power_normalization_target > 0``, the returned field function is scaled using the power
     implied by the current scalar flux. This scaling affects only the returned field function;
@@ -939,6 +948,12 @@ WrapLBS(py::module& slv)
             Store angular flux state (`psi`) for transient mode, angular-flux
             field functions, and angular-flux I/O.
           - adjoint: bool, default=False
+          - csda_enabled: bool, default=False
+            Enable CSDA charged-particle transport for CEPXS data loaded with
+            ``csda_format=True``. CSDA requires a Cartesian
+            :class:`SteadyStateSourceSolver` solve, ``sweep_type='AAH'``, CPU
+            sweeps, and charged-particle group ranges that are not split across
+            groupsets.
           - verbose_inner_iterations: bool, default=True
             Print inner iteration details, including WGS and AGS iterations.
           - verbose_outer_iterations: bool, default=True
@@ -1448,6 +1463,10 @@ WrapLBS(py::module& slv)
           - save_angular_flux: bool, default=False
             Store angular flux state (`psi`) for transient mode, angular-flux
             field functions, and angular-flux I/O.
+          - csda_enabled: bool, default=False
+            Enable CSDA charged-particle transport for CEPXS data loaded with
+            ``csda_format=True``. CSDA is not supported for this curvilinear
+            problem class.
           - verbose_inner_iterations: bool, default=True
             Print inner iteration details, including WGS and AGS iterations.
           - verbose_outer_iterations: bool, default=True
@@ -1531,10 +1550,28 @@ WrapSteadyState(py::module& slv)
     values["balance"] = table.balance;
     if (table.csda_charge_deposition_rate.has_value())
       values["csda_charge_deposition_rate"] = table.csda_charge_deposition_rate.value();
+    if (table.csda_particle_deposition_rate.has_value())
+      values["csda_particle_deposition_rate"] = table.csda_particle_deposition_rate.value();
     if (table.csda_particle_balance.has_value())
       values["csda_particle_balance"] = table.csda_particle_balance.value();
+    if (table.csda_particle_relative_balance.has_value())
+      values["csda_particle_relative_balance"] = table.csda_particle_relative_balance.value();
     if (table.csda_energy_deposition_rate.has_value())
       values["csda_energy_deposition_rate"] = table.csda_energy_deposition_rate.value();
+    if (table.csda_energy_collision_loss_rate.has_value())
+      values["csda_energy_collision_loss_rate"] = table.csda_energy_collision_loss_rate.value();
+    if (table.csda_energy_continuous_loss_rate.has_value())
+      values["csda_energy_continuous_loss_rate"] = table.csda_energy_continuous_loss_rate.value();
+    if (table.csda_energy_production_rate.has_value())
+      values["csda_energy_production_rate"] = table.csda_energy_production_rate.value();
+    if (table.csda_energy_inflow_rate.has_value())
+      values["csda_energy_inflow_rate"] = table.csda_energy_inflow_rate.value();
+    if (table.csda_energy_outflow_rate.has_value())
+      values["csda_energy_outflow_rate"] = table.csda_energy_outflow_rate.value();
+    if (table.csda_energy_balance.has_value())
+      values["csda_energy_balance"] = table.csda_energy_balance.value();
+    if (table.csda_energy_relative_balance.has_value())
+      values["csda_energy_relative_balance"] = table.csda_energy_relative_balance.value();
     if (table.initial_inventory.has_value())
       values["initial_inventory"] = table.initial_inventory.value();
     if (table.final_inventory.has_value())
@@ -1618,16 +1655,46 @@ WrapSteadyState(py::module& slv)
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
         - ``csda_charge_deposition_rate``:
-          Optional CSDA terminal charge-deposition tally for charged-particle runs.
+          Optional signed terminal charge-deposition tally, with electron
+          deposition positive and positron deposition negative. Present only
+          when CSDA data is active.
+        - ``csda_particle_deposition_rate``:
+          Optional terminal particle-deposition tally. Electron and positron
+          contributions use the same sign.
         - ``csda_particle_balance``:
-          Optional balance with the CSDA terminal charge-deposition tally treated as
-          an additional sink term.
+          Optional signed relative particle residual: production plus inflow
+          minus absorption, outflow, and terminal particle deposition, divided
+          by ``production_rate + inflow_rate``. Zero gain gives zero for a zero
+          residual and signed infinity otherwise.
+        - ``csda_particle_relative_balance``:
+          Optional magnitude of ``csda_particle_balance``.
         - ``csda_energy_deposition_rate``:
-          Optional CSDA deposited-energy tally for charged-particle runs.
+          Optional sum of discrete collision energy loss and CSDA energy-space
+          loss, including terminal cutoff. Uses group-midpoint energies, not the
+          imported CEPXS deposition response used by field functions.
+        - ``csda_energy_collision_loss_rate``:
+          Optional discrete collision energy-loss rate for CSDA runs.
+        - ``csda_energy_continuous_loss_rate``:
+          Optional discrete CSDA energy-space current loss rate for CSDA runs.
+        - ``csda_energy_production_rate``:
+          Optional energy-weighted source/production rate for CSDA runs.
+        - ``csda_energy_inflow_rate``:
+          Optional energy-weighted boundary in-flow rate for CSDA runs.
+        - ``csda_energy_outflow_rate``:
+          Optional energy-weighted boundary out-flow rate for CSDA runs.
+        - ``csda_energy_balance``:
+          Optional signed relative energy residual: energy production plus
+          inflow minus outflow, collision loss, and CSDA continuous loss, divided
+          by ``csda_energy_production_rate + csda_energy_inflow_rate``. Zero gain
+          gives zero for a zero residual and signed infinity otherwise.
+        - ``csda_energy_relative_balance``:
+          Optional magnitude of ``csda_energy_balance``.
 
     Notes
     -----
     This solver applies no extra normalization to the balance table.
+    CSDA balance entries are convergence-sensitive and should be interpreted only
+    after the linear solve has converged to the requested tolerance.
     )"
   );
   // clang-format on
@@ -1647,10 +1714,28 @@ WrapTransient(py::module& slv)
     values["balance"] = table.balance;
     if (table.csda_charge_deposition_rate.has_value())
       values["csda_charge_deposition_rate"] = table.csda_charge_deposition_rate.value();
+    if (table.csda_particle_deposition_rate.has_value())
+      values["csda_particle_deposition_rate"] = table.csda_particle_deposition_rate.value();
     if (table.csda_particle_balance.has_value())
       values["csda_particle_balance"] = table.csda_particle_balance.value();
+    if (table.csda_particle_relative_balance.has_value())
+      values["csda_particle_relative_balance"] = table.csda_particle_relative_balance.value();
     if (table.csda_energy_deposition_rate.has_value())
       values["csda_energy_deposition_rate"] = table.csda_energy_deposition_rate.value();
+    if (table.csda_energy_collision_loss_rate.has_value())
+      values["csda_energy_collision_loss_rate"] = table.csda_energy_collision_loss_rate.value();
+    if (table.csda_energy_continuous_loss_rate.has_value())
+      values["csda_energy_continuous_loss_rate"] = table.csda_energy_continuous_loss_rate.value();
+    if (table.csda_energy_production_rate.has_value())
+      values["csda_energy_production_rate"] = table.csda_energy_production_rate.value();
+    if (table.csda_energy_inflow_rate.has_value())
+      values["csda_energy_inflow_rate"] = table.csda_energy_inflow_rate.value();
+    if (table.csda_energy_outflow_rate.has_value())
+      values["csda_energy_outflow_rate"] = table.csda_energy_outflow_rate.value();
+    if (table.csda_energy_balance.has_value())
+      values["csda_energy_balance"] = table.csda_energy_balance.value();
+    if (table.csda_energy_relative_balance.has_value())
+      values["csda_energy_relative_balance"] = table.csda_energy_relative_balance.value();
     if (table.initial_inventory.has_value())
       values["initial_inventory"] = table.initial_inventory.value();
     if (table.final_inventory.has_value())
@@ -1824,12 +1909,40 @@ WrapTransient(py::module& slv)
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
         - ``csda_charge_deposition_rate``:
-          Optional CSDA terminal charge-deposition tally for charged-particle runs.
+          Optional signed terminal charge-deposition tally, with electron
+          deposition positive and positron deposition negative. Present only
+          when CSDA data is active.
+        - ``csda_particle_deposition_rate``:
+          Optional terminal particle-deposition tally. Electron and positron
+          contributions use the same sign.
         - ``csda_particle_balance``:
-          Optional balance with the CSDA terminal charge-deposition tally treated as
-          an additional sink term.
+          Optional signed relative particle residual: production plus inflow
+          minus absorption, outflow, and terminal particle deposition, divided
+          by ``production_rate + inflow_rate``. Zero gain gives zero for a zero
+          residual and signed infinity otherwise.
+        - ``csda_particle_relative_balance``:
+          Optional magnitude of ``csda_particle_balance``.
         - ``csda_energy_deposition_rate``:
-          Optional CSDA deposited-energy tally for charged-particle runs.
+          Optional sum of discrete collision energy loss and CSDA energy-space
+          loss, including terminal cutoff. Uses group-midpoint energies, not the
+          imported CEPXS deposition response used by field functions.
+        - ``csda_energy_collision_loss_rate``:
+          Optional discrete collision energy-loss rate for CSDA runs.
+        - ``csda_energy_continuous_loss_rate``:
+          Optional discrete CSDA energy-space current loss rate for CSDA runs.
+        - ``csda_energy_production_rate``:
+          Optional energy-weighted source/production rate for CSDA runs.
+        - ``csda_energy_inflow_rate``:
+          Optional energy-weighted boundary in-flow rate for CSDA runs.
+        - ``csda_energy_outflow_rate``:
+          Optional energy-weighted boundary out-flow rate for CSDA runs.
+        - ``csda_energy_balance``:
+          Optional signed relative energy residual: energy production plus
+          inflow minus outflow, collision loss, and CSDA continuous loss, divided
+          by ``csda_energy_production_rate + csda_energy_inflow_rate``. Zero gain
+          gives zero for a zero residual and signed infinity otherwise.
+        - ``csda_energy_relative_balance``:
+          Optional magnitude of ``csda_energy_balance``.
         - ``initial_inventory``:
           Total particle inventory at the start of the timestep, computed as
           ``integral (1 / v_g) * phi_old dV`` summed over groups and the full domain.
@@ -1874,10 +1987,28 @@ WrapNLKEigen(py::module& slv)
     values["balance"] = table.balance;
     if (table.csda_charge_deposition_rate.has_value())
       values["csda_charge_deposition_rate"] = table.csda_charge_deposition_rate.value();
+    if (table.csda_particle_deposition_rate.has_value())
+      values["csda_particle_deposition_rate"] = table.csda_particle_deposition_rate.value();
     if (table.csda_particle_balance.has_value())
       values["csda_particle_balance"] = table.csda_particle_balance.value();
+    if (table.csda_particle_relative_balance.has_value())
+      values["csda_particle_relative_balance"] = table.csda_particle_relative_balance.value();
     if (table.csda_energy_deposition_rate.has_value())
       values["csda_energy_deposition_rate"] = table.csda_energy_deposition_rate.value();
+    if (table.csda_energy_collision_loss_rate.has_value())
+      values["csda_energy_collision_loss_rate"] = table.csda_energy_collision_loss_rate.value();
+    if (table.csda_energy_continuous_loss_rate.has_value())
+      values["csda_energy_continuous_loss_rate"] = table.csda_energy_continuous_loss_rate.value();
+    if (table.csda_energy_production_rate.has_value())
+      values["csda_energy_production_rate"] = table.csda_energy_production_rate.value();
+    if (table.csda_energy_inflow_rate.has_value())
+      values["csda_energy_inflow_rate"] = table.csda_energy_inflow_rate.value();
+    if (table.csda_energy_outflow_rate.has_value())
+      values["csda_energy_outflow_rate"] = table.csda_energy_outflow_rate.value();
+    if (table.csda_energy_balance.has_value())
+      values["csda_energy_balance"] = table.csda_energy_balance.value();
+    if (table.csda_energy_relative_balance.has_value())
+      values["csda_energy_relative_balance"] = table.csda_energy_relative_balance.value();
     if (table.initial_inventory.has_value())
       values["initial_inventory"] = table.initial_inventory.value();
     if (table.final_inventory.has_value())
@@ -1994,12 +2125,40 @@ WrapNLKEigen(py::module& slv)
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
         - ``csda_charge_deposition_rate``:
-          Optional CSDA terminal charge-deposition tally for charged-particle runs.
+          Optional signed terminal charge-deposition tally, with electron
+          deposition positive and positron deposition negative. Present only
+          when CSDA data is active.
+        - ``csda_particle_deposition_rate``:
+          Optional terminal particle-deposition tally. Electron and positron
+          contributions use the same sign.
         - ``csda_particle_balance``:
-          Optional balance with the CSDA terminal charge-deposition tally treated as
-          an additional sink term.
+          Optional signed relative particle residual: production plus inflow
+          minus absorption, outflow, and terminal particle deposition, divided
+          by ``production_rate + inflow_rate``. Zero gain gives zero for a zero
+          residual and signed infinity otherwise.
+        - ``csda_particle_relative_balance``:
+          Optional magnitude of ``csda_particle_balance``.
         - ``csda_energy_deposition_rate``:
-          Optional CSDA deposited-energy tally for charged-particle runs.
+          Optional sum of discrete collision energy loss and CSDA energy-space
+          loss, including terminal cutoff. Uses group-midpoint energies, not the
+          imported CEPXS deposition response used by field functions.
+        - ``csda_energy_collision_loss_rate``:
+          Optional discrete collision energy-loss rate for CSDA runs.
+        - ``csda_energy_continuous_loss_rate``:
+          Optional discrete CSDA energy-space current loss rate for CSDA runs.
+        - ``csda_energy_production_rate``:
+          Optional energy-weighted source/production rate for CSDA runs.
+        - ``csda_energy_inflow_rate``:
+          Optional energy-weighted boundary in-flow rate for CSDA runs.
+        - ``csda_energy_outflow_rate``:
+          Optional energy-weighted boundary out-flow rate for CSDA runs.
+        - ``csda_energy_balance``:
+          Optional signed relative energy residual: energy production plus
+          inflow minus outflow, collision loss, and CSDA continuous loss, divided
+          by ``csda_energy_production_rate + csda_energy_inflow_rate``. Zero gain
+          gives zero for a zero residual and signed infinity otherwise.
+        - ``csda_energy_relative_balance``:
+          Optional magnitude of ``csda_energy_balance``.
 
     Notes
     -----
@@ -2024,10 +2183,28 @@ WrapPIteration(py::module& slv)
     values["balance"] = table.balance;
     if (table.csda_charge_deposition_rate.has_value())
       values["csda_charge_deposition_rate"] = table.csda_charge_deposition_rate.value();
+    if (table.csda_particle_deposition_rate.has_value())
+      values["csda_particle_deposition_rate"] = table.csda_particle_deposition_rate.value();
     if (table.csda_particle_balance.has_value())
       values["csda_particle_balance"] = table.csda_particle_balance.value();
+    if (table.csda_particle_relative_balance.has_value())
+      values["csda_particle_relative_balance"] = table.csda_particle_relative_balance.value();
     if (table.csda_energy_deposition_rate.has_value())
       values["csda_energy_deposition_rate"] = table.csda_energy_deposition_rate.value();
+    if (table.csda_energy_collision_loss_rate.has_value())
+      values["csda_energy_collision_loss_rate"] = table.csda_energy_collision_loss_rate.value();
+    if (table.csda_energy_continuous_loss_rate.has_value())
+      values["csda_energy_continuous_loss_rate"] = table.csda_energy_continuous_loss_rate.value();
+    if (table.csda_energy_production_rate.has_value())
+      values["csda_energy_production_rate"] = table.csda_energy_production_rate.value();
+    if (table.csda_energy_inflow_rate.has_value())
+      values["csda_energy_inflow_rate"] = table.csda_energy_inflow_rate.value();
+    if (table.csda_energy_outflow_rate.has_value())
+      values["csda_energy_outflow_rate"] = table.csda_energy_outflow_rate.value();
+    if (table.csda_energy_balance.has_value())
+      values["csda_energy_balance"] = table.csda_energy_balance.value();
+    if (table.csda_energy_relative_balance.has_value())
+      values["csda_energy_relative_balance"] = table.csda_energy_relative_balance.value();
     if (table.initial_inventory.has_value())
       values["initial_inventory"] = table.initial_inventory.value();
     if (table.final_inventory.has_value())
@@ -2138,12 +2315,40 @@ WrapPIteration(py::module& slv)
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
         - ``csda_charge_deposition_rate``:
-          Optional CSDA terminal charge-deposition tally for charged-particle runs.
+          Optional signed terminal charge-deposition tally, with electron
+          deposition positive and positron deposition negative. Present only
+          when CSDA data is active.
+        - ``csda_particle_deposition_rate``:
+          Optional terminal particle-deposition tally. Electron and positron
+          contributions use the same sign.
         - ``csda_particle_balance``:
-          Optional balance with the CSDA terminal charge-deposition tally treated as
-          an additional sink term.
+          Optional signed relative particle residual: production plus inflow
+          minus absorption, outflow, and terminal particle deposition, divided
+          by ``production_rate + inflow_rate``. Zero gain gives zero for a zero
+          residual and signed infinity otherwise.
+        - ``csda_particle_relative_balance``:
+          Optional magnitude of ``csda_particle_balance``.
         - ``csda_energy_deposition_rate``:
-          Optional CSDA deposited-energy tally for charged-particle runs.
+          Optional sum of discrete collision energy loss and CSDA energy-space
+          loss, including terminal cutoff. Uses group-midpoint energies, not the
+          imported CEPXS deposition response used by field functions.
+        - ``csda_energy_collision_loss_rate``:
+          Optional discrete collision energy-loss rate for CSDA runs.
+        - ``csda_energy_continuous_loss_rate``:
+          Optional discrete CSDA energy-space current loss rate for CSDA runs.
+        - ``csda_energy_production_rate``:
+          Optional energy-weighted source/production rate for CSDA runs.
+        - ``csda_energy_inflow_rate``:
+          Optional energy-weighted boundary in-flow rate for CSDA runs.
+        - ``csda_energy_outflow_rate``:
+          Optional energy-weighted boundary out-flow rate for CSDA runs.
+        - ``csda_energy_balance``:
+          Optional signed relative energy residual: energy production plus
+          inflow minus outflow, collision loss, and CSDA continuous loss, divided
+          by ``csda_energy_production_rate + csda_energy_inflow_rate``. Zero gain
+          gives zero for a zero residual and signed infinity otherwise.
+        - ``csda_energy_relative_balance``:
+          Optional magnitude of ``csda_energy_balance``.
 
     Notes
     -----

@@ -93,6 +93,9 @@ NonLinearKEigenSolver::Initialize()
   OpenSnInvalidArgumentIf(do_problem_->HasUncollidedFlux(),
                           GetName() + ": uncollided flux is only supported by the steady-state "
                                       "fixed-source solver.");
+  OpenSnInvalidArgumentIf(do_problem_->GetOptions().csda_enabled,
+                          GetName() + ": CSDA is only supported by the steady-state fixed-source "
+                                      "solver.");
   initialized_ = true;
 }
 

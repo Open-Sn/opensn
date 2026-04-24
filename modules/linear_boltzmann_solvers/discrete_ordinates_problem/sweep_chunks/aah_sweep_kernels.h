@@ -9,7 +9,6 @@
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/csda_sweep_helper.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
@@ -37,11 +36,9 @@ struct AAHSweepData
   const size_t groupset_angle_group_stride;
   const size_t groupset_group_stride;
   std::vector<double>& destination_phi;
-  std::vector<double>& destination_phi_e;
   std::vector<double>& destination_psi;
   bool surface_source_active;
   bool include_rhs_time_term;
-  bool csda_enabled;
   DiscreteOrdinatesProblem& problem;
   const std::vector<double>* psi_old; // nullptr for steady sweeps
   unsigned int group_block_size;      // used by fixed-N/AVX path
@@ -65,9 +62,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
   DenseMatrix<double> Amat(data.max_num_cell_dofs, data.max_num_cell_dofs);
   DenseMatrix<double> Atemp(data.max_num_cell_dofs, data.max_num_cell_dofs);
-  DenseMatrix<double> Aext(data.max_num_cell_dofs + 1, data.max_num_cell_dofs + 1);
   std::vector<Vector<double>> b(gs_size, Vector<double>(data.max_num_cell_dofs, 0.0));
-  Vector<double> b_ext(data.max_num_cell_dofs + 1, 0.0);
   std::vector<double> source(data.max_num_cell_dofs);
 
   const auto& spds = angle_set.GetSPDS();
@@ -90,9 +85,6 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
     const auto& xs = data.xs.at(cell.block_id);
     const auto& sigma_t = xs->GetSigmaTotal();
 
-    const auto csda_enabled = data.csda_enabled;
-    const auto csda_data = csda_enabled ? MakeCSDAMaterialData(*xs) : CSDAMaterialData{};
-
     std::vector<double> tau_gsg;
     if constexpr (time_dependent)
     {
@@ -108,13 +100,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
     const auto& G = data.unit_cell_matrices[cell_local_id].intV_shapeI_gradshapeJ;
     const auto& M = data.unit_cell_matrices[cell_local_id].intV_shapeI_shapeJ;
-    const auto& v = data.unit_cell_matrices[cell_local_id].intV_shapeI;
     const auto& M_surf = data.unit_cell_matrices[cell_local_id].intS_shapeI_shapeJ;
-    const auto& IntF_shapeI = data.unit_cell_matrices[cell_local_id].intS_shapeI;
-
-    double cell_volume = 0.0;
-    for (size_t i = 0; i < cell_num_nodes; ++i)
-      cell_volume += v(i);
 
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
@@ -128,12 +114,6 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;
-
-      // Cell-wise coefficient of the within-group energy basis
-      // chi_g(E) = 2 * (E - E_g) / DeltaE_g.
-      std::vector<double> psiE_gsg;
-      if (csda_enabled)
-        psiE_gsg.assign(gs_size, 0.0);
 
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
         for (size_t i = 0; i < cell_num_nodes; ++i)
@@ -207,8 +187,6 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         if constexpr (time_dependent)
           sigma_tg += tau_gsg[gsg];
 
-        const bool csda_active = IsCSDAActive(csda_data, gs_gi + gsg);
-
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           double temp_src = 0.0;
@@ -229,67 +207,19 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           source[i] = temp_src;
         }
 
-        if (csda_active)
+        for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const CSDALocalSolveContext csda_ctx{gsg,
-                                               gs_gi,
-                                               sigma_tg,
-                                               cell_volume,
-                                               &Amat,
-                                               &M,
-                                               &v,
-                                               &cell,
-                                               &cell_mapping,
-                                               &face_orientations,
-                                               &face_mu_values,
-                                               &IntF_shapeI,
-                                               &cell_transport_view,
-                                               &angle_set,
-                                               ni_preloc_face_counter,
-                                               &csda_data,
-                                               &Aext,
-                                               &b_ext,
-                                               &psiE_gsg};
-          SolveCSDALocalSystem(
-            csda_ctx,
-            [&source](size_t j) { return source[j]; },
-            [&b](size_t gg, size_t j) { return b[gg](j); },
-            [&b](size_t gg, size_t i, double value) { b[gg](i) = value; },
-            [&fluds, &angle_set, &cell, cell_local_id, direction_num, spls_index, as_ss_idx](
-              bool is_local,
-              bool is_reflecting,
-              size_t face_num,
-              int in_face_counter_slope,
-              int preloc_face_counter_slope,
-              size_t gg)
-            {
-              const double* psiE = nullptr;
-              if (is_local)
-                psiE = fluds.UpwindPsiE(spls_index, in_face_counter_slope, 0, 0, as_ss_idx);
-              else if (is_reflecting)
-                psiE = angle_set.PsiBoundaryE(
-                  cell.faces[face_num].neighbor_id, direction_num, cell_local_id, face_num, 0, 0);
-              else
-                psiE = fluds.NLUpwindPsiE(preloc_face_counter_slope, 0, 0, as_ss_idx);
-              return psiE ? psiE[gg] : 0.0;
-            });
-        }
-        else
-        {
-          for (size_t i = 0; i < cell_num_nodes; ++i)
+          double temp = 0.0;
+          for (size_t j = 0; j < cell_num_nodes; ++j)
           {
-            double temp = 0.0;
-            for (size_t j = 0; j < cell_num_nodes; ++j)
-            {
-              const double Mij = M(i, j);
-              Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
-              temp += Mij * source[j];
-            }
-            b[gsg](i) += temp;
+            const double Mij = M(i, j);
+            Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
+            temp += Mij * source[j];
           }
-
-          GaussElimination(Atemp, b[gsg], cell_num_nodes);
+          b[gsg](i) += temp;
         }
+
+        GaussElimination(Atemp, b[gsg], cell_num_nodes);
       }
 
       for (unsigned int m = 0; m < data.num_moments; ++m)
@@ -301,14 +231,6 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           for (size_t gsg = 0; gsg < gs_size; ++gsg)
             data.destination_phi[ir + gsg] += wn_d2m * b[gsg](i);
         }
-      }
-
-      if (csda_enabled)
-      {
-        const double wn_d2m = d2m_row[0];
-        const size_t cell_g_map = cell_local_id * static_cast<size_t>(data.problem.GetNumGroups()) + gs_gi;
-        for (size_t gsg = 0; gsg < gs_size; ++gsg)
-          data.destination_phi_e[cell_g_map + gsg] += wn_d2m * psiE_gsg[gsg];
       }
 
       if (data.save_angular_flux)
@@ -386,21 +308,6 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
               psi[gsg] = b[gsg](i);
           }
 
-          if (csda_enabled)
-            StoreOutgoingCSDASlope(
-              (not is_boundary_face or is_reflecting_boundary_face),
-              psiE_gsg,
-              [&]() -> double*
-              {
-                if (is_local_face)
-                  return fluds.OutgoingPsiE(spls_index, out_face_counter, fi, as_ss_idx);
-                if (is_reflecting_boundary_face)
-                  return angle_set.PsiReflectedE(
-                    face.neighbor_id, direction_num, cell_local_id, f, fi);
-                if (not is_boundary_face)
-                  return fluds.NLOutgoingPsiE(deploc_face_counter, fi, as_ss_idx);
-                return nullptr;
-              });
         }
       }
     }

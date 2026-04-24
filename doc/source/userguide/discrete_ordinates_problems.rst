@@ -222,6 +222,8 @@ The most important options for everyday use are:
 * ``max_ags_iterations``
 * ``ags_tolerance``
 * ``ags_convergence_check``
+* ``verbose_ags_iterations``
+* ``csda_enabled``
 * ``field_function_prefix_option``
 * ``field_function_prefix``
 
@@ -260,6 +262,17 @@ Restart-related options include:
    Problem options are where users should look for global transport behavior.
    If a setting changes how the entire problem behaves rather than how one
    groupset behaves, it usually belongs here.
+
+CSDA charged-particle transport is enabled with:
+
+.. code-block:: python
+
+   options={"csda_enabled": True}
+
+This requires CEPXS data loaded with ``csda_format=True`` and a supported
+Cartesian discrete-ordinates problem solved with
+:py:class:`pyopensn.solver.SteadyStateSourceSolver`. See :doc:`csda` for the
+full workflow, output names, and restrictions.
 
 Setting options after construction
 ----------------------------------

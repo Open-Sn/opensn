@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/csda_utils.h"
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
@@ -11,7 +12,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 
-#include <cmath>
 #include <vector>
 
 namespace opensn
@@ -23,8 +23,6 @@ struct CSDAMaterialData
   const std::vector<double>* stopping_power = nullptr;
   std::vector<double> delta_e;
 };
-
-inline constexpr double kCSDATolerance = 1.0e-12;
 
 /// Context for one coupled local CSDA solve:
 /// N nodal angular-flux unknowns plus one cellwise slope unknown.
@@ -133,7 +131,7 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
     }
 
     double csda_gm1 = 0.0;
-    if (gsg > 0)
+    if (gsg > 0 and IsCSDAActive(csda_data, gs_gi + gsg - 1))
     {
       const double Sgm1 = (*csda_data.stopping_power)[gs_gi + gsg - 1];
       const double dEgm1 = csda_data.delta_e[gs_gi + gsg - 1];
@@ -212,7 +210,7 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
     Aext(cell_num_nodes, j) = v(j) * coeff_row;
 
   double rhs_csda_gm1 = 0.0;
-  if (gsg > 0)
+  if (gsg > 0 and IsCSDAActive(csda_data, gs_gi + gsg - 1))
   {
     const double Sgm1 = (*csda_data.stopping_power)[gs_gi + gsg - 1];
     const double dEgm1 = csda_data.delta_e[gs_gi + gsg - 1];

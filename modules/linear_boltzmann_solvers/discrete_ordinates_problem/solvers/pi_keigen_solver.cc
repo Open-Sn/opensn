@@ -79,6 +79,9 @@ PowerIterationKEigenSolver::Initialize()
                                       "fixed-source solver.");
 
   const auto& options = do_problem_->GetOptions();
+  OpenSnInvalidArgumentIf(options.csda_enabled,
+                          GetName() + ": CSDA is only supported by the steady-state fixed-source "
+                                      "solver.");
   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
 
   for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)

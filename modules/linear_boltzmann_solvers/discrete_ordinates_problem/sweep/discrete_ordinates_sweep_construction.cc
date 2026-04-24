@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aah_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbc_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_csda_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk_td.h"
@@ -158,10 +159,11 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         }
         else
         {
-          fluds = std::make_shared<AAH_FLUDS>(
-            gs_num_grps,
-            angle_indices.size(),
-            dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data));
+          fluds =
+            std::make_shared<AAH_FLUDS>(gs_num_grps,
+                                        angle_indices.size(),
+                                        dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data),
+                                        options_.csda_enabled);
         }
 
         std::shared_ptr<AngleSet> angle_set;
@@ -185,6 +187,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                      angle_indices,
                                                      sweep_boundaries_,
                                                      options_.max_mpi_message_size,
+                                                     options_.csda_enabled,
                                                      *sweep_communicator_);
         }
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
@@ -257,6 +260,8 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
   switch (ParseSweepKind(sweep_type_, GetName()))
   {
     case SweepKind::AAH:
+      if (options_.csda_enabled)
+        return std::make_shared<AAHCSDASweepChunk>(*this, groupset);
       if (use_time_dependent_chunk)
         return std::make_shared<AAHSweepChunkTD>(*this, groupset);
       if (use_gpus_)

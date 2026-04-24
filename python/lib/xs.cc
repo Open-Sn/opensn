@@ -195,7 +195,28 @@ WrapMultiGroupXS(py::module& xs)
     {
       self = MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format);
     },
-    "Load multi-group cross sections from a CEPXS cross-section file.",
+    R"(
+    Load multi-group cross sections from a CEPXS-BFP binary cross-section file.
+
+    Parameters
+    ----------
+    file_name : str
+        CEPXS-BFP Fortran-record binary library to load.
+    material_id : int, default=0
+        Material id to load from the CEPXS library.
+    csda_format : bool, default=False
+        Interpret the CEPXS rows using OpenSn's CSDA charged-particle convention.
+        This imports stopping power, energy deposition, and the custom 1D XS
+        ``charge_deposition`` needed by CSDA field functions and balance tallies.
+
+    Notes
+    -----
+    Use ``csda_format=True`` together with
+    ``DiscreteOrdinatesProblem(..., options={"csda_enabled": True})`` for CSDA
+    charged-particle transport.
+
+    This method mutates ``self`` by replacing its current contents.
+    )",
     py::arg("file_name"),
     py::arg("material_id") = 0,
     py::arg("csda_format") = false

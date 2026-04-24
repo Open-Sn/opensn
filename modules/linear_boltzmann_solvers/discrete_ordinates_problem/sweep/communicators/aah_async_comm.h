@@ -26,6 +26,7 @@ public:
                                unsigned int num_groups,
                                std::size_t num_angles,
                                int max_mpi_message_size,
+                               bool csda_enabled,
                                const SweepCommunicator& sweep_communicator);
 
   using AsynchronousCommunicator::GetMaxNumMessages;
@@ -87,6 +88,7 @@ private:
   unsigned int num_groups_;
   std::size_t num_angles_;
   int max_mpi_message_size_;
+  const bool csda_enabled_;
   bool done_sending_;
   bool data_initialized_;
   bool upstream_data_initialized_;

@@ -178,7 +178,7 @@ private:
   void ForEachDelayedAngularSlope(int groupset_id, Fn&& fn) const;
 
   template <typename Fn>
-  void AppendDelayedAngularFields(int groupset_id, bool old_store, Fn&& fn) const;
+  void AppendDelayedAngularFields(int groupset_id, bool old_store, Fn fn) const;
 
 private:
   static constexpr double epsilon_ = 1.0e-8;

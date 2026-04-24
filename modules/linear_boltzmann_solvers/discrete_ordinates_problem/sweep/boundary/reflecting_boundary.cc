@@ -106,7 +106,7 @@ ReflectingBoundary::ForEachDelayedAngularSlope(int groupset_id, Fn&& fn) const
 
 template <typename Fn>
 void
-ReflectingBoundary::AppendDelayedAngularFields(int groupset_id, bool old_store, Fn&& fn) const
+ReflectingBoundary::AppendDelayedAngularFields(int groupset_id, bool old_store, Fn fn) const
 {
   if (old_store)
   {
@@ -351,8 +351,7 @@ void
 ReflectingBoundary::AppendNewDelayedAngularDOFsToVector(int groupset_id,
                                                         std::vector<double>& output) const
 {
-  AppendDelayedAngularFields(
-    groupset_id, false, [&output](double val) { output.push_back(val); });
+  AppendDelayedAngularFields(groupset_id, false, [&output](double val) { output.push_back(val); });
 }
 
 void
@@ -409,8 +408,8 @@ ReflectingBoundary::SetNewDelayedAngularDOFsFromVector(int groupset_id,
 {
   ForEachDelayedAngularFlux<false>(groupset_id,
                                    [&values, &index](double& psi) { psi = values[index++]; });
-  ForEachDelayedAngularSlope<false>(
-    groupset_id, [&values, &index](double& slope) { slope = values[index++]; });
+  ForEachDelayedAngularSlope<false>(groupset_id,
+                                    [&values, &index](double& slope) { slope = values[index++]; });
 }
 
 void
@@ -420,8 +419,8 @@ ReflectingBoundary::SetOldDelayedAngularDOFsFromVector(int groupset_id,
 {
   ForEachDelayedAngularFlux<true>(groupset_id,
                                   [&values, &index](double& psi) { psi = values[index++]; });
-  ForEachDelayedAngularSlope<true>(
-    groupset_id, [&values, &index](double& slope) { slope = values[index++]; });
+  ForEachDelayedAngularSlope<true>(groupset_id,
+                                   [&values, &index](double& slope) { slope = values[index++]; });
 }
 
 void
