@@ -105,12 +105,18 @@
 <span class="cm"> * \endcode</span>
 <span class="cm"> * \note Remember to include the header &quot;framework/object_factory.h&quot;.*/</span>
 <span class="cp">#define OpenSnRegisterObjectInNamespace(namespace_name, object_name)                               \</span>
-<span class="cp">  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \</span>
-<span class="cp">    opensn::ObjectFactory::AddObjectToRegistry&lt;object_name&gt;(#namespace_name, #object_name)</span>
+<span class="cp">  namespace                                                                                        \</span>
+<span class="cp">  {                                                                                                \</span>
+<span class="cp">  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \</span>
+<span class="cp">    opensn::ObjectFactory::AddObjectToRegistry&lt;object_name&gt;(#namespace_name, #object_name);        \</span>
+<span class="cp">  }</span>
 
 <span class="cp">#define OpenSnRegisterObject(object_name)                                                          \</span>
-<span class="cp">  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \</span>
-<span class="cp">    opensn::ObjectFactory::AddObjectToRegistry&lt;object_name&gt;(#object_name)</span>
+<span class="cp">  namespace                                                                                        \</span>
+<span class="cp">  {                                                                                                \</span>
+<span class="cp">  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \</span>
+<span class="cp">    opensn::ObjectFactory::AddObjectToRegistry&lt;object_name&gt;(#object_name);                         \</span>
+<span class="cp">  }</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Macro for registering an object alias within the ObjectFactory</span>
@@ -123,8 +129,11 @@
 <span class="cm"> * `namespace_name.alias`</span>
 <span class="cm"> */</span>
 <span class="cp">#define OpenSnRegisterObjectAliasInNamespace(namespace_name, alias, object_name)                   \</span>
-<span class="cp">  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \</span>
-<span class="cp">    opensn::ObjectFactory::AddObjectToRegistry&lt;object_name&gt;(#namespace_name, #object_name)</span>
+<span class="cp">  namespace                                                                                        \</span>
+<span class="cp">  {                                                                                                \</span>
+<span class="cp">  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \</span>
+<span class="cp">    opensn::ObjectFactory::AddObjectToRegistry&lt;object_name&gt;(#namespace_name, #object_name);        \</span>
+<span class="cp">  }</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Macro for registering an object (parameters only) within the</span>
@@ -138,13 +147,19 @@
 <span class="cm"> *</span>
 <span class="cm"> * \note Remember to include the header &quot;framework/object_factory.h&quot;*/</span>
 <span class="cp">#define OpenSnRegisterObjectParametersOnlyInNamespace(namespace_name, object_name)                 \</span>
-<span class="cp">  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \</span>
+<span class="cp">  namespace                                                                                        \</span>
+<span class="cp">  {                                                                                                \</span>
+<span class="cp">  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \</span>
 <span class="cp">    opensn::ObjectFactory::AddObjectToRegistryParamsOnly&lt;object_name&gt;(#namespace_name,             \</span>
-<span class="cp">                                                                      #object_name)</span>
+<span class="cp">                                                                      #object_name);               \</span>
+<span class="cp">  }</span>
 
 <span class="cp">#define OpenSnRegisterObjectParametersOnly(object_name)                                            \</span>
-<span class="cp">  static char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =              \</span>
-<span class="cp">    opensn::ObjectFactory::AddObjectToRegistryParamsOnly&lt;object_name&gt;(#object_name)</span>
+<span class="cp">  namespace                                                                                        \</span>
+<span class="cp">  {                                                                                                \</span>
+<span class="cp">  char OpenSnJoinWords(unique_var_name_object_##object_name##_, __COUNTER__) =                     \</span>
+<span class="cp">    opensn::ObjectFactory::AddObjectToRegistryParamsOnly&lt;object_name&gt;(#object_name);               \</span>
+<span class="cp">  }</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
