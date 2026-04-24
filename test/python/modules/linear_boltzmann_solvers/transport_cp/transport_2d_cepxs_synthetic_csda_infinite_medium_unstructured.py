@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-2D synthetic CSDA infinite-medium regression.
+2D synthetic CSDA infinite-medium regression on an unstructured mesh.
 
 This problem is designed to be predictable in serial and MPI:
-- homogeneous 2D orthogonal mesh
+- homogeneous 2D unstructured mesh
 - reflecting boundaries on all sides
 - uniform volumetric source in group 0
 - synthetic 3-group electron-only CEPXS CSDA library generated at runtime
@@ -24,12 +24,16 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.mesh import FromFileMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
-    from pyopensn.fieldfunc import FieldFunctionInterpolation, FieldFunctionInterpolationVolume
+    from pyopensn.fieldfunc import (
+        FieldFunctionGridBased,
+        FieldFunctionInterpolation,
+        FieldFunctionInterpolationVolume,
+    )
     from pyopensn.logvol import RPPLogicalVolume
 
 
@@ -157,7 +161,12 @@ def compute_reference():
     phi_e = sol[G:]
     raw_edep = sum(SIGMA_EDEP[g] * phi[g] for g in range(G))
     raw_cdep = sum(SIGMA_CDEP[g] * phi[g] for g in range(G))
-    csda_edep = raw_edep + sum(phi[g] / delta_e[g] - phi_e[g] * STOPPING[g] for g in range(G))
+    csda_edep = raw_edep
+    for g in range(G):
+        group_center = 0.5 * (E_BOUNDS[g] + E_BOUNDS[g + 1])
+        next_group_center = 0.0 if g + 1 == G else 0.5 * (E_BOUNDS[g + 1] + E_BOUNDS[g + 2])
+        terminal_current = STOPPING[g] * (phi[g] / delta_e[g] - phi_e[g])
+        csda_edep += terminal_current * (group_center - next_group_center)
     g_last = G - 1
     csda_cdep = raw_cdep + STOPPING[g_last] * (phi[g_last] / delta_e[g_last] - phi_e[g_last])
     return phi, raw_edep, csda_edep, raw_cdep, csda_cdep
@@ -173,16 +182,20 @@ def volume_value(ff, op_type, logical_volume):
 
 
 if __name__ == "__main__":
-    nx = 12
-    ny = 12
-    x_nodes = [i / nx for i in range(nx + 1)]
-    y_nodes = [i / ny for i in range(ny + 1)]
-
-    meshgen = OrthogonalMeshGenerator(node_sets=[x_nodes, y_nodes])
+    mesh_path = os.path.join(
+        os.path.dirname(__file__), "../../../../assets/mesh/rectangular_2d_2mat_gmsh_v2.msh"
+    )
+    meshgen = FromFileMeshGenerator(filename=mesh_path)
     grid = meshgen.Execute()
+    grid.SetOrthogonalBoundaries()
     grid.SetUniformBlockID(0)
 
-    xs_path = os.path.join(os.path.dirname(__file__), "cepxs_synthetic_csda_3g.bxslib")
+    xs_path = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "../../../../assets/xs/cepxs_synthetic_csda_3g.bxslib",
+        )
+    )
     ensure_synthetic_cepxs(xs_path)
 
     xs = MultiGroupXS()
@@ -236,6 +249,9 @@ if __name__ == "__main__":
 
     ff_name = "energy_deposition"
     edep_ff = problem.CreateFieldFunction(ff_name, "energy_deposition")
+    FieldFunctionGridBased.ExportMultipleToPVTU(
+        [edep_ff], "synth2d_csda_infinite_medium_unstructured_edep"
+    )
     edep_avg = volume_value(edep_ff, "avg", vol)
     edep_min = volume_value(edep_ff, "min", vol)
     edep_max = volume_value(edep_ff, "max", vol)

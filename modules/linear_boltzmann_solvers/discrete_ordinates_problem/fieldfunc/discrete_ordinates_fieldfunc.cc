@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/csda_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/utils/error.h"
 #include <iomanip>
@@ -14,36 +15,13 @@ namespace opensn
 namespace
 {
 
-std::vector<std::pair<unsigned int, unsigned int>>
-FindChargedGroupRanges(const std::vector<double>& stopping_power)
-{
-  constexpr double tol = 1.0e-12;
-  std::vector<std::pair<unsigned int, unsigned int>> ranges;
-
-  unsigned int g = 0;
-  while (g < stopping_power.size())
-  {
-    while (g < stopping_power.size() and std::abs(stopping_power[g]) <= tol)
-      ++g;
-    if (g >= stopping_power.size())
-      break;
-
-    const unsigned int g_begin = g;
-    while (g < stopping_power.size() and std::abs(stopping_power[g]) > tol)
-      ++g;
-    ranges.emplace_back(g_begin, g);
-  }
-
-  return ranges;
-}
-
 std::vector<double>
 ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
-                       const Cell& cell,
-                       const UnknownManager& phi_uk_man,
-                       const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                       const std::vector<double>& phi_new_local,
-                       const unsigned int num_groups)
+                        const Cell& cell,
+                        const UnknownManager& phi_uk_man,
+                        const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                        const std::vector<double>& phi_new_local,
+                        const unsigned int num_groups)
 {
   const auto& cell_mapping = sdm.GetCellMapping(cell);
   const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -209,20 +187,17 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
 
   OpenSnInvalidArgumentIf(not options_.csda_enabled,
                           GetName() + ": Field function \"" + xs_name +
-                                      "\" requires `options.csda_enabled=true`.");
+                            "\" requires `options.csda_enabled=true`.");
 
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
   const auto& unit_cell_matrices = GetUnitCellMatrices();
   std::vector<double> data_vector_local(local_node_count_, 0.0);
-  std::vector<double> projected_csda_numerator(local_node_count_, 0.0);
-  std::vector<double> projected_csda_denominator(local_node_count_, 0.0);
 
   for (const auto& cell : grid_->local_cells)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& intV_shapeI = unit_cell_matrices[cell.local_id].intV_shapeI;
     const auto& xs = block_id_to_xs_map_.at(cell.block_id);
     const auto& stopping_power = xs->GetStoppingPower();
     const auto delta_e = stopping_power.empty() ? std::vector<double>{} : xs->GetDeltaE();
@@ -245,12 +220,12 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
     if (is_csda_energy_deposition)
       raw_coeffs = xs->GetEnergyDeposition().empty() ? nullptr : &xs->GetEnergyDeposition();
     else if (is_csda_charge_deposition)
-      raw_coeffs = xs->HasCustomXS("charge_deposition") ? &xs->GetCustomXS("charge_deposition")
-                                                        : nullptr;
+      raw_coeffs =
+        xs->HasCustomXS("charge_deposition") ? &xs->GetCustomXS("charge_deposition") : nullptr;
 
     OpenSnLogicalErrorIf(is_csda_charge_deposition and raw_coeffs == nullptr,
-                         GetName() +
-                           ": Field function \"" + xs_name + "\" could not find "
+                         GetName() + ": Field function \"" + xs_name +
+                           "\" could not find "
                            "custom XS \"charge_deposition\".");
 
     if (raw_coeffs != nullptr)
@@ -258,85 +233,76 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
                            GetName() + ": Field function \"" + xs_name +
                              "\" has incompatible raw deposition XS group size.");
 
-    const auto charged_ranges =
-      stopping_power.empty() ? std::vector<std::pair<unsigned int, unsigned int>>{}
-                             : FindChargedGroupRanges(stopping_power);
+    const auto charged_ranges = stopping_power.empty()
+                                  ? std::vector<std::pair<unsigned int, unsigned int>>{}
+                                  : FindCSDAChargedGroupRanges(stopping_power);
     if (is_csda_charge_deposition)
       OpenSnLogicalErrorIf(charged_ranges.size() > 2,
                            GetName() + ": Field function \"" + xs_name +
                              "\" supports at most two charged-particle blocks "
                              "(electron then positron).");
 
-    const int electron_last_group =
-      charged_ranges.empty() ? -1 : static_cast<int>(charged_ranges.front().second) - 1;
-    const int positron_last_group =
-      charged_ranges.size() < 2 ? -1 : static_cast<int>(charged_ranges.back().second) - 1;
     const size_t cell_g_offset = cell.local_id * static_cast<size_t>(num_groups_);
-    const auto phi_cell_avg =
-      ComputeCellAveragePhi0g(sdm, cell, phi_uk_man, unit_cell_matrices, phi_new_local_, num_groups_);
+    const auto phi_cell_avg = ComputeCellAveragePhi0g(
+      sdm, cell, phi_uk_man, unit_cell_matrices, phi_new_local_, num_groups_);
 
-    for (size_t i = 0; i < num_nodes; ++i)
+    // The CSDA terminal-current correction below is fundamentally a cell-averaged quantity: it is
+    // built entirely from cell-averaged flux and psi_E moments, so it is constant across a cell.
+    // The raw reaction-rate term (from a custom "energy_deposition"/"charge_deposition" XS) is
+    // instead evaluated from the true nodal flux and can vary meaningfully within a cell. Summing
+    // a nodal quantity against a cell-flat one is harmless when one of the two is negligible, but
+    // for CEPXS-CSDA libraries where the raw XS is populated within the charged-particle block
+    // (e.g. coupled electron-photon libraries), the two terms can be the same order of magnitude
+    // and nearly cancel. Any real intra-cell slope in the nodal term then survives uncanceled and
+    // is amplified relative to the much smaller combined signal, producing a spurious sawtooth
+    // that has nothing to do with the transport solution itself. Cell-averaging the raw term
+    // before combining -- i.e. representing both terms at the same (cell) resolution -- removes
+    // that artifact without changing the mean value of either field.
+    double cell_avg_raw_value = 0.0;
+    if (raw_coeffs != nullptr)
+      for (unsigned int g = 0; g < num_groups_; ++g)
+        cell_avg_raw_value += raw_coeffs->at(g) * phi_cell_avg[g];
+
+    double csda_value = 0.0;
+    for (size_t r = 0; r < charged_ranges.size(); ++r)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i);
-      const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
-
-      double nodal_value = 0.0;
-      if (raw_coeffs != nullptr)
-        for (unsigned int g = 0; g < num_groups_; ++g)
-          nodal_value += raw_coeffs->at(g) * phi_new_local_[imapB + g];
-
-      double csda_value = 0.0;
-
-      for (const auto& [g_begin, g_end] : charged_ranges)
-        for (unsigned int g = g_begin; g < g_end; ++g)
-        {
-          const double phi_g = phi_cell_avg[g];
-          const double phi_e_g = phi_e_new_local_[cell_g_offset + g];
-          const double Sg = stopping_power[g];
-          const double dEg = delta_e[g];
-          const bool is_terminal_group = (g + 1 == g_end);
-          const double terminal_charge_current = Sg * (phi_g / dEg - phi_e_g);
-
-          if (is_csda_energy_deposition)
-          {
-            // Benchmark-faithful response for the current OpenSn CSDA ansatz:
-            // the charged-group energy-loss rate is reconstructed as S_g * Phi_g.
-            // If the terminal charged group is treated as fully absorbing, then
-            // the residual cutoff energy E_{g+1} carried by the terminal current
-            // is also deposited locally.
-            csda_value += Sg * phi_g;
-            if (is_terminal_group)
-              csda_value += energy_bounds[g + 1] * terminal_charge_current;
-          }
-          else
-          {
-            // Derived from the OpenSn within-group ansatz evaluated at the low-energy
-            // edge of the terminal charged group:
-            //   psi(E_low) = Phi_g / DeltaE_g - psiE_g.
-            // Charge deposition is the terminal energy-space current S_g * psi(E_low),
-            // positive for electrons and negative for positrons.
-            if (static_cast<int>(g) == electron_last_group)
-              csda_value += terminal_charge_current;
-            else if (static_cast<int>(g) == positron_last_group)
-              csda_value -= terminal_charge_current;
-          }
-        }
-
-      if (is_csda_charge_deposition_term_cellavg)
-        data_vector_local[imapA] = csda_value;
-      else
+      const auto [g_begin, g_end] = charged_ranges[r];
+      for (unsigned int g = g_begin; g < g_end; ++g)
       {
-        data_vector_local[imapA] = nodal_value;
-        projected_csda_numerator[imapA] += intV_shapeI(i) * csda_value;
-        projected_csda_denominator[imapA] += intV_shapeI(i);
+        const double phi_g = phi_cell_avg[g];
+        const double phi_e_g = phi_e_new_local_[cell_g_offset + g];
+        const double Sg = stopping_power[g];
+        const double dEg = delta_e[g];
+        const bool is_terminal_group = (g + 1 == g_end);
+        const double terminal_charge_current = Sg * (phi_g / dEg - phi_e_g);
+        const double next_energy =
+          is_terminal_group ? 0.0 : CSDAGroupCenterEnergy(energy_bounds, g + 1);
+        const double edge_energy_loss = CSDAGroupCenterEnergy(energy_bounds, g) - next_energy;
+
+        if (is_csda_energy_deposition)
+        {
+          // Conservative response for the discrete CSDA energy-space current.
+          csda_value += edge_energy_loss * terminal_charge_current;
+        }
+        else
+        {
+          // Derived from the OpenSn within-group ansatz evaluated at the low-energy
+          // edge of the terminal charged group:
+          //   psi(E_low) = Phi_g / DeltaE_g - psiE_g.
+          // Charge deposition is the terminal energy-space current S_g * psi(E_low),
+          // positive for electrons and negative for positrons.
+          if (is_terminal_group)
+            csda_value += ComputeCSDATerminalDepositionRates(terminal_charge_current, r).charge;
+        }
       }
     }
-  }
 
-  if (not is_csda_charge_deposition_term_cellavg)
-    for (size_t i = 0; i < local_node_count_; ++i)
-      if (projected_csda_denominator[i] > 0.0)
-        data_vector_local[i] += projected_csda_numerator[i] / projected_csda_denominator[i];
+    const double cell_value =
+      is_csda_charge_deposition_term_cellavg ? csda_value : cell_avg_raw_value + csda_value;
+
+    for (size_t i = 0; i < num_nodes; ++i)
+      data_vector_local[sdm.MapDOFLocal(cell, i)] = cell_value;
+  }
 
   return data_vector_local;
 }

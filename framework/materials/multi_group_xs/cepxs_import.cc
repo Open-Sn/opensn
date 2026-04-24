@@ -114,7 +114,9 @@ BytesToDouble(const std::vector<char>& bytes)
 }
 
 std::vector<double>
-ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary, const int n_groups)
+ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary,
+                                 const int n_groups,
+                                 const bool require_energy_bounds)
 {
   OpenSnLogicalErrorIf(n_groups <= 0, "Invalid group count for CEPXS ancillary parsing.");
   OpenSnLogicalErrorIf(ancillary.size() % sizeof(double) != 0,
@@ -129,14 +131,16 @@ ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary, const int n
   {
     const double e0 = vals[start_idx];
     const double eN = vals[start_idx + n_bounds - 1];
-    if (not std::isfinite(e0) or not std::isfinite(eN) or e0 <= 0.0 or eN <= 0.0 or e0 <= eN)
+    if (not std::isfinite(e0) or not std::isfinite(eN) or e0 <= 0.0 or eN < 0.0 or e0 <= eN)
       return false;
 
     for (size_t i = 1; i < n_bounds; ++i)
     {
       const double e_prev = vals[start_idx + i - 1];
       const double e_curr = vals[start_idx + i];
-      if (not std::isfinite(e_curr) or e_curr <= 0.0 or e_prev <= e_curr)
+      const bool is_terminal_bound = (i + 1 == n_bounds);
+      if (not std::isfinite(e_curr) or (is_terminal_bound ? e_curr < 0.0 : e_curr <= 0.0) or
+          e_prev <= e_curr)
         return false;
     }
     return true;
@@ -178,6 +182,10 @@ ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary, const int n
     if (is_finite_positive_window(start))
       return {vals.begin() + static_cast<std::ptrdiff_t>(start),
               vals.begin() + static_cast<std::ptrdiff_t>(start + n_bounds)};
+
+  OpenSnLogicalErrorIf(require_energy_bounds,
+                       "CEPXS ancillary group-boundary window not found. CSDA requires the "
+                       "physical energy-group boundaries.");
 
   // Last resort
   std::vector<double> synthetic(n_bounds, 0.0);
@@ -253,7 +261,7 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id, CEPXSRowFormat
   OpenSnLogicalErrorIf(not rdr.ReadRecord(rec), "Failed reading CEPXS binary ancillary record.");
 
   xs.num_groups = static_cast<unsigned int>(n_groups);
-  xs.e_bounds = ExtractEnergyBoundsFromAncillary(rec, n_groups);
+  xs.e_bounds = ExtractEnergyBoundsFromAncillary(rec, n_groups, row_format == CEPXSRowFormat::CSDA);
 
   xs.sigma_t.assign(xs.num_groups, 0.0);
   xs.charge_deposition.assign(xs.num_groups, 0.0);
@@ -365,6 +373,8 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id, CEPXSRowFormat
                        "CEPXS binary energy deposition contains non-finite values.");
   OpenSnLogicalErrorIf(not xs.stopping_power.empty() and not is_finite_vec(xs.stopping_power),
                        "CEPXS binary stopping power contains non-finite values.");
+  OpenSnLogicalErrorIf(not xs.stopping_power.empty() and not IsNonNegative(xs.stopping_power),
+                       "CEPXS binary stopping power contains negative values.");
 
   if (not xs.stopping_power.empty())
   {

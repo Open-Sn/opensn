@@ -22,10 +22,7 @@ public:
   using MomentCallbackFunc = std::function<void(SweepChunk* sweeper, AngleSet* angle_set)>;
 
   SweepChunk(std::vector<double>& destination_phi,
-             std::vector<double>& destination_phi_e,
              std::vector<double>& destination_psi,
-             bool csda_enabled,
-             unsigned int total_num_groups,
              const std::shared_ptr<MeshContinuum>& grid,
              const SpatialDiscretization& discretization,
              const std::vector<UnitCellMatrices>& unit_cell_matrices,
@@ -52,10 +49,7 @@ public:
                                    groupset_.GetNumGroups()),
       groupset_group_stride_(groupset_.GetNumGroups()),
       destination_phi_(destination_phi),
-      destination_phi_e_(destination_phi_e),
       destination_psi_(destination_psi),
-      csda_enabled_(csda_enabled),
-      total_num_groups_(total_num_groups),
       cell_(nullptr)
   {
   }
@@ -73,7 +67,7 @@ public:
    * Zero the portion of the output flux moments vector corresponding to the groupset for this
    * sweep chunk.
    */
-  void ZeroDestinationPhi();
+  virtual void ZeroDestinationPhi();
 
   /// Sets all elements of the output angular flux vector to zero.
   void ZeroDestinationPsi() { (destination_psi_).assign((destination_psi_).size(), 0.0); }
@@ -91,7 +85,6 @@ public:
   void IncludeRHSTimeTerm(bool status) { include_rhs_time_term_ = status; }
 
   virtual bool IsTimeDependent() const { return false; }
-  bool IsCSDAEnabled() const { return csda_enabled_; }
 
   virtual ~SweepChunk() = default;
 
@@ -118,10 +111,7 @@ protected:
   const size_t groupset_angle_group_stride_;
   const size_t groupset_group_stride_;
   std::vector<double>& destination_phi_;
-  std::vector<double>& destination_phi_e_;
   std::vector<double>& destination_psi_;
-  const bool csda_enabled_;
-  const unsigned int total_num_groups_;
   bool surface_source_active_ = false;
   bool include_rhs_time_term_ = true;
   const Cell* cell_;

@@ -75,6 +75,8 @@ public:
    */
   const std::string& GetSweepType() const { return sweep_type_; }
 
+  void ValidateOptions(std::optional<SweepChunkMode> mode = std::nullopt) const;
+
   std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
   std::shared_ptr<AGSLinearSolver> GetAGSSolver();
@@ -419,6 +421,7 @@ private:
                                       size_t groupset_id,
                                       unsigned int group,
                                       size_t angle);
+  void ValidateCSDAGroupConfiguration() const;
   /** @} */
 
 public:

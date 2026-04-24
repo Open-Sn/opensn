@@ -8,9 +8,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <algorithm>
-#include <cassert>
 #include <functional>
-#include <limits>
 #include <numeric>
 #include <utility>
 
@@ -24,17 +22,19 @@ AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(
   unsigned int num_groups,
   std::size_t num_angles,
   int max_mpi_message_size,
+  bool csda_enabled,
   const SweepCommunicator& sweep_communicator)
   : AsynchronousCommunicator(fluds, groupset_id, angle_set_id, sweep_communicator),
     num_groups_(num_groups),
     num_angles_(num_angles),
     max_mpi_message_size_(max_mpi_message_size),
+    csda_enabled_(csda_enabled),
     done_sending_(false),
     data_initialized_(false),
     upstream_data_initialized_(false)
 {
-  // psi and psiE messages use separate tag blocks.
-  num_message_tag_blocks_ = 2;
+  // CSDA psi and psiE messages use separate tag blocks.
+  num_message_tag_blocks_ = csda_enabled_ ? 2 : 1;
   BuildMessageStructure();
 }
 
@@ -59,7 +59,7 @@ AAH_ASynchronousCommunicator::ClearDownstreamBuffers()
   if (not mpi::test_all(deploc_msg_request_))
     return;
 
-  if (not mpi::test_all(deploc_msgE_request_))
+  if (csda_enabled_ and not mpi::test_all(deploc_msgE_request_))
     return;
 
   done_sending_ = true;
@@ -124,7 +124,8 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
                                                             std::plus<>{},
                                                             [](const auto& v) { return v.size(); });
   deploc_msg_request_.resize(total_deploc_messages);
-  deploc_msgE_request_.resize(total_deploc_messages);
+  if (csda_enabled_)
+    deploc_msgE_request_.resize(total_deploc_messages);
 }
 
 void
@@ -146,24 +147,29 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData()
   for (std::size_t i = 0; i < num_delayed_dependencies; ++i)
   {
     auto& upstream_psi = fluds_.DelayedPrelocIOutgoingPsi()[i];
-    auto& upstream_psiE = fluds_.DelayedPrelocIOutgoingPsiE()[i];
 
     for (int m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
       const int psi_tag = GetMessageTag(m, 0);
-      const int psiE_tag = GetMessageTag(m, 1);
       if (not delayed_preloc_msg_received_[i][m])
       {
-        if (not comm.iprobe(source, psi_tag) or not comm.iprobe(source, psiE_tag))
+        const int psiE_tag = csda_enabled_ ? GetMessageTag(m, 1) : 0;
+        if (not comm.iprobe(source, psi_tag) or
+            (csda_enabled_ and not comm.iprobe(source, psiE_tag)))
         {
           all_messages_received = false;
           continue;
         }
         const bool psi_ok =
           not comm.recv<double>(source, psi_tag, &upstream_psi[block_pos], size).error();
-        const bool psiE_ok =
-          not comm.recv<double>(source, psiE_tag, &upstream_psiE[block_pos], size).error();
+        bool psiE_ok = true;
+        if (csda_enabled_)
+        {
+          auto& upstream_psiE = fluds_.DelayedPrelocIOutgoingPsiE()[i];
+          psiE_ok =
+            not comm.recv<double>(source, psiE_tag, &upstream_psiE[block_pos], size).error();
+        }
         if (psi_ok and psiE_ok)
           delayed_preloc_msg_received_[i][m] = true;
       }
@@ -192,24 +198,29 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi()
   for (std::size_t i = 0; i < num_dependencies; ++i)
   {
     auto& upstream_psi = fluds_.PrelocIOutgoingPsi()[i];
-    auto& upstream_psiE = fluds_.PrelocIOutgoingPsiE()[i];
 
     for (int m = 0; m < preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
       const int psi_tag = GetMessageTag(m, 0);
-      const int psiE_tag = GetMessageTag(m, 1);
       if (not preloc_msg_received_[i][m])
       {
-        if (not comm.iprobe(source, psi_tag) or not comm.iprobe(source, psiE_tag))
+        const int psiE_tag = csda_enabled_ ? GetMessageTag(m, 1) : 0;
+        if (not comm.iprobe(source, psi_tag) or
+            (csda_enabled_ and not comm.iprobe(source, psiE_tag)))
         {
           all_messages_received = false;
           continue;
         }
         const bool psi_ok =
           not comm.recv<double>(source, psi_tag, &upstream_psi[block_pos], size).error();
-        const bool psiE_ok =
-          not comm.recv<double>(source, psiE_tag, &upstream_psiE[block_pos], size).error();
+        bool psiE_ok = true;
+        if (csda_enabled_)
+        {
+          auto& upstream_psiE = fluds_.PrelocIOutgoingPsiE()[i];
+          psiE_ok =
+            not comm.recv<double>(source, psiE_tag, &upstream_psiE[block_pos], size).error();
+        }
         if (psi_ok and psiE_ok)
           preloc_msg_received_[i][m] = true;
       }
@@ -234,15 +245,18 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi()
   for (std::size_t i = 0, req = 0; i < num_successors; ++i)
   {
     const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
-    const auto& outgoing_psiE = fluds_.DeplocIOutgoingPsiE()[i];
 
     for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
       const int psi_tag = GetMessageTag(m, 0);
-      const int psiE_tag = GetMessageTag(m, 1);
       deploc_msg_request_[req] = comm.isend(dest, psi_tag, &outgoing_psi[block_pos], size);
-      deploc_msgE_request_[req] = comm.isend(dest, psiE_tag, &outgoing_psiE[block_pos], size);
+      if (csda_enabled_)
+      {
+        const int psiE_tag = GetMessageTag(m, 1);
+        const auto& outgoing_psiE = fluds_.DeplocIOutgoingPsiE()[i];
+        deploc_msgE_request_[req] = comm.isend(dest, psiE_tag, &outgoing_psiE[block_pos], size);
+      }
     }
   }
 }
