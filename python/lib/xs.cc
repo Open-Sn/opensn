@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
-#define XS_GETTER(method_name) [](MultiGroupXS& self) { return convert_vector(self.method_name()); }
+#define XS_GETTER(method_name)                                                                     \
+  py::cpp_function([](MultiGroupXS& self) { return convert_vector(self.method_name()); },          \
+                   py::keep_alive<0, 1>())
 
 namespace opensn
 {
@@ -238,50 +240,42 @@ WrapMultiGroupXS(py::module& xs)
   multigroup_xs.def_property_readonly(
     "sigma_t",
     XS_GETTER(GetSigmaTotal),
-    "Get total cross section.",
-    py::keep_alive<0, 1>()
+    "Get total cross section."
   );
   multigroup_xs.def_property_readonly(
     "sigma_a",
     XS_GETTER(GetSigmaAbsorption),
-    "Get absorption cross section.",
-    py::keep_alive<0, 1>()
+    "Get absorption cross section."
   );
   multigroup_xs.def_property_readonly(
     "energy_deposition",
     XS_GETTER(GetEnergyDeposition),
-    "Get energy deposition cross section.",
-    py::keep_alive<0, 1>()
+    "Get energy deposition cross section."
   );
   multigroup_xs.def_property_readonly(
     "sigma_f",
     XS_GETTER(GetSigmaFission),
-    "Get fission cross section.",
-    py::keep_alive<0, 1>()
+    "Get fission cross section."
   );
   multigroup_xs.def_property_readonly(
     "chi",
     XS_GETTER(GetChi),
-    "Get neutron fission spectrum.",
-    py::keep_alive<0, 1>()
+    "Get neutron fission spectrum."
   );
   multigroup_xs.def_property_readonly(
     "nu_sigma_f",
     XS_GETTER(GetNuSigmaF),
-    "Get neutron production due to fission.",
-    py::keep_alive<0, 1>()
+    "Get neutron production due to fission."
   );
   multigroup_xs.def_property_readonly(
     "nu_prompt_sigma_f",
     XS_GETTER(GetNuPromptSigmaF),
-    "Get prompt neutron production due to fission.",
-    py::keep_alive<0, 1>()
+    "Get prompt neutron production due to fission."
   );
   multigroup_xs.def_property_readonly(
     "nu_delayed_sigma_f",
     XS_GETTER(GetNuDelayedSigmaF),
-    "Get delayed neutron production due to fission.",
-    py::keep_alive<0, 1>()
+    "Get delayed neutron production due to fission."
   );
   multigroup_xs.def(
     "has_custom_xs",
@@ -304,8 +298,7 @@ WrapMultiGroupXS(py::module& xs)
   multigroup_xs.def_property_readonly(
     "inv_velocity",
     XS_GETTER(GetInverseVelocity),
-    "Get inverse velocity.",
-    py::keep_alive<0, 1>()
+    "Get inverse velocity."
   );
   // clang-format on
 }
