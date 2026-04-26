@@ -4,6 +4,7 @@
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include <cmath>
 
 namespace opensn
 {
@@ -361,6 +362,9 @@ MultiGroupXS::ComputeDiffusionParameters()
   if (diffusion_initialized_)
     return;
 
+  constexpr double sigma_tr_min = 1.0e-12;
+  constexpr double diffusion_coeff_max = 1.0 / 3.0 / sigma_tr_min;
+
   // Initialize diffusion data
   sigma_tr_.resize(num_groups_, 0.0);
   diffusion_coeff_.resize(num_groups_, 1.0);
@@ -373,7 +377,8 @@ MultiGroupXS::ComputeDiffusionParameters()
   {
     // Determine transport correction
     double sigma_1 = 0.0;
-    if (S.size() > 1)
+    const bool has_p1_scattering = S.size() > 1;
+    if (has_p1_scattering)
     {
       for (unsigned int gp = 0; gp < num_groups_; ++gp)
       {
@@ -389,22 +394,27 @@ MultiGroupXS::ComputeDiffusionParameters()
     } // if moment 1 available
 
     // Compute transport cross section
-    if (sigma_1 >= sigma_t_[g])
+    if (has_p1_scattering and sigma_1 >= sigma_t_[g])
     {
-      log.Log0Warning() << "Negative transport cross section found for "
-                        << "group " << g << " in call to " << __FUNCTION__ << ". "
-                        << "sigma_t=" << sigma_t_[g] << " sigma_1=" << sigma_1 << ". "
-                        << "Setting sigma_1=0, sigma_tr=sigma_t for this group.";
+      log.Log0Warning() << "Non-positive transport cross section found for group " << g << " ("
+                        << "sigma_t = " << sigma_t_[g] << ", sigma_1 = " << sigma_1
+                        << "). Setting sigma_1 = 0.0 and sigma_tr = sigma_t for this group.";
       sigma_1 = 0.0;
     }
     sigma_tr_[g] = sigma_t_[g] - sigma_1;
 
     // Compute the diffusion coefficient
-    // Cap the value for when sigma_t - sigma_1 is near zero
-    if ((sigma_t_[g] - sigma_1) < 1.0e-12)
-      diffusion_coeff_[g] = 1.0e12;
+    // Cap the value for when the transport cross section is near zero
+    if (std::fabs(sigma_tr_[g]) < sigma_tr_min)
+    {
+      log.Log0Warning() << "Transport cross section near zero for group " << g
+                        << " (sigma_tr = " << sigma_tr_[g] << ", sigma_tr_min = " << sigma_tr_min
+                        << "). Setting diffusion coefficient to " << diffusion_coeff_max
+                        << " for this group.";
+      diffusion_coeff_[g] = diffusion_coeff_max;
+    }
     else
-      diffusion_coeff_[g] = 1.0 / 3.0 / (sigma_t_[g] - sigma_1);
+      diffusion_coeff_[g] = 1.0 / 3.0 / sigma_tr_[g];
 
     // Determine within group scattering
     if (not S.empty())
