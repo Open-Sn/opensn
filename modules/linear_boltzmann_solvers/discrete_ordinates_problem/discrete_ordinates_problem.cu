@@ -24,14 +24,18 @@ DiscreteOrdinatesProblem::InitializeBoundaryCarrier()
   if (not use_gpus_)
     return;
   boundary_carrier_ = std::make_shared<BoundaryCarrier>(boundary_bank_, groupsets_);
+  for (const auto& groupset : groupsets_)
+    boundary_carrier_->UploadToDevice(groupset.id);
 }
 
 void
 DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id, bool host_to_device)
 {
+  if (not has_reflecting_boundaries_)
+    return;
   if (host_to_device)
     boundary_carrier_->UploadToDevice(groupset_id);
-  else if (has_reflecting_boundaries_)
+  else
     boundary_carrier_->DownloadToHost(groupset_id);
 }
 
