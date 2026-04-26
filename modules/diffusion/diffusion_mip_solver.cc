@@ -493,7 +493,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                 {
                   aij_bc_value = 0.0;
                   for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-                    aij_bc_value += kappa * source_function_(fe_srf_data.QPointXYZ(qp)) *
+                    aij_bc_value += kappa * ref_solution_function_(fe_srf_data.QPointXYZ(qp)) *
                                     fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(jm, qp) *
                                     fe_srf_data.JxW(qp);
                 }
