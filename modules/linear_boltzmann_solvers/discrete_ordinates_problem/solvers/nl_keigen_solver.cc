@@ -95,12 +95,21 @@ NonLinearKEigenSolver::Execute()
   if (reset_phi0_)
     LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
+  double initial_k_eff = 1.0;
   if (num_initial_power_its_ > 0)
   {
-    double k_eff = 1.0;
-    PowerIterationKEigenSolver(
-      *do_problem_, nl_solver_.GetToleranceOptions().nl_abs_tol, num_initial_power_its_, k_eff);
+    PowerIterationKEigenSolver(*do_problem_,
+                               nl_solver_.GetToleranceOptions().nl_abs_tol,
+                               num_initial_power_its_,
+                               initial_k_eff);
   }
+
+  const double production = ComputeFissionProduction(*do_problem_, do_problem_->GetPhiOldLocal());
+  OpenSnLogicalErrorIf(production == 0.0,
+                       GetName() + ": Initial guess has zero fission production.");
+  const double normalization = initial_k_eff / production;
+  LBSVecOps::ScalePhiVector(*do_problem_, PhiSTLOption::PHI_OLD, normalization);
+  LBSVecOps::ScalePhiVector(*do_problem_, PhiSTLOption::PHI_NEW, normalization);
 
   nl_solver_.Setup();
   nl_solver_.Solve();

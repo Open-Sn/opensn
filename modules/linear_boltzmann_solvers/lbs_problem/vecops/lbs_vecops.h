@@ -7,6 +7,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "caliper/cali.h"
 #include <petscksp.h>
+#include <cstdint>
 #include <vector>
 
 namespace opensn
@@ -35,13 +36,15 @@ public:
   static void SetGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
                                                 const LBSGroupset& groupset,
                                                 Vec dest,
-                                                PhiSTLOption src);
+                                                PhiSTLOption src,
+                                                int64_t offset = 0);
 
   /// Disassembles a groupset-scoped PETSc vector back into a primary STL vector.
   static void SetPrimarySTLvectorFromGSPETScVec(LBSProblem& lbs_problem,
                                                 const LBSGroupset& groupset,
                                                 Vec src,
-                                                PhiSTLOption dest);
+                                                PhiSTLOption dest,
+                                                int64_t offset = 0);
 
   /// Assembles a vector for a given group span from a source vector.
   static void SetGroupScopedPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
