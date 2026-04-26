@@ -932,13 +932,17 @@ LBSProblem::InitializeMaterials()
                   const auto& xs = mat_id_xs.second;
                   return xs->IsFissionable() and xs->GetNumPrecursors() > 0;
                 });
+  const bool has_fissionable_material =
+    std::any_of(block_id_to_xs_map_.begin(),
+                block_id_to_xs_map_.end(),
+                [](const auto& mat_id_xs) { return mat_id_xs.second->IsFissionable(); });
 
   const bool has_any_precursor_data =
     std::any_of(block_id_to_xs_map_.begin(),
                 block_id_to_xs_map_.end(),
                 [](const auto& mat_id_xs) { return mat_id_xs.second->GetNumPrecursors() > 0; });
 
-  if (options_.use_precursors and not has_any_precursor_data)
+  if (options_.use_precursors and has_fissionable_material and not has_any_precursor_data)
   {
     log.Log0Warning() << GetName()
                       << ": options.use_precursors is enabled, but no precursor data was found "
