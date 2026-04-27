@@ -116,6 +116,8 @@
 <span class="w">                         </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
 <span class="w">                         </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
 
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;3D XYZ Lebedev&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Load quadrature points for the given order from predefined tabulated data.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">LoadFromOrder</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">quadrature_order</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
@@ -138,6 +140,8 @@
 <span class="w">                        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
 <span class="w">                        </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
 <span class="w">                        </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;2D XY Lebedev&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Load upper-hemisphere points for the given order, halving weights at the equator.</span>

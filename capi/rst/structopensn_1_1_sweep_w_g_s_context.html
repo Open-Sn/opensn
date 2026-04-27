@@ -87,6 +87,15 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_sweep_wgs_context.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-iterative-methods-sweep-wgs-context-h"><span class="std std-ref">File sweep_wgs_context.h</span></a></p></li>
 </ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats.html#exhale-struct-structopensn-1-1-sweep-w-g-s-context-1-1-sweep-stats"><span class="std std-ref">Struct SweepWGSContext::SweepStats</span></a></p></li>
+</ul>
+</section>
+</section>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
 <section id="base-type">
@@ -139,6 +148,16 @@
 <span class="target" id="structopensn_1_1_sweep_w_g_s_context_1a15fa970111010dcf2d46984aa08d9b64"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RebuildAngularFluxFromConvergedPhi</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_rhs_time_term</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15SweepWGSContext34RebuildAngularFluxFromConvergedPhiEb" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn15SweepWGSContext24GetAccumulatedSweepStatsEv">
+<span class="target" id="structopensn_1_1_sweep_w_g_s_context_1a68acf69b5c0f2fa10962af2b46855291"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn15SweepWGSContext10SweepStatsE" title="opensn::SweepWGSContext::SweepStats"><span class="n"><span class="pre">SweepStats</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAccumulatedSweepStats</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn15SweepWGSContext24GetAccumulatedSweepStatsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15SweepWGSContext26ResetAccumulatedSweepStatsEv">
+<span class="target" id="structopensn_1_1_sweep_w_g_s_context_1ab98e91a43432ab8d6875c0b7a7f013d9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResetAccumulatedSweepStats</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15SweepWGSContext26ResetAccumulatedSweepStatsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -153,11 +172,29 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn15SweepWGSContext11sweep_timesE">
-<span class="target" id="structopensn_1_1_sweep_w_g_s_context_1ac7b81396330b3b814be0cf878c57c34d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sweep_times</span></span></span><a class="headerlink" href="#_CPPv4N6opensn15SweepWGSContext11sweep_timesE" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15SweepWGSContext12sweep_stats_E">
+<span class="target" id="structopensn_1_1_sweep_w_g_s_context_1a638747467aeff3b55af91cd68ea5cb1b"></span><a class="reference internal" href="#_CPPv4N6opensn15SweepWGSContext10SweepStatsE" title="opensn::SweepWGSContext::SweepStats"><span class="n"><span class="pre">SweepStats</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sweep_stats_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn15SweepWGSContext12sweep_stats_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15SweepWGSContext10SweepStatsE">
+<span class="target" id="structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SweepStats</span></span></span><a class="headerlink" href="#_CPPv4N6opensn15SweepWGSContext10SweepStatsE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15SweepWGSContext10SweepStats16total_sweep_timeE">
+<span class="target" id="structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats_1ab2756e18e1ae8fdfed6e4626dcec450f"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">total_sweep_time</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn15SweepWGSContext10SweepStats16total_sweep_timeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15SweepWGSContext10SweepStats10num_sweepsE">
+<span class="target" id="structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats_1a0db99860aadbcd470f72b9e40f385d5d"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_sweeps</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn15SweepWGSContext10SweepStats10num_sweepsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>

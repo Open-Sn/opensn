@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a7ffcdf7f77a323b46e84a61fdcdcc6a6:
+
+Function opensn::PETScSolverStatusToIterationStatus
+===================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PETScSolverStatusToIterationStatus(const PETScSolverStatus)
+   :project: opensn

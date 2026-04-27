@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a777855ece4b75b45eece1bd16d27ca37:
+
+Function opensn::SNESReasonToPETScSolverStatus
+==============================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SNESReasonToPETScSolverStatus(SNESConvergedReason)
+   :project: opensn

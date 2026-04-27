@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_numeric_format:
+
+Struct NumericFormat
+====================
+
+- Defined in :ref:`file_framework_logging_log_format.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::NumericFormat
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

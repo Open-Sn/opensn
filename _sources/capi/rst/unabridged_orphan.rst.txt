@@ -230,6 +230,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_iteration_summary.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_k_b_a_graph_partitioner_1_1_coordinate_info.rst
 
 .. toctree::
@@ -321,6 +326,11 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_nonlocal_node_info.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_numeric_format.rst
 
 .. toctree::
    :maxdepth: 1
@@ -496,6 +506,11 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_sweep_w_g_s_context.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats.rst
 
 .. toctree::
    :maxdepth: 1
@@ -1729,6 +1744,11 @@ Enums
 .. toctree::
    :maxdepth: 1
 
+   enum_namespaceopensn_1a5336509e50b98c6cffaa041a8737a4a7.rst
+
+.. toctree::
+   :maxdepth: 1
+
    enum_namespaceopensn_1adbca6961a12788281ba4908a5ede2aa2.rst
 
 .. toctree::
@@ -1744,12 +1764,22 @@ Enums
 .. toctree::
    :maxdepth: 1
 
+   enum_namespaceopensn_1a2e43bc59338ad8a7fc2d1ab317653e71.rst
+
+.. toctree::
+   :maxdepth: 1
+
    enum_namespaceopensn_1af374fa8b10c3bc4ed30bc997c1ee2327.rst
 
 .. toctree::
    :maxdepth: 1
 
    enum_namespaceopensn_1a05f2bd4e18caaed618352dd6b880f07f.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   enum_namespaceopensn_1ad5c7d81c06e8ddea80e38bfdd16d55fa.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2174,6 +2204,11 @@ Directories
    :maxdepth: 1
 
    dir_modules_linear_boltzmann_solvers_lbs_problem_io.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2647,6 +2682,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_framework_graphs_kba_graph_partitioner.h.rst
 
 .. toctree::
@@ -2738,6 +2778,11 @@ Files
    :maxdepth: 1
 
    file_framework_logging_log.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_logging_log_format.h.rst
 
 .. toctree::
    :maxdepth: 1

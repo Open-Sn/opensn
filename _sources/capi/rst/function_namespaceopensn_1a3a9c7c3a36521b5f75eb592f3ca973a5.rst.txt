@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3a9c7c3a36521b5f75eb592f3ca973a5:
+
+Function opensn::FormatIterationSummary
+=======================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FormatIterationSummary(const std::string&, const IterationSummary&)
+   :project: opensn

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a07c36fc022bdd865feb1616a29790143:
+
+Function opensn::PETScSolverStatusName
+======================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PETScSolverStatusName(PETScSolverStatus)
+   :project: opensn

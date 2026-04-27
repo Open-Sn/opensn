@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a172e62c208313f9c13a0db472c3e189a:
+
+Function opensn::MostSevereIterationStatus(const std::vector<IterationSummary>&)
+================================================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::MostSevereIterationStatus(const std::vector<IterationSummary>&)
+   :project: opensn

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab261c81605d17cf5d7c8f9923d93dcb6:
+
+Function opensn::GetPETScConvergedReasonstring(SNESConvergedReason)
+===================================================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GetPETScConvergedReasonstring(SNESConvergedReason)
+   :project: opensn

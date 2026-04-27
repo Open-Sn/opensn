@@ -837,12 +837,13 @@ are discarded.</p></li>
 <li><p>save_angular_flux: bool, default=False
 Store angular flux state (<cite>psi</cite>) for transient mode, angular-flux
 field functions, and angular-flux I/O.</p></li>
-<li><p>verbose_inner_iterations: bool, default=True</p></li>
-<li><p>verbose_outer_iterations: bool, default=True</p></li>
+<li><p>verbose_inner_iterations: bool, default=True
+Print inner iteration details, including WGS and AGS iterations.</p></li>
+<li><p>verbose_outer_iterations: bool, default=True
+Print outer solver progress, including PI/NLKE iterations and transient steps.</p></li>
 <li><p>max_ags_iterations: int, default=100</p></li>
 <li><p>ags_tolerance: float, default=1.0e-6</p></li>
 <li><p>ags_convergence_check: {‘l2’, ‘pointwise’}, default=’l2’</p></li>
-<li><p>verbose_ags_iterations: bool, default=True</p></li>
 <li><p>power_default_kappa: float, default=3.20435e-11</p></li>
 <li><p>field_function_prefix_option: {‘prefix’, ‘solver_name’}, default=’prefix’</p></li>
 <li><p>field_function_prefix: str, default=’’</p></li>

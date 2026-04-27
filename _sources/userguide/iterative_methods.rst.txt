@@ -94,9 +94,9 @@ These are specified in the problem ``options`` block:
 - ``max_ags_iterations``
 - ``ags_tolerance``
 - ``ags_convergence_check``
-- ``verbose_inner_iterations``
-- ``verbose_ags_iterations``
-- ``verbose_outer_iterations``
+- ``verbose_inner_iterations`` controls inner solver details, including WGS and AGS iterations.
+- ``verbose_outer_iterations`` controls outer solver progress, including PI/NLKE iterations and
+  transient step summaries.
 
 These settings control how the solver coordinates multiple groupsets and how
 much iteration information is printed.
@@ -399,7 +399,6 @@ The relevant problem options are:
 - ``max_ags_iterations``
 - ``ags_tolerance``
 - ``ags_convergence_check``
-- ``verbose_ags_iterations``
 
 What AGS does
 -------------
@@ -481,7 +480,6 @@ Example:
        "max_ags_iterations": 100,
        "ags_tolerance": 1.0e-6,
        "ags_convergence_check": "l2",
-       "verbose_ags_iterations": True,
    }
 
 
@@ -818,7 +816,6 @@ Two groupsets with AGS control
            "max_ags_iterations": 100,
            "ags_tolerance": 1.0e-6,
            "ags_convergence_check": "pointwise",
-           "verbose_ags_iterations": True,
        },
    )
 

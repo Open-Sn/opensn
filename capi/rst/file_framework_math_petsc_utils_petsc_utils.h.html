@@ -93,7 +93,8 @@
 <li><p><a class="reference internal" href="#included-by" id="id3">Included By</a></p></li>
 <li><p><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></p></li>
 <li><p><a class="reference internal" href="#classes" id="id5">Classes</a></p></li>
-<li><p><a class="reference internal" href="#functions" id="id6">Functions</a></p></li>
+<li><p><a class="reference internal" href="#enums" id="id6">Enums</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id7">Functions</a></p></li>
 </ul>
 </nav>
 <section id="definition-framework-math-petsc-utils-petsc-utils-h">
@@ -109,6 +110,7 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">framework/utils/error.h</span></code> (<a class="reference internal" href="file_framework_utils_error.h.html#file-framework-utils-error-h"><span class="std std-ref">File error.h</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">petscksp.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">petscsnes.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">vector</span></code> (<a class="reference internal" href="file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h.html#file-framework-data-types-parallel-vector-ghosted-parallel-stl-vector-h"><span class="std std-ref">File ghosted_parallel_stl_vector.h</span></a>)</p></li>
 </ul>
 </section>
@@ -116,6 +118,7 @@
 <h2>Included By<a class="headerlink" href="#included-by" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_nl_keigen_acc_context.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-acceleration-nl-keigen-acc-context-h"><span class="std std-ref">File nl_keigen_acc_context.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-iterative-methods-iteration-logging-h"><span class="std std-ref">File iteration_logging.h</span></a></p></li>
 </ul>
 </section>
 <section id="namespaces">
@@ -129,6 +132,12 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="structopensn_1_1_ghost_vec_local_raw.html#exhale-struct-structopensn-1-1-ghost-vec-local-raw"><span class="std std-ref">Struct GhostVecLocalRaw</span></a></p></li>
 <li><p><a class="reference internal" href="structopensn_1_1_p_e_t_sc_solver_setup.html#exhale-struct-structopensn-1-1-p-e-t-sc-solver-setup"><span class="std std-ref">Struct PETScSolverSetup</span></a></p></li>
+</ul>
+</section>
+<section id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="enum_namespaceopensn_1ad5c7d81c06e8ddea80e38bfdd16d55fa.html#exhale-enum-namespaceopensn-1ad5c7d81c06e8ddea80e38bfdd16d55fa"><span class="std std-ref">Enum PETScSolverStatus</span></a></p></li>
 </ul>
 </section>
 <section id="functions">
@@ -147,11 +156,15 @@
 <li><p><a class="reference internal" href="function_namespaceopensn_1a6dd9caec061347d11166f1cc337d5d24.html#exhale-function-namespaceopensn-1a6dd9caec061347d11166f1cc337d5d24"><span class="std std-ref">Function opensn::CreateVector(Vec&amp;, int64_t, int64_t)</span></a></p></li>
 <li><p><a class="reference internal" href="function_namespaceopensn_1a8979e15cdd9c55b55be98f01fcc2e0fc.html#exhale-function-namespaceopensn-1a8979e15cdd9c55b55be98f01fcc2e0fc"><span class="std std-ref">Function opensn::CreateVectorWithGhosts</span></a></p></li>
 <li><p><a class="reference internal" href="function_namespaceopensn_1ab8ba9e293b4a2b9c750312dbbee03f89.html#exhale-function-namespaceopensn-1ab8ba9e293b4a2b9c750312dbbee03f89"><span class="std std-ref">Function opensn::GetGhostVectorLocalViewRead</span></a></p></li>
-<li><p><a class="reference internal" href="function_namespaceopensn_1ab600f4b7adb5993556b8d19ea1d01794.html#exhale-function-namespaceopensn-1ab600f4b7adb5993556b8d19ea1d01794"><span class="std std-ref">Function opensn::GetPETScConvergedReasonstring</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ab600f4b7adb5993556b8d19ea1d01794.html#exhale-function-namespaceopensn-1ab600f4b7adb5993556b8d19ea1d01794"><span class="std std-ref">Function opensn::GetPETScConvergedReasonstring(KSPConvergedReason)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1ab261c81605d17cf5d7c8f9923d93dcb6.html#exhale-function-namespaceopensn-1ab261c81605d17cf5d7c8f9923d93dcb6"><span class="std std-ref">Function opensn::GetPETScConvergedReasonstring(SNESConvergedReason)</span></a></p></li>
 <li><p><a class="reference internal" href="function_namespaceopensn_1a4a943cd4ab43ee0c8732ea13052460f8.html#exhale-function-namespaceopensn-1a4a943cd4ab43ee0c8732ea13052460f8"><span class="std std-ref">Function opensn::InitMatrixSparsity(Mat&amp;, const std::vector&lt;int64_t&gt;&amp;, const std::vector&lt;int64_t&gt;&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_namespaceopensn_1ae3c19e76a3093fc6b02efdd9c3e32f23.html#exhale-function-namespaceopensn-1ae3c19e76a3093fc6b02efdd9c3e32f23"><span class="std std-ref">Function opensn::InitMatrixSparsity(Mat&amp;, int64_t, int64_t)</span></a></p></li>
 <li><p><a class="reference internal" href="function_namespaceopensn_1a2926755f77015f034808b5f9680e3a7a.html#exhale-function-namespaceopensn-1a2926755f77015f034808b5f9680e3a7a"><span class="std std-ref">Function opensn::KSPMonitorRelativeToRHS</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a0a6010e101c0eb6c3fe7d0ad340b2840.html#exhale-function-namespaceopensn-1a0a6010e101c0eb6c3fe7d0ad340b2840"><span class="std std-ref">Function opensn::KSPReasonToPETScSolverStatus</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a07c36fc022bdd865feb1616a29790143.html#exhale-function-namespaceopensn-1a07c36fc022bdd865feb1616a29790143"><span class="std std-ref">Function opensn::PETScSolverStatusName</span></a></p></li>
 <li><p><a class="reference internal" href="function_namespaceopensn_1ad7498692cdd3514d11c457bac5afe9de.html#exhale-function-namespaceopensn-1ad7498692cdd3514d11c457bac5afe9de"><span class="std std-ref">Function opensn::RestoreGhostVectorLocalViewRead</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a777855ece4b75b45eece1bd16d27ca37.html#exhale-function-namespaceopensn-1a777855ece4b75b45eece1bd16d27ca37"><span class="std std-ref">Function opensn::SNESReasonToPETScSolverStatus</span></a></p></li>
 </ul>
 </section>
 </section>

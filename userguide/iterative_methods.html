@@ -256,9 +256,9 @@ iteration k-eigen solve, or a nonlinear k-eigen solve?</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">verbose_inner_iterations</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">verbose_ags_iterations</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">verbose_outer_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_inner_iterations</span></code> controls inner solver details, including WGS and AGS iterations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose_outer_iterations</span></code> controls outer solver progress, including PI/NLKE iterations and
+transient step summaries.</p></li>
 </ul>
 <p>These settings control how the solver coordinates multiple groupsets and how
 much iteration information is printed.</p>
@@ -532,7 +532,6 @@ iterations, usually abbreviated AGS.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">verbose_ags_iterations</span></code></p></li>
 </ul>
 <section id="what-ags-does">
 <h3><span class="section-number">9.5.1. </span>What AGS does<a class="headerlink" href="#what-ags-does" title="Link to this heading"></a></h3>
@@ -604,7 +603,6 @@ tighter inner solves</p></li>
     <span class="s2">&quot;max_ags_iterations&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
     <span class="s2">&quot;ags_tolerance&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
     <span class="s2">&quot;ags_convergence_check&quot;</span><span class="p">:</span> <span class="s2">&quot;l2&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;verbose_ags_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -917,7 +915,6 @@ difficult, the best improvements usually come from:</p>
         <span class="s2">&quot;max_ags_iterations&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
         <span class="s2">&quot;ags_tolerance&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
         <span class="s2">&quot;ags_convergence_check&quot;</span><span class="p">:</span> <span class="s2">&quot;pointwise&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;verbose_ags_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">)</span>
 </pre></div>

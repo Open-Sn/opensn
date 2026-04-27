@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File iteration_logging.h &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File iteration_logging.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-iteration-logging-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-lbs-problem-iterative-methods-iteration-logging-h"></span><h1>Program Listing for File iteration_logging.h<a class="headerlink" href="#program-listing-for-file-iteration-logging-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-iterative-methods-iteration-logging-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2026 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/logging/log_format.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/logging/log.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/petsc_utils/petsc_utils.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/runtime.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;sstream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">IterationStatus</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">NONE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">CONVERGED</span><span class="p">,</span>
+<span class="w">  </span><span class="n">LIMIT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">FAILED</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">IterationSummary</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">detail</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">metric_name</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">metric_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span>
+<span class="nf">IterationStatusName</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">status</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">IterationStatus</span><span class="o">::</span><span class="no">CONVERGED</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;converged&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">IterationStatus</span><span class="o">::</span><span class="no">LIMIT</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;iteration_limit&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">IterationStatus</span><span class="o">::</span><span class="no">FAILED</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;failed&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">IterationStatus</span><span class="o">::</span><span class="no">NONE</span><span class="p">:</span>
+<span class="w">    </span><span class="k">default</span><span class="o">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;not_run&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span>
+<span class="nf">HasIterationStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">IterationSummary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">summary</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">IterationStatus</span>
+<span class="nf">PETScSolverStatusToIterationStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">PETScSolverStatus</span><span class="w"> </span><span class="n">status</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">PETScSolverStatus</span><span class="o">::</span><span class="no">CONVERGED</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">CONVERGED</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">PETScSolverStatus</span><span class="o">::</span><span class="no">LIMIT</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">LIMIT</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">PETScSolverStatus</span><span class="o">::</span><span class="no">FAILED</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">FAILED</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">PETScSolverStatus</span><span class="o">::</span><span class="no">ITERATING</span><span class="p">:</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">PETScSolverStatus</span><span class="o">::</span><span class="no">NONE</span><span class="p">:</span>
+<span class="w">    </span><span class="k">default</span><span class="o">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">IterationStatus</span>
+<span class="nf">KSPReasonToIterationStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">KSPConvergedReason</span><span class="w"> </span><span class="n">reason</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">PETScSolverStatusToIterationStatus</span><span class="p">(</span><span class="n">KSPReasonToPETScSolverStatus</span><span class="p">(</span><span class="n">reason</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">IterationStatus</span>
+<span class="nf">MostSevereIterationStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">lhs</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">rhs</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">severity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">status</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">IterationStatus</span><span class="o">::</span><span class="no">FAILED</span><span class="p">:</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">IterationStatus</span><span class="o">::</span><span class="no">LIMIT</span><span class="p">:</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">IterationStatus</span><span class="o">::</span><span class="no">CONVERGED</span><span class="p">:</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">IterationStatus</span><span class="o">::</span><span class="no">NONE</span><span class="p">:</span>
+<span class="w">      </span><span class="k">default</span><span class="o">:</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">severity</span><span class="p">(</span><span class="n">lhs</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">severity</span><span class="p">(</span><span class="n">rhs</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">lhs</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">rhs</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">IterationStatus</span>
+<span class="nf">MostSevereIterationStatus</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">IterationSummary</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">summaries</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">summary</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">summaries</span><span class="p">)</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MostSevereIterationStatus</span><span class="p">(</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">status</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">status</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">IterationStatus</span>
+<span class="nf">IterationStatusFromSolve</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">converged</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">reached_iteration_limit</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">inner_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inner_status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">FAILED</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">inner_status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">LIMIT</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">inner_status</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">converged</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">CONVERGED</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">reached_iteration_limit</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">LIMIT</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span>
+<span class="nf">FormatNestedStatusSummary</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">level_name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">status</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">level_name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot; = &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">IterationStatusName</span><span class="p">(</span><span class="n">status</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span>
+<span class="nf">FormatNestedStatusCounts</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">level_name</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">IterationSummary</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">summaries</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">summaries</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">first_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">summaries</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">status</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">all_same</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">all_of</span><span class="p">(</span><span class="n">summaries</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
+<span class="w">                </span><span class="n">summaries</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
+<span class="w">                </span><span class="p">[</span><span class="n">first_status</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">summary</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">first_status</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">all_same</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">FormatNestedStatusSummary</span><span class="p">(</span><span class="n">level_name</span><span class="p">,</span><span class="w"> </span><span class="n">first_status</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">summaries</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">count_if</span><span class="p">(</span><span class="n">summaries</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
+<span class="w">                                                  </span><span class="n">summaries</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span>
+<span class="w">                                                  </span><span class="p">[</span><span class="n">status</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">summary</span><span class="p">)</span>
+<span class="w">                                                  </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">status</span><span class="p">;</span><span class="w"> </span><span class="p">}));</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">append_count</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="p">[](</span><span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">first</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">first</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="w">    </span><span class="n">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span><span class="w"> </span><span class="n">out</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;; &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">level_name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; = mixed (&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">append_count</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;converged&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">CONVERGED</span><span class="p">),</span><span class="w"> </span><span class="n">first</span><span class="p">);</span>
+<span class="w">  </span><span class="n">append_count</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;iteration_limit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">LIMIT</span><span class="p">),</span><span class="w"> </span><span class="n">first</span><span class="p">);</span>
+<span class="w">  </span><span class="n">append_count</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;failed&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">FAILED</span><span class="p">),</span><span class="w"> </span><span class="n">first</span><span class="p">);</span>
+<span class="w">  </span><span class="n">append_count</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;not_run&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">),</span><span class="w"> </span><span class="n">first</span><span class="p">);</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span>
+<span class="nf">FormatIterationSummary</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">IterationSummary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">summary</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span><span class="w"> </span><span class="n">out</span><span class="p">;</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; final, status = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">IterationStatusName</span><span class="p">(</span><span class="n">summary</span><span class="p">.</span><span class="n">status</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;iterations&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">num_iterations</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">opensn</span><span class="o">::</span><span class="n">log</span><span class="p">.</span><span class="n">GetVerbosity</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">detail</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, detail = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">detail</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">metric_name</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+<span class="w">    </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">metric_name</span><span class="p">,</span><span class="w"> </span><span class="n">summary</span><span class="p">.</span><span class="n">metric_value</span><span class="p">,</span><span class="w"> </span><span class="n">Scientific</span><span class="p">(</span><span class="mi">6</span><span class="p">));</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span>
+<span class="nf">FormatKEigenOuterIteration</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">phase_name</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">iteration</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">k_eff</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">k_eff_change</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">reactivity_pcm</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">IterationSummary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ags_summary</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">IterationSummary</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">wgs_summaries</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">outer_status</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span><span class="w"> </span><span class="n">out</span><span class="p">;</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">phase_name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; iteration = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">iteration</span><span class="p">;</span>
+<span class="w">  </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;k_eff&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">k_eff</span><span class="p">,</span><span class="w"> </span><span class="n">Fixed</span><span class="p">(</span><span class="mi">7</span><span class="p">));</span>
+<span class="w">  </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;k_eff_change&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">k_eff_change</span><span class="p">,</span><span class="w"> </span><span class="n">Scientific</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span>
+<span class="w">  </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rho_pcm&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">reactivity_pcm</span><span class="p">,</span><span class="w"> </span><span class="n">Fixed</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">outer_status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">)</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, status = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">IterationStatusName</span><span class="p">(</span><span class="n">outer_status</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">HasIterationStatus</span><span class="p">(</span><span class="n">ags_summary</span><span class="p">))</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">FormatNestedStatusSummary</span><span class="p">(</span><span class="s">&quot;AGS&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ags_summary</span><span class="p">.</span><span class="n">status</span><span class="p">);</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">FormatNestedStatusCounts</span><span class="p">(</span><span class="s">&quot;WGS&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">wgs_summaries</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span>
+<span class="nf">FormatTransientStepSummary</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">phase_name</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">step</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">dt</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">IterationSummary</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ags_summary</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">IterationSummary</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">wgs_summaries</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span><span class="w"> </span><span class="n">out</span><span class="p">;</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">phase_name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; step = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">step</span><span class="p">;</span>
+<span class="w">  </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;dt&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dt</span><span class="p">,</span><span class="w"> </span><span class="n">Scientific</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+<span class="w">  </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;time&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="n">Fixed</span><span class="p">(</span><span class="mi">4</span><span class="p">));</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ags_status</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">HasIterationStatus</span><span class="p">(</span><span class="n">ags_summary</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">ags_summary</span><span class="p">.</span><span class="n">status</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">inner_status</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">MostSevereIterationStatus</span><span class="p">(</span><span class="n">ags_status</span><span class="p">,</span><span class="w"> </span><span class="n">MostSevereIterationStatus</span><span class="p">(</span><span class="n">wgs_summaries</span><span class="p">));</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inner_status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">)</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, status = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">IterationStatusName</span><span class="p">(</span><span class="n">inner_status</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">HasIterationStatus</span><span class="p">(</span><span class="n">ags_summary</span><span class="p">))</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">FormatNestedStatusSummary</span><span class="p">(</span><span class="s">&quot;AGS&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ags_summary</span><span class="p">.</span><span class="n">status</span><span class="p">);</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">FormatNestedStatusCounts</span><span class="p">(</span><span class="s">&quot;WGS&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">wgs_summaries</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span>
+<span class="nf">FormatKEigenFinalSummary</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">phase_name</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">k_eff</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">change</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">count</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">count_label</span><span class="p">,</span>
+<span class="w">                         </span><span class="k">const</span><span class="w"> </span><span class="n">IterationStatus</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">ostringstream</span><span class="w"> </span><span class="n">out</span><span class="p">;</span>
+<span class="w">  </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">phase_name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; final&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">IterationStatus</span><span class="o">::</span><span class="n">NONE</span><span class="p">)</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, status = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">IterationStatusName</span><span class="p">(</span><span class="n">status</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;k_eff&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">k_eff</span><span class="p">,</span><span class="w"> </span><span class="n">Fixed</span><span class="p">(</span><span class="mi">7</span><span class="p">));</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">change</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">)</span>
+<span class="w">    </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;k_eff_change&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">change</span><span class="p">,</span><span class="w"> </span><span class="n">Scientific</span><span class="p">(</span><span class="mi">6</span><span class="p">));</span>
+<span class="w">  </span><span class="n">AppendNumericField</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">count_label</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

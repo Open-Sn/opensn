@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a81cb01d4edbd3b66a0495dede75179ec:
+
+Function opensn::Fixed
+======================
+
+- Defined in :ref:`file_framework_logging_log_format.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Fixed(const int)
+   :project: opensn

@@ -100,6 +100,12 @@
 
 <span class="k">struct</span><span class="w"> </span><span class="nc">SweepWGSContext</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">WGSContext</span>
 <span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">SweepStats</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">total_sweep_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_sweeps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
 <span class="w">  </span><span class="n">SweepWGSContext</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
 <span class="w">                  </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
 <span class="w">                  </span><span class="k">const</span><span class="w"> </span><span class="n">SetSourceFunction</span><span class="o">&amp;</span><span class="w"> </span><span class="n">set_source_function</span><span class="p">,</span>
@@ -118,10 +124,12 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PostSolveCallback</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RebuildAngularFluxFromConvergedPhi</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">include_rhs_time_term</span><span class="p">);</span>
+<span class="w">  </span><span class="n">SweepStats</span><span class="w"> </span><span class="nf">GetAccumulatedSweepStats</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">sweep_stats_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetAccumulatedSweepStats</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sweep_stats_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepChunk</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">;</span>
 <span class="w">  </span><span class="n">SweepScheduler</span><span class="w"> </span><span class="n">sweep_scheduler</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sweep_times</span><span class="p">;</span>
+<span class="w">  </span><span class="n">SweepStats</span><span class="w"> </span><span class="n">sweep_stats_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

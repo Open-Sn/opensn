@@ -92,6 +92,7 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/utils/error.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscksp.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscsnes.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -112,6 +113,19 @@
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">relative_residual_tol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-6</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">maximum_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
 <span class="p">};</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">PETScSolverStatus</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">NONE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ITERATING</span><span class="p">,</span>
+<span class="w">  </span><span class="n">CONVERGED</span><span class="p">,</span>
+<span class="w">  </span><span class="n">LIMIT</span><span class="p">,</span>
+<span class="w">  </span><span class="n">FAILED</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="n">PETScSolverStatus</span><span class="w"> </span><span class="nf">KSPReasonToPETScSolverStatus</span><span class="p">(</span><span class="n">KSPConvergedReason</span><span class="w"> </span><span class="n">reason</span><span class="p">);</span>
+<span class="n">PETScSolverStatus</span><span class="w"> </span><span class="nf">SNESReasonToPETScSolverStatus</span><span class="p">(</span><span class="n">SNESConvergedReason</span><span class="w"> </span><span class="n">reason</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="nf">PETScSolverStatusName</span><span class="p">(</span><span class="n">PETScSolverStatus</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Creates a general vector.</span>
@@ -314,6 +328,9 @@
 
 <span class="c1">/// Gets the string value of a converged reason.</span>
 <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetPETScConvergedReasonstring</span><span class="p">(</span><span class="n">KSPConvergedReason</span><span class="w"> </span><span class="n">reason</span><span class="p">);</span>
+
+<span class="c1">/// Gets the string value of a converged reason.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetPETScConvergedReasonstring</span><span class="p">(</span><span class="n">SNESConvergedReason</span><span class="w"> </span><span class="n">reason</span><span class="p">);</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>

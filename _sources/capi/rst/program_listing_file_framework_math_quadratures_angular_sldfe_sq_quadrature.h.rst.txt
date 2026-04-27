@@ -197,6 +197,8 @@ Program Listing for File sldfe_sq_quadrature.h
                             OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
    
      ~SLDFEsqQuadrature3DXYZ() override = default;
+   
+     std::string GetName() const override { return "3D XYZ SLDFE square"; }
    };
    
    class SLDFEsqQuadrature2DXY : public SLDFEsqQuadrature
@@ -208,6 +210,8 @@ Program Listing for File sldfe_sq_quadrature.h
                            OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
    
      ~SLDFEsqQuadrature2DXY() override = default;
+   
+     std::string GetName() const override { return "2D XY SLDFE square"; }
    
    protected:
      bool FilterQuadraturePoint(const Vector3& omega) const override;

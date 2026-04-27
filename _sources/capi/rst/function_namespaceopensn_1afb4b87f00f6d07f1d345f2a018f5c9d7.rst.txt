@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1afb4b87f00f6d07f1d345f2a018f5c9d7:
+
+Function opensn::IterationStatusName
+====================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::IterationStatusName(const IterationStatus)
+   :project: opensn

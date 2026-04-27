@@ -167,6 +167,8 @@
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
 <span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
 
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;3D XYZ Triangular&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Assemble quadrature points and weights for the varying azimuthal angles per polar level.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AssembleTriangularCosines</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">azimuthal_per_polar</span><span class="p">,</span>
@@ -195,6 +197,8 @@
 <span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
 <span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;2D XY Triangular&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Assemble quadrature points and weights for the varying azimuthal angles per polar level.</span>

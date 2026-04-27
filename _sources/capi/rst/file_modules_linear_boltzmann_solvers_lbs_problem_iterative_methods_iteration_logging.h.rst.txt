@@ -1,0 +1,112 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h:
+
+File iteration_logging.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods>` (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h``)
+---------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``framework/logging/log.h`` (:ref:`file_framework_logging_log.h`)
+
+- ``framework/logging/log_format.h`` (:ref:`file_framework_logging_log_format.h`)
+
+- ``framework/math/petsc_utils/petsc_utils.h`` (:ref:`file_framework_math_petsc_utils_petsc_utils.h`)
+
+- ``framework/runtime.h`` (:ref:`file_framework_runtime.h`)
+
+- ``sstream``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_ags_linear_solver.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_iteration_summary`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a5336509e50b98c6cffaa041a8737a4a7`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a3a9c7c3a36521b5f75eb592f3ca973a5`
+
+- :ref:`exhale_function_namespaceopensn_1a66c48c926e7b022bd7acdd2fedcf6d69`
+
+- :ref:`exhale_function_namespaceopensn_1a90c16e420675056069165cf90da2ab72`
+
+- :ref:`exhale_function_namespaceopensn_1a7c5ca2547e75fc9cf995fb052a971333`
+
+- :ref:`exhale_function_namespaceopensn_1a3c91094ae5552c4c773af26ecc8a7397`
+
+- :ref:`exhale_function_namespaceopensn_1a798330b432e46c3cdef7156155cc135b`
+
+- :ref:`exhale_function_namespaceopensn_1a062887ee24b8aefa92c9369252fa12d4`
+
+- :ref:`exhale_function_namespaceopensn_1a9795aed06169ce5eaa2333046d17eb78`
+
+- :ref:`exhale_function_namespaceopensn_1afb4b87f00f6d07f1d345f2a018f5c9d7`
+
+- :ref:`exhale_function_namespaceopensn_1abee8953dfa92ef294cfc22a8ab1f8d03`
+
+- :ref:`exhale_function_namespaceopensn_1a48e592260894c3ded46a677237e9723e`
+
+- :ref:`exhale_function_namespaceopensn_1a172e62c208313f9c13a0db472c3e189a`
+
+- :ref:`exhale_function_namespaceopensn_1a7ffcdf7f77a323b46e84a61fdcdcc6a6`
+

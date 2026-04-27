@@ -136,6 +136,8 @@
 
 <span class="w">  </span><span class="o">~</span><span class="n">GLCProductQuadrature2DRZ</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;2D RZ Gauss-Legendre/Chebyshev product&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
@@ -158,6 +160,8 @@
 <span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
 
 <span class="w">  </span><span class="o">~</span><span class="n">GLProductQuadrature1DSpherical</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;1D Spherical Gauss-Legendre product&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MakeHarmonicIndices</span><span class="p">();</span>
 

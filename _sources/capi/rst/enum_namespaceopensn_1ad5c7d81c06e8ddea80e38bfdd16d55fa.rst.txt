@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1ad5c7d81c06e8ddea80e38bfdd16d55fa:
+
+Enum PETScSolverStatus
+======================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::PETScSolverStatus
+   :project: opensn

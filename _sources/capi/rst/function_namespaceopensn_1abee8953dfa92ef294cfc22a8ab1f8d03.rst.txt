@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1abee8953dfa92ef294cfc22a8ab1f8d03:
+
+Function opensn::KSPReasonToIterationStatus
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::KSPReasonToIterationStatus(const KSPConvergedReason)
+   :project: opensn

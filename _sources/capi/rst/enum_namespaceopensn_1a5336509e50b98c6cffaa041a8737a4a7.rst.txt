@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a5336509e50b98c6cffaa041a8737a4a7:
+
+Enum IterationStatus
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::IterationStatus
+   :project: opensn

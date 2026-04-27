@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a7c5ca2547e75fc9cf995fb052a971333:
+
+Function opensn::FormatNestedStatusCounts
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FormatNestedStatusCounts(const std::string&, const std::vector<IterationSummary>&)
+   :project: opensn

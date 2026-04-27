@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a2e43bc59338ad8a7fc2d1ab317653e71:
+
+Enum NumericFormatKind
+======================
+
+- Defined in :ref:`file_framework_logging_log_format.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::NumericFormatKind
+   :project: opensn

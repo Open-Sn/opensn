@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a0a6010e101c0eb6c3fe7d0ad340b2840:
+
+Function opensn::KSPReasonToPETScSolverStatus
+=============================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::KSPReasonToPETScSolverStatus(KSPConvergedReason)
+   :project: opensn

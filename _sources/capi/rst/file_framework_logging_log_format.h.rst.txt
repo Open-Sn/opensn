@@ -1,0 +1,84 @@
+
+.. _file_framework_logging_log_format.h:
+
+File log_format.h
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_logging>` (``framework/logging``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/logging/log_format.h``)
+-----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_logging_log_format.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstddef``
+
+- ``iomanip``
+
+- ``ostream``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_numeric_format`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a2e43bc59338ad8a7fc2d1ab317653e71`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ad6c141021758d85d7b0ab620c671c65c`
+
+- :ref:`exhale_function_namespaceopensn_1a342b161d6ffcc3980ca41dc5d5a38659`
+
+- :ref:`exhale_function_namespaceopensn_1a81cb01d4edbd3b66a0495dede75179ec`
+
+- :ref:`exhale_function_namespaceopensn_1ae5947626e5577e8e57ab77ebec7c232c`
+

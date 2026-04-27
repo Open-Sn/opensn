@@ -310,21 +310,13 @@
 <section id="Angular-Quadrature">
 <h2><span class="section-number">5.4.1.6. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h2>
 <p>We create a product Gauss-Legendre-Chebyshev angular quadrature and pass the <strong>total</strong> number of polar cosines (here <code class="docutils literal notranslate"><span class="pre">n_polar</span> <span class="pre">=</span> <span class="pre">2</span></code>) and the number of azimuthal subdivisions in <strong>four quadrants</strong> (<code class="docutils literal notranslate"><span class="pre">n_azimuthal</span> <span class="pre">=</span> <span class="pre">4</span></code>). This creates a 3D angular quadrature for XYZ geometry.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[42]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pquad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[0]  Using 3D XYZ Gauss–Legendre/Chebyshev product quadrature with 8 angles and weight sum of 1.00
-</pre></div></div>
 </div>
 </section>
 <section id="Linear-Boltzmann-Solver">
@@ -366,7 +358,6 @@
         <span class="s2">&quot;use_precursors&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
         <span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
         <span class="s2">&quot;verbose_outer_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;verbose_ags_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">)</span>
 <br/></pre></div>
@@ -424,7 +415,7 @@
 [0]          Final k-eigenvalue    :        1
 [0]          Final change          :        2.43605e-11 (Total number of sweeps:200)
 [0]
-[0]  LinearBoltzmann::KEigenvalueSolver execution completed
+[0]  00:00:00.0 Finished solver execution PowerIterationKEigenSolver.
 [0]
 </pre></div></div>
 </div>
@@ -447,7 +438,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[0]  Initializing TransientSolver.
+[0]  00:00:00.0 Initializing solver TransientSolver.
 [0]  *** WARNING ***  TransientSolver: fissionable material is present but use_precursors is disabled. Running prompt-only transient.
 </pre></div></div>
 </div>

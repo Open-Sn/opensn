@@ -26,7 +26,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Function opensn::HasNonZero" href="function_namespaceopensn_1a5efdf4aa01cdf63eb062b4dcbdd97f5b.html" />
+    <link rel="next" title="Function opensn::HasIterationStatus" href="function_namespaceopensn_1a062887ee24b8aefa92c9369252fa12d4.html" />
     <link rel="prev" title="Template Function opensn::H5WriteDataset1D" href="function_namespaceopensn_1a2cae895da69180244056b5914f580802.html" /> 
 </head>
 
@@ -64,6 +64,8 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aa9b93a1e6b8cdf6eda2f96c2848de8c2.html">Template Function opensn::AAH_Sweep_Generic</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1af306a78772d819be3c1ee3fd5cab48ed.html">Template Function opensn::Add(const DenseMatrix&lt;TYPE&gt;&amp;, const DenseMatrix&lt;TYPE&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a9affbff5b51b7bfaa644f85f5053b003.html">Template Function opensn::Add(const Vector&lt;TYPE&gt;&amp;, const Vector&lt;TYPE&gt;&amp;)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad6c141021758d85d7b0ab620c671c65c.html">Function opensn::AppendNumericField(std::ostream&amp;, const std::string&amp;, const std::size_t, const bool)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a342b161d6ffcc3980ca41dc5d5a38659.html">Function opensn::AppendNumericField(std::ostream&amp;, const std::string&amp;, const double, const NumericFormat, const bool)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a4b34773f7d28fd41bb4f55c0549eca18.html">Function opensn::AssertReadableFile</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a177b73b5df38403f1ebd18ff52244206.html">Function opensn::AssocLegendre</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a327d93dfb09c6e4b27ff28cd3b8f1e77.html">Function opensn::BuildBlockCellExtents</a></li>
@@ -116,6 +118,13 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1af44db9c1ce3bab159ed7d936f147e4f3.html">Function opensn::Factorial</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a0fb0f6840b04038a08db15f956fd891d.html">Function opensn::Finalize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a0ea5e75edd022fcd106d2037520000a5.html">Function opensn::FindHighestDimension</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a81cb01d4edbd3b66a0495dede75179ec.html">Function opensn::Fixed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3a9c7c3a36521b5f75eb592f3ca973a5.html">Function opensn::FormatIterationSummary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a66c48c926e7b022bd7acdd2fedcf6d69.html">Function opensn::FormatKEigenFinalSummary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a90c16e420675056069165cf90da2ab72.html">Function opensn::FormatKEigenOuterIteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a7c5ca2547e75fc9cf995fb052a971333.html">Function opensn::FormatNestedStatusCounts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3c91094ae5552c4c773af26ecc8a7397.html">Function opensn::FormatNestedStatusSummary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a798330b432e46c3cdef7156155cc135b.html">Function opensn::FormatTransientStepSummary</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a91dce05acc78a5b020a13d3f8641368b.html">Template Function opensn::GaussElimination</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a32bddde67f81b8ac1e6732dd345b87f9.html">Template Function opensn::get_datatype</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aa5f3dafec4bbf7976cd939512c58b4a6.html">Specialized Template Function opensn::get_datatype&lt; bool &gt;</a></li>
@@ -135,7 +144,8 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a689545ba1e4b5ee77aff4d480844a91c.html">Function opensn::GetBlocksOfDesiredDimension</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad42868d85ee5c6ee1a0d2de5618c7c57.html">Function opensn::GetCellDataIndex</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab8ba9e293b4a2b9c750312dbbee03f89.html">Function opensn::GetGhostVectorLocalViewRead</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab600f4b7adb5993556b8d19ea1d01794.html">Function opensn::GetPETScConvergedReasonstring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab600f4b7adb5993556b8d19ea1d01794.html">Function opensn::GetPETScConvergedReasonstring(KSPConvergedReason)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab261c81605d17cf5d7c8f9923d93dcb6.html">Function opensn::GetPETScConvergedReasonstring(SNESConvergedReason)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad602f7fa66a81755aa650856acefe62d.html">Function opensn::GetVersionStr</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1aa614a475e01c2936a4ae56649bcf2b40.html">Template Function opensn::gpu_kernel::ComputeGMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1gpu__kernel_1ae1bc05ed95d5f8f5209574dc151d0625.html">Template Function opensn::gpu_kernel::ComputePhi</a></li>
@@ -164,6 +174,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a468773d409cc1b5a03ddf7ed41e04577.html">Template Function opensn::H5ReadOptionalAttribute</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2cae895da69180244056b5914f580802.html">Template Function opensn::H5WriteDataset1D</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::hash_djb2a</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a062887ee24b8aefa92c9369252fa12d4.html">Function opensn::HasIterationStatus</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a5efdf4aa01cdf63eb062b4dcbdd97f5b.html">Function opensn::HasNonZero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2603b50ede73cc62a97d092346a976af.html">Function opensn::Initialize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a4a943cd4ab43ee0c8732ea13052460f8.html">Function opensn::InitMatrixSparsity(Mat&amp;, const std::vector&lt;int64_t&gt;&amp;, const std::vector&lt;int64_t&gt;&amp;)</a></li>
@@ -174,9 +185,13 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a90a066c315750af6f6c781392a5a2e2c.html">Function opensn::InvertMatrix(const NDArray&lt;double, 2&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ac7c0232212b4c28d47595e8520281d22.html">Function opensn::IsNonNegative</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1a389594753619fc6b1d544485f4f3c5.html">Function opensn::IsPositive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a9795aed06169ce5eaa2333046d17eb78.html">Function opensn::IterationStatusFromSolve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1afb4b87f00f6d07f1d345f2a018f5c9d7.html">Function opensn::IterationStatusName</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1a772889c5ca897ef33121c36b8ebfd4.html">Function opensn::KEigenKSPMonitor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a448dab141b0b0db91c6c927f20286041.html">Function opensn::KEigenSNESMonitor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2926755f77015f034808b5f9680e3a7a.html">Function opensn::KSPMonitorRelativeToRHS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1abee8953dfa92ef294cfc22a8ab1f8d03.html">Function opensn::KSPReasonToIterationStatus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a0a6010e101c0eb6c3fe7d0ad340b2840.html">Function opensn::KSPReasonToPETScSolverStatus</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8eb2c0e27bee677a06aeb140fc102158.html">Function opensn::L1Norm</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab32620964e0bc997f9352c15a1eb1d11.html">Function opensn::L2Norm</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ae5df3aaf1d79a2361490fdf0808cbdc6.html">Function opensn::Legendre</a></li>
@@ -189,6 +204,8 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a767a3047554fa01ccc00ef1cd66e13a2.html">Function opensn::MapGeometryTypeToCoordSys</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ac84a4495f09f1bb632002e860739a0b7.html">Template Function opensn::MemCopyRow</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a226c429ee6072808bb5477115d9095e5.html">Function opensn::MIP_TGDSA_PreConditionerMult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a48e592260894c3ded46a677237e9723e.html">Function opensn::MostSevereIterationStatus(const IterationStatus, const IterationStatus)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a172e62c208313f9c13a0db472c3e189a.html">Function opensn::MostSevereIterationStatus(const std::vector&lt;IterationSummary&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a970db0121bb18a47a1400ae6630e8b89.html">Template Function opensn::Mult(const DenseMatrix&lt;TYPE&gt;&amp;, const TYPE)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1abd3fa1f9d91fc4c479aa1e5bb9cf00b7.html">Template Function opensn::Mult(const DenseMatrix&lt;TYPE&gt;&amp;, const Vector&lt;TYPE&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aab3c67d40e6e55826ed11805f566756f.html">Template Function opensn::Mult(const DenseMatrix&lt;TYPE&gt;&amp;, const DenseMatrix&lt;TYPE&gt;&amp;)</a></li>
@@ -206,6 +223,8 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ae7b499513b903d1588322ea3e6fbfcca.html">Function opensn::OrthogonalizeMatrixSpan(const NDArray&lt;double, 2&gt;&amp;, const std::vector&lt;double&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a073c22c5a84f641da97dabf6ee200eb6.html">Function opensn::PackGroupsetXS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a6c9b162528be69b3b3ef1bdc01ee0136.html">Function opensn::ParameterBlockTypeName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a07c36fc022bdd865feb1616a29790143.html">Function opensn::PETScSolverStatusName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a7ffcdf7f77a323b46e84a61fdcdcc6a6.html">Function opensn::PETScSolverStatusToIterationStatus</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a22094640b32abe9b9b936991c578aef9.html">Function opensn::PopulateRaySegmentLengths</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ae36300f028cd3cfe090d42aa14566545.html">Template Function opensn::PowerIteration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab417388b7303220280cdc5b909321247.html">Function opensn::PowerIterationKEigenSolver</a></li>
@@ -222,10 +241,12 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1bea552a3cd9dec00e2872622a33d676.html">Function opensn::Scale(std::vector&lt;double&gt;&amp;, const double&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1af19640fd7bf1b121d528bd8ff125963b.html">Template Function opensn::Scaled(const DenseMatrix&lt;TYPE&gt;&amp;, TYPE)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2b52e15f8ca0086f83f7213e4c48e3ee.html">Template Function opensn::Scaled(const Vector&lt;TYPE&gt;&amp;, TYPE)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ae5947626e5577e8e57ab77ebec7c232c.html">Function opensn::Scientific</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a29b56d0fb78a6d7899dfcc7f7209bb61.html">Function opensn::Set</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8fa43a9fc19c5746a332686cd872ab64.html">Function opensn::SetBlockIDArrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3266e9b3b3fa81018b9b218563dda4f5.html">Template Function opensn::SetupMessageData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ac26c01c7e45e9babbf3c72f2e05e69d7.html">Function opensn::Sleep</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a777855ece4b75b45eece1bd16d27ca37.html">Function opensn::SNESReasonToPETScSolverStatus</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a9a150f771f5f743674abdfa0bee57209.html">Function opensn::StartsWith</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a9b23642480e712de8fab3dd0554d450f.html">Function opensn::SteppingMethodFromString</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3a8aff9a9226ae81de297113dcdbcd37.html">Function opensn::SteppingMethodStringName</a></li>
@@ -324,7 +345,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="function_namespaceopensn_1a2cae895da69180244056b5914f580802.html" class="btn btn-neutral float-left" title="Template Function opensn::H5WriteDataset1D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1a5efdf4aa01cdf63eb062b4dcbdd97f5b.html" class="btn btn-neutral float-right" title="Function opensn::HasNonZero" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1a062887ee24b8aefa92c9369252fa12d4.html" class="btn btn-neutral float-right" title="Function opensn::HasIterationStatus" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

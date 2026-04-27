@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a90c16e420675056069165cf90da2ab72:
+
+Function opensn::FormatKEigenOuterIteration
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FormatKEigenOuterIteration(const std::string&, const unsigned int, const double, const double, const double, const IterationSummary&, const std::vector<IterationSummary>&, const IterationStatus)
+   :project: opensn

@@ -113,6 +113,8 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4`
 
+- :ref:`exhale_struct_structopensn_1_1_iteration_summary`
+
 - :ref:`exhale_struct_structopensn_1_1_k_b_a_graph_partitioner_1_1_coordinate_info`
 
 - :ref:`exhale_struct_structopensn_1_1_k_residual_function_context`
@@ -150,6 +152,8 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_non_linear_solver_context`
 
 - :ref:`exhale_struct_structopensn_1_1_nonlocal_node_info`
+
+- :ref:`exhale_struct_structopensn_1_1_numeric_format`
 
 - :ref:`exhale_struct_structopensn_1_1_object_factory_1_1_object_registry_entry`
 
@@ -220,6 +224,8 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_sweep_scheduler_1_1_rule_values`
 
 - :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context`
+
+- :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats`
 
 - :ref:`exhale_struct_structopensn_1_1_task`
 
@@ -708,15 +714,21 @@ Enums
 
 - :ref:`exhale_enum_namespaceopensn_1a594f3c575814d9061da1e7e41c14686b`
 
+- :ref:`exhale_enum_namespaceopensn_1a5336509e50b98c6cffaa041a8737a4a7`
+
 - :ref:`exhale_enum_namespaceopensn_1adbca6961a12788281ba4908a5ede2aa2`
 
 - :ref:`exhale_enum_namespaceopensn_1a646dcf9223a2ca00076d37531f17a1bf`
 
 - :ref:`exhale_enum_namespaceopensn_1a2bc625d5a3bcad808cdb614d13f73457`
 
+- :ref:`exhale_enum_namespaceopensn_1a2e43bc59338ad8a7fc2d1ab317653e71`
+
 - :ref:`exhale_enum_namespaceopensn_1af374fa8b10c3bc4ed30bc997c1ee2327`
 
 - :ref:`exhale_enum_namespaceopensn_1a05f2bd4e18caaed618352dd6b880f07f`
+
+- :ref:`exhale_enum_namespaceopensn_1ad5c7d81c06e8ddea80e38bfdd16d55fa`
 
 - :ref:`exhale_enum_namespaceopensn_1a888a70b0fcfee2519583f22c144fdb85`
 
@@ -754,6 +766,10 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1af306a78772d819be3c1ee3fd5cab48ed`
 
 - :ref:`exhale_function_namespaceopensn_1a9affbff5b51b7bfaa644f85f5053b003`
+
+- :ref:`exhale_function_namespaceopensn_1ad6c141021758d85d7b0ab620c671c65c`
+
+- :ref:`exhale_function_namespaceopensn_1a342b161d6ffcc3980ca41dc5d5a38659`
 
 - :ref:`exhale_function_namespaceopensn_1a4b34773f7d28fd41bb4f55c0549eca18`
 
@@ -853,6 +869,20 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a0ea5e75edd022fcd106d2037520000a5`
 
+- :ref:`exhale_function_namespaceopensn_1a81cb01d4edbd3b66a0495dede75179ec`
+
+- :ref:`exhale_function_namespaceopensn_1a3a9c7c3a36521b5f75eb592f3ca973a5`
+
+- :ref:`exhale_function_namespaceopensn_1a66c48c926e7b022bd7acdd2fedcf6d69`
+
+- :ref:`exhale_function_namespaceopensn_1a90c16e420675056069165cf90da2ab72`
+
+- :ref:`exhale_function_namespaceopensn_1a7c5ca2547e75fc9cf995fb052a971333`
+
+- :ref:`exhale_function_namespaceopensn_1a3c91094ae5552c4c773af26ecc8a7397`
+
+- :ref:`exhale_function_namespaceopensn_1a798330b432e46c3cdef7156155cc135b`
+
 - :ref:`exhale_function_namespaceopensn_1a91dce05acc78a5b020a13d3f8641368b`
 
 - :ref:`exhale_function_namespaceopensn_1a32bddde67f81b8ac1e6732dd345b87f9`
@@ -893,6 +923,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ab600f4b7adb5993556b8d19ea1d01794`
 
+- :ref:`exhale_function_namespaceopensn_1ab261c81605d17cf5d7c8f9923d93dcb6`
+
 - :ref:`exhale_function_namespaceopensn_1ad602f7fa66a81755aa650856acefe62d`
 
 - :ref:`exhale_function_namespaceopensn_1ab29c1808c043128c5ef2680ea73cdb5a`
@@ -923,6 +955,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ac09d8d3153ccce4e3f8833516ecd9a99`
 
+- :ref:`exhale_function_namespaceopensn_1a062887ee24b8aefa92c9369252fa12d4`
+
 - :ref:`exhale_function_namespaceopensn_1a5efdf4aa01cdf63eb062b4dcbdd97f5b`
 
 - :ref:`exhale_function_namespaceopensn_1a2603b50ede73cc62a97d092346a976af`
@@ -943,11 +977,19 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a1a389594753619fc6b1d544485f4f3c5`
 
+- :ref:`exhale_function_namespaceopensn_1a9795aed06169ce5eaa2333046d17eb78`
+
+- :ref:`exhale_function_namespaceopensn_1afb4b87f00f6d07f1d345f2a018f5c9d7`
+
 - :ref:`exhale_function_namespaceopensn_1a1a772889c5ca897ef33121c36b8ebfd4`
 
 - :ref:`exhale_function_namespaceopensn_1a448dab141b0b0db91c6c927f20286041`
 
 - :ref:`exhale_function_namespaceopensn_1a2926755f77015f034808b5f9680e3a7a`
+
+- :ref:`exhale_function_namespaceopensn_1abee8953dfa92ef294cfc22a8ab1f8d03`
+
+- :ref:`exhale_function_namespaceopensn_1a0a6010e101c0eb6c3fe7d0ad340b2840`
 
 - :ref:`exhale_function_namespaceopensn_1a8eb2c0e27bee677a06aeb140fc102158`
 
@@ -972,6 +1014,10 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1ac84a4495f09f1bb632002e860739a0b7`
 
 - :ref:`exhale_function_namespaceopensn_1a226c429ee6072808bb5477115d9095e5`
+
+- :ref:`exhale_function_namespaceopensn_1a48e592260894c3ded46a677237e9723e`
+
+- :ref:`exhale_function_namespaceopensn_1a172e62c208313f9c13a0db472c3e189a`
 
 - :ref:`exhale_function_namespaceopensn_1a970db0121bb18a47a1400ae6630e8b89`
 
@@ -1007,6 +1053,10 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a6c9b162528be69b3b3ef1bdc01ee0136`
 
+- :ref:`exhale_function_namespaceopensn_1a07c36fc022bdd865feb1616a29790143`
+
+- :ref:`exhale_function_namespaceopensn_1a7ffcdf7f77a323b46e84a61fdcdcc6a6`
+
 - :ref:`exhale_function_namespaceopensn_1a22094640b32abe9b9b936991c578aef9`
 
 - :ref:`exhale_function_namespaceopensn_1ae36300f028cd3cfe090d42aa14566545`
@@ -1039,6 +1089,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a2b52e15f8ca0086f83f7213e4c48e3ee`
 
+- :ref:`exhale_function_namespaceopensn_1ae5947626e5577e8e57ab77ebec7c232c`
+
 - :ref:`exhale_function_namespaceopensn_1a29b56d0fb78a6d7899dfcc7f7209bb61`
 
 - :ref:`exhale_function_namespaceopensn_1a8fa43a9fc19c5746a332686cd872ab64`
@@ -1046,6 +1098,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a3266e9b3b3fa81018b9b218563dda4f5`
 
 - :ref:`exhale_function_namespaceopensn_1ac26c01c7e45e9babbf3c72f2e05e69d7`
+
+- :ref:`exhale_function_namespaceopensn_1a777855ece4b75b45eece1bd16d27ca37`
 
 - :ref:`exhale_function_namespaceopensn_1a9a150f771f5f743674abdfa0bee57209`
 

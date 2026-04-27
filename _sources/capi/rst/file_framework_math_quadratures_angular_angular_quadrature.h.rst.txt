@@ -36,6 +36,8 @@ Includes
 
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 

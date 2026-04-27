@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a66c48c926e7b022bd7acdd2fedcf6d69:
+
+Function opensn::FormatKEigenFinalSummary
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FormatKEigenFinalSummary(const std::string&, const double, const double, const std::size_t, const std::string&, const IterationStatus)
+   :project: opensn

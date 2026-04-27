@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a342b161d6ffcc3980ca41dc5d5a38659:
+
+Function opensn::AppendNumericField(std::ostream&, const std::string&, const double, const NumericFormat, const bool)
+=====================================================================================================================
+
+- Defined in :ref:`file_framework_logging_log_format.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::AppendNumericField(std::ostream&, const std::string&, const double, const NumericFormat, const bool)
+   :project: opensn

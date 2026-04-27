@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File iteration_logging.h &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">File iteration_logging.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="file-iteration-logging-h">
+<span id="file-modules-linear-boltzmann-solvers-lbs-problem-iterative-methods-iteration-logging-h"></span><h1>File iteration_logging.h<a class="headerlink" href="#file-iteration-logging-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="dir_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods.html#dir-modules-linear-boltzmann-solvers-lbs-problem-iterative-methods"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/iterative_methods</span></code>)</p>
+<nav class="contents local" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#definition-modules-linear-boltzmann-solvers-lbs-problem-iterative-methods-iteration-logging-h" id="id1">Definition (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#includes" id="id2">Includes</a></p></li>
+<li><p><a class="reference internal" href="#included-by" id="id3">Included By</a></p></li>
+<li><p><a class="reference internal" href="#namespaces" id="id4">Namespaces</a></p></li>
+<li><p><a class="reference internal" href="#classes" id="id5">Classes</a></p></li>
+<li><p><a class="reference internal" href="#enums" id="id6">Enums</a></p></li>
+<li><p><a class="reference internal" href="#functions" id="id7">Functions</a></p></li>
+</ul>
+</nav>
+<section id="definition-modules-linear-boltzmann-solvers-lbs-problem-iterative-methods-iteration-logging-h">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h</span></code>)<a class="headerlink" href="#definition-modules-linear-boltzmann-solvers-lbs-problem-iterative-methods-iteration-logging-h" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h.html">Program Listing for File iteration_logging.h</a></li>
+</ul>
+</div>
+</section>
+<section id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">algorithm</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/logging/log.h</span></code> (<a class="reference internal" href="file_framework_logging_log.h.html#file-framework-logging-log-h"><span class="std std-ref">File log.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/logging/log_format.h</span></code> (<a class="reference internal" href="file_framework_logging_log_format.h.html#file-framework-logging-log-format-h"><span class="std std-ref">File log_format.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/math/petsc_utils/petsc_utils.h</span></code> (<a class="reference internal" href="file_framework_math_petsc_utils_petsc_utils.h.html#file-framework-math-petsc-utils-petsc-utils-h"><span class="std std-ref">File petsc_utils.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">framework/runtime.h</span></code> (<a class="reference internal" href="file_framework_runtime.h.html#file-framework-runtime-h"><span class="std std-ref">File runtime.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sstream</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">string</span></code> (<a class="reference internal" href="file_framework_logging_stringstream_color.h.html#file-framework-logging-stringstream-color-h"><span class="std std-ref">File stringstream_color.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vector</span></code> (<a class="reference internal" href="file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h.html#file-framework-data-types-parallel-vector-ghosted-parallel-stl-vector-h"><span class="std std-ref">File ghosted_parallel_stl_vector.h</span></a>)</p></li>
+</ul>
+</section>
+<section id="included-by">
+<h2>Included By<a class="headerlink" href="#included-by" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_ags_linear_solver.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-iterative-methods-ags-linear-solver-h"><span class="std std-ref">File ags_linear_solver.h</span></a></p></li>
+<li><p><a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-iterative-methods-wgs-context-h"><span class="std std-ref">File wgs_context.h</span></a></p></li>
+</ul>
+</section>
+<section id="namespaces">
+<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="namespace_opensn.html#namespace-opensn"><span class="std std-ref">Namespace opensn</span></a></p></li>
+</ul>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_iteration_summary.html#exhale-struct-structopensn-1-1-iteration-summary"><span class="std std-ref">Struct IterationSummary</span></a></p></li>
+</ul>
+</section>
+<section id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="enum_namespaceopensn_1a5336509e50b98c6cffaa041a8737a4a7.html#exhale-enum-namespaceopensn-1a5336509e50b98c6cffaa041a8737a4a7"><span class="std std-ref">Enum IterationStatus</span></a></p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_namespaceopensn_1a3a9c7c3a36521b5f75eb592f3ca973a5.html#exhale-function-namespaceopensn-1a3a9c7c3a36521b5f75eb592f3ca973a5"><span class="std std-ref">Function opensn::FormatIterationSummary</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a66c48c926e7b022bd7acdd2fedcf6d69.html#exhale-function-namespaceopensn-1a66c48c926e7b022bd7acdd2fedcf6d69"><span class="std std-ref">Function opensn::FormatKEigenFinalSummary</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a90c16e420675056069165cf90da2ab72.html#exhale-function-namespaceopensn-1a90c16e420675056069165cf90da2ab72"><span class="std std-ref">Function opensn::FormatKEigenOuterIteration</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a7c5ca2547e75fc9cf995fb052a971333.html#exhale-function-namespaceopensn-1a7c5ca2547e75fc9cf995fb052a971333"><span class="std std-ref">Function opensn::FormatNestedStatusCounts</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a3c91094ae5552c4c773af26ecc8a7397.html#exhale-function-namespaceopensn-1a3c91094ae5552c4c773af26ecc8a7397"><span class="std std-ref">Function opensn::FormatNestedStatusSummary</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a798330b432e46c3cdef7156155cc135b.html#exhale-function-namespaceopensn-1a798330b432e46c3cdef7156155cc135b"><span class="std std-ref">Function opensn::FormatTransientStepSummary</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a062887ee24b8aefa92c9369252fa12d4.html#exhale-function-namespaceopensn-1a062887ee24b8aefa92c9369252fa12d4"><span class="std std-ref">Function opensn::HasIterationStatus</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a9795aed06169ce5eaa2333046d17eb78.html#exhale-function-namespaceopensn-1a9795aed06169ce5eaa2333046d17eb78"><span class="std std-ref">Function opensn::IterationStatusFromSolve</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1afb4b87f00f6d07f1d345f2a018f5c9d7.html#exhale-function-namespaceopensn-1afb4b87f00f6d07f1d345f2a018f5c9d7"><span class="std std-ref">Function opensn::IterationStatusName</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1abee8953dfa92ef294cfc22a8ab1f8d03.html#exhale-function-namespaceopensn-1abee8953dfa92ef294cfc22a8ab1f8d03"><span class="std std-ref">Function opensn::KSPReasonToIterationStatus</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a48e592260894c3ded46a677237e9723e.html#exhale-function-namespaceopensn-1a48e592260894c3ded46a677237e9723e"><span class="std std-ref">Function opensn::MostSevereIterationStatus(const IterationStatus, const IterationStatus)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a172e62c208313f9c13a0db472c3e189a.html#exhale-function-namespaceopensn-1a172e62c208313f9c13a0db472c3e189a"><span class="std std-ref">Function opensn::MostSevereIterationStatus(const std::vector&lt;IterationSummary&gt;&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_namespaceopensn_1a7ffcdf7f77a323b46e84a61fdcdcc6a6.html#exhale-function-namespaceopensn-1a7ffcdf7f77a323b46e84a61fdcdcc6a6"><span class="std std-ref">Function opensn::PETScSolverStatusToIterationStatus</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

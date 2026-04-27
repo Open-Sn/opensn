@@ -56,3 +56,5 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context`
 
+- :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats`
+

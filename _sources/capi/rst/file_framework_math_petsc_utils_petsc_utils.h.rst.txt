@@ -34,6 +34,8 @@ Includes
 
 - ``petscksp.h``
 
+- ``petscsnes.h``
+
 - ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 
@@ -43,6 +45,8 @@ Included By
 
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_nl_keigen_acc_context.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
 
 
 
@@ -61,6 +65,13 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_ghost_vec_local_raw`
 
 - :ref:`exhale_struct_structopensn_1_1_p_e_t_sc_solver_setup`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1ad5c7d81c06e8ddea80e38bfdd16d55fa`
 
 
 Functions
@@ -95,11 +106,19 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ab600f4b7adb5993556b8d19ea1d01794`
 
+- :ref:`exhale_function_namespaceopensn_1ab261c81605d17cf5d7c8f9923d93dcb6`
+
 - :ref:`exhale_function_namespaceopensn_1a4a943cd4ab43ee0c8732ea13052460f8`
 
 - :ref:`exhale_function_namespaceopensn_1ae3c19e76a3093fc6b02efdd9c3e32f23`
 
 - :ref:`exhale_function_namespaceopensn_1a2926755f77015f034808b5f9680e3a7a`
 
+- :ref:`exhale_function_namespaceopensn_1a0a6010e101c0eb6c3fe7d0ad340b2840`
+
+- :ref:`exhale_function_namespaceopensn_1a07c36fc022bdd865feb1616a29790143`
+
 - :ref:`exhale_function_namespaceopensn_1ad7498692cdd3514d11c457bac5afe9de`
+
+- :ref:`exhale_function_namespaceopensn_1a777855ece4b75b45eece1bd16d27ca37`
 

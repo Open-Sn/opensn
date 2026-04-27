@@ -6,6 +6,16 @@ Struct SweepWGSContext
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_sweep_wgs_context.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats`
+
+
 Inheritance Relationships
 -------------------------
 

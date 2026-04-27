@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_sweep_w_g_s_context_1_1_sweep_stats:
+
+Struct SweepWGSContext::SweepStats
+==================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_sweep_wgs_context.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SweepWGSContext::SweepStats
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

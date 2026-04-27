@@ -150,6 +150,8 @@
 <span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
 <span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;1D Slab Gauss-Legendre product&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GLCProductQuadrature2DXY</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ProductQuadrature</span>
@@ -162,6 +164,8 @@
 <span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
 <span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;2D XY Gauss-Legendre/Chebyshev product&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">GLCProductQuadrature3DXYZ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ProductQuadrature</span>
@@ -174,6 +178,8 @@
 <span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scattering_order</span><span class="p">,</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
 <span class="w">    </span><span class="n">OperatorConstructionMethod</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OperatorConstructionMethod</span><span class="o">::</span><span class="n">STANDARD</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetName</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;3D XYZ Gauss-Legendre/Chebyshev product&quot;</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

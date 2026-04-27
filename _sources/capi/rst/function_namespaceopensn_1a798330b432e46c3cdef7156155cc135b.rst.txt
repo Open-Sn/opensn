@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a798330b432e46c3cdef7156155cc135b:
+
+Function opensn::FormatTransientStepSummary
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FormatTransientStepSummary(const std::string&, const unsigned int, const double, const double, const IterationSummary&, const std::vector<IterationSummary>&)
+   :project: opensn

@@ -222,7 +222,7 @@ OpenSn version 0.0.1
 <section id="Geometry">
 <h2><span class="section-number">5.3.4.2. </span><strong>Geometry</strong><a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 1D multi-group, source-driven detector response problem using the WIMS69 energy group structure. The neutron source is modeled as a 0.4 cm slab of Cf-252 encased in 0.1 cm slabs of stainless steel (SS-316). The detector is modeled as a 2.4 cm region of He-3 enclosed in a 0.07 cm SS-316 sleeve and surrounded by high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="324dd0d8b34f486698cd4c8538f53c6c" src="../../../../_images/detector_geom.png" /></p>
+<p><img alt="405f995792f942dcba927a85a83a607d" src="../../../../_images/detector_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -413,7 +413,7 @@ OpenSn version 0.0.1
 <section id="Angular-Quadrature">
 <h3><span class="section-number">5.3.4.4.1. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h3>
 <p>Since we are solving a 1D problem we will create Gauss-Legendre Product Quadrature for a 1D slab. In this case we will use 512 polar angles creating a 1D angular quadrature in <span class="math notranslate nohighlight">\(\mu\)</span> with a scattering order of 0.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
@@ -421,14 +421,6 @@ OpenSn version 0.0.1
                                   <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[0]  Using 1D Slab Gauss–Legendre product quadrature with 512 angles and weight sum of 1.00
-</pre></div></div>
 </div>
 </section>
 <section id="Group-Structure">
@@ -523,7 +515,7 @@ OpenSn version 0.0.1
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 [0]
-[0]  Initializing LBS SteadyStateSourceSolver with name: LBSDiscreteOrdinatesProblem
+[0]  00:00:00.0 Initializing solver SteadyStateSourceSolver.
 [0]
 [0]  Scattering order    : 0
 [0]  Number of Groups    : 69
