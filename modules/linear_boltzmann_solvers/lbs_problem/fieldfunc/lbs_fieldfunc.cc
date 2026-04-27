@@ -174,30 +174,6 @@ LBSProblem::ComputeFieldFunctionPowerScaleFactor(const double power_normalizatio
   return power_normalization_target / global_total_power;
 }
 
-const std::vector<double>*
-LBSProblem::GetFieldFunctionCoefficients(const MultiGroupXS& xs, const std::string& xs_name) const
-{
-  if (xs_name == "sigma_t")
-    return &xs.GetSigmaTotal();
-  if (xs_name == "sigma_a")
-    return &xs.GetSigmaAbsorption();
-  if (xs_name == "sigma_f")
-    return xs.GetSigmaFission().empty() ? nullptr : &xs.GetSigmaFission();
-  if (xs_name == "nu_sigma_f")
-    return xs.GetNuSigmaF().empty() ? nullptr : &xs.GetNuSigmaF();
-  if (xs_name == "energy_deposition")
-    return xs.GetEnergyDeposition().empty() ? nullptr : &xs.GetEnergyDeposition();
-  if (xs_name == "chi")
-    return xs.GetChi().empty() ? nullptr : &xs.GetChi();
-  if (xs_name == "inv_velocity")
-    return xs.GetInverseVelocity().empty() ? nullptr : &xs.GetInverseVelocity();
-  if (xs.HasCustomXS(xs_name))
-    return &xs.GetCustomXS(xs_name);
-
-  throw std::logic_error(GetName() + ": Unknown 1D cross section \"" + xs_name +
-                         "\" requested for field function generation.");
-}
-
 std::vector<double>
 LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
 {
@@ -210,7 +186,7 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& xs = block_id_to_xs_map_.at(cell.block_id);
-    const auto* coeffs = GetFieldFunctionCoefficients(*xs, xs_name);
+    const auto* coeffs = xs->GetByName(xs_name);
 
     if (coeffs == nullptr)
       continue;

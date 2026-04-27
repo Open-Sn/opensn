@@ -123,6 +123,8 @@ public:
   const std::vector<double>& GetCustomXS(const std::string& name) const;
   std::vector<std::string> GetCustomXSNames() const;
 
+  const std::vector<double>* GetByName(const std::string& xs_name) const;
+
 private:
   /// Total number of groups
   unsigned int num_groups_;

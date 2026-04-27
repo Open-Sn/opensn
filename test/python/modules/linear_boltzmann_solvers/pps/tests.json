@@ -1,0 +1,26 @@
+[
+  {
+    "file": "reed_balance.py",
+    "comment": "1D Reed problem",
+    "num_procs": 1,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "transport_3d.py",
+    "comment": "Computing volumetric post-processors on 3D domain",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  }
+]

@@ -310,6 +310,28 @@ MultiGroupXS::GetCustomXSNames() const
   return names;
 }
 
+const std::vector<double>*
+MultiGroupXS::GetByName(const std::string& xs_name) const
+{
+  if (xs_name == "sigma_t")
+    return &GetSigmaTotal();
+  if (xs_name == "sigma_a")
+    return &GetSigmaAbsorption();
+  if (xs_name == "sigma_f")
+    return GetSigmaFission().empty() ? nullptr : &GetSigmaFission();
+  if (xs_name == "nu_sigma_f")
+    return GetNuSigmaF().empty() ? nullptr : &GetNuSigmaF();
+  if (xs_name == "chi")
+    return GetChi().empty() ? nullptr : &GetChi();
+  if (xs_name == "inv_velocity")
+    return GetInverseVelocity().empty() ? nullptr : &GetInverseVelocity();
+  if (HasCustomXS(xs_name))
+    return &GetCustomXS(xs_name);
+
+  throw std::logic_error("Unknown 1D cross section \"" + xs_name +
+                         "\" requested for field function generation.");
+}
+
 void
 MultiGroupXS::ComputeAbsorption()
 {
