@@ -28,6 +28,15 @@ public:
   {
   }
 
+  ArbitraryBoundary(unsigned int num_groups,
+                    std::shared_ptr<AngularFluxTimeFunction> angular_flux_time_function,
+                    CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
+    : SweepBoundary(LBSBoundaryType::ARBITRARY, num_groups, coord_type),
+      angular_flux_time_function_(std::move(angular_flux_time_function)),
+      boundary_flux_()
+  {
+  }
+
   double* PsiIncoming(std::uint32_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
@@ -43,14 +52,17 @@ public:
 
 private:
   std::shared_ptr<AngularFluxFunction> angular_flux_function_;
+  std::shared_ptr<AngularFluxTimeFunction> angular_flux_time_function_;
   NDArray<double, 2> boundary_flux_;
   std::size_t num_angles_ = 0;
   bool boundary_flux_ready_ = false;
+  double boundary_flux_time_ = 0.0;
 
   void AllocateSpace(unsigned int angle_num)
   {
     const auto required_angles = angle_num + 1;
-    if (required_angles <= num_angles_ or not angular_flux_function_)
+    if (required_angles <= num_angles_ or
+        (not angular_flux_function_ and not angular_flux_time_function_))
       return;
 
     num_angles_ = required_angles;
@@ -60,18 +72,23 @@ private:
 
   void UpdateBoundaryFlux()
   {
-    if (not angular_flux_function_)
+    if (not angular_flux_function_ and not angular_flux_time_function_)
       return;
-    if (boundary_flux_ready_)
+    const double evaluation_time = GetEvaluationTime();
+    if (boundary_flux_ready_ and boundary_flux_time_ == evaluation_time)
       return;
 
     boundary_flux_ready_ = true;
+    boundary_flux_time_ = evaluation_time;
     for (std::size_t angle = 0; angle < num_angles_; ++angle)
     {
       for (unsigned int group = 0; group < num_groups_; ++group)
       {
         const double value =
-          (*angular_flux_function_)(static_cast<int>(group), static_cast<int>(angle));
+          angular_flux_time_function_
+            ? (*angular_flux_time_function_)(
+                static_cast<int>(group), static_cast<int>(angle), evaluation_time)
+            : (*angular_flux_function_)(static_cast<int>(group), static_cast<int>(angle));
         boundary_flux_(angle, group) = value;
       }
     }

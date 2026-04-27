@@ -1,5 +1,180 @@
 [
   {
+    "file": "transient_time_dependent_boundary.py",
+    "comment": "Time-dependent isotropic and arbitrary boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE01_ISO_PULSE_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE02_DELAYED_ISO_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE03_ISO_WINDOW_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE04_INACTIVE_ISO_ZERO_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE05_INACTIVE_ARBITRARY_ZERO_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE06_ARBITRARY_CALLED_EACH_STEP_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE07_MULTIGROUP_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE08_MULTI_ARBITRARY_CONSTANT_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE09_MULTI_ARBITRARY_WINDOWS_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE10_REFLECTING_ARBITRARY_ISO_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE11_INVALID_ISO_BOUNDS_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE12_ARBITRARY_REJECTS_BOUNDS_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_2d_mixed_time_dependent_bcs.py",
+    "comment": "2D mixed time-dependent boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_MIXED_2D_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_3d_mixed_time_dependent_bcs.py",
+    "comment": "3D mixed time-dependent boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_MIXED_3D_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_2d_adjacent_reflecting_arbitrary_bcs.py",
+    "comment": "2D adjacent reflecting and arbitrary boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_ADJACENT_REFLECTING_ARBITRARY_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_3d_adjacent_reflecting_arbitrary_bcs.py",
+    "comment": "3D adjacent reflecting and arbitrary boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_ADJACENT_REFLECTING_ARBITRARY_3D_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_2d_opposing_reflecting_arbitrary_bcs.py",
+    "comment": "2D opposing reflecting and arbitrary boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_OPPOSING_REFLECTING_ARBITRARY_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_3d_opposing_reflecting_arbitrary_bcs.py",
+    "comment": "3D opposing reflecting and arbitrary boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_OPPOSING_REFLECTING_ARBITRARY_3D_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_keigen_1d_theta_precursor_scaling.py",
     "comment": "1D delayed fission source scales with theta (TransientSourceFunction check)",
     "num_procs": 4,

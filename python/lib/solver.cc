@@ -749,8 +749,20 @@ WrapLBS(py::module& slv)
               Boundary type specification.
           - group_strength: List[float], optional
               Required when ``type='isotropic'``. Isotropic strength per group.
+          - start_time: float, optional
+              Active start time for isotropic boundaries only. Defaults to -infinity.
+          - end_time: float, optional
+              Active end time for isotropic boundaries only. Defaults to infinity.
           - function: AngularFluxFunction, optional
-              Required when ``type='arbitrary'``. Callable that returns incoming angular flux.
+              Required when ``type='arbitrary'`` unless ``time_function`` is supplied. Callable
+              that returns incoming angular flux from group and direction.
+          - time_function: AngularFluxTimeFunction, optional
+              Required when ``type='arbitrary'`` unless ``function`` is supplied. Callable that
+              returns incoming angular flux from group, direction, and time.
+        Isotropic boundaries may use ``start_time``/``end_time`` for simple on/off behavior.
+        Arbitrary boundaries must specify exactly one of ``function`` or ``time_function``; use
+        ``time_function`` for time-dependent arbitrary inflow and handle any active window inside
+        that callback.
     point_sources: List[pyopensn.source.PointSource], default=[]
         A list of point sources.
     volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]
@@ -871,8 +883,20 @@ WrapLBS(py::module& slv)
               Boundary type specification.
           - group_strength: List[float], optional
               Required when ``type='isotropic'``. Isotropic strength per group.
+          - start_time: float, optional
+              Active start time for isotropic boundaries only. Defaults to -infinity.
+          - end_time: float, optional
+              Active end time for isotropic boundaries only. Defaults to infinity.
           - function: AngularFluxFunction, optional
-              Required when ``type='arbitrary'``. Callable that returns incoming angular flux.
+              Required when ``type='arbitrary'`` unless ``time_function`` is supplied. Callable
+              that returns incoming angular flux from group and direction.
+          - time_function: AngularFluxTimeFunction, optional
+              Required when ``type='arbitrary'`` unless ``function`` is supplied. Callable that
+              returns incoming angular flux from group, direction, and time.
+        Isotropic boundaries may use ``start_time``/``end_time`` for simple on/off behavior.
+        Arbitrary boundaries must specify exactly one of ``function`` or ``time_function``; use
+        ``time_function`` for time-dependent arbitrary inflow and handle any active window inside
+        that callback.
 
     Notes
     -----
@@ -1186,8 +1210,20 @@ WrapLBS(py::module& slv)
               Boundary type specification.
           - group_strength: List[float], optional
               Required when ``type='isotropic'``. Isotropic strength per group.
+          - start_time: float, optional
+              Active start time for isotropic boundaries only. Defaults to -infinity.
+          - end_time: float, optional
+              Active end time for isotropic boundaries only. Defaults to infinity.
           - function: AngularFluxFunction, optional
-              Required when ``type='arbitrary'``. Callable that returns incoming angular flux.
+              Required when ``type='arbitrary'`` unless ``time_function`` is supplied. Callable
+              that returns incoming angular flux from group and direction.
+          - time_function: AngularFluxTimeFunction, optional
+              Required when ``type='arbitrary'`` unless ``function`` is supplied. Callable that
+              returns incoming angular flux from group, direction, and time.
+        Isotropic boundaries may use ``start_time``/``end_time`` for simple on/off behavior.
+        Arbitrary boundaries must specify exactly one of ``function`` or ``time_function``; use
+        ``time_function`` for time-dependent arbitrary inflow and handle any active window inside
+        that callback.
     point_sources: List[pyopensn.source.PointSource], default=[]
         A list of point sources.
     volumetric_sources: List[pyopensn.source.VolumetricSource], default=[]

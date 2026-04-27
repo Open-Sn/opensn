@@ -344,6 +344,77 @@ WrapFunctors(py::module& math)
     py::arg("group"),
     py::arg("direction")
   );
+
+  // angular flux time function
+  auto angular_flux_time_function =
+    py::class_<AngularFluxTimeFunction, std::shared_ptr<AngularFluxTimeFunction>>(
+      math,
+      "AngularFluxTimeFunction",
+      R"(
+    Time-dependent angular flux function.
+
+    Functions that accept a group index, a direction index, and time, and return the incoming
+    angular flux value for that (group, direction, time) tuple.
+
+    Wrapper of :cpp:class:`opensn::AngularFluxTimeFunction`.
+
+    Examples
+    --------
+    >>> # Create from a Python function
+    >>> def incident_flux(group, direction, time):
+    ...     return 1.0 if group == 0 and time <= 0.5 else 0.0
+    >>> f = AngularFluxTimeFunction(incident_flux)
+    >>>
+    >>> # Create from lambda
+    >>> g = AngularFluxTimeFunction(lambda group, direction, time: time)
+    >>>
+    >>> # Evaluate
+    >>> f(0, 3, 0.25)
+    1.0
+    >>> g(1, 2, 0.5)
+    0.5
+    )"
+    );
+  angular_flux_time_function.def(
+    py::init(
+      [](const std::function<double(int, int, double)>& func)
+      {
+        return std::make_shared<AngularFluxTimeFunction>(func);
+      }
+    ),
+    R"(
+    Construct a time-dependent angular flux function from a Python function or lambda.
+
+    Parameters
+    ----------
+    func: Callable[[int, int, float], float]
+        Referenced angular flux function. The arguments are energy group index, direction index,
+        and time.
+    )",
+    py::arg("func")
+  );
+  angular_flux_time_function.def(
+    "__call__",
+    [](AngularFluxTimeFunction& self, int group, int direction, double time)
+    {
+      return self(group, direction, time);
+    },
+    R"(
+    Evaluate the associated time-dependent angular flux function.
+
+    Parameters
+    ----------
+    group: int
+        Energy group index.
+    direction: int
+        Direction index in the angular quadrature.
+    time: float
+        Evaluation time.
+    )",
+    py::arg("group"),
+    py::arg("direction"),
+    py::arg("time")
+  );
   // clang-format on
 }
 

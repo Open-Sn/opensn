@@ -36,6 +36,17 @@ public:
   }
 };
 
+/// Base class for evaluating incoming angular fluxes given group, direction, and time.
+class AngularFluxTimeFunction : public std::function<double(int, int, double)>
+{
+public:
+  AngularFluxTimeFunction() = default;
+  AngularFluxTimeFunction(const std::function<double(int, int, double)>& src)
+    : std::function<double(int, int, double)>(src)
+  {
+  }
+};
+
 /// Base class for evaluating group-wise strengths given group index and time.
 class GroupTimeFunction : public std::function<double(unsigned int, double)>
 {
