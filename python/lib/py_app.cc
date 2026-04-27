@@ -64,6 +64,7 @@ PyApp::PyApp(const mpi::Communicator& comm)
   Console::BindModule(WrapLBS);
   Console::BindModule(WrapSteadyState);
   Console::BindModule(WrapTransient);
+  Console::BindModule(WrapSLEPcKEigen);
   Console::BindModule(WrapNLKEigen);
   Console::BindModule(WrapPIteration);
   Console::BindModule(WrapDiscreteOrdinatesKEigenAcceleration);

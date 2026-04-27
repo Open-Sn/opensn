@@ -102,20 +102,18 @@ LBSVecOps::ScalePhiVector(LBSProblem& lbs_problem, PhiSTLOption phi_opt, double 
 }
 
 void
-LBSVecOps::SetGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
-                                             const LBSGroupset& groupset,
-                                             Vec dest,
-                                             PhiSTLOption src)
+LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+  LBSProblem& lbs_problem, const LBSGroupset& groupset, Vec dest, PhiSTLOption src, int64_t offset)
 {
   const auto& src_phi =
     (src == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal() : lbs_problem.GetPhiOldLocal();
   PetscScalar* petsc_dest = nullptr;
   OpenSnPETScCall(VecGetArray(dest, &petsc_dest));
-  int64_t index = GroupsetScopedCopy(lbs_problem,
-                                     groupset.first_group,
-                                     groupset.GetNumGroups(),
-                                     [&](int64_t idx, size_t mapped_idx)
-                                     { petsc_dest[idx] = src_phi[mapped_idx]; });
+  int64_t index = offset + GroupsetScopedCopy(lbs_problem,
+                                              groupset.first_group,
+                                              groupset.GetNumGroups(),
+                                              [&](int64_t idx, size_t mapped_idx)
+                                              { petsc_dest[offset + idx] = src_phi[mapped_idx]; });
   if (groupset.angle_agg)
   {
     if (src == PhiSTLOption::PHI_NEW)
@@ -127,20 +125,18 @@ LBSVecOps::SetGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
 }
 
 void
-LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(LBSProblem& lbs_problem,
-                                             const LBSGroupset& groupset,
-                                             Vec src,
-                                             PhiSTLOption dest)
+LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+  LBSProblem& lbs_problem, const LBSGroupset& groupset, Vec src, PhiSTLOption dest, int64_t offset)
 {
   auto& dest_phi =
     (dest == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal() : lbs_problem.GetPhiOldLocal();
   const PetscScalar* petsc_src = nullptr;
   OpenSnPETScCall(VecGetArrayRead(src, &petsc_src));
-  int64_t index = GroupsetScopedCopy(lbs_problem,
-                                     groupset.first_group,
-                                     groupset.GetNumGroups(),
-                                     [&](int64_t idx, size_t mapped_idx)
-                                     { dest_phi[mapped_idx] = petsc_src[idx]; });
+  int64_t index = offset + GroupsetScopedCopy(lbs_problem,
+                                              groupset.first_group,
+                                              groupset.GetNumGroups(),
+                                              [&](int64_t idx, size_t mapped_idx)
+                                              { dest_phi[mapped_idx] = petsc_src[offset + idx]; });
   if (groupset.angle_agg)
   {
     if (dest == PhiSTLOption::PHI_NEW)
@@ -234,6 +230,7 @@ LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
   PetscScalar* x_ref = nullptr;
   OpenSnPETScCall(VecGetArray(x, &x_ref));
 
+  int64_t offset = 0;
   for (auto gs_id : groupset_ids)
   {
     const auto& groupset = groupsets.at(gs_id);
@@ -241,8 +238,11 @@ LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
     auto gsf = groupset.last_group;
     auto gss = gsf - gsi + 1;
 
-    int64_t index = GroupsetScopedCopy(
-      lbs_problem, gsi, gss, [&](int64_t idx, size_t mapped_idx) { x_ref[idx] = y[mapped_idx]; });
+    int64_t index = offset + GroupsetScopedCopy(lbs_problem,
+                                                gsi,
+                                                gss,
+                                                [&](int64_t idx, size_t mapped_idx)
+                                                { x_ref[offset + idx] = y[mapped_idx]; });
     if (groupset.angle_agg)
     {
       if (which_phi == PhiSTLOption::PHI_NEW)
@@ -250,6 +250,7 @@ LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
       else if (which_phi == PhiSTLOption::PHI_OLD)
         groupset.angle_agg->AppendOldDelayedAngularDOFsToArray(index, x_ref);
     }
+    offset = index + 1;
   }
 
   OpenSnPETScCall(VecRestoreArray(x, &x_ref));
@@ -267,6 +268,7 @@ LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(LBSProblem& lbs_problem,
   const PetscScalar* x_ref = nullptr;
   OpenSnPETScCall(VecGetArrayRead(x, &x_ref));
 
+  int64_t offset = 0;
   for (auto gs_id : groupset_ids)
   {
     const auto& groupset = groupsets.at(gs_id);
@@ -274,8 +276,11 @@ LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(LBSProblem& lbs_problem,
     auto gsf = groupset.last_group;
     auto gss = gsf - gsi + 1;
 
-    int64_t index = GroupsetScopedCopy(
-      lbs_problem, gsi, gss, [&](int64_t idx, size_t mapped_idx) { y[mapped_idx] = x_ref[idx]; });
+    int64_t index = offset + GroupsetScopedCopy(lbs_problem,
+                                                gsi,
+                                                gss,
+                                                [&](int64_t idx, size_t mapped_idx)
+                                                { y[mapped_idx] = x_ref[offset + idx]; });
     if (groupset.angle_agg)
     {
       if (which_phi == PhiSTLOption::PHI_NEW)
@@ -283,6 +288,7 @@ LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(LBSProblem& lbs_problem,
       else if (which_phi == PhiSTLOption::PHI_OLD)
         groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, x_ref);
     }
+    offset = index + 1;
   }
 
   OpenSnPETScCall(VecRestoreArrayRead(x, &x_ref));
