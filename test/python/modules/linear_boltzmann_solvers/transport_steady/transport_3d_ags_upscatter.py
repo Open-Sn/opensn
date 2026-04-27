@@ -103,7 +103,7 @@ if __name__ == "__main__":
         ],
         volumetric_sources=[mg_src],
         options={
-            "verbose_ags_iterations": True,
+            "verbose_inner_iterations": False,
             "max_ags_iterations": 30,
             "ags_tolerance": 1.0e-6,
         },

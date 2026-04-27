@@ -58,7 +58,6 @@ def solve_and_get_fission_prod(xs_path):
             "use_precursors": True,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
-            "verbose_ags_iterations": False,
         },
     )
 

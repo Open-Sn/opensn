@@ -48,7 +48,6 @@ struct LBSOptions
   bool adjoint = false;
 
   bool verbose_inner_iterations = true;
-  bool verbose_ags_iterations = true;
   bool verbose_outer_iterations = true;
   bool ags_pointwise_convergence = false;
   unsigned int max_ags_iterations = 100;

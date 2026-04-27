@@ -13,7 +13,6 @@
 #include <petscksp.h>
 #include "caliper/cali.h"
 #include <memory>
-#include <iomanip>
 
 namespace opensn
 {
@@ -106,14 +105,7 @@ void
 WGSLinearSolver::PreSolveCallback()
 {
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
-  auto& groupset = gs_context_ptr->groupset;
-  auto& do_problem = gs_context_ptr->do_problem;
-  if (do_problem.GetOptions().verbose_inner_iterations)
-  {
-    log.Log() << "Solving groupset " << groupset.id << " with " << this->GetIterativeMethodName()
-              << " (groups " << groupset.first_group << "-" << groupset.last_group << ", "
-              << groupset.quadrature->abscissae.size() << " angles)\n";
-  }
+  gs_context_ptr->last_solve = {};
   gs_context_ptr->PreSolveCallback();
 }
 
@@ -134,11 +126,7 @@ WGSLinearSolver::SetInitialGuess()
   OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
 
   if (init_guess_norm > 1.0e-10)
-  {
     OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE));
-    if (gs_context_ptr->log_info)
-      log.Log() << "Using phi_old as initial guess.";
-  }
 }
 
 void
@@ -149,9 +137,6 @@ WGSLinearSolver::SetRHS()
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   auto& groupset = gs_context_ptr->groupset;
   auto& do_problem = gs_context_ptr->do_problem;
-
-  if (gs_context_ptr->log_info)
-    log.Log() << program_timer.GetTimeString() << " Computing b";
 
   // SetSource for RHS
   saved_q_moments_local_ = do_problem.GetQMomentsLocal();
@@ -220,6 +205,11 @@ WGSLinearSolver::SetRHS()
 void
 WGSLinearSolver::PostSolveCallback()
 {
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
+  auto& groupset = gs_context_ptr->groupset;
+  auto& do_problem = gs_context_ptr->do_problem;
+  const bool report_nonfatal = do_problem.GetOptions().verbose_inner_iterations;
+
   // Get convergence reason
   if (not GetKSPSolveSuppressionFlag())
   {
@@ -227,29 +217,20 @@ WGSLinearSolver::PostSolveCallback()
     OpenSnPETScCall(KSPGetConvergedReason(ksp_, &reason));
     PetscInt its = 0;
     OpenSnPETScCall(KSPGetIterationNumber(ksp_, &its));
-    if (reason < 0)
-      log.Log0Warning() << "Krylov solver diverged. "
-                        << "Reason: " << GetPETScConvergedReasonstring(reason);
-    else if (reason == KSP_CONVERGED_RTOL)
+    gs_context_ptr->last_solve.num_iterations = static_cast<unsigned int>(its);
+    gs_context_ptr->last_solve.status = KSPReasonToIterationStatus(reason);
+    gs_context_ptr->last_solve.detail = GetPETScConvergedReasonstring(reason);
+    if (report_nonfatal and (gs_context_ptr->last_solve.status == IterationStatus::FAILED or
+                             gs_context_ptr->last_solve.status == IterationStatus::LIMIT))
     {
-      auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
-      if (gs_context_ptr && gs_context_ptr->log_info && its == 0)
-        log.Log() << program_timer.GetTimeString() << " CONVERGED (relative tolerance)";
+      log.Log() << program_timer.GetTimeString() << " "
+                << FormatIterationSummary("WGS groups [" + std::to_string(groupset.first_group) +
+                                            "-" + std::to_string(groupset.last_group) + "]",
+                                          gs_context_ptr->last_solve);
     }
-    else if (reason == KSP_CONVERGED_ATOL)
-    {
-      auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
-      if (gs_context_ptr && gs_context_ptr->log_info && its == 0)
-        log.Log() << program_timer.GetTimeString() << " CONVERGED (absolute tolerance)";
-    }
-    else if (reason == KSP_DIVERGED_ITS)
-      log.Log0Warning() << "Krylov solver reached iteration limit.";
   }
 
   // Copy x to local solution
-  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
-  auto& groupset = gs_context_ptr->groupset;
-  auto& do_problem = gs_context_ptr->do_problem;
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_NEW);
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
 

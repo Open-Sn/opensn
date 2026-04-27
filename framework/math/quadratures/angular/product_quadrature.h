@@ -63,6 +63,8 @@ public:
     unsigned int scattering_order,
     bool verbose = false,
     OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
+
+  std::string GetName() const override { return "1D Slab Gauss-Legendre product"; }
 };
 
 class GLCProductQuadrature2DXY : public ProductQuadrature
@@ -75,6 +77,8 @@ public:
     unsigned int scattering_order,
     bool verbose = false,
     OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
+
+  std::string GetName() const override { return "2D XY Gauss-Legendre/Chebyshev product"; }
 };
 
 class GLCProductQuadrature3DXYZ : public ProductQuadrature
@@ -87,6 +91,8 @@ public:
     unsigned int scattering_order,
     bool verbose = false,
     OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
+
+  std::string GetName() const override { return "3D XYZ Gauss-Legendre/Chebyshev product"; }
 };
 
 } // namespace opensn

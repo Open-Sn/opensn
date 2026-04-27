@@ -4,8 +4,6 @@
 #include "framework/math/nonlinear_solver/petsc_nonlinear_solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
-#include "framework/logging/log.h"
-#include "framework/logging/stringstream_color.h"
 
 namespace opensn
 {
@@ -149,7 +147,6 @@ void
 PETScNonLinearSolver::Solve()
 {
   converged_ = false;
-  converged_reason_string_ = "Reason not obtained";
   PreSolveCallback();
   SetInitialGuess();
 
@@ -159,27 +156,8 @@ PETScNonLinearSolver::Solve()
   SNESConvergedReason conv_reason = SNES_CONVERGED_ITERATING;
   OpenSnPETScCall(SNESGetConvergedReason(nl_solver_, &conv_reason));
 
-  if (conv_reason > 0)
+  if (SNESReasonToPETScSolverStatus(conv_reason) == PETScSolverStatus::CONVERGED)
     converged_ = true;
-
-  const char* strreason = nullptr;
-  OpenSnPETScCall(SNESGetConvergedReasonString(nl_solver_, &strreason));
-
-  converged_reason_string_ = std::string(strreason);
-}
-
-std::string
-PETScNonLinearSolver::GetConvergedReasonString() const
-{
-  std::stringstream outstr;
-  if (converged_)
-    outstr << StringStreamColor(FG_GREEN) << std::string(10, ' ') << "Converged "
-           << converged_reason_string_ << StringStreamColor(RESET);
-  else
-    outstr << StringStreamColor(FG_RED) << std::string(10, ' ') << "Convergence failure "
-           << converged_reason_string_ << StringStreamColor(RESET);
-
-  return outstr.str();
 }
 
 } // namespace opensn

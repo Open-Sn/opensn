@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
+#include "framework/utils/timer.h"
 #include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
 #include "framework/data_types/parallel_vector/parallel_stl_vector.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
@@ -14,6 +15,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
+#include <sstream>
 
 namespace opensn
 {
@@ -169,6 +172,7 @@ SMMAcceleration::PostPowerIteration()
   double lambda = solver_->GetEigenvalue();
   double lambda_old = solver_->GetEigenvalue();
   double F0_old = ComputeFissionProduction(do_problem_, phi_new_local_);
+  bool converged = false;
 
   for (int m = 0; m < pi_max_its_; ++m)
   {
@@ -206,10 +210,21 @@ SMMAcceleration::PostPowerIteration()
 
     // Check for convergence
     const double lambda_change = std::fabs(lambda / lambda_old - 1.0);
-    const auto converged = lambda_change < pi_k_tol_;
+    const bool converged_this_iteration = lambda_change < pi_k_tol_;
+    const auto status = IterationStatusFromSolve(converged_this_iteration, m + 1 == pi_max_its_);
     if (verbose_)
-      log.Log() << "SMM PI iteration " << m << "  lambda " << lambda << "  change " << lambda_change
-                << (converged ? "  CONVERGED" : "");
+    {
+      std::ostringstream out;
+      out << "SMM PI iteration = " << m;
+      AppendNumericField(out, "lambda", lambda, Fixed(7));
+      AppendNumericField(out, "lambda_change", lambda_change, Scientific(6));
+      if (status != IterationStatus::NONE)
+        out << ", status = " << IterationStatusName(status);
+      log.Log() << program_timer.GetTimeString() << " " << out.str();
+    }
+
+    if (converged_this_iteration)
+      converged = true;
 
     // Bump variables for next iteration
     lambda_old = lambda;

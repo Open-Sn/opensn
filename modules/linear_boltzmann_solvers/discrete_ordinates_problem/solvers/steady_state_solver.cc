@@ -47,6 +47,7 @@ void
 SteadyStateSourceSolver::Initialize()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Initialize");
+  log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
 
   OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
                           GetName() + ": Problem is in time-dependent mode. Call problem."
@@ -61,6 +62,7 @@ void
 SteadyStateSourceSolver::Execute()
 {
   CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Execute");
+  log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
 
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
@@ -80,6 +82,8 @@ SteadyStateSourceSolver::Execute()
 
   if (IsBalanceEnabled())
     ComputeBalance(*do_problem_);
+
+  log.Log() << program_timer.GetTimeString() << " Finished solver execution " << GetName() << ".";
 }
 
 BalanceTable

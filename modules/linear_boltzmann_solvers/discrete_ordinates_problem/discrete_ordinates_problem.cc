@@ -45,7 +45,6 @@
 #include <cassert>
 #include <cmath>
 #include <iomanip>
-#include <numeric>
 #include <sstream>
 #include <stdexcept>
 
@@ -521,7 +520,10 @@ DiscreteOrdinatesProblem::PrintSimHeader()
     for (const auto& groupset : groupsets_)
     {
       outstr << "***** Groupset " << groupset.id << " *****\n"
+             << "Quadrature type : " << groupset.quadrature->GetName() << "\n"
              << "Number of angles: " << groupset.quadrature->abscissae.size() << "\n"
+             << "Quadrature norm : " << std::fixed << std::setprecision(2)
+             << groupset.quadrature->GetWeightSum() << std::defaultfloat << "\n"
              << "Groups:\n";
       const auto n_gs_groups = groupset.GetNumGroups();
       constexpr int groups_per_line = 12;
@@ -599,6 +601,7 @@ DiscreteOrdinatesProblem::BuildRuntime()
     WGDSA::Init(*this, groupset);
     TGDSA::Init(*this, groupset);
   }
+  log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
   InitializeSolverSchemes();
 }
 
@@ -633,7 +636,7 @@ DiscreteOrdinatesProblem::InitializeSolverSchemes()
   else
   {
     ags_solver_->SetMaxIterations(options_.max_ags_iterations);
-    ags_solver_->SetVerbosity(options_.verbose_ags_iterations);
+    ags_solver_->SetVerbosity(options_.verbose_inner_iterations);
   }
   ags_solver_->SetTolerance(options_.ags_tolerance);
 }
@@ -1866,9 +1869,6 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
     } // for an_ss
   } // for so_grouping
-
-  if (options_.verbose_inner_iterations)
-    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
 
   opensn::mpi_comm.barrier();
 }

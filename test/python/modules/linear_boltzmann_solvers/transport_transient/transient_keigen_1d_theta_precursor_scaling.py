@@ -58,7 +58,6 @@ def run_case(theta, use_precursors, xs):
             "use_precursors": use_precursors,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
-            "verbose_ags_iterations": False,
         },
     )
 

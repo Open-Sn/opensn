@@ -29,6 +29,8 @@ public:
                          bool verbose = false,
                          OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
+  std::string GetName() const override { return "3D XYZ Lebedev"; }
+
 private:
   /// Load quadrature points for the given order from predefined tabulated data.
   void LoadFromOrder(unsigned int quadrature_order, bool verbose = false);
@@ -51,6 +53,8 @@ public:
                         unsigned int scattering_order,
                         bool verbose = false,
                         OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
+
+  std::string GetName() const override { return "2D XY Lebedev"; }
 
 private:
   /// Load upper-hemisphere points for the given order, halving weights at the equator.

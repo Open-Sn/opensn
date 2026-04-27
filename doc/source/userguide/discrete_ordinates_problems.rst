@@ -206,7 +206,6 @@ The most important options for everyday use are:
 * ``max_ags_iterations``
 * ``ags_tolerance``
 * ``ags_convergence_check``
-* ``verbose_ags_iterations``
 * ``field_function_prefix_option``
 * ``field_function_prefix``
 

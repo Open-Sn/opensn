@@ -8,9 +8,9 @@
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/utils/timer.h"
 #include "caliper/cali.h"
 #include <petscksp.h>
-#include <iomanip>
 
 namespace opensn
 {
@@ -107,19 +107,6 @@ SweepWGSContext::GetSystemSize()
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
   const size_t global_size =
     global_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
-  const size_t num_angles = groupset.quadrature->abscissae.size();
-  const size_t num_psi_global = global_node_count * num_angles * groupset.GetNumGroups();
-  const size_t num_delayed_psi_global = num_delayed_psi_info.second;
-
-  if (log_info)
-  {
-    log.Log() << "Total number of angular unknowns: " << num_psi_global << "\n"
-              << "Number of lagged angular unknowns: " << num_delayed_psi_global << "("
-              << std::setprecision(2)
-              << static_cast<double>(num_delayed_psi_global) * 100 /
-                   static_cast<double>(num_psi_global)
-              << "%)";
-  }
 
   return {static_cast<int64_t>(local_size), static_cast<int64_t>(global_size)};
 }
@@ -127,7 +114,6 @@ SweepWGSContext::GetSystemSize()
 void
 SweepWGSContext::PreSolveCallback()
 {
-  sweep_times.clear();
 }
 
 void
@@ -150,7 +136,8 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 
   auto sweep_time =
     static_cast<double>(duration_cast<nanoseconds>(sweep_end - sweep_start).count()) / 1.0e+9;
-  sweep_times.push_back(sweep_time);
+  sweep_stats_.total_sweep_time += sweep_time;
+  ++sweep_stats_.num_sweeps;
 }
 
 void
@@ -168,29 +155,6 @@ SweepWGSContext::PostSolveCallback()
   {
     RebuildAngularFluxFromConvergedPhi(sweep_chunk->IsTimeDependent());
   }
-
-  if (log_info)
-  {
-    if (not sweep_times.empty())
-    {
-      double tot_sweep_time = 0.0;
-      auto num_sweeps = static_cast<double>(sweep_times.size());
-      for (auto time : sweep_times)
-        tot_sweep_time += time;
-      double avg_sweep_time = tot_sweep_time / num_sweeps;
-      size_t num_angles = groupset.quadrature->abscissae.size();
-      size_t num_unknowns = do_problem.GetGlobalNodeCount() * num_angles * groupset.GetNumGroups();
-      double max_avg_sweep_time = 0.0;
-      opensn::mpi_comm.all_reduce(&avg_sweep_time, 1, &max_avg_sweep_time, mpi::op::max<double>());
-
-      log.Log() << "\n       Average sweep time (s):        " << max_avg_sweep_time
-                << "\n       Sweep Time/Unknown (ns):       "
-                << max_avg_sweep_time * 1.0e9 / static_cast<double>(num_unknowns)
-                << "\n       Number of unknowns per sweep:  " << num_unknowns << "\n\n";
-    }
-  }
-
-  sweep_times.clear();
 }
 
 } // namespace opensn

@@ -7,10 +7,11 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
+#include "framework/logging/log_format.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include <iomanip>
+#include "framework/utils/timer.h"
 
 namespace opensn
 {
@@ -117,12 +118,22 @@ NLKEigenDiffSolver::PostSolveCallback()
 
   PetscInt number_of_func_evals = 0;
   OpenSnPETScCall(SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals));
+  SNESConvergedReason reason = SNES_CONVERGED_ITERATING;
+  OpenSnPETScCall(SNESGetConvergedReason(nl_solver_, &reason));
+  const auto status = SNESReasonToPETScSolverStatus(reason);
 
   // Print summary
   if (nl_context_ptr->verbosity_level >= 1)
-    log.Log() << "        Final lambda-eigenvalue    :        " << std::fixed << std::setw(10)
-              << std::setprecision(7) << k_eff << " (num_DOps:" << number_of_func_evals << ")"
-              << "\n";
+  {
+    std::stringstream summary;
+    summary << "NLKE diffusion final, status = " << PETScSolverStatusName(status);
+    AppendNumericField(summary, "k_eff", k_eff, Fixed(7));
+    AppendNumericField(
+      summary, "function_evaluations", static_cast<std::size_t>(number_of_func_evals));
+    if (log.GetVerbosity() >= 2)
+      summary << ", detail = " << GetPETScConvergedReasonstring(reason);
+    log.Log() << program_timer.GetTimeString() << " " << summary.str();
+  }
 }
 
 } // namespace opensn

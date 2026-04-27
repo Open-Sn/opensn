@@ -124,10 +124,6 @@ GLProductQuadrature1DSlab::GLProductQuadrature1DSlab(unsigned int Npolar,
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
-
-  log.Log() << "Using 1D Slab Gauss–Legendre product quadrature with " << omegas.size()
-            << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_
-            << std::endl;
 }
 
 GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(unsigned int Npolar,
@@ -172,10 +168,6 @@ GLCProductQuadrature2DXY::GLCProductQuadrature2DXY(unsigned int Npolar,
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
-
-  log.Log() << "Using 2D XY Gauss–Legendre/Chebyshev product quadrature with " << omegas.size()
-            << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_
-            << std::endl;
 }
 
 GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(unsigned int Npolar,
@@ -219,10 +211,6 @@ GLCProductQuadrature3DXYZ::GLCProductQuadrature3DXYZ(unsigned int Npolar,
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
-
-  log.Log() << "Using 3D XYZ Gauss–Legendre/Chebyshev product quadrature with " << omegas.size()
-            << " angles and weight sum of " << std::fixed << std::setprecision(2) << weight_sum_
-            << std::endl;
 }
 
 } // namespace opensn

@@ -3,12 +3,13 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_convergence_test.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
-#include <iomanip>
 
 namespace opensn
 {
@@ -57,24 +58,20 @@ GSConvergenceTest(
   double scaled_residual = rnorm * residual_scale;
 
   // Print iteration information
-  std::string offset;
-  if (context->groupset.apply_wgdsa or context->groupset.apply_tgdsa)
-    offset = std::string("    ");
-
   std::stringstream iter_info;
-  iter_info << program_timer.GetTimeString() << " " << offset << "WGS groups ["
-            << context->groupset.first_group << "-" << context->groupset.last_group << "]"
-            << " Iteration " << std::setw(5) << n << " Residual " << std::setw(9)
-            << scaled_residual;
+  iter_info << program_timer.GetTimeString() << " WGS groups [" << context->groupset.first_group
+            << "-" << context->groupset.last_group << "]"
+            << " iteration = " << n;
+  AppendNumericField(iter_info, "residual", scaled_residual, Scientific(6));
 
   if (scaled_residual < tol)
   {
-    *convergedReason = KSP_CONVERGED_RTOL;
-    iter_info << " CONVERGED\n";
+    *convergedReason = KSP_CONVERGED_ATOL;
+    iter_info << ", status = " << IterationStatusName(KSPReasonToIterationStatus(*convergedReason));
   }
 
   if (context->log_info)
-    log.Log() << iter_info.str() << std::endl;
+    log.Log() << iter_info.str();
 
   return PETSC_SUCCESS;
 }

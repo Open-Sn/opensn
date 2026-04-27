@@ -1,0 +1,251 @@
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "framework/logging/log_format.h"
+#include "framework/logging/log.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
+#include "framework/runtime.h"
+#include <algorithm>
+#include <sstream>
+#include <string>
+#include <vector>
+
+namespace opensn
+{
+
+enum class IterationStatus
+{
+  NONE,
+  CONVERGED,
+  LIMIT,
+  FAILED,
+};
+
+struct IterationSummary
+{
+  unsigned int num_iterations = 0;
+  IterationStatus status = IterationStatus::NONE;
+  std::string detail;
+  std::string metric_name;
+  double metric_value = 0.0;
+};
+
+inline const char*
+IterationStatusName(const IterationStatus status)
+{
+  switch (status)
+  {
+    case IterationStatus::CONVERGED:
+      return "converged";
+    case IterationStatus::LIMIT:
+      return "iteration_limit";
+    case IterationStatus::FAILED:
+      return "failed";
+    case IterationStatus::NONE:
+    default:
+      return "not_run";
+  }
+}
+
+inline bool
+HasIterationStatus(const IterationSummary& summary)
+{
+  return summary.status != IterationStatus::NONE;
+}
+
+inline IterationStatus
+PETScSolverStatusToIterationStatus(const PETScSolverStatus status)
+{
+  switch (status)
+  {
+    case PETScSolverStatus::CONVERGED:
+      return IterationStatus::CONVERGED;
+    case PETScSolverStatus::LIMIT:
+      return IterationStatus::LIMIT;
+    case PETScSolverStatus::FAILED:
+      return IterationStatus::FAILED;
+    case PETScSolverStatus::ITERATING:
+    case PETScSolverStatus::NONE:
+    default:
+      return IterationStatus::NONE;
+  }
+}
+
+inline IterationStatus
+KSPReasonToIterationStatus(const KSPConvergedReason reason)
+{
+  return PETScSolverStatusToIterationStatus(KSPReasonToPETScSolverStatus(reason));
+}
+
+inline IterationStatus
+MostSevereIterationStatus(const IterationStatus lhs, const IterationStatus rhs)
+{
+  const auto severity = [](const IterationStatus status)
+  {
+    switch (status)
+    {
+      case IterationStatus::FAILED:
+        return 3;
+      case IterationStatus::LIMIT:
+        return 2;
+      case IterationStatus::CONVERGED:
+        return 1;
+      case IterationStatus::NONE:
+      default:
+        return 0;
+    }
+  };
+  return severity(lhs) >= severity(rhs) ? lhs : rhs;
+}
+
+inline IterationStatus
+MostSevereIterationStatus(const std::vector<IterationSummary>& summaries)
+{
+  IterationStatus status = IterationStatus::NONE;
+  for (const auto& summary : summaries)
+    status = MostSevereIterationStatus(status, summary.status);
+  return status;
+}
+
+inline IterationStatus
+IterationStatusFromSolve(const bool converged,
+                         const bool reached_iteration_limit,
+                         const IterationStatus inner_status = IterationStatus::NONE)
+{
+  if (inner_status == IterationStatus::FAILED or inner_status == IterationStatus::LIMIT)
+    return inner_status;
+  if (converged)
+    return IterationStatus::CONVERGED;
+  return reached_iteration_limit ? IterationStatus::LIMIT : IterationStatus::NONE;
+}
+
+inline std::string
+FormatNestedStatusSummary(const std::string& level_name, const IterationStatus status)
+{
+  return "; " + level_name + " = " + IterationStatusName(status);
+}
+
+inline std::string
+FormatNestedStatusCounts(const std::string& level_name,
+                         const std::vector<IterationSummary>& summaries)
+{
+  if (summaries.empty())
+    return "";
+
+  const auto first_status = summaries.front().status;
+  const bool all_same =
+    std::all_of(summaries.begin(),
+                summaries.end(),
+                [first_status](const auto& summary) { return summary.status == first_status; });
+  if (all_same)
+    return FormatNestedStatusSummary(level_name, first_status);
+
+  const auto count = [&summaries](const IterationStatus status) -> std::size_t
+  {
+    return static_cast<std::size_t>(std::count_if(summaries.begin(),
+                                                  summaries.end(),
+                                                  [status](const auto& summary)
+                                                  { return summary.status == status; }));
+  };
+  const auto append_count =
+    [](std::ostringstream& out, const char* label, const std::size_t value, bool& first)
+  {
+    if (value == 0)
+      return;
+    out << (first ? "" : ", ") << label << " = " << value;
+    first = false;
+  };
+
+  std::ostringstream out;
+  bool first = true;
+  out << "; " << level_name << " = mixed (";
+  append_count(out, "converged", count(IterationStatus::CONVERGED), first);
+  append_count(out, "iteration_limit", count(IterationStatus::LIMIT), first);
+  append_count(out, "failed", count(IterationStatus::FAILED), first);
+  append_count(out, "not_run", count(IterationStatus::NONE), first);
+  out << ")";
+  return out.str();
+}
+
+inline std::string
+FormatIterationSummary(const std::string& label, const IterationSummary& summary)
+{
+  std::ostringstream out;
+  out << label << " final, status = " << IterationStatusName(summary.status);
+  AppendNumericField(out, "iterations", summary.num_iterations);
+  if (opensn::log.GetVerbosity() >= 2 and not summary.detail.empty())
+    out << ", detail = " << summary.detail;
+  if (not summary.metric_name.empty())
+    AppendNumericField(out, summary.metric_name, summary.metric_value, Scientific(6));
+  return out.str();
+}
+
+inline std::string
+FormatKEigenOuterIteration(const std::string& phase_name,
+                           const unsigned int iteration,
+                           const double k_eff,
+                           const double k_eff_change,
+                           const double reactivity_pcm,
+                           const IterationSummary& ags_summary,
+                           const std::vector<IterationSummary>& wgs_summaries,
+                           const IterationStatus outer_status)
+{
+  std::ostringstream out;
+  out << phase_name << " iteration = " << iteration;
+  AppendNumericField(out, "k_eff", k_eff, Fixed(7));
+  AppendNumericField(out, "k_eff_change", k_eff_change, Scientific(5));
+  AppendNumericField(out, "rho_pcm", reactivity_pcm, Fixed(2));
+  if (outer_status != IterationStatus::NONE)
+    out << ", status = " << IterationStatusName(outer_status);
+  if (HasIterationStatus(ags_summary))
+    out << FormatNestedStatusSummary("AGS", ags_summary.status);
+  out << FormatNestedStatusCounts("WGS", wgs_summaries);
+  return out.str();
+}
+
+inline std::string
+FormatTransientStepSummary(const std::string& phase_name,
+                           const unsigned int step,
+                           const double dt,
+                           const double time,
+                           const IterationSummary& ags_summary,
+                           const std::vector<IterationSummary>& wgs_summaries)
+{
+  std::ostringstream out;
+  out << phase_name << " step = " << step;
+  AppendNumericField(out, "dt", dt, Scientific(1));
+  AppendNumericField(out, "time", time, Fixed(4));
+  const auto ags_status =
+    HasIterationStatus(ags_summary) ? ags_summary.status : IterationStatus::NONE;
+  const auto inner_status =
+    MostSevereIterationStatus(ags_status, MostSevereIterationStatus(wgs_summaries));
+  if (inner_status != IterationStatus::NONE)
+    out << ", status = " << IterationStatusName(inner_status);
+  if (HasIterationStatus(ags_summary))
+    out << FormatNestedStatusSummary("AGS", ags_summary.status);
+  out << FormatNestedStatusCounts("WGS", wgs_summaries);
+  return out.str();
+}
+
+inline std::string
+FormatKEigenFinalSummary(const std::string& phase_name,
+                         const double k_eff,
+                         const double change,
+                         const std::size_t count,
+                         const std::string& count_label,
+                         const IterationStatus status = IterationStatus::NONE)
+{
+  std::ostringstream out;
+  out << phase_name << " final";
+  if (status != IterationStatus::NONE)
+    out << ", status = " << IterationStatusName(status);
+  AppendNumericField(out, "k_eff", k_eff, Fixed(7));
+  if (change >= 0.0)
+    AppendNumericField(out, "k_eff_change", change, Scientific(6));
+  AppendNumericField(out, count_label, count);
+  return out.str();
+}
+
+} // namespace opensn

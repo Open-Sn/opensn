@@ -2,14 +2,56 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/diffusion/diffusion.h"
+#include "framework/logging/log_format.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/utils/timer.h"
+#include <sstream>
 
 namespace opensn
 {
+
+namespace
+{
+
+void
+LogDiffusionSolveStart(const std::string& name, Vec rhs)
+{
+  double rhs_norm = 0.0;
+  OpenSnPETScCall(VecNorm(rhs, NORM_2, &rhs_norm));
+
+  std::ostringstream out;
+  out << name << " solve";
+  AppendNumericField(out, "rhs_norm", rhs_norm, Scientific(6));
+  log.Log() << program_timer.GetTimeString() << " " << out.str();
+}
+
+void
+LogDiffusionSolveFinal(const std::string& name, KSP ksp, Vec x)
+{
+  double solution_norm = 0.0;
+  OpenSnPETScCall(VecNorm(x, NORM_2, &solution_norm));
+
+  KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
+  OpenSnPETScCall(KSPGetConvergedReason(ksp, &reason));
+  PetscInt iterations = 0;
+  OpenSnPETScCall(KSPGetIterationNumber(ksp, &iterations));
+
+  const auto status = KSPReasonToPETScSolverStatus(reason);
+
+  std::ostringstream out;
+  out << name << " final, status = " << PETScSolverStatusName(status);
+  AppendNumericField(out, "iterations", static_cast<std::size_t>(iterations));
+  AppendNumericField(out, "solution_norm", solution_norm, Scientific(6));
+  if (log.GetVerbosity() >= 2)
+    out << ", detail = " << GetPETScConvergedReasonstring(reason);
+  log.Log() << program_timer.GetTimeString() << " " << out.str();
+}
+
+} // namespace
 
 DiffusionSolver::DiffusionSolver(std::string name,
                                  const opensn::SpatialDiscretization& sdm,
@@ -209,10 +251,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   if (options.verbose)
   {
     OpenSnPETScCall(KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr));
-
-    double rhs_norm = 0.0;
-    OpenSnPETScCall(VecNorm(rhs_, NORM_2, &rhs_norm));
-    log.Log() << "RHS-norm " << rhs_norm;
+    LogDiffusionSolveStart(name_, rhs_);
   }
 
   if (use_initial_guess)
@@ -230,16 +269,7 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 
   // Print convergence info
   if (options.verbose)
-  {
-    double sol_norm = 0.0;
-    OpenSnPETScCall(VecNorm(x, NORM_2, &sol_norm));
-    log.Log() << "Solution-norm " << sol_norm;
-
-    KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
-    OpenSnPETScCall(KSPGetConvergedReason(ksp_, &reason));
-
-    log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
-  }
+    LogDiffusionSolveFinal(name_, ksp_, x);
 
   // Transfer petsc solution to vector
   if (requires_ghosts_)
@@ -281,10 +311,7 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   if (options.verbose)
   {
     OpenSnPETScCall(KSPMonitorSet(ksp_, &KSPMonitorRelativeToRHS, nullptr, nullptr));
-
-    double rhs_norm = 0.0;
-    OpenSnPETScCall(VecNorm(rhs_, NORM_2, &rhs_norm));
-    log.Log() << "RHS-norm " << rhs_norm;
+    LogDiffusionSolveStart(name_, rhs_);
   }
 
   if (use_initial_guess)
@@ -297,16 +324,7 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 
   // Print convergence info
   if (options.verbose)
-  {
-    double sol_norm = 0.0;
-    OpenSnPETScCall(VecNorm(x, NORM_2, &sol_norm));
-    log.Log() << "Solution-norm " << sol_norm;
-
-    KSPConvergedReason reason = KSP_CONVERGED_ITERATING;
-    OpenSnPETScCall(KSPGetConvergedReason(ksp_, &reason));
-
-    log.Log() << "Convergence Reason: " << GetPETScConvergedReasonstring(reason);
-  }
+    LogDiffusionSolveFinal(name_, ksp_, x);
 
   // Transfer petsc solution to vector
   OpenSnPETScCall(VecCopy(x, petsc_solution));

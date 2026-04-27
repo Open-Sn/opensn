@@ -6,8 +6,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "NLKE final",
+        "wordnum": 13,
         "gold": 0.99454,
         "abs_tol": 1e-05
       }
@@ -20,14 +20,14 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "Iteration    21",
-        "wordnum": 11,
-        "gold": "CONVERGED"
+        "key": "PI final",
+        "wordnum": 8,
+        "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "PI final",
+        "wordnum": 13,
         "gold": 0.5969127,
         "abs_tol": 1e-07
       }
@@ -94,15 +94,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Iteration     3",
-        "wordnum": 8,
-        "gold": 0.5969127,
-        "abs_tol": 1e-07
-      },
-      {
-        "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "NLKE final",
+        "wordnum": 13,
         "gold": 0.5969127,
         "abs_tol": 1e-07
       }
@@ -115,8 +108,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "PI final",
+        "wordnum": 13,
         "gold": 0.5969127,
         "abs_tol": 1e-07
       }
@@ -129,8 +122,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "NLKE final",
+        "wordnum": 13,
         "gold": 0.99454,
         "abs_tol": 1e-05
       }
@@ -143,14 +136,14 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "Iteration    21",
-        "wordnum": 11,
-        "gold": "CONVERGED"
+        "key": "PI final",
+        "wordnum": 8,
+        "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "PI final",
+        "wordnum": 13,
         "gold": 0.5969127,
         "abs_tol": 1e-07
       }
@@ -163,8 +156,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "NLKE final",
+        "wordnum": 13,
         "gold": 0.5969127,
         "abs_tol": 1e-07
       }
@@ -190,8 +183,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "NLKE final",
+        "wordnum": 13,
         "gold": 1.5029618,
         "abs_tol": 1e-05
       }
@@ -204,8 +197,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "NLKE final",
+        "wordnum": 13,
         "gold": 1.5029618,
         "abs_tol": 1e-05
       }
@@ -219,8 +212,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "PI final",
+        "wordnum": 13,
         "gold": 1.192559,
         "abs_tol": 0.0001
       }
@@ -287,8 +280,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "PI final",
+        "wordnum": 13,
         "gold": 0.929337,
         "abs_tol": 1e-06
       }
@@ -301,8 +294,8 @@
     "checks": [
       {
         "type": "FloatCompare",
-        "key": "Final k-eigenvalue",
-        "wordnum": 4,
+        "key": "PI final",
+        "wordnum": 13,
         "gold": 0.995,
         "abs_tol": 1e-04
       },

@@ -30,8 +30,6 @@ public:
 
   bool IsConverged() const { return converged_; }
 
-  std::string GetConvergedReasonString() const;
-
   void Setup() override;
 
   void Solve() override;
@@ -67,7 +65,6 @@ protected:
 private:
   bool system_set_;
   bool converged_;
-  std::string converged_reason_string_;
 };
 
 } // namespace opensn

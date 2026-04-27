@@ -49,6 +49,8 @@ public:
 
   ~GLCProductQuadrature2DRZ() override = default;
 
+  std::string GetName() const override { return "2D RZ Gauss-Legendre/Chebyshev product"; }
+
   void MakeHarmonicIndices();
 
 private:
@@ -71,6 +73,8 @@ public:
     OperatorConstructionMethod method = OperatorConstructionMethod::STANDARD);
 
   ~GLProductQuadrature1DSpherical() override = default;
+
+  std::string GetName() const override { return "1D Spherical Gauss-Legendre product"; }
 
   void MakeHarmonicIndices();
 

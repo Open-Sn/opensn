@@ -173,7 +173,6 @@ Problem options available in Python include:
 * ``max_ags_iterations``
 * ``ags_tolerance``
 * ``ags_convergence_check``
-* ``verbose_ags_iterations``
 * ``field_function_prefix_option``
 * ``field_function_prefix``
 

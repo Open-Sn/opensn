@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/math/linear_solver/linear_solver_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
 #include <vector>
 #include <functional>
@@ -52,6 +53,7 @@ struct WGSContext : public LinearSystemContext
   SourceFlags rhs_src_scope;
   bool log_info = true;
   size_t counter_applications_of_inv_op = 0;
+  IterationSummary last_solve;
 };
 
 } // namespace opensn
