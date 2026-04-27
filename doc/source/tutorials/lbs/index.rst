@@ -7,5 +7,6 @@ Linear Boltzmann Solver
 
    primer/index
    keigen/index
+   9pebs/index
    src_driven/index
    transient/index
