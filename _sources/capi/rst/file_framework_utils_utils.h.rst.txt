@@ -38,6 +38,8 @@ Includes
 
 - ``framework/data_types/byte_array.h`` (:ref:`file_framework_data_types_byte_array.h`)
 
+- ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
+
 - ``fstream``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
@@ -88,6 +90,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a42a78c325fb9db322461ef9a50f0e61f`
 
 - :ref:`exhale_function_namespaceopensn_1acb70f37bd02323306b8c93c8420cd98c`
+
+- :ref:`exhale_function_namespaceopensn_1ac84a4495f09f1bb632002e860739a0b7`
 
 - :ref:`exhale_function_namespaceopensn_1af0816584bd9b03fe6f0e916b2596fedd`
 

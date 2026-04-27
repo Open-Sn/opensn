@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ac84a4495f09f1bb632002e860739a0b7:
+
+Template Function opensn::MemCopyRow
+====================================
+
+- Defined in :ref:`file_framework_utils_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::MemCopyRow(NDArray<T, 2>&, unsigned int, const std::vector<T>&)
+   :project: opensn

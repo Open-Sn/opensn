@@ -1610,6 +1610,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_volume_postprocessor.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_volumetric_finite_element_data.rst
 
 .. toctree::
@@ -2174,6 +2179,11 @@ Directories
    :maxdepth: 1
 
    dir_modules_linear_boltzmann_solvers_lbs_problem_point_source.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   dir_modules_linear_boltzmann_solvers_lbs_problem_postprocessors.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3308,6 +3318,11 @@ Files
    :maxdepth: 1
 
    file_framework_data_types_vector_ghost_communicator_vector_ghost_communicator.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_volume_postprocessor.h.rst
 
 .. toctree::
    :maxdepth: 1

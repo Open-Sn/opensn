@@ -97,9 +97,17 @@
 <li class="toctree-l4"><a class="reference internal" href="#volume-interpolation">24.7.3. Volume Interpolation</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#other-useful-post-processing-paths">24.8. Other Useful Post-Processing Paths</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#transient-workflows">24.9. Transient Workflows</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">24.10. Practical Guidance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#volume-postprocessor">24.8. Volume Postprocessor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basic-usage">24.8.1. Basic Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spatial-restriction">24.8.2. Spatial Restriction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#energy-restriction">24.8.3. Energy Restriction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multipliers-and-cross-section-weighting">24.8.4. Multipliers and Cross-Section Weighting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#results">24.8.5. Results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#other-useful-post-processing-paths">24.9. Other Useful Post-Processing Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-workflows">24.10. Transient Workflows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">24.11. Practical Guidance</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
@@ -443,8 +451,171 @@ averages, sums, maxima, and function-weighted variants over a logical volume.</p
 <code class="docutils literal notranslate"><span class="pre">SetOperationFunction</span></code>.</p>
 </section>
 </section>
+<section id="volume-postprocessor">
+<h2><span class="section-number">24.8. </span>Volume Postprocessor<a class="headerlink" href="#volume-postprocessor" title="Link to this heading"></a></h2>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.post.VolumePostprocessor</span></code> computes scalar-flux integrals,
+maxima, minima, or volume-weighted averages over spatial regions and energy
+groups. It produces a single result value per region and group, making it useful
+for reaction rates and monitoring quantities across geometry subsets or
+energy ranges.</p>
+<section id="basic-usage">
+<h3><span class="section-number">24.8.1. </span>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h3>
+<p>Create and execute a volume postprocessor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.post</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumePostprocessor</span>
+
+<span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">pps</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">pps</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Available operation types are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;integral&quot;</span></code> — volume-weighted integral of scalar flux</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;avg&quot;</span></code> — volume-weighted average of scalar flux</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code> — maximum scalar flux in region</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;min&quot;</span></code> — minimum scalar flux in region</p></li>
+</ul>
+</section>
+<section id="spatial-restriction">
+<h3><span class="section-number">24.8.2. </span>Spatial Restriction<a class="headerlink" href="#spatial-restriction" title="Link to this heading"></a></h3>
+<p>By default, a postprocessor operates over the entire domain. Restrict computation
+to mesh blocks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Or restrict to one or more logical volumes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+
+<span class="n">lv</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span>
+    <span class="n">logical_volumes</span><span class="o">=</span><span class="p">[</span><span class="n">lv</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Combine block and logical-volume restrictions — the postprocessor uses only cells
+inside both:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lv1</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">lv2</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">logical_volumes</span><span class="o">=</span><span class="p">[</span><span class="n">lv1</span><span class="p">,</span> <span class="n">lv2</span><span class="p">],</span>
+    <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Each logical volume produces one row of results.</p>
+</section>
+<section id="energy-restriction">
+<h3><span class="section-number">24.8.3. </span>Energy Restriction<a class="headerlink" href="#energy-restriction" title="Link to this heading"></a></h3>
+<p>By default, a postprocessor returns results for all energy groups. Restrict to a
+single group:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">group</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Or restrict to a single groupset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">groupset</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">group</span></code> and <code class="docutils literal notranslate"><span class="pre">groupset</span></code> parameters are mutually exclusive.</p>
+</section>
+<section id="multipliers-and-cross-section-weighting">
+<h3><span class="section-number">24.8.4. </span>Multipliers and Cross-Section Weighting<a class="headerlink" href="#multipliers-and-cross-section-weighting" title="Link to this heading"></a></h3>
+<p>By default, the postprocessor multiplies each group’s scalar flux by 1.0. Apply a
+uniform multiplier:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">multiplier</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Apply group-specific multipliers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">group_mults</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]</span>  <span class="c1"># one per group</span>
+<span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">group_multipliers</span><span class="o">=</span><span class="n">group_mults</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Weight by a cross section (for example, fission rate):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">xs_multiplier</span><span class="o">=</span><span class="s2">&quot;sigma_f&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The cross-section name must exist in the problem’s XS definitions. Only one of
+<code class="docutils literal notranslate"><span class="pre">multiplier</span></code>, <code class="docutils literal notranslate"><span class="pre">group_multipliers</span></code>, and <code class="docutils literal notranslate"><span class="pre">xs_multiplier</span></code> may be specified.</p>
+</section>
+<section id="results">
+<h3><span class="section-number">24.8.5. </span>Results<a class="headerlink" href="#results" title="Link to this heading"></a></h3>
+<p>After calling <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>, retrieve results with <code class="docutils literal notranslate"><span class="pre">GetValue()</span></code>. The return
+value is a 2D array indexed as <code class="docutils literal notranslate"><span class="pre">result[region][group]</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">pps</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">pps</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+
+<span class="c1"># Single region, all groups</span>
+<span class="c1"># result[0] is a vector of values, one per group</span>
+<span class="k">for</span> <span class="n">group_index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group </span><span class="si">{</span><span class="n">group_index</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With multiple logical volumes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lv1</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">lv2</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">logical_volumes</span><span class="o">=</span><span class="p">[</span><span class="n">lv1</span><span class="p">,</span> <span class="n">lv2</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">pps</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">pps</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+
+<span class="c1"># result[0] is values for lv1</span>
+<span class="c1"># result[1] is values for lv2</span>
+</pre></div>
+</div>
+<p>With energy restriction:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pps</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">group</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">pps</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">pps</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+
+<span class="c1"># result[0] is a vector with one element (the single group)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="other-useful-post-processing-paths">
-<h2><span class="section-number">24.8. </span>Other Useful Post-Processing Paths<a class="headerlink" href="#other-useful-post-processing-paths" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.9. </span>Other Useful Post-Processing Paths<a class="headerlink" href="#other-useful-post-processing-paths" title="Link to this heading"></a></h2>
 <p>For discrete ordinates problems, other useful output paths include:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPsi()</span></code> for direct access to stored angular-flux arrays</p></li>
@@ -456,7 +627,7 @@ flux storage and restart-style workflows</p></li>
 post-processing workflow.</p>
 </section>
 <section id="transient-workflows">
-<h2><span class="section-number">24.9. </span>Transient Workflows<a class="headerlink" href="#transient-workflows" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.10. </span>Transient Workflows<a class="headerlink" href="#transient-workflows" title="Link to this heading"></a></h2>
 <p>For transient problems, the usual pattern is:</p>
 <ol class="arabic simple">
 <li><p>advance the timestep,</p></li>
@@ -480,7 +651,7 @@ timestep. Creating a new field function after each <code class="docutils literal
 but is usually unnecessary when the existing object supports <code class="docutils literal notranslate"><span class="pre">Update()</span></code>.</p>
 </section>
 <section id="practical-guidance">
-<h2><span class="section-number">24.10. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">24.11. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
 <p>For most workflows:</p>
 <ul class="simple">
 <li><p>use <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction()</span></code> for scalar flux,</p></li>

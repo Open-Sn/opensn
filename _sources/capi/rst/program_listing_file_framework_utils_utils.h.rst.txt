@@ -16,6 +16,7 @@ Program Listing for File utils.h
    #pragma once
    
    #include "framework/data_types/byte_array.h"
+   #include "framework/data_types/ndarray.h"
    #include <cstddef>
    #include <string>
    #include <vector>
@@ -160,6 +161,23 @@ Program Listing for File utils.h
    HasNonZero(const std::vector<double>& vec)
    {
      return std::any_of(vec.begin(), vec.end(), [](double x) { return x > 0.0; });
+   }
+   
+   /**
+    * Copy `std::vector` into the row of a 2-D NDArray
+    *
+    * \tparam Element type
+    * \param dest 2-D NDArray to copy into
+    * \param row Row index into the `dest`
+    * \param src Vector that will be copied
+    */
+   template <typename T>
+   void
+   MemCopyRow(NDArray<T, 2>& dest, unsigned int row, const std::vector<T>& src)
+   {
+     assert(dest.dimension()[1] == src.size());
+     auto ofst = dest.MapNDtoLin(row, 0);
+     std::memcpy(dest.data() + ofst, src.data(), sizeof(T) * src.size());
    }
    
    } // namespace opensn

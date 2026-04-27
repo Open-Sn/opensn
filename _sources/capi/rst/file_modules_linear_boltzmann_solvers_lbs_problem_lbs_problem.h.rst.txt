@@ -86,6 +86,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_total_xs_carrier.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_volume_postprocessor.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
 
 

@@ -344,6 +344,197 @@ Available operation types are:
 The ``*_func`` variants use a scalar material function supplied with
 ``SetOperationFunction``.
 
+Volume Postprocessor
+====================
+
+The :py:class:`pyopensn.post.VolumePostprocessor` computes scalar-flux integrals,
+maxima, minima, or volume-weighted averages over spatial regions and energy
+groups. It produces a single result value per region and group, making it useful
+for reaction rates and monitoring quantities across geometry subsets or
+energy ranges.
+
+Basic Usage
+-----------
+
+Create and execute a volume postprocessor:
+
+.. code-block:: python
+
+   from pyopensn.post import VolumePostprocessor
+
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+   )
+   pps.Execute()
+   result = pps.GetValue()
+
+Available operation types are:
+
+* ``"integral"`` — volume-weighted integral of scalar flux
+* ``"avg"`` — volume-weighted average of scalar flux
+* ``"max"`` — maximum scalar flux in region
+* ``"min"`` — minimum scalar flux in region
+
+Spatial Restriction
+-------------------
+
+By default, a postprocessor operates over the entire domain. Restrict computation
+to mesh blocks:
+
+.. code-block:: python
+
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       block_ids=[1, 2],
+   )
+
+Or restrict to one or more logical volumes:
+
+.. code-block:: python
+
+   from pyopensn.logvol import RPPLogicalVolume
+
+   lv = RPPLogicalVolume(xmin=0.0, xmax=1.0, ymin=0.0, ymax=0.5)
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="avg",
+       logical_volumes=[lv],
+   )
+
+Combine block and logical-volume restrictions — the postprocessor uses only cells
+inside both:
+
+.. code-block:: python
+
+   lv1 = RPPLogicalVolume(xmin=0.0, xmax=1.0, ymin=0.0, ymax=0.5)
+   lv2 = RPPLogicalVolume(xmin=1.0, xmax=2.0, ymin=0.0, ymax=0.5)
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       logical_volumes=[lv1, lv2],
+       block_ids=[1],
+   )
+
+Each logical volume produces one row of results.
+
+Energy Restriction
+-------------------
+
+By default, a postprocessor returns results for all energy groups. Restrict to a
+single group:
+
+.. code-block:: python
+
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       group=6,
+   )
+
+Or restrict to a single groupset:
+
+.. code-block:: python
+
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       groupset=1,
+   )
+
+The ``group`` and ``groupset`` parameters are mutually exclusive.
+
+Multipliers and Cross-Section Weighting
+----------------------------------------
+
+By default, the postprocessor multiplies each group's scalar flux by 1.0. Apply a
+uniform multiplier:
+
+.. code-block:: python
+
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       multiplier=2.5,
+   )
+
+Apply group-specific multipliers:
+
+.. code-block:: python
+
+   group_mults = [1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0]  # one per group
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       group_multipliers=group_mults,
+   )
+
+Weight by a cross section (for example, fission rate):
+
+.. code-block:: python
+
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       xs_multiplier="sigma_f",
+   )
+
+The cross-section name must exist in the problem's XS definitions. Only one of
+``multiplier``, ``group_multipliers``, and ``xs_multiplier`` may be specified.
+
+Results
+-------
+
+After calling ``Execute()``, retrieve results with ``GetValue()``. The return
+value is a 2D array indexed as ``result[region][group]``:
+
+.. code-block:: python
+
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+   )
+   pps.Execute()
+   result = pps.GetValue()
+
+   # Single region, all groups
+   # result[0] is a vector of values, one per group
+   for group_index, value in enumerate(result[0]):
+       print(f"Group {group_index}: {value}")
+
+With multiple logical volumes:
+
+.. code-block:: python
+
+   lv1 = RPPLogicalVolume(...)
+   lv2 = RPPLogicalVolume(...)
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       logical_volumes=[lv1, lv2],
+   )
+   pps.Execute()
+   result = pps.GetValue()
+
+   # result[0] is values for lv1
+   # result[1] is values for lv2
+
+With energy restriction:
+
+.. code-block:: python
+
+   pps = VolumePostprocessor(
+       problem=phys,
+       value_type="integral",
+       group=3,
+   )
+   pps.Execute()
+   result = pps.GetValue()
+
+   # result[0] is a vector with one element (the single group)
+   print(result[0][0])
+
 Other Useful Post-Processing Paths
 ==================================
 

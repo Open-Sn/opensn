@@ -20,6 +20,7 @@ Subdirectories
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_groupset`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_io`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_point_source`
+- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_postprocessors`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_source_functions`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_vecops`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_volumetric_source`

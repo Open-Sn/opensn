@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_volume_postprocessor:
+
+Class VolumePostprocessor
+=========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_volume_postprocessor.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::VolumePostprocessor
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:
