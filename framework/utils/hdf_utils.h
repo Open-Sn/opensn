@@ -314,6 +314,52 @@ H5ReadDataset1D(hid_t id, const std::string& name, std::vector<T>& data)
 
 template <typename T>
 bool
+H5ReadDataset2D(hid_t id, const std::string& name, std::vector<std::vector<T>>& data)
+{
+  static_assert(
+    !std::is_same_v<T, bool>,
+    "H5ReadDataset2D does not support std::vector<std::vector<bool>>. Use unsigned char.");
+
+  bool success = false;
+  data.clear();
+
+  auto dataset = H5Dopen2(id, name.c_str(), H5P_DEFAULT);
+  if (dataset == H5I_INVALID_HID)
+    return false;
+
+  auto dataspace = H5Dget_space(dataset);
+  if (dataspace != H5I_INVALID_HID)
+  {
+    const int rank = H5Sget_simple_extent_ndims(dataspace);
+    if (rank == 2)
+    {
+      hsize_t dims[2] = {0, 0};
+      if (H5Sget_simple_extent_dims(dataspace, dims, nullptr) >= 0)
+      {
+        auto n0 = static_cast<size_t>(dims[0]);
+        auto n1 = static_cast<size_t>(dims[1]);
+        std::vector<T> flat_data(n0 * n1);
+        if (flat_data.empty() or
+            H5Dread(dataset, get_datatype<T>(), H5S_ALL, H5S_ALL, H5P_DEFAULT, flat_data.data()) >=
+              0)
+        {
+          data.assign(n0, std::vector<T>(n1));
+          for (size_t i = 0; i < n0; ++i)
+            for (size_t j = 0; j < n1; ++j)
+              data[i][j] = flat_data[i * n1 + j];
+          success = true;
+        }
+      }
+    }
+    H5Sclose(dataspace);
+  }
+
+  H5Dclose(dataset);
+  return success;
+}
+
+template <typename T>
+bool
 H5ReadAttribute(hid_t id, const std::string& name, T& value)
 {
   bool success = false;

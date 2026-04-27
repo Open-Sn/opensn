@@ -205,6 +205,19 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_1d_openmcxs_delayed_slab.py",
+    "comment": "1D 2G delayed-neutron slab keigenvalue test using OpenMC MGXS library",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "OPENSN_KEFF",
+        "goldvalue": 0.35819387,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
     "file": "c5g7_restart.py",
     "outfileprefix": "c5g7_restart",
     "comment": "2D C5G7 with PI and restarts",
