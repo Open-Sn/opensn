@@ -13,7 +13,6 @@
 #include <vector>
 #include <queue>
 #include <limits>
-#include <unordered_map>
 
 namespace opensn
 {
@@ -33,14 +32,9 @@ struct FaceNeighborInfo
 
 using FaceNeighborInfoVec = std::vector<std::vector<FaceNeighborInfo>>;
 
-FaceNeighborInfoVec&
+FaceNeighborInfoVec
 GetFaceNeighborInfo(const MeshContinuum& grid)
 {
-  static std::unordered_map<const MeshContinuum*, FaceNeighborInfoVec> cache;
-  auto it = cache.find(&grid);
-  if (it != cache.end())
-    return it->second;
-
   FaceNeighborInfoVec info;
   info.resize(grid.local_cells.size());
   for (const auto& cell : grid.local_cells)
@@ -72,8 +66,7 @@ GetFaceNeighborInfo(const MeshContinuum& grid)
     }
   }
 
-  auto [ins_it, _] = cache.emplace(&grid, std::move(info));
-  return ins_it->second;
+  return info;
 }
 
 } // namespace
