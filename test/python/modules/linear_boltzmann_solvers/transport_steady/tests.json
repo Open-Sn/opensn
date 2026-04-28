@@ -591,27 +591,27 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] Iteration    54",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [0-62] iteration = 54",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] Iteration    58",
-        "wordnum": 9,
-        "gold": "CONVERGED"
+        "key": "WGS groups [63-167] iteration = 58",
+        "wordnum": 18,
+        "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [0-62] Iteration    54",
-        "wordnum": 8,
+        "key": "WGS groups [0-62] iteration = 54",
+        "wordnum": 13,
         "gold": 6.8534e-07,
         "abs_tol": 1e-09
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [63-167] Iteration    58",
-        "wordnum": 8,
+        "key": "WGS groups [63-167] iteration = 58",
+        "wordnum": 13,
         "gold": 6.2607e-07,
         "abs_tol": 1e-09
       },

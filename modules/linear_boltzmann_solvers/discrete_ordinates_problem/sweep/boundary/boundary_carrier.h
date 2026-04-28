@@ -29,20 +29,13 @@ public:
   /// Copy the boundary flux data for the specified groupset from device to host.
   void DownloadToHost(int groupset_id);
   /// Get device pointer of a given groupset.
-  double* GetDevicePtr(int groupset_id) { return boundary_flux_[groupset_id].device_memory.get(); }
+  double* GetDevicePtr(int groupset_id) { return device_boundary_flux_[groupset_id].get(); }
 
 protected:
-  /// Host-pinned and device-memory of boundary flux storage for a groupset.
-  struct HostDeviceData
-  {
-    /// Manager for pinning the host boundary flux data.
-    crb::MemoryPinningManager<double> host_pin;
-    /// Device memory storing a copy of the boundary flux data.
-    crb::DeviceMemory<double> device_memory;
-  };
-
   /// Boundary flux storage indexed by groupset ID.
-  std::vector<HostDeviceData> boundary_flux_;
+  std::vector<crb::DeviceMemory<double>> device_boundary_flux_;
+  /// Reference to boundary bank.
+  BoundaryBank& bank_;
 };
 
 } // namespace opensn

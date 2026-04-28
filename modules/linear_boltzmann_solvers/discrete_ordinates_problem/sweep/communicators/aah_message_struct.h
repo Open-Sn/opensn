@@ -17,6 +17,8 @@ namespace opensn
 /// \brief Message details for each message passing.
 struct AAH_MessageDetails
 {
+  /// Member constructor.
+  AAH_MessageDetails(int p, int s, int bp) : peer(p), size(s), block_pos(bp) {}
   /// MPI rank of the peer partition.
   int peer;
   /// Size of the message (in number of doubles).

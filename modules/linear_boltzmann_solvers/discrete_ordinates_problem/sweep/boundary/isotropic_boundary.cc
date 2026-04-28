@@ -18,12 +18,11 @@ IsotropicBoundary::IsotropicBoundary(BoundaryBank& bank,
   {
     offset_[groupset.id] = bank_[groupset.id].counter++;
     double* flux = bank_.ExtendBoundaryFlux(groupset.id, groupset.GetNumGroups());
-    for (unsigned int g = 0; g <= groupset.GetNumGroups(); ++g)
+    for (unsigned int g = 0; g < groupset.GetNumGroups(); ++g)
     {
       flux[g] = boundary_flux[groupset.first_group + g];
     }
   }
-  boundary_flux.clear();
 }
 
 std::uint64_t

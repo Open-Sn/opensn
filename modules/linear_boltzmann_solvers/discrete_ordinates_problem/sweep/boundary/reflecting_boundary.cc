@@ -18,72 +18,60 @@ namespace opensn
 
 template <bool ApplyOnOldFlux, typename Fn>
 void
-ReflectingBoundary::ForEachGroupset(Fn&& fn)
+ReflectingBoundary::TransformGroupset(int groupset_id, Fn&& fn)
 {
   if (not opposing_reflected_)
     return;
   auto&& f = std::forward<Fn>(fn);
-  for (int groupset_id = 0; const auto& extra_data : extra_data_)
-  {
-    const auto& old_stride = extra_data.old_stride;
-    double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
-    std::size_t size = old_stride * bank_[groupset_id].groupset_size;
-    std::span<double> flux_view(flux, size);
-    f(flux_view);
-    ++groupset_id;
-  }
+  const auto& extra_data = extra_data_[groupset_id];
+  const auto old_stride = extra_data.old_stride;
+  double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
+  std::size_t size = old_stride * bank_[groupset_id].groupset_size;
+  std::span<double> flux_view(flux, size);
+  f(flux_view);
 }
 
 template <bool ApplyOnOldFlux, typename Fn>
 void
-ReflectingBoundary::ForEachGroupset(Fn&& fn) const
+ReflectingBoundary::TransformGroupset(int groupset_id, Fn&& fn) const
 {
   if (not opposing_reflected_)
     return;
   auto&& f = std::forward<Fn>(fn);
-  for (int groupset_id = 0; const auto& extra_data : extra_data_)
-  {
-    const auto& old_stride = extra_data.old_stride;
-    const double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
-    std::size_t size = old_stride * bank_[groupset_id].groupset_size;
-    std::span<const double> flux_view(flux, size);
-    f(flux_view);
-    ++groupset_id;
-  }
+  const auto& extra_data = extra_data_[groupset_id];
+  const auto old_stride = extra_data.old_stride;
+  const double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
+  std::size_t size = old_stride * bank_[groupset_id].groupset_size;
+  std::span<const double> flux_view(flux, size);
+  f(flux_view);
 }
 
 template <bool ApplyOnOldFlux, typename Fn>
 void
-ReflectingBoundary::ForEachDelayedAngularFlux(Fn&& fn)
+ReflectingBoundary::ForEachDelayedAngularFlux(int groupset_id, Fn&& fn)
 {
   if (not opposing_reflected_)
     return;
   auto&& f = std::forward<Fn>(fn);
-  for (int groupset_id = 0; auto& extra_data : extra_data_)
-  {
-    const auto& old_stride = extra_data.old_stride;
-    double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
-    std::size_t size = old_stride * bank_[groupset_id].groupset_size;
-    std::for_each_n(flux, size, f);
-    ++groupset_id;
-  }
+  const auto& extra_data = extra_data_[groupset_id];
+  const auto old_stride = extra_data.old_stride;
+  double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
+  std::size_t size = old_stride * bank_[groupset_id].groupset_size;
+  std::for_each_n(flux, size, f);
 }
 
 template <bool ApplyOnOldFlux, typename Fn>
 void
-ReflectingBoundary::ForEachDelayedAngularFlux(Fn&& fn) const
+ReflectingBoundary::ForEachDelayedAngularFlux(int groupset_id, Fn&& fn) const
 {
   if (not opposing_reflected_)
     return;
   auto&& f = std::forward<Fn>(fn);
-  for (int groupset_id = 0; const auto& extra_data : extra_data_)
-  {
-    const auto& old_stride = extra_data.old_stride;
-    const double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
-    std::size_t size = old_stride * bank_[groupset_id].groupset_size;
-    std::for_each_n(flux, size, f);
-    ++groupset_id;
-  }
+  const auto& extra_data = extra_data_[groupset_id];
+  const auto old_stride = extra_data.old_stride;
+  const double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
+  std::size_t size = old_stride * bank_[groupset_id].groupset_size;
+  std::for_each_n(flux, size, f);
 }
 
 ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
@@ -207,7 +195,7 @@ ReflectingBoundary::InitializeAngleDependent(const std::vector<LBSGroupset>& gro
     auto& old_stride = extra_data.old_stride;
 
     map_dirnum.reserve(num_angles);
-    map_dirnum.resize(num_angles);
+    map_dirnum.resize(num_angles, std::numeric_limits<std::uint64_t>::max());
 
     std::uint64_t internal_angle_idx = 0;
     for (const auto& angleset : angle_agg)
@@ -297,127 +285,118 @@ ReflectingBoundary::SetOpposingReflected(
 }
 
 void
-ReflectingBoundary::ZeroOpposingDelayedAngularFluxOld()
+ReflectingBoundary::ZeroOpposingDelayedAngularFluxOld(int groupset_id)
 {
-  ForEachGroupset<true>([](std::span<double> flux) { std::fill(flux.begin(), flux.end(), 0.0); });
+  TransformGroupset<true>(groupset_id, [](auto flux) { std::fill(flux.begin(), flux.end(), 0.0); });
 }
 
 size_t
-ReflectingBoundary::CountDelayedAngularDOFsNew() const
+ReflectingBoundary::CountDelayedAngularDOFsNew(int groupset_id) const
 {
-  size_t counter = 0;
-  ForEachGroupset<false>([&](std::span<const double> flux) { counter += flux.size(); });
-  return counter;
+  if (not opposing_reflected_)
+    return 0;
+  const auto& extra_data = extra_data_[groupset_id];
+  return extra_data.old_stride * bank_[groupset_id].groupset_size;
 }
 
 size_t
-ReflectingBoundary::CountDelayedAngularDOFsOld() const
+ReflectingBoundary::CountDelayedAngularDOFsOld(int groupset_id) const
 {
-  size_t counter = 0;
-  ForEachGroupset<true>([&](std::span<const double> flux) { counter += flux.size(); });
-  return counter;
+  return CountDelayedAngularDOFsNew(groupset_id);
 }
 
 void
-ReflectingBoundary::AppendNewDelayedAngularDOFsToVector(std::vector<double>& output) const
+ReflectingBoundary::AppendNewDelayedAngularDOFsToVector(int groupset_id,
+                                                        std::vector<double>& output) const
 {
-  ForEachGroupset<false>([&](std::span<const double> flux)
-                         { output.insert(output.end(), flux.begin(), flux.end()); });
+  TransformGroupset<false>(
+    groupset_id, [&output](auto flux) { output.insert(output.end(), flux.begin(), flux.end()); });
 }
 
 void
-ReflectingBoundary::AppendOldDelayedAngularDOFsToVector(std::vector<double>& output) const
+ReflectingBoundary::AppendOldDelayedAngularDOFsToVector(int groupset_id,
+                                                        std::vector<double>& output) const
 {
-  ForEachGroupset<true>([&](std::span<const double> flux)
-                        { output.insert(output.end(), flux.begin(), flux.end()); });
+  TransformGroupset<true>(
+    groupset_id, [&output](auto flux) { output.insert(output.end(), flux.begin(), flux.end()); });
 }
 
 void
-ReflectingBoundary::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* buffer) const
+ReflectingBoundary::AppendNewDelayedAngularDOFsToArray(int groupset_id,
+                                                       int64_t& index,
+                                                       double* buffer) const
 {
-  ForEachDelayedAngularFlux<false>(
-    [&](const double& val)
-    {
-      ++index;
-      buffer[index] = val;
-    });
+  ForEachDelayedAngularFlux<false>(groupset_id,
+                                   [&index, buffer](double psi) { buffer[++index] = psi; });
 }
 
 void
-ReflectingBoundary::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* buffer) const
+ReflectingBoundary::AppendOldDelayedAngularDOFsToArray(int groupset_id,
+                                                       int64_t& index,
+                                                       double* buffer) const
 {
-  ForEachDelayedAngularFlux<true>(
-    [&](const double& val)
-    {
-      ++index;
-      buffer[index] = val;
-    });
+  ForEachDelayedAngularFlux<true>(groupset_id,
+                                  [&index, buffer](double psi) { buffer[++index] = psi; });
 }
 
 void
-ReflectingBoundary::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* buffer)
+ReflectingBoundary::SetNewDelayedAngularDOFsFromArray(int groupset_id,
+                                                      int64_t& index,
+                                                      const double* buffer)
 {
-  ForEachDelayedAngularFlux<false>(
-    [&](double& val)
-    {
-      ++index;
-      val = buffer[index];
-    });
+  ForEachDelayedAngularFlux<false>(groupset_id,
+                                   [&index, buffer](double& psi) { psi = buffer[++index]; });
 }
 
 void
-ReflectingBoundary::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* buffer)
+ReflectingBoundary::SetOldDelayedAngularDOFsFromArray(int groupset_id,
+                                                      int64_t& index,
+                                                      const double* buffer)
 {
-  ForEachDelayedAngularFlux<true>(
-    [&](double& val)
-    {
-      ++index;
-      val = buffer[index];
-    });
+  ForEachDelayedAngularFlux<true>(groupset_id,
+                                  [&index, buffer](double& psi) { psi = buffer[++index]; });
 }
 
 void
-ReflectingBoundary::SetNewDelayedAngularDOFsFromVector(const std::vector<double>& values,
+ReflectingBoundary::SetNewDelayedAngularDOFsFromVector(int groupset_id,
+                                                       const std::vector<double>& values,
                                                        size_t& index)
 {
-  ForEachDelayedAngularFlux<false>([&](double& val) { val = values[index++]; });
+  ForEachDelayedAngularFlux<false>(groupset_id,
+                                   [&values, &index](double& psi) { psi = values[index++]; });
 }
 
 void
-ReflectingBoundary::SetOldDelayedAngularDOFsFromVector(const std::vector<double>& values,
+ReflectingBoundary::SetOldDelayedAngularDOFsFromVector(int groupset_id,
+                                                       const std::vector<double>& values,
                                                        size_t& index)
 {
-  ForEachDelayedAngularFlux<true>([&](double& val) { val = values[index++]; });
+  ForEachDelayedAngularFlux<true>(groupset_id,
+                                  [&values, &index](double& psi) { psi = values[index++]; });
 }
 
 void
-ReflectingBoundary::CopyDelayedAngularFluxOldToNew()
+ReflectingBoundary::CopyDelayedAngularFluxOldToNew(int groupset_id)
 {
   if (not opposing_reflected_)
     return;
-  for (int groupset_id = 0; const auto& extra_data : extra_data_)
-  {
-    double* flux = GetBoundaryFlux(groupset_id);
-    std::size_t size = extra_data.old_stride * bank_[groupset_id].groupset_size;
-    const double* flux_old = flux + size;
-    std::copy_n(flux_old, size, flux);
-    ++groupset_id;
-  }
+  const auto& extra_data = extra_data_[groupset_id];
+  double* flux = GetBoundaryFlux(groupset_id);
+  std::size_t size = extra_data.old_stride * bank_[groupset_id].groupset_size;
+  const double* flux_old = flux + size;
+  std::copy_n(flux_old, size, flux);
 }
 
 void
-ReflectingBoundary::CopyDelayedAngularFluxNewToOld()
+ReflectingBoundary::CopyDelayedAngularFluxNewToOld(int groupset_id)
 {
   if (not opposing_reflected_)
     return;
-  for (int groupset_id = 0; const auto& extra_data : extra_data_)
-  {
-    double* flux = GetBoundaryFlux(groupset_id);
-    std::size_t size = extra_data.old_stride * bank_[groupset_id].groupset_size;
-    double* flux_old = flux + size;
-    std::copy_n(flux, size, flux_old);
-    ++groupset_id;
-  }
+  const auto& extra_data = extra_data_[groupset_id];
+  double* flux = GetBoundaryFlux(groupset_id);
+  std::size_t size = extra_data.old_stride * bank_[groupset_id].groupset_size;
+  double* flux_old = flux + size;
+  std::copy_n(flux, size, flux_old);
 }
 
 double*
@@ -429,7 +408,7 @@ ReflectingBoundary::PsiIncoming(std::uint32_t cell_local_id,
                                 unsigned int group_idx)
 {
   FaceNode fn(cell_local_id, face_num, fi);
-  std::uint64_t facenode_idx = facenode_to_index_[fn];
+  std::uint64_t facenode_idx = facenode_to_index_.at(fn);
   auto& extra_data = extra_data_[groupset_id];
   const auto& node_stride = extra_data.node_stride;
   const auto& old_stride = extra_data.old_stride;
@@ -447,7 +426,7 @@ ReflectingBoundary::PsiOutgoing(uint64_t cell_local_id,
                                 int groupset_id)
 {
   FaceNode fn(cell_local_id, face_num, fi);
-  std::uint64_t facenode_idx = facenode_to_index_[fn];
+  std::uint64_t facenode_idx = facenode_to_index_.at(fn);
   auto& extra_data = extra_data_[groupset_id];
   const auto& node_stride = extra_data.node_stride;
   std::uint64_t node_angle_offset = facenode_idx * node_stride + extra_data.map_dirnum[angle_num];
@@ -459,7 +438,7 @@ ReflectingBoundary::GetOffsetToAngleset(const FaceNode& face_node,
                                         AngleSet& anglset,
                                         bool is_outgoing)
 {
-  std::uint64_t facenode_idx = facenode_to_index_[face_node];
+  std::uint64_t facenode_idx = facenode_to_index_.at(face_node);
   int groupset_id = anglset.GetGroupsetID();
   auto& extra_data = extra_data_[groupset_id];
   const auto& node_stride = extra_data.node_stride;

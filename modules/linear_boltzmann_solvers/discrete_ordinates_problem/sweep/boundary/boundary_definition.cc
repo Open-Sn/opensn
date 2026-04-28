@@ -36,10 +36,8 @@ CheckRequiredParams(const InputParameters& params,
                     const std::string& param_name)
 {
   if (not params.Has(param_name))
-    throw std::runtime_error(std::format(R"(Boundary '{}' of type="{}" does not support "{}".)",
-                                         boundary_name,
-                                         boundary_type,
-                                         param_name));
+    throw std::runtime_error(std::format(
+      R"(Boundary '{}' of type="{}" requires "{}".)", boundary_name, boundary_type, param_name));
 }
 
 } // namespace

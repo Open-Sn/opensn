@@ -64,35 +64,57 @@ public:
   {
   }
 
-  virtual void ZeroOpposingDelayedAngularFluxOld() {}
+  virtual void ZeroOpposingDelayedAngularFluxOld(int groupset_id) {}
 
-  virtual size_t CountDelayedAngularDOFsNew() const { return 0; }
+  virtual size_t CountDelayedAngularDOFsNew(int groupset_id) const { return 0; }
 
-  virtual size_t CountDelayedAngularDOFsOld() const { return 0; }
+  virtual size_t CountDelayedAngularDOFsOld(int groupset_id) const { return 0; }
 
-  virtual void AppendNewDelayedAngularDOFsToVector(std::vector<double>& output) const {}
-
-  virtual void AppendOldDelayedAngularDOFsToVector(std::vector<double>& output) const {}
-
-  virtual void AppendNewDelayedAngularDOFsToArray(int64_t& index, double* buffer) const {}
-
-  virtual void AppendOldDelayedAngularDOFsToArray(int64_t& index, double* buffer) const {}
-
-  virtual void SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* buffer) {}
-
-  virtual void SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* buffer) {}
-
-  virtual void SetNewDelayedAngularDOFsFromVector(const std::vector<double>& values, size_t& index)
+  virtual void AppendNewDelayedAngularDOFsToVector(int groupset_id,
+                                                   std::vector<double>& output) const
   {
   }
 
-  virtual void SetOldDelayedAngularDOFsFromVector(const std::vector<double>& values, size_t& index)
+  virtual void AppendOldDelayedAngularDOFsToVector(int groupset_id,
+                                                   std::vector<double>& output) const
   {
   }
 
-  virtual void CopyDelayedAngularFluxOldToNew() {}
+  virtual void
+  AppendNewDelayedAngularDOFsToArray(int groupset_id, int64_t& index, double* buffer) const
+  {
+  }
 
-  virtual void CopyDelayedAngularFluxNewToOld() {}
+  virtual void
+  AppendOldDelayedAngularDOFsToArray(int groupset_id, int64_t& index, double* buffer) const
+  {
+  }
+
+  virtual void
+  SetNewDelayedAngularDOFsFromArray(int groupset_id, int64_t& index, const double* buffer)
+  {
+  }
+
+  virtual void
+  SetOldDelayedAngularDOFsFromArray(int groupset_id, int64_t& index, const double* buffer)
+  {
+  }
+
+  virtual void SetNewDelayedAngularDOFsFromVector(int groupset_id,
+                                                  const std::vector<double>& values,
+                                                  size_t& index)
+  {
+  }
+
+  virtual void SetOldDelayedAngularDOFsFromVector(int groupset_id,
+                                                  const std::vector<double>& values,
+                                                  size_t& index)
+  {
+  }
+
+  virtual void CopyDelayedAngularFluxOldToNew(int groupset_id) {}
+
+  virtual void CopyDelayedAngularFluxNewToOld(int groupset_id) {}
 
   virtual const Vector3* GetNormalForReflection() const { return nullptr; }
 
@@ -157,6 +179,8 @@ public:
     auto& data = bank_[groupset_id];
     return data.boundary_flux.data() + group_num;
   }
+
+  virtual void UpdateBoundaryFlux(const LBSGroupset& groupset) {}
 
 protected:
   BoundaryBank& bank_;

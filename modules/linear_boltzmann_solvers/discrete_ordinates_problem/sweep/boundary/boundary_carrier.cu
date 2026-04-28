@@ -10,34 +10,38 @@ namespace opensn
 {
 
 BoundaryCarrier::BoundaryCarrier(BoundaryBank& bank, const std::vector<LBSGroupset>& groupsets)
+  : bank_(bank)
 {
   if (not bank.IsAllocationDisabled())
     throw std::runtime_error("Cannot create a BoundaryCarrier while BoundaryBank allocation is "
                              "enabled.");
 
-  boundary_flux_.reserve(groupsets.size());
-  boundary_flux_.resize(groupsets.size());
+  device_boundary_flux_.reserve(groupsets.size());
+  device_boundary_flux_.resize(groupsets.size());
 
   for (const auto& groupset : groupsets)
   {
     auto& host_data = bank[groupset.id].boundary_flux;
-    boundary_flux_[groupset.id].host_pin = crb::MemoryPinningManager<double>(host_data);
-    boundary_flux_[groupset.id].device_memory = crb::DeviceMemory<double>(host_data.size());
+    device_boundary_flux_[groupset.id] = crb::DeviceMemory<double>(host_data.size());
   }
 }
 
 void
 BoundaryCarrier::UploadToDevice(int groupset_id)
 {
-  auto& flux = boundary_flux_[groupset_id];
-  crb::copy(flux.device_memory, flux.host_pin, flux.host_pin.size());
+  auto& host_data = bank_[groupset_id].boundary_flux;
+  crb::MemoryPinningManager<double> host_pinner(host_data);
+  auto& device_data = device_boundary_flux_[groupset_id];
+  crb::copy(device_data, host_pinner, host_pinner.size());
 }
 
 void
 BoundaryCarrier::DownloadToHost(int groupset_id)
 {
-  auto& flux = boundary_flux_[groupset_id];
-  crb::copy(flux.host_pin, flux.device_memory, flux.host_pin.size());
+  auto& host_data = bank_[groupset_id].boundary_flux;
+  crb::MemoryPinningManager<double> host_pinner(host_data);
+  auto& device_data = device_boundary_flux_[groupset_id];
+  crb::copy(host_pinner, device_data, host_pinner.size());
 }
 
 } // namespace opensn

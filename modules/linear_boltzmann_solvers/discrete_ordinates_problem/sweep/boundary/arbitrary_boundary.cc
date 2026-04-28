@@ -34,6 +34,25 @@ ArbitraryBoundary::ArbitraryBoundary(BoundaryBank& bank,
 }
 
 void
+ArbitraryBoundary::UpdateBoundaryFlux(const LBSGroupset& groupset)
+{
+  auto& map_dirnum = extra_data_[groupset.id].map_dirnum;
+  double* boundary_flux = GetBoundaryFlux(groupset.id);
+
+  for (std::uint64_t dir_num = 0; dir_num < map_dirnum.size(); ++dir_num)
+  {
+    auto internal_angle_index = map_dirnum[dir_num];
+    double* angular_boundary_flux = boundary_flux + internal_angle_index * groupset.GetNumGroups();
+    for (unsigned int g = 0; g < groupset.GetNumGroups(); ++g)
+    {
+      unsigned int group = groupset.first_group + g;
+      angular_boundary_flux[g] =
+        (*angular_flux_function_)(static_cast<int>(group), static_cast<int>(dir_num));
+    }
+  }
+}
+
+void
 ArbitraryBoundary::InitializeAngleDependent(const std::vector<LBSGroupset>& groupsets)
 {
   for (const auto& groupset : groupsets)
@@ -51,18 +70,7 @@ ArbitraryBoundary::InitializeAngleDependent(const std::vector<LBSGroupset>& grou
         map_dirnum[angle_indice] = i++;
     }
 
-    for (std::uint64_t dir_num = 0; dir_num < num_angles; ++dir_num)
-    {
-      auto internal_angle_index = map_dirnum[dir_num];
-      double* angular_boundary_flux =
-        boundary_flux + internal_angle_index * groupset.GetNumGroups();
-      for (unsigned int g = 0; g < groupset.GetNumGroups(); ++g)
-      {
-        unsigned int group = groupset.first_group + g;
-        angular_boundary_flux[g] =
-          (*angular_flux_function_)(static_cast<int>(group), static_cast<int>(dir_num));
-      }
-    }
+    UpdateBoundaryFlux(groupset);
   }
 }
 

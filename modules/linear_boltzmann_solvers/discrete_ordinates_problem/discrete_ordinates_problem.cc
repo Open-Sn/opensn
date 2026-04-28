@@ -552,7 +552,7 @@ DiscreteOrdinatesProblem::BuildRuntime()
   for (auto& [bid, boundary] : sweep_boundaries_)
     boundary->InitializeReflectingMap(groupsets_);
   if (use_gpus_)
-    SortAngleSetsAngleIndices(); // DO NOT sort in RZ geometry
+    SortAngleSetsAngleIndices();
   for (auto& [bid, boundary] : sweep_boundaries_)
     boundary->InitializeAngleDependent(groupsets_);
   boundary_bank_.ShrinkToFit();

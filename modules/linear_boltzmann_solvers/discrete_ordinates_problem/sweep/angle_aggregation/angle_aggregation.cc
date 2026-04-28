@@ -52,7 +52,7 @@ AngleAggregation::ZeroIncomingDelayedPsi()
 
   // Opposing reflecting bndries
   for (const auto& [bid, bndry] : boundaries_)
-    bndry->ZeroOpposingDelayedAngularFluxOld();
+    bndry->ZeroOpposingDelayedAngularFluxOld(groupset_id_);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -139,7 +139,7 @@ AngleAggregation::GetNumDelayedAngularDOFs()
   size_t local_ang_unknowns = 0;
 
   for (const auto& [bid, bndry] : boundaries_)
-    local_ang_unknowns += bndry->CountDelayedAngularDOFsNew();
+    local_ang_unknowns += bndry->CountDelayedAngularDOFsNew(groupset_id_);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -165,7 +165,7 @@ AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_r
   CALI_CXX_MARK_SCOPE("AngleAggregation::AppendNewDelayedAngularDOFsToArray");
 
   for (auto& [bid, bndry] : boundaries_)
-    bndry->AppendNewDelayedAngularDOFsToArray(index, x_ref);
+    bndry->AppendNewDelayedAngularDOFsToArray(groupset_id_, index, x_ref);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -191,7 +191,7 @@ AngleAggregation::AppendOldDelayedAngularDOFsToArray(int64_t& index, double* x_r
   CALI_CXX_MARK_SCOPE("AngleAggregation::AppendOldDelayedAngularDOFsToArray");
 
   for (auto& [bid, bndry] : boundaries_)
-    bndry->AppendOldDelayedAngularDOFsToArray(index, x_ref);
+    bndry->AppendOldDelayedAngularDOFsToArray(groupset_id_, index, x_ref);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -217,7 +217,7 @@ AngleAggregation::SetOldDelayedAngularDOFsFromArray(int64_t& index, const double
   CALI_CXX_MARK_SCOPE("AngleAggregation::SetOldDelayedAngularDOFsFromArray");
 
   for (auto& [bid, bndry] : boundaries_)
-    bndry->SetOldDelayedAngularDOFsFromArray(index, x_ref);
+    bndry->SetOldDelayedAngularDOFsFromArray(groupset_id_, index, x_ref);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -243,7 +243,7 @@ AngleAggregation::SetNewDelayedAngularDOFsFromArray(int64_t& index, const double
   CALI_CXX_MARK_SCOPE("AngleAggregation::SetNewDelayedAngularDOFsFromArray");
 
   for (auto& [bid, bndry] : boundaries_)
-    bndry->SetNewDelayedAngularDOFsFromArray(index, x_ref);
+    bndry->SetNewDelayedAngularDOFsFromArray(groupset_id_, index, x_ref);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -274,7 +274,7 @@ AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
   psi_vector.reserve(psi_size.first);
 
   for (auto& [bid, bndry] : boundaries_)
-    bndry->AppendNewDelayedAngularDOFsToVector(psi_vector);
+    bndry->AppendNewDelayedAngularDOFsToVector(groupset_id_, psi_vector);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -305,7 +305,7 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
 
   size_t index = 0;
   for (auto& [bid, bndry] : boundaries_)
-    bndry->SetNewDelayedAngularDOFsFromVector(stl_vector, index);
+    bndry->SetNewDelayedAngularDOFsFromVector(groupset_id_, stl_vector, index);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -330,7 +330,7 @@ AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
   psi_vector.reserve(psi_size.first);
 
   for (auto& [bid, bndry] : boundaries_)
-    bndry->AppendOldDelayedAngularDOFsToVector(psi_vector);
+    bndry->AppendOldDelayedAngularDOFsToVector(groupset_id_, psi_vector);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -361,7 +361,7 @@ AngleAggregation::SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double
 
   size_t index = 0;
   for (auto& [bid, bndry] : boundaries_)
-    bndry->SetOldDelayedAngularDOFsFromVector(stl_vector, index);
+    bndry->SetOldDelayedAngularDOFsFromVector(groupset_id_, stl_vector, index);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -381,7 +381,7 @@ AngleAggregation::SetDelayedPsiOld2New()
   CALI_CXX_MARK_SCOPE("AngleAggregation::SetDelayedPsiOld2New");
 
   for (auto& [bid, bndry] : boundaries_)
-    bndry->CopyDelayedAngularFluxOldToNew();
+    bndry->CopyDelayedAngularFluxOldToNew(groupset_id_);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)
@@ -398,7 +398,7 @@ AngleAggregation::SetDelayedPsiNew2Old()
   CALI_CXX_MARK_SCOPE("AngleAggregation::SetDelayedPsiNew2Old");
 
   for (auto& [bid, bndry] : boundaries_)
-    bndry->CopyDelayedAngularFluxNewToOld();
+    bndry->CopyDelayedAngularFluxNewToOld(groupset_id_);
 
   // Intra-cell cycles
   for (auto& angle_set : angle_set_groups_)

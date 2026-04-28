@@ -44,33 +44,43 @@ public:
     std::uint64_t boundary_id,
     const std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries) override;
 
-  void ZeroOpposingDelayedAngularFluxOld() override;
+  void ZeroOpposingDelayedAngularFluxOld(int groupset_id) override;
 
-  size_t CountDelayedAngularDOFsNew() const override;
+  size_t CountDelayedAngularDOFsNew(int groupset_id) const override;
 
-  size_t CountDelayedAngularDOFsOld() const override;
+  size_t CountDelayedAngularDOFsOld(int groupset_id) const override;
 
-  void AppendNewDelayedAngularDOFsToVector(std::vector<double>& output) const override;
+  void AppendNewDelayedAngularDOFsToVector(int groupset_id,
+                                           std::vector<double>& output) const override;
 
-  void AppendOldDelayedAngularDOFsToVector(std::vector<double>& output) const override;
+  void AppendOldDelayedAngularDOFsToVector(int groupset_id,
+                                           std::vector<double>& output) const override;
 
-  void AppendNewDelayedAngularDOFsToArray(int64_t& index, double* buffer) const override;
+  void AppendNewDelayedAngularDOFsToArray(int groupset_id,
+                                          int64_t& index,
+                                          double* buffer) const override;
 
-  void AppendOldDelayedAngularDOFsToArray(int64_t& index, double* buffer) const override;
+  void AppendOldDelayedAngularDOFsToArray(int groupset_id,
+                                          int64_t& index,
+                                          double* buffer) const override;
 
-  void SetNewDelayedAngularDOFsFromArray(int64_t& index, const double* buffer) override;
+  void
+  SetNewDelayedAngularDOFsFromArray(int groupset_id, int64_t& index, const double* buffer) override;
 
-  void SetOldDelayedAngularDOFsFromArray(int64_t& index, const double* buffer) override;
+  void
+  SetOldDelayedAngularDOFsFromArray(int groupset_id, int64_t& index, const double* buffer) override;
 
-  void SetNewDelayedAngularDOFsFromVector(const std::vector<double>& values,
+  void SetNewDelayedAngularDOFsFromVector(int groupset_id,
+                                          const std::vector<double>& values,
                                           size_t& index) override;
 
-  void SetOldDelayedAngularDOFsFromVector(const std::vector<double>& values,
+  void SetOldDelayedAngularDOFsFromVector(int groupset_id,
+                                          const std::vector<double>& values,
                                           size_t& index) override;
 
-  void CopyDelayedAngularFluxOldToNew() override;
+  void CopyDelayedAngularFluxOldToNew(int groupset_id) override;
 
-  void CopyDelayedAngularFluxNewToOld() override;
+  void CopyDelayedAngularFluxNewToOld(int groupset_id) override;
 
   void GetReflectedMap(int groupset_id,
                        std::vector<std::vector<std::uint32_t>>& reflected_maps) override
@@ -133,16 +143,16 @@ protected:
 
 private:
   template <bool ApplyOnOldFlux, typename Fn>
-  void ForEachGroupset(Fn&& fn);
+  void TransformGroupset(int groupset_id, Fn&& fn);
 
   template <bool ApplyOnOldFlux, typename Fn>
-  void ForEachGroupset(Fn&& fn) const;
+  void TransformGroupset(int groupset_id, Fn&& fn) const;
 
   template <bool ApplyOnOldFlux, typename Fn>
-  void ForEachDelayedAngularFlux(Fn&& fn);
+  void ForEachDelayedAngularFlux(int groupset_id, Fn&& fn);
 
   template <bool ApplyOnOldFlux, typename Fn>
-  void ForEachDelayedAngularFlux(Fn&& fn) const;
+  void ForEachDelayedAngularFlux(int groupset_id, Fn&& fn) const;
 
 private:
   static constexpr double epsilon_ = 1.0e-8;

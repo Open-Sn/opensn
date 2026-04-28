@@ -32,6 +32,8 @@ public:
                       int groupset_id,
                       unsigned int group_idx) override;
 
+  void UpdateBoundaryFlux(const LBSGroupset& groupset) override;
+
   void InitializeAngleDependent(const std::vector<LBSGroupset>& groupsets) override;
   std::uint64_t
   GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing) override;
