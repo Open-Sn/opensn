@@ -26,11 +26,9 @@ public:
   explicit CrossSectionSensitivityPostprocessor(const InputParameters& params);
 
   void Execute();
+  void ApplyKEigenvalueScaling(double k_eff);
 
   const NDArray<double, 2>& GetValue() const;
-
-  static InputParameters GetInputParameters();
-  static std::shared_ptr<CrossSectionSensitivityPostprocessor> Create(const ParameterBlock& params);
 
 private:
   void CreateSpatialRestriction();
@@ -55,6 +53,10 @@ private:
                                                    const std::vector<double>& forward_phi,
                                                    const std::vector<double>& adjoint_phi) const;
 
+  double ComputeFissionDenominator(const std::vector<double>& forward_phi,
+                                   const std::vector<double>& adjoint_phi) const;
+  void ScaleForKEigenvalueSensitivity(double k_eff, double denominator);
+
   void ValidateSelectedCoefficient() const;
 
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
@@ -78,6 +80,10 @@ private:
   std::string adjoint_angular_fluxes_prefix_;
   bool flux_moments_single_file_ = false;
   bool relative_ = false;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<CrossSectionSensitivityPostprocessor> Create(const ParameterBlock& params);
 };
 
 } // namespace opensn

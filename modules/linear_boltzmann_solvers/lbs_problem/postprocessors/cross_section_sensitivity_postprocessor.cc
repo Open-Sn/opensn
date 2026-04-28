@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 namespace opensn
@@ -31,12 +32,10 @@ CrossSectionSensitivityPostprocessor::GetInputParameters()
                                    "Logical volumes to restrict the computation to.");
   params.AddOptionalParameter<std::string>(
     "sensitivity_type", "sigma_t", "Sensitivity type: 'sigma_t', 'scatter', or 'production'.");
-  params.AddOptionalParameter("group", 0, "Single group to compute for sigma_t.");
+  params.AddOptionalParameter("group", 0, "Group for sigma_t or production sensitivities.");
   params.AddOptionalParameter("moment", 0, "Scattering moment/order for scatter sensitivities.");
-  params.AddOptionalParameter("ell", 0, "Deprecated alias for 'moment'.");
-  params.AddOptionalParameter("from_group", 0, "Source group for scatter/production coefficient.");
-  params.AddOptionalParameter(
-    "to_group", 0, "Destination group for scatter/production coefficient.");
+  params.AddOptionalParameter("from_group", 0, "Source group for scatter coefficient.");
+  params.AddOptionalParameter("to_group", 0, "Destination group for scatter coefficient.");
   params.AddOptionalParameter("relative", false, "Return relative sensitivities x dR/dx.");
   params.AddOptionalParameter<std::string>(
     "forward_flux_moments", "", "Forward flux-moment file prefix. Empty uses current phi.");
@@ -195,21 +194,26 @@ CrossSectionSensitivityPostprocessor::ValidateSelectedCoefficient() const
   if (sensitivity_type_ == SensitivityType::SIGMA_T)
     return;
 
+  if (sensitivity_type_ == SensitivityType::PRODUCTION)
+  {
+    OpenSnInvalidArgumentIf(not selected_group_.has_value(),
+                            "'group' is required for production sensitivities.");
+    OpenSnInvalidArgumentIf(selected_group_.value() >= do_problem_->GetNumGroups(),
+                            "'group' must be a valid group index.");
+    return;
+  }
+
   OpenSnInvalidArgumentIf(not from_group_.has_value() or not to_group_.has_value(),
-                          "'from_group' and 'to_group' are required for scatter and production "
-                          "sensitivities.");
+                          "'from_group' and 'to_group' are required for scatter sensitivities.");
   OpenSnInvalidArgumentIf(from_group_.value() >= do_problem_->GetNumGroups() or
                             to_group_.value() >= do_problem_->GetNumGroups(),
                           "'from_group' and 'to_group' must be valid group indices.");
 
-  if (sensitivity_type_ == SensitivityType::SCATTER)
-  {
-    OpenSnInvalidArgumentIf(scattering_moments_.empty(), "No scattering moments were selected.");
-    for (const auto ell : scattering_moments_)
-      OpenSnInvalidArgumentIf(ell >= do_problem_->GetNumMoments(),
-                              "Selected scattering moment must be less than the number of flux "
-                              "moments.");
-  }
+  OpenSnInvalidArgumentIf(scattering_moments_.empty(), "No scattering moments were selected.");
+  for (const auto ell : scattering_moments_)
+    OpenSnInvalidArgumentIf(ell >= do_problem_->GetNumMoments(),
+                            "Selected scattering moment must be less than the number of flux "
+                            "moments.");
 }
 
 void
@@ -296,6 +300,18 @@ CrossSectionSensitivityPostprocessor::Execute()
   }
 }
 
+void
+CrossSectionSensitivityPostprocessor::ApplyKEigenvalueScaling(const double k_eff)
+{
+  OpenSnInvalidArgumentIf(k_eff <= 0.0, "The forward k-eigenvalue must be positive.");
+
+  std::vector<double> forward_phi;
+  std::vector<double> adjoint_phi;
+  LoadFluxMoments(forward_phi, adjoint_phi);
+
+  ScaleForKEigenvalueSensitivity(k_eff, ComputeFissionDenominator(forward_phi, adjoint_phi));
+}
+
 std::vector<double>
 CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
   const std::vector<std::uint32_t>& cell_local_ids,
@@ -366,10 +382,12 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
   const auto& grid = do_problem_->GetGrid();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
+  const auto from_group = from_group_.value_or(0);
+  const auto to_group = to_group_.value_or(0);
 
   const LBSGroupset* coefficient_groupset = nullptr;
   for (const auto& groupset : do_problem_->GetGroupsets())
-    if (to_group_.value() >= groupset.first_group and to_group_.value() <= groupset.last_group)
+    if (to_group >= groupset.first_group and to_group <= groupset.last_group)
     {
       coefficient_groupset = &groupset;
       break;
@@ -401,8 +419,7 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
       if (relative_)
       {
         if (ell < xs->GetTransferMatrices().size())
-          relative_coefficient =
-            xs->GetTransferMatrix(ell).GetValueIJ(to_group_.value(), from_group_.value());
+          relative_coefficient = xs->GetTransferMatrix(ell).GetValueIJ(to_group, from_group);
         else
           relative_coefficient = 0.0;
       }
@@ -410,8 +427,8 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
       for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         const auto dof_map = transport_view.MapDOF(i, m, 0);
-        local[column] += relative_coefficient * adjoint_phi[dof_map + to_group_.value()] *
-                         forward_phi[dof_map + from_group_.value()] * fe_values.intV_shapeI(i);
+        local[column] += relative_coefficient * adjoint_phi[dof_map + to_group] *
+                         forward_phi[dof_map + from_group] * fe_values.intV_shapeI(i);
       }
     }
   }
@@ -431,6 +448,7 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
   const auto& grid = do_problem_->GetGrid();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
+  const auto group = selected_group_.value_or(0);
 
   double local = 0.0;
   for (const auto cell_id : cell_local_ids)
@@ -440,26 +458,116 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
     const auto& transport_view = transport_views[cell.local_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
 
-    double relative_coefficient = 1.0;
+    if (not xs->IsFissionable())
+      continue;
+
+    const auto& chi = xs->GetChi();
+    const auto& sigma_f = xs->GetSigmaFission();
+    const auto& nu_sigma_f = xs->GetNuSigmaF();
+
+    OpenSnLogicalErrorIf(group >= sigma_f.size() or group >= nu_sigma_f.size(),
+                         "Production sensitivity group is outside the fission XS data.");
+    OpenSnLogicalErrorIf(chi.size() < do_problem_->GetNumGroups(),
+                         "The fission spectrum does not contain all energy groups.");
+
+    double coefficient = 0.0;
     if (relative_)
+      coefficient = nu_sigma_f[group];
+    else if (sigma_f[group] != 0.0)
+      coefficient = nu_sigma_f[group] / sigma_f[group];
+    else
     {
-      OpenSnInvalidArgumentIf(not xs->IsFissionable(),
-                              "Relative production sensitivity requested for non-fissionable "
-                              "material.");
-      relative_coefficient = xs->GetProductionMatrix()[to_group_.value()][from_group_.value()];
+      OpenSnInvalidArgumentIf(nu_sigma_f[group] != 0.0,
+                              "Cannot compute nu from nu_sigma_f / sigma_f for a group with "
+                              "zero sigma_f and nonzero nu_sigma_f.");
+      coefficient = 0.0;
     }
+
+    if (coefficient == 0.0)
+      continue;
 
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
       const auto dof_map = transport_view.MapDOF(i, 0, 0);
-      local += relative_coefficient * adjoint_phi[dof_map + to_group_.value()] *
-               forward_phi[dof_map + from_group_.value()] * fe_values.intV_shapeI(i);
+
+      double adjoint_fission_importance = 0.0;
+      for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
+        adjoint_fission_importance += chi[g] * adjoint_phi[dof_map + g];
+
+      local += coefficient * forward_phi[dof_map + group] * adjoint_fission_importance *
+               fe_values.intV_shapeI(i);
     }
   }
 
   double global = 0.0;
   mpi_comm.all_reduce(local, global, mpi::op::sum<double>());
   return {global};
+}
+
+double
+CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
+  const std::vector<double>& forward_phi, const std::vector<double>& adjoint_phi) const
+{
+  const auto& grid = do_problem_->GetGrid();
+  const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
+  const auto& transport_views = do_problem_->GetCellTransportViews();
+
+  double local = 0.0;
+  for (const auto& cell : grid->local_cells)
+  {
+    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
+    if (not xs->IsFissionable())
+      continue;
+
+    const auto& fe_values = unit_cell_matrices[cell.local_id];
+    const auto& transport_view = transport_views[cell.local_id];
+    const auto& chi = xs->GetChi();
+    const auto& nu_sigma_f = xs->GetNuSigmaF();
+
+    OpenSnLogicalErrorIf(chi.size() < do_problem_->GetNumGroups() or
+                           nu_sigma_f.size() < do_problem_->GetNumGroups(),
+                         "Fission XS data does not contain all energy groups.");
+
+    for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+    {
+      const auto dof_map = transport_view.MapDOF(i, 0, 0);
+
+      double adjoint_fission_importance = 0.0;
+      double forward_fission_production = 0.0;
+      for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
+      {
+        adjoint_fission_importance += chi[g] * adjoint_phi[dof_map + g];
+        forward_fission_production += nu_sigma_f[g] * forward_phi[dof_map + g];
+      }
+
+      local += adjoint_fission_importance * forward_fission_production * fe_values.intV_shapeI(i);
+    }
+  }
+
+  double global = 0.0;
+  mpi_comm.all_reduce(local, global, mpi::op::sum<double>());
+  return global;
+}
+
+void
+CrossSectionSensitivityPostprocessor::ScaleForKEigenvalueSensitivity(const double k_eff,
+                                                                     const double denominator)
+{
+  OpenSnInvalidArgumentIf(std::abs(denominator) == 0.0,
+                          "The fission normalization denominator <psi_adj,F psi> is zero.");
+
+  const double scale = sensitivity_type_ == SensitivityType::PRODUCTION
+                         ? k_eff / denominator
+                         : k_eff * k_eff / denominator;
+  const auto num_columns =
+    sensitivity_type_ == SensitivityType::SIGMA_T
+      ? groups_.size()
+      : (sensitivity_type_ == SensitivityType::SCATTER ? scattering_moments_.size()
+                                                       : static_cast<std::size_t>(1));
+
+  for (size_t i = 0; i < cell_local_ids_.size(); ++i)
+    for (size_t j = 0; j < num_columns; ++j)
+      values_(i, j) *= scale;
 }
 
 const NDArray<double, 2>&

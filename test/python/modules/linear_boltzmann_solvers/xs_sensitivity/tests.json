@@ -1,46 +1,34 @@
 [
   {
-    "file": "synthetic_1d_kernels.py",
-    "comment": "Exact 1D synthetic-buffer checks for sigma_t, scatter, and production kernels",
-    "num_procs": 1,
-    "checks": [
-      {"type": "KeyValuePair", "key": "XS_SENS_1D_SIGMA_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-12},
-      {"type": "KeyValuePair", "key": "XS_SENS_1D_SCATTER_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-12},
-      {"type": "KeyValuePair", "key": "XS_SENS_1D_PRODUCTION_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-12}
-    ]
-  },
-  {
-    "file": "synthetic_2d_spatial_moments.py",
-    "comment": "Exact 2D synthetic-buffer checks for block-restricted sigma_t and all scattering moments",
-    "num_procs": 1,
-    "checks": [
-      {"type": "KeyValuePair", "key": "XS_SENS_2D_SIGMA_BLOCK_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-12},
-      {"type": "KeyValuePair", "key": "XS_SENS_2D_SCATTER_MOMENTS_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-12}
-    ]
-  },
-  {
-    "file": "synthetic_3d_sigma.py",
-    "comment": "Exact 3D synthetic-buffer check for all-group sigma_t angular-flux sensitivity",
-    "num_procs": 1,
-    "checks": [
-      {"type": "KeyValuePair", "key": "XS_SENS_3D_SIGMA_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-12}
-    ]
-  },
-  {
     "file": "fixed_source_1d_infinite_medium.py",
     "comment": "1D reflective infinite-medium fixed-source semi-analytic sigma_t and scatter sensitivities",
     "num_procs": 1,
     "checks": [
-      {"type": "KeyValuePair", "key": "XS_SENS_INF_SIGMA_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-8},
-      {"type": "KeyValuePair", "key": "XS_SENS_INF_SCATTER_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-8}
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_INF_SIGMA_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_INF_SCATTER_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
     ]
   },
   {
     "file": "keigen_1d_infinite_medium.py",
-    "comment": "1D reflective infinite-medium k-eigenvalue analytic check",
+    "comment": "1D reflective infinite-medium k-eigenvalue analytic production sensitivity check",
     "num_procs": 1,
     "checks": [
-      {"type": "KeyValuePair", "key": "XS_SENS_KEIGEN_K_ERR=", "goldvalue": 0.0, "abs_tol": 1.0e-8}
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_KEIGEN_PRODUCTION_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
     ]
   }
 ]

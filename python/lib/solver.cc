@@ -330,17 +330,6 @@ WrapLBS(py::module& slv)
     )"
   );
   lbs_problem.def(
-    "SetPhiNewLocal",
-    [](LBSProblem& self, const std::vector<double>& phi)
-    {
-      self.SetPhiNewFrom(phi);
-    },
-    R"(
-    Set the current scalar flux iterate from a local vector.
-    )",
-    py::arg("phi")
-  );
-  lbs_problem.def(
     "WriteFluxMoments",
     [](LBSProblem& self, const std::string& file_base)
     {

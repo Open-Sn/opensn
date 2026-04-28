@@ -109,6 +109,21 @@ WrapPostprocessors(py::module& post)
     )"
   );
   xs_sens.def(
+    "ApplyKEigenvalueScaling",
+    [](CrossSectionSensitivityPostprocessor& self, const double k_eff)
+    {
+      self.ApplyKEigenvalueScaling(k_eff);
+    },
+    R"(
+    Scale the previously computed sensitivities to k-eigenvalue sensitivities.
+
+    Parameters
+    ----------
+    k_eff : float
+        Forward k-eigenvalue used in the first-order k-sensitivity normalization.
+    )"
+  );
+  xs_sens.def(
     "GetValue",
     [](CrossSectionSensitivityPostprocessor& self)
     {
