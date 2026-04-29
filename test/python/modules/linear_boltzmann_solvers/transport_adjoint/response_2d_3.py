@@ -35,7 +35,6 @@ if "opensn_console" not in globals():
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.response import ResponseEvaluator
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
-    from pyopensn.math import VectorSpatialFunction
 else:
     barrier = MPIBarrier
 
@@ -130,17 +129,12 @@ if __name__ == "__main__":
         fwd_qois.append(value)
         fwd_qoi_sum += value
 
-    # Create adjoint source using a response function
-    def ResponseFunction(xyz, mat_id):
-        response = [0.0] * num_groups
-        response[5] = 1.0
-        return response
-    response_func = VectorSpatialFunction(ResponseFunction)
-
-    # Create the adjoint volumetric source with the response function over the QoI region.
+    # Create the adjoint volumetric source over the QoI region.
+    qoi_response = [0.0] * num_groups
+    qoi_response[5] = 1.0
     adjoint_source = VolumetricSource(
         logical_volume=qoi_vol,
-        func=response_func
+        group_strength=qoi_response
     )
 
     # Switch to adjoint mode
