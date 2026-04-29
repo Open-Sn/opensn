@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/math/math.h"
@@ -16,8 +17,10 @@
 #include <cmath>
 #include <exception>
 #include <iomanip>
+#include <limits>
 #include <sstream>
 #include <slepceps.h>
+#include <string>
 
 namespace opensn
 {
@@ -158,6 +161,18 @@ ApplyLinearKEigenOperator(SLEPcLinearKEigenContext& ctx, Vec x, Vec y)
   OpenSnLogicalErrorIf(not ags_solver, "SLEPcLinearKEigenSolver: AGS solver is not available.");
   ags_solver->Solve();
 
+  ctx.last_ags_solve = ags_solver->GetLastSolveSummary();
+  ctx.last_wgs_solves.clear();
+  ctx.last_wgs_solves.reserve(do_problem->GetNumWGSSolvers());
+  for (size_t gsid = 0; gsid < do_problem->GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_context =
+      std::dynamic_pointer_cast<WGSContext>(do_problem->GetWGSSolver(gsid)->GetContext());
+    OpenSnLogicalErrorIf(not wgs_context, "SLEPcLinearKEigenSolver: Cast to WGSContext failed.");
+    if (HasIterationStatus(wgs_context->last_solve))
+      ctx.last_wgs_solves.emplace_back(wgs_context->last_solve);
+  }
+
   LBSVecOps::SetGroupScopedPETScVecFromPrimarySTLvector(
     *do_problem, 0, do_problem->GetNumGroups() - 1, y, phi_new_local);
 
@@ -177,45 +192,75 @@ ShellMult(Mat M, Vec x, Vec y)
   return ApplyLinearKEigenOperator(*ctx, x, y);
 }
 
-} // namespace
+IterationStatus
+SLEPcStatusToIterationStatus(const PetscInt nconv,
+                             const PetscInt iterations,
+                             const int maximum_iterations,
+                             const IterationStatus inner_status)
+{
+  if (inner_status == IterationStatus::FAILED or inner_status == IterationStatus::LIMIT)
+    return inner_status;
+  if (nconv > 0)
+    return IterationStatus::CONVERGED;
+  return iterations >= maximum_iterations ? IterationStatus::LIMIT : IterationStatus::NONE;
+}
 
-static PetscErrorCode
+PetscErrorCode
 SLEPcLinearKEigenMonitor(EPS unused_eps,
                          PetscInt its,
                          PetscInt unused_nconv,
                          PetscScalar* unused_eigr, // NOLINT(readability-non-const-parameter)
                          PetscScalar* unused_eigi, // NOLINT(readability-non-const-parameter)
-                         PetscReal* errest,
+                         PetscReal* errest,        // NOLINT(readability-non-const-parameter)
                          PetscInt nest,
                          void* ctx)
 {
   (void)unused_eps;
-  (void)unused_nconv;
   (void)unused_eigr;
   (void)unused_eigi;
 
   const bool has_error_estimate = nest > 0 and errest != nullptr;
+  auto* kctx = static_cast<SLEPcLinearKEigenContext*>(ctx);
   if (ctx)
   {
-    auto* kctx = static_cast<SLEPcLinearKEigenContext*>(ctx);
     if (has_error_estimate)
       kctx->last_eps_residual = errest[0];
+    kctx->last_eps_solve.num_iterations = static_cast<unsigned int>(its);
+    kctx->last_eps_solve.metric_name = "residual";
+    kctx->last_eps_solve.metric_value = kctx->last_eps_residual;
   }
-  std::stringstream iter_info;
-  iter_info << program_timer.GetTimeString() << " SLEPc EPS iteration = " << its;
-  if (has_error_estimate)
-    iter_info << ", residual = " << std::scientific << std::setprecision(6) << errest[0]
-              << std::defaultfloat;
-  else
-    iter_info << ", status = iterating";
-  log.Log() << iter_info.str();
+
+  if (kctx and kctx->do_problem->GetOptions().verbose_outer_iterations)
+  {
+    IterationSummary eps_summary = kctx->last_eps_solve;
+    if (not has_error_estimate)
+      eps_summary.metric_name.clear();
+
+    const auto ags_status = HasIterationStatus(kctx->last_ags_solve) ? kctx->last_ags_solve.status
+                                                                     : IterationStatus::NONE;
+    const auto inner_status =
+      MostSevereIterationStatus(ags_status, MostSevereIterationStatus(kctx->last_wgs_solves));
+    const auto iteration_status = SLEPcStatusToIterationStatus(
+      unused_nconv, its, std::numeric_limits<int>::max(), inner_status);
+
+    log.Log() << program_timer.GetTimeString() << " "
+              << FormatEigenIteration("SLEPc EPS",
+                                      static_cast<unsigned int>(its),
+                                      eps_summary,
+                                      kctx->last_ags_solve,
+                                      kctx->last_wgs_solves,
+                                      iteration_status);
+  }
 
   return 0;
 }
 
+} // namespace
+
 void
 SLEPcLinearKEigenSolver::SetMonitor()
 {
+  EPSMonitorSet(eps_, SLEPcLinearKEigenMonitor, context_ptr_.get(), nullptr);
 }
 
 void
@@ -275,12 +320,26 @@ SLEPcLinearKEigenSolver::Solve()
   EPSSetTolerances(eps_, tolerance_options.residual_absolute, tolerance_options.maximum_iterations);
   EPSSetType(eps_, eps_type_.c_str());
   EPSSetInitialSpace(eps_, 1, &x_);
-  EPSMonitorSet(eps_, SLEPcLinearKEigenMonitor, context_ptr_.get(), nullptr);
   EPSSolve(eps_);
 
   // Check for convergence
   PetscInt nconv = 0;
   EPSGetConverged(eps_, &nconv);
+  PetscInt iterations = 0;
+  EPSGetIterationNumber(eps_, &iterations);
+
+  const auto ags_status =
+    HasIterationStatus(ctx->last_ags_solve) ? ctx->last_ags_solve.status : IterationStatus::NONE;
+  const auto inner_status =
+    MostSevereIterationStatus(ags_status, MostSevereIterationStatus(ctx->last_wgs_solves));
+  ctx->last_eps_solve.num_iterations = static_cast<unsigned int>(iterations);
+  ctx->last_eps_solve.status = SLEPcStatusToIterationStatus(
+    nconv, iterations, tolerance_options.maximum_iterations, inner_status);
+  ctx->last_eps_solve.detail =
+    nconv > 0 ? "eigenpairs_converged=" + std::to_string(nconv) : "no_eigenpairs_converged";
+  ctx->last_eps_solve.metric_name = "residual";
+  ctx->last_eps_solve.metric_value = ctx->last_eps_residual;
+
   if (nconv == 0)
   {
     OpenSnLogicalError(program_timer.GetTimeString() + " SLEPc EPS: No eigenpairs converged.");
@@ -298,6 +357,9 @@ SLEPcLinearKEigenSolver::PreSolveCallback()
   auto ctx = std::dynamic_pointer_cast<SLEPcLinearKEigenContext>(context_ptr_);
   ctx->last_eps_residual = 1.0;
   ctx->last_operator_residual = 1.0;
+  ctx->last_eps_solve = {};
+  ctx->last_ags_solve = {};
+  ctx->last_wgs_solves.clear();
 }
 
 void
@@ -344,6 +406,28 @@ SLEPcLinearKEigenSolver::PostSolveCallback()
 
   OpenSnLogicalErrorIf(not std::isfinite(ctx->last_operator_residual),
                        "SLEPcLinearKEigenSolver: final operator residual is not finite.");
+
+  if (do_problem->GetOptions().verbose_outer_iterations)
+  {
+    const auto ags_status =
+      HasIterationStatus(ctx->last_ags_solve) ? ctx->last_ags_solve.status : IterationStatus::NONE;
+    const auto inner_status =
+      MostSevereIterationStatus(ags_status, MostSevereIterationStatus(ctx->last_wgs_solves));
+    if (inner_status == IterationStatus::FAILED or inner_status == IterationStatus::LIMIT)
+      ctx->last_eps_solve.status = inner_status;
+
+    ctx->last_eps_solve.metric_name = "operator_residual";
+    ctx->last_eps_solve.metric_value = ctx->last_operator_residual;
+    log.Log() << program_timer.GetTimeString() << " "
+              << FormatKEigenFinalSummary("SLEPc",
+                                          ctx->eigenvalue,
+                                          -1.0,
+                                          ctx->last_eps_solve.num_iterations,
+                                          "eps_iterations",
+                                          ctx->last_eps_solve.status);
+    log.Log() << program_timer.GetTimeString() << " "
+              << FormatIterationSummary("SLEPc EPS", ctx->last_eps_solve);
+  }
 
   const auto ags_solver = do_problem->GetAGSSolver();
   const double residual_tolerance = std::max({10.0 * tolerance_options.residual_absolute,

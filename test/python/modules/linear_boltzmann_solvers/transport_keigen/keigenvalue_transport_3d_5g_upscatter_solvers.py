@@ -6,7 +6,7 @@
 
 The homogeneous fully reflecting problem has a spatially constant solution.
 The reference k is the dominant eigenvalue of inv(T - S) F for the XS data in
-simple_5g_upscatter_fissile.xs.
+test/assets/xs/simple_5g_upscatter_fissile.xs.
 """
 
 import os
@@ -43,7 +43,7 @@ PRODUCTION = [
     [0.030, 0.036, 0.012, 0.006, 0.005],
     [0.010, 0.012, 0.004, 0.002, 0.002],
 ]
-EXPECTED_K = 0.647082071109
+EXPECTED_K = 0.6553715484430904
 
 
 def solve_dense(matrix, rhs):
@@ -73,7 +73,7 @@ def solve_dense(matrix, rhs):
 
 def apply_reference_operator(phi):
     loss = [
-        [(SIGMA_T[g] if g == gp else 0.0) - SCATTER[gp][g] for gp in range(5)]
+        [(SIGMA_T[g] if g == gp else 0.0) - SCATTER[g][gp] for gp in range(5)]
         for g in range(5)
     ]
     fission_source = [
@@ -102,7 +102,7 @@ def make_problem():
     grid.SetOrthogonalBoundaries()
 
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn("simple_5g_upscatter_fissile.xs")
+    xs.LoadFromOpenSn("../../../../assets/xs/simple_5g_upscatter_fissile.xs")
 
     quad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)
     groupsets = []

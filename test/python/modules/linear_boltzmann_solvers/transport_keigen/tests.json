@@ -914,7 +914,7 @@
       {
         "type": "KeyValuePair",
         "key": "PowerIteration k-eigenvalue:",
-        "goldvalue": 0.647082071109,
+        "goldvalue": 0.655371548443,
         "abs_tol": 5e-06
       },
       {
@@ -926,7 +926,7 @@
       {
         "type": "KeyValuePair",
         "key": "NonLinearKEigen k-eigenvalue:",
-        "goldvalue": 0.647082071109,
+        "goldvalue": 0.655371548443,
         "abs_tol": 5e-06
       }
     ]

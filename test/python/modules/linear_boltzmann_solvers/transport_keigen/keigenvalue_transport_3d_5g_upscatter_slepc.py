@@ -6,7 +6,7 @@
 
 The homogeneous fully reflecting problem has a spatially constant solution.
 The reference k is the dominant eigenvalue of inv(T - S) F for the XS data in
-simple_5g_upscatter_fissile.xs.
+test/assets/xs/simple_5g_upscatter_fissile.xs.
 """
 
 import os
@@ -101,7 +101,7 @@ def make_problem():
     grid.SetOrthogonalBoundaries()
 
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn("simple_5g_upscatter_fissile.xs")
+    xs.LoadFromOpenSn("../../../../assets/xs/simple_5g_upscatter_fissile.xs")
 
     quad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)
     return DiscreteOrdinatesProblem(
@@ -173,7 +173,6 @@ def make_problem():
         options={
             "use_precursors": False,
             "verbose_inner_iterations": False,
-            "verbose_ags_iterations": False,
             "verbose_outer_iterations": True,
             "max_ags_iterations": 200,
             "ags_tolerance": 1.0e-10,
