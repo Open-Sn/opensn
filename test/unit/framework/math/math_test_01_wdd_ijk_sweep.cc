@@ -40,7 +40,7 @@ WDD_IJK_Sweep2(const std::array<size_t, 3>& mesh_divs,
   const auto& D2M = quad.GetDiscreteToMomentOperator();
 
   int n = 0;
-  for (const auto& omega_n : quad.omegas)
+  for (const auto& omega_n : quad.GetOmegas())
   {
     // Determine sweep ordering
     if (omega_n.x > 0.0)
@@ -131,13 +131,13 @@ TEST(MathTest, WDD_IJK_Sweep)
   auto phi = WDD_IJK_Sweep2(mesh_divisions, mesh_lengths, bcs, sigma_t, q, *pquad, verbose);
 
   {
-    ASSERT_EQ(pquad->omegas.size(), 2);
-    EXPECT_NEAR(pquad->omegas[0].x, 0.816497, 1e-5);
-    EXPECT_NEAR(pquad->omegas[0].y, 0, 1e-5);
-    EXPECT_NEAR(pquad->omegas[0].z, 0.57735, 1e-5);
-    EXPECT_NEAR(pquad->omegas[1].x, 0.816497, 1e-5);
-    EXPECT_NEAR(pquad->omegas[1].y, 0., 1e-5);
-    EXPECT_NEAR(pquad->omegas[1].z, -0.57735, 1e-5);
+    ASSERT_EQ(pquad->GetNumAngles(), 2);
+    EXPECT_NEAR(pquad->GetOmega(0).x, 0.816497, 1e-5);
+    EXPECT_NEAR(pquad->GetOmega(0).y, 0, 1e-5);
+    EXPECT_NEAR(pquad->GetOmega(0).z, 0.57735, 1e-5);
+    EXPECT_NEAR(pquad->GetOmega(1).x, 0.816497, 1e-5);
+    EXPECT_NEAR(pquad->GetOmega(1).y, 0., 1e-5);
+    EXPECT_NEAR(pquad->GetOmega(1).z, -0.57735, 1e-5);
   }
 
   {

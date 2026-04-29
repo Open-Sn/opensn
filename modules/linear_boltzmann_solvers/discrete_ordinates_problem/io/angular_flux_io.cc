@@ -80,7 +80,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
     const auto& quadrature = groupset.quadrature;
 
     auto groupset_id = groupset.id;
-    auto num_gs_dirs = quadrature->omegas.size();
+    auto num_gs_dirs = quadrature->GetNumAngles();
     auto num_gs_groups = groupset.GetNumGroups();
 
     const auto group_name = "groupset_" + std::to_string(groupset_id);
@@ -207,7 +207,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
     const auto& uk_man = groupset.psi_uk_man_;
     const auto& quadrature = groupset.quadrature;
 
-    const auto num_gs_dirs = quadrature->omegas.size();
+    const auto num_gs_dirs = quadrature->GetNumAngles();
     const auto num_gs_groups = groupset.GetNumGroups();
     OpenSnLogicalErrorIf(file_num_gs_dirs != num_gs_dirs,
                          "Incompatible number of groupset angles found in file " + file_name +

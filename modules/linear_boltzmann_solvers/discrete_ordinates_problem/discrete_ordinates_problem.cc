@@ -198,7 +198,7 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   for (auto& groupset : groupsets_)
   {
     groupset.psi_uk_man_.unknowns.clear();
-    size_t num_angles = groupset.quadrature->abscissae.size();
+    size_t num_angles = groupset.quadrature->GetNumAngles();
     auto gs_num_groups = groupset.GetNumGroups();
     auto& grpset_psi_uk_man = groupset.psi_uk_man_;
     const auto VarVecN = UnknownType::VECTOR_N;
@@ -521,7 +521,7 @@ DiscreteOrdinatesProblem::PrintSimHeader()
     {
       outstr << "***** Groupset " << groupset.id << " *****\n"
              << "Quadrature type : " << groupset.quadrature->GetName() << "\n"
-             << "Number of angles: " << groupset.quadrature->abscissae.size() << "\n"
+             << "Number of angles: " << groupset.quadrature->GetNumAngles() << "\n"
              << "Quadrature norm : " << std::fixed << std::setprecision(2)
              << groupset.quadrature->GetWeightSum() << std::defaultfloat << "\n"
              << "Groups:\n";
@@ -1123,7 +1123,7 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
     std::map<std::size_t, std::size_t> reversed_angle_map;
     if (options_.save_angular_flux)
     {
-      const auto& omegas = groupset.quadrature->omegas;
+      const auto& omegas = groupset.quadrature->GetOmegas();
       const auto num_gs_angles = omegas.size();
 
       // Go through angles until all are paired
@@ -1266,7 +1266,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
           continue;
 
         const size_t master_dir_id = so_grouping.front();
-        const auto& omega = quadrature->omegas[master_dir_id];
+        const auto& omega = quadrature->GetOmega(master_dir_id);
         const auto new_swp_order = std::make_shared<AAH_SPDS>(
           id, omega, this->grid_, quadrature_allow_cycles_map_[quadrature], use_gpus_);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
@@ -1411,7 +1411,7 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
           continue;
 
         const size_t master_dir_id = so_grouping.front();
-        const auto& omega = quadrature->omegas[master_dir_id];
+        const auto& omega = quadrature->GetOmega(master_dir_id);
         const auto new_swp_order =
           std::make_shared<CBC_SPDS>(omega, this->grid_, quadrature_allow_cycles_map_[quadrature]);
         quadrature_spds_map_[quadrature].push_back(new_swp_order);
@@ -1566,9 +1566,9 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::AssociateSOsAndDirections");
 
   // Checks
-  if (quadrature.omegas.empty())
+  if (quadrature.GetOmegas().empty())
     throw std::logic_error(GetName() + ": Quadrature with no omegas cannot be used");
-  if (quadrature.weights.empty())
+  if (quadrature.GetWeights().empty())
     throw std::logic_error(GetName() + ": Quadrature with no weights cannot be used");
 
   // Build groupings
@@ -1592,14 +1592,14 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
         }
         else
         {
-          const size_t num_dirs = quadrature.omegas.size();
+          const size_t num_dirs = quadrature.GetNumAngles();
           for (size_t n = 0; n < num_dirs; ++n)
             unq_so_grps.push_back({n});
         }
       }
       else
       {
-        const size_t num_dirs = quadrature.omegas.size();
+        const size_t num_dirs = quadrature.GetNumAngles();
         for (size_t n = 0; n < num_dirs; ++n)
           unq_so_grps.push_back({n});
       }
@@ -1627,15 +1627,17 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
       {
         const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
 
-        const auto num_azi = product_quad.azimu_ang.size();
-        const auto num_pol = product_quad.polar_ang.size();
+        const auto& azimuthal_angles = product_quad.GetAzimuthalAngles();
+        const auto& polar_angles = product_quad.GetPolarAngles();
+        const auto num_azi = azimuthal_angles.size();
+        const auto num_pol = polar_angles.size();
 
         // Make two separate list of polar angles
         // One upward-pointing and one downward
         std::vector<size_t> upward_polar_ids;
         std::vector<size_t> dnward_polar_ids;
         for (size_t p = 0; p < num_pol; ++p)
-          if (product_quad.polar_ang[p] > M_PI_2)
+          if (polar_angles[p] > M_PI_2)
             upward_polar_ids.push_back(p);
           else
             dnward_polar_ids.push_back(p);
@@ -1697,7 +1699,7 @@ DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshCo
           std::vector<unsigned int> group1;
           std::vector<unsigned int> group2;
           for (const auto& dir_id : dir_set.second)
-            if (quadrature.abscissae[dir_id].phi > M_PI_2)
+            if (quadrature.GetAbscissa(dir_id).phi > M_PI_2)
               group1.push_back(dir_id);
             else
               group2.push_back(dir_id);

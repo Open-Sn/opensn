@@ -21,6 +21,9 @@ GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(unsigned int Npol
   if (Npolar % 2 != 0)
     throw std::invalid_argument("GLProductQuadrature1DSpherical: Npolar must be even.");
 
+  n_polar_ = Npolar;
+  n_azimuthal_ = 1;
+
   Initialize(Npolar, verbose);
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
@@ -87,9 +90,9 @@ GLProductQuadrature1DSpherical::Initialize(unsigned int Npolar, const bool verbo
   // Product quadrature initialization
   // Compute weights, abscissae $(0, \vartheta_{p})$ and direction vectors
   // $\omega_{p} := ((1-\mu_{p}^{2})^{1/2}, 0, \mu_{p})$
-  weights.clear();
-  abscissae.clear();
-  omegas.clear();
+  weights_.clear();
+  abscissae_.clear();
+  omegas_.clear();
   for (size_t p = 0; p < polar_quad.weights.size(); ++p)
   {
     const auto pol_wei = polar_quad.weights[p];
@@ -100,13 +103,13 @@ GLProductQuadrature1DSpherical::Initialize(unsigned int Npolar, const bool verbo
     const auto abscissa = QuadraturePointPhiTheta(0, std::acos(pol_abs));
     const auto omega = Vector3(pol_com, 0, pol_abs);
 
-    weights.emplace_back(weight);
-    abscissae.emplace_back(abscissa);
-    omegas.emplace_back(omega);
+    weights_.emplace_back(weight);
+    abscissae_.emplace_back(abscissa);
+    omegas_.emplace_back(omega);
   }
-  weights.shrink_to_fit();
-  abscissae.shrink_to_fit();
-  omegas.shrink_to_fit();
+  weights_.shrink_to_fit();
+  abscissae_.shrink_to_fit();
+  omegas_.shrink_to_fit();
 
   // Map of direction indices
   map_directions_.clear();
@@ -133,13 +136,13 @@ GLProductQuadrature1DSpherical::Initialize(unsigned int Npolar, const bool verbo
       log.Log() << std::endl;
     }
     log.Log() << "curvilinear product quadrature : spherical" << std::endl;
-    for (size_t k = 0; k < weights.size(); ++k)
-      log.Log() << "angle index " << k << ": weight = " << weights[k] << ", (phi, theta) = ("
-                << abscissae[k].phi << ", " << abscissae[k].theta << ")"
-                << ", omega = " << omegas[k].PrintStr()
+    for (size_t k = 0; k < weights_.size(); ++k)
+      log.Log() << "angle index " << k << ": weight = " << weights_[k] << ", (phi, theta) = ("
+                << abscissae_[k].phi << ", " << abscissae_[k].theta << ")"
+                << ", omega = " << omegas_[k].PrintStr()
                 << ", fac_diamond_difference = " << fac_diamond_difference_[k]
                 << ", fac_streaming_operator = " << fac_streaming_operator_[k] << std::endl;
-    const auto sum_weights = std::accumulate(weights.begin(), weights.end(), 0.0);
+    const auto sum_weights = std::accumulate(weights_.begin(), weights_.end(), 0.0);
     log.Log() << "sum(weights) = " << sum_weights << std::endl;
   }
 }
@@ -147,19 +150,19 @@ GLProductQuadrature1DSpherical::Initialize(unsigned int Npolar, const bool verbo
 void
 GLProductQuadrature1DSpherical::InitializeParameters()
 {
-  fac_diamond_difference_.resize(weights.size(), 1);
-  fac_streaming_operator_.resize(weights.size(), 0);
+  fac_diamond_difference_.resize(weights_.size(), 1);
+  fac_streaming_operator_.resize(weights_.size(), 0);
 
   // Interface quantities initialised to starting direction values
   double alpha_interface = 0;
-  std::vector<double> mu_interface(2, omegas[map_directions_[0].front()].z);
+  std::vector<double> mu_interface(2, omegas_[map_directions_[0].front()].z);
 
   // Initialization permits to forego start direction and final direction
   for (size_t p = 1; p < map_directions_.size() - 1; ++p)
   {
     const auto k = map_directions_[p][0];
-    const auto w_p = weights[k];
-    const auto mu_p = omegas[k].z;
+    const auto w_p = weights_[k];
+    const auto mu_p = omegas_[k].z;
 
     alpha_interface -= w_p * mu_p;
 
@@ -196,6 +199,9 @@ GLCProductQuadrature2DRZ::GLCProductQuadrature2DRZ(unsigned int Npolar,
 
   if (Nazimuthal % 4 != 0)
     throw std::invalid_argument("GLCProductQuadraturee2DRZ: Nazimuthal must be a multiple of 4.");
+
+  n_polar_ = Npolar;
+  n_azimuthal_ = Nazimuthal;
 
   const auto quad_polar = GaussLegendreQuadrature(Npolar, verbose);
   std::vector<GaussQuadrature> quad_azimuthal;
@@ -309,9 +315,9 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
   // Product quadrature initialization
   // Compute weights, abscissae $(\varphi, \vartheta)$ and direction vectors
   // $\omega_{pq} := (\mu_{pq}, \xi_{p}, \eta_{pq})$
-  weights.clear();
-  abscissae.clear();
-  omegas.clear();
+  weights_.clear();
+  abscissae_.clear();
+  omegas_.clear();
   for (size_t p = 0; p < azimu_quad_vec.size(); ++p)
   {
     const auto pol_wei = polar_quad.weights[p];
@@ -330,14 +336,14 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
       const auto abscissa = QuadraturePointPhiTheta(std::acos(azi_abs), std::acos(pol_abs));
       const auto omega = Vector3(pol_com * azi_abs, pol_abs, pol_com * azi_com);
 
-      weights.emplace_back(weight);
-      abscissae.emplace_back(abscissa);
-      omegas.emplace_back(omega);
+      weights_.emplace_back(weight);
+      abscissae_.emplace_back(abscissa);
+      omegas_.emplace_back(omega);
     }
   }
-  weights.shrink_to_fit();
-  abscissae.shrink_to_fit();
-  omegas.shrink_to_fit();
+  weights_.shrink_to_fit();
+  abscissae_.shrink_to_fit();
+  omegas_.shrink_to_fit();
 
   // Map of direction indices
   unsigned int ind0 = 0;
@@ -368,13 +374,13 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
       log.Log() << std::endl;
     }
     log.Log() << "curvilinear product quadrature : cylindrical" << std::endl;
-    for (size_t k = 0; k < weights.size(); ++k)
-      log.Log() << "angle index " << k << ": weight = " << weights[k] << ", (phi, theta) = ("
-                << abscissae[k].phi << ", " << abscissae[k].theta << ")"
-                << ", omega = " << omegas[k].PrintStr()
+    for (size_t k = 0; k < weights_.size(); ++k)
+      log.Log() << "angle index " << k << ": weight = " << weights_[k] << ", (phi, theta) = ("
+                << abscissae_[k].phi << ", " << abscissae_[k].theta << ")"
+                << ", omega = " << omegas_[k].PrintStr()
                 << ", fac_diamond_difference = " << fac_diamond_difference_[k]
                 << ", fac_streaming_operator = " << fac_streaming_operator_[k] << std::endl;
-    const auto sum_weights = std::accumulate(weights.begin(), weights.end(), 0.0);
+    const auto sum_weights = std::accumulate(weights_.begin(), weights_.end(), 0.0);
     log.Log() << "sum(weights) = " << sum_weights << std::endl;
   }
 }
@@ -382,27 +388,27 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
 void
 GLCProductQuadrature2DRZ::InitializeParameters()
 {
-  fac_diamond_difference_.resize(weights.size(), 1);
-  fac_streaming_operator_.resize(weights.size(), 0);
+  fac_diamond_difference_.resize(weights_.size(), 1);
+  fac_streaming_operator_.resize(weights_.size(), 0);
   for (size_t p = 0; p < map_directions_.size(); ++p)
   {
     double sum_q_weights = 0;
     for (size_t q = 0; q < map_directions_[p].size(); ++q)
-      sum_q_weights += weights[map_directions_[p][q]];
+      sum_q_weights += weights_[map_directions_[p][q]];
     const auto pi_sum_q_weights = M_PI / sum_q_weights;
 
     // Interface quantities initialised to starting direction values
     double alpha_interface = 0;
-    double phi_interface = abscissae[map_directions_[p].front()].phi;
+    double phi_interface = abscissae_[map_directions_[p].front()].phi;
     std::vector<double> mu_interface(2, std::cos(phi_interface));
 
     // Initialization permits to forego start direction and final direction
     for (size_t q = 1; q < map_directions_[p].size() - 1; ++q)
     {
       const auto k = map_directions_[p][q];
-      const auto w_pq = weights[k];
-      const auto mu_pq = omegas[k].x;
-      const auto phi_pq = abscissae[k].phi;
+      const auto w_pq = weights_[k];
+      const auto mu_pq = omegas_[k].x;
+      const auto phi_pq = abscissae_[k].phi;
 
       alpha_interface -= w_pq * mu_pq;
 

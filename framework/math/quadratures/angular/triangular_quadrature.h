@@ -34,7 +34,17 @@ public:
   }
 
   /// Polar angles for each polar level.
-  std::vector<double> polar_ang;
+  const std::vector<double>& GetPolarAngles() const { return polar_ang_; }
+
+  /// Azimuthal angles for each polar level.
+  const std::vector<std::vector<double>>& GetAzimuthalAnglesPerPolarLevel() const
+  {
+    return azimuthal_per_polar_;
+  }
+
+  unsigned int GetNumPolarAngles() const override { return n_polar_; }
+
+  unsigned int GetNumAzimuthalAngles() const override { return n_azimuthal_; }
 
 protected:
   TriangularQuadrature(unsigned int dimension,
@@ -49,6 +59,9 @@ protected:
   /// Sum of all quadrature weights.
   double weight_sum_;
 
+  /// Polar angles for each polar level.
+  std::vector<double> polar_ang_;
+
   /// Azimuthal angles for each polar level.
   ///
   /// The number of azimuthal angles decreases as the polar angle moves away from the equator,
@@ -57,6 +70,12 @@ protected:
 
   /// Linear indices of ordered directions mapped to polar level.
   std::map<unsigned int, std::vector<unsigned int>> map_directions_;
+
+  /// Number of polar angles specified for this triangular quadrature.
+  unsigned int n_polar_ = 0;
+
+  /// Maximum number of azimuthal angles specified for this triangular quadrature.
+  unsigned int n_azimuthal_ = 0;
 };
 
 /// Triangular GLC quadrature for 3D XYZ geometry.

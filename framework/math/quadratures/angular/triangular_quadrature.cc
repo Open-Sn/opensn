@@ -19,13 +19,13 @@ GLCTriangularQuadrature3DXYZ::AssembleTriangularCosines(
 {
   const size_t Np = polar.size();
 
-  polar_ang = polar;
+  polar_ang_ = polar;
   azimuthal_per_polar_ = azimuthal_per_polar;
 
   if (verbose)
   {
     log.Log() << "Polar angles:";
-    for (const auto& ang : polar_ang)
+    for (const auto& ang : polar_ang_)
       log.Log() << ang;
   }
 
@@ -34,8 +34,8 @@ GLCTriangularQuadrature3DXYZ::AssembleTriangularCosines(
   for (unsigned int j = 0; j < Np; ++j)
     map_directions_.emplace(j, std::vector<unsigned int>());
 
-  abscissae.clear();
-  weights.clear();
+  abscissae_.clear();
+  weights_.clear();
   weight_sum_ = 0.0;
 
   unsigned int direction_index = 0;
@@ -54,10 +54,10 @@ GLCTriangularQuadrature3DXYZ::AssembleTriangularCosines(
       map_directions_[j].emplace_back(direction_index);
 
       const auto abscissa = QuadraturePointPhiTheta(azimuthal_per_polar[j][i], polar[j]);
-      abscissae.emplace_back(abscissa);
+      abscissae_.emplace_back(abscissa);
 
       const double weight = wts_per_polar[j][i];
-      weights.emplace_back(weight);
+      weights_.emplace_back(weight);
       weight_sum_ += weight;
 
       ++direction_index;
@@ -65,27 +65,27 @@ GLCTriangularQuadrature3DXYZ::AssembleTriangularCosines(
   }
 
   // Create omega list
-  omegas.clear();
-  for (const auto& qpoint : abscissae)
+  omegas_.clear();
+  for (const auto& qpoint : abscissae_)
   {
     Vector3 new_omega;
     new_omega.x = std::sin(qpoint.theta) * std::cos(qpoint.phi);
     new_omega.y = std::sin(qpoint.theta) * std::sin(qpoint.phi);
     new_omega.z = std::cos(qpoint.theta);
 
-    omegas.emplace_back(new_omega);
+    omegas_.emplace_back(new_omega);
 
     if (verbose)
       log.Log() << "Quadrature angle=" << new_omega.PrintStr();
   }
 
   // Normalize weights to 1.0
-  for (auto& w : weights)
+  for (auto& w : weights_)
     w /= weight_sum_;
 
   // Compute and store sum of weights after normalization
   weight_sum_ = 0.0;
-  for (auto& w : weights)
+  for (auto& w : weights_)
     weight_sum_ += w;
 }
 
@@ -103,9 +103,8 @@ GLCTriangularQuadrature3DXYZ::GLCTriangularQuadrature3DXYZ(unsigned int Npolar,
   // this ensures exactly 4 azimuthal angles at the poles (1 per octant)
   const unsigned int Nazimuthal = 2 * Npolar;
 
-  // Set parameters for Galerkin quadrature methods
-  SetNumberOfPolar(Npolar);
-  SetNumberOfAzimuthal(Nazimuthal);
+  n_polar_ = Npolar;
+  n_azimuthal_ = Nazimuthal;
 
   GaussLegendreQuadrature gl_polar(Npolar);
 
@@ -176,13 +175,13 @@ GLCTriangularQuadrature2DXY::AssembleTriangularCosines(
 {
   const size_t Np = polar.size();
 
-  polar_ang = polar;
+  polar_ang_ = polar;
   azimuthal_per_polar_ = azimuthal_per_polar;
 
   if (verbose)
   {
     log.Log() << "Polar angles:";
-    for (const auto& ang : polar_ang)
+    for (const auto& ang : polar_ang_)
       log.Log() << ang;
   }
 
@@ -191,8 +190,8 @@ GLCTriangularQuadrature2DXY::AssembleTriangularCosines(
   for (unsigned int j = 0; j < Np; ++j)
     map_directions_.emplace(j, std::vector<unsigned int>());
 
-  abscissae.clear();
-  weights.clear();
+  abscissae_.clear();
+  weights_.clear();
   weight_sum_ = 0.0;
 
   unsigned int direction_index = 0;
@@ -211,10 +210,10 @@ GLCTriangularQuadrature2DXY::AssembleTriangularCosines(
       map_directions_[j].emplace_back(direction_index);
 
       const auto abscissa = QuadraturePointPhiTheta(azimuthal_per_polar[j][i], polar[j]);
-      abscissae.emplace_back(abscissa);
+      abscissae_.emplace_back(abscissa);
 
       const double weight = wts_per_polar[j][i];
-      weights.emplace_back(weight);
+      weights_.emplace_back(weight);
       weight_sum_ += weight;
 
       ++direction_index;
@@ -222,27 +221,27 @@ GLCTriangularQuadrature2DXY::AssembleTriangularCosines(
   }
 
   // Create omega list
-  omegas.clear();
-  for (const auto& qpoint : abscissae)
+  omegas_.clear();
+  for (const auto& qpoint : abscissae_)
   {
     Vector3 new_omega;
     new_omega.x = std::sin(qpoint.theta) * std::cos(qpoint.phi);
     new_omega.y = std::sin(qpoint.theta) * std::sin(qpoint.phi);
     new_omega.z = std::cos(qpoint.theta);
 
-    omegas.emplace_back(new_omega);
+    omegas_.emplace_back(new_omega);
 
     if (verbose)
       log.Log() << "Quadrature angle=" << new_omega.PrintStr();
   }
 
   // Normalize weights to 1.0
-  for (auto& w : weights)
+  for (auto& w : weights_)
     w /= weight_sum_;
 
   // Compute and store sum of weights after normalization
   weight_sum_ = 0.0;
-  for (auto& w : weights)
+  for (auto& w : weights_)
     weight_sum_ += w;
 }
 
@@ -263,9 +262,8 @@ GLCTriangularQuadrature2DXY::GLCTriangularQuadrature2DXY(unsigned int Npolar,
   // this ensures exactly 4 azimuthal angles at the pole (1 per quadrant)
   const unsigned int Nazimuthal = 2 * Npolar;
 
-  // Set parameters for Galerkin quadrature methods
-  SetNumberOfPolar(Npolar);
-  SetNumberOfAzimuthal(Nazimuthal);
+  n_polar_ = Npolar;
+  n_azimuthal_ = Nazimuthal;
 
   GaussLegendreQuadrature gl_polar(Npolar);
 

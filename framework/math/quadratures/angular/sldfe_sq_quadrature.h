@@ -31,6 +31,8 @@ public:
 
   void LocallyRefine(const Vector3& ref_dir, double cone_size, bool dir_as_plane_normal = false);
 
+  unsigned int GetQuadratureOrder() const override { return static_cast<unsigned int>(level_); }
+
 protected:
   void GenerateRefinement();
 
@@ -38,6 +40,7 @@ protected:
 
   virtual bool FilterQuadraturePoint(const Vector3& omega) const;
 
+private:
   enum class QuadraturePointOptimization
   {
     CENTROID,
@@ -65,7 +68,6 @@ protected:
   QuadraturePointOptimization qp_optimization_type = QuadraturePointOptimization::EMPIRICAL;
   std::vector<SphericalQuadrilateral> deployed_SQs;
 
-private:
   struct BaseFunctor
   {
     virtual double operator()(double mu, double eta, double xi) { return 0.0; }

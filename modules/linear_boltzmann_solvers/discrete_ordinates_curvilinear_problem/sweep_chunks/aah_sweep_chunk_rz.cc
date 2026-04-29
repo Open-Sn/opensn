@@ -111,8 +111,8 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
       auto direction_num = as_angle_indices[as_ss_idx];
-      auto omega = groupset_.quadrature->omegas[direction_num];
-      auto wt = groupset_.quadrature->weights[direction_num];
+      auto omega = groupset_.quadrature->GetOmega(direction_num);
+      auto wt = groupset_.quadrature->GetWeight(direction_num);
 
       const auto polar_level = map_polar_level_[direction_num];
       const auto fac_diamond_difference =

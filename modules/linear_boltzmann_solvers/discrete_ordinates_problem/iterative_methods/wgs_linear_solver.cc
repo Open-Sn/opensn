@@ -106,6 +106,14 @@ WGSLinearSolver::PreSolveCallback()
 {
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   gs_context_ptr->last_solve = {};
+  auto& groupset = gs_context_ptr->groupset;
+  auto& do_problem = gs_context_ptr->do_problem;
+  if (do_problem.GetOptions().verbose_inner_iterations)
+  {
+    log.Log() << "Solving groupset " << groupset.id << " with " << this->GetIterativeMethodName()
+              << " (groups " << groupset.first_group << "-" << groupset.last_group << ", "
+              << groupset.quadrature->GetNumAngles() << " angles)\n";
+  }
   gs_context_ptr->PreSolveCallback();
 }
 

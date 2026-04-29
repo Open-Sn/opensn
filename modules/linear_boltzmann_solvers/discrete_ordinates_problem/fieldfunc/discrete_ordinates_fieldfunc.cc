@@ -44,7 +44,7 @@ DiscreteOrdinatesProblem::CreateAngularFluxFieldFunctionList(
                          "CreateAngularFluxFieldFunctionList: group not found in any groupset.");
 
     const auto& groupset = *gs_ptr;
-    const auto num_angles = groupset.quadrature->omegas.size();
+    const auto num_angles = groupset.quadrature->GetNumAngles();
 
     for (const auto a : angles)
     {

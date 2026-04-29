@@ -402,7 +402,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
     {
       const auto& uk_man = groupset.psi_uk_man_;
       const auto& quadrature = groupset.quadrature;
-      const auto& num_gs_angles = quadrature->omegas.size();
+      const auto num_gs_angles = quadrature->GetNumAngles();
       const auto& num_gs_groups = groupset.GetNumGroups();
 
       for (const auto& cell : grid->local_cells)
@@ -427,11 +427,11 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
 
               for (size_t n = 0; n < num_gs_angles; ++n)
               {
-                const auto& omega = quadrature->omegas[n];
+                const auto& omega = quadrature->GetOmega(n);
                 const auto mu = omega.Dot(face.normal);
                 if (mu < 0.0)
                 {
-                  const auto& wt = quadrature->weights[n];
+                  const auto& wt = quadrature->GetWeight(n);
                   const auto weight = -mu * wt * intF_shapeI;
                   const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
 
@@ -500,7 +500,7 @@ ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
                                              const LBSGroupset& groupset,
                                              const double /*unused*/) const
 {
-  const auto num_gs_angles = groupset.quadrature->omegas.size();
+  const auto num_gs_angles = groupset.quadrature->GetNumAngles();
   const auto num_gs_groups = groupset.GetNumGroups();
   const auto first_group = groupset.first_group;
 

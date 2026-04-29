@@ -31,13 +31,13 @@ GetInflow(const Cell& cell,
   const auto& fe_vals = unit_cell_matrices.at(cell.local_id);
   const auto& int_f_shape_i = fe_vals.intS_shapeI[f];
   const unsigned int num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-  const size_t num_angles = quadrature->omegas.size();
+  const size_t num_angles = quadrature->GetNumAngles();
 
   double inflow = 0.0;
   for (size_t n = 0; n < num_angles; ++n)
   {
-    const auto& omega = quadrature->omegas[n];
-    const auto& weight = quadrature->weights[n];
+    const auto& omega = quadrature->GetOmega(n);
+    const auto& weight = quadrature->GetWeight(n);
     const double mu = omega.Dot(face.normal);
 
     if (mu >= 0.0)
@@ -135,10 +135,10 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
         {
           for (const auto& groupset : groupsets_)
           {
-            for (int n = 0; n < groupset.quadrature->omegas.size(); ++n)
+            for (size_t n = 0; n < groupset.quadrature->GetNumAngles(); ++n)
             {
-              const auto& omega = groupset.quadrature->omegas[n];
-              const double wt = groupset.quadrature->weights[n];
+              const auto& omega = groupset.quadrature->GetOmega(n);
+              const double wt = groupset.quadrature->GetWeight(n);
               const double mu = omega.Dot(face.normal);
 
               if (mu < 0.0)
@@ -188,7 +188,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
       for (const auto& groupset : groupsets_)
       {
         const auto& quad = groupset.quadrature;
-        const auto num_angles = quad->omegas.size();
+        const auto num_angles = quad->GetNumAngles();
         const auto first_grp = groupset.first_group;
         const auto num_gs_groups = groupset.GetNumGroups();
         const size_t groupset_angle_group_stride =
@@ -206,7 +206,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
             {
               const size_t imap =
                 base + i * groupset_angle_group_stride + n * groupset_group_stride;
-              const double wt = quad->weights[n];
+              const double wt = quad->GetWeight(n);
               phi_old += wt * psi_old_local_[groupset.id][imap + gsg];
               phi_new += wt * psi_new_local_[groupset.id][imap + gsg];
             }

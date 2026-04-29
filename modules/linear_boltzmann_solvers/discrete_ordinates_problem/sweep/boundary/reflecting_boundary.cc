@@ -49,7 +49,7 @@ ReflectingBoundary::InitializeDelayedAngularFlux(const std::shared_ptr<MeshConti
   if (not grid)
     throw std::logic_error("ReflectingBoundary: mesh continuum is null.");
 
-  const auto tot_num_angles = static_cast<int>(quadrature.abscissae.size());
+  const auto tot_num_angles = static_cast<int>(quadrature.GetNumAngles());
   reflected_anglenum_.assign(tot_num_angles, -1);
   angle_readyflags_.assign(tot_num_angles, false);
 
@@ -58,7 +58,7 @@ ReflectingBoundary::InitializeDelayedAngularFlux(const std::shared_ptr<MeshConti
 
   for (int n = 0; n < tot_num_angles; ++n)
   {
-    const Vector3& omega_n = quadrature.omegas[n];
+    const Vector3& omega_n = quadrature.GetOmega(n);
     Vector3 omega_reflected;
 
     switch (GetCoordType())
@@ -92,7 +92,7 @@ ReflectingBoundary::InitializeDelayedAngularFlux(const std::shared_ptr<MeshConti
     bool found = false;
     for (int nstar = 0; nstar < tot_num_angles; ++nstar)
     {
-      if (omega_reflected.Dot(quadrature.omegas[nstar]) > (1.0 - epsilon_))
+      if (omega_reflected.Dot(quadrature.GetOmega(nstar)) > (1.0 - epsilon_))
       {
         reflected_anglenum_[n] = nstar;
         found = true;
@@ -104,7 +104,7 @@ ReflectingBoundary::InitializeDelayedAngularFlux(const std::shared_ptr<MeshConti
     {
       throw std::logic_error("ReflectingBoundary: Reflected angle not found for angle " +
                              std::to_string(n) + " with direction " +
-                             quadrature.omegas[n].PrintStr() +
+                             quadrature.GetOmega(n).PrintStr() +
                              ".\nThis can happen for two reasons:\n1) A quadrature is used "
                              "that is not symmetric about the axis associated with the "
                              "reflected boundary.\n2) The reflecting boundary is not "
@@ -119,7 +119,7 @@ ReflectingBoundary::InitializeDelayedAngularFlux(const std::shared_ptr<MeshConti
   const size_t num_local_cells = grid->local_cells.size();
   for (int n = 0; n < tot_num_angles; ++n)
   {
-    if (quadrature.omegas[n].Dot(normal_) < 0.0)
+    if (quadrature.GetOmega(n).Dot(normal_) < 0.0)
       continue;
 
     auto& cell_vec = boundary_flux_[n];
@@ -165,7 +165,7 @@ ReflectingBoundary::GetFollowingAngleSets(std::set<AngleSet*>& following_angle_s
   if (opposing_reflected_)
     return;
 
-  const auto& omegas = angle_agg.GetQuadrature()->omegas;
+  const auto& omegas = angle_agg.GetQuadrature()->GetOmegas();
   for (const auto& angle_idx : angleset.GetAngleIndices())
   {
     if (omegas[angle_idx].Dot(normal_) < 0.0)
