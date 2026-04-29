@@ -36,6 +36,7 @@ CBCD_FLUDS::CBCD_FLUDS(size_t num_groups,
     cell_to_outgoing_boundary_nodes_(common_data_.GetOutgoingBoundaryNodeMap()),
     cell_to_incoming_nonlocal_nodes_(common_data_.GetIncomingNonlocalNodeMap()),
     cell_to_outgoing_nonlocal_nodes_(common_data_.GetOutgoingNonlocalNodeMap()),
+    local_psi_(local_psi_data_size_),
     incoming_boundary_psi_(common_data_.GetNumIncomingBoundaryNodes() * num_groups_and_angles_),
     outgoing_boundary_psi_(common_data_.GetNumOutgoingBoundaryNodes() * num_groups_and_angles_),
     incoming_nonlocal_psi_(common_data_.GetNumIncomingNonlocalNodes() * num_groups_and_angles_),
@@ -43,15 +44,19 @@ CBCD_FLUDS::CBCD_FLUDS(size_t num_groups,
     local_cell_ids_(num_local_cells),
     save_angular_flux_(save_angular_flux)
 {
+  if (save_angular_flux_ and host_saved_psi_.empty())
+  {
+    host_saved_psi_ = crb::HostVector<double>(local_psi_data_size_);
+    device_saved_psi_ = crb::DeviceMemory<double>(local_psi_data_size_);
+  }
+  CreatePointerSet();
 }
 
 CBCD_FLUDS::~CBCD_FLUDS()
 {
-  local_psi_.async_free(stream_);
   if (not host_saved_psi_.empty())
   {
     host_saved_psi_.clear();
-    device_saved_psi_.async_free(stream_);
   }
   local_cell_ids_.clear();
   incoming_boundary_psi_.clear();
@@ -63,13 +68,6 @@ CBCD_FLUDS::~CBCD_FLUDS()
 void
 CBCD_FLUDS::AllocateLocalAndSavedPsi()
 {
-  local_psi_ = crb::DeviceMemory<double>(local_psi_data_size_, stream_);
-  if (save_angular_flux_ and host_saved_psi_.empty())
-  {
-    host_saved_psi_ = crb::HostVector<double>(local_psi_data_size_);
-    device_saved_psi_ = crb::DeviceMemory<double>(local_psi_data_size_, stream_);
-  }
-  CreatePointerSet();
 }
 
 void

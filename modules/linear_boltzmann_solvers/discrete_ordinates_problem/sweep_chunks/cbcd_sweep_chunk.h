@@ -36,7 +36,7 @@ public:
 
   const std::vector<CBCD_FLUDS*>& GetFLUDS() const { return fluds_list_; }
 
-  const std::vector<crb::Stream>& GetStreams() const { return streams_list_; }
+  std::vector<crb::Stream>& GetStreams() { return streams_list_; }
 
   using SweepChunk::Sweep;
   void Sweep(const std::vector<std::uint32_t>& cell_local_ids, size_t angle_set_id);
@@ -47,7 +47,7 @@ private:
   std::vector<CBCD_FLUDS*> fluds_list_;
   std::vector<crb::Stream> streams_list_;
   std::vector<gpu_kernel::Arguments<gpu_kernel::SweepType::CBC>> kernel_args_list_;
-  std::vector<::dim3> block_sizes_;
+  std::vector<crb::Dim3> block_sizes_;
   std::vector<unsigned int> grid_size_x_list_;
 };
 

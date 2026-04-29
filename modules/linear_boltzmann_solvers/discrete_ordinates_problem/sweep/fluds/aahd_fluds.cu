@@ -60,13 +60,6 @@ AAHD_Bank::Clear()
   device_storage.reset();
 }
 
-void
-AAHD_Bank::Clear(crb::Stream& stream)
-{
-  host_storage.clear();
-  device_storage.async_free(stream);
-}
-
 AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
                                      const std::vector<std::size_t>& loc_offsets,
                                      std::size_t stride)
@@ -74,16 +67,6 @@ AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
 {
   host_storage = crb::HostVector<double>(loc_offsets.back() * stride_size, 0.0);
   device_storage = crb::DeviceMemory<double>(loc_offsets.back() * stride_size);
-}
-
-AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
-                                     const std::vector<std::size_t>& loc_offsets,
-                                     std::size_t stride,
-                                     crb::Stream& stream)
-  : location_sizes(&loc_sizes), location_offsets(&loc_offsets), stride_size(stride)
-{
-  host_storage = crb::HostVector<double>(loc_offsets.back() * stride_size, 0.0);
-  device_storage = crb::DeviceMemory<double>(loc_offsets.back() * stride_size, stream);
 }
 
 void
@@ -182,8 +165,7 @@ AAHD_FLUDS::AllocateSaveAngularFlux(DiscreteOrdinatesProblem& problem, const LBS
   if (not problem.GetPsiNewLocal()[groupset.id].empty() && save_angular_flux_.IsNotInitialized())
   {
     auto* mesh_carrier_ptr = problem.GetMeshCarrier();
-    save_angular_flux_ =
-      AAHD_Bank(mesh_carrier_ptr->num_nodes_total * num_groups_and_angles_, stream_);
+    save_angular_flux_ = AAHD_Bank(mesh_carrier_ptr->num_nodes_total * num_groups_and_angles_);
   }
 }
 

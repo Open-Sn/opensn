@@ -84,11 +84,27 @@ _add_cxx_cfg(Native "-fno-math-errno")
 _add_cxx_cfg(Native "-fno-trapping-math")
 _add_cxx_cfg(Native "-ffp-contract=fast")
 
+# GPU acceleration
+set(OPENSN_ACCELERATOR_COUNT 0)
 option(OPENSN_WITH_CUDA "Enable CUDA support" OFF)
 option(OPENSN_WITH_HIP "Enable HIP support" OFF)
-if (OPENSN_WITH_CUDA AND OPENSN_WITH_HIP)
-  message(FATAL_ERROR "Cannot enable both CUDA and HIP support at the same time")
+option(OPENSN_WITH_SYCL "Enable SYCL support" OFF)
+if(OPENSN_WITH_CUDA)
+  math(EXPR OPENSN_ACCELERATOR_COUNT "${OPENSN_ACCELERATOR_COUNT} + 1")
 endif()
+if(OPENSN_WITH_HIP)
+  math(EXPR OPENSN_ACCELERATOR_COUNT "${OPENSN_ACCELERATOR_COUNT} + 1")
+endif()
+if(OPENSN_WITH_SYCL)
+  math(EXPR OPENSN_ACCELERATOR_COUNT "${OPENSN_ACCELERATOR_COUNT} + 1")
+  set(SYCL_ARCHITECTURE "spir64_gen" CACHE STRING "SYCL target architecture")
+  set(SYCL_TARGET_BACKEND "" CACHE STRING "SYCL target backend options, e.g. -device pvc")
+  set(SYCL_REGISTER_ALLOC_MODE "" CACHE STRING "SYCL register allocation mode, e.g. pvc:large")
+endif()
+if(OPENSN_ACCELERATOR_COUNT GREATER 1)
+  message(FATAL_ERROR "Cannot enable more than one of CUDA, HIP, and SYCL support at the same time")
+endif()
+
 if (OPENSN_WITH_CUDA)
   set(CMAKE_CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER})
   find_package(CUDAToolkit 12.0 REQUIRED)
@@ -103,8 +119,9 @@ if (OPENSN_WITH_HIP)
   message(STATUS "HIP architectures detected: ${CMAKE_HIP_ARCHITECTURES}")
   enable_language(HIP)
 endif()
+
 set(OPENSN_WITH_GPU OFF)
-if (OPENSN_WITH_CUDA OR OPENSN_WITH_HIP)
+if (OPENSN_WITH_CUDA OR OPENSN_WITH_HIP OR OPENSN_WITH_SYCL)
   set(OPENSN_WITH_GPU ON FORCE)
 endif()
 if(OPENSN_WITH_HIP AND CMAKE_HIP_PLATFORM STREQUAL "nvidia")
@@ -112,9 +129,10 @@ if(OPENSN_WITH_HIP AND CMAKE_HIP_PLATFORM STREQUAL "nvidia")
 else()
   set(HIP_ON_NVIDIA OFF)
 endif()
+
+# Python interface
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
-
 if(OPENSN_WITH_PYTHON_MODULE)
   set(OPENSN_WITH_PYTHON ON CACHE BOOL "Python support requested for building module" FORCE)
 endif()
@@ -254,6 +272,8 @@ if (OPENSN_WITH_GPU)
     set_source_files_properties(${LIBOPENSNGPU_SRCS} PROPERTIES LANGUAGE CUDA)
   elseif (OPENSN_WITH_HIP)
     set_source_files_properties(${LIBOPENSNGPU_SRCS} PROPERTIES LANGUAGE HIP)
+  elseif (OPENSN_WITH_SYCL)
+    set_source_files_properties(${LIBOPENSNGPU_SRCS} PROPERTIES LANGUAGE CXX)
   endif()
   add_library(libopensngpu STATIC ${LIBOPENSNGPU_SRCS})
 endif()
@@ -261,6 +281,7 @@ endif()
 add_library(libopensn SHARED ${LIBOPENSN_SRCS})
 
 if (OPENSN_WITH_GPU)
+  add_subdirectory(external/caribou)
   if (OPENSN_WITH_CUDA)
     target_compile_features(libopensngpu PUBLIC cuda_std_20)
     set(CMAKE_CUDA_HOST_COMPILER "${CMAKE_CXX_COMPILER}")
@@ -275,10 +296,24 @@ if (OPENSN_WITH_GPU)
     target_compile_options(libopensngpu PRIVATE --expt-extended-lambda --expt-relaxed-constexpr)
     target_compile_options(libopensngpu PRIVATE $<BUILD_INTERFACE:-diag-suppress 1301>)
   endif()
+  if(OPENSN_WITH_SYCL)
+    set(OPENSN_SYCL_COMPILE_OPTIONS -fsycl -fsycl-targets=${SYCL_ARCHITECTURE})
+    set(OPENSN_SYCL_LINK_OPTIONS -fsycl -fsycl-targets=${SYCL_ARCHITECTURE})
+    if(SYCL_TARGET_BACKEND)
+      list(APPEND OPENSN_SYCL_COMPILE_OPTIONS -Xsycl-target-backend "${SYCL_TARGET_BACKEND}")
+      list(APPEND OPENSN_SYCL_LINK_OPTIONS -Xsycl-target-backend "${SYCL_TARGET_BACKEND}" )
+    endif()
+    if(SYCL_REGISTER_ALLOC_MODE)
+      list(APPEND OPENSN_SYCL_LINK_OPTIONS -ftarget-register-alloc-mode=${SYCL_REGISTER_ALLOC_MODE})
+    endif()
+    target_compile_options(libopensngpu PRIVATE ${OPENSN_SYCL_COMPILE_OPTIONS})
+    target_link_options(libopensngpu PUBLIC ${OPENSN_SYCL_LINK_OPTIONS})
+  endif()
   target_compile_definitions(libopensngpu PRIVATE __OPENSN_WITH_GPU__)
   target_compile_definitions(libopensn PRIVATE __OPENSN_WITH_GPU__)
   set_property(TARGET libopensngpu PROPERTY POSITION_INDEPENDENT_CODE ON)
   set_property(TARGET libopensngpu PROPERTY OUTPUT_NAME opensngpu)
+  target_link_libraries(libopensngpu PUBLIC libcaribou)
   if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     target_compile_options(libopensngpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
   endif()
@@ -317,6 +352,7 @@ if (OPENSN_WITH_GPU)
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${PROJECT_SOURCE_DIR}
       ${PROJECT_SOURCE_DIR}/external
+      ${PROJECT_SOURCE_DIR}/external/caribou
       PUBLIC
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/opensn>
       $<BUILD_INTERFACE:${HDF5_INCLUDE_DIRS}>
@@ -453,7 +489,7 @@ install(
 
 if(OPENSN_WITH_GPU)
   install(
-        TARGETS libopensngpu
+        TARGETS libopensngpu libcaribou
         EXPORT openSnTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
