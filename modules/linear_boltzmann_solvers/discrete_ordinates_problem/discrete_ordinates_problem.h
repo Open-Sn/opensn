@@ -14,7 +14,6 @@
 namespace opensn
 {
 class FieldFunctionGridBased;
-class DiscreteOrdinatesProblemIO;
 class AGSLinearSolver;
 class LinearSolver;
 struct BalanceTable;
@@ -27,7 +26,6 @@ class DiscreteOrdinatesProblem : public LBSProblem
 {
 protected:
   using SweepOrderGroupingInfo = std::pair<UniqueSOGroupings, DirIDToSOMap>;
-  friend class DiscreteOrdinatesProblemIO;
 
 public:
   enum class SweepChunkMode
@@ -37,10 +35,7 @@ public:
     TIME_DEPENDENT = 2
   };
 
-  void SetSweepChunkMode(SweepChunkMode mode);
-
-  void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }
-
+  /// Construction and transport-mode controls.
   bool IsTimeDependent() const override
   {
     return sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT) == SweepChunkMode::TIME_DEPENDENT;
@@ -50,20 +45,11 @@ public:
 
   void SetSteadyStateMode() override;
 
-  std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset)
-  {
-    return SetSweepChunk(groupset);
-  }
-
-  void ResetMode(SweepChunkMode target_mode);
-
-  /// Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode).
-  void ReinitializeSolverSchemes();
-
   ~DiscreteOrdinatesProblem() override;
 
   using BoundaryDefinition = std::pair<LBSBoundaryType, std::shared_ptr<SweepBoundary>>;
 
+  /// Problem metadata and solver access.
   const std::string& GetSweepType() const { return sweep_type_; }
 
   std::pair<size_t, size_t> GetNumPhiIterativeUnknowns() override;
@@ -75,6 +61,13 @@ public:
 
   WGSContext& GetWGSContext(int groupset_id);
 
+  /**
+   * Internal angular-flux state access.
+   *
+   * These mutable references are used by sweep chunks, transient solvers, acceleration,
+   * restart I/O, and angular-flux I/O. User-facing Python APIs expose copies or field
+   * functions rather than mutable access to this storage.
+   */
   /// Read/write access to newest updated angular flux vector.
   std::vector<std::vector<double>>& GetPsiNewLocal();
 
@@ -100,13 +93,14 @@ public:
   /// Copy psi_new to psi_old
   void UpdatePsiOld();
 
+  /// Balance and output helpers.
   BalanceTable ComputeBalanceTable(double scaling_factor = 1.0);
 
   void ComputeBalance(double scaling_factor = 1.0);
 
   void PrintSimHeader() override;
 
-  /// Returns the sweep boundaries as a read only reference
+  /// Returns the sweep boundaries as a read-only reference.
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
 
   const std::map<uint64_t, BoundaryDefinition>& GetBoundaryDefinitions() const;
@@ -126,6 +120,13 @@ public:
   CreateAngularFluxFieldFunctionList(const std::vector<unsigned int>& groups,
                                      const std::vector<size_t>& angles);
 
+  /**
+   * Supported runtime discrete-ordinates reconfiguration.
+   *
+   * These methods update the dependent sweep, boundary, acceleration, and solver data
+   * owned by the problem. Lower-level sweep chunk and solver-scheme controls remain
+   * protected implementation details.
+   */
   void SetSaveAngularFlux(bool save);
 
   void SetBlockID2XSMap(const BlockID2XSMap& xs_map) override;
@@ -140,12 +141,18 @@ protected:
   /// Factory-only constructor.
   explicit DiscreteOrdinatesProblem(const InputParameters& params);
 
-  /// Build sweep/runtime data structures once base runtime is available.
+  /// Internal factory step: build sweep/runtime data once base runtime data is available.
   void BuildRuntime();
 
   void InitializeBoundaries() override;
 
   void InitializeSolverSchemes();
+  /// Rebuild WGS/AGS solver schemes after runtime configuration changes.
+  void ReinitializeSolverSchemes();
+
+  void SetSweepChunkMode(SweepChunkMode mode);
+  void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }
+  void ResetMode(SweepChunkMode target_mode);
 
   void InitializeWGSContexts();
 
@@ -169,15 +176,21 @@ protected:
   /// Initializes fluds_ data structures.
   void InitFluxDataStructures(LBSGroupset& groupset);
 
-  /// Clears all the sweep orderings for a groupset in preperation for another.
+  /// Clears all the sweep orderings for a groupset in preparation for another.
   void ResetSweepOrderings(LBSGroupset& groupset);
 
-  /// Sets up the sweek chunk for the given discretization method.
+  /// Sets up the sweep chunk for the given discretization method.
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
+
+  std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset)
+  {
+    return SetSweepChunk(groupset);
+  }
 
   bool ReadProblemRestartData(hid_t file_id) override;
   bool WriteProblemRestartData(hid_t file_id) const override;
   void ResetDerivedSolutionVectors() override;
+  void RebuildBoundaryRuntimeData();
 
   BoundaryDefinition CreateBoundaryFromParams(const InputParameters& params) const;
   std::shared_ptr<SweepBoundary> CreateSweepBoundary(uint64_t boundary_id) const;

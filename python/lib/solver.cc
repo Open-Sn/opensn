@@ -898,16 +898,17 @@ WrapLBS(py::module& slv)
       py::list psi_list;
       for (const auto& vec : psi)
       {
-        auto array = py::array_t<double>(static_cast<py::ssize_t>(vec.size()),
-                                         vec.data(),
-                                         py::cast(self));
+        auto array = py::array_t<double>(static_cast<py::ssize_t>(vec.size()));
+        std::copy(vec.begin(), vec.end(), static_cast<double*>(array.mutable_data()));
         psi_list.append(array);
       }
       return psi_list;
     },
     R"(
-    Return psi as a list of NumPy arrays (float64), using zero-copy views into the
-    underlying data.
+    Return psi as a list of NumPy arrays (float64).
+
+    The arrays are copies of the current angular-flux state. Mutating them does not
+    mutate the problem.
     )"
   );
   do_problem.def(

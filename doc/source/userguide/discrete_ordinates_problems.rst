@@ -365,8 +365,8 @@ Angular-Flux Access
 The discrete-ordinates problem also exposes angular-flux data directly through
 :py:meth:`GetPsi`.
 
-``GetPsi()`` returns a list of NumPy arrays that view the underlying angular-
-flux storage.
+``GetPsi()`` returns a list of NumPy arrays copied from the current angular-
+flux storage. Mutating the returned arrays does not mutate the problem.
 
 This is a specialized interface and is mainly useful when:
 

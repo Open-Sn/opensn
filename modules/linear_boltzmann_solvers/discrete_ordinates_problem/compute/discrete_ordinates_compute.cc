@@ -71,6 +71,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   auto& q_moments_local_ = do_problem.GetQMomentsLocal();
   auto active_set_source_fn = do_problem.GetActiveSetSourceFunction();
   const auto& cell_transport_views_ = do_problem.GetCellTransportViews();
+  const auto& cell_outflow_views_ = do_problem.GetCellOutflowViews();
   const auto& unit_cell_matrices_ = do_problem.GetUnitCellMatrices();
   const auto& sweep_boundaries_ = do_problem.GetSweepBoundaries();
   const auto num_groups_ = do_problem.GetNumGroups();
@@ -109,6 +110,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   {
     const auto& cell_mapping = discretization_.GetCellMapping(cell);
     const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& outflow_view = cell_outflow_views_[cell.local_id];
     const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
     const size_t num_nodes = transport_view.GetNumNodes();
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
@@ -129,7 +131,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
         if (bndry->IsReflecting())
         {
           for (unsigned int g = 0; g < num_groups_; ++g)
-            local_in_flow += transport_view.GetOutflow(f, g);
+            local_in_flow += outflow_view.Get(f, g);
         }
         else
         {
@@ -164,7 +166,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
     for (size_t f = 0; f < cell.faces.size(); ++f)
       for (unsigned int g = 0; g < num_groups_; ++g)
-        local_out_flow += transport_view.GetOutflow(f, g);
+        local_out_flow += outflow_view.Get(f, g);
 
     // Absorption and sources
     const auto& xs = transport_view.GetXS();
@@ -358,6 +360,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& groupset = do_problem.GetGroupset(groupset_id);
   const auto& cell_transport_views = do_problem.GetCellTransportViews();
+  const auto& cell_outflow_views = do_problem.GetCellOutflowViews();
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
   const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
   const auto& quad = groupset.quadrature;
@@ -368,6 +371,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
   for (const auto& cell : grid->local_cells)
   {
     const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& outflow_view = cell_outflow_views[cell.local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
 
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
@@ -381,7 +385,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
         for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
         {
           auto g = gsi + gsg;
-          local_leakage[gsg] += transport_view.GetOutflow(f, g);
+          local_leakage[gsg] += outflow_view.Get(f, g);
           local_leakage[gsg] +=
             GetInflow(cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, g);
         }
@@ -414,6 +418,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
   const auto& cell_transport_views = do_problem.GetCellTransportViews();
+  const auto& cell_outflow_views = do_problem.GetCellOutflowViews();
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
   const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
 
@@ -430,6 +435,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
     for (const auto& cell : grid->local_cells)
     {
       const auto& transport_view = cell_transport_views[cell.local_id];
+      const auto& outflow_view = cell_outflow_views[cell.local_id];
       const auto& cell_mapping = sdm.GetCellMapping(cell);
 
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
@@ -442,7 +448,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
 
           for (auto g = groupset.first_group; g <= groupset.last_group; ++g)
           {
-            local_leakage[face.neighbor_id][g] += transport_view.GetOutflow(f, g);
+            local_leakage[face.neighbor_id][g] += outflow_view.Get(f, g);
             local_leakage[face.neighbor_id][g] +=
               GetInflow(cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, g);
           }

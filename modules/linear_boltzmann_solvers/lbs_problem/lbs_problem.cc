@@ -4,7 +4,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -246,8 +245,7 @@ void
 LBSProblem::AddPointSource(std::shared_ptr<PointSource> point_source)
 {
   point_sources_.push_back(point_source);
-  if (initialized_)
-    point_sources_.back()->Initialize(*this);
+  point_sources_.back()->Initialize(*this);
 }
 
 void
@@ -266,8 +264,7 @@ void
 LBSProblem::AddVolumetricSource(std::shared_ptr<VolumetricSource> volumetric_source)
 {
   volumetric_sources_.push_back(volumetric_source);
-  if (initialized_)
-    volumetric_sources_.back()->Initialize(*this);
+  volumetric_sources_.back()->Initialize(*this);
 }
 
 void
@@ -298,40 +295,37 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
   block_id_to_xs_map_ = xs_map;
   InitializeMaterials();
 
-  if (initialized_)
+  if (options_.use_precursors)
   {
-    if (options_.use_precursors)
+    const size_t num_cells = grid_->local_cells.size();
+    const size_t new_max_precursors_per_material = max_precursors_per_material_;
+    const size_t num_precursor_dofs = num_cells * new_max_precursors_per_material;
+
+    std::vector<double> remapped_precursors(num_precursor_dofs, 0.0);
+    if (old_precursor_state.size() == num_cells * old_max_precursors_per_material)
     {
-      const size_t num_cells = grid_->local_cells.size();
-      const size_t new_max_precursors_per_material = max_precursors_per_material_;
-      const size_t num_precursor_dofs = num_cells * new_max_precursors_per_material;
-
-      std::vector<double> remapped_precursors(num_precursor_dofs, 0.0);
-      if (old_precursor_state.size() == num_cells * old_max_precursors_per_material)
+      for (const auto& cell : grid_->local_cells)
       {
-        for (const auto& cell : grid_->local_cells)
-        {
-          unsigned int old_num_precursors = 0;
-          if (const auto old_xs_it = old_xs_map.find(cell.block_id); old_xs_it != old_xs_map.end())
-            old_num_precursors = old_xs_it->second->GetNumPrecursors();
+        unsigned int old_num_precursors = 0;
+        if (const auto old_xs_it = old_xs_map.find(cell.block_id); old_xs_it != old_xs_map.end())
+          old_num_precursors = old_xs_it->second->GetNumPrecursors();
 
-          const unsigned int new_num_precursors =
-            block_id_to_xs_map_.at(cell.block_id)->GetNumPrecursors();
-          const unsigned int num_precursors_to_copy =
-            std::min(old_num_precursors, new_num_precursors);
+        const unsigned int new_num_precursors =
+          block_id_to_xs_map_.at(cell.block_id)->GetNumPrecursors();
+        const unsigned int num_precursors_to_copy =
+          std::min(old_num_precursors, new_num_precursors);
 
-          const size_t old_base = cell.local_id * old_max_precursors_per_material;
-          const size_t new_base = cell.local_id * new_max_precursors_per_material;
-          for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
-            remapped_precursors[new_base + j] = old_precursor_state[old_base + j];
-        }
+        const size_t old_base = cell.local_id * old_max_precursors_per_material;
+        const size_t new_base = cell.local_id * new_max_precursors_per_material;
+        for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
+          remapped_precursors[new_base + j] = old_precursor_state[old_base + j];
       }
-
-      precursor_new_local_ = std::move(remapped_precursors);
     }
-    else
-      precursor_new_local_.clear();
+
+    precursor_new_local_ = std::move(remapped_precursors);
   }
+  else
+    precursor_new_local_.clear();
 
   ResetGPUCarriers();
   InitializeGPUExtras();
@@ -361,16 +355,22 @@ LBSProblem::GetUnitGhostCellMatrices() const
   return unit_ghost_cell_matrices_;
 }
 
-std::vector<CellLBSView>&
-LBSProblem::GetCellTransportViews()
-{
-  return cell_transport_views_;
-}
-
 const std::vector<CellLBSView>&
 LBSProblem::GetCellTransportViews() const
 {
   return cell_transport_views_;
+}
+
+std::vector<CellOutflowView>&
+LBSProblem::GetCellOutflowViews()
+{
+  return cell_outflow_views_;
+}
+
+const std::vector<CellOutflowView>&
+LBSProblem::GetCellOutflowViews() const
+{
+  return cell_outflow_views_;
 }
 
 const UnknownManager&
@@ -401,12 +401,6 @@ const std::vector<double>&
 LBSProblem::GetQMomentsLocal() const
 {
   return q_moments_local_;
-}
-
-std::vector<double>&
-LBSProblem::GetExtSrcMomentsLocal()
-{
-  return ext_src_moments_local_;
 }
 
 const std::vector<double>&
@@ -595,19 +589,19 @@ LBSProblem::ParseOptions(const InputParameters& input)
      [this](const ParameterBlock& spec) { options_.max_mpi_message_size = spec.GetValue<int>(); }},
     {"restart_writes_enabled",
      [this](const ParameterBlock& spec)
-     { options_.restart_writes_enabled = spec.GetValue<bool>(); }},
+     { options_.restart.writes_enabled = spec.GetValue<bool>(); }},
     {"write_delayed_psi_to_restart",
      [this](const ParameterBlock& spec)
-     { options_.write_delayed_psi_to_restart = spec.GetValue<bool>(); }},
+     { options_.restart.write_delayed_psi = spec.GetValue<bool>(); }},
     {"read_restart_path",
      [this](const ParameterBlock& spec)
-     { options_.read_restart_path = BuildRestartPath(spec.GetValue<std::string>()); }},
+     { options_.restart.read_path = BuildRestartPath(spec.GetValue<std::string>()); }},
     {"write_restart_path",
      [this](const ParameterBlock& spec)
-     { options_.write_restart_path = BuildRestartPath(spec.GetValue<std::string>()); }},
+     { options_.restart.write_path = BuildRestartPath(spec.GetValue<std::string>()); }},
     {"write_restart_time_interval",
      [this](const ParameterBlock& spec)
-     { options_.write_restart_time_interval = std::chrono::seconds(spec.GetValue<int>()); }},
+     { options_.restart.write_time_interval = std::chrono::seconds(spec.GetValue<int>()); }},
     {"use_precursors",
      [this](const ParameterBlock& spec) { options_.use_precursors = spec.GetValue<bool>(); }},
     {"use_source_moments",
@@ -646,17 +640,17 @@ LBSProblem::ParseOptions(const InputParameters& input)
       setter_it->second(spec);
   }
 
-  OpenSnInvalidArgumentIf(options_.write_restart_time_interval > std::chrono::seconds(0) and
-                            not options_.restart_writes_enabled,
+  OpenSnInvalidArgumentIf(options_.restart.write_time_interval > std::chrono::seconds(0) and
+                            not options_.restart.writes_enabled,
                           GetName() + ": `write_restart_time_interval>0` requires "
                                       "`restart_writes_enabled=true`.");
 
-  OpenSnInvalidArgumentIf(options_.write_restart_time_interval > std::chrono::seconds(0) and
-                            options_.write_restart_time_interval < std::chrono::seconds(30),
+  OpenSnInvalidArgumentIf(options_.restart.write_time_interval > std::chrono::seconds(0) and
+                            options_.restart.write_time_interval < std::chrono::seconds(30),
                           GetName() + ": `write_restart_time_interval` must be 0 (disabled) "
                                       "or at least 30 seconds.");
 
-  OpenSnInvalidArgumentIf(options_.restart_writes_enabled and options_.write_restart_path.empty(),
+  OpenSnInvalidArgumentIf(options_.restart.writes_enabled and options_.restart.write_path.empty(),
                           GetName() + ": `restart_writes_enabled=true` requires a non-empty "
                                       "`write_restart_path`.");
 
@@ -665,9 +659,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
                           GetName() + ": non-empty `field_function_prefix` requires "
                                       "`field_function_prefix_option=\"prefix\"`.");
 
-  if (options_.restart_writes_enabled)
+  if (options_.restart.writes_enabled)
   {
-    const auto dir = options_.write_restart_path.parent_path();
+    const auto dir = options_.restart.write_path.parent_path();
 
     // Create restart directory if necessary.
     // If dir is empty, write path resolves relative to the working directory.
@@ -684,7 +678,7 @@ LBSProblem::ParseOptions(const InputParameters& input)
                                dir.string());
     }
     opensn::mpi_comm.barrier();
-    UpdateRestartWriteTime();
+    options_.restart.MarkWriteComplete();
   }
 }
 
@@ -697,18 +691,6 @@ LBSProblem::BuildRestartPath(const std::string& path_stem)
   auto path = std::filesystem::path(path_stem);
   path += std::to_string(opensn::mpi_comm.rank()) + ".restart.h5";
   return path;
-}
-
-bool
-LBSProblem::ReadRestartData(const RestartDataHook& extra_reader)
-{
-  return LBSSolverIO::ReadRestartData(*this, extra_reader);
-}
-
-bool
-LBSProblem::WriteRestartData(const RestartDataHook& extra_writer)
-{
-  return LBSSolverIO::WriteRestartData(*this, extra_writer);
 }
 
 bool
@@ -727,8 +709,6 @@ void
 LBSProblem::BuildRuntime()
 {
   CALI_CXX_MARK_SCOPE("LBSProblem::BuildRuntime");
-  if (initialized_)
-    return;
 
   PrintSimHeader();
   mpi_comm.barrier();
@@ -736,8 +716,6 @@ LBSProblem::BuildRuntime()
   InitializeRuntimeCore();
   ValidateRuntimeModeConfiguration();
   InitializeSources();
-
-  initialized_ = true;
 }
 
 void
@@ -1042,7 +1020,6 @@ LBSProblem::InitializeParrays()
 
   // Compute num of unknowns
   size_t local_unknown_count = local_node_count_ * num_groups_ * num_moments_;
-
   log.LogAllVerbose1() << "LBS Number of phi unknowns: " << local_unknown_count;
 
   // Size local vectors
@@ -1057,27 +1034,14 @@ LBSProblem::InitializeParrays()
     precursor_new_local_.assign(num_precursor_dofs, 0.0);
   }
 
-  // Initialize transport views
-  // Transport views act as a data structure to store information
-  // related to the transport simulation. The most prominent function
-  // here is that it holds the means to know where a given cell's
-  // transport quantities are located in the unknown vectors (i.e. phi)
-  //
-  // Also, for a given cell, within a given sweep chunk,
-  // we need to solve a matrix which square size is the
-  // amount of nodes on the cell. max_cell_dof_count is
-  // initialized here.
-  //
+  // Initialize cell transport metadata and outflow tallies.
   size_t block_MG_counter = 0; // Counts the strides of moment and group
-
-  const Vector3 ihat(1.0, 0.0, 0.0);
-  const Vector3 jhat(0.0, 1.0, 0.0);
-  const Vector3 khat(0.0, 0.0, 1.0);
-
   min_cell_dof_count_ = std::numeric_limits<unsigned int>::max();
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
   cell_transport_views_.reserve(grid_->local_cells.size());
+  cell_outflow_views_.clear();
+  cell_outflow_views_.reserve(grid_->local_cells.size());
   for (auto& cell : grid_->local_cells)
   {
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
@@ -1113,7 +1077,7 @@ LBSProblem::InitializeParrays()
       }
 
       ++f;
-    } // for f
+    }
 
     max_cell_dof_count_ = std::max(max_cell_dof_count_, static_cast<unsigned int>(num_nodes));
     min_cell_dof_count_ = std::min(min_cell_dof_count_, static_cast<unsigned int>(num_nodes));
@@ -1121,18 +1085,17 @@ LBSProblem::InitializeParrays()
                                        num_nodes,
                                        num_groups_,
                                        num_moments_,
-                                       num_faces,
                                        *block_id_to_xs_map_[cell.block_id],
                                        cell_volume,
                                        face_local_flags,
                                        face_locality,
-                                       neighbor_cell_ptrs,
-                                       cell_on_boundary);
+                                       neighbor_cell_ptrs);
+    cell_outflow_views_.emplace_back(num_faces, num_groups_, face_locality, cell_on_boundary);
     block_MG_counter += num_nodes * num_groups_ * num_moments_;
   } // for local cell
 
   // Populate grid nodal mappings
-  // This is used in the Flux Data Structures (FLUDS)
+  // This is used in the Flux Data Structure (FLUDS).
   grid_nodal_mappings_.clear();
   grid_nodal_mappings_.reserve(grid_->local_cells.size());
   for (auto& cell : grid_->local_cells)
@@ -1154,10 +1117,10 @@ LBSProblem::InitializeParrays()
       }
 
       cell_nodal_mapping.emplace_back(adj_face_idx, face_node_mapping, cell_node_mapping);
-    } // for f
+    }
 
     grid_nodal_mappings_.push_back(cell_nodal_mapping);
-  } // for local cell
+  }
 
   // Get grid localized communicator set
   grid_local_comm_set_ = grid_->MakeMPILocalCommunicatorSet();
@@ -1300,9 +1263,6 @@ LBSProblem::ScaleExtSrcMoments(double factor)
 void
 LBSProblem::SetAdjoint(bool adjoint)
 {
-  OpenSnLogicalErrorIf(
-    not initialized_, GetName() + ": Problem must be fully constructed before calling SetAdjoint.");
-
   if (adjoint)
     if (IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");

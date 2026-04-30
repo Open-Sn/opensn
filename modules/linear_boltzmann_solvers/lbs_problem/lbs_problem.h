@@ -31,24 +31,30 @@ class FieldFunctionGridBased;
 class TotalXSCarrier;
 class OutflowCarrier;
 class MeshCarrier;
-class LBSSolverIO;
 template <typename T>
 class MemoryPinner;
 
-/// Base class for all Linear Boltzmann Solvers.
+/**
+ * Base class for all Linear Boltzmann Solvers.
+ *
+ * Problems are created through derived-class factory functions. The factory
+ * function performs all constructor-time parsing and calls BuildRuntime
+ * before returning the shared pointer, so public methods operate on a fully
+ * built problem.
+ */
 class LBSProblem : public Problem, public std::enable_shared_from_this<LBSProblem>
 {
 public:
   using RestartDataHook = std::function<bool(hid_t)>;
 
-  friend class LBSSolverIO;
-
+  /// Construction and lifetime.
   LBSProblem(const LBSProblem&) = delete;
 
   LBSProblem& operator=(const LBSProblem&) = delete;
 
   ~LBSProblem() override;
 
+  /// Time and adjoint-mode controls.
   /// Returns a constant reference to the solver options.
   const LBSOptions& GetOptions() const;
 
@@ -94,6 +100,7 @@ public:
   /// Returns true if the problem is in adjoint mode.
   bool IsAdjoint() const;
 
+  /// Supported solution-vector operations.
   void ZeroPhi();
   void CopyPhiNewToOld();
   void SetPhiOldFrom(const std::vector<double>& phi_old);
@@ -107,6 +114,8 @@ public:
   void ZeroPrecursors();
   void ZeroExtSrcMoments();
   void ScaleExtSrcMoments(double factor);
+
+  /// Problem metadata and immutable access.
   GeometryType GetGeometryType() const;
 
   /// Returns the number of moments for the solver.
@@ -135,6 +144,14 @@ public:
   const LBSGroupset& GetGroupset(size_t groupset_id) const;
   size_t GetNumGroupsets() const;
 
+  /**
+   * Problem runtime reconfiguration.
+   *
+   * These methods are the public mutators available after construction.
+   * They refresh the runtime data owned by the problem where needed.
+   * Other mutable state accessors below are exposed for solvers and
+   * low-level I/O, not as general user-facing methods.
+   */
   /// Adds a point source to the solver.
   void AddPointSource(std::shared_ptr<PointSource> point_source);
 
@@ -165,6 +182,7 @@ public:
   /// Obtains a reference to the grid.
   std::shared_ptr<MeshContinuum> GetGrid() const;
 
+  /// Low-level device/runtime carriers used by solver components.
   TotalXSCarrier* GetTotalXSCarrier() { return total_xs_carrier_.get(); }
   const TotalXSCarrier* GetTotalXSCarrier() const { return total_xs_carrier_.get(); }
 
@@ -180,6 +198,7 @@ public:
   MemoryPinner<double>* GetPhiPinner() { return phi_pinner_.get(); }
   const MemoryPinner<double>* GetPhiPinner() const { return phi_pinner_.get(); }
 
+  /// Discretization and local transport data.
   /// Obtains a reference to the spatial discretization.
   const SpatialDiscretization& GetSpatialDiscretization() const;
 
@@ -189,11 +208,14 @@ public:
   /// Returns read-only access to the unit ghost cell matrices.
   const std::map<uint64_t, UnitCellMatrices>& GetUnitGhostCellMatrices() const;
 
-  /// Returns a reference to the list of local cell transport views.
-  std::vector<CellLBSView>& GetCellTransportViews();
-
-  /// Returns a const reference to the list of local cell transport views.
+  /// Returns read-only access to the list of local cell transport views.
   const std::vector<CellLBSView>& GetCellTransportViews() const;
+
+  /// Returns read/write access to local cell outflow tallies.
+  std::vector<CellOutflowView>& GetCellOutflowViews();
+
+  /// Returns read-only access to local cell outflow tallies.
+  const std::vector<CellOutflowView>& GetCellOutflowViews() const;
 
   /// Obtains a reference to the unknown manager for flux-moments.
   const UnknownManager& GetUnknownManager() const;
@@ -204,14 +226,19 @@ public:
   /// Returns the global node count for the flux-moments data structures.
   size_t GetGlobalNodeCount() const;
 
+  /**
+   * Internal solver-state access.
+   *
+   * These mutable references are intentionally available to solver kernels,
+   * iterative methods, acceleration routines, and restart/flux I/O. User-facing
+   * code should prefer the explicit operations above or read-only field-function/query
+   * APIs.
+   */
   /// Read/write access to source moments vector.
   std::vector<double>& GetQMomentsLocal();
 
   /// Read access to source moments vector.
   const std::vector<double>& GetQMomentsLocal() const;
-
-  /// Read/write access to exterior src moments vector.
-  std::vector<double>& GetExtSrcMomentsLocal();
 
   /// Read access to exterior src moments vector.
   const std::vector<double>& GetExtSrcMomentsLocal() const;
@@ -240,11 +267,13 @@ public:
   SetSourceFunction GetActiveSetSourceFunction() const;
 
   /**
-   * Gets the local and global number of iterative unknowns. This normally is only the flux moments,
-   * however, the sweep based solvers might include delayed angular fluxes in this number.
+   * Gets the local and global number of iterative unknowns. This is
+   * typically only the flux moments, however, the sweep based solvers
+   * might include delayed angular fluxes in this number.
    */
   virtual std::pair<size_t, size_t> GetNumPhiIterativeUnknowns();
 
+  /// Field-function and postprocessing helpers.
   /**
    * Returns a flux-moment field function for a given group and moment.
    *
@@ -260,19 +289,9 @@ public:
   bool ReadRestartData(const RestartDataHook& extra_reader = {});
   bool WriteRestartData(const RestartDataHook& extra_writer = {});
 
-  bool TriggerRestartDump() const
-  {
-    if (options_.write_restart_time_interval <= std::chrono::seconds(0))
-      return false;
+  bool TriggerRestartDump() const { return options_.restart.IsWriteDue(); }
 
-    auto elapsed = std::chrono::system_clock::now() - options_.last_restart_write_time;
-    return elapsed >= options_.write_restart_time_interval;
-  }
-
-  void UpdateRestartWriteTime()
-  {
-    options_.last_restart_write_time = std::chrono::system_clock::now();
-  }
+  void UpdateRestartWriteTime() { options_.restart.MarkWriteComplete(); }
 
   /// Makes a source-moments vector from scattering and fission based on the latest phi-solution.
   std::vector<double> MakeSourceMomentsFromPhi();
@@ -288,7 +307,7 @@ protected:
   /// Input parameters based construction.
   explicit LBSProblem(const InputParameters& params);
 
-  /// Build runtime data structures once all constructor-time configuration is complete.
+  /// Internal factory step: build runtime data after constructor-time configuration is complete.
   void BuildRuntime();
 
   virtual void PrintSimHeader();
@@ -343,6 +362,7 @@ protected:
   std::vector<UnitCellMatrices> unit_cell_matrices_;
   std::map<uint64_t, UnitCellMatrices> unit_ghost_cell_matrices_;
   std::vector<CellLBSView> cell_transport_views_;
+  std::vector<CellOutflowView> cell_outflow_views_;
 
   UnknownManager flux_moments_uk_man_;
 
@@ -356,8 +376,6 @@ protected:
   std::vector<double> precursor_new_local_;
 
   SetSourceFunction active_set_source_function_;
-
-  bool initialized_ = false;
 
   /// Data carriers needed to run the sweep on GPU.
   std::shared_ptr<TotalXSCarrier> total_xs_carrier_ = nullptr;

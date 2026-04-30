@@ -129,7 +129,7 @@ DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
   auto* phi = GetPhiPinner();
   phi->CopyFromDevice();
   auto* outflow = GetOutflowCarrier();
-  outflow->AccumulateBack(GetCellTransportViews());
+  outflow->AccumulateBack(cell_outflow_views_);
   outflow->Reset();
 }
 

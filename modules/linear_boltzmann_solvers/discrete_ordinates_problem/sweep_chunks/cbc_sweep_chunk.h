@@ -63,7 +63,8 @@ protected:
   const Cell* cell_;
   std::uint32_t cell_local_id_;
   const CellMapping* cell_mapping_;
-  CellLBSView* cell_transport_view_;
+  const CellLBSView* cell_transport_view_;
+  CellOutflowView* cell_outflow_view_;
   size_t cell_num_faces_;
   size_t cell_num_nodes_;
 

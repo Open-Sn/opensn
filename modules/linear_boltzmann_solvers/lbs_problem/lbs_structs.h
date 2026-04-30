@@ -29,17 +29,34 @@ enum class PhiSTLOption
   PHI_NEW = 2
 };
 
+/// Restart read/write policy and derived per-rank paths.
+struct LBSRestartOptions
+{
+  bool writes_enabled = false;
+  bool write_delayed_psi = true;
+  std::filesystem::path read_path;
+  std::filesystem::path write_path;
+  std::chrono::time_point<std::chrono::system_clock> last_write_time;
+  std::chrono::seconds write_time_interval = std::chrono::seconds(0);
+
+  bool IsWriteDue() const
+  {
+    if (write_time_interval <= std::chrono::seconds(0))
+      return false;
+
+    const auto elapsed = std::chrono::system_clock::now() - last_write_time;
+    return elapsed >= write_time_interval;
+  }
+
+  void MarkWriteComplete() { last_write_time = std::chrono::system_clock::now(); }
+};
+
 /// Struct for storing LBS options.
 struct LBSOptions
 {
   int max_mpi_message_size = 32768;
 
-  bool restart_writes_enabled = false;
-  bool write_delayed_psi_to_restart = true;
-  std::filesystem::path read_restart_path;
-  std::filesystem::path write_restart_path;
-  std::chrono::time_point<std::chrono::system_clock> last_restart_write_time;
-  std::chrono::seconds write_restart_time_interval = std::chrono::seconds(0);
+  LBSRestartOptions restart;
 
   bool use_precursors = true;
   bool use_src_moments = false;
