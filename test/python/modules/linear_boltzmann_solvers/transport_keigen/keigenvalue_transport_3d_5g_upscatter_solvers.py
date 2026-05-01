@@ -137,7 +137,6 @@ def make_problem():
         options={
             "use_precursors": False,
             "verbose_inner_iterations": False,
-            "verbose_ags_iterations": False,
             "verbose_outer_iterations": True,
             "max_ags_iterations": 200,
             "ags_tolerance": 1.0e-10,
