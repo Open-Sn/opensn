@@ -320,6 +320,7 @@ Post-processors
 
    post.VolumePostprocessor
    post.CrossSectionSensitivityPostprocessor
+   post.SurfacePostprocessor
 
 
 Cross section
