@@ -240,7 +240,15 @@ WrapPostprocessors(py::module& post)
     value_type : str, required
         Type of value to compute: 'integral', 'max', 'min', or 'avg'.
     current_type : str, required
-        Type of value to compute: 'incoming', 'outgoing', or 'net'.
+        Type of current to compute: 'incoming', 'outgoing', or 'net'.
+    boundaries : List[str], required
+        Names of the boundaries to restrict the computation to. At least one is required.
+    logical_volumes : List[LogicalVolume], optional
+        Logical volumes restricting the selected boundary faces. Each gives one result row.
+    group : int, optional
+        Single group to compute (mutually exclusive with groupset).
+    groupset : int, optional
+        Single groupset to compute (mutually exclusive with group).
     )"
   );
   sp.def(

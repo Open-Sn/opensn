@@ -755,6 +755,133 @@ return value is a 2D array indexed as ``result[region][column]``, where
    for group_index, value in enumerate(result[0]):
        print(f"Group {group_index}: {value}")
 
+Surface Postprocessor
+=====================
+
+The :py:class:`pyopensn.post.SurfacePostprocessor` computes surface flux/current
+integrals, maxima, minima, or area-weighted averages over boundary surfaces and
+energy groups. It is specifically designed for discrete ordinates problems
+and provides access to boundary partial currents and net currents.
+
+Basic Usage
+-----------
+
+Create and execute a surface postprocessor:
+
+.. code-block:: python
+
+   from pyopensn.post import SurfacePostprocessor
+
+   pps = SurfacePostprocessor(
+      problem=phys,
+      value_type="integral",
+      current_type="net",
+      boundaries=["xmin"],
+   )
+   pps.Execute()
+   result = pps.GetValue()
+
+Operation Types
+---------------
+
+The ``value_type`` parameter determines the reduction operation:
+
+* ``"integral"`` — area-weighted integral of the selected current type
+* ``"avg"`` — area-weighted average of the selected current type
+* ``"max"`` — maximum value of the selected (face-integrated) current type on the surface
+* ``"min"`` — minimum value of the selected (face-integrated) current type on the surface
+
+The ``current_type`` parameter selects which component of the surface flux is
+evaluated:
+
+* ``"incoming"`` — partial current entering the domain. Values are negative, because
+  inward directions have a negative dot product with the outward face normal.
+* ``"outgoing"`` — partial current leaving the domain. Values are non-negative.
+* ``"net"`` — net outward current: the outgoing partial current plus the signed
+  (negative) incoming partial current. A negative net value means net inflow.
+
+Spatial Restriction
+-------------------
+
+A surface postprocessor must be restricted to one or more boundaries:
+
+.. code-block:: python
+
+   pps = SurfacePostprocessor(
+      problem=phys,
+      value_type="integral",
+      current_type="net",
+      boundaries=["xmin", "xmax"],
+   )
+
+Optionally, restrict computation to one or more logical volumes to evaluate
+only a portion of the specified boundaries:
+
+.. code-block:: python
+
+   from pyopensn.logvol import RPPLogicalVolume
+
+   lv = RPPLogicalVolume(ymin=0.0, ymax=0.5, infx=True, infz=True)
+   pps = SurfacePostprocessor(
+      problem=phys,
+      value_type="integral",
+      current_type="net",
+      boundaries=["xmin"],
+      logical_volumes=[lv],
+   )
+
+Each logical volume produces one row of results. If no logical volumes are
+specified, the entire surface of the named boundaries is used as a single region.
+
+Energy Restriction
+-------------------
+
+Similar to the volume postprocessor, you can restrict the computation to a
+single group or a single groupset:
+
+.. code-block:: python
+
+   pps = SurfacePostprocessor(
+      problem=phys,
+      value_type="integral",
+      current_type="net",
+      boundaries=["xmin"],
+      group=6,
+   )
+
+Or:
+
+.. code-block:: python
+
+   pps = SurfacePostprocessor(
+      problem=phys,
+      value_type="integral",
+      current_type="net",
+      boundaries=["xmin"],
+      groupset=1,
+   )
+
+Results
+-------
+
+After calling ``Execute()``, retrieve results with ``GetValue()``. The return
+value is a 2D array indexed as ``result[region][group]``:
+
+.. code-block:: python
+
+   pps = SurfacePostprocessor(
+      problem=phys,
+      value_type="integral",
+      current_type="net",
+      boundaries=["xmin"],
+   )
+   pps.Execute()
+   result = pps.GetValue()
+
+   # result[0] is a vector of values for the combined xmin boundary, one per group
+   for group_index, value in enumerate(result[0]):
+      print(f"Group {group_index}: {value}")
+
 Other Useful Post-Processing Paths
 ==================================
 
