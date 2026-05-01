@@ -44,7 +44,7 @@ VolumetricSource::GetInputParameters()
   params.AddOptionalParameter<std::shared_ptr<VectorSpatialFunction>>(
     "func",
     std::shared_ptr<VectorSpatialFunction>{},
-    "SpatialMaterialFunction object to be used to define the source.");
+    "VectorSpatialFunction object to be used to define the source.");
   params.AddOptionalParameter<std::shared_ptr<GroupTimeFunction>>(
     "strength_function",
     std::shared_ptr<GroupTimeFunction>{},
