@@ -308,6 +308,26 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_3d_5g_upscatter_solvers.py",
+    "comment":
+      "3D 5G infinite-medium k-eigenvalue test with five groupsets, upscatter, analytic reference, PI, and NLKE",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PowerIteration k-eigenvalue:",
+        "goldvalue": 0.647082071109,
+        "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "NonLinearKEigen k-eigenvalue:",
+        "goldvalue": 0.647082071109,
+        "abs_tol": 5e-06
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_1d_1g_scalar_power_ff.py",
     "comment": "1D 1G k-eigenvalue writes scalar flux, power, and a generic XS-driven field function to the same PVTU output",
     "num_procs": 1,

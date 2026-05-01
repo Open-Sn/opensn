@@ -121,15 +121,17 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
   auto nl_context_ptr = GetNLKAGSContextPtr(context_ptr_, __PRETTY_FUNCTION__);
 
   auto& lbs_problem = nl_context_ptr->lbs_problem;
+  const auto& groupset_ids = nl_context_ptr->groupset_ids;
 
   // Unpack solution
-  LBSVecOps::SetPrimarySTLvectorFromGroupScopedPETScVec(
-    *lbs_problem, 0, lbs_problem->GetNumGroups() - 1, x_, PhiSTLOption::PHI_NEW);
-  LBSVecOps::SetPrimarySTLvectorFromGroupScopedPETScVec(
-    *lbs_problem, 0, lbs_problem->GetNumGroups() - 1, x_, PhiSTLOption::PHI_OLD);
+  LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(
+    *lbs_problem, groupset_ids, x_, PhiSTLOption::PHI_NEW);
+  LBSVecOps::SetPrimarySTLvectorFromMultiGSPETScVec(
+    *lbs_problem, groupset_ids, x_, PhiSTLOption::PHI_OLD);
 
   // Compute final k_eff
   double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiNewLocal());
+  nl_context_ptr->kresid_func_context.k_eff = k_eff;
 
   PetscInt number_of_func_evals = 0;
   OpenSnPETScCall(SNESGetNumberFunctionEvals(nl_solver_, &number_of_func_evals));
