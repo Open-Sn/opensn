@@ -6,7 +6,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "caliper/cali.h"
 
 #include "framework/logging/log.h"
 #include "framework/runtime.h"

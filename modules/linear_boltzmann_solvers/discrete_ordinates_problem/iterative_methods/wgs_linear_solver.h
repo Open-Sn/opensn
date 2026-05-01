@@ -24,6 +24,8 @@ public:
 
   ~WGSLinearSolver() override;
 
+  void Solve() override;
+
 protected:
   void PreSetupCallback() override;
   void SetConvergenceTest() override;

@@ -9,8 +9,10 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 #include <iomanip>
 #include <limits>
 #include <utility>
@@ -96,6 +98,10 @@ TransientSolver::TransientSolver(const InputParameters& params)
 void
 TransientSolver::Initialize()
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_transient("Transient", CaliperTransientScopeDepth());
+  CALI_CXX_MARK_SCOPE("Initialize");
+
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
   enforce_stop_time_ = false;
 
@@ -159,6 +165,9 @@ TransientSolver::Initialize()
 void
 TransientSolver::Execute()
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_transient("Transient", CaliperTransientScopeDepth());
+
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
@@ -173,6 +182,9 @@ TransientSolver::Execute()
     64.0 * std::numeric_limits<double>::epsilon() * std::max({1.0, std::abs(tf), std::abs(t0)});
 
   enforce_stop_time_ = true;
+  bool time_step_loop_open = false;
+  CALI_CXX_MARK_LOOP_BEGIN(time_step, "TimeStep");
+  time_step_loop_open = true;
   try
   {
     while (true)
@@ -185,6 +197,8 @@ TransientSolver::Execute()
         do_problem_->SetTime(current_time_);
         break;
       }
+
+      CALI_CXX_MARK_LOOP_ITERATION(time_step, step_);
 
       if (pre_advance_callback_)
         pre_advance_callback_();
@@ -212,10 +226,14 @@ TransientSolver::Execute()
   }
   catch (...)
   {
+    if (time_step_loop_open)
+      CALI_CXX_MARK_LOOP_END(time_step);
     do_problem_->SetTimeStep(dt_nominal);
     enforce_stop_time_ = false;
     throw;
   }
+  CALI_CXX_MARK_LOOP_END(time_step);
+  time_step_loop_open = false;
 
   do_problem_->SetTimeStep(dt_nominal);
   enforce_stop_time_ = false;
@@ -229,6 +247,10 @@ TransientSolver::Execute()
 void
 TransientSolver::Advance()
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_transient("Transient", CaliperTransientScopeDepth());
+  CALI_CXX_MARK_SCOPE("Advance");
+
   const auto& options = do_problem_->GetOptions();
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Advance.");
   if (enforce_stop_time_ and stop_time_ <= current_time_)

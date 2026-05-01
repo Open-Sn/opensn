@@ -15,7 +15,6 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
                               unsigned int gss,
                               Functor func)
 {
-  CALI_CXX_MARK_SCOPE("LBSVecOps::GroupsetScopedCopy");
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
@@ -45,7 +44,6 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
 void
 LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_opt, double value)
 {
-  CALI_CXX_MARK_SCOPE("LBSVecOps::SetPhiVectorScalarValues");
 
   auto& phi = (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
                                                  : lbs_problem.GetPhiOldLocal();
@@ -72,7 +70,6 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
 void
 LBSVecOps::ScalePhiVector(LBSProblem& lbs_problem, PhiSTLOption phi_opt, double value)
 {
-  CALI_CXX_MARK_SCOPE("LBSVecOps::ScalePhiVector");
 
   const auto& groupsets = lbs_problem.GetGroupsets();
 

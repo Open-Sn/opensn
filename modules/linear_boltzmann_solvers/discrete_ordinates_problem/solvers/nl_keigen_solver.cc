@@ -9,8 +9,10 @@
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -82,6 +84,10 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
 void
 NonLinearKEigenSolver::Initialize()
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_nlke("NLKE", CaliperNLKEScopeDepth());
+  CALI_CXX_MARK_SCOPE("Initialize");
+
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
 
   OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
@@ -93,6 +99,9 @@ NonLinearKEigenSolver::Initialize()
 void
 NonLinearKEigenSolver::Execute()
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_nlke("NLKE", CaliperNLKEScopeDepth());
+
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
 
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
@@ -103,6 +112,8 @@ NonLinearKEigenSolver::Execute()
   double initial_k_eff = 1.0;
   if (num_initial_power_its_ > 0)
   {
+    CALI_CXX_MARK_SCOPE("InitialPowerIteration");
+
     PowerIterationKEigenSolver(*do_problem_,
                                nl_solver_.GetToleranceOptions().nl_abs_tol,
                                num_initial_power_its_,
@@ -116,7 +127,10 @@ NonLinearKEigenSolver::Execute()
   LBSVecOps::ScalePhiVector(*do_problem_, PhiSTLOption::PHI_OLD, normalization);
   LBSVecOps::ScalePhiVector(*do_problem_, PhiSTLOption::PHI_NEW, normalization);
 
-  nl_solver_.Setup();
+  {
+    CALI_CXX_MARK_SCOPE("Setup");
+    nl_solver_.Setup();
+  }
   nl_solver_.Solve();
 
   if (do_problem_->GetOptions().use_precursors)

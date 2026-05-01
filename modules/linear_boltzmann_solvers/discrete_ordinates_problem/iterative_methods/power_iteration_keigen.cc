@@ -10,7 +10,9 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/utils/timer.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -21,6 +23,9 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
                            unsigned int max_iterations,
                            double& k_eff)
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_pi("PI", CaliperPIScopeDepth());
+
   const std::string fname = "PowerIterationKEigenSolver";
   auto* do_problem = dynamic_cast<DiscreteOrdinatesProblem*>(&lbs_problem);
   if (not do_problem)
@@ -56,14 +61,20 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
   ags_solver->SetVerbosity(print_ags_iters);
   unsigned int nit = 0;
   bool converged = false;
+  CALI_CXX_MARK_LOOP_BEGIN(pi_iteration, "PIIteration");
   while (nit < max_iterations)
   {
+    CALI_CXX_MARK_LOOP_ITERATION(pi_iteration, nit);
+
     lbs_problem.ZeroQMoments();
     for (const auto& groupset : groupsets)
+    {
+      CALI_CXX_MARK_SCOPE("Source");
       active_set_source_function(groupset,
                                  lbs_problem.GetQMomentsLocal(),
                                  phi_old_local,
                                  APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+    }
 
     lbs_problem.ScaleQMoments(1.0 / k_eff);
 
@@ -118,6 +129,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
     if (converged)
       break;
   } // for k iterations
+  CALI_CXX_MARK_LOOP_END(pi_iteration);
 
   // Print summary
   size_t total_sweeps = 0;

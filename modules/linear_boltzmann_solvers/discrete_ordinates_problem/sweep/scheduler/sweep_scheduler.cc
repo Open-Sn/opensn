@@ -9,7 +9,6 @@
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 #include <algorithm>
 #include <unordered_map>
 
@@ -21,7 +20,6 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
                                SweepChunk& sweep_chunk)
   : scheduler_type_(scheduler_type), angle_agg_(angle_agg), sweep_chunk_(sweep_chunk)
 {
-  CALI_CXX_MARK_SCOPE("SweepScheduler::SweepScheduler");
 
   angle_agg_.InitializeReflectingBCs();
 
@@ -75,7 +73,6 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
 void
 SweepScheduler::InitializeAlgoDOG()
 {
-  CALI_CXX_MARK_SCOPE("SweepScheduler::InitializeAlgoDOG");
 
   const bool is_cylindrical = angle_agg_.GetQuadrature()->GetDimension() == 2 &&
                               angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL;
@@ -187,8 +184,6 @@ SweepScheduler::SortRuleValuesDOGDefault()
 void
 SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
-  CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoDOG");
-
   const bool is_cylindrical = angle_agg_.GetQuadrature()->GetDimension() == 2 &&
                               angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL;
 
@@ -287,8 +282,6 @@ SweepScheduler::ScheduleAlgoDOGDefault(SweepChunk& sweep_chunk)
 void
 SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 {
-  CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoFIFO");
-
   // Loop over AngleSetGroups
   bool finished = false;
   while (not finished)
@@ -349,8 +342,6 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
 void
 SweepScheduler::Sweep()
 {
-  CALI_CXX_MARK_SCOPE("SweepScheduler::Sweep");
-
   if (scheduler_type_ == SchedulingAlgorithm::ASYNC_FIFO)
     ScheduleAlgoAsyncFIFO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)

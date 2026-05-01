@@ -62,11 +62,19 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
 void
 SweepWGSContext::RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term)
 {
+  CALI_CXX_MARK_SCOPE("AngularFluxReconstruction");
+
   const auto scope = lhs_src_scope | rhs_src_scope;
-  set_source_function(groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+  {
+    CALI_CXX_MARK_SCOPE("Source");
+    set_source_function(groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+  }
 
   sweep_chunk->IncludeRHSTimeTerm(include_rhs_time_term);
-  ApplyInverseTransportOperator(scope);
+  {
+    CALI_CXX_MARK_SCOPE("Sweep");
+    ApplyInverseTransportOperator(scope);
+  }
   LBSVecOps::GSScopedCopyPrimarySTLvectors(
     do_problem, groupset, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 }
@@ -74,7 +82,6 @@ SweepWGSContext::RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term)
 void
 SweepWGSContext::SetPreconditioner(KSP& solver)
 {
-  CALI_CXX_MARK_SCOPE("SweepWGSContext::SetPreconditioner");
 
   auto& ksp = solver;
 
@@ -95,7 +102,6 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
 std::pair<int64_t, int64_t>
 SweepWGSContext::GetSystemSize()
 {
-  CALI_CXX_MARK_SCOPE("SweepWGSContext::SystemSize");
 
   const size_t local_node_count = do_problem.GetLocalNodeCount();
   const size_t global_node_count = do_problem.GetGlobalNodeCount();
@@ -119,8 +125,6 @@ SweepWGSContext::PreSolveCallback()
 void
 SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 {
-  CALI_CXX_MARK_SCOPE("SweepWGSContext::ApplyInverseTransportOperator");
-
   ++counter_applications_of_inv_op;
 
   // Sweep
@@ -143,7 +147,6 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
 void
 SweepWGSContext::PostSolveCallback()
 {
-  CALI_CXX_MARK_SCOPE("SweepWGSContext::PostSolveCallback");
 
   // Perform final sweep with converged phi and delayed psi dofs. This step is necessary for
   // Krylov methods to recover the actual solution (this includes all of the PETSc methods

@@ -8,7 +8,6 @@
 #include "framework/utils/utils.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 #include "cxxopts/cxxopts.h"
 #include <string>
 
@@ -98,6 +97,9 @@ PyApp::Run(int argc, char** argv)
   }
   else
     return EXIT_FAILURE;
+
+  if (opensn::use_caliper and opensn::mpi_comm.rank() == 0)
+    std::cout << std::endl;
 
   cali_mgr.flush();
   return EXIT_SUCCESS;

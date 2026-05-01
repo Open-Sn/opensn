@@ -5,7 +5,6 @@
 #include "framework/logging/log.h"
 #include "framework/math/math.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 #include <utility>
 
 namespace opensn
@@ -34,7 +33,6 @@ AAH_FLUDS::AAH_FLUDS(unsigned int num_groups,
     delayed_local_psi_Gn_block_strideG_(common_data_.delayed_local_psi_Gn_block_stride_ *
                                         num_groups_)
 {
-  CALI_CXX_MARK_SCOPE("AAH_FLUDS::AAH_FLUDS");
 
   // Adjusting for different group aggregate
   for (const auto& val : common_data_.local_psi_n_block_stride_)

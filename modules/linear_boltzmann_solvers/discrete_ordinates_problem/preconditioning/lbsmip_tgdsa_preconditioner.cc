@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -32,6 +33,8 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   // Apply TGDSA
   if (groupset.apply_tgdsa)
   {
+    CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
+
     // DSA dsa(solver);
     std::vector<double> delta_phi_local;
     TGDSA::AssembleDeltaPhiVector(solver, groupset, phi_delta, delta_phi_local);

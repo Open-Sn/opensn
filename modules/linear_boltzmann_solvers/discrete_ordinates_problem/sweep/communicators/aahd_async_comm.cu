@@ -4,7 +4,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aahd_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
-#include "caliper/cali.h"
 #include <functional>
 #include <numeric>
 
@@ -38,7 +37,6 @@ AAHD_ASynchronousCommunicator::AAHD_ASynchronousCommunicator(FLUDS& fluds,
 void
 AAHD_ASynchronousCommunicator::BuildMessageStructure()
 {
-  CALI_CXX_MARK_SCOPE("AAHD_ASynchronousCommunicator::BuildMessageStructure");
   const auto& spds = fluds_.GetSPDS();
   auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(&fluds_);
   if (aahd_fluds == nullptr)
@@ -81,7 +79,6 @@ AAHD_ASynchronousCommunicator::BuildMessageStructure()
 void
 AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi(int angle_set_num)
 {
-  CALI_CXX_MARK_SCOPE("AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi");
 
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
@@ -115,7 +112,6 @@ AAHD_ASynchronousCommunicator::WaitForUpstreamPsi()
 void
 AAHD_ASynchronousCommunicator::PrepostReceiveDelayedData(int angle_set_num)
 {
-  CALI_CXX_MARK_SCOPE("AAH_ASynchronousCommunicator::PrepostReceiveDelayedData");
 
   const auto& spds = fluds_.GetSPDS();
   const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
@@ -143,7 +139,6 @@ AAHD_ASynchronousCommunicator::WaitForDelayedIncomingPsi()
 void
 AAHD_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
 {
-  CALI_CXX_MARK_SCOPE("AAHD_ASynchronousCommunicator::SendDownstreamPsi");
 
   const auto& spds = fluds_.GetSPDS();
   const auto& location_successors = spds.GetLocationSuccessors();

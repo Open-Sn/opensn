@@ -4,7 +4,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -13,7 +12,6 @@ void
 CommunicateLocationDependencies(const std::vector<int>& location_dependencies,
                                 std::vector<std::vector<int>>& global_dependencies)
 {
-  CALI_CXX_MARK_FUNCTION;
 
   int P = opensn::mpi_comm.size();
 

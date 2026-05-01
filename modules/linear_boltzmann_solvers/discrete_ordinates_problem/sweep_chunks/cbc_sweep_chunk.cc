@@ -8,7 +8,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/logging/log.h"
-#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -45,8 +44,6 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
 void
 CBCSweepChunk::SetAngleSet(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("CbcSweepChunk::SetAngleSet");
-
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
 
   gs_size_ = groupset_.GetNumGroups();

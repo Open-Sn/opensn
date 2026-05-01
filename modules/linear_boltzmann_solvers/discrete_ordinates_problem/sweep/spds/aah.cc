@@ -6,7 +6,6 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 #include <boost/graph/topological_sort.hpp>
 #include <algorithm>
 
@@ -20,7 +19,6 @@ AAH_SPDS::AAH_SPDS(int id,
                    bool use_gpus)
   : SPDS(omega, grid), id_(id), allow_cycles_(allow_cycles)
 {
-  CALI_CXX_MARK_SCOPE("AAH_SPDS::AAH_SPDS");
 
   // Populate Cell Relationships
   size_t num_loc_cells = grid->local_cells.size();
@@ -99,7 +97,6 @@ AAH_SPDS::BuildGlobalSweepFAS()
 {
   assert(not global_dependencies_.empty());
 
-  CALI_CXX_MARK_SCOPE("AAH_SPDS::BuildGlobalSweepFAS");
 
   // Create global sweep graph
   const int comm_size = opensn::mpi_comm.size();
@@ -136,7 +133,6 @@ AAH_SPDS::BuildGlobalSweepFAS()
 std::vector<double>
 AAH_SPDS::ComputeLocalLocationEdgeWeights() const
 {
-  CALI_CXX_MARK_SCOPE("AAH_SPDS::ComputeLocalLocationEdgeWeights");
 
   const int comm_size = opensn::mpi_comm.size();
   std::vector<double> row(comm_size, 0.0);
@@ -170,7 +166,6 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
 void
 AAH_SPDS::BuildGlobalSweepTDG()
 {
-  CALI_CXX_MARK_SCOPE("AAH_SPDS::BuildGlobalSweepTDG");
 
   // Create graph
   Graph global_tdg(opensn::mpi_comm.size());

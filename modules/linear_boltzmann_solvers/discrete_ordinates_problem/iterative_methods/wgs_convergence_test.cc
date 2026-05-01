@@ -9,7 +9,6 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -19,8 +18,6 @@ PetscErrorCode
 GSConvergenceTest(
   KSP ksp, PetscInt n, PetscReal rnorm, KSPConvergedReason* convergedReason, void* /*unused*/)
 {
-  CALI_CXX_MARK_FUNCTION;
-
   // Get data context
   WGSContext* context = nullptr;
   PetscErrorCode ierr = KSPGetApplicationContext(ksp, static_cast<void*>(&context));

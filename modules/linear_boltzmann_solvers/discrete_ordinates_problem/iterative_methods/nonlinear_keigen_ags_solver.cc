@@ -11,6 +11,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
+#include "caliper/cali.h"
 #include <petscsnes.h>
 
 namespace opensn
@@ -30,6 +31,13 @@ GetNLKAGSContextPtr(const std::shared_ptr<NonLinearSolverContext>& context,
 }
 
 } // namespace
+
+void
+NLKEigenvalueAGSSolver::Solve()
+{
+  CALI_CXX_MARK_SCOPE("NonlinearSolve");
+  PETScNonLinearSolver::Solve();
+}
 
 void
 NLKEigenvalueAGSSolver::PreSetupCallback()

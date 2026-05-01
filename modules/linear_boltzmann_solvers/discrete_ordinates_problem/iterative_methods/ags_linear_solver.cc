@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 
@@ -17,7 +18,8 @@ namespace opensn
 void
 AGSLinearSolver::Solve()
 {
-  CALI_CXX_MARK_SCOPE("AGSLinearSolver::Solve");
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_ags("AGS", CaliperAGSScopeDepth());
   const bool is_multi_groupset = wgs_solvers_.size() > 1;
   const bool print_ags_stats = verbose_ and is_multi_groupset;
   last_solve_ = {};
@@ -35,8 +37,11 @@ AGSLinearSolver::Solve()
   bool child_limited = false;
   unsigned int num_iterations = 0;
   const bool reports_as_iteration = is_multi_groupset;
+  CALI_CXX_MARK_LOOP_BEGIN(ags_iteration, "AGSIteration");
   for (unsigned int iter = 0; iter < max_iterations_; ++iter)
   {
+    CALI_CXX_MARK_LOOP_ITERATION(ags_iteration, iter);
+
     num_iterations = iter + 1;
     for (auto& solver : wgs_solvers_)
     {
@@ -107,6 +112,7 @@ AGSLinearSolver::Solve()
     else
       phi_old_ = lbs_problem_.GetPhiNewLocal();
   }
+  CALI_CXX_MARK_LOOP_END(ags_iteration);
 
   const auto inner_status = failed
                               ? IterationStatus::FAILED
@@ -118,7 +124,8 @@ AGSLinearSolver::Solve()
   last_solve_.metric_name =
     lbs_problem_.GetOptions().ags_pointwise_convergence ? "pw_change" : "l2_change";
   last_solve_.metric_value = last_error;
-  if (print_ags_stats and not converged)
+  if (print_ags_stats and
+      (last_solve_.status == IterationStatus::FAILED or last_solve_.status == IterationStatus::LIMIT))
     log.Log() << program_timer.GetTimeString() << " " << FormatIterationSummary("AGS", last_solve_);
 
   for (const auto& solver : wgs_solvers_)
