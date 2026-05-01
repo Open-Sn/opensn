@@ -120,6 +120,7 @@ if(OPENSN_WITH_PYTHON_MODULE)
 endif()
 
 # dependencies
+find_package(LAPACK REQUIRED)
 find_package(MPI REQUIRED)
 find_package(mpicpp-lite 2.5 REQUIRED)
 
@@ -335,6 +336,8 @@ target_link_libraries(libopensn
     ${HDF5_LIBRARIES}
     mpicpp-lite::mpicpp-lite
     MPI::MPI_CXX
+    PRIVATE
+    LAPACK::LAPACK
 )
 if (OPENSN_WITH_GPU)
   target_link_libraries(libopensn INTERFACE libopensngpu)

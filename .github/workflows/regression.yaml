@@ -20,7 +20,15 @@ jobs:
         shell: bash
         run: |
           module load python3/3.12.3 opensn/gcc/14
-          mkdir build && cd build && cmake -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
@@ -68,7 +76,17 @@ jobs:
         shell: bash
         run: |
           module load cuda/12.9 python3/3.12.3 opensn/gcc/14
-          mkdir build && cd build && cmake -DOPENSN_WITH_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89 -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DOPENSN_WITH_CUDA=ON \
+            -DCMAKE_CUDA_ARCHITECTURES=89 \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
@@ -95,7 +113,17 @@ jobs:
           module load cuda/12.9 python3/3.12.3 rocm/7.1.1 opensn/clang/19
           export HIP_PLATFORM=nvidia
           export HIP_COMPILER=nvcc
-          mkdir build && cd build && cmake -DOPENSN_WITH_HIP=ON -DCMAKE_HIP_ARCHITECTURES=89 -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+          mkdir build
+          cd build
+          cmake \
+            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DLAPACK_LIBRARIES="/opt/local/OpenBLAS-0.3.31/lib64/libopenblas.a;pthread;m;gfortran" \
+            -DOPENSN_WITH_HIP=ON \
+            -DCMAKE_HIP_ARCHITECTURES=89 \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            ..
+          make -j
       - name: test
         shell: bash
         run: |
