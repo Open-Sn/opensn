@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
+#include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>

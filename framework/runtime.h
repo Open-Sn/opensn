@@ -20,15 +20,12 @@ namespace opensn
 static const std::string program = "OpenSn";
 
 class Timer;
-class Logger;
 
 extern mpi::Communicator mpi_comm;
-extern Logger& log;
 extern Timer program_timer;
 extern bool use_caliper;
 extern std::string cali_config;
 extern cali::ConfigManager cali_mgr;
-extern bool suppress_color;
 extern std::filesystem::path input_path;
 
 /// Initializes all necessary items

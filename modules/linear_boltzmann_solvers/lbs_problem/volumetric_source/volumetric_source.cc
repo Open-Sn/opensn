@@ -7,6 +7,7 @@
 #include "framework/mesh/cell/cell.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
+#include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/object_factory.h"
 #include <memory>

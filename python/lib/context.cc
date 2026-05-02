@@ -78,7 +78,7 @@ WrapSettings(py::module& context)
     "UseColor",
     [](bool cfg)
     {
-      suppress_color = (!cfg);
+      log.SetColorEnabled(cfg);
     },
     "Enable/disable color output. Default is True.",
     py::arg("config") = true
@@ -161,7 +161,7 @@ WrapSysArgv(py::module& context)
         // color
         if (arg == "-c" || arg == "--suppress-color")
         {
-          suppress_color = true;
+          log.SetColorEnabled(false);
           continue;
         }
         // verbosity

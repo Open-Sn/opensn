@@ -4,7 +4,6 @@
 #include "framework/runtime.h"
 #include "framework/math/math.h"
 #include "framework/object_factory.h"
-#include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "config.h"
 #include "caliper/cali.h"
@@ -15,13 +14,11 @@ namespace opensn
 {
 
 // Global variables
-Logger& log = Logger::GetInstance();
 mpi::Communicator mpi_comm;
 bool use_caliper = false;
 std::string cali_config("runtime-report(calc.inclusive=true),max_column_width=80");
 cali::ConfigManager cali_mgr;
 Timer program_timer;
-bool suppress_color = false;
 std::filesystem::path input_path;
 
 int

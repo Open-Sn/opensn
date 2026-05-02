@@ -137,7 +137,7 @@ PyApp::ProcessArguments(int argc, char** argv)
     }
 
     if (result.count("suppress-color"))
-      opensn::suppress_color = true;
+      opensn::log.SetColorEnabled(false);
 
     if (result.count("caliper"))
     {

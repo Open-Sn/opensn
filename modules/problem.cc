@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/problem.h"
-#include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
 
