@@ -791,12 +791,14 @@ WrapLBS(py::module& slv)
         These options are applied at problem creation.
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
+        Both sweep types support time-dependent (transient) mode.
     time_dependent : bool, default=False
         If true, the problem starts in time-dependent mode. Otherwise it starts in
         steady-state mode. Requires ``options.save_angular_flux=True``.
+        Both ``AAH`` and ``CBC`` sweep types support time-dependent mode.
     use_gpus : bool, default=False
-        A flag specifying whether GPU acceleration is used for the sweep. Currently, only ``AAH`` is
-        supported.
+        A flag specifying whether GPU acceleration is used for the sweep. Both
+        ```AAH``` and ```CBC``` sweep types support GPU acceleration.
     )"
   );
   do_problem.def(

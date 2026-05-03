@@ -264,7 +264,6 @@ The practical differences are:
   feedback-arc-set edges and lagging the corresponding angular-flux
   dependencies.
 * ``CBC`` does not support local sweep cycles.
-* time-dependent discrete-ordinates problems are restricted to ``AAH``.
 
 .. note::
 
@@ -274,8 +273,12 @@ The practical differences are:
 
 Practical recommendation:
 
-* keep ``sweep_type="AAH"`` unless there is a specific reason to choose
-  ``CBC`` and the sweep graph is known to be compatible with it.
+* ``AAH`` remains the default production choice and is the safer option for
+  most users, particularly for problems with cyclic sweep dependencies.
+* Both ``AAH`` and ``CBC`` support time-dependent (transient) mode.
+* Choose ``CBC`` only when the sweep graph is known to be acyclic or when
+  you have verified it meets the acyclicity requirement for your specific
+  problem.
 
 Problem Modes
 =============
