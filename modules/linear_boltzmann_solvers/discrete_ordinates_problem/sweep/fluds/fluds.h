@@ -5,11 +5,12 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h"
+#include "framework/mesh/cell/cell.h"
 #include <set>
 #include <span>
 #include <vector>
 #include <cstddef>
-#include <cstdint>
+#include <unordered_map>
 
 namespace opensn
 {
@@ -59,6 +60,11 @@ public:
 
   virtual ~FLUDS() = default;
 
+  std::unordered_map<CellFaceKey, std::vector<double>>& GetDeplocsOutgoingMessages()
+  {
+    return deplocs_outgoing_messages_;
+  }
+
 protected:
   const unsigned int num_groups_;
   const size_t num_angles_;
@@ -71,6 +77,9 @@ protected:
   std::vector<std::span<double>> prelocI_outgoing_psi_view_;
   std::vector<std::span<double>> delayed_prelocI_outgoing_psi_view_;
   std::vector<std::span<double>> delayed_prelocI_outgoing_psi_old_view_;
+
+  /// Received delayed outgoing messages keyed by cell face.
+  std::unordered_map<CellFaceKey, std::vector<double>> deplocs_outgoing_messages_;
 };
 
 } // namespace opensn
