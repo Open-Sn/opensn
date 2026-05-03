@@ -3,22 +3,22 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbcd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/logging/log.h"
-#include "framework/runtime.h"
-#include <utility>
+#include <algorithm>
+#include <cassert>
 
 namespace opensn
 {
 
-CBCD_FLUDS::CBCD_FLUDS(size_t num_groups,
-                       size_t num_angles,
-                       size_t num_local_cells,
+CBCD_FLUDS::CBCD_FLUDS(std::size_t num_groups,
+                       std::size_t num_angles,
+                       std::size_t num_local_cells,
                        const CBCD_FLUDSCommonData& common_data,
                        const UnknownManager& psi_uk_man,
                        const SpatialDiscretization& sdm,
@@ -50,6 +50,7 @@ CBCD_FLUDS::CBCD_FLUDS(size_t num_groups,
     device_saved_psi_ = crb::DeviceMemory<double>(local_psi_data_size_);
   }
   CreatePointerSet();
+  deplocs_outgoing_messages_.reserve(common_data.GetNumIncomingNonlocalFaces());
 }
 
 CBCD_FLUDS::~CBCD_FLUDS()
@@ -105,7 +106,7 @@ CBCD_FLUDS::CopyIncomingBoundaryPsiToDevice(CBCDSweepChunk& sweep_chunk, CBCD_An
 
   for (const auto& node : incoming_boundary_node_map_)
   {
-    for (size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
+    for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
     {
       auto direction_num = angle_indices[as_ss_idx];
       double* dst_psi = incoming_boundary_psi_.data() +
@@ -137,7 +138,7 @@ CBCD_FLUDS::CopyIncomingNonlocalPsiToDevice(CBCD_AngleSet* angle_set,
       continue;
     for (const auto& node : incoming_boundary_it->second)
     {
-      for (size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
+      for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
       {
         double* dst_psi = incoming_nonlocal_psi_.data() +
                           node.storage_index * num_groups_and_angles_ + as_ss_idx * num_groups_;
@@ -169,7 +170,7 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
         const auto& face = cell.faces[node.face_id];
         if (angle_set->GetBoundaries().at(face.neighbor_id)->IsReflecting())
         {
-          for (size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
+          for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
           {
             auto direction_num = angle_indices[as_ss_idx];
             double* dst_psi = angle_set->PsiReflected(
@@ -193,14 +194,11 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
         const auto& face_data_size = num_face_nodes * num_groups_and_angles_;
         const int locality =
           sweep_chunk.GetCellTransportView(node.cell_local_id).FaceLocality(node.face_id);
-        auto& async_comm = *angle_set->GetCommunicator();
-        std::vector<double>* psi_nonlocal_outgoing =
-          &async_comm.InitGetDownwindMessageData(locality,
-                                                 face.neighbor_id,
-                                                 face_nodal_mapping.associated_face_,
-                                                 angle_set->GetID(),
-                                                 face_data_size);
-        for (size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
+        auto& async_comm =
+          static_cast<CBCD_AsynchronousCommunicator&>(*angle_set->GetCommunicator());
+        std::vector<double>* psi_nonlocal_outgoing = &async_comm.InitGetDownwindMessageData(
+          locality, face.neighbor_id, face_nodal_mapping.associated_face_, face_data_size);
+        for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
         {
           auto* dst_psi = NLOutgoingPsi(psi_nonlocal_outgoing, node.face_node, as_ss_idx);
           const double* src_psi = outgoing_nonlocal_psi_.data() +
@@ -257,27 +255,30 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
 }
 
 double*
-CBCD_FLUDS::NLUpwindPsi(uint64_t cell_global_id,
+CBCD_FLUDS::NLUpwindPsi(std::uint64_t cell_global_id,
                         unsigned int face_id,
                         unsigned int face_node_mapped,
-                        size_t as_ss_idx)
+                        std::size_t as_ss_idx)
 {
-  std::vector<double>& psi = deplocs_outgoing_messages_.at({cell_global_id, face_id});
-  const size_t dof_map =
+  auto it = deplocs_outgoing_messages_.find({cell_global_id, face_id});
+  if (it == deplocs_outgoing_messages_.end())
+    return nullptr;
+  auto& psi = it->second;
+  const std::size_t dof_map =
     face_node_mapped * num_groups_and_angles_ + //  Offset to start of data for face_node_mapped
     as_ss_idx * num_groups_;                    // Offset to start of data for angle_set_index
 
-  assert((dof_map >= 0) and (dof_map < psi.size()));
+  assert(dof_map < psi.size());
   return &psi[dof_map];
 }
 
 double*
 CBCD_FLUDS::NLOutgoingPsi(std::vector<double>* psi_nonlocal_outgoing,
-                          size_t face_node,
-                          size_t as_ss_idx)
+                          std::size_t face_node,
+                          std::size_t as_ss_idx)
 {
   assert(psi_nonlocal_outgoing != nullptr);
-  const size_t addr_offset = face_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  const std::size_t addr_offset = face_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
   return &(*psi_nonlocal_outgoing)[addr_offset];
 }
 

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h"
 #include "caribou/main.hpp"
 #include <memory>
 
@@ -15,15 +15,15 @@ namespace opensn
 
 class CBC_SPDS;
 
-/// CBC angle set for device.
+/// Device CBC angle set.
 class CBCD_AngleSet : public AngleSet
 {
 public:
-  CBCD_AngleSet(size_t id,
+  CBCD_AngleSet(std::size_t id,
                 const LBSGroupset& groupset,
                 const SPDS& spds,
                 std::shared_ptr<FLUDS>& fluds,
-                const std::vector<size_t>& angle_indices,
+                const std::vector<std::size_t>& angle_indices,
                 std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                 const MPICommunicatorSet& comm_set);
 
@@ -51,6 +51,7 @@ public:
 
   void SyncDeviceAngleIndices() override;
 
+  /// Return the associated device stream.
   crb::Stream& GetStream() { return stream_; }
 
   std::uint32_t* GetDeviceAngleIndices() { return device_angle_indices_.get(); }
@@ -62,7 +63,7 @@ public:
 protected:
   const CBC_SPDS& cbc_spds_;
   std::vector<Task> current_task_list_;
-  CBC_AsynchronousCommunicator async_comm_;
+  CBCD_AsynchronousCommunicator async_comm_;
   /// Associated crb::Stream.
   crb::Stream stream_ = crb::Stream::get_null_stream();
   /// Angle indices on GPU.

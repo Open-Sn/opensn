@@ -20,9 +20,9 @@ SweepChunk::SetAngleSet(AngleSet& angle_set)
 }
 
 void
-SweepChunk::SetCell(Cell const* cell_ptr, AngleSet& angle_set)
+SweepChunk::SetCell(Cell const* cell_ptr)
 {
-  OpenSnLogicalError("SweepChunk::SetCell is not implemented for this sweep chunk.");
+  cell_ = cell_ptr;
 }
 
 void

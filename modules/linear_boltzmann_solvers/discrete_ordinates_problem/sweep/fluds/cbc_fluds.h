@@ -5,11 +5,10 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h"
-#include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/math/spatial_discretization/spatial_discretization.h"
 #include <cstddef>
-#include <map>
-#include <functional>
+#include <cstdint>
+#include <span>
+#include <vector>
 
 namespace opensn
 {
@@ -18,96 +17,98 @@ class UnknownManager;
 class SpatialDiscretization;
 class Cell;
 
-/**
- * Flux data structures (FLUDS) specific to the cell-by-cell (CBC) sweep algorithm
- *
- * This class manages the storage and access of angular flux data during a CBC sweep
- *
- * It provides methods to access:
- * - Upwind angular flux data from local neighbor cells
- * - Storage locations for downwind angular flux data for the current cell
- * - Upwind angular flux data received from remote MPI ranks
- */
+/// Host CBC FLUDS.
 class CBC_FLUDS : public FLUDS
 {
 public:
+  /// Incoming nonlocal face psi and owning local cell.
+  struct IncomingNonlocalPsi
+  {
+    /// Face psi storage.
+    std::span<double> psi;
+    /// Local cell associated with the received face data.
+    std::uint32_t cell_local_id = 0;
+  };
+
   CBC_FLUDS(unsigned int num_groups,
-            size_t num_angles,
+            std::size_t num_angles,
             const CBC_FLUDSCommonData& common_data,
             const UnknownManager& psi_uk_man,
             const SpatialDiscretization& sdm);
 
-  virtual const FLUDSCommonData& GetCommonData() const;
+  const CBC_FLUDSCommonData& GetCommonData() const;
 
   /**
-   * Given a local upwind neighbor cell, a node index on this cell, and an
-   * angleset subset index, this function returns a pointer to
-   * the start of the group data for the specified node and angle.
+   * Return local upwind cell psi for a mapped face node.
+   *
+   * \param face_neighbor Local upwind neighbor cell.
+   * \param adj_cell_node Mapped node in the upwind cell.
+   * \param as_ss_idx Angle-set subset index.
+   * \return Local upwind cell psi for the specified node and angle subset.
    */
-  double* UpwindPsi(const Cell& face_neighbor, unsigned int adj_cell_node, size_t as_ss_idx);
+  double* UpwindPsi(const Cell& face_neighbor, unsigned int adj_cell_node, std::size_t as_ss_idx);
 
   /**
-   * Given a local cell, a node index on this cell, and an angleset subset index,
-   * this function returns a pointer to the start of the group data for the specified
-   * node and angle for writing its just solved angular fluxes.
+   * Return writable outgoing cell psi for a cell node.
+   *
+   * \param cell Local cell.
+   * \param cell_node Local cell node.
+   * \param as_ss_idx Angle-set subset index.
+   * \return Local outgoing cell psi for the specified node and angle subset.
    */
-  double* OutgoingPsi(const Cell& cell, unsigned int cell_node, size_t as_ss_idx);
+  double* OutgoingPsi(const Cell& cell, unsigned int cell_node, std::size_t as_ss_idx);
 
   /**
-   * Given a remote upwind cell's global ID, a face ID on this cell,
-   * a node index on this face, and an angleset subset index,
-   * this function returns a pointer to the start of the group data for the specified
-   * face node and angle.
-   */
-  double* NLUpwindPsi(uint64_t cell_global_id,
-                      unsigned int face_id,
-                      unsigned int face_node_mapped,
-                      size_t as_ss_idx);
-
-  /**
-   * Given a pointer to a vector holding the non-local outgoing psi data for a face,
-   * a node index on this face, and an angleset subset index,
-   * this function returns a pointer to the start of the group data for the specified
-   * face node and angle.
+   * Return received nonlocal upwind face psi for a mapped face node.
+   *
+   * \param incoming_face_slot Incoming nonlocal face slot.
+   * \param face_node_mapped Mapped upwind face node.
+   * \param as_ss_idx Angle-set subset index.
+   * \return Received face psi, or nullptr if the slot has not been received this sweep epoch.
    */
   double*
-  NLOutgoingPsi(std::vector<double>* psi_nonlocal_outgoing, size_t face_node, size_t as_ss_idx);
+  NLUpwindPsi(std::size_t incoming_face_slot, unsigned int face_node_mapped, std::size_t as_ss_idx);
 
-  void ClearLocalAndReceivePsi() override { deplocs_outgoing_messages_.clear(); }
-  void ClearSendPsi() override {}
-  void AllocateInternalLocalPsi() override {}
-  void AllocateOutgoingPsi() override {}
+  /**
+   * Return writable nonlocal outgoing face psi for a face node.
+   *
+   * \param psi_nonlocal_outgoing Nonlocal outgoing face storage.
+   * \param face_node Face node.
+   * \param as_ss_idx Angle-set subset index.
+   * \return Writable face psi for the specified face node and angle subset.
+   */
+  double* NLOutgoingPsi(std::vector<double>* psi_nonlocal_outgoing,
+                        std::size_t face_node,
+                        std::size_t as_ss_idx);
 
-  void AllocateDelayedLocalPsi() override {}
-  void AllocatePrelocIOutgoingPsi() override {}
-  void AllocateDelayedPrelocIOutgoingPsi() override {}
+  void ClearLocalAndReceivePsi() override;
 
-  // cell_global_id, face_id
-  using CellFaceKey = std::pair<uint64_t, unsigned int>;
-
-  std::map<CellFaceKey, std::vector<double>>& GetDeplocsOutgoingMessages()
-  {
-    return deplocs_outgoing_messages_;
-  }
+  /**
+   * Prepare incoming nonlocal face-psi storage and return the owning local cell.
+   *
+   * \param incoming_face_slot Incoming nonlocal face slot.
+   * \param data_size Number of psi values to store for the face.
+   * \return Prepared face-psi storage and associated local cell ID.
+   */
+  IncomingNonlocalPsi PrepareIncomingNonlocalPsiBySlot(std::size_t incoming_face_slot,
+                                                       std::size_t data_size);
 
 protected:
   const CBC_FLUDSCommonData& common_data_;
   const UnknownManager& psi_uk_man_;
   const SpatialDiscretization& sdm_;
-  size_t num_angles_in_gs_quadrature_;
-  std::uint64_t num_quadrature_local_dofs_;
-  size_t num_local_spatial_dofs_;
-  size_t local_psi_data_size_;
-
-  /**
-   * Layout for storage for local angular fluxes:
-   * spatial DOF major -> angle in angleset major -> group in groupset major
-   */
+  /// Spatial DOF -> angleset subset -> group major layout.
   std::vector<double> local_psi_data_;
-
-  std::vector<std::vector<double>> boundryI_incoming_psi_;
-
-  std::map<CellFaceKey, std::vector<double>> deplocs_outgoing_messages_;
+  /// Contiguous storage for received nonlocal face psi.
+  std::vector<double> incoming_nonlocal_psi_;
+  /// Offsets into received nonlocal face-psi storage.
+  std::vector<std::size_t> incoming_nonlocal_psi_offsets_;
+  /// Receive epoch for each nonlocal face slot.
+  std::vector<std::uint32_t> incoming_psi_epoch_;
+  /// Current receive epoch.
+  std::uint32_t current_psi_epoch_ = 1;
+  /// Local angular-flux storage offset by local cell.
+  std::vector<std::size_t> cell_psi_start_;
 };
 
 } // namespace opensn

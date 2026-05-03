@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbcd_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
@@ -14,12 +14,12 @@
 namespace opensn
 {
 
-CBCD_AngleSet::CBCD_AngleSet(size_t id,
+CBCD_AngleSet::CBCD_AngleSet(std::size_t id,
                              const LBSGroupset& groupset,
                              const SPDS& spds,
                              std::shared_ptr<FLUDS>& fluds,
-                             const std::vector<size_t>& angle_indices,
-                             std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+                             const std::vector<std::size_t>& angle_indices,
+                             std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                              const MPICommunicatorSet& comm_set)
   : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds)),

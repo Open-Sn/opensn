@@ -17,20 +17,20 @@ void
 CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization& sdm)
 {
   const MeshContinuum& grid = *(spds_.GetGrid());
-  const size_t num_local_cells = grid.local_cells.size();
+  const std::size_t num_local_cells = grid.local_cells.size();
   std::uint64_t total_face_nodes = 0;
   for (const auto& cell : grid.local_cells)
     for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
       total_face_nodes += sdm.GetCellMapping(cell).GetNumFaceNodes(f);
-  std::vector<size_t> cell_spatial_dof_offsets(num_local_cells);
-  size_t current_dof_offset = 0;
+  std::vector<std::size_t> cell_spatial_dof_offsets(num_local_cells);
+  std::size_t current_dof_offset = 0;
   for (const auto& cell : grid.local_cells)
   {
     cell_spatial_dof_offsets[cell.local_id] = current_dof_offset;
     current_dof_offset += sdm.GetCellMapping(cell).GetNumNodes();
   }
-  const size_t offsets_size = 2 * num_local_cells;
-  const size_t total_size = offsets_size + total_face_nodes;
+  const std::size_t offsets_size = 2 * num_local_cells;
+  const std::size_t total_size = offsets_size + total_face_nodes;
   std::vector<std::uint64_t> local_map(total_size);
   std::uint64_t* cell_offsets_ptr = local_map.data();
   std::uint64_t* indices_ptr = local_map.data() + offsets_size;
@@ -41,17 +41,26 @@ CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization
   {
     cell_offsets_ptr[2 * cell.local_id] = current_index_offset;
     std::uint64_t num_cell_nodes = 0;
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {
       const CellFace& face = cell.faces[f];
       const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell.local_id][f];
       const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell.local_id][f];
-      const size_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      const std::size_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
       const bool is_outgoing_face = (orientation == FaceOrientation::OUTGOING);
       const bool is_incoming_face = (orientation == FaceOrientation::INCOMING);
       const bool is_local_face = face.IsNeighborLocal(&grid);
       const bool is_boundary_face = not face.has_neighbor;
-      for (size_t fn = 0; fn < num_face_nodes; ++fn)
+
+      if ((not is_local_face) and (not is_boundary_face))
+      {
+        if (is_incoming_face)
+          ++num_incoming_nonlocal_faces_;
+        else if (is_outgoing_face)
+          ++num_outgoing_nonlocal_faces_;
+      }
+
+      for (std::size_t fn = 0; fn < num_face_nodes; ++fn)
       {
         CBCD_NodeIndex node_index;
 
