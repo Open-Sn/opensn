@@ -35,9 +35,26 @@ CheckRequiredParams(const InputParameters& params,
                     const std::string& boundary_type,
                     const std::string& param_name)
 {
-  if (not params.Has(param_name))
+  if (not params.IsParameterValid(param_name))
     throw std::runtime_error(std::format(
       R"(Boundary '{}' of type="{}" requires "{}".)", boundary_name, boundary_type, param_name));
+}
+
+void
+CheckRequiredParams(const InputParameters& params,
+                    const std::string& boundary_name,
+                    const std::string& boundary_type,
+                    const std::string& param_name1,
+                    const std::string& param_name2)
+{
+  bool is_valid = (params.IsParameterValid(param_name1) xor params.IsParameterValid(param_name2));
+  if (not is_valid)
+    throw std::runtime_error(
+      std::format(R"(Boundary '{}' of type="{}" requires either "{}" or "{}".)",
+                  boundary_name,
+                  boundary_type,
+                  param_name1,
+                  param_name2));
 }
 
 } // namespace
@@ -59,6 +76,7 @@ BoundaryDefinition::BoundaryDefinition(const InputParameters& params, unsigned i
     case LBSBoundaryType::ISOTROPIC:
     {
       CheckForbiddenParams(params, boundary_name, boundary_type, "function");
+      CheckForbiddenParams(params, boundary_name, boundary_type, "time_function");
       CheckRequiredParams(params, boundary_name, boundary_type, "group_strength");
       params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
       auto param_group_strength = params.GetParamVectorValue<double>("group_strength");
@@ -70,27 +88,59 @@ BoundaryDefinition::BoundaryDefinition(const InputParameters& params, unsigned i
           num_groups,
           param_group_strength.size()));
       group_strength = std::move(param_group_strength);
+      if (params.IsParameterValid("start_time"))
+        start_time = params.GetParamValue<double>("start_time");
+      if (params.IsParameterValid("end_time"))
+        end_time = params.GetParamValue<double>("end_time");
+      if (not(start_time <= end_time))
+        throw std::runtime_error(std::format(
+          "Boundary '{}' with type=\"isotropic\" expected \"start_time\" to be less than or "
+          "equal to \"end_time\", but received start_time={} and end_time={}.",
+          boundary_name,
+          start_time,
+          end_time));
       break;
     }
     case LBSBoundaryType::ARBITRARY:
     {
       CheckForbiddenParams(params, boundary_name, boundary_type, "group_strength");
-      CheckRequiredParams(params, boundary_name, boundary_type, "function");
-      auto param_angular_flux_function =
-        params.GetSharedPtrParam<AngularFluxFunction>("function", false);
-      if (not param_angular_flux_function)
-        throw std::runtime_error(std::format(
-          "Boundary '{}' with type=\"arbitrary\" expected parameter \"function\" to hold a "
-          "non-null AngularFluxFunction.",
-          boundary_name));
-
-      angular_flux_function = std::move(param_angular_flux_function);
+      CheckForbiddenParams(params, boundary_name, boundary_type, "start_time");
+      CheckForbiddenParams(params, boundary_name, boundary_type, "end_time");
+      CheckRequiredParams(params, boundary_name, boundary_type, "function", "time_function");
+      if (params.IsParameterValid("function"))
+      {
+        auto param_angular_flux_function =
+          params.GetSharedPtrParam<AngularFluxFunction>("function", false);
+        if (not param_angular_flux_function)
+          throw std::runtime_error(std::format(
+            "Boundary '{}' with type=\"arbitrary\" expected parameter \"function\" to hold a "
+            "non-null AngularFluxFunction.",
+            boundary_name));
+        time_angular_flux_function = std::make_shared<AngularFluxTimeFunction>(
+          [angular_flux_function =
+             std::move(param_angular_flux_function)](int group, int direction, double time)
+          { return (*angular_flux_function)(group, direction); });
+      }
+      else if (params.IsParameterValid("time_function"))
+      {
+        auto param_angular_flux_function =
+          params.GetSharedPtrParam<AngularFluxTimeFunction>("time_function", false);
+        if (not param_angular_flux_function)
+          throw std::runtime_error(std::format(
+            "Boundary '{}' with type=\"arbitrary\" expected parameter \"time_function\" to hold a "
+            "non-null AngularFluxFunction.",
+            boundary_name));
+        time_angular_flux_function = std::move(param_angular_flux_function);
+      }
       break;
     }
     default:
     {
       CheckForbiddenParams(params, boundary_name, boundary_type, "function");
+      CheckForbiddenParams(params, boundary_name, boundary_type, "time_function");
       CheckForbiddenParams(params, boundary_name, boundary_type, "group_strength");
+      CheckForbiddenParams(params, boundary_name, boundary_type, "start_time");
+      CheckForbiddenParams(params, boundary_name, boundary_type, "end_time");
     }
   }
 }

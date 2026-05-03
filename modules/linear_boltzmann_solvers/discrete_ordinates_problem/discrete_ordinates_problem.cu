@@ -29,9 +29,11 @@ DiscreteOrdinatesProblem::InitializeBoundaryCarrier()
 }
 
 void
-DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id, bool host_to_device)
+DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id,
+                                                     bool host_to_device,
+                                                     bool force)
 {
-  if (not has_reflecting_boundaries_)
+  if (not has_reflecting_boundaries_ and not force)
     return;
   if (host_to_device)
     boundary_carrier_->UploadToDevice(groupset_id);

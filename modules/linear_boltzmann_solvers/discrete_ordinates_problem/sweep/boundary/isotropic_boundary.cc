@@ -11,17 +11,37 @@ namespace opensn
 
 IsotropicBoundary::IsotropicBoundary(BoundaryBank& bank,
                                      const std::vector<LBSGroupset>& groupsets,
-                                     std::vector<double>& boundary_flux)
-  : SweepBoundary(bank, LBSBoundaryType::ISOTROPIC)
+                                     const std::vector<double>& boundary_flux,
+                                     double start_time,
+                                     double end_time)
+  : SweepBoundary(bank, LBSBoundaryType::ISOTROPIC),
+    active_boundary_flux_(boundary_flux),
+    start_time_(start_time),
+    end_time_(end_time)
 {
   for (const auto& groupset : groupsets)
   {
     offset_[groupset.id] = bank_[groupset.id].counter++;
-    double* flux = bank_.ExtendBoundaryFlux(groupset.id, groupset.GetNumGroups());
-    for (unsigned int g = 0; g < groupset.GetNumGroups(); ++g)
+    bank_.ExtendBoundaryFlux(groupset.id, groupset.GetNumGroups());
+  }
+  IsotropicBoundary::UpdateBoundaryFlux(groupsets);
+}
+
+void
+IsotropicBoundary::UpdateBoundaryFlux(const std::vector<LBSGroupset>& groupsets)
+{
+  bool is_active = (evaluation_time_ >= start_time_ and evaluation_time_ <= end_time_);
+  if (current_state_ != is_active)
+  {
+    for (const auto& groupset : groupsets)
     {
-      flux[g] = boundary_flux[groupset.first_group + g];
+      double* boundary_flux = GetBoundaryFlux(groupset.id);
+      for (unsigned int g = 0; g < groupset.GetNumGroups(); ++g)
+      {
+        boundary_flux[g] = ((is_active) ? active_boundary_flux_[groupset.first_group + g] : 0.0);
+      }
     }
+    current_state_ = is_active;
   }
 }
 

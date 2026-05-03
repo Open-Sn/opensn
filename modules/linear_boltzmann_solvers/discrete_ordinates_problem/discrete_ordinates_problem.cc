@@ -157,11 +157,23 @@ DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
                                            {},
                                            "Required only if \"type\" is \"isotropic\". An array "
                                            "of isotropic strength per group");
+  params.AddOptionalParameter("start_time",
+                              -std::numeric_limits<double>::infinity(),
+                              "Time at which an isotropic boundary condition becomes active.");
+  params.AddOptionalParameter("end_time",
+                              std::numeric_limits<double>::infinity(),
+                              "Time at which an isotropic boundary condition becomes inactive.");
   params.AddOptionalParameter<std::shared_ptr<AngularFluxFunction>>(
     "function",
     std::shared_ptr<AngularFluxFunction>{},
     "Angular flux function to be used for arbitrary boundary conditions. The function takes an "
     "energy group index and a direction index and returns the incoming angular flux value.");
+  params.AddOptionalParameter<std::shared_ptr<AngularFluxTimeFunction>>(
+    "time_function",
+    std::shared_ptr<AngularFluxTimeFunction>{},
+    "Time-dependent angular flux function to be used for arbitrary boundary conditions. The "
+    "function takes an energy group index, a direction index, and time, and returns the incoming "
+    "angular flux value.");
   params.ConstrainParameterRange(
     "type", AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary"}));
 
@@ -398,7 +410,7 @@ DiscreteOrdinatesProblem::SetBoundaryOptions(const InputParameters& params)
     throw std::runtime_error("Boundary name \"" + boundary_name + "\" not found in mesh.");
   }
   const auto bid = it->second;
-  boundary_definitions_.emplace(bid, BoundaryDefinition(params, GetNumGroups()));
+  boundary_definitions_[bid] = BoundaryDefinition(params, GetNumGroups());
 }
 
 void
@@ -829,6 +841,25 @@ DiscreteOrdinatesProblem::SetSaveAngularFlux(bool save)
 }
 
 void
+DiscreteOrdinatesProblem::SetTime(double time)
+{
+  LBSProblem::SetTime(time);
+  if (has_time_dependent_boundaries_)
+  {
+    for (const auto& [_, boundary] : sweep_boundaries_)
+    {
+      boundary->SetEvaluationTime(time_);
+      boundary->UpdateBoundaryFlux(groupsets_);
+    }
+    if (use_gpus_)
+    {
+      for (const auto& groupset : groupsets_)
+        TransferDeviceBoundaryData(groupset.id, true, true);
+    }
+  }
+}
+
+void
 DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
 {
   InitializeSolverSchemes();
@@ -937,14 +968,19 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
       }
       case LBSBoundaryType::ISOTROPIC:
       {
-        sweep_boundaries_[bid] =
-          std::make_shared<IsotropicBoundary>(boundary_bank_, groupsets_, bndry_def.group_strength);
+        sweep_boundaries_[bid] = std::make_shared<IsotropicBoundary>(boundary_bank_,
+                                                                     groupsets_,
+                                                                     bndry_def.group_strength,
+                                                                     bndry_def.start_time,
+                                                                     bndry_def.end_time);
+        has_time_dependent_boundaries_ = true;
         break;
       }
       case LBSBoundaryType::ARBITRARY:
       {
         sweep_boundaries_[bid] = std::make_shared<ArbitraryBoundary>(
-          boundary_bank_, groupsets_, bndry_def.angular_flux_function);
+          boundary_bank_, groupsets_, bndry_def.time_angular_flux_function);
+        has_time_dependent_boundaries_ = true;
         break;
       }
       case LBSBoundaryType::REFLECTING:
@@ -1448,7 +1484,9 @@ DiscreteOrdinatesProblem::InitializeBoundaryCarrier()
 }
 
 void
-DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id, bool host_to_device)
+DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id,
+                                                     bool host_to_device,
+                                                     bool force)
 {
 }
 

@@ -23,7 +23,7 @@ class ArbitraryBoundary : public SweepBoundary
 public:
   ArbitraryBoundary(BoundaryBank& bank,
                     const std::vector<LBSGroupset>& groupsets,
-                    std::shared_ptr<AngularFluxFunction> angular_flux_function);
+                    std::shared_ptr<AngularFluxTimeFunction> angular_flux_function);
 
   double* PsiIncoming(std::uint32_t cell_local_id,
                       unsigned int face_num,
@@ -32,7 +32,7 @@ public:
                       int groupset_id,
                       unsigned int group_idx) override;
 
-  void UpdateBoundaryFlux(const LBSGroupset& groupset) override;
+  void UpdateBoundaryFlux(const std::vector<LBSGroupset>& groupsets) override;
 
   void InitializeAngleDependent(const std::vector<LBSGroupset>& groupsets) override;
   std::uint64_t
@@ -40,7 +40,7 @@ public:
 
 private:
   /// Function that dictates the angular flux.
-  std::shared_ptr<AngularFluxFunction> angular_flux_function_;
+  std::shared_ptr<AngularFluxTimeFunction> angular_flux_function_;
 
   /// Additional data specific to arbitrary boundary for each groupset.
   struct ExtraData

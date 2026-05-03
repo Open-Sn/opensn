@@ -63,6 +63,8 @@ public:
 
   void ResetMode(SweepChunkMode target_mode);
 
+  void SetTime(double time) override;
+
   /// Rebuild WGS/AGS solver schemes (e.g., after changing sweep chunk mode).
   void ReinitializeSolverSchemes();
 
@@ -145,8 +147,9 @@ public:
    * Transfer data in boundary to device or vice-versa.
    * \param groupset_id Groupset ID.
    * \param host_to_device Flag indicating the direction of transfer.
+   * \param force Force update.
    */
-  void TransferDeviceBoundaryData(int groupset_id, bool host_to_device);
+  void TransferDeviceBoundaryData(int groupset_id, bool host_to_device, bool force = false);
 
 protected:
   /// Factory-only constructor.
@@ -215,6 +218,7 @@ protected:
   std::shared_ptr<BoundaryCarrier> boundary_carrier_ = nullptr;
   std::optional<ParameterBlock> boundary_conditions_block_;
   bool has_reflecting_boundaries_ = false;
+  bool has_time_dependent_boundaries_ = false;
 
   /// Max level size.
   std::size_t max_level_size_ = 0;

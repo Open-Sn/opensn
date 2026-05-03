@@ -180,21 +180,19 @@ public:
     return data.boundary_flux.data() + group_num;
   }
 
-  virtual void UpdateBoundaryFlux(const LBSGroupset& groupset) {}
+  virtual void UpdateBoundaryFlux(const std::vector<LBSGroupset>& groupsets) {}
 
 protected:
+  /// Reference to the boundary bank (contiguous memory allocated for all boundaries).
   BoundaryBank& bank_;
-
   /**
    * Offset used to access boundary flux data for each groupset.
    * Boundary fluxes for a given boundary start at offset * groupset.GetNumGroups().
    */
   std::vector<std::uint64_t> offset_;
-
-private:
   /// Boundary type.
   LBSBoundaryType type_;
-  /// Time value passed to boundary functions
+  /// Time value passed to boundary functions.
   double evaluation_time_ = 0.0;
 };
 
