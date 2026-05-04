@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # Load cross-section data for a 1-group fissile material
     num_groups = 1
     xs_simple_fissile = MultiGroupXS()
-    xs_simple_fissile.LoadFromOpenSn("simple_fissile.xs")
+    xs_simple_fissile.LoadFromOpenSn("../../../../assets/xs/simple_fissile.xs")
 
     # Angle information
     n_angles = 32  # Number of discrete angles

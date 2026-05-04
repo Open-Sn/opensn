@@ -71,10 +71,10 @@ if __name__ == "__main__":
     # Add cross sections to materials
     num_groups = 10
     xs_1 = MultiGroupXS()
-    xs_1.LoadFromOpenSn("response_2d_3_mat1.xs")
+    xs_1.LoadFromOpenSn("../../../../assets/xs/response_2d_3_mat1.xs")
 
     xs_2 = MultiGroupXS()
-    xs_2.LoadFromOpenSn("response_2d_3_mat2.xs")
+    xs_2.LoadFromOpenSn("../../../../assets/xs/response_2d_3_mat2.xs")
 
     # Create point source (multigroup)
     src = [0.0] * num_groups

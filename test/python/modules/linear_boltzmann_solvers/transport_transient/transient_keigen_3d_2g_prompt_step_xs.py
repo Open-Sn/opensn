@@ -36,10 +36,16 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
 
     xs_crit = MultiGroupXS()
-    xs_crit.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs2g_prompt_crit.cxs"))
+    xs_crit.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs2g_prompt_crit.cxs")
+    )
 
     xs_super = MultiGroupXS()
-    xs_super.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), "xs2g_prompt_super.cxs"))
+    xs_super.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs2g_prompt_super.cxs")
+    )
 
     pquad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)
 

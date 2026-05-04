@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     # Materials
     xs_uo2 = MultiGroupXS()
-    xs_uo2.LoadFromOpenMC("uo2.h5", "set1", 294.0)
+    xs_uo2.LoadFromOpenMC("../../../../assets/xs/uo2.h5", "set1", 294.0)
 
     # Solver
     num_groups = 172

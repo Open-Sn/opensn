@@ -40,7 +40,9 @@ if __name__ == "__main__":
 
     xs_water = MultiGroupXS()
     xs_water.LoadFromOpenMC(
-        os.path.join(os.path.dirname(__file__), "xs_water.h5"), "set1", 294
+        os.path.join(os.path.dirname(__file__), "../../../../assets/xs/xs_water.h5"),
+        "set1",
+        294
     )
     num_groups = xs_water.num_groups
 

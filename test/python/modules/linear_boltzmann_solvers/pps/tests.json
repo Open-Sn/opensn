@@ -22,5 +22,17 @@
         "error_code": 0
       }
     ]
+  },
+  {
+    "file": "transport_2d_1_poly.py",
+    "comment": "Computing surface post-processors on 2D domain",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
   }
 ]

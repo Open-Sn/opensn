@@ -41,8 +41,9 @@ if __name__ == "__main__":
     grid.SetOrthogonalBoundaries()
 
     xs_diag = MultiGroupXS()
-    xs_diag.LoadFromOpenSn(
-        os.path.join(os.path.dirname(__file__), "simple_2g_downscatter_td.cxs")
+    xs_diag.LoadFromOpenSn(os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/simple_2g_downscatter_td.cxs")
     )
     num_groups = xs_diag.num_groups
 
