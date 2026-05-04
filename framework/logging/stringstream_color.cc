@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/logging/stringstream_color.h"
-#include "framework/runtime.h"
 
 namespace opensn
 {
@@ -10,8 +9,6 @@ namespace opensn
 std::string
 StringStreamColor(StringStreamColorCode code)
 {
-  if (suppress_color)
-    return {};
   return "\033[" + std::to_string(static_cast<int>(code)) + "m";
 }
 

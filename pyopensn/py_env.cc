@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_env.h"
+#include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
 #include "mpi4py/mpi4py.h"
@@ -40,7 +41,7 @@ PyEnv::PyEnv()
   ::PetscOptionsSetValue(NULL, "-options_left", "0");
   ::PetscOptionsInsertString(nullptr, "-no_signal_handler");
   ::PetscInitialize(nullptr, nullptr, nullptr, nullptr);
-  opensn::suppress_color = true;
+  log.SetColorEnabled(false);
   Initialize();
 }
 

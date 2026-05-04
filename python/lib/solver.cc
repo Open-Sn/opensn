@@ -3,6 +3,7 @@
 
 #include "python/lib/py_wrappers.h"
 #include <pybind11/functional.h>
+#include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
