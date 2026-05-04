@@ -53,18 +53,27 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
     gpu_kernel::RoundUp(static_cast<unsigned int>(args.flud_data.stride_size));
   unsigned int block_size_x = std::min(stride_size, gpu_kernel::threshold);
   unsigned int block_size_y = gpu_kernel::threshold / block_size_x;
-  ::dim3 block_size{block_size_x, block_size_y};
+  crb::Dim3 block_size(block_size_x, block_size_y);
   unsigned int grid_size_x = (stride_size + gpu_kernel::threshold - 1) / gpu_kernel::threshold;
   for (std::uint32_t level = 0; level < levelized_spls.size(); ++level)
   {
     // compute grid size
     std::size_t level_size = levelized_spls[level].size();
     unsigned int grid_size_y = (level_size + block_size_y - 1) / block_size_y;
-    ::dim3 grid_size{grid_size_x, grid_size_y};
+    crb::Dim3 grid_size(grid_size_x, grid_size_y);
     // perform the sweep on device
     const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
+#if defined(__NVCC__) || defined(__HIPCC__)
     gpu_kernel::SweepKernel<gpu_kernel::SweepType::AAH><<<grid_size, block_size, 0, stream>>>(
       args, level_data, static_cast<unsigned int>(level_size), saved_psi);
+#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+    stream.parallel_for(sycl::nd_range<3>(grid_size * block_size, block_size),
+                        [=](sycl::nd_item<3> work_index)
+                        {
+                          gpu_kernel::SweepKernel<gpu_kernel::SweepType::AAH>(
+                            args, level_data, static_cast<unsigned int>(level_size), saved_psi);
+                        });
+#endif
   }
 }
 

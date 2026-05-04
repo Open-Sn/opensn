@@ -25,8 +25,8 @@ CBCD_AngleSet::CBCD_AngleSet(size_t id,
   : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds)),
     async_comm_(id, *fluds, comm_set),
-    stream_(crb::Stream::create()),
-    device_angle_indices_(angles_.size(), stream_)
+    stream_(),
+    device_angle_indices_(angles_.size())
 {
   crb::MemoryPinningManager angle_indices_pinner_(angles_);
   crb::copy(device_angle_indices_, angle_indices_pinner_, angles_.size(), 0, 0, stream_);
@@ -38,7 +38,6 @@ CBCD_AngleSet::CBCD_AngleSet(size_t id,
 
 CBCD_AngleSet::~CBCD_AngleSet()
 {
-  device_angle_indices_.async_free(stream_);
 }
 
 AsynchronousCommunicator*

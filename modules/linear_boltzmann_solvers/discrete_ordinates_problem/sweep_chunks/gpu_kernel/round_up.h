@@ -14,6 +14,8 @@ namespace opensn::gpu_kernel
 constexpr unsigned int threshold = 128;
 #elif defined(__HIPCC__)
 constexpr unsigned int threshold = 64;
+#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+constexpr unsigned int threshold = 32;
 #endif
 
 /// Round up a number to a multiple of the divisor, assuming that the divisor is a power of 2.

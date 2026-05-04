@@ -16,7 +16,7 @@ namespace opensn::gpu_kernel
 
 /// Compute the sweep matrix from gradient, mass, and the source term
 template <std::size_t ndofs, SweepType t>
-__device__ void
+__CRB_DEVICE_FUNC__ void
 ComputeGMS(double* sweep_matrix,
            double* psi,
            double* s,
@@ -61,7 +61,7 @@ ComputeGMS(double* sweep_matrix,
 
 /// Compute the sweep matrix from surface integral
 template <std::size_t ndofs, SweepType t>
-__device__ void
+__CRB_DEVICE_FUNC__ void
 ComputeSurfaceIntegral(double* sweep_matrix,
                        double* psi,
                        CellView& cell,
@@ -108,7 +108,7 @@ ComputeSurfaceIntegral(double* sweep_matrix,
 
 /// Gaussian elimination
 template <std::size_t ndofs>
-__device__ void
+__CRB_DEVICE_FUNC__ void
 GaussianElimination(double* sweep_matrix, double* psi)
 {
   // forward elimination
@@ -152,7 +152,7 @@ GaussianElimination(double* sweep_matrix, double* psi)
 
 /// Record angular flux to downwind and compute outflow for boundary faces.
 template <SweepType t>
-__device__ inline void
+__CRB_DEVICE_FUNC__ void
 WritePsiToFludsAndOutflow(double* psi,
                           CellView& cell,
                           DirectionView& direction,
@@ -198,7 +198,7 @@ WritePsiToFludsAndOutflow(double* psi,
 
 /// Compute the scalar flux.
 template <std::size_t ndofs, SweepType t>
-__device__ void
+__CRB_DEVICE_FUNC__ void
 ComputePhi(double* psi,
            CellView& cell,
            DirectionView& direction,
@@ -219,7 +219,7 @@ ComputePhi(double* psi,
 
 /// Store the angular flux
 template <std::size_t ndofs>
-__device__ void
+__CRB_DEVICE_FUNC__ void
 SaveAngularFlux(const double* psi,
                 double* saved_psi,
                 CellView& cell,
@@ -236,7 +236,7 @@ SaveAngularFlux(const double* psi,
 
 /// Template device function performing the sweep
 template <std::size_t ndofs, SweepType t>
-__device__ void
+__CRB_DEVICE_FUNC__ void
 Sweep(const Arguments<t>& args,
       CellView& cell,
       DirectionView& direction,

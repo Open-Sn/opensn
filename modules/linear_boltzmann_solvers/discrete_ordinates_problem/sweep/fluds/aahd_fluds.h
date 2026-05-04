@@ -24,11 +24,6 @@ struct AAHD_Bank
   AAHD_Bank() = default;
   /// Construct and allocate memory.
   AAHD_Bank(std::size_t size) : host_storage(size, 0.0), device_storage(size) {}
-  /// Construct and allocate memory asynchronously.
-  AAHD_Bank(std::size_t size, crb::Stream& stream)
-    : host_storage(size, 0.0), device_storage(size, stream)
-  {
-  }
 
   AAHD_Bank(const AAHD_Bank& other);
   AAHD_Bank& operator=(const AAHD_Bank& other);
@@ -37,8 +32,6 @@ struct AAHD_Bank
 
   /// Clear host and device storage.
   void Clear();
-  /// Asynchronously clear of device storage.
-  void Clear(crb::Stream& stream);
   /// Upload data from host to device.
   void UploadToDevice();
   /// Upload data from host to device asynchronously.
@@ -83,11 +76,6 @@ struct AAHD_NonLocalBank : public AAHD_Bank
   AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
                     const std::vector<std::size_t>& loc_offsets,
                     std::size_t stride);
-  /// Asynchronous member constructor.
-  AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
-                    const std::vector<std::size_t>& loc_offsets,
-                    std::size_t stride,
-                    crb::Stream& stream);
 
   /// Update views.
   void UpdateViews(std::vector<std::span<double>>& views);

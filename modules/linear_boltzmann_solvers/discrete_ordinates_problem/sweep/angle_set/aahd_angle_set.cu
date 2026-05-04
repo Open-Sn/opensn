@@ -24,7 +24,7 @@ AAHD_AngleSet::AAHD_AngleSet(size_t id,
     async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set),
     device_angle_indices_(angles_.size())
 {
-  stream_ = crb::Stream::create();
+  stream_ = crb::Stream();
   std::dynamic_pointer_cast<AAHD_FLUDS>(fluds_)->GetStream() = stream_;
   crb::MemoryPinningManager angle_indices_pinner_(angles_);
   crb::copy(device_angle_indices_, angle_indices_pinner_, angles_.size());
