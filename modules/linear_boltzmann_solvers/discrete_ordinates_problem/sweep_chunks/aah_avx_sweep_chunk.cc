@@ -6,7 +6,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/error.h"
-#include "caliper/cali.h"
 #include <algorithm>
 #include <array>
 #include <vector>
@@ -223,8 +222,6 @@ void
 AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 {
   static_assert(NumNodes >= 1 and NumNodes <= 8);
-
-  CALI_CXX_MARK_SCOPE("AAH_Sweep_FixedN");
 
   const auto& groupset = data.groupset;
   const auto gs_size = groupset.GetNumGroups();

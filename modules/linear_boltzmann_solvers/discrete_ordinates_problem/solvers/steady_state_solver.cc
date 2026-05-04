@@ -8,6 +8,7 @@
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
 #include "framework/utils/error.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <memory>
@@ -47,7 +48,9 @@ SteadyStateSourceSolver::SteadyStateSourceSolver(const InputParameters& params)
 void
 SteadyStateSourceSolver::Initialize()
 {
-  CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Initialize");
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_steady_state("SteadyState", CaliperSteadyStateScopeDepth());
+  CALI_CXX_MARK_SCOPE("Initialize");
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
 
   OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
@@ -62,7 +65,8 @@ SteadyStateSourceSolver::Initialize()
 void
 SteadyStateSourceSolver::Execute()
 {
-  CALI_CXX_MARK_SCOPE("SteadyStateSourceSolver::Execute");
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_steady_state("SteadyState", CaliperSteadyStateScopeDepth());
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
 
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");

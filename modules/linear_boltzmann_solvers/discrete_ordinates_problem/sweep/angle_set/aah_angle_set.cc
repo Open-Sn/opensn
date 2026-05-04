@@ -5,7 +5,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -32,8 +31,6 @@ AAH_AngleSet::InitializeDelayedUpstreamData()
 AngleSetStatus
 AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission)
 {
-  CALI_CXX_MARK_SCOPE("AAH_AngleSet::AngleSetAdvance");
-
   if (executed_)
   {
     if (not async_comm_.DoneSending())

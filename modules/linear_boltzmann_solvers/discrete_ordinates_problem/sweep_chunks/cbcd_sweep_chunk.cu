@@ -6,7 +6,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/round_up.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
-#include "caliper/cali.h"
 #include <algorithm>
 
 namespace opensn
@@ -49,8 +48,6 @@ CBCDSweepChunk::CBCDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
 void
 CBCDSweepChunk::Sweep(const std::vector<std::uint32_t>& cell_local_ids, size_t angle_set_id)
 {
-  CALI_CXX_MARK_SCOPE("CBCDSweepChunk::Sweep");
-
   auto* fluds = fluds_list_[angle_set_id];
   auto* device_saved_psi = fluds->GetSavedAngularFluxDevicePointer();
   auto& stream = streams_list_[angle_set_id];

@@ -4,7 +4,6 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 #include <cassert>
 
 namespace opensn
@@ -13,7 +12,6 @@ namespace opensn
 double
 ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
-  CALI_CXX_MARK_SCOPE("ComputeFissionProduction");
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
@@ -74,7 +72,6 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 double
 ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
-  CALI_CXX_MARK_SCOPE("ComputeFissionRate");
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
@@ -122,7 +119,6 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
 void
 ComputePrecursors(LBSProblem& lbs_problem)
 {
-  CALI_CXX_MARK_SCOPE("ComputePrecursors");
 
   const auto J = lbs_problem.GetMaxPrecursorsPerMaterial();
 

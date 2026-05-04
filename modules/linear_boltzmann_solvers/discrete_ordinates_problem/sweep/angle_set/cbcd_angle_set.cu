@@ -10,7 +10,6 @@
 #include "framework/data_types/range.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 
 namespace opensn
 {

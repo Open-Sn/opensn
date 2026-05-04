@@ -6,7 +6,6 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/strong_components.hpp>
 #include <algorithm>
@@ -334,7 +333,6 @@ SPDS::RemoveCyclicDependencies(Graph& g)
 int
 SPDS::MapLocJToPrelocI(int locJ) const
 {
-  CALI_CXX_MARK_SCOPE("SPDS::MapLocJToPrelocI");
 
   for (int i = 0; i < location_dependencies_.size(); ++i)
   {
@@ -359,7 +357,6 @@ SPDS::MapLocJToPrelocI(int locJ) const
 int
 SPDS::MapLocJToDeplocI(int locJ) const
 {
-  CALI_CXX_MARK_SCOPE("SPDS::MapLocJToDeploc");
 
   for (int i = 0; i < location_successors_.size(); ++i)
   {
@@ -380,7 +377,6 @@ SPDS::PopulateCellRelationships(
   std::set<int>& location_successors,
   std::vector<std::set<std::pair<std::uint32_t, double>>>& cell_successors)
 {
-  CALI_CXX_MARK_SCOPE("SPDS::PopulateCellRelationships");
 
   constexpr double tolerance = 1.0e-16;
 

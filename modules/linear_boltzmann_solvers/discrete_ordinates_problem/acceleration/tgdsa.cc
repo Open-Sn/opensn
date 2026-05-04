@@ -12,10 +12,10 @@ namespace opensn
 void
 TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_SCOPE("TGDSA::Init");
-
   if (groupset.apply_tgdsa)
   {
+    CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
+
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& uk_man = sdm.UNITARY_UNKNOWN_MANAGER;
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
@@ -81,7 +81,6 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                               const std::vector<double>& phi_in,
                               std::vector<double>& delta_phi_local)
 {
-  CALI_CXX_MARK_SCOPE("TGDSA::AssembleDeltaPhiVector");
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
@@ -128,7 +127,6 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                  const std::vector<double>& delta_phi_local,
                                  std::vector<double>& ref_phi_new)
 {
-  CALI_CXX_MARK_SCOPE("TGDSA::DisassembleDeltaPhiVector");
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
@@ -163,7 +161,6 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 void
 TGDSA::CleanUp(LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_SCOPE("TGDSA::CleanUp");
 
   if (groupset.apply_tgdsa)
     groupset.tgdsa_solver = nullptr;

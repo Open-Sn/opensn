@@ -12,8 +12,10 @@
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/logging/log.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
+#include "caliper/cali.h"
 #include <memory>
 
 namespace opensn
@@ -39,6 +41,9 @@ ClassicRichardson::SyncLaggedStateToLatestIterate(WGSContext& gs_context)
 void
 ClassicRichardson::Solve()
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_wgs("WGS", CaliperWGSScopeDepth());
+
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   gs_context_ptr->PreSetupCallback();
   gs_context_ptr->PreSolveCallback();
@@ -54,17 +59,28 @@ ClassicRichardson::Solve()
   double last_pw_phi_change = 0.0;
   bool converged = false;
   unsigned int num_iterations = 0;
+  CALI_CXX_MARK_LOOP_BEGIN(wgs_iteration, "WGSIteration");
   for (unsigned int k = 0; k < groupset.max_iterations; ++k)
   {
+    CALI_CXX_MARK_LOOP_ITERATION(wgs_iteration, k);
+
     num_iterations = k + 1;
     do_problem.SetQMomentsFrom(saved_q_moments_local_);
-    gs_context_ptr->set_source_function(
-      groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
-    gs_context_ptr->ApplyInverseTransportOperator(scope);
+    {
+      CALI_CXX_MARK_SCOPE("Source");
+      gs_context_ptr->set_source_function(
+        groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+    }
+    {
+      CALI_CXX_MARK_SCOPE("Sweep");
+      gs_context_ptr->ApplyInverseTransportOperator(scope);
+    }
 
     // Apply WGDSA
     if (groupset.apply_wgdsa)
     {
+      CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
+
       std::vector<double> delta_phi;
       WGDSA::AssembleDeltaPhiVector(
         do_problem, groupset, do_problem.GetPhiNewLocal() - do_problem.GetPhiOldLocal(), delta_phi);
@@ -77,6 +93,8 @@ ClassicRichardson::Solve()
     // Apply TGDSA
     if (groupset.apply_tgdsa)
     {
+      CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
+
       std::vector<double> delta_phi;
       TGDSA::AssembleDeltaPhiVector(
         do_problem, groupset, do_problem.GetPhiNewLocal() - do_problem.GetPhiOldLocal(), delta_phi);
@@ -124,6 +142,7 @@ ClassicRichardson::Solve()
       break;
     }
   }
+  CALI_CXX_MARK_LOOP_END(wgs_iteration);
 
   gs_context_ptr->last_solve.num_iterations = num_iterations;
   gs_context_ptr->last_solve.status = IterationStatusFromSolve(converged, true);
@@ -131,7 +150,8 @@ ClassicRichardson::Solve()
   gs_context_ptr->last_solve.metric_name = "phi_change";
   gs_context_ptr->last_solve.metric_value = last_pw_phi_change;
 
-  if (verbose_ and not converged)
+  if (verbose_ and (gs_context_ptr->last_solve.status == IterationStatus::FAILED or
+                    gs_context_ptr->last_solve.status == IterationStatus::LIMIT))
     log.Log() << program_timer.GetTimeString() << " "
               << FormatIterationSummary("WGS groups [" + std::to_string(groupset.first_group) +
                                           "-" + std::to_string(groupset.last_group) + "]",

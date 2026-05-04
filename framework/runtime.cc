@@ -32,7 +32,7 @@ Initialize()
     cali_mgr.start();
   }
 
-  CALI_MARK_BEGIN(opensn::program.c_str());
+  CALI_MARK_PHASE_BEGIN(opensn::program.c_str());
 
   // Disable internal HDF error reporting
   H5Eset_auto2(H5E_DEFAULT, nullptr, nullptr);
@@ -50,7 +50,7 @@ Finalize()
 
   opensn::mpi_comm.barrier();
 
-  CALI_MARK_END(opensn::program.c_str());
+  CALI_MARK_PHASE_END(opensn::program.c_str());
 }
 
 std::string

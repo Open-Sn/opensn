@@ -6,7 +6,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_kernels.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "caliper/cali.h"
 #include <stdexcept>
 
 namespace opensn
@@ -83,8 +82,6 @@ AAHSweepChunkTD::Sweep(AngleSet& angle_set)
 void
 AAHSweepChunkTD::Sweep_Generic(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("AAHSweepChunkTD::Sweep");
-
   AAHSweepData data{grid_,
                     discretization_,
                     unit_cell_matrices_,
@@ -113,8 +110,6 @@ template <int NumNodes>
 void
 AAHSweepChunkTD::Sweep_FixedN(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("AAHSweepChunkTD::Sweep_FixedN");
-
   AAHSweepData data{grid_,
                     discretization_,
                     unit_cell_matrices_,

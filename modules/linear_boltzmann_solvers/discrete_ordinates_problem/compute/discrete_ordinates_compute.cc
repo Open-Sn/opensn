@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/utils/caliper_scopes.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <cmath>
@@ -61,8 +62,6 @@ GetInflow(const Cell& cell,
 BalanceTable
 ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 {
-  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ComputeBalanceTable");
-
   opensn::mpi_comm.barrier();
 
   const auto& grid_ = do_problem.GetGrid();
@@ -310,7 +309,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 void
 ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 {
-  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ComputeBalance");
+  CaliperPhaseScope cali_post_phase("Post", CaliperPostPhaseDepth());
+  CALI_CXX_MARK_SCOPE("Balance");
 
   const auto table = ComputeBalanceTable(do_problem, scaling_factor);
   const auto time_dependent = do_problem.IsTimeDependent();
@@ -351,7 +351,6 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
                const unsigned int groupset_id,
                const uint64_t boundary_id)
 {
-  CALI_CXX_MARK_SCOPE("ComputeLeakage");
 
   OpenSnInvalidArgumentIf(groupset_id >= do_problem.GetNumGroupsets(), "Invalid groupset id.");
 
@@ -403,7 +402,6 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
 std::map<uint64_t, std::vector<double>>
 ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>& boundary_ids)
 {
-  CALI_CXX_MARK_SCOPE("ComputeLeakage");
 
   const auto& grid = do_problem.GetGrid();
   const auto uniq = grid->GetUniqueBoundaryIDs();

@@ -4,7 +4,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
-#include "caliper/cali.h"
 #include <algorithm>
 
 namespace opensn
@@ -86,8 +85,6 @@ AAHD_AngleSet::IsReady()
 AngleSetStatus
 AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission)
 {
-  CALI_CXX_MARK_SCOPE("AAHD_AngleSet::AngleSetAdvance");
-
   if (executed_)
     return AngleSetStatus::FINISHED;
 

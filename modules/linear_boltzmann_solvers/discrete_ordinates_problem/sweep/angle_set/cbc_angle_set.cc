@@ -9,7 +9,6 @@
 #include "framework/data_types/range.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -36,8 +35,6 @@ CBC_AngleSet::GetCommunicator()
 AngleSetStatus
 CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission)
 {
-  CALI_CXX_MARK_SCOPE("CBC_AngleSet::AngleSetAdvance");
-
   if (executed_)
     return AngleSetStatus::FINISHED;
 

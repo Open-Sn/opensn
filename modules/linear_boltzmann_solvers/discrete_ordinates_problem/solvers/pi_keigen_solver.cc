@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/logging/log.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/utils/error.h"
@@ -15,6 +16,7 @@
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include "caliper/cali.h"
 #include <cmath>
 #include <iomanip>
 
@@ -67,6 +69,10 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
 void
 PowerIterationKEigenSolver::Initialize()
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_pi("PI", CaliperPIScopeDepth());
+  CALI_CXX_MARK_SCOPE("Initialize");
+
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
 
   OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
@@ -104,19 +110,28 @@ PowerIterationKEigenSolver::Initialize()
   F_prev_ = ComputeFissionProduction(*do_problem_, phi_old_local_);
 
   if (acceleration_)
+  {
+    CALI_CXX_MARK_SCOPE("Acceleration");
     acceleration_->Initialize(*this);
+  }
   initialized_ = true;
 }
 
 void
 PowerIterationKEigenSolver::Execute()
 {
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_pi("PI", CaliperPIScopeDepth());
+
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
 
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   if (acceleration_)
+  {
+    CALI_CXX_MARK_SCOPE("Acceleration");
     acceleration_->PreExecute();
+  }
 
   const auto& options = do_problem_->GetOptions();
   double k_eff_prev = 1.0;
@@ -125,17 +140,26 @@ PowerIterationKEigenSolver::Execute()
   // Start power iterations
   unsigned int nit = 0;
   bool converged = false;
+  CALI_CXX_MARK_LOOP_BEGIN(pi_iteration, "PIIteration");
   while (nit < max_iters_)
   {
+    CALI_CXX_MARK_LOOP_ITERATION(pi_iteration, nit);
+
     OpenSnLogicalErrorIf(k_eff_ <= 0.0 or not std::isfinite(k_eff_),
                          GetName() + ": invalid k_eff encountered: " + std::to_string(k_eff_));
 
     // Set the fission source
-    SetLBSFissionSource(phi_old_local_, false);
+    {
+      CALI_CXX_MARK_SCOPE("Source");
+      SetLBSFissionSource(phi_old_local_, false);
+    }
     do_problem_->ScaleQMoments(1.0 / k_eff_);
 
     if (acceleration_)
+    {
+      CALI_CXX_MARK_SCOPE("Acceleration");
       acceleration_->PrePowerIteration();
+    }
 
     // This solves the inners for transport
     auto ags_solver = do_problem_->GetAGSSolver();
@@ -145,6 +169,7 @@ PowerIterationKEigenSolver::Execute()
     // Get k-eigenvalue from the acceleration method
     if (acceleration_)
     {
+      CALI_CXX_MARK_SCOPE("Acceleration");
       k_eff_ = acceleration_->PostPowerIteration();
     }
     // Recompute k-eigenvalue
@@ -207,6 +232,7 @@ PowerIterationKEigenSolver::Execute()
     if (converged)
       break;
   } // for k iterations
+  CALI_CXX_MARK_LOOP_END(pi_iteration);
 
   // If restarts are enabled, always write a restart dump upon convergence or
   // when we reach the iteration limit

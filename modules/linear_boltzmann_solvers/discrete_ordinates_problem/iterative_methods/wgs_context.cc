@@ -31,7 +31,7 @@ WGSContext::WGSContext(DiscreteOrdinatesProblem& do_problem,
 int
 WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
 {
-  CALI_CXX_MARK_SCOPE("WGSContext::MatrixAction");
+  CALI_CXX_MARK_SCOPE("MatrixAction");
 
   WGSContext* gs_context_ptr = nullptr;
   OpenSnPETScCall(MatShellGetContext(matrix, static_cast<void*>(&gs_context_ptr)));
@@ -42,8 +42,11 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
 
   // Setting the source using updated phi_old
   do_problem.ZeroQMoments();
-  set_source_function(
-    groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), lhs_src_scope);
+  {
+    CALI_CXX_MARK_SCOPE("Source");
+    set_source_function(
+      groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), lhs_src_scope);
+  }
 
   // Disable RHS time term in Krylov operator
   if (auto* sweep_ctx = dynamic_cast<SweepWGSContext*>(gs_context_ptr))
@@ -53,7 +56,10 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   }
 
   // Apply transport operator
-  gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope);
+  {
+    CALI_CXX_MARK_SCOPE("Sweep");
+    gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope);
+  }
 
   // Copy local into operating vector
   // We copy the STL data to the operating vector

@@ -19,6 +19,8 @@ public:
 
   ~NLKEigenvalueAGSSolver() override = default;
 
+  void Solve() override;
+
 protected:
   void PreSetupCallback() override;
   void SetMonitor() override;

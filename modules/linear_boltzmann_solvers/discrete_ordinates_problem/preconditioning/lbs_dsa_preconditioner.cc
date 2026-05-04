@@ -9,6 +9,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
+#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -35,6 +36,8 @@ WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   // Apply WGDSA
   if (groupset.apply_wgdsa)
   {
+    CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
+
     std::vector<double> delta_phi_local;
     WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
 
@@ -46,6 +49,8 @@ WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   // Apply TGDSA
   if (groupset.apply_tgdsa)
   {
+    CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
+
     std::vector<double> delta_phi_local;
     TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
 
@@ -77,6 +82,8 @@ WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec p
   // Apply WGDSA
   if (groupset.apply_wgdsa)
   {
+    CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
+
     std::vector<double> delta_phi_local;
     WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
 
@@ -88,6 +95,8 @@ WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec p
   // Apply TGDSA
   if (groupset.apply_tgdsa)
   {
+    CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
+
     std::vector<double> delta_phi_local;
     TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
 

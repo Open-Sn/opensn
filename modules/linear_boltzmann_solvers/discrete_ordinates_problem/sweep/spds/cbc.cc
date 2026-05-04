@@ -6,7 +6,6 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
-#include "caliper/cali.h"
 #include <boost/graph/topological_sort.hpp>
 
 namespace opensn
@@ -17,7 +16,6 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
                    bool allow_cycles)
   : SPDS(omega, grid)
 {
-  CALI_CXX_MARK_SCOPE("CBC_SPDS::CBC_SPDS");
 
   size_t num_loc_cells = grid->local_cells.size();
 

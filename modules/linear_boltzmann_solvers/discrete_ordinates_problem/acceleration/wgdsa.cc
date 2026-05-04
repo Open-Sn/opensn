@@ -14,10 +14,10 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
             LBSGroupset& groupset,
             bool vaccum_bcs_are_dirichlet)
 {
-  CALI_CXX_MARK_SCOPE("WGDSA::Init");
-
   if (groupset.apply_wgdsa)
   {
+    CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
+
     // Make UnknownManager
     const auto num_gs_groups = groupset.GetNumGroups();
     opensn::UnknownManager uk_man;
@@ -66,7 +66,6 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                               const std::vector<double>& phi_in,
                               std::vector<double>& delta_phi_local)
 {
-  CALI_CXX_MARK_SCOPE("WGDSA::AssembleDeltaPhiVector");
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
@@ -108,7 +107,6 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                  const std::vector<double>& delta_phi_local,
                                  std::vector<double>& ref_phi_new)
 {
-  CALI_CXX_MARK_SCOPE("WGDSA::DisassembleDeltaPhiVector");
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
@@ -140,7 +138,6 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 void
 WGDSA::CleanUp(LBSGroupset& groupset)
 {
-  CALI_CXX_MARK_SCOPE("WGDSA::CleanUp");
 
   if (groupset.apply_wgdsa)
     groupset.wgdsa_solver = nullptr;
@@ -151,7 +148,6 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
                        const LBSGroupset& groupset,
                        const std::vector<double>& phi_in)
 {
-  CALI_CXX_MARK_SCOPE("WGDSA::WGSCopyOnlyPhi0");
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
@@ -192,7 +188,6 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
                          const std::vector<double>& input,
                          std::vector<double>& output)
 {
-  CALI_CXX_MARK_SCOPE("WGDSA::GSProjectBackPhi0");
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();

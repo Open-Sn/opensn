@@ -6,7 +6,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "caliper/cali.h"
 
 namespace opensn
 {
@@ -21,8 +20,6 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                            const std::vector<double>& phi,
                            const SourceFlags source_flags)
 {
-  CALI_CXX_MARK_SCOPE("SourceFunction::operator");
-
   if (source_flags.Empty())
     return;
 

@@ -8,7 +8,9 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/preconditioning/lbs_shell_operations.h"
+#include "framework/utils/caliper_scopes.h"
 
+#include "caliper/cali.h"
 #include <petscsnes.h>
 
 namespace opensn
@@ -31,6 +33,8 @@ GetLocalGroupsetVectorSize(const LBSProblem& lbs_problem, const LBSGroupset& gro
 PetscErrorCode
 NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
 {
+  CALI_CXX_MARK_SCOPE("Residual");
+
   auto& function_context = *static_cast<KResidualFunctionContext*>(ctx);
 
   NLKEigenAGSContext* nl_context_ptr = nullptr;
@@ -61,39 +65,52 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   // Compute 1/k F phi
   lbs_problem->ZeroQMoments();
   for (const auto& groupset : lbs_problem->GetGroupsets())
+  {
+    CALI_CXX_MARK_SCOPE("Source");
     active_set_source_function(groupset,
                                lbs_problem->GetQMomentsLocal(),
                                lbs_problem->GetPhiOldLocal(),
                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+  }
 
   const double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
   lbs_problem->ScaleQMoments(1.0 / k_eff);
 
-  // Now add MS phi
-  for (const auto& groupset : lbs_problem->GetGroupsets())
   {
-    auto& wgs_context = do_problem->GetWGSContext(groupset.id);
-    const bool supress_wgs = wgs_context.lhs_src_scope & SUPPRESS_WG_SCATTER;
-    SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
-    if (supress_wgs)
-      source_flags |= SUPPRESS_WG_SCATTER;
-    active_set_source_function(
-      groupset, lbs_problem->GetQMomentsLocal(), lbs_problem->GetPhiOldLocal(), source_flags);
-  }
+    CALI_CXX_MARK_SCOPE("LinearSolve");
 
-  // Sweep all the groupsets
-  // After this phi_new = DLinv(MSD phi + 1/k FD phi)
-  offset = 0;
-  for (const auto groupset_id : groupset_ids)
-  {
-    const auto& groupset = lbs_problem->GetGroupsets().at(groupset_id);
-    auto& wgs_context = do_problem->GetWGSContext(groupset.id);
-    LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-      *lbs_problem, groupset, phi, PhiSTLOption::PHI_OLD, offset);
-    wgs_context.ApplyInverseTransportOperator(SourceFlags());
-    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
-      *lbs_problem, groupset, r, PhiSTLOption::PHI_NEW, offset);
-    offset += GetLocalGroupsetVectorSize(*lbs_problem, groupset);
+    // Now add MS phi
+    for (const auto& groupset : lbs_problem->GetGroupsets())
+    {
+      auto& wgs_context = do_problem->GetWGSContext(groupset.id);
+      const bool supress_wgs = wgs_context.lhs_src_scope & SUPPRESS_WG_SCATTER;
+      SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
+      if (supress_wgs)
+        source_flags |= SUPPRESS_WG_SCATTER;
+      {
+        CALI_CXX_MARK_SCOPE("Source");
+        active_set_source_function(
+          groupset, lbs_problem->GetQMomentsLocal(), lbs_problem->GetPhiOldLocal(), source_flags);
+      }
+    }
+
+    // Sweep all the groupsets
+    // After this phi_new = DLinv(MSD phi + 1/k FD phi)
+    offset = 0;
+    for (const auto groupset_id : groupset_ids)
+    {
+      const auto& groupset = lbs_problem->GetGroupsets().at(groupset_id);
+      auto& wgs_context = do_problem->GetWGSContext(groupset.id);
+      LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+        *lbs_problem, groupset, phi, PhiSTLOption::PHI_OLD, offset);
+      {
+        CALI_CXX_MARK_SCOPE("Sweep");
+        wgs_context.ApplyInverseTransportOperator(SourceFlags());
+      }
+      LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+        *lbs_problem, groupset, r, PhiSTLOption::PHI_NEW, offset);
+      offset += GetLocalGroupsetVectorSize(*lbs_problem, groupset);
+    }
   }
 
   ierr = VecAXPY(r, -1.0, phi);
@@ -104,7 +121,10 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   {
     auto& wgs_context = do_problem->GetWGSContext(groupset.id);
     if (groupset.apply_wgdsa or groupset.apply_tgdsa)
+    {
+      CALI_CXX_MARK_SCOPE("Acceleration");
       WGDSA_TGDSA_PreConditionerMult2(wgs_context, r, r);
+    }
   }
 
   // Assign k to the context so monitors can work
