@@ -1,0 +1,24 @@
+#!/bin/bash
+#PBS -N {{base_name}}_{{n_nodes}}
+#PBS -q {{partition}}
+#PBS -l select={{n_nodes}}
+#PBS -l walltime=01:00:00
+#PBS -l filesystems=home:flare
+#PBS -o {{outdir}}/{{base_name}}_{{n_nodes}}.out
+#PBS -e {{outdir}}/{{base_name}}_{{n_nodes}}.err
+{% if gpu_options -%}
+{{gpu_options}}
+{% endif %}
+{% if environment -%}
+{{environment}}
+{% endif -%}
+cd {{outdir}}
+mpiexec -n {{n_nodes * n_tasks}} \
+{% if processor == "gpu" -%}
+  --ppn {{n_tasks}} \
+  --cpu-bind=list:1-8:9-16:17-24:25-32:33-40:41-48:53-60:61-68:69-76:77-84:85-92:93-100 \
+  --env OMP_NUM_THREADS={{n_cores}} --env OMP_PLACES=cores \
+  gpu_tile_compact.sh \
+{% endif -%}
+  {{opensn_binary}} -i {{input_script}}
+

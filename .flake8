@@ -7,5 +7,4 @@ extend-exclude = build*
 
 per-file-ignores =
     test/python/*.py: F401, F821
-    tools/scaling/sweep/node_to_node/unstructured_mesh/weak/weak_scaling.py: F401, F821
-    tools/scaling/sweep/node_to_node/unstructured_mesh/strong/strong_scaling.py: F401, F821
+    tools/scaling/lib/unstructured.py: F401, F821

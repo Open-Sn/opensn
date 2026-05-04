@@ -27,14 +27,15 @@ scattering_order = 0  # Scattering order
 # Mesh
 meshgen = DistributedMeshGenerator(
     inputs=[
-        FromFileMeshGenerator(filename="strong_scaling.msh")
+        FromFileMeshGenerator(filename="{{mesh_file}}")
     ]
 )
 grid = meshgen.Execute()
+grid.SetOrthogonalBoundaries()
 
-# Cross-section datta
+# Cross-section data
 xs_diag = MultiGroupXS()
-xs_diag.LoadFromOpenSn("diag_XS_64g_1mom_c0.99.xs")
+xs_diag.LoadFromOpenSn("xs_168g.xs")
 
 # Boundary conditions
 bsrc = [0.0 for _ in range(n_g)]
@@ -56,17 +57,20 @@ phys = DiscreteOrdinatesProblem(
             "angle_aggregation_type": "single",
             "angle_aggregation_num_subsets": 1,
             "inner_linear_method": "petsc_richardson",
-            "l_abs_tol": 1.0e-6,
-            "l_max_its": 9,
+            "l_abs_tol": 1.0e-12,
+            "l_max_its": 64,
         },
     ],
     xs_map=[
         {"block_ids": [1], "xs": xs_diag},
     ],
-    scattering_order=scattering_order,
     boundary_conditions=[
         {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
     ],
+    options={
+        "max_mpi_message_size": 256 * 1024
+    },
+    use_gpus={{use_gpus}}
 )
 ss_solver = SteadyStateSourceSolver(problem=phys)
 ss_solver.Initialize()

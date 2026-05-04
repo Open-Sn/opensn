@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name={{base_name}}_{{n_nodes}}
+#SBATCH --nodes={{n_nodes}}
+#SBATCH --partition={{partition}}
+#SBATCH --exclusive
+#SBATCH --time=01:00:00
+#SBATCH --output={{outdir}}/{{base_name}}_{{n_nodes}}.out
+#SBATCH --error={{outdir}}/{{base_name}}_{{n_nodes}}.err
+{% if processor == "gpu" and gpu_options -%}
+{{gpu_options}}
+{% endif %}
+cd {{outdir}}
+srun -n {{n_nodes * n_tasks}} -c {{n_cores}} {{opensn_binary}} -i {{input_script}}
+
