@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
+#include <limits>
 #include <vector>
 
 namespace opensn
@@ -17,9 +18,13 @@ class IsotropicBoundary : public SweepBoundary
 public:
   explicit IsotropicBoundary(unsigned int num_groups,
                              std::vector<double> boundary_flux,
-                             CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
+                             CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN,
+                             double start_time = -std::numeric_limits<double>::infinity(),
+                             double end_time = std::numeric_limits<double>::infinity())
     : SweepBoundary(LBSBoundaryType::ISOTROPIC, num_groups, coord_type),
-      boundary_flux_(std::move(boundary_flux))
+      boundary_flux_(std::move(boundary_flux)),
+      start_time_(start_time),
+      end_time_(end_time)
   {
   }
 
@@ -29,11 +34,18 @@ public:
                       unsigned int angle_num,
                       unsigned int group_num) override
   {
+    if (not IsActive(GetEvaluationTime()))
+      return ZeroFlux(group_num);
+
     return &boundary_flux_[group_num];
   }
 
 private:
   std::vector<double> boundary_flux_;
+  double start_time_ = -std::numeric_limits<double>::infinity();
+  double end_time_ = std::numeric_limits<double>::infinity();
+
+  bool IsActive(double time) const { return time >= start_time_ and time <= end_time_; }
 };
 
 } // namespace opensn

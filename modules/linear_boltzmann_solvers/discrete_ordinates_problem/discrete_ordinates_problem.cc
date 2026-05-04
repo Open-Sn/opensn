@@ -45,6 +45,8 @@
 #include <cassert>
 #include <cmath>
 #include <iomanip>
+#include <limits>
+#include <numeric>
 #include <sstream>
 #include <stdexcept>
 
@@ -100,6 +102,18 @@ DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
     std::shared_ptr<AngularFluxFunction>{},
     "Angular flux function to be used for arbitrary boundary conditions. The function takes an "
     "energy group index and a direction index and returns the incoming angular flux value.");
+  params.AddOptionalParameter<std::shared_ptr<AngularFluxTimeFunction>>(
+    "time_function",
+    std::shared_ptr<AngularFluxTimeFunction>{},
+    "Time-dependent angular flux function to be used for arbitrary boundary conditions. The "
+    "function takes an energy group index, a direction index, and time, and returns the incoming "
+    "angular flux value.");
+  params.AddOptionalParameter("start_time",
+                              -std::numeric_limits<double>::infinity(),
+                              "Time at which an isotropic boundary condition becomes active.");
+  params.AddOptionalParameter("end_time",
+                              std::numeric_limits<double>::infinity(),
+                              "Time at which an isotropic boundary condition becomes inactive.");
   params.ConstrainParameterRange(
     "type", AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary"}));
 
@@ -391,15 +405,27 @@ DiscreteOrdinatesProblem::CreateBoundaryFromParams(const InputParameters& params
       throw std::runtime_error("Boundary '" + boundary_name +
                                "' with type=\"isotropic\" does "
                                "not support \"function\".");
+    if (params.IsParameterValid("time_function"))
+      throw std::runtime_error("Boundary '" + boundary_name +
+                               "' with type=\"isotropic\" does "
+                               "not support \"time_function\".");
     params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
     const auto group_strength = params.GetParamVectorValue<double>("group_strength");
     if (group_strength.size() != GetNumGroups())
       throw std::runtime_error(GetName() + ": Boundary '" + boundary_name +
                                "' with type=\"isotropic\" requires \"group_strength\" to match "
                                "the solver group count.");
+    const auto start_time = params.GetParamValue<double>("start_time");
+    const auto end_time = params.GetParamValue<double>("end_time");
+    if (start_time > end_time)
+      throw std::runtime_error("Boundary '" + boundary_name +
+                               "' with type=\"isotropic\" requires start_time <= end_time.");
     return {type,
-            std::make_shared<IsotropicBoundary>(
-              GetNumGroups(), group_strength, MapGeometryTypeToCoordSys(geometry_type_))};
+            std::make_shared<IsotropicBoundary>(GetNumGroups(),
+                                                group_strength,
+                                                MapGeometryTypeToCoordSys(geometry_type_),
+                                                start_time,
+                                                end_time)};
   }
   else if (type == LBSBoundaryType::ARBITRARY)
   {
@@ -408,14 +434,40 @@ DiscreteOrdinatesProblem::CreateBoundaryFromParams(const InputParameters& params
                                "' with type=\"arbitrary\" does "
                                "not support \"group_strength\".");
     if (not params.Has("function"))
+    {
+      if (not params.Has("time_function"))
+        throw std::runtime_error("Boundary '" + boundary_name +
+                                 "' with type=\"arbitrary\" requires parameter \"function\" or "
+                                 "\"time_function\"");
+    }
+    const bool has_function = params.IsParameterValid("function");
+    const bool has_time_function = params.IsParameterValid("time_function");
+    if (has_function == has_time_function)
       throw std::runtime_error("Boundary '" + boundary_name +
-                               "' with type=\"arbitrary\" "
-                               "requires parameter \"function\"");
+                               "' with type=\"arbitrary\" requires exactly one of \"function\" "
+                               "or \"time_function\".");
+    if (params.IsParameterValid("start_time") or params.IsParameterValid("end_time"))
+      throw std::runtime_error("Boundary '" + boundary_name +
+                               "' with type=\"arbitrary\" does not support start_time/end_time. "
+                               "Time dependence should be handled in the callback.");
+    if (has_time_function)
+    {
+      auto angular_flux_time_function =
+        params.GetSharedPtrParam<AngularFluxTimeFunction>("time_function", false);
+      if (not angular_flux_time_function)
+        throw std::runtime_error("Boundary '" + boundary_name +
+                                 "' with type=\"arbitrary\" requires a non-null "
+                                 "AngularFluxTimeFunction passed via \"time_function\".");
+      return {type,
+              std::make_shared<ArbitraryBoundary>(GetNumGroups(),
+                                                  angular_flux_time_function,
+                                                  MapGeometryTypeToCoordSys(geometry_type_))};
+    }
     auto angular_flux_function = params.GetSharedPtrParam<AngularFluxFunction>("function", false);
     if (not angular_flux_function)
       throw std::runtime_error("Boundary '" + boundary_name +
-                               "' with type=\"arbitrary\" "
-                               "requires a non-null AngularFluxFunction passed via \"function\".");
+                               "' with type=\"arbitrary\" requires a non-null "
+                               "AngularFluxFunction passed via \"function\".");
     return {type,
             std::make_shared<ArbitraryBoundary>(
               GetNumGroups(), angular_flux_function, MapGeometryTypeToCoordSys(geometry_type_))};
@@ -427,6 +479,12 @@ DiscreteOrdinatesProblem::CreateBoundaryFromParams(const InputParameters& params
   if (params.IsParameterValid("function"))
     throw std::runtime_error("Boundary '" + boundary_name + "' with type=" + bndry_type +
                              " does not support function.");
+  if (params.IsParameterValid("time_function"))
+    throw std::runtime_error("Boundary '" + boundary_name + "' with type=" + bndry_type +
+                             " does not support time_function.");
+  if (params.IsParameterValid("start_time") or params.IsParameterValid("end_time"))
+    throw std::runtime_error("Boundary '" + boundary_name + "' with type=" + bndry_type +
+                             " does not support start_time/end_time.");
 
   return {type, nullptr};
 }

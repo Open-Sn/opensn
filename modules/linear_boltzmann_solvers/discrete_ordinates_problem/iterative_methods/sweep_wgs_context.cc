@@ -128,6 +128,8 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
     (scope & APPLY_FIXED_SOURCES) and (not do_problem.GetOptions().use_src_moments);
   const bool zero_incoming_delayed_psi = (scope & ZERO_INCOMING_DELAYED_PSI);
   do_problem.ZeroOutflowBalanceVars(groupset);
+  for (const auto& [_, boundary] : do_problem.GetSweepBoundaries())
+    boundary->SetEvaluationTime(do_problem.GetTime());
   sweep_scheduler.PrepareForSweep(use_bndry_source_flag, zero_incoming_delayed_psi);
 
   high_resolution_clock::time_point sweep_start = high_resolution_clock::now();

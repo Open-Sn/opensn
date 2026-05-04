@@ -82,7 +82,10 @@ Each boundary entry is a dictionary with:
 * ``name``: the boundary id on the mesh
 * ``type``: one of the supported boundary-condition types
 * ``group_strength``: required for ``"isotropic"``
-* ``function``: required for ``"arbitrary"``
+* ``start_time`` and ``end_time``: optional active time window for
+  ``"isotropic"`` boundaries
+* ``function``: steady or time-independent callback for ``"arbitrary"``
+* ``time_function``: time-dependent callback for ``"arbitrary"``
 
 .. note::
 
@@ -159,6 +162,8 @@ Important points:
 
 * ``group_strength`` must have one entry per energy group
 * the values are incoming boundary angular flux values
+* ``start_time`` and ``end_time`` can be used to activate the boundary only
+  during part of a transient calculation
 * because OpenSn normalizes quadrature weights to sum to ``1.0``, a value
   ``group_strength[g] = X`` means "apply a uniform isotropic incoming angular
   flux of value ``X`` in group ``g``" in OpenSn's discrete convention
@@ -168,6 +173,37 @@ Important points:
    Isotropic boundaries are often the simplest way to drive a benchmark or test
    problem when the intent is "inject a known incoming flux on this face" rather
    than "create particles throughout a volume."
+
+Time-Windowed Isotropic Boundaries
+----------------------------------
+
+For transient problems, an isotropic boundary can be restricted to an active
+time interval with ``start_time`` and ``end_time``.
+
+Example:
+
+.. code-block:: python
+
+   {
+       "name": "xmin",
+       "type": "isotropic",
+       "group_strength": [1.0, 0.0],
+       "start_time": 0.0,
+       "end_time": 0.5,
+   }
+
+The boundary is active when:
+
+* ``time >= start_time``
+* ``time <= end_time``
+
+Outside that interval, the isotropic inflow on that boundary is zero.
+
+.. note::
+
+   ``start_time`` and ``end_time`` are supported for ``"isotropic"``
+   boundaries only. They are not accepted for ``"vacuum"``, ``"reflecting"``,
+   or ``"arbitrary"`` boundaries.
 
 Arbitrary Boundaries
 --------------------
@@ -225,6 +261,55 @@ Example:
    If you want an arbitrary boundary to behave like a uniform isotropic inflow
    of value ``X`` in one group, return ``X`` for every incoming direction in
    that group. Do not multiply by quadrature weights in the callback.
+
+Time-Dependent Arbitrary Boundaries
+-----------------------------------
+
+For transient problems, arbitrary boundary inflow can depend on time by using
+:py:class:`pyopensn.math.AngularFluxTimeFunction` and the ``time_function``
+boundary entry.
+
+The callback signature is:
+
+.. code-block:: python
+
+   def bc_func(group_index, direction_index, time) -> float:
+       ...
+
+Example:
+
+.. code-block:: python
+
+   from pyopensn.math import AngularFluxTimeFunction
+
+   def xmin_pulse(group_index, direction_index, time):
+       if group_index == 0 and 0.0 <= time <= 0.5:
+           return 1.0
+       return 0.0
+
+   boundary_conditions = [
+       {
+           "name": "xmin",
+           "type": "arbitrary",
+           "time_function": AngularFluxTimeFunction(xmin_pulse),
+       },
+       {"name": "xmax", "type": "vacuum"},
+   ]
+
+Important behavior:
+
+* an ``"arbitrary"`` boundary must specify exactly one of ``function`` or
+  ``time_function``
+* ``function`` callbacks receive ``(group_index, direction_index)``
+* ``time_function`` callbacks receive ``(group_index, direction_index, time)``
+* ``start_time`` and ``end_time`` are not supported for arbitrary boundaries;
+  put any active-window logic inside the callback
+
+.. note::
+
+   The time argument is the problem time used by the transient sweep. This makes
+   the boundary value part of the timestep solve rather than a Python-side
+   boundary replacement between solves.
 
 Setting and Replacing Boundary Conditions
 -----------------------------------------
@@ -611,15 +696,50 @@ Examples:
    drive a sequence of solves or a Python-controlled transient without
    reconstructing the entire problem.
 
-Transient Source Behavior
-=========================
+Transient Source and Boundary Behavior
+======================================
 
 For transient problems, time dependence can enter through:
 
-* ``start_time`` / ``end_time``
-* ``strength_function`` callbacks
+* boundary ``start_time`` / ``end_time`` windows on isotropic boundaries
+* boundary ``time_function`` callbacks on arbitrary boundaries
+* source ``start_time`` / ``end_time`` windows
+* source ``strength_function`` callbacks
 * explicit replacement of source objects between calls to
   :py:meth:`Advance`
+
+Example of a time-windowed isotropic boundary:
+
+.. code-block:: python
+
+   boundary_conditions = [
+       {
+           "name": "xmin",
+           "type": "isotropic",
+           "group_strength": [1.0],
+           "start_time": 0.0,
+           "end_time": 10.0,
+       },
+       {"name": "xmax", "type": "vacuum"},
+   ]
+
+Example of a time-dependent arbitrary boundary:
+
+.. code-block:: python
+
+   from pyopensn.math import AngularFluxTimeFunction
+
+   def angular_inflow(group, direction, time):
+       return 1.0 if group == 0 and time < 10.0 else 0.0
+
+   boundary_conditions = [
+       {
+           "name": "xmin",
+           "type": "arbitrary",
+           "time_function": AngularFluxTimeFunction(angular_inflow),
+       },
+       {"name": "xmax", "type": "vacuum"},
+   ]
 
 Example of a time-windowed volumetric source:
 
@@ -648,10 +768,11 @@ Example of replacing sources in a Python timestep loop:
 
 .. note::
 
-   There are two different design styles for transient sources. One is to keep a
-   single source object and let it handle its own time dependence. The other is
-   to replace source objects explicitly in the Python loop. Both are valid; the
-   clearer choice depends on how much logic the source behavior really needs.
+   There are two different design styles for transient driving terms. One is to
+   keep a single boundary or source object and let it handle its own time
+   dependence. The other is to replace objects explicitly in the Python loop.
+   Both are valid; the clearer choice depends on how much logic the behavior
+   really needs.
 
 Boundary Names and Mesh Labels
 ==============================
@@ -681,6 +802,10 @@ Best Practices
   physical model; they are the clearest and least error-prone options.
 * Use isotropic boundaries for simple incoming-flux problems.
 * Use arbitrary boundaries only when the inflow genuinely depends on angle.
+* Prefer isotropic ``start_time``/``end_time`` windows for simple transient
+  boundary pulses.
+* Prefer ``AngularFluxTimeFunction`` when arbitrary boundary inflow must vary
+  with time.
 * Use volumetric sources based on block ids when source regions already align
   with the mesh labeling.
 * Use logical volumes when the source region is geometric rather than material
