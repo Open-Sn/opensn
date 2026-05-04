@@ -19,21 +19,24 @@ Program Listing for File main.h
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/buffer.h"
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/solver.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+   #include "caribou/main.hpp"
    #include <utility>
    #include <type_traits>
+   
+   namespace crb = caribou;
    
    namespace opensn::gpu_kernel
    {
    
    template <std::uint32_t... I, class F>
-   __device__ inline void
+   __CRB_DEVICE_FUNC__ void
    ForDOFs1ToN(std::integer_sequence<std::uint32_t, I...>, F&& f)
    {
      (f(std::integral_constant<std::uint32_t, I + 1>{}), ...);
    }
    
    template <class F>
-   __device__ inline void
+   __CRB_DEVICE_FUNC__ void
    ForDOFs1ToMax(F&& f)
    {
      ForDOFs1ToN(std::make_integer_sequence<std::uint32_t, LBSProblem::max_dofs_gpu>{},
@@ -41,7 +44,7 @@ Program Listing for File main.h
    }
    
    template <SweepType t, class... Args>
-   __device__ inline void
+   __CRB_DEVICE_FUNC__ void
    SweepDispatch(std::uint32_t n, Args&&... args)
    {
      bool done = false;
@@ -58,14 +61,20 @@ Program Listing for File main.h
    }
    
    template <SweepType t>
-   __global__ void
+   __CRB_GLOBAL_FUNC__ void
    SweepKernel(Arguments<t> args,
                const std::uint32_t* cells_to_sweep,
                unsigned int num_cells,
                double* saved_psi)
    {
+   #if defined(__NVCC__) || defined(__HIPCC__)
      unsigned int cell_idx = threadIdx.y + blockDim.y * blockIdx.y;
      unsigned int angle_group_idx = threadIdx.x + blockDim.x * blockIdx.x;
+   #elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+     auto work_index = ::sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+     unsigned int cell_idx = work_index.get_global_id(1);
+     unsigned int angle_group_idx = work_index.get_global_id(2);
+   #endif
      if (cell_idx >= num_cells || angle_group_idx >= args.flud_data.stride_size)
        return;
      unsigned int angle_idx = angle_group_idx / args.groupset_size;

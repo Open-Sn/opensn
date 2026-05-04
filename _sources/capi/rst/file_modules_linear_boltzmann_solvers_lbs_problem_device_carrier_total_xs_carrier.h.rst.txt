@@ -48,8 +48,6 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_xs.h`
-
 
 
 

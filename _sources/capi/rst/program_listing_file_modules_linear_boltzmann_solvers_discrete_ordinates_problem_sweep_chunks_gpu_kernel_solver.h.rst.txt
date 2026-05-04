@@ -28,7 +28,7 @@ Program Listing for File solver.h
    
    /// Compute the sweep matrix from gradient, mass, and the source term
    template <std::size_t ndofs, SweepType t>
-   __device__ void
+   __CRB_DEVICE_FUNC__ void
    ComputeGMS(double* sweep_matrix,
               double* psi,
               double* s,
@@ -73,7 +73,7 @@ Program Listing for File solver.h
    
    /// Compute the sweep matrix from surface integral
    template <std::size_t ndofs, SweepType t>
-   __device__ void
+   __CRB_DEVICE_FUNC__ void
    ComputeSurfaceIntegral(double* sweep_matrix,
                           double* psi,
                           CellView& cell,
@@ -120,7 +120,7 @@ Program Listing for File solver.h
    
    /// Gaussian elimination
    template <std::size_t ndofs>
-   __device__ void
+   __CRB_DEVICE_FUNC__ void
    GaussianElimination(double* sweep_matrix, double* psi)
    {
      // forward elimination
@@ -164,7 +164,7 @@ Program Listing for File solver.h
    
    /// Record angular flux to downwind and compute outflow for boundary faces.
    template <SweepType t>
-   __device__ inline void
+   __CRB_DEVICE_FUNC__ void
    WritePsiToFludsAndOutflow(double* psi,
                              CellView& cell,
                              DirectionView& direction,
@@ -210,7 +210,7 @@ Program Listing for File solver.h
    
    /// Compute the scalar flux.
    template <std::size_t ndofs, SweepType t>
-   __device__ void
+   __CRB_DEVICE_FUNC__ void
    ComputePhi(double* psi,
               CellView& cell,
               DirectionView& direction,
@@ -231,7 +231,7 @@ Program Listing for File solver.h
    
    /// Store the angular flux
    template <std::size_t ndofs>
-   __device__ void
+   __CRB_DEVICE_FUNC__ void
    SaveAngularFlux(const double* psi,
                    double* saved_psi,
                    CellView& cell,
@@ -248,7 +248,7 @@ Program Listing for File solver.h
    
    /// Template device function performing the sweep
    template <std::size_t ndofs, SweepType t>
-   __device__ void
+   __CRB_DEVICE_FUNC__ void
    Sweep(const Arguments<t>& args,
          CellView& cell,
          DirectionView& direction,

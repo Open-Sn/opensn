@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``caribou/main.hpp``
+
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/arguments.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/buffer.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_buffer.h`)
@@ -60,11 +62,11 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a5e52e6a57cde1d9761236d1fb1cc7def`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a384cb3ea678f19b0c7355f0190cfa3fa`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a2bcc3b725868f4d63e2d99685007e991`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a06023a9e39c4a3d0175ce890be877abe`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a2d440d99eceae4e133b6ea994bf43f58`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1aa73cb7e16b68e9f77691eae78cf856bd`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a42c29b56e45fae463d229c132ed84f3f`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a5f5e75ed78963288cb7efae9da707a9d`
 

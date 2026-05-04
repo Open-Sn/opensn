@@ -1,6 +1,6 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a5e52e6a57cde1d9761236d1fb1cc7def:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1aa73cb7e16b68e9f77691eae78cf856bd:
 
-Template Function opensn::gpu_kernel::ForDOFs1ToMax
+Template Function opensn::gpu_kernel::SweepDispatch
 ===================================================
 
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::ForDOFs1ToMax(F&&)
+.. doxygenfunction:: opensn::gpu_kernel::SweepDispatch(std::uint32_t, Args&&...)
    :project: opensn

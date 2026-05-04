@@ -94,21 +94,24 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/buffer.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/solver.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;caribou/main.hpp&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;type_traits&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">crb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">caribou</span><span class="p">;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span><span class="o">::</span><span class="nn">gpu_kernel</span>
 <span class="p">{</span>
 
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">...</span><span class="w"> </span><span class="n">I</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">F</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">ForDOFs1ToN</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">integer_sequence</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="n">I</span><span class="p">...</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">f</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">integral_constant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="n">I</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="o">&gt;</span><span class="p">{}),</span><span class="w"> </span><span class="p">...);</span>
 <span class="p">}</span>
 
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">F</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">ForDOFs1ToMax</span><span class="p">(</span><span class="n">F</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">f</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="n">ForDOFs1ToN</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_integer_sequence</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">::</span><span class="n">max_dofs_gpu</span><span class="o">&gt;</span><span class="p">{},</span>
@@ -116,7 +119,7 @@
 <span class="p">}</span>
 
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">SweepDispatch</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">done</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
@@ -133,14 +136,20 @@
 <span class="p">}</span>
 
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="o">&gt;</span>
-<span class="n">__global__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_GLOBAL_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">SweepKernel</span><span class="p">(</span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="p">,</span>
 <span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">cells_to_sweep</span><span class="p">,</span>
 <span class="w">            </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_cells</span><span class="p">,</span>
 <span class="w">            </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">saved_psi</span><span class="p">)</span>
 <span class="p">{</span>
+<span class="cp">#if defined(__NVCC__) || defined(__HIPCC__)</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">cell_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">blockDim</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">angle_group_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="cp">#elif defined(SYCL_LANGUAGE_VERSION) &amp;&amp; defined(__INTEL_LLVM_COMPILER)</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">work_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">::</span><span class="n">sycl</span><span class="o">::</span><span class="n">ext</span><span class="o">::</span><span class="n">oneapi</span><span class="o">::</span><span class="n">this_work_item</span><span class="o">::</span><span class="n">get_nd_item</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">cell_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work_index</span><span class="p">.</span><span class="n">get_global_id</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">angle_group_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work_index</span><span class="p">.</span><span class="n">get_global_id</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="cp">#endif</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cell_idx</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">num_cells</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">angle_group_idx</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">flud_data</span><span class="p">.</span><span class="n">stride_size</span><span class="p">)</span>
 <span class="w">    </span><span class="k">return</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">angle_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">angle_group_idx</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">groupset_size</span><span class="p">;</span>

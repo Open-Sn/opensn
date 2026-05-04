@@ -16,7 +16,6 @@ Subdirectories
 --------------
 
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_device_carrier`
-- :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool`
 - :ref:`dir_modules_linear_boltzmann_solvers_lbs_problem_device_view`
 
 

@@ -103,7 +103,7 @@
 
 <span class="c1">/// Compute the sweep matrix from gradient, mass, and the source term</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ndofs</span><span class="p">,</span><span class="w"> </span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">ComputeGMS</span><span class="p">(</span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">sweep_matrix</span><span class="p">,</span>
 <span class="w">           </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">psi</span><span class="p">,</span>
 <span class="w">           </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
@@ -148,7 +148,7 @@
 
 <span class="c1">/// Compute the sweep matrix from surface integral</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ndofs</span><span class="p">,</span><span class="w"> </span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">ComputeSurfaceIntegral</span><span class="p">(</span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">sweep_matrix</span><span class="p">,</span>
 <span class="w">                       </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">psi</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">CellView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
@@ -195,7 +195,7 @@
 
 <span class="c1">/// Gaussian elimination</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ndofs</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">GaussianElimination</span><span class="p">(</span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">sweep_matrix</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">psi</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="c1">// forward elimination</span>
@@ -239,7 +239,7 @@
 
 <span class="c1">/// Record angular flux to downwind and compute outflow for boundary faces.</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">WritePsiToFludsAndOutflow</span><span class="p">(</span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">psi</span><span class="p">,</span>
 <span class="w">                          </span><span class="n">CellView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
 <span class="w">                          </span><span class="n">DirectionView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">direction</span><span class="p">,</span>
@@ -285,7 +285,7 @@
 
 <span class="c1">/// Compute the scalar flux.</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ndofs</span><span class="p">,</span><span class="w"> </span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">ComputePhi</span><span class="p">(</span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">psi</span><span class="p">,</span>
 <span class="w">           </span><span class="n">CellView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
 <span class="w">           </span><span class="n">DirectionView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">direction</span><span class="p">,</span>
@@ -306,7 +306,7 @@
 
 <span class="c1">/// Store the angular flux</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ndofs</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">SaveAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">psi</span><span class="p">,</span>
 <span class="w">                </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">saved_psi</span><span class="p">,</span>
 <span class="w">                </span><span class="n">CellView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
@@ -323,7 +323,7 @@
 
 <span class="c1">/// Template device function performing the sweep</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ndofs</span><span class="p">,</span><span class="w"> </span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="o">&gt;</span>
-<span class="n">__device__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">Sweep</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">args</span><span class="p">,</span>
 <span class="w">      </span><span class="n">CellView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
 <span class="w">      </span><span class="n">DirectionView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">direction</span><span class="p">,</span>

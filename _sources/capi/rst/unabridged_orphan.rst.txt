@@ -16,11 +16,6 @@ Namespaces
 .. toctree::
    :maxdepth: 1
 
-   namespace_opensn__device_dbg.rst
-
-.. toctree::
-   :maxdepth: 1
-
    namespace_opensn__EmpiricalHarmonicRules.rst
 
 .. toctree::
@@ -2188,11 +2183,6 @@ Directories
 .. toctree::
    :maxdepth: 1
 
-   dir_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool.rst
-
-.. toctree::
-   :maxdepth: 1
-
    dir_modules_linear_boltzmann_solvers_lbs_problem_device_view.rst
 
 .. toctree::
@@ -3058,21 +3048,6 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_power_iteration_keigen.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_mesh.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_quadrature.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_modules_linear_boltzmann_solvers_lbs_problem_device_debug_tool_print_xs.h.rst
 
 .. toctree::
    :maxdepth: 1
