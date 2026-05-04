@@ -70,3 +70,10 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_logger`
 
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1aa0e28d1f14e9035faab80fc1ecd1cbb9`
+

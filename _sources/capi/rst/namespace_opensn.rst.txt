@@ -1235,8 +1235,6 @@ Variables
 
 - :ref:`exhale_variable_namespaceopensn_1a82e7b6a54db1102e3e42267b43b093d4`
 
-- :ref:`exhale_variable_namespaceopensn_1aba8fba6785de64e8218089045f8675b7`
-
 - :ref:`exhale_variable_namespaceopensn_1ad68991c35026374cafaed8fb496b25ca`
 
 - :ref:`exhale_variable_namespaceopensn_1acd8e4e1145d66a401858a4c4a6436e89`

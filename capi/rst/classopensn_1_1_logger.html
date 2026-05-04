@@ -113,9 +113,8 @@
 <li><p>LOG_ALLVERBOSE_2, Used only if verbosity level equals 2</p></li>
 </ul>
 </p>
-<p>A log can be made by first connecting code with the logger. This is done by including the log header and then defining an extern reference to the global object.</p>
+<p>The logging facility can be accessed by including the log header and using the global logger.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#include &quot;framework/logging/log.h&quot;</span>
-<span class="n">extern</span> <span class="n">Logger</span><span class="o">&amp;</span> <span class="n">opensn</span><span class="p">::</span><span class="n">log</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>A log is then written inside a piece of code as follows:</p>
@@ -235,6 +234,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn6Logger12GetVerbosityEv">
 <span class="target" id="classopensn_1_1_logger_1a458831453905f33fe0d63fcab4a2aa4b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetVerbosity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn6Logger12GetVerbosityEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Logger15SetColorEnabledEb">
+<span class="target" id="classopensn_1_1_logger_1a39cfe29ed946540f20f238f8fc6982bf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetColorEnabled</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">enabled</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Logger15SetColorEnabledEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn6Logger14IsColorEnabledEv">
+<span class="target" id="classopensn_1_1_logger_1a5f626cfcdb2c034f5e334365412bfb34"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsColorEnabled</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn6Logger14IsColorEnabledEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">

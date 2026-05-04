@@ -3,7 +3,7 @@
 Variable opensn::log
 ====================
 
-- Defined in :ref:`file_framework_runtime.h`
+- Defined in :ref:`file_framework_logging_log.h`
 
 
 Variable Documentation

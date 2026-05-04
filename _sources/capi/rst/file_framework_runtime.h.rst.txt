@@ -89,15 +89,11 @@ Variables
 
 - :ref:`exhale_variable_namespaceopensn_1a003f0f0d5097c689b4920a514cee5bce`
 
-- :ref:`exhale_variable_namespaceopensn_1aa0e28d1f14e9035faab80fc1ecd1cbb9`
-
 - :ref:`exhale_variable_namespaceopensn_1aa33be9e03229ef1f33db38c90a09e2d9`
 
 - :ref:`exhale_variable_namespaceopensn_1af3fecae321821ae5515300eb3f508615`
 
 - :ref:`exhale_variable_namespaceopensn_1ac6fbe4eb58362a1ed9253c55863b9b84`
-
-- :ref:`exhale_variable_namespaceopensn_1aba8fba6785de64e8218089045f8675b7`
 
 - :ref:`exhale_variable_namespaceopensn_1ad68991c35026374cafaed8fb496b25ca`
 
