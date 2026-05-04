@@ -67,6 +67,9 @@ phys = DiscreteOrdinatesProblem(
     boundary_conditions=[
         {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
     ],
+    options={
+        "max_mpi_message_size": 256 * 1024
+    },
     use_gpus={{use_gpus}}
 )
 ss_solver = SteadyStateSourceSolver(problem=phys)

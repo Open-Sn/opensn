@@ -16,7 +16,16 @@ env = Environment(
     loader=FileSystemLoader(base_dir),
     autoescape=False
 )
-slurm_template = env.get_template("slurm_template.txt")
+templates = {
+    "slurm": env.get_template("slurm_template.txt"),
+    "lc-flux": env.get_template("flux_template.txt"),
+    "alcf-pbs": env.get_template("pbs_template.txt")
+}
+commands = {
+    "slurm": "sbatch",
+    "lc-flux": "flux batch",
+    "alcf-pbs": "qsub"
+}
 py_template = env.get_template("unstructured.py")
 
 
@@ -35,16 +44,29 @@ def run_gmsh(gmsh_binary, input_geo, divisor, output_msh):
     subprocess.run(cmd, check=True)
 
 
-def make_slurm_keys(base_name, opensn_binary, n_cores, partition, ngpus, gpu_config):
-    """Create a dictionary of keys for SLURM job file generation."""
+def make_launch_script_keys(
+    base_name,
+    outdir,
+    opensn_binary,
+    processor,
+    n_cores,
+    partition,
+    ngpus,
+    environment,
+    gpu_config
+):
+    """Create a dictionary of keys for job file generation."""
     keys = {
         "base_name": base_name,
+        "outdir": str(outdir),
         "opensn_binary": opensn_binary,
+        "environment": environment,
         "partition": partition,
+        "processor": processor
     }
-    if ngpus > 0:
+    if processor == "gpu":
         keys["use_gpus"] = True
-        keys["gpu_options"] = f"#SBATCH {gpu_config}"
+        keys["gpu_options"] = gpu_config
         keys["n_tasks"] = ngpus
         keys["n_cores"] = n_cores // ngpus
     else:
@@ -55,22 +77,24 @@ def make_slurm_keys(base_name, opensn_binary, n_cores, partition, ngpus, gpu_con
     return keys
 
 
-def create_slurm_file(keys, n_nodes, input_script, prefix, output_dir):
-    """Create a SLURM job file to run OpenSn."""
+def create_job_script(engine, keys, n_nodes, input_script, prefix, output_dir):
+    """Create a job file to run OpenSn."""
 
-    slurm_content = slurm_template.render(**keys, n_nodes=n_nodes, input_script=input_script)
-    slurm_filename = output_dir / f"{prefix}_{n_nodes}.sh"
-    print(f"Generating SLURM file {slurm_filename}")
-    with open(slurm_filename, "w") as slurm_file:
-        slurm_file.write(slurm_content)
-    return slurm_filename
+    content = templates[engine].render(**keys, n_nodes=n_nodes, input_script=input_script)
+    fname = output_dir / f"{prefix}_{n_nodes}.sh"
+    print(f"Generating job file {fname}")
+    with open(fname, "w") as job_file:
+        job_file.write(content)
+    return fname
 
 
 def generate_strong_scaling(nodes, **kwargs):
     """Generate files for strong scaling study."""
 
     # copy necessary files to output directory
-    out_dir = base_dir.parent / "output" / "strong"
+    processor = kwargs["processor"]
+    engine = kwargs["engine"]
+    out_dir = base_dir.parent / "output" / f"strong_{processor}"
     os.makedirs(out_dir, exist_ok=True)
     shutil.copyfile(
         base_dir / "xs_168g.xs",
@@ -85,30 +109,34 @@ def generate_strong_scaling(nodes, **kwargs):
         output_msh=out_dir / "strong_scaling.msh"
     )
 
-    # create SLURM job files
-    keys = make_slurm_keys(
-        base_name="strong",
+    # create job files
+    keys = make_launch_script_keys(
+        base_name=f"strong_{processor}",
+        outdir=out_dir,
         opensn_binary=kwargs["opensn_binary"],
+        processor=processor,
         n_cores=kwargs["ncores"],
         partition=kwargs["partition"],
         ngpus=kwargs["ngpus"],
+        environment=kwargs["environment"],
         gpu_config=kwargs["gpu_config"]
     )
     script_name = out_dir / "strong_scaling.py"
-    slurm_scripts = []
+    scripts = []
     for n_nodes in nodes:
-        slurm_script = create_slurm_file(
+        script = create_job_script(
+            engine=engine,
             keys=keys,
             n_nodes=n_nodes,
             input_script=script_name,
             prefix="strong",
             output_dir=out_dir
         )
-        slurm_scripts.append(slurm_script)
+        scripts.append(script)
     with open(out_dir / "submit_jobs.sh", "w") as launch_file:
         launch_file.write("#!/bin/bash\n\n")
-        for slurm_script in slurm_scripts:
-            launch_file.write(f"sbatch {slurm_script.name}\n")
+        for script in scripts:
+            launch_file.write(f"{commands[engine]} {script.name}\n")
 
     # generate the Python script
     print("Generating strong scaling Python script.")
@@ -121,7 +149,9 @@ def generate_weak_scaling(nodes, divisors, **kwargs):
     """Generate files for weak scaling study."""
 
     # copy necessary files to output directory
-    out_dir = base_dir.parent / "output" / "weak"
+    processor = kwargs["processor"]
+    engine = kwargs["engine"]
+    out_dir = base_dir.parent / "output" / f"weak_{processor}"
     os.makedirs(out_dir, exist_ok=True)
     shutil.copyfile(
         base_dir / "xs_168g.xs",
@@ -137,29 +167,33 @@ def generate_weak_scaling(nodes, divisors, **kwargs):
             output_msh=out_dir / f"weak_scaling_{n_nodes}.msh"
         )
 
-    # create SLURM job files
-    keys = make_slurm_keys(
-        base_name="weak",
+    # create job files
+    keys = make_launch_script_keys(
+        base_name=f"weak_{processor}",
+        outdir=out_dir,
         opensn_binary=kwargs["opensn_binary"],
+        processor=processor,
         n_cores=kwargs["ncores"],
         partition=kwargs["partition"],
         ngpus=kwargs["ngpus"],
+        environment=kwargs["environment"],
         gpu_config=kwargs["gpu_config"]
     )
-    slurm_scripts = []
+    scripts = []
     for n_nodes in nodes:
-        slurm_script = create_slurm_file(
+        script = create_job_script(
+            engine=engine,
             keys=keys,
             n_nodes=n_nodes,
             input_script=out_dir / f"weak_scaling_{n_nodes}.py",
             prefix="weak",
             output_dir=out_dir
         )
-        slurm_scripts.append(slurm_script)
+        scripts.append(script)
     with open(out_dir / "submit_jobs.sh", "w") as launch_file:
         launch_file.write("#!/bin/bash\n\n")
-        for slurm_script in slurm_scripts:
-            launch_file.write(f"sbatch {slurm_script.name}\n")
+        for script in scripts:
+            launch_file.write(f"{commands[engine]} {script.name}\n")
 
     # generate the Python script
     print("Generating weak scaling Python script.")

@@ -1,0 +1,14 @@
+#!/bin/sh
+#flux: --job-name={{base_name}}_{{n_nodes}}
+#flux: --nodes={{n_nodes}}
+#flux: --queue={{partition}}
+#flux: --exclusive
+#flux: --time=60m
+#flux: --output={{outdir}}/{{base_name}}_{{n_nodes}}.out
+#flux: --error={{outdir}}/{{base_name}}_{{n_nodes}}.err
+{% if processor == "gpu" and gpu_options -%}
+{{gpu_options}}
+{% endif %}
+cd {{outdir}}
+flux run -n {{n_nodes * n_tasks}} -c {{n_cores}} {{opensn_binary}} -i {{input_script}}
+

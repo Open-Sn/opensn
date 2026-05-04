@@ -24,12 +24,18 @@ def extract_data(filename):
     avg_time = None
     num_unknowns = None
 
+    avg_time_re = re.compile(r'avg_sweep_time\s*=\s*([0-9.eE+-]+)\s*s')
+    unknowns_re = re.compile(r'\bunknowns\s*=\s*([0-9.eE+-]+)')
+
     with open(filename, 'r') as f:
         for line in f:
-            if "Average sweep time" in line:
-                avg_time = float(line.split()[-1])
-            elif "Number of unknowns per sweep" in line:
-                num_unknowns = float(line.split()[-1])
+            avg_match = avg_time_re.search(line)
+            if avg_match:
+                avg_time = float(avg_match.group(1))
+
+            unknowns_match = unknowns_re.search(line)
+            if unknowns_match:
+                num_unknowns = float(unknowns_match.group(1))
 
     if avg_time is None or num_unknowns is None:
         return None
@@ -113,6 +119,12 @@ if __name__ == "__main__":
         help="Filename for the output plot (default: strong_scaling_plot.pdf)."
     )
     parser.add_argument(
+        "--dir",
+        type=str,
+        default="output/strong_cpu",
+        help="Folder to find strong scaling result (default: output/strong_cpu)."
+    )
+    parser.add_argument(
         "--history",
         type=str,
         choices=["none", "comp", "save"],
@@ -128,7 +140,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # get files matching the prefix in the input directory
-    input_dir = Path(__file__).resolve().parent / "output/strong"
+    input_dir = Path(__file__).resolve().parent / args.dir
     if not input_dir.exists():
         raise FileNotFoundError(f"Input directory {input_dir} does not exist.")
     files = glob.glob(f"{input_dir}/strong_*.out")
