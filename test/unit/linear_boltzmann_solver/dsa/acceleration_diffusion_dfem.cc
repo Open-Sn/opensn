@@ -138,7 +138,7 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "Error: " << std::scientific << global_error
                     << " Num-cells: " << grid->GetGlobalNumberOfCells();
 
-  EXPECT_NEAR(global_error, 9.25362783, 1e-6);
+  EXPECT_NEAR(global_error, 5.04055232e-2, 1e-9);
 }
 
 } // namespace
