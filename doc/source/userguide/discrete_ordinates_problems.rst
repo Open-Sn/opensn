@@ -276,6 +276,8 @@ Practical recommendation:
 * ``AAH`` remains the default production choice and is the safer option for
   most users, particularly for problems with cyclic sweep dependencies.
 * Both ``AAH`` and ``CBC`` support time-dependent (transient) mode.
+* Both ``AAH`` and ``CBC`` are available for CPU curvilinear
+  :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem` solves.
 * Choose ``CBC`` only when the sweep graph is known to be acyclic or when
   you have verified it meets the acyclicity requirement for your specific
   problem.
@@ -494,7 +496,7 @@ It uses the same general construction pattern, but currently requires:
 
 * a suitable curvilinear mesh,
 * ``coord_system=2`` for cylindrical coordinates,
-* a compatible quadrature and solver setup.
+* a compatible ``GLCProductQuadrature2DRZ`` quadrature and solver setup.
 
 Important current limitations:
 
@@ -515,6 +517,20 @@ Example:
        xs_map=xs_map,
        sweep_type="AAH",
    )
+
+For CPU curvilinear solves, ``sweep_type`` may be either ``"AAH"`` or
+``"CBC"``:
+
+.. code-block:: python
+
+   phys = DiscreteOrdinatesCurvilinearProblem(
+       ...,
+       sweep_type="CBC",
+   )
+
+The same sweep-cycle guidance applies as for Cartesian problems: use ``AAH`` as
+the default when cyclic sweep dependencies are possible, and choose ``CBC`` only
+for problems whose sweep graph satisfies CBC's acyclicity requirements.
 
 Typical Construction Patterns
 =============================

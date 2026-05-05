@@ -30,7 +30,7 @@ CBC_AngleSet::GetCommunicator()
 }
 
 AngleSetStatus
-CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus /*permission*/)
+CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission)
 {
   CALI_CXX_MARK_SCOPE("CBC_AngleSet::AngleSetAdvance");
 
@@ -74,6 +74,22 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus /*permissi
         boundaries_ready_ = false;
         return AngleSetStatus::NOT_FINISHED;
       }
+  }
+
+  if (permission != AngleSetStatus::EXECUTE)
+  {
+    const bool all_tasks_completed = (num_completed_tasks_ == task_list_->size());
+    const bool all_messages_sent =
+      (not async_comm_.HasPendingCommunication()) or async_comm_.SendData();
+    if (all_tasks_completed and all_messages_sent)
+    {
+      for (const auto& boundary_entry : boundaries_)
+        boundary_entry.second->UpdateAnglesReadyStatus(angles_);
+      executed_ = true;
+      return AngleSetStatus::FINISHED;
+    }
+
+    return ready_tasks_.empty() ? AngleSetStatus::NOT_FINISHED : AngleSetStatus::READY_TO_EXECUTE;
   }
 
   while (not ready_tasks_.empty())
