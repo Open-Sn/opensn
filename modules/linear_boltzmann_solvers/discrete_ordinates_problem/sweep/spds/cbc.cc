@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <boost/graph/topological_sort.hpp>
+#include <algorithm>
 
 namespace opensn
 {
@@ -19,9 +20,9 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
 {
   CALI_CXX_MARK_SCOPE("CBC_SPDS::CBC_SPDS");
 
-  size_t num_loc_cells = grid->local_cells.size();
+  const auto num_loc_cells = grid->local_cells.size();
 
-  // Populate Cell Relationships
+  // Populate cell relationships
   std::vector<std::set<std::pair<std::uint32_t, double>>> cell_successors(num_loc_cells);
   std::set<int> location_successors;
   std::set<int> location_dependencies;
@@ -31,11 +32,11 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   location_successors_.reserve(location_successors.size());
   location_dependencies_.reserve(location_dependencies.size());
 
-  for (auto v : location_successors)
-    location_successors_.push_back(v);
+  for (const auto location : location_successors)
+    location_successors_.push_back(location);
 
-  for (auto v : location_dependencies)
-    location_dependencies_.push_back(v);
+  for (const auto location : location_dependencies)
+    location_dependencies_.push_back(location);
 
   // Build local cell graph
   Graph local_DG(num_loc_cells);
@@ -63,30 +64,33 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   }
 
   // Create task list
-  std::vector<std::vector<int>> global_dependencies;
-  global_dependencies.resize(opensn::mpi_comm.size());
+  std::vector<std::vector<int>> global_dependencies(opensn::mpi_comm.size());
   CommunicateLocationDependencies(location_dependencies_, global_dependencies);
 
   constexpr auto INCOMING = FaceOrientation::INCOMING;
   constexpr auto OUTGOING = FaceOrientation::OUTGOING;
 
   // For each local cell create a task
+  task_list_.reserve(grid_->local_cells.size());
   for (const auto& cell : grid_->local_cells)
   {
-    const size_t num_faces = cell.faces.size();
+    const auto num_faces = cell.faces.size();
     unsigned int num_dependencies = 0;
     std::vector<std::uint32_t> successors;
+    successors.reserve(num_faces);
 
-    for (size_t f = 0; f < num_faces; ++f)
+    for (std::size_t f = 0; f < num_faces; ++f)
     {
-      if (cell_face_orientations_[cell.local_id][f] == INCOMING)
+      const auto& face = cell.faces[f];
+      const auto& orientation = cell_face_orientations_[cell.local_id][f];
+
+      if (orientation == INCOMING)
       {
-        if (cell.faces[f].has_neighbor)
+        if (face.has_neighbor)
           ++num_dependencies;
       }
-      else if (cell_face_orientations_[cell.local_id][f] == OUTGOING)
+      else if (orientation == OUTGOING)
       {
-        const auto& face = cell.faces[f];
         if (face.has_neighbor and grid->IsCellLocal(face.neighbor_id))
           successors.push_back(grid->cells[face.neighbor_id].local_id);
       }

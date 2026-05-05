@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbcd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
@@ -50,6 +51,7 @@ CBCD_FLUDS::CBCD_FLUDS(size_t num_groups,
     device_saved_psi_ = crb::DeviceMemory<double>(local_psi_data_size_);
   }
   CreatePointerSet();
+  deplocs_outgoing_messages_.reserve(common_data.GetNumIncomingNonlocalFaces());
 }
 
 CBCD_FLUDS::~CBCD_FLUDS()
@@ -192,13 +194,10 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
         const auto& face_data_size = num_face_nodes * num_groups_and_angles_;
         const int locality =
           sweep_chunk.GetCellTransportView(node.cell_local_id).FaceLocality(node.face_id);
-        auto& async_comm = *angle_set->GetCommunicator();
-        std::vector<double>* psi_nonlocal_outgoing =
-          &async_comm.InitGetDownwindMessageData(locality,
-                                                 face.neighbor_id,
-                                                 face_nodal_mapping.associated_face_,
-                                                 angle_set->GetID(),
-                                                 face_data_size);
+        auto& async_comm =
+          static_cast<CBCD_AsynchronousCommunicator&>(*angle_set->GetCommunicator());
+        std::vector<double>* psi_nonlocal_outgoing = &async_comm.InitGetDownwindMessageData(
+          locality, face.neighbor_id, face_nodal_mapping.associated_face_, face_data_size);
         for (size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
         {
           auto* dst_psi = NLOutgoingPsi(psi_nonlocal_outgoing, node.face_node, as_ss_idx);
@@ -261,12 +260,15 @@ CBCD_FLUDS::NLUpwindPsi(uint64_t cell_global_id,
                         unsigned int face_node_mapped,
                         size_t as_ss_idx)
 {
-  std::vector<double>& psi = deplocs_outgoing_messages_.at({cell_global_id, face_id});
+  auto it = deplocs_outgoing_messages_.find({cell_global_id, face_id});
+  if (it == deplocs_outgoing_messages_.end())
+    return nullptr;
+  auto& psi = it->second;
   const size_t dof_map =
     face_node_mapped * num_groups_and_angles_ + //  Offset to start of data for face_node_mapped
     as_ss_idx * num_groups_;                    // Offset to start of data for angle_set_index
 
-  assert((dof_map >= 0) and (dof_map < psi.size()));
+  assert(dof_map < psi.size());
   return &psi[dof_map];
 }
 

@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "caribou/main.hpp"
@@ -140,7 +140,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
         }
         num_completed_tasks[i] += in_flight_tasks[i].size();
         // Send MPI data
-        auto* comm = static_cast<CBC_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
+        auto* comm = static_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
         comm->SendData();
         in_flight_tasks[i].clear();
         in_flight_cell_ids[i].clear();
@@ -154,7 +154,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
     {
       if (executed[i])
         continue;
-      auto* comm = static_cast<CBC_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
+      auto* comm = static_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
       auto& current_task_list = angle_sets[i]->GetCurrentTaskList();
       auto received = comm->ReceiveData();
       if (not received.empty())
@@ -232,7 +232,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
       if (executed[i] or (not boundary_data_set[i]) or kernel_in_flight[i])
         continue;
       auto& current_task_list = angle_sets[i]->GetCurrentTaskList();
-      auto* comm = static_cast<CBC_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
+      auto* comm = static_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
       bool all_done = (num_completed_tasks[i] == current_task_list.size());
       if (all_done and comm->SendData())
       {
@@ -251,7 +251,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
     }
   }
 
-  /// Copy phi and outflow data back to host
+  // Copy phi and outflow data back to host
   cbcd_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
 
   // Receive delayed data

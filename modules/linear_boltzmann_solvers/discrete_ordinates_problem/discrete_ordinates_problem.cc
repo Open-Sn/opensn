@@ -16,6 +16,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
@@ -1882,10 +1883,6 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
 
   const bool use_time_dependent_chunk = (mode == SweepChunkMode::TIME_DEPENDENT);
 
-  if (use_time_dependent_chunk && sweep_type_ != "AAH")
-    throw std::invalid_argument(GetName() +
-                                ": Time dependent is only supported with sweep_type='AAH'.");
-
   if (sweep_type_ == "AAH")
   {
     if (use_time_dependent_chunk)
@@ -1896,6 +1893,8 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
   }
   else if (sweep_type_ == "CBC")
   {
+    if (use_time_dependent_chunk)
+      return std::make_shared<CBCSweepChunkTD>(*this, groupset);
     if (use_gpus_)
       return CreateCBCDSweepChunk(groupset);
     return std::make_shared<CBCSweepChunk>(*this, groupset);
