@@ -162,7 +162,7 @@ mesh, source, or groupset definitions.
 This selects the sweep type:
 
 * ``"AAH"``: the aggregated sweeper with cycle breaking
-* ``"CBC"``: the cell-by-cell sweeper
+* ``"CBC"``: the cell-by-cell sweeper with cycle breaking
 
 ``use_gpus``
 ------------
@@ -286,28 +286,25 @@ Operationally, the two sweep types are different:
 
 The practical differences are:
 
-* ``AAH`` has explicit delayed-angular-flux machinery for cycle handling.
-* ``AAH`` can break both local and inter-partition sweep cycles by removing
-  feedback-arc-set edges and lagging the corresponding angular-flux
-  dependencies.
-* ``CBC`` does not support local sweep cycles.
+* ``AAH`` is the more general sweep implementation.
+* ``CBC`` preserves the cell-by-cell sweep structure.
+* Both ``AAH`` and ``CBC`` can break cyclic sweep dependencies by storing and
+  lagging the corresponding angular fluxes.
+* GPU ``CBC``/``CBCD`` does not currently support CBC cycle breaking.
 
 .. note::
 
-   In the ``AAH`` implementation, the lagged data is tied specifically to
-   cycle-breaking dependencies. It is not a general statement that all angular
-   fluxes are always lagged.
+   Lagged data is tied specifically to cycle-breaking dependencies. It is not a
+   general statement that all angular fluxes are always lagged.
 
 Practical recommendation:
 
 * ``AAH`` remains the default production choice and is the safer option for
-  most users, particularly for problems with cyclic sweep dependencies.
+  most users.
 * Both ``AAH`` and ``CBC`` support time-dependent (transient) mode.
 * Both ``AAH`` and ``CBC`` are available for CPU curvilinear
   :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem` solves.
-* Choose ``CBC`` only when the sweep graph is known to be acyclic or when
-  you have verified it meets the acyclicity requirement for your specific
-  problem.
+* Choose ``CBC`` when cell-by-cell sweep ordering is desired.
 
 Problem Modes
 =============
@@ -345,10 +342,11 @@ later.
 
 Current restrictions:
 
-* only ``"AAH"`` is supported for GPU use,
+* both ``"AAH"`` and ``"CBC"`` are supported for GPU use,
 * curvilinear problems do not support GPU acceleration,
 * time-dependent problems do not support GPU acceleration,
-* adjoint problems do not support GPU acceleration.
+* adjoint problems do not support GPU acceleration,
+* ``"CBC"`` on GPUs does not currently support CBC cycle breaking.
 
 Most users should treat this as a deployment choice after the base problem is
 already running correctly on the CPU.
@@ -551,9 +549,8 @@ Example:
 
 For CPU curvilinear solves, ``sweep_type`` may be either ``"AAH"`` or
 ``"CBC"``. The same sweep-cycle guidance applies as for Cartesian problems:
-use ``AAH`` as the default when cyclic sweep dependencies are possible, and
-choose ``CBC`` only for problems whose sweep graph satisfies CBC's acyclicity
-requirements.
+use ``AAH`` as the default, and choose ``CBC`` when the cell-by-cell sweep path
+is desired.
 
 Typical Construction Patterns
 =============================

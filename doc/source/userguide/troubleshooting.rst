@@ -104,8 +104,7 @@ structure. If a problem behaves strangely in parallel:
 
 .. note::
 
-   ``CBC`` does not support cyclic sweep dependencies the way ``AAH`` does. If
-   the mesh or partitioning can create sweep-graph cycles, stay with ``AAH``.
+   ``CBC`` can break cyclic sweep dependencies, but it is more specialized than ``AAH``. If a parallel case behaves unexpectedly, compare against ``AAH`` before assuming the decomposition or iteration settings are incorrect.
 
 If imported cross sections behave unexpectedly
 ==============================================

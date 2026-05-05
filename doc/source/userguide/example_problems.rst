@@ -542,9 +542,8 @@ problem type and a compatible quadrature.
    solver.Execute()
 
 The curvilinear problem supports CPU ``AAH`` and ``CBC`` sweep types. Use
-``AAH`` as the default, particularly when cyclic sweep dependencies are
-possible; choose ``CBC`` only when the sweep graph satisfies CBC's acyclicity
-requirements.
+``AAH`` as the default; choose ``CBC`` when the cell-by-cell sweep path is
+desired.
 
 Example 9: Updating a Problem In Place
 ======================================

@@ -313,10 +313,8 @@ This problem type is experimental, and it should be treated that way in
 production workflows.
 
 CPU curvilinear solves support both ``sweep_type="AAH"`` and
-``sweep_type="CBC"``. Use ``AAH`` as the default, particularly when
-cyclic sweep dependencies are possible. Choose ``CBC`` only when the sweep graph
-is acyclic for the chosen mesh, decomposition, and quadrature. Curvilinear GPU
-sweeps are not supported.
+``sweep_type="CBC"``. Use ``AAH`` as the default, and choose ``CBC`` when the
+cell-by-cell sweep path is desired. Curvilinear GPU sweeps are not supported.
 
 .. note::
 

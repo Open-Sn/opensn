@@ -383,6 +383,8 @@ Reasonable values:
 ----------------
 
 ``allow_cycles`` controls whether sweep cycles are allowed in the groupset.
+For CPU ``AAH`` and ``CBC`` sweeps, selected cyclic dependencies are lagged and
+resolved by the groupset iteration.
 
 For most users, this is not the first iterative-method parameter to tune, but it
 is part of the groupset solve setup and can matter on meshes whose sweep
