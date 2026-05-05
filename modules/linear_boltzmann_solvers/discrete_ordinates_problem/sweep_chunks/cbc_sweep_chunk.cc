@@ -20,6 +20,7 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),
                problem.GetCellTransportViews(),
+               problem.GetCellOutflowViews(),
                problem.GetQMomentsLocal(),
                groupset,
                problem.GetBlockID2XSMap(),
@@ -37,6 +38,7 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
     cell_local_id_(0),
     cell_mapping_(nullptr),
     cell_transport_view_(nullptr),
+    cell_outflow_view_(nullptr),
     cell_num_faces_(0),
     cell_num_nodes_(0)
 {
@@ -65,6 +67,7 @@ CBCSweepChunk::SetCell(const Cell* cell_ptr, AngleSet& angle_set)
   cell_local_id_ = cell_ptr->local_id;
   cell_mapping_ = &discretization_.GetCellMapping(*cell_);
   cell_transport_view_ = &cell_transport_views_[cell_->local_id];
+  cell_outflow_view_ = &cell_outflow_views_[cell_->local_id];
   cell_num_faces_ = cell_->faces.size();
   cell_num_nodes_ = cell_mapping_->GetNumNodes();
 
@@ -272,7 +275,7 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
         if (is_boundary_face)
         {
           for (size_t gsg = 0; gsg < gs_size_; ++gsg)
-            cell_transport_view_->AddOutflow(
+            cell_outflow_view_->Add(
               f, gs_gi_ + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
         }
 

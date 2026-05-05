@@ -25,7 +25,8 @@ public:
              const std::shared_ptr<MeshContinuum>& grid,
              const SpatialDiscretization& discretization,
              const std::vector<UnitCellMatrices>& unit_cell_matrices,
-             std::vector<CellLBSView>& cell_transport_views,
+             const std::vector<CellLBSView>& cell_transport_views,
+             std::vector<CellOutflowView>& cell_outflow_views,
              const std::vector<double>& source_moments,
              const LBSGroupset& groupset,
              const BlockID2XSMap& xs,
@@ -36,6 +37,7 @@ public:
       discretization_(discretization),
       unit_cell_matrices_(unit_cell_matrices),
       cell_transport_views_(cell_transport_views),
+      cell_outflow_views_(cell_outflow_views),
       source_moments_(source_moments),
       groupset_(groupset),
       xs_(xs),
@@ -71,7 +73,7 @@ public:
   /// Returns true if angular flux storage is allocated.
   bool SaveAngularFluxEnabled() const { return not destination_psi_.empty(); }
 
-  /// Activates or deactives the surface src flag.
+  /// Activates or deactivates the surface src flag.
   void SetBoundarySourceActiveFlag(bool flag_value) { surface_source_active_ = flag_value; }
 
   /// Returns the surface src-active flag.
@@ -96,7 +98,8 @@ protected:
   const std::shared_ptr<MeshContinuum> grid_;
   const SpatialDiscretization& discretization_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
-  std::vector<CellLBSView>& cell_transport_views_;
+  const std::vector<CellLBSView>& cell_transport_views_;
+  std::vector<CellOutflowView>& cell_outflow_views_;
   const std::vector<double>& source_moments_;
   const LBSGroupset& groupset_;
   const BlockID2XSMap& xs_;

@@ -82,7 +82,7 @@ DiscreteOrdinatesProblemIO::WriteRestartData(const DiscreteOrdinatesProblem& do_
 {
   bool success = H5CreateAttribute<bool>(file_id, "time_dependent", do_problem.IsTimeDependent());
 
-  if (do_problem.GetOptions().write_delayed_psi_to_restart)
+  if (do_problem.GetOptions().restart.write_delayed_psi)
   {
     int gs_id = 0;
     for (const auto& gs : do_problem.GetGroupsets())

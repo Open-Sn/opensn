@@ -20,6 +20,7 @@ AAHSweepChunkRZ::AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset&
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),
                problem.GetCellTransportViews(),
+               problem.GetCellOutflowViews(),
                problem.GetQMomentsLocal(),
                groupset,
                problem.GetBlockID2XSMap(),
@@ -89,7 +90,8 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
     auto cell_local_id = spls[spls_index];
     const auto& cell = grid_->local_cells[cell_local_id];
     const auto& cell_mapping = discretization_.GetCellMapping(cell);
-    auto& cell_transport_view = cell_transport_views_[cell_local_id];
+    const auto& cell_transport_view = cell_transport_views_[cell_local_id];
+    auto& cell_outflow_view = cell_outflow_views_[cell_local_id];
     auto cell_num_faces = cell.faces.size();
     auto cell_num_nodes = cell_mapping.GetNumNodes();
 
@@ -309,7 +311,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
           if (is_boundary_face)
           {
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
-              cell_transport_view.AddOutflow(
+              cell_outflow_view.Add(
                 f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
           }
 

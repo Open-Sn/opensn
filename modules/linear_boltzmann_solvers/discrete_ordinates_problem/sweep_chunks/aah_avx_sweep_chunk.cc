@@ -248,7 +248,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   {
     const uint64_t cell_local_id = spls[spls_index];
     auto& cell = data.grid->local_cells[cell_local_id];
-    auto& cell_transport_view = data.cell_transport_views[cell_local_id];
+    const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
+    auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
     const auto& cell_mapping = data.discretization.GetCellMapping(cell);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     constexpr auto expected_nodes = static_cast<size_t>(NumNodes);
@@ -570,7 +571,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
             const double flux_i = mu_wt_f * IntF_shapeI(i);
 
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
-              cell_transport_view.AddOutflow(f, gs_gi + gsg, flux_i * b[gsg * NumNodes + i]);
+              cell_outflow_view.Add(f, gs_gi + gsg, flux_i * b[gsg * NumNodes + i]);
           }
 
           double* psi = nullptr;
@@ -602,6 +603,7 @@ AAHSweepChunk::Sweep_FixedN(AngleSet& angle_set)
                     discretization_,
                     unit_cell_matrices_,
                     cell_transport_views_,
+                    cell_outflow_views_,
                     source_moments_,
                     groupset_,
                     xs_,

@@ -13,6 +13,62 @@ namespace opensn
 
 class Cell;
 
+/// Group-wise outflow tally for a cell.
+class CellOutflowView
+{
+public:
+  CellOutflowView(int num_faces,
+                  unsigned int num_groups,
+                  const std::vector<int>& face_locality,
+                  bool cell_on_boundary)
+    : num_faces_(num_faces), num_groups_(num_groups)
+  {
+    if (cell_on_boundary)
+    {
+      outflow_.resize(num_faces_);
+      for (std::size_t f = 0; f < num_faces_; ++f)
+        if (face_locality[f] < 0)
+          outflow_[f].assign(num_groups_, 0.0);
+    }
+  }
+
+  void Zero(std::size_t f, unsigned int g)
+  {
+    if (f >= num_faces_)
+      return;
+    assert(f < num_faces_ && "CellOutflowView::Zero face index out of range.");
+    assert(g < num_groups_ && "CellOutflowView::Zero group index out of range.");
+    if (f < outflow_.size() and g < outflow_[f].size())
+      outflow_[f][g] = 0.0;
+  }
+
+  void Add(std::size_t f, unsigned int g, double intS_mu_psi)
+  {
+    if (f >= num_faces_)
+      return;
+    assert(f < num_faces_ && "CellOutflowView::Add face index out of range.");
+    assert(g < num_groups_ && "CellOutflowView::Add group index out of range.");
+    if (f < outflow_.size() and g < outflow_[f].size())
+      outflow_[f][g] += intS_mu_psi;
+  }
+
+  double Get(std::size_t f, unsigned int g) const
+  {
+    if (f >= num_faces_)
+      return 0.0;
+    assert(f < num_faces_ && "CellOutflowView::Get face index out of range.");
+    assert(g < num_groups_ && "CellOutflowView::Get group index out of range.");
+    if (f < outflow_.size() and g < outflow_[f].size())
+      return outflow_[f][g];
+    return 0.0;
+  }
+
+private:
+  std::size_t num_faces_;
+  unsigned int num_groups_;
+  std::vector<std::vector<double>> outflow_;
+};
+
 /// Transport view of a cell.
 class CellLBSView
 {
@@ -21,13 +77,11 @@ public:
               int num_nodes,
               unsigned int num_groups,
               unsigned int num_moments,
-              int num_faces,
               const MultiGroupXS& xs_mapping,
               double volume,
               const std::vector<bool>& face_local_flags,
               const std::vector<int>& face_locality,
-              const std::vector<const Cell*>& neighbor_cell_ptrs,
-              bool cell_on_boundary)
+              const std::vector<const Cell*>& neighbor_cell_ptrs)
     : phi_address_(phi_address),
       num_nodes_(num_nodes),
       num_groups_(num_groups),
@@ -38,13 +92,6 @@ public:
       face_locality_(face_locality),
       neighbor_cell_ptrs_(neighbor_cell_ptrs)
   {
-    if (cell_on_boundary)
-    {
-      outflow_.resize(num_faces);
-      for (int f = 0; f < num_faces; ++f)
-        if (face_locality_[f] < 0)
-          outflow_[f].assign(num_groups_, 0.0);
-    }
   }
 
   size_t MapDOF(uint64_t node, uint64_t moment, unsigned int grp) const
@@ -76,34 +123,6 @@ public:
 
   double GetVolume() const { return volume_; }
 
-  void ZeroOutflow(std::size_t f, unsigned int g)
-  {
-    assert(f < face_local_flags_.size() && "CellLBSView::ZeroOutflow face index out of range.");
-    assert(g < num_groups_ && "CellLBSView::ZeroOutflow group index out of range.");
-    if (f < outflow_.size() and g < outflow_[f].size())
-      outflow_[f][g] = 0.0;
-  }
-
-  void AddOutflow(std::size_t f, unsigned int g, double intS_mu_psi)
-  {
-    assert(f < face_local_flags_.size() && "CellLBSView::AddOutflow face index out of range.");
-    assert(g < num_groups_ && "CellLBSView::AddOutflow group index out of range.");
-    if (f < outflow_.size())
-    {
-      if (g < outflow_[f].size())
-        outflow_[f][g] += intS_mu_psi;
-    }
-  }
-
-  double GetOutflow(std::size_t f, unsigned int g) const
-  {
-    assert(f < face_local_flags_.size() && "CellLBSView::GetOutflow face index out of range.");
-    assert(g < num_groups_ && "CellLBSView::GetOutflow group index out of range.");
-    if (f < outflow_.size() and g < outflow_[f].size())
-      return outflow_[f][g];
-    return 0.0;
-  }
-
   void ReassignXS(const MultiGroupXS& xs) { xs_ = &xs; }
 
 private:
@@ -116,7 +135,6 @@ private:
   const std::vector<bool> face_local_flags_;
   const std::vector<int> face_locality_;
   const std::vector<const Cell*> neighbor_cell_ptrs_;
-  std::vector<std::vector<double>> outflow_;
 };
 
 } // namespace opensn

@@ -345,12 +345,14 @@ DiscreteOrdinatesProblem::SetBoundaryOptions(const InputParameters& params)
   }
   const auto bid = it->second;
   boundary_definitions_[bid] = CreateBoundaryFromParams(params);
+  RebuildBoundaryRuntimeData();
 }
 
 void
 DiscreteOrdinatesProblem::ClearBoundaries()
 {
   boundary_definitions_.clear();
+  RebuildBoundaryRuntimeData();
 }
 
 DiscreteOrdinatesProblem::BoundaryDefinition
@@ -545,8 +547,6 @@ void
 DiscreteOrdinatesProblem::BuildRuntime()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::BuildRuntime");
-  if (initialized_)
-    return;
 
   if (boundary_conditions_block_)
   {
@@ -613,8 +613,26 @@ DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
     return;
 
   sweep_chunk_mode_ = mode;
-  if (initialized_)
+  if (discretization_)
     UpdateAngularFluxStorage();
+}
+
+void
+DiscreteOrdinatesProblem::RebuildBoundaryRuntimeData()
+{
+  if (not grid_face_histogram_)
+    return;
+
+  InitializeBoundaries();
+  for (auto& groupset : groupsets_)
+  {
+    WGDSA::CleanUp(groupset);
+    TGDSA::CleanUp(groupset);
+    WGDSA::Init(*this, groupset);
+    TGDSA::Init(*this, groupset);
+  }
+
+  ReinitializeSolverSchemes();
 }
 
 void
@@ -644,20 +662,12 @@ DiscreteOrdinatesProblem::InitializeSolverSchemes()
 void
 DiscreteOrdinatesProblem::SetTimeDependentMode()
 {
-  OpenSnLogicalErrorIf(
-    not initialized_,
-    GetName() + ": Problem must be fully constructed before calling SetTimeDependentMode.");
-
   ResetMode(SweepChunkMode::TIME_DEPENDENT);
 }
 
 void
 DiscreteOrdinatesProblem::SetSteadyStateMode()
 {
-  OpenSnLogicalErrorIf(not initialized_,
-                       GetName() +
-                         ": Problem must be fully constructed before calling SetSteadyStateMode.");
-
   ResetMode(SweepChunkMode::STEADY_STATE);
 }
 
@@ -666,8 +676,6 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 {
   OpenSnInvalidArgumentIf(target_mode == SweepChunkMode::DEFAULT,
                           GetName() + ": target mode cannot be SweepChunkMode::Default.");
-  OpenSnLogicalErrorIf(not initialized_,
-                       GetName() + ": Problem must be fully constructed before mode changes.");
 
   // Current configured sweep mode (or Default if no explicit mode has been selected yet).
   const auto active_mode = sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT);
@@ -863,7 +871,7 @@ DiscreteOrdinatesProblem::SetSaveAngularFlux(bool save)
 {
   options_.save_angular_flux = save;
 
-  if (initialized_)
+  if (discretization_)
     UpdateAngularFluxStorage();
 }
 
@@ -877,9 +885,6 @@ void
 DiscreteOrdinatesProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 {
   LBSProblem::SetBlockID2XSMap(xs_map);
-
-  if (not initialized_)
-    return;
 
   for (auto& groupset : groupsets_)
   {
@@ -1217,7 +1222,7 @@ DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
   for (const auto& cell : grid_->local_cells)
     for (int f = 0; f < cell.faces.size(); ++f)
       for (auto group = groupset.first_group; group <= groupset.last_group; ++group)
-        cell_transport_views_[cell.local_id].ZeroOutflow(f, group);
+        cell_outflow_views_[cell.local_id].Zero(f, group);
 }
 
 void

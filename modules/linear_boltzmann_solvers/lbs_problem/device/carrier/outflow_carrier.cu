@@ -54,7 +54,7 @@ OutflowCarrier::OutflowCarrier(LBSProblem& lbs_problem)
 }
 
 void
-OutflowCarrier::AccumulateBack(std::vector<CellLBSView>& cell_transport_views)
+OutflowCarrier::AccumulateBack(std::vector<CellOutflowView>& cell_outflow_views)
 {
   // copy data back from the GPU
   crb::copy(host_memory_, device_memory_, host_memory_.size());
@@ -63,12 +63,12 @@ OutflowCarrier::AccumulateBack(std::vector<CellLBSView>& cell_transport_views)
   {
     // get corresponding cell view
     auto [cell_idx, face_idx] = unpack(cell_face_idx);
-    CellLBSView& cell_view = cell_transport_views[cell_idx];
+    CellOutflowView& outflow_view = cell_outflow_views[cell_idx];
     double* src_outflow = reinterpret_cast<double*>(host_memory_.data()) + offset;
     // add outflow for each group
     for (std::uint32_t g = 0; g < num_groups; ++g)
     {
-      cell_view.AddOutflow(face_idx, g, src_outflow[g]);
+      outflow_view.Add(face_idx, g, src_outflow[g]);
     }
   }
 }

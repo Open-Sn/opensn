@@ -23,7 +23,8 @@ struct AAHSweepData
   const std::shared_ptr<MeshContinuum>& grid;
   const SpatialDiscretization& discretization;
   const std::vector<UnitCellMatrices>& unit_cell_matrices;
-  std::vector<CellLBSView>& cell_transport_views;
+  const std::vector<CellLBSView>& cell_transport_views;
+  std::vector<CellOutflowView>& cell_outflow_views;
   const std::vector<double>& source_moments;
   const LBSGroupset& groupset;
   const BlockID2XSMap& xs;
@@ -91,7 +92,8 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
   {
     const auto cell_local_id = spls[spls_index];
     auto& cell = data.grid->local_cells[cell_local_id];
-    auto& cell_transport_view = data.cell_transport_views[cell_local_id];
+    const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
+    auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
     const auto& cell_mapping = data.discretization.GetCellMapping(cell);
     const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
@@ -307,7 +309,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           if (is_boundary_face)
           {
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
-              cell_transport_view.AddOutflow(
+              cell_outflow_view.Add(
                 f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
           }
 

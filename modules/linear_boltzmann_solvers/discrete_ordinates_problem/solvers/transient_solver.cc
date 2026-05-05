@@ -115,7 +115,7 @@ TransientSolver::Initialize()
                           GetName() + ": Problem is in steady-state mode. Call problem."
                                       "SetTimeDependentMode() before initializing this solver.");
 
-  if (not options.read_restart_path.empty())
+  if (not options.restart.read_path.empty())
     restart_successful = ReadRestartData();
 
   if (not restart_successful)
@@ -200,7 +200,7 @@ TransientSolver::Execute()
       if (post_advance_callback_)
         post_advance_callback_();
 
-      if (options.restart_writes_enabled and do_problem_->TriggerRestartDump())
+      if (options.restart.writes_enabled and do_problem_->TriggerRestartDump())
         WriteRestartData();
 
       if (std::abs(tf - current_time_) <= tol)
@@ -220,7 +220,7 @@ TransientSolver::Execute()
   do_problem_->SetTimeStep(dt_nominal);
   enforce_stop_time_ = false;
 
-  if (options.restart_writes_enabled)
+  if (options.restart.writes_enabled)
     WriteRestartData();
 
   log.Log() << program_timer.GetTimeString() << " Finished solver execution " << GetName() << ".";
@@ -335,7 +335,7 @@ TransientSolver::StepPrecursors()
   auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
 
   // Uses phi_new and precursor_prev_local to compute precursor_new_local (theta-flavor)
-  auto& transport_views = do_problem_->GetCellTransportViews();
+  const auto& transport_views = do_problem_->GetCellTransportViews();
   for (const auto& cell : do_problem_->GetGrid()->local_cells)
   {
     const auto& fe_values = do_problem_->GetUnitCellMatrices()[cell.local_id];

@@ -55,7 +55,7 @@ SteadyStateSourceSolver::Initialize()
                                       "SetSteadyStateMode() before initializing this solver.");
   initialized_ = true;
 
-  if (not do_problem_->GetOptions().read_restart_path.empty())
+  if (not do_problem_->GetOptions().restart.read_path.empty())
     do_problem_->ReadRestartData();
 }
 
@@ -72,7 +72,7 @@ SteadyStateSourceSolver::Execute()
   auto& ags_solver = *do_problem_->GetAGSSolver();
   ags_solver.Solve();
 
-  if (options.restart_writes_enabled)
+  if (options.restart.writes_enabled)
     do_problem_->WriteRestartData();
 
   if (options.use_precursors)

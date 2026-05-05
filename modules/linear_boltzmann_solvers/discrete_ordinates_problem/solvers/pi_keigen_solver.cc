@@ -95,7 +95,7 @@ PowerIterationKEigenSolver::Initialize()
   ags_solver->SetVerbosity(print_ags_iters);
 
   bool restart_successful = false;
-  if (not options.read_restart_path.empty())
+  if (not options.restart.read_path.empty())
     restart_successful = ReadRestartData();
 
   if (reset_phi0_ and not restart_successful)
@@ -201,7 +201,7 @@ PowerIterationKEigenSolver::Execute()
                                               outer_status);
     }
 
-    if (options.restart_writes_enabled and do_problem_->TriggerRestartDump())
+    if (options.restart.writes_enabled and do_problem_->TriggerRestartDump())
       WriteRestartData();
 
     if (converged)
@@ -210,7 +210,7 @@ PowerIterationKEigenSolver::Execute()
 
   // If restarts are enabled, always write a restart dump upon convergence or
   // when we reach the iteration limit
-  if (options.restart_writes_enabled)
+  if (options.restart.writes_enabled)
     WriteRestartData();
 
   // Print summary

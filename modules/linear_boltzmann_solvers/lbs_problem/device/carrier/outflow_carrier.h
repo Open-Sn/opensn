@@ -23,7 +23,7 @@ public:
   OutflowCarrier(LBSProblem& lbs_problem);
 
   /// Accumulate computed outflow on GPU back to CPU.
-  void AccumulateBack(std::vector<CellLBSView>& cell_transport_views);
+  void AccumulateBack(std::vector<CellOutflowView>& cell_outflow_views);
   /**
    * Zero-fill device and host memory, forcing flux accumulation to zero to reuse the allocated
    * space for the next sweep.
