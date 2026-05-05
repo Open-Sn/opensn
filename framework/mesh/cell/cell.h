@@ -6,6 +6,7 @@
 #include "framework/data_types/vector3.h"
 #include "framework/data_types/byte_array.h"
 #include <limits>
+#include <functional>
 #include <tuple>
 #include <vector>
 #include <cstdint>
@@ -16,6 +17,18 @@ namespace opensn
 
 class Cell;
 class MeshContinuum;
+
+/// Key identifying a face on a mesh cell by global cell id and local face id.
+struct CellFaceKey
+{
+  /// Global cell ID.
+  std::uint64_t cell_global_id = 0;
+
+  /// Local face ID on the cell.
+  unsigned int face_id = 0;
+
+  bool operator==(const CellFaceKey&) const = default;
+};
 
 enum class CellType
 {
@@ -137,3 +150,33 @@ public:
 };
 
 } // namespace opensn
+
+namespace std
+{
+
+template <>
+struct hash<opensn::CellFaceKey>
+{
+  std::size_t operator()(const opensn::CellFaceKey& key) const noexcept
+  {
+    constexpr std::uint64_t offset = 0x9e3779b97f4a7c15ULL;
+    const auto cell_hash = Mix(key.cell_global_id);
+    const auto face_hash = Mix(static_cast<std::uint64_t>(key.face_id) + offset);
+    return static_cast<std::size_t>(
+      Mix(cell_hash ^ (face_hash + offset + (cell_hash << 6) + (cell_hash >> 2))));
+  }
+
+private:
+  static std::uint64_t Mix(std::uint64_t value) noexcept
+  {
+    constexpr std::uint64_t multiplier = 0xe9846afb1a615dULL;
+    value ^= value >> 32;
+    value *= multiplier;
+    value ^= value >> 32;
+    value *= multiplier;
+    value ^= value >> 28;
+    return value;
+  }
+};
+
+} // namespace std

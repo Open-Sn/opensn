@@ -51,6 +51,15 @@ CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization
       const bool is_incoming_face = (orientation == FaceOrientation::INCOMING);
       const bool is_local_face = face.IsNeighborLocal(&grid);
       const bool is_boundary_face = not face.has_neighbor;
+
+      if ((not is_local_face) and (not is_boundary_face))
+      {
+        if (is_incoming_face)
+          ++num_incoming_nonlocal_faces_;
+        else if (is_outgoing_face)
+          ++num_outgoing_nonlocal_faces_;
+      }
+
       for (size_t fn = 0; fn < num_face_nodes; ++fn)
       {
         CBCD_NodeIndex node_index;

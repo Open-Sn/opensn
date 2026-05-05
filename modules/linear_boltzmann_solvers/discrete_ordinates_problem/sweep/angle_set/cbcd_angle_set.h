@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h"
 #include "caribou/main.hpp"
 #include <memory>
 
@@ -72,7 +72,7 @@ public:
 protected:
   const CBC_SPDS& cbc_spds_;
   std::vector<Task> current_task_list_;
-  CBC_AsynchronousCommunicator async_comm_;
+  CBCD_AsynchronousCommunicator async_comm_;
   /// Associated crb::Stream.
   crb::Stream stream_;
   /// Angle indices on GPU.

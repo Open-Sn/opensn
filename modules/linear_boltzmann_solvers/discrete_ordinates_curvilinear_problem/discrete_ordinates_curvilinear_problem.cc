@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/cbc_sweep_chunk_rz.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -338,9 +339,13 @@ DiscreteOrdinatesCurvilinearProblem::GetSecondaryUnitCellMatrices() const
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
-  auto sweep_chunk = std::make_shared<AAHSweepChunkRZ>(*this, groupset);
+  if (sweep_type_ == "AAH")
+    return std::make_shared<AAHSweepChunkRZ>(*this, groupset);
 
-  return sweep_chunk;
+  if (sweep_type_ == "CBC")
+    return std::make_shared<CBCSweepChunkRZ>(*this, groupset);
+
+  OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");
 }
 
 } // namespace opensn

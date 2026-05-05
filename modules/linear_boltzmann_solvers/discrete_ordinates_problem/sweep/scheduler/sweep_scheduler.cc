@@ -12,9 +12,34 @@
 #include "caliper/cali.h"
 #include <algorithm>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace opensn
 {
+namespace
+{
+
+bool
+IsCylindrical(const AngleAggregation& angle_agg)
+{
+  return angle_agg.GetQuadrature()->GetDimension() == 2 &&
+         angle_agg.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL;
+}
+
+bool
+HasCurvilinearQuadrature(const AngleAggregation& angle_agg)
+{
+  return dynamic_cast<const CurvilinearProductQuadrature*>(angle_agg.GetQuadrature().get()) !=
+         nullptr;
+}
+
+bool
+NeedsRZAngleSetDependencies(const AngleAggregation& angle_agg)
+{
+  return IsCylindrical(angle_agg) && HasCurvilinearQuadrature(angle_agg);
+}
+
+} // namespace
 
 SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
                                AngleAggregation& angle_agg,
@@ -25,11 +50,13 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
 
   angle_agg_.InitializeReflectingBCs();
 
+  const bool needs_rz_angle_dependencies = NeedsRZAngleSetDependencies(angle_agg_);
+
   if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     InitializeAlgoDOG();
 
   if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE ||
-      scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
+      scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH || needs_rz_angle_dependencies)
   {
     angle_agg_.SetupAngleSetDependencies();
   }
@@ -44,18 +71,12 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
   for (auto& angset : angle_agg_)
     angset->InitializeDelayedUpstreamData();
 
-  if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
+  if (needs_rz_angle_dependencies)
   {
-    const auto* curvi_quad =
-      dynamic_cast<const CurvilinearProductQuadrature*>(angle_agg_.GetQuadrature().get());
-    if (curvi_quad && angle_agg_.GetQuadrature()->GetDimension() == 2 &&
-        angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL)
-    {
-      const auto& following_map = angle_agg_.GetFollowingAngleSetsMap();
-      for (const auto& [from, to_set] : following_map)
-        for (auto* to : to_set)
-          preceding_angle_sets_[to].insert(from);
-    }
+    const auto& following_map = angle_agg_.GetFollowingAngleSetsMap();
+    for (const auto& [from, to_set] : following_map)
+      for (auto* to : to_set)
+        preceding_angle_sets_[to].insert(from);
   }
 
   // Get local max num messages accross anglesets
@@ -77,8 +98,7 @@ SweepScheduler::InitializeAlgoDOG()
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::InitializeAlgoDOG");
 
-  const bool is_cylindrical = angle_agg_.GetQuadrature()->GetDimension() == 2 &&
-                              angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL;
+  const bool is_cylindrical = IsCylindrical(angle_agg_);
 
   std::unordered_map<unsigned int, int> angle_order;
   const auto* curvi_quad =
@@ -189,10 +209,7 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoDOG");
 
-  const bool is_cylindrical = angle_agg_.GetQuadrature()->GetDimension() == 2 &&
-                              angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL;
-
-  if (is_cylindrical)
+  if (IsCylindrical(angle_agg_))
     ScheduleAlgoDOGRZ(sweep_chunk);
   else
     ScheduleAlgoDOGDefault(sweep_chunk);
@@ -289,19 +306,10 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoFIFO");
 
-  // Loop over AngleSetGroups
-  bool finished = false;
-  while (not finished)
-  {
-    finished = true;
-
-    for (auto& angle_set : angle_agg_)
-    {
-      AngleSetStatus status = angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
-      if (status != AngleSetStatus::FINISHED)
-        finished = false;
-    } // for angleset
-  } // while not finished
+  if (NeedsRZAngleSetDependencies(angle_agg_))
+    ScheduleAlgoFIFORZ(sweep_chunk);
+  else
+    ScheduleAlgoFIFODefault(sweep_chunk);
 
   // Receive delayed data
   opensn::mpi_comm.barrier();
@@ -326,6 +334,68 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 
   for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
     bndry->ResetAnglesReadyStatus();
+}
+
+void
+SweepScheduler::ScheduleAlgoFIFORZ(SweepChunk& sweep_chunk)
+{
+  bool finished = false;
+  std::unordered_set<AngleSet*> completed;
+  while (not finished)
+  {
+    finished = true;
+
+    for (auto& angle_set : angle_agg_)
+    {
+      const auto dep_it = preceding_angle_sets_.find(angle_set.get());
+      if (dep_it != preceding_angle_sets_.end())
+      {
+        bool deps_ready = true;
+        for (auto* dep : dep_it->second)
+        {
+          if (completed.find(dep) == completed.end())
+          {
+            deps_ready = false;
+            break;
+          }
+        }
+
+        if (not deps_ready)
+        {
+          const auto status =
+            angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::READY_TO_EXECUTE);
+          if (status == AngleSetStatus::FINISHED)
+            completed.insert(angle_set.get());
+          else
+            finished = false;
+          continue;
+        }
+      }
+
+      AngleSetStatus status = angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+      if (status == AngleSetStatus::FINISHED)
+        completed.insert(angle_set.get());
+      if (status != AngleSetStatus::FINISHED)
+        finished = false;
+    } // for angleset
+  } // while not finished
+}
+
+void
+SweepScheduler::ScheduleAlgoFIFODefault(SweepChunk& sweep_chunk)
+{
+  bool finished = false;
+  while (not finished)
+  {
+    finished = true;
+
+    for (auto& angle_set : angle_agg_)
+    {
+      const auto status = angle_set->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+      if (status != AngleSetStatus::FINISHED)
+        finished = false;
+    } // for angleset
+  } // while not finished
 }
 
 #ifndef __OPENSN_WITH_GPU__

@@ -10,7 +10,7 @@
 #include "caribou/main.hpp"
 #include <cstddef>
 #include <functional>
-#include <map>
+#include <unordered_map>
 
 namespace crb = caribou;
 
@@ -93,13 +93,6 @@ public:
   void AllocatePrelocIOutgoingPsi() override {}
   void AllocateDelayedPrelocIOutgoingPsi() override {}
 
-  // cell_global_id, face_id
-  using CellFaceKey = std::pair<uint64_t, unsigned int>;
-  std::map<CellFaceKey, std::vector<double>>& GetDeplocsOutgoingMessages()
-  {
-    return deplocs_outgoing_messages_;
-  }
-
 private:
   /// Reference to the common data.
   const CBCD_FLUDSCommonData& common_data_;
@@ -138,8 +131,6 @@ private:
   void CreatePointerSet();
 
   std::vector<std::vector<double>> boundaryI_incoming_psi_;
-
-  std::map<CellFaceKey, std::vector<double>> deplocs_outgoing_messages_;
 };
 
 } // namespace opensn

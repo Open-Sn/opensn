@@ -35,6 +35,12 @@ public:
   /// Get number of outgoing non-local face nodes.
   std::size_t GetNumOutgoingNonlocalNodes() const { return num_outgoing_nonlocal_nodes_; }
 
+  /// Get number of incoming non-local faces.
+  std::size_t GetNumIncomingNonlocalFaces() const { return num_incoming_nonlocal_faces_; }
+
+  /// Get number of outgoing non-local faces.
+  std::size_t GetNumOutgoingNonlocalFaces() const { return num_outgoing_nonlocal_faces_; }
+
   /// Get incoming boundary node map.
   const std::vector<BoundaryNodeInfo>& GetIncomingBoundaryNodeMap() const
   {
@@ -67,8 +73,12 @@ private:
   size_t num_incoming_boundary_nodes_;
   /// Number of outgoing boundary face nodes.
   size_t num_outgoing_boundary_nodes_;
+  /// Number of incoming non-local faces.
+  size_t num_incoming_nonlocal_faces_;
   /// Number of incoming non-local face nodes.
   size_t num_incoming_nonlocal_nodes_;
+  /// Number of outgoing non-local faces.
+  size_t num_outgoing_nonlocal_faces_;
   /// Number of outgoing non-local face nodes.
   size_t num_outgoing_nonlocal_nodes_;
   /// Device pointer to cell-face-node map for angular flux buffer access.

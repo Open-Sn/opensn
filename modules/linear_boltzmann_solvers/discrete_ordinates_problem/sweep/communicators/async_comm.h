@@ -24,15 +24,6 @@ public:
 
   virtual ~AsynchronousCommunicator() = default;
 
-  virtual std::vector<double>& InitGetDownwindMessageData(int location_id,
-                                                          uint64_t cell_global_id,
-                                                          unsigned int face_id,
-                                                          size_t angle_set_id,
-                                                          size_t data_size)
-  {
-    OpenSnLogicalError("Method not implemented");
-  }
-
 protected:
   FLUDS& fluds_;
   const MPICommunicatorSet& comm_set_;

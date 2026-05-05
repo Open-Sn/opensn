@@ -37,6 +37,12 @@ private:
   /// Applies a first-in-first-out sweep scheduling.
   void ScheduleAlgoFIFO(SweepChunk& sweep_chunk);
 
+  /// Executes FIFO scheduler (RZ).
+  void ScheduleAlgoFIFORZ(SweepChunk& sweep_chunk);
+
+  /// Executes FIFO scheduler (default).
+  void ScheduleAlgoFIFODefault(SweepChunk& sweep_chunk);
+
   /// Applies a first-in-first-out sweep scheduling on device.
   void ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk);
 
@@ -89,7 +95,7 @@ private:
   };
   std::vector<RuleValues> rule_values_;
 
-  /// Angle set dependencies (preceding sets) used by DOG scheduling.
+  /// Angle set dependencies (preceding sets) used by RZ scheduling.
   std::unordered_map<AngleSet*, std::set<AngleSet*>> preceding_angle_sets_;
 
   SPMD_ThreadPool pool_;

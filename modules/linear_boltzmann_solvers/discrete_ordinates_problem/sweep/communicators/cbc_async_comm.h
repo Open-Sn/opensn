@@ -4,67 +4,94 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h"
-#include "framework/data_types/byte_array.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h"
 #include "mpicpp-lite/mpicpp-lite.h"
-#include <map>
-#include <vector>
-#include <cstdint>
 #include <cstddef>
-
-namespace mpi = mpicpp_lite;
+#include <cstdint>
+#include <limits>
+#include <span>
+#include <vector>
 
 namespace opensn
 {
 
-class MPICommunicatorSet;
-class ByteArray;
+namespace mpi = mpicpp_lite;
 
+class MPICommunicatorSet;
+class CBC_FLUDS;
+
+/// Nonblocking MPI communicator for host CBC nonlocal face flux payloads.
 class CBC_AsynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
   explicit CBC_AsynchronousCommunicator(size_t angle_set_id,
                                         FLUDS& fluds,
-                                        const MPICommunicatorSet& comm_set)
-    : AsynchronousCommunicator(fluds, comm_set), angle_set_id_(angle_set_id)
-  {
-  }
+                                        const MPICommunicatorSet& comm_set);
 
-  std::vector<double>& InitGetDownwindMessageData(int location_id,
-                                                  uint64_t cell_global_id,
-                                                  unsigned int face_id,
-                                                  size_t angle_set_id,
-                                                  size_t data_size) override;
+  /// Queue a complete downwind face payload for sending.
+  void QueueDownwindMessage(size_t peer_index,
+                            size_t incoming_face_slot,
+                            std::span<const double> payload);
 
   bool SendData();
 
-  std::vector<uint64_t> ReceiveData();
+  /// Receive all currently available nonlocal face payloads into a caller-owned buffer.
+  void ReceiveData(std::vector<std::uint32_t>& cells_who_received_data);
 
-  void Reset()
-  {
-    outgoing_message_queue_.clear();
-    send_buffer_.clear();
-  }
+  bool HasPendingCommunication() const noexcept { return not send_buffer_.empty(); }
+
+  void Reset();
 
 protected:
+  /// MPI tag shared by the angle set.
   const size_t angle_set_id_;
+  /// Current location.
+  const int location_id_;
+  /// Receiver-side communicator.
+  const mpi::Communicator& receive_comm_;
+  CBC_FLUDS& cbc_fluds_;
+  /// Number of locations that may send nonlocal payloads to this location.
+  std::size_t num_receive_sources_ = 0;
 
-  // location_id, cell_global_id, face_id
-  using MessageKey = std::tuple<int, uint64_t, unsigned int>;
-  std::map<MessageKey, std::vector<double>> outgoing_message_queue_;
-
+  /// Destination-batched nonblocking send buffer.
   struct BufferItem
   {
-    int destination = 0;
-    mpi::Request mpi_request;
+    /// SPDS-successor peer index.
+    size_t peer_index = 0;
+    /// Destination communicator.
+    const mpi::Communicator* comm = nullptr;
+    /// Destination rank in `comm`.
+    int rank = 0;
+    /// Posted-send flag.
     bool send_initiated = false;
-    bool completed = false;
-    ByteArray data_array;
+    /// Packed face records.
+    std::vector<std::byte> data;
   };
-  std::vector<BufferItem> send_buffer_;
 
-  // cell_global_id, face_id
-  using CellFaceKey = std::pair<uint64_t, unsigned int>;
-  void MergeDeplocsOutgoingMessages(std::map<CellFaceKey, std::vector<double>>& received_messages);
+  /// Cached destination routing.
+  struct SendPeer
+  {
+    /// Destination communicator.
+    const mpi::Communicator* comm = nullptr;
+    /// Destination rank in `comm`.
+    int rank = 0;
+  };
+
+  BufferItem& GetOpenSendBuffer(size_t peer_index);
+
+  /// Queued or in-flight sends.
+  std::vector<BufferItem> send_buffer_;
+  /// MPI requests aligned with `send_buffer_`.
+  std::vector<mpi::Request> send_requests_;
+  /// Completed buffers retained for reuse.
+  std::vector<BufferItem> reusable_send_buffers_;
+  /// Packed receive scratch buffer.
+  std::vector<std::byte> receive_buffer_;
+  /// SPDS-successor-indexed routing cache.
+  std::vector<SendPeer> send_peers_;
+  /// Open send-buffer index for each SPDS-successor peer.
+  std::vector<size_t> open_send_buffer_indices_;
+  static constexpr size_t INVALID_BUFFER_INDEX = std::numeric_limits<size_t>::max();
 };
 
 } // namespace opensn
