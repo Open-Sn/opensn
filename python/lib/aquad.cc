@@ -99,19 +99,28 @@ WrapQuadrature(py::module& aquad)
     Wrapper of :cpp:class:`opensn::AngularQuadrature`.
     )"
   );
-  angular_quadrature.def_readonly(
+  angular_quadrature.def_property_readonly(
     "abscissae",
-    &AngularQuadrature::abscissae,
+    [](const AngularQuadrature& self) -> const std::vector<QuadraturePointPhiTheta>&
+    {
+      return self.GetAbscissae();
+    },
     "Vector of polar and azimuthal angles."
   );
-  angular_quadrature.def_readonly(
+  angular_quadrature.def_property_readonly(
     "weights",
-    &AngularQuadrature::weights,
+    [](const AngularQuadrature& self) -> const std::vector<double>&
+    {
+      return self.GetWeights();
+    },
     "Quadrature weights."
   );
-  angular_quadrature.def_readonly(
+  angular_quadrature.def_property_readonly(
     "omegas",
-    &AngularQuadrature::omegas,
+    [](const AngularQuadrature& self) -> const std::vector<Vector3>&
+    {
+      return self.GetOmegas();
+    },
     "Vector of direction vectors."
   );
   angular_quadrature.def(
@@ -173,6 +182,13 @@ WrapQuadrature(py::module& aquad)
     &AngularQuadrature::GetMomentToHarmonicsIndexMap,
     py::return_value_policy::reference_internal
   );
+  angular_quadrature.def("GetDimension", &AngularQuadrature::GetDimension);
+  angular_quadrature.def("GetScatteringOrder", &AngularQuadrature::GetScatteringOrder);
+  angular_quadrature.def("GetNumMoments", &AngularQuadrature::GetNumMoments);
+  angular_quadrature.def("GetNumAngles", &AngularQuadrature::GetNumAngles);
+  angular_quadrature.def("GetAbscissa", &AngularQuadrature::GetAbscissa, py::return_value_policy::reference_internal);
+  angular_quadrature.def("GetWeight", &AngularQuadrature::GetWeight);
+  angular_quadrature.def("GetOmega", &AngularQuadrature::GetOmega, py::return_value_policy::reference_internal);
   // clang-format on
 }
 
@@ -192,6 +208,18 @@ WrapProductQuadrature(py::module& aquad)
     Wrapper of :cpp:class:`opensn::ProductQuadrature`.
     )"
   );
+  product_quadrature.def(
+    "GetPolarAngles",
+    &ProductQuadrature::GetPolarAngles,
+    py::return_value_policy::reference_internal
+  );
+  product_quadrature.def(
+    "GetAzimuthalAngles",
+    &ProductQuadrature::GetAzimuthalAngles,
+    py::return_value_policy::reference_internal
+  );
+  product_quadrature.def("GetNumPolarAngles", &ProductQuadrature::GetNumPolarAngles);
+  product_quadrature.def("GetNumAzimuthalAngles", &ProductQuadrature::GetNumAzimuthalAngles);
 
   // Gauss-Legendre 1D slab product quadrature
   auto angular_quadrature_gl_prod_1d_slab = py::class_<GLProductQuadrature1DSlab,
@@ -342,6 +370,18 @@ WrapTriangularQuadrature(py::module& aquad)
     Wrapper of :cpp:class:`opensn::TriangularQuadrature`.
     )"
   );
+  triangular_quadrature.def(
+    "GetPolarAngles",
+    &TriangularQuadrature::GetPolarAngles,
+    py::return_value_policy::reference_internal
+  );
+  triangular_quadrature.def(
+    "GetAzimuthalAnglesPerPolarLevel",
+    &TriangularQuadrature::GetAzimuthalAnglesPerPolarLevel,
+    py::return_value_policy::reference_internal
+  );
+  triangular_quadrature.def("GetNumPolarAngles", &TriangularQuadrature::GetNumPolarAngles);
+  triangular_quadrature.def("GetNumAzimuthalAngles", &TriangularQuadrature::GetNumAzimuthalAngles);
 
   // Triangular GLC 3D XYZ quadrature
   auto angular_quadrature_triangular_glc_3d_xyz = py::class_<GLCTriangularQuadrature3DXYZ,
@@ -543,6 +583,7 @@ WrapSLDFEsqQuadrature(py::module& aquad)
         Verbosity.
     )"
   );
+  sldfesq_quadrature_3d_xyz.def("GetQuadratureOrder", &SLDFEsqQuadrature3DXYZ::GetQuadratureOrder);
   sldfesq_quadrature_3d_xyz.def(
     "LocallyRefine",
     &SLDFEsqQuadrature3DXYZ::LocallyRefine,
@@ -620,6 +661,7 @@ WrapSLDFEsqQuadrature(py::module& aquad)
         Verbosity.
     )"
   );
+  sldfesq_quadrature_2d_xy.def("GetQuadratureOrder", &SLDFEsqQuadrature2DXY::GetQuadratureOrder);
   sldfesq_quadrature_2d_xy.def(
     "LocallyRefine",
     &SLDFEsqQuadrature2DXY::LocallyRefine,
@@ -705,6 +747,7 @@ WrapLebedevQuadrature(py::module& aquad)
         Whether to print verbose output during initialization.
     )"
   );
+  angular_quadrature_lebedev_3d_xyz.def("GetQuadratureOrder", &LebedevQuadrature3DXYZ::GetQuadratureOrder);
 
   // Lebedev 2D XY quadrature
   auto angular_quadrature_lebedev_2d_xy = py::class_<LebedevQuadrature2DXY,
@@ -751,6 +794,7 @@ WrapLebedevQuadrature(py::module& aquad)
         Whether to print verbose output during initialization.
     )"
   );
+  angular_quadrature_lebedev_2d_xy.def("GetQuadratureOrder", &LebedevQuadrature2DXY::GetQuadratureOrder);
   // clang-format on
 }
 

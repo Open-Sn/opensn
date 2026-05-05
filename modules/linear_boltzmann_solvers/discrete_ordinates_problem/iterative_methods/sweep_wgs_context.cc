@@ -107,6 +107,19 @@ SweepWGSContext::GetSystemSize()
     local_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.first;
   const size_t global_size =
     global_node_count * num_moments * groupset_numgrps + num_delayed_psi_info.second;
+  const size_t num_angles = groupset.quadrature->GetNumAngles();
+  const size_t num_psi_global = global_node_count * num_angles * groupset.GetNumGroups();
+  const size_t num_delayed_psi_global = num_delayed_psi_info.second;
+
+  if (log_info)
+  {
+    log.Log() << "Total number of angular unknowns: " << num_psi_global << "\n"
+              << "Number of lagged angular unknowns: " << num_delayed_psi_global << "("
+              << std::setprecision(2)
+              << static_cast<double>(num_delayed_psi_global) * 100 /
+                   static_cast<double>(num_psi_global)
+              << "%)";
+  }
 
   return {static_cast<int64_t>(local_size), static_cast<int64_t>(global_size)};
 }

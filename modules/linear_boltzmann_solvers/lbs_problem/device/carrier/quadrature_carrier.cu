@@ -24,7 +24,7 @@ QuadratureCarrier::ComputeSize(const LBSGroupset& groupset)
   alloc_size += 2 * sizeof(std::uint32_t);
   // get number of angles and number of moments
   const AngularQuadrature& quadrature = *(groupset.quadrature);
-  std::size_t num_angles = quadrature.omegas.size();
+  std::size_t num_angles = quadrature.GetNumAngles();
   auto num_moments = quadrature.GetNumMoments();
   // size of each directions
   alloc_size += num_angles * (4 * sizeof(double) + 2 * num_moments * sizeof(double));
@@ -39,7 +39,7 @@ QuadratureCarrier::Assemble(const LBSGroupset& groupset)
   // number of angles and number of moments
   char* data = reinterpret_cast<char*>(host_memory_.data());
   std::uint32_t* num_angles_and_moments_data = reinterpret_cast<std::uint32_t*>(data);
-  std::size_t num_angles = quadrature.omegas.size();
+  std::size_t num_angles = quadrature.GetNumAngles();
   *(num_angles_and_moments_data++) = num_angles;
   const auto& m2d = quadrature.GetMomentToDiscreteOperator();
   const auto& d2m = quadrature.GetDiscreteToMomentOperator();
@@ -50,14 +50,14 @@ QuadratureCarrier::Assemble(const LBSGroupset& groupset)
   for (std::size_t direction_num = 0; direction_num < num_angles; ++direction_num)
   {
     // omega
-    const Vector3& omega = quadrature.omegas[direction_num];
+    const Vector3& omega = quadrature.GetOmega(direction_num);
     double* omega_data = reinterpret_cast<double*>(data);
     *(omega_data++) = omega.x;
     *(omega_data++) = omega.y;
     *(omega_data++) = omega.z;
     // weight
     double* weight_data = omega_data;
-    *(weight_data++) = quadrature.weights[direction_num];
+    *(weight_data++) = quadrature.GetWeight(direction_num);
     // M2D data
     double* m2d_data = weight_data;
     for (unsigned int m = 0; m < num_moments; ++m)

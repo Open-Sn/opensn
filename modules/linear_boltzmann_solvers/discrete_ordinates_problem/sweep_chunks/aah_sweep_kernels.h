@@ -125,8 +125,8 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
     for (size_t as_ss_idx = 0; as_ss_idx < as_angle_indices.size(); ++as_ss_idx)
     {
       const auto direction_num = as_angle_indices[as_ss_idx];
-      const auto omega = groupset.quadrature->omegas[direction_num];
-      const auto wt = groupset.quadrature->weights[direction_num];
+      const auto omega = groupset.quadrature->GetOmega(direction_num);
+      const auto wt = groupset.quadrature->GetWeight(direction_num);
 
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;

@@ -29,10 +29,18 @@ public:
     return map_directions_;
   }
 
-  std::vector<double> polar_ang;
-  std::vector<double> azimu_ang;
+  const std::vector<double>& GetPolarAngles() const { return polar_ang_; }
+
+  const std::vector<double>& GetAzimuthalAngles() const { return azimu_ang_; }
+
+  unsigned int GetNumPolarAngles() const override { return n_polar_; }
+
+  unsigned int GetNumAzimuthalAngles() const override { return n_azimuthal_; }
 
 protected:
+  std::vector<double> polar_ang_;
+  std::vector<double> azimu_ang_;
+
   ProductQuadrature(unsigned int dimension,
                     unsigned int scattering_order,
                     OperatorConstructionMethod method)
@@ -52,6 +60,12 @@ protected:
 
   /// Linear indices of ordered directions mapped to polar level.
   std::map<unsigned int, std::vector<unsigned int>> map_directions_;
+
+  /// Number of polar angles specified for this product quadrature.
+  unsigned int n_polar_ = 0;
+
+  /// Number of azimuthal angles specified for this product quadrature.
+  unsigned int n_azimuthal_ = 0;
 };
 
 class GLProductQuadrature1DSlab : public ProductQuadrature

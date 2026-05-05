@@ -75,7 +75,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   const auto& m_ell_em_map = quadrature->GetMomentToHarmonicsIndexMap();
 
   const unsigned int num_moments = m_ell_em_map.size();
-  const size_t num_dirs = quadrature->omegas.size();
+  const size_t num_dirs = quadrature->GetNumAngles();
 
   opensn::log.Log() << "End Set/Get params." << std::endl;
   opensn::log.Log() << "Num Moments: " << num_moments << std::endl;
@@ -319,8 +319,8 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   {
     for (size_t d = 0; d < num_dirs; ++d)
     {
-      const auto& omega = quadrature->omegas[d];
-      const auto& weight = quadrature->weights[d];
+      const auto& omega = quadrature->GetOmega(d);
+      const auto& weight = quadrature->GetWeight(d);
 
       std::vector<int64_t> iorder, jorder, korder;
       if (omega.x > 0.0)

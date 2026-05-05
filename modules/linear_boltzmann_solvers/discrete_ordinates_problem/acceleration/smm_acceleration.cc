@@ -317,8 +317,9 @@ SMMAcceleration::ComputeBoundaryFactors()
   for (const auto& groupset : do_problem_.GetGroupsets())
   {
     const auto& quad = groupset.quadrature;
-    const auto num_gs_dirs = quad->omegas.size();
-    const auto wt_sum = std::accumulate(quad->weights.begin(), quad->weights.end(), 0.0);
+    const auto num_gs_dirs = quad->GetNumAngles();
+    const auto& weights = quad->GetWeights();
+    const auto wt_sum = std::accumulate(weights.begin(), weights.end(), 0.0);
 
     // Loop over cells
     for (const auto& cell : grid->local_cells)
@@ -342,7 +343,7 @@ SMMAcceleration::ComputeBoundaryFactors()
           // |\Omega \cdot \hat{n}| divided by the sum of the quadrature weights.
           double val = 0.0;
           for (size_t d = 0; d < num_gs_dirs; ++d)
-            val += quad->weights[d] * std::fabs(quad->omegas[d].Dot(face.normal));
+            val += quad->GetWeight(d) * std::fabs(quad->GetOmega(d).Dot(face.normal));
           bndry_factors_[imap][gs] = val / wt_sum;
         }
         ++f;
@@ -441,7 +442,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
   {
     const auto& psi_uk_man = groupset.psi_uk_man_;
     const auto& quad = groupset.quadrature;
-    const auto num_gs_dirs = quad->omegas.size();
+    const auto num_gs_dirs = quad->GetNumAngles();
 
     const auto first_grp = groupset.first_group;
     const auto num_gs_groups = groupset.GetNumGroups();
@@ -466,8 +467,8 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
           // Perform the quad integration
           for (size_t d = 0; d < num_gs_dirs; ++d)
           {
-            const auto& omega = quad->omegas[d];
-            const auto& wt = quad->weights[d];
+            const auto& omega = quad->GetOmega(d);
+            const auto& wt = quad->GetWeight(d);
 
             const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
             const auto coeff = wt * psi[gs][psi_dof];
@@ -512,8 +513,8 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
               // Perform the quadrature integration
               for (size_t d = 0; d < num_gs_dirs; ++d)
               {
-                const auto& wt = quad->weights[d];
-                const auto& omega = quad->omegas[d];
+                const auto& wt = quad->GetWeight(d);
+                const auto& omega = quad->GetOmega(d);
                 const auto mu = std::fabs(omega.Dot(face.normal));
 
                 const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);

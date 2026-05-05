@@ -98,8 +98,8 @@ CBCSweepChunk::Sweep(AngleSet& angle_set)
   for (size_t as_ss_idx = 0; as_ss_idx < num_angles_in_as_; ++as_ss_idx)
   {
     auto direction_num = as_angle_indices[as_ss_idx];
-    auto omega = groupset_.quadrature->omegas[direction_num];
-    auto wt = groupset_.quadrature->weights[direction_num];
+    auto omega = groupset_.quadrature->GetOmega(direction_num);
+    auto wt = groupset_.quadrature->GetWeight(direction_num);
 
     // Reset right-hand side
     for (size_t gsg = 0; gsg < gs_size_; ++gsg)

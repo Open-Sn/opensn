@@ -19,7 +19,8 @@ LebedevQuadrature3DXYZ::LebedevQuadrature3DXYZ(unsigned int quadrature_order,
                                                unsigned int scattering_order,
                                                bool verbose,
                                                OperatorConstructionMethod method)
-  : AngularQuadrature(AngularQuadratureType::LEBEDEV_QUADRATURE, 3, scattering_order, method)
+  : AngularQuadrature(AngularQuadratureType::LEBEDEV_QUADRATURE, 3, scattering_order, method),
+    quadrature_order_(quadrature_order)
 {
   LoadFromOrder(quadrature_order, verbose);
   MakeHarmonicIndices();
@@ -30,9 +31,9 @@ LebedevQuadrature3DXYZ::LebedevQuadrature3DXYZ(unsigned int quadrature_order,
 void
 LebedevQuadrature3DXYZ::LoadFromOrder(unsigned int quadrature_order, bool verbose)
 {
-  abscissae.clear();
-  weights.clear();
-  omegas.clear();
+  abscissae_.clear();
+  weights_.clear();
+  omegas_.clear();
 
   // Get points from LebedevOrders
   const auto& points = LebedevOrders::GetOrderPoints(quadrature_order);
@@ -56,14 +57,14 @@ LebedevQuadrature3DXYZ::LoadFromOrder(unsigned int quadrature_order, bool verbos
 
     // Create the point
     QuadraturePointPhiTheta qpoint(phi, theta);
-    abscissae.push_back(qpoint);
+    abscissae_.push_back(qpoint);
 
     // Create the direction vector
     Vector3 omega{x / r, y / r, z / r};
-    omegas.push_back(omega);
+    omegas_.push_back(omega);
 
     // Store the weight
-    weights.push_back(w);
+    weights_.push_back(w);
     weight_sum += w;
 
     if (verbose)
@@ -94,7 +95,7 @@ LebedevQuadrature3DXYZ::LoadFromOrder(unsigned int quadrature_order, bool verbos
 
     // Normalize weights
     const double scale_factor = expected_sum / weight_sum;
-    for (auto& w : weights)
+    for (auto& w : weights_)
       w *= scale_factor;
 
     if (verbose)
@@ -106,7 +107,8 @@ LebedevQuadrature2DXY::LebedevQuadrature2DXY(unsigned int quadrature_order,
                                              unsigned int scattering_order,
                                              bool verbose,
                                              OperatorConstructionMethod method)
-  : AngularQuadrature(AngularQuadratureType::LEBEDEV_QUADRATURE, 2, scattering_order, method)
+  : AngularQuadrature(AngularQuadratureType::LEBEDEV_QUADRATURE, 2, scattering_order, method),
+    quadrature_order_(quadrature_order)
 {
   LoadFromOrder(quadrature_order, verbose);
   MakeHarmonicIndices();
@@ -117,9 +119,9 @@ LebedevQuadrature2DXY::LebedevQuadrature2DXY(unsigned int quadrature_order,
 void
 LebedevQuadrature2DXY::LoadFromOrder(unsigned int quadrature_order, bool verbose)
 {
-  abscissae.clear();
-  weights.clear();
-  omegas.clear();
+  abscissae_.clear();
+  weights_.clear();
+  omegas_.clear();
 
   // Get points from LebedevOrders
   const auto& points = LebedevOrders::GetOrderPoints(quadrature_order);
@@ -154,14 +156,14 @@ LebedevQuadrature2DXY::LoadFromOrder(unsigned int quadrature_order, bool verbose
 
     // Create the point
     QuadraturePointPhiTheta qpoint(phi, theta);
-    abscissae.push_back(qpoint);
+    abscissae_.push_back(qpoint);
 
     // Create the direction vector
     Vector3 omega{x / r, y / r, z / r};
-    omegas.push_back(omega);
+    omegas_.push_back(omega);
 
     // Store the weight (Doubled to renormalize from 0.5 to 1.0)
-    weights.push_back(2.0 * w);
+    weights_.push_back(2.0 * w);
     weight_sum += 2.0 * w;
 
     if (verbose)
@@ -174,8 +176,7 @@ LebedevQuadrature2DXY::LoadFromOrder(unsigned int quadrature_order, bool verbose
 
   if (verbose)
   {
-    log.Log() << "Loaded " << abscissae.size()
-              << " Lebedev 2D quadrature points (upper hemisphere) "
+    log.Log() << "Loaded " << GetNumAngles() << " Lebedev 2D quadrature points (upper hemisphere) "
               << "from quadrature order " << quadrature_order;
     log.Log() << ostr.str() << "\n"
               << "Weight sum=" << weight_sum;

@@ -133,7 +133,7 @@ AGSLinearSolver::Solve()
 
     const double avg_sweep_time = stats.total_sweep_time / static_cast<double>(stats.num_sweeps);
     const auto& groupset = sweep_context->groupset;
-    const size_t num_angles = groupset.quadrature->abscissae.size();
+    const size_t num_angles = groupset.quadrature->GetNumAngles();
     const size_t num_unknowns =
       lbs_problem_.GetGlobalNodeCount() * num_angles * groupset.GetNumGroups();
     const auto num_delayed_psi_info = groupset.angle_agg->GetNumDelayedAngularDOFs();

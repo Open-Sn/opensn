@@ -75,6 +75,21 @@ protected:
   {
   }
 
+  /// Sets the operator construction method.
+  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
+  {
+    construction_method_ = method;
+  }
+
+  /// Populate the map of moment index to spherical harmonic indices.
+  void MakeHarmonicIndices();
+  /// Quadrature-specific order parameter used by harmonic-selection rules.
+  virtual unsigned int GetQuadratureOrder() const { return 0; }
+  /// Number of polar angles used by harmonic-selection rules.
+  virtual unsigned int GetNumPolarAngles() const { return 0; }
+  /// Number of azimuthal angles used by harmonic-selection rules.
+  virtual unsigned int GetNumAzimuthalAngles() const { return 0; }
+
   /// Discrete-to-moment operator matrix.
   /// OpenSn storage is indexed [angle][moment].
   NDArray<double, 2> d2m_op_ = {};
@@ -90,12 +105,12 @@ protected:
   /// Maximum scattering order for moment calculations.
   unsigned int scattering_order_;
   OperatorConstructionMethod construction_method_;
-  unsigned int quadrature_order_ = 0;
-  unsigned int n_polar_ = 0;
-  unsigned int n_azimuthal_ = 0;
-
-  /// Populate the map of moment index to spherical harmonic indices.
-  void MakeHarmonicIndices();
+  /// Quadrature point abscissae in spherical coordinates.
+  std::vector<QuadraturePointPhiTheta> abscissae_ = {};
+  /// Quadrature weights.
+  std::vector<double> weights_ = {};
+  /// Quadrature point direction vectors in Cartesian coordinates.
+  std::vector<Vector3> omegas_ = {};
 
 public:
   virtual ~AngularQuadrature() = default;
@@ -105,12 +120,6 @@ public:
 
   /// Compute the moment-to-discrete operator.
   void BuildMomentToDiscreteOperator();
-
-  /// Sets the operator construction method
-  void SetOperatorConstructionMethod(OperatorConstructionMethod method)
-  {
-    construction_method_ = method;
-  }
 
   /// Gets the current operator construction method
   OperatorConstructionMethod GetOperatorConstructionMethod() const { return construction_method_; }
@@ -132,6 +141,10 @@ public:
 
   unsigned int GetNumMoments() const { return m_to_ell_em_map_.size(); }
 
+  size_t GetNumAngles() const { return omegas_.size(); }
+
+  bool Empty() const { return GetNumAngles() == 0; }
+
   AngularQuadratureType GetType() const { return type_; }
 
   /// Return a user-facing quadrature name.
@@ -140,22 +153,20 @@ public:
   /// Return the sum of all quadrature weights.
   virtual double GetWeightSum() const;
 
-  /// Set the quadrature-specific order parameter.
-  /// For Lebedev: Lebedev order {3, 5, 7, ...}; for SLDFESQ: uniform refinement level.
-  void SetQuadratureOrder(unsigned int order) { quadrature_order_ = order; }
+  const std::vector<QuadraturePointPhiTheta>& GetAbscissae() const { return abscissae_; }
 
-  /// Set the number of positive-mu polar points (product quadrature types).
-  void SetNumberOfPolar(unsigned int num_polar) { n_polar_ = num_polar; }
+  const QuadraturePointPhiTheta& GetAbscissa(size_t angle_index) const
+  {
+    return abscissae_.at(angle_index);
+  }
 
-  /// Set the total number of azimuthal points (product quadrature types).
-  void SetNumberOfAzimuthal(unsigned int num_azimu) { n_azimuthal_ = num_azimu; }
+  const std::vector<double>& GetWeights() const { return weights_; }
 
-  /// Quadrature point abscissae in spherical coordinates.
-  std::vector<QuadraturePointPhiTheta> abscissae = {};
-  /// Quadrature weights.
-  std::vector<double> weights = {};
-  /// Quadrature point direction vectors in Cartesian coordinates.
-  std::vector<Vector3> omegas = {};
+  double GetWeight(size_t angle_index) const { return weights_.at(angle_index); }
+
+  const std::vector<Vector3>& GetOmegas() const { return omegas_; }
+
+  const Vector3& GetOmega(size_t angle_index) const { return omegas_.at(angle_index); }
 };
 
 } // namespace opensn

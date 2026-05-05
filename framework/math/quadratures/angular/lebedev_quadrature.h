@@ -31,9 +31,13 @@ public:
 
   std::string GetName() const override { return "3D XYZ Lebedev"; }
 
+  unsigned int GetQuadratureOrder() const override { return quadrature_order_; }
+
 private:
   /// Load quadrature points for the given order from predefined tabulated data.
   void LoadFromOrder(unsigned int quadrature_order, bool verbose = false);
+
+  unsigned int quadrature_order_ = 0;
 };
 
 /// Lebedev quadrature restricted to the upper hemisphere (2D XY).
@@ -56,9 +60,13 @@ public:
 
   std::string GetName() const override { return "2D XY Lebedev"; }
 
+  unsigned int GetQuadratureOrder() const override { return quadrature_order_; }
+
 private:
   /// Load upper-hemisphere points for the given order, halving weights at the equator.
   void LoadFromOrder(unsigned int quadrature_order, bool verbose = false);
+
+  unsigned int quadrature_order_ = 0;
 };
 
 } // namespace opensn

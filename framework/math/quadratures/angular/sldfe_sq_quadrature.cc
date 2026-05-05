@@ -23,11 +23,6 @@ SLDFEsqQuadrature::SLDFEsqQuadrature(int level,
 {
   if (level < 0)
     throw std::invalid_argument("SLDFEsqQuadrature: level must be non-negative");
-
-  // Set quadrature_order_ to the refinement level so harmonic selection
-  // can directly look up the correct empirical rules without needing
-  // to reverse-map from the number of angles.
-  quadrature_order_ = static_cast<unsigned int>(level);
 }
 
 std::array<std::array<Vector3, 4>, 4>
@@ -482,9 +477,9 @@ SLDFEsqQuadrature::CopyToAllOctants()
 void
 SLDFEsqQuadrature::PopulateQuadratureAbscissae()
 {
-  abscissae.clear();
-  weights.clear();
-  omegas.clear();
+  abscissae_.clear();
+  weights_.clear();
+  omegas_.clear();
   raw_weight_sum_ = 0.0;
 
   for (const auto& sq : deployed_SQs)
@@ -503,14 +498,14 @@ SLDFEsqQuadrature::PopulateQuadratureAbscissae()
         continue;
 
       raw_weight_sum_ += weight;
-      abscissae.emplace_back(phi, theta);
-      weights.push_back(weight);
-      omegas.push_back(omega);
+      abscissae_.emplace_back(phi, theta);
+      weights_.push_back(weight);
+      omegas_.push_back(omega);
     }
   }
 
   // Normalize weights to 1.0
-  for (auto& w : weights)
+  for (auto& w : weights_)
     w /= raw_weight_sum_;
 }
 
@@ -530,7 +525,7 @@ SLDFEsqQuadrature3DXYZ::SLDFEsqQuadrature3DXYZ(int level,
 
   if (verbose)
   {
-    log.Log() << "SLDFEsqQuadrature3DXYZ created with " << omegas.size() << " directions"
+    log.Log() << "SLDFEsqQuadrature3DXYZ created with " << GetNumAngles() << " directions"
               << " at refinement level " << level;
   }
 }
@@ -545,7 +540,7 @@ SLDFEsqQuadrature2DXY::SLDFEsqQuadrature2DXY(int level,
 
   if (verbose)
   {
-    log.Log() << "SLDFEsqQuadrature2DXY created with " << omegas.size() << " directions"
+    log.Log() << "SLDFEsqQuadrature2DXY created with " << GetNumAngles() << " directions"
               << " at refinement level " << level << " (upper hemisphere only)";
   }
 }
@@ -730,11 +725,11 @@ SLDFEsqQuadrature::PrintQuadratureToFile(const std::string& file_base)
   {
     points_file << "x,y,z,weights\n";
 
-    const bool has_weights = weights.size() == omegas.size();
-    for (size_t i = 0; i < omegas.size(); ++i)
+    const bool has_weights = weights_.size() == omegas_.size();
+    for (size_t i = 0; i < omegas_.size(); ++i)
     {
-      const auto& point = omegas[i];
-      const double normalized_weight = has_weights ? weights[i] : 0.0;
+      const auto& point = omegas_[i];
+      const double normalized_weight = has_weights ? weights_[i] : 0.0;
       const double raw_weight = normalized_weight * raw_weight_sum_;
       points_file << point[0] << "," << point[1] << "," << point[2] << "," << raw_weight << "\n";
     }
