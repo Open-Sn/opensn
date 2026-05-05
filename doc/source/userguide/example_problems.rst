@@ -541,15 +541,10 @@ problem type and a compatible quadrature.
    solver.Initialize()
    solver.Execute()
 
-The curvilinear problem supports CPU ``AAH`` and ``CBC`` sweeps. If CBC is
-appropriate for the mesh and sweep graph, select it explicitly:
-
-.. code-block:: python
-
-   phys = DiscreteOrdinatesCurvilinearProblem(
-       ...,
-       sweep_type="CBC",
-   )
+The curvilinear problem supports CPU ``AAH`` and ``CBC`` sweep types. Use
+``AAH`` as the default, particularly when cyclic sweep dependencies are
+possible; choose ``CBC`` only when the sweep graph satisfies CBC's acyclicity
+requirements.
 
 Example 9: Updating a Problem In Place
 ======================================

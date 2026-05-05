@@ -292,14 +292,13 @@ It uses the same general structure as
 curvilinear geometry and currently requires:
 
 * ``coord_system=2`` for cylindrical coordinates
-* a compatible ``GLCProductQuadrature2DRZ`` quadrature
 
 This problem type is experimental, and it should be treated that way in
 production workflows.
 
 CPU curvilinear solves support both ``sweep_type="AAH"`` and
-``sweep_type="CBC"``. Use ``AAH`` as the conservative default, especially when
-cyclic sweep dependencies are possible; choose ``CBC`` only when the sweep graph
+``sweep_type="CBC"``. Use ``AAH`` as the default, particularly when
+cyclic sweep dependencies are possible. Choose ``CBC`` only when the sweep graph
 is acyclic for the chosen mesh, decomposition, and quadrature. Curvilinear GPU
 sweeps are not supported.
 

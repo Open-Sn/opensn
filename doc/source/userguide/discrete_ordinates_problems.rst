@@ -494,9 +494,8 @@ curvilinear companion to the Cartesian problem class.
 
 It uses the same general construction pattern, but currently requires:
 
-* a suitable curvilinear mesh,
-* ``coord_system=2`` for cylindrical coordinates,
-* a compatible ``GLCProductQuadrature2DRZ`` quadrature and solver setup.
+* a suitable curvilinear mesh
+* ``coord_system=2`` for cylindrical coordinates
 
 Important current limitations:
 
@@ -519,18 +518,10 @@ Example:
    )
 
 For CPU curvilinear solves, ``sweep_type`` may be either ``"AAH"`` or
-``"CBC"``:
-
-.. code-block:: python
-
-   phys = DiscreteOrdinatesCurvilinearProblem(
-       ...,
-       sweep_type="CBC",
-   )
-
-The same sweep-cycle guidance applies as for Cartesian problems: use ``AAH`` as
-the default when cyclic sweep dependencies are possible, and choose ``CBC`` only
-for problems whose sweep graph satisfies CBC's acyclicity requirements.
+``"CBC"``. The same sweep-cycle guidance applies as for Cartesian problems:
+use ``AAH`` as the default when cyclic sweep dependencies are possible, and
+choose ``CBC`` only for problems whose sweep graph satisfies CBC's acyclicity
+requirements.
 
 Typical Construction Patterns
 =============================
