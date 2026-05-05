@@ -68,7 +68,20 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
     return AngleSetStatus::RECEIVING;
 
   if (permission != AngleSetStatus::EXECUTE)
-    return AngleSetStatus::READY_TO_EXECUTE;
+  {
+    const bool all_tasks_completed = (num_completed_tasks_ == task_list_->size());
+    const bool all_messages_sent =
+      (not async_comm_.HasPendingCommunication()) or async_comm_.SendData();
+    if (all_tasks_completed and all_messages_sent)
+    {
+      for (auto& angleset : following_angle_sets_)
+        angleset->DecrementCounter();
+      executed_ = true;
+      return AngleSetStatus::FINISHED;
+    }
+
+    return ready_tasks_.empty() ? AngleSetStatus::NOT_FINISHED : AngleSetStatus::READY_TO_EXECUTE;
+  }
 
   while (not ready_tasks_.empty())
   {
