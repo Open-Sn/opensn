@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/avx_sweep_chunk_utils.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk_shared.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 
 namespace opensn
@@ -13,64 +14,70 @@ class CellMapping;
 class DiscreteOrdinatesProblem;
 
 /**
- * Implements the core sweep operation for a single cell within the
- * cell-by-cell (CBC) sweep algorithm.
+ * Host CBC sweep chunk.
  *
- * This class is responsible for performing the discrete ordinates transport
- * calculation on a given cell for all angles and groups managed by its
- * current AngleSet
- * It interacts with a CBC_FLUDS object to obtain upwind angular flux data
- * (from local neighbors, MPI remote buffers, or boundaries) and to store
- * outgoing angular flux data (to local neighbors or MPI send buffers)
+ * Dispatches between the generic and fixed-node CBC sweep kernels for the
+ * currently bound angle set and cell.
  */
 class CBCSweepChunk : public SweepChunk
 {
 public:
+  /**
+   * Construct one CBC sweep chunk for a groupset.
+   *
+   * \param problem Owning discrete-ordinates problem.
+   * \param groupset Groupset swept by this chunk.
+   */
   CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
-  /// Set the current AngleSet
+  /**
+   * Bind the current angle set.
+   *
+   * \param angle_set Angle set to bind.
+   */
   void SetAngleSet(AngleSet& angle_set) override;
 
-  /// Set the current cell to be swept
+  /**
+   * Bind the current cell to be swept.
+   *
+   * \param cell_ptr Cell to bind.
+   * \param angle_set Owning angle set.
+   */
   void SetCell(Cell const* cell_ptr, AngleSet& angle_set) override;
 
   /**
-   * Performs the discrete ordinates sweep calculation for the currently
-   * set cell, for all angles and groups within the provided AngleSet.
+   * Sweep the currently bound cell for the provided angle set.
    *
-   * It:
-   * - Assembles the local transport equation system for each angle and group
-   * - Retrieves upwind angular fluxes from local neighbors, remote locations
-   *   (via MPI data managed by CBC_FLUDS), or boundaries
-   * - Solves the local system for the outgoing angular fluxes at the cell nodes
-   * - Updates the global scalar flux moments
-   * - If save_angular_flux is true, stores the computed angular fluxes into
-   *   the global angular flux vector
-   * - Propagates outgoing angular fluxes to local downwind neighbors or stages
-   *   them for MPI transmission to remote downwind neighbors
+   * Selects the fixed-node kernel when all local cells have the same node count
+   * in the supported range, otherwise falls back to the generic CBC kernel.
+   *
+   * \param angle_set Angle set currently being advanced.
    */
   void Sweep(AngleSet& angle_set) override;
 
 protected:
-  CBC_FLUDS* fluds_;
-  size_t gs_size_;
-  unsigned int gs_gi_;
-  size_t num_angles_in_as_;
-  unsigned int group_stride_; // Stride for consecutive angles
-  size_t group_angle_stride_; // Stride for consecutive spatial DOFs
-  bool surface_source_active_;
+  /// Owning discrete-ordinates problem.
+  DiscreteOrdinatesProblem& problem_;
+  /// Cached per-cell and per-angleset context.
+  CBCSweepChunkContext ctx_;
+  /// Group block size for SIMD batch solves.
+  unsigned int group_block_size_ = 0;
+  /// Reusable scratch buffers for generic sweep chunk kernel.
+  CBCGenericSweepScratch generic_scratch_;
 
-  const Cell* cell_;
-  std::uint32_t cell_local_id_;
-  const CellMapping* cell_mapping_;
-  CellLBSView* cell_transport_view_;
-  size_t cell_num_faces_;
-  size_t cell_num_nodes_;
+private:
+  /// Pointer-to-member for the selected sweep implementation (generic or fixed-node).
+  using SweepFunc = void (CBCSweepChunk::*)(AngleSet&);
+  /// Selected sweep function pointer (generic or fixed-node).
+  SweepFunc sweep_impl_ = nullptr;
 
-  DenseMatrix<Vector3> G_;
-  DenseMatrix<double> M_;
-  std::vector<DenseMatrix<double>> M_surf_;
-  std::vector<Vector<double>> IntS_shapeI_;
+  /// Construct the aggregated sweep data for the current cell.
+  CBCSweepData MakeSweepData(const std::vector<double>* psi_old);
+  /// Sweep using the generic kernel.
+  void Sweep_Generic(AngleSet& angle_set);
+  /// Sweep using the fixed-node kernel.
+  template <unsigned int NumNodes>
+  void Sweep_FixedN(AngleSet& angle_set);
 };
 
 } // namespace opensn
