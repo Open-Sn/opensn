@@ -18,17 +18,18 @@ import sys
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
+
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.solver import (
         DiscreteOrdinatesProblem,
         PowerIterationKEigenSolver,
         TransientSolver,
     )
-    from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.xs import MultiGroupXS
-    from pyopensn.mesh import OrthogonalMeshGenerator
 
 
 def read_block_value(file_path, block_begin, block_end):
@@ -75,11 +76,17 @@ if __name__ == "__main__":
     xs_list = []
     for i in range(5):
         xs = MultiGroupXS()
-        xs.LoadFromOpenSn(os.path.join(os.path.dirname(__file__), f"xs1g_delayed_ramp_{i}.cxs"))
+        xs.LoadFromOpenSn(os.path.join(
+            os.path.dirname(__file__),
+            f"../../../../assets/xs/xs1g_delayed_ramp_{i}.cxs")
+        )
         xs_list.append(xs)
     xs_crit = xs_list[0]
     xs_super = xs_list[-1]
-    xs_scalar_file = os.path.join(os.path.dirname(__file__), "xs1g_delayed_ramp_0.cxs")
+    xs_scalar_file = os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_delayed_ramp_0.cxs"
+    )
 
     pquad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)
 

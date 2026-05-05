@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     # Load cross sections from OpenMC MGXS file
     xs_hdpe = MultiGroupXS()
-    xs_hdpe.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
+    xs_hdpe.LoadFromOpenMC("../../../../assets/xs/HDPE.h5", "set1", 294.0)
 
     # Create sources
     strength = [0.0 for _ in range(num_groups)]

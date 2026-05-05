@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # Energy groups and cross-section data.
     num_groups = 21
     xs_graphite = MultiGroupXS()
-    xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
+    xs_graphite.LoadFromOpenSn("../../../../assets/xs/xs_graphite_pure.xs")
 
     # Define sources
     strength = [0.0 for _ in range(num_groups)]

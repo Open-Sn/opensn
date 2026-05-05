@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     # 1-group fissile material with k_inf ~ 1.0
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn("simple_fissile.xs")
+    xs.LoadFromOpenSn("../../../../assets/xs/simple_fissile.xs")
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,

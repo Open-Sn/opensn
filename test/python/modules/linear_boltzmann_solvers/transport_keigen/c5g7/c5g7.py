@@ -37,9 +37,9 @@ if __name__ == "__main__":
         print(f"Running C5G7 with mesh_type = {mesh_type} and k_method = {k_method}\n")
 
     if mesh_type == "coarse":
-        mesh_file = "mesh/2d_c5g7_coarse.msh"
+        mesh_file = "../../../../../assets/mesh/2d_c5g7_coarse.msh"
     else:
-        mesh_file = "mesh/2d_c5g7_refined.msh"
+        mesh_file = "../../../../../assets/mesh/2d_c5g7_refined.msh"
     meshgen = FromFileMeshGenerator(filename=mesh_file)
     grid = meshgen.Execute()
     grid.SetOrthogonalBoundaries()
@@ -49,13 +49,13 @@ if __name__ == "__main__":
     for m in range(7):
         xss.append(MultiGroupXS())
 
-    xss[0].LoadFromOpenSn("materials/XS_water.xs")
-    xss[1].LoadFromOpenSn("materials/XS_UO2.xs")
-    xss[2].LoadFromOpenSn("materials/XS_7pMOX.xs")
-    xss[3].LoadFromOpenSn("materials/XS_guide_tube.xs")
-    xss[4].LoadFromOpenSn("materials/XS_4_3pMOX.xs")
-    xss[5].LoadFromOpenSn("materials/XS_8_7pMOX.xs")
-    xss[6].LoadFromOpenSn("materials/XS_fission_chamber.xs")
+    xss[0].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_water.xs")
+    xss[1].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_UO2.xs")
+    xss[2].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_7pMOX.xs")
+    xss[3].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_guide_tube.xs")
+    xss[4].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_4_3pMOX.xs")
+    xss[5].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_8_7pMOX.xs")
+    xss[6].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_fission_chamber.xs")
 
     num_groups = xss[0].num_groups
 

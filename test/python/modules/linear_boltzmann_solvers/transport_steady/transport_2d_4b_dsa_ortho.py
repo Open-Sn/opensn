@@ -55,9 +55,9 @@ if __name__ == "__main__":
 
     num_groups = 168
     xs_graphite = MultiGroupXS()
-    xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
+    xs_graphite.LoadFromOpenSn("../../../../assets/xs/xs_graphite_pure.xs")
     xs_air = MultiGroupXS()
-    xs_air.LoadFromOpenSn("xs_air50RH.xs")
+    xs_air.LoadFromOpenSn("../../../../assets/xs/xs_air50RH.xs")
 
     strength = [0.0 for _ in range(num_groups)]
     strength[0] = 1.0

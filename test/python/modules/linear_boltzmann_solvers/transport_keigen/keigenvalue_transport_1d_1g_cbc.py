@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     # Cross sections
     xs_simple_fissile = MultiGroupXS()
-    xs_simple_fissile.LoadFromOpenSn("simple_fissile.xs")
+    xs_simple_fissile.LoadFromOpenSn("../../../../assets/xs/simple_fissile.xs")
 
     # Setup Physics
     num_groups = 1

@@ -60,7 +60,7 @@ if __name__ == "__main__":
     # Cross sections
     num_groups = 3
     xs_upscatter = MultiGroupXS()
-    xs_upscatter.LoadFromOpenSn("simple_upscatter.xs")
+    xs_upscatter.LoadFromOpenSn("../../../../assets/xs/simple_upscatter.xs")
 
     # Source
     strength = [1.0 for _ in range(num_groups)]

@@ -33,7 +33,7 @@ if __name__ == "__main__":
     num_groups = 168
     grid.SetUniformBlockID(0)
     xs_3_170 = MultiGroupXS()
-    xs_3_170.LoadFromOpenSn("xs_168g.xs")
+    xs_3_170.LoadFromOpenSn("../../../../assets/xs/xs_168g.xs")
 
     # Angular quadrature
     pquad = GLProductQuadrature1DSlab(n_polar=80, scattering_order=5)

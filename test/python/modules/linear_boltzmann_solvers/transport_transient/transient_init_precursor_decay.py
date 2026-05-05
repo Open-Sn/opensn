@@ -71,7 +71,10 @@ if __name__ == "__main__":
     dt = 0.05
     Q = 0.5
 
-    xs_path = os.path.join(os.path.dirname(__file__), "xs1g_delayed_crit_1p.cxs")
+    xs_path = os.path.join(
+        os.path.dirname(__file__),
+        "../../../../assets/xs/xs1g_delayed_crit_1p.cxs"
+    )
     xs = MultiGroupXS()
     xs.LoadFromOpenSn(xs_path)
 

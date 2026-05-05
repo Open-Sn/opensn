@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     # Load cross-section data from file
     xs_data = MultiGroupXS()
-    xs_data.LoadFromOpenSn("transport_2d_cyl_2g.xs")
+    xs_data.LoadFromOpenSn("../../../../assets/xs/transport_2d_cyl_2g.xs")
 
     # Angular quadrature
     pquad = GLCProductQuadrature2DRZ(n_polar=4, n_azimuthal=8, scattering_order=0)

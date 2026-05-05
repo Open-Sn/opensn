@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     # Add cross sections to materials
     xs_hdpe = MultiGroupXS()
-    xs_hdpe.LoadFromOpenMC("HDPE.h5", "set1", 294.0)
+    xs_hdpe.LoadFromOpenMC("../../../../assets/xs/HDPE.h5", "set1", 294.0)
 
     strength = [0.0 for _ in range(num_groups)]
     strength[0] = 1.0

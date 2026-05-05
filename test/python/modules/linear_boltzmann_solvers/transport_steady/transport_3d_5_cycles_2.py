@@ -45,7 +45,7 @@ if __name__ == "__main__":
     # Define energy groups and load cross-section data
     num_groups = 5
     xs_graphite = MultiGroupXS()
-    xs_graphite.LoadFromOpenSn("xs_graphite_pure.xs")
+    xs_graphite.LoadFromOpenSn("../../../../assets/xs/xs_graphite_pure.xs")
 
     # Create volumetric source
     strength = [0.0 for _ in range(num_groups)]
