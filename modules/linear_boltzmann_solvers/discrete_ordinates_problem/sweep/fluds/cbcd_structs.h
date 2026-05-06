@@ -101,7 +101,8 @@ struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
   double* __restrict__ outgoing_boundary_psi = nullptr;
 
   /// Get pointer to the incoming angular flux (if the face is not incoming, a nullptr is returned).
-  constexpr double* GetIncomingFluxPointer(const CBCD_NodeIndex& node_index) const noexcept
+  constexpr double* GetIncomingFluxPointer(const CBCD_NodeIndex& node_index,
+                                           unsigned int angle_group_idx) const noexcept
   {
     // Undefined case (corresponds to a parallel face)
     if (node_index.IsUndefined())
@@ -114,22 +115,23 @@ struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
     // Incoming boundary case
     if (node_index.IsBoundary())
     {
-      return incoming_boundary_psi + node_index.GetIndex() * stride_size;
+      return incoming_boundary_psi + node_index.GetIndex() * stride_size + angle_group_idx;
     }
     // Incoming local case
     if (node_index.IsLocal())
     {
-      return local_psi + node_index.GetIndex() * stride_size;
+      return local_psi + node_index.GetIndex() * stride_size + angle_group_idx;
     }
     // Incoming non-local case
     else
     {
-      return nonlocal_incoming_psi + node_index.GetIndex() * stride_size;
+      return nonlocal_incoming_psi + node_index.GetIndex() * stride_size + angle_group_idx;
     }
   }
 
   /// Get pointer to the outgoing angular flux (if the face is not outgoing, a nullptr is returned).
-  constexpr double* GetOutgoingFluxPointer(const CBCD_NodeIndex& node_index) const noexcept
+  constexpr double* GetOutgoingFluxPointer(const CBCD_NodeIndex& node_index,
+                                           unsigned int angle_group_idx) const noexcept
   {
     // Undefined case (corresponds to a parallel face)
     if (node_index.IsUndefined())
@@ -142,17 +144,17 @@ struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
     // Outgoing boundary case
     if (node_index.IsBoundary())
     {
-      return outgoing_boundary_psi + node_index.GetIndex() * stride_size;
+      return outgoing_boundary_psi + node_index.GetIndex() * stride_size + angle_group_idx;
     }
     // Outgoing local case
     if (node_index.IsLocal())
     {
-      return local_psi + node_index.GetIndex() * stride_size;
+      return local_psi + node_index.GetIndex() * stride_size + angle_group_idx;
     }
     // Outgoing non-local case
     else
     {
-      return nonlocal_outgoing_psi + node_index.GetIndex() * stride_size;
+      return nonlocal_outgoing_psi + node_index.GetIndex() * stride_size + angle_group_idx;
     }
   }
 };

@@ -101,6 +101,7 @@ CBCD_FLUDS::CopyIncomingBoundaryPsiToDevice(CBCDSweepChunk& sweep_chunk, CBCD_An
 {
   const auto& angle_indices = angle_set->GetAngleIndices();
   const auto& num_angles = angle_indices.size();
+  const auto& groupset = sweep_chunk.GetGroupset();
 
   for (const auto& node : incoming_boundary_node_map_)
   {
@@ -114,7 +115,7 @@ CBCD_FLUDS::CopyIncomingBoundaryPsiToDevice(CBCDSweepChunk& sweep_chunk, CBCD_An
                                                      node.cell_local_id,
                                                      node.face_id,
                                                      node.face_node,
-                                                     sweep_chunk.GetGroupsetGroupIndex(),
+                                                     0,
                                                      sweep_chunk.IsSurfaceSourceActive());
       std::copy(src_psi, src_psi + num_groups_, dst_psi);
     }

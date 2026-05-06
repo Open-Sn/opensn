@@ -39,6 +39,58 @@ enum class CellType
 std::string CellTypeName(CellType type);
 
 /**
+ * Node on a face.
+ * This class represents a node on a face. It stores the cell local index, the face index
+ * within the cell and the index of the node relative to the face as compact 64-bit integer. This
+ * class abstracts the node for usage with std::map and std::set.
+ */
+class FaceNode
+{
+public:
+  /// Default constructor.
+  constexpr FaceNode() = default;
+  /// Member constructor.
+  constexpr FaceNode(std::uint32_t cell_idx, std::uint16_t face_idx, std::uint16_t face_node_idx)
+    : value_(0)
+  {
+    value_ |= static_cast<std::uint64_t>(cell_idx) << 32;
+    value_ |= static_cast<std::uint64_t>(face_idx) << 16;
+    value_ |= static_cast<std::uint64_t>(face_node_idx);
+  }
+
+  /// Comparison operator for ordering.
+  constexpr bool operator<(const FaceNode& other) const { return value_ < other.value_; }
+
+  /// Equality operator.
+  constexpr bool operator==(const FaceNode& other) const { return value_ == other.value_; }
+
+  /// Get cell local index.
+  constexpr std::uint32_t GetCellIndex() const { return static_cast<std::uint32_t>(value_ >> 32); }
+
+  /// Get face index.
+  constexpr std::uint16_t GetFaceIndex() const
+  {
+    return static_cast<std::uint16_t>((value_ >> 16) & 0xFFFFU);
+  }
+
+  /// Get face node index.
+  constexpr std::uint16_t GetFaceNodeIndex() const
+  {
+    return static_cast<std::uint16_t>(value_ & 0xFFFFU);
+  }
+
+  /// Check if the face node is initialized.
+  constexpr bool IsInitialized() const
+  {
+    return value_ != std::numeric_limits<std::uint64_t>::max();
+  }
+
+private:
+  /// Core value.
+  std::uint64_t value_ = std::numeric_limits<std::uint64_t>::max();
+};
+
+/**
  * In this paradigm a face is an object which largely is considered to be planar (meaning all the
  * vertices lay in the same plane).
  */
@@ -137,3 +189,11 @@ public:
 };
 
 } // namespace opensn
+
+namespace std
+{
+
+/// Print face node.
+ostream& operator<<(ostream& out, const opensn::FaceNode& n);
+
+} // namespace std

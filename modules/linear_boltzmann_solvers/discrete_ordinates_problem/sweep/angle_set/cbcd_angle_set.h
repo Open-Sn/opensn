@@ -20,7 +20,7 @@ class CBCD_AngleSet : public AngleSet
 {
 public:
   CBCD_AngleSet(size_t id,
-                size_t num_groups,
+                const LBSGroupset& groupset,
                 const SPDS& spds,
                 std::shared_ptr<FLUDS>& fluds,
                 const std::vector<size_t>& angle_indices,
@@ -49,19 +49,7 @@ public:
 
   bool ReceiveDelayedData() override { return true; }
 
-  const double* PsiBoundary(uint64_t boundary_id,
-                            unsigned int angle_num,
-                            uint64_t cell_local_id,
-                            unsigned int face_num,
-                            unsigned int fi,
-                            unsigned int g,
-                            bool surface_source_active) override;
-
-  double* PsiReflected(uint64_t boundary_id,
-                       unsigned int angle_num,
-                       uint64_t cell_local_id,
-                       unsigned int face_num,
-                       unsigned int fi) override;
+  void SyncDeviceAngleIndices() override;
 
   crb::Stream& GetStream() { return stream_; }
 
@@ -69,12 +57,14 @@ public:
 
   std::vector<Task>& GetCurrentTaskList() { return current_task_list_; }
 
+  void UpdateDependencyCounters();
+
 protected:
   const CBC_SPDS& cbc_spds_;
   std::vector<Task> current_task_list_;
   CBC_AsynchronousCommunicator async_comm_;
   /// Associated crb::Stream.
-  crb::Stream stream_;
+  crb::Stream stream_ = crb::Stream::get_null_stream();
   /// Angle indices on GPU.
   crb::DeviceMemory<std::uint32_t> device_angle_indices_;
 };

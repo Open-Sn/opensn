@@ -22,6 +22,28 @@ enum class SchedulingAlgorithm
   ASYNC_FIFO = 4          ///< ASYNC_FIFO
 };
 
+struct RuleValues
+{
+  std::shared_ptr<AngleSet> angle_set;
+  int depth_of_graph;
+  int sign_of_omegax;
+  int sign_of_omegay;
+  int sign_of_omegaz;
+  int azimuthal_order;
+  size_t set_index;
+
+  explicit RuleValues(std::shared_ptr<AngleSet>& ref_as)
+    : angle_set(ref_as),
+      depth_of_graph(0),
+      sign_of_omegax(1),
+      sign_of_omegay(1),
+      sign_of_omegaz(1),
+      azimuthal_order(0),
+      set_index(0)
+  {
+  }
+};
+
 class SweepScheduler
 {
 public:
@@ -46,18 +68,6 @@ private:
   /// Executes the depth-of-graph algorithm.
   void ScheduleAlgoDOG(SweepChunk& sweep_chunk);
 
-  /// Sort rule values for DOG scheduling (RZ).
-  void SortRuleValuesDOGRZ();
-
-  /// Sort rule values for DOG scheduling (default).
-  void SortRuleValuesDOGDefault();
-
-  /// Executes DOG scheduler (RZ).
-  void ScheduleAlgoDOGRZ(SweepChunk& sweep_chunk);
-
-  /// Executes DOG scheduler (default).
-  void ScheduleAlgoDOGDefault(SweepChunk& sweep_chunk);
-
   /// Performs the all-at-once scheduling algorithm.
   void ScheduleAlgoAAO(SweepChunk& sweep_chunk);
 
@@ -66,27 +76,6 @@ private:
   AngleAggregation& angle_agg_;
   SweepChunk& sweep_chunk_;
 
-  struct RuleValues
-  {
-    std::shared_ptr<AngleSet> angle_set;
-    int depth_of_graph;
-    int sign_of_omegax;
-    int sign_of_omegay;
-    int sign_of_omegaz;
-    int azimuthal_order;
-    size_t set_index;
-
-    explicit RuleValues(std::shared_ptr<AngleSet>& ref_as)
-      : angle_set(ref_as),
-        depth_of_graph(0),
-        sign_of_omegax(1),
-        sign_of_omegay(1),
-        sign_of_omegaz(1),
-        azimuthal_order(0),
-        set_index(0)
-    {
-    }
-  };
   std::vector<RuleValues> rule_values_;
 
   /// Angle set dependencies (preceding sets) used by DOG scheduling.

@@ -15,7 +15,7 @@ class CBC_AngleSet : public AngleSet
 {
 public:
   CBC_AngleSet(size_t id,
-               unsigned int num_groups,
+               const LBSGroupset& groupset,
                const SPDS& spds,
                std::shared_ptr<FLUDS>& fluds,
                const std::vector<size_t>& angle_indices,
@@ -41,20 +41,6 @@ public:
   void ResetSweepBuffers() override;
 
   bool ReceiveDelayedData() override { return true; }
-
-  const double* PsiBoundary(uint64_t boundary_id,
-                            unsigned int angle_num,
-                            uint64_t cell_local_id,
-                            unsigned int face_num,
-                            unsigned int fi,
-                            unsigned int g,
-                            bool surface_source_active) override;
-
-  double* PsiReflected(uint64_t boundary_id,
-                       unsigned int angle_num,
-                       uint64_t cell_local_id,
-                       unsigned int face_num,
-                       unsigned int fi) override;
 
 protected:
   const CBC_SPDS& cbc_spds_;

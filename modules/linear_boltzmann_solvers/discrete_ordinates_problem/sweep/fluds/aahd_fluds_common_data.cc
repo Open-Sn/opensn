@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include <algorithm>
@@ -22,9 +23,8 @@ AAHD_FLUDSCommonData::AAHD_FLUDSCommonData(
 {
   ComputeNodeIndexForNonDelayedLocalFaces(sdm);
   ComputeNodeIndexForDelayedLocalFaces(sdm);
-  ComputeNodeIndexForBoundaryAndNonLocalFaces(sdm);
+  ComputeNodeIndexForNonLocalFaces(sdm);
   ComputeNodeIndexForParallelFaces(sdm);
-  CopyFlattenNodeIndexToDevice(sdm);
 }
 
 void
@@ -80,10 +80,10 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
         std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
-          AAHD_FaceNode upwind(cell_local_idx, f, fnode);
-          AAHD_FaceNode downwind(neighbor_local_idx,
-                                 face_nodal_mapping.associated_face_,
-                                 face_nodal_mapping.face_node_mapping_.at(fnode));
+          FaceNode upwind(cell_local_idx, f, fnode);
+          FaceNode downwind(neighbor_local_idx,
+                            face_nodal_mapping.associated_face_,
+                            face_nodal_mapping.face_node_mapping_.at(fnode));
           AAHD_DirectedEdgeNode new_node{upwind, downwind};
           new_outgoing_nodes.push_back(new_node);
         }
@@ -113,9 +113,10 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
           local_node_stack.push_back(new_node);
         }
         // record the stack index
-        node_tracker_.emplace(new_node.upwind_node, AAHD_NodeIndex(stack_index, true, true, false));
+        node_tracker_.emplace(new_node.upwind_node,
+                              AAHD_NodeIndex(stack_index, true, false, true, false));
         node_tracker_.emplace(new_node.downwind_node,
-                              AAHD_NodeIndex(stack_index, false, true, false));
+                              AAHD_NodeIndex(stack_index, false, false, true, false));
         ++stack_index;
       }
       // merge cell idle slots to level idle slots
@@ -161,12 +162,13 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
           std::uint32_t num_face_nodes = sdm.GetCellMapping(upwind_cell).GetNumFaceNodes(f);
           for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
           {
-            AAHD_FaceNode upwind(edge.first, f, fnode);
-            node_tracker_.emplace(upwind, AAHD_NodeIndex(fas_node_index, true, true, true));
-            AAHD_FaceNode downwind(edge.second,
-                                   face_nodal_mapping.associated_face_,
-                                   face_nodal_mapping.face_node_mapping_.at(fnode));
-            node_tracker_.emplace(downwind, AAHD_NodeIndex(fas_node_index, false, true, true));
+            FaceNode upwind(edge.first, f, fnode);
+            node_tracker_.emplace(upwind, AAHD_NodeIndex(fas_node_index, true, false, true, true));
+            FaceNode downwind(edge.second,
+                              face_nodal_mapping.associated_face_,
+                              face_nodal_mapping.face_node_mapping_.at(fnode));
+            node_tracker_.emplace(downwind,
+                                  AAHD_NodeIndex(fas_node_index, false, false, true, true));
             fas_node_index++;
           }
         }
@@ -177,7 +179,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
 }
 
 void
-AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryAndNonLocalFaces(const SpatialDiscretization& sdm)
+AAHD_FLUDSCommonData::ComputeNodeIndexForNonLocalFaces(const SpatialDiscretization& sdm)
 {
   // get reference to the mesh
   const MeshContinuum& grid = *(spds_.GetGrid());
@@ -197,59 +199,44 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryAndNonLocalFaces(const SpatialD
       const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell.local_id][f];
       const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell.local_id][f];
       std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
-      // skip for local face
-      if (face.IsNeighborLocal(&grid))
+      // skip for local face and boundary face
+      if (face.IsNeighborLocal(&grid) or not face.has_neighbor)
         continue;
-      // construct index for boundary faces
-      if (not face.has_neighbor && orientation != FaceOrientation::PARALLEL)
+      // store non-local face nodes to the banks
+      std::vector<AAHD_NonLocalFaceNode> nl_en_vec(num_face_nodes);
+      for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
       {
-        for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
+        nl_en_vec[fnode] = AAHD_NonLocalFaceNode(cell.global_id,
+                                                 cell.local_id,
+                                                 f,
+                                                 fnode,
+                                                 face.neighbor_id,
+                                                 face_nodal_mapping.associated_face_,
+                                                 face_nodal_mapping.face_node_mapping_.at(fnode));
+      }
+      // get neighbor partition ID
+      int loc = face.GetNeighborPartitionID(&grid);
+      // append to incoming bank
+      if (orientation == FaceOrientation::INCOMING)
+      {
+        int preloc = spds_.MapLocJToPrelocI(loc);
+        // non-delayed incoming
+        if (preloc >= 0)
         {
-          node_tracker_.emplace(
-            AAHD_FaceNode(cell.local_id, f, fnode),
-            AAHD_NodeIndex(incremental_boundary_index, orientation == FaceOrientation::OUTGOING));
-          ++incremental_boundary_index;
+          incoming_bank[preloc].insert(nl_en_vec.begin(), nl_en_vec.end());
+        }
+        // delayed incoming
+        else
+        {
+          preloc = -preloc - 1;
+          delayed_incoming_bank[preloc].insert(nl_en_vec.begin(), nl_en_vec.end());
         }
       }
-      // store non-local face nodes to the banks
-      else if (face.has_neighbor)
+      // append to outgoing bank
+      else if (orientation == FaceOrientation::OUTGOING)
       {
-        // initialize non-local face nodes
-        std::vector<AAHD_NonLocalFaceNode> nl_en_vec(num_face_nodes);
-        for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
-        {
-          nl_en_vec[fnode] = AAHD_NonLocalFaceNode(cell.global_id,
-                                                   cell.local_id,
-                                                   f,
-                                                   fnode,
-                                                   face.neighbor_id,
-                                                   face_nodal_mapping.associated_face_,
-                                                   face_nodal_mapping.face_node_mapping_.at(fnode));
-        }
-        // get neighbor partition ID
-        int loc = face.GetNeighborPartitionID(&grid);
-        // append to incoming bank
-        if (orientation == FaceOrientation::INCOMING)
-        {
-          int preloc = spds_.MapLocJToPrelocI(loc);
-          // non-delayed incoming
-          if (preloc >= 0)
-          {
-            incoming_bank[preloc].insert(nl_en_vec.begin(), nl_en_vec.end());
-          }
-          // delayed incoming
-          else
-          {
-            preloc = -preloc - 1;
-            delayed_incoming_bank[preloc].insert(nl_en_vec.begin(), nl_en_vec.end());
-          }
-        }
-        // append to outgoing bank
-        else if (orientation == FaceOrientation::OUTGOING)
-        {
-          int deploc = spds_.MapLocJToDeplocI(loc);
-          outgoing_bank[deploc].insert(nl_en_vec.begin(), nl_en_vec.end());
-        }
+        int deploc = spds_.MapLocJToDeplocI(loc);
+        outgoing_bank[deploc].insert(nl_en_vec.begin(), nl_en_vec.end());
       }
     }
   }
@@ -259,7 +246,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryAndNonLocalFaces(const SpatialD
   {
     for (const AAHD_NonLocalFaceNode& nl_en : incoming_bank[loc_idx])
     {
-      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, false, false, false));
+      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, false, false, false, false));
       node_index++;
     }
   }
@@ -268,7 +255,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryAndNonLocalFaces(const SpatialD
   {
     for (const AAHD_NonLocalFaceNode& nl_en : delayed_incoming_bank[loc_idx])
     {
-      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, false, false, true));
+      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, false, false, false, true));
       node_index++;
     }
   }
@@ -277,12 +264,11 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryAndNonLocalFaces(const SpatialD
   {
     for (const AAHD_NonLocalFaceNode& nl_en : outgoing_bank[loc_idx])
     {
-      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, true, false, false));
+      node_tracker_.emplace(nl_en.node, AAHD_NodeIndex(node_index, true, false, false, false));
       node_index++;
     }
   }
   // store size
-  boundary_node_size_ = incremental_boundary_index;
   std::size_t cumulative_offset = 0;
   nonlocal_incoming_node_offsets_ = {0};
   for (const std::set<AAHD_NonLocalFaceNode>& nl_en_set : incoming_bank)
@@ -330,7 +316,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForParallelFaces(const SpatialDiscretizati
       // construct index for parallel faces
       for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
       {
-        node_tracker_.emplace(AAHD_FaceNode(cell.local_id, f, fnode), AAHD_NodeIndex());
+        node_tracker_.emplace(FaceNode(cell.local_id, f, fnode), AAHD_NodeIndex());
       }
     }
   }

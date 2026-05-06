@@ -12,6 +12,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_structs.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbcd_angle_set.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h"
@@ -52,13 +53,16 @@ struct Arguments
   Arguments(DiscreteOrdinatesProblem& problem,
             const LBSGroupset& groupset,
             AngleSetType& angle_set,
-            FLUDSType& fluds)
+            FLUDSType& fluds,
+            bool is_active)
   {
     // Get mesh and quadrature data
     auto* mesh = problem.GetMeshCarrier();
     mesh_data = mesh->GetDevicePtr();
-    auto* quadrature = reinterpret_cast<QuadratureCarrier*>(groupset.quad_carrier);
+    auto quadrature = groupset.quad_carrier;
     quad_data = quadrature->GetDevicePtr();
+    // Get boundary
+    boundary = problem.GetBoundaryCarrier()->GetDevicePtr(groupset.id);
     // Copy source moment and destination phi data to GPU
     auto* src = problem.GetSourceMomentsPinner();
     src_moment = src->GetDevicePtr();
@@ -71,9 +75,13 @@ struct Arguments
     // Copy angleset data to GPU
     directions = angle_set.GetDeviceAngleIndices();
     angleset_size = angle_set.GetNumAngles();
+    if constexpr (t == SweepType::AAH)
+      boundary_offset = angle_set.GetDeviceBoudnaryOffset();
     // Copy FLUDS data to GPU and retrieve the pointer set
     flud_data = fluds.GetDevicePointerSet();
     flud_index = fluds.GetCommonData().GetDeviceIndex();
+    // Copy surface source active
+    is_surface_source_active = is_active;
   }
 
   // Mesh and quadrature
@@ -82,8 +90,11 @@ struct Arguments
   // Source moments and phi
   const double* __restrict__ src_moment;
   double* __restrict__ phi;
+  // Boundary
+  double* __restrict__ boundary;
   // Angle set
   const std::uint32_t* __restrict__ directions;
+  const std::uint64_t* __restrict__ boundary_offset;
   std::uint32_t angleset_size;
   // Group set
   std::uint32_t num_groups;
@@ -92,6 +103,8 @@ struct Arguments
   // FLUDS
   const std::uint64_t* __restrict__ flud_index;
   FLUDSPointerSetType flud_data;
+  // Source active
+  bool is_surface_source_active;
 };
 
 } // namespace opensn::gpu_kernel

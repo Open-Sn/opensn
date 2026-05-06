@@ -130,8 +130,7 @@ AAHD_FLUDS::AAHD_FLUDS(unsigned int num_groups,
                                 num_groups_and_angles_),
     nonlocal_outgoing_psi_bank_(common_data_.GetNumNonLocalOutgoingNodes(),
                                 common_data_.GetNonLocalOutgoingNodeOffsets(),
-                                num_groups_and_angles_),
-    boundary_psi_(common_data_.GetNumBoundaryNodes(), num_groups_and_angles_)
+                                num_groups_and_angles_)
 {
   nonlocal_outgoing_psi_bank_.UpdateViews(deplocI_outgoing_psi_view_);
   nonlocal_incoming_psi_bank_.UpdateViews(prelocI_outgoing_psi_view_);
@@ -203,39 +202,6 @@ AAHD_FLUDS::CopyDelayedPsiToDevice()
 }
 
 void
-AAHD_FLUDS::CopyBoundaryToDevice(MeshContinuum& grid,
-                                 AngleSet& angle_set,
-                                 const LBSGroupset& groupset,
-                                 bool is_surface_source_active)
-{
-  const std::vector<std::uint32_t>& as_angle_indices = angle_set.GetAngleIndices();
-  const auto gs_gi = groupset.first_group;
-  const std::size_t required_size = common_data_.GetNumBoundaryNodes() * num_groups_and_angles_;
-  for (const auto& [face_node, node_index] : common_data_.GetNodeTracker())
-  {
-    if (node_index.IsUndefined() or not node_index.IsBoundary() or node_index.IsOutgoing())
-      continue;
-    const CellFace& face =
-      grid.local_cells[face_node.GetCellIndex()].faces[face_node.GetFaceIndex()];
-    double* dest =
-      boundary_psi_.host_storage.data() + node_index.GetIndex() * num_groups_and_angles_;
-    for (const std::uint32_t& direction_num : as_angle_indices)
-    {
-      const double* src = angle_set.PsiBoundary(face.neighbor_id,
-                                                direction_num,
-                                                face_node.GetCellIndex(),
-                                                face_node.GetFaceIndex(),
-                                                face_node.GetFaceNodeIndex(),
-                                                gs_gi,
-                                                is_surface_source_active);
-      std::memcpy(dest, src, num_groups_ * sizeof(double));
-      dest += num_groups_;
-    }
-  }
-  boundary_psi_.UploadToDevice(stream_);
-}
-
-void
 AAHD_FLUDS::CopyNonLocalIncomingPsiToDevice()
 {
   nonlocal_incoming_psi_bank_.UploadToDevice(stream_);
@@ -274,12 +240,6 @@ AAHD_FLUDS::GetDevicePointerSet()
   {
     assert(pointer_set.nonlocal_outgoing_psi != nullptr);
   }
-  // boundary psi
-  pointer_set.boundary_psi = boundary_psi_.device_storage.get();
-  if (common_data_.GetNumBoundaryNodes() > 0)
-  {
-    assert(pointer_set.boundary_psi != nullptr);
-  }
   // stride size
   pointer_set.stride_size = num_groups_and_angles_;
   return pointer_set;
@@ -290,35 +250,6 @@ AAHD_FLUDS::CopyPsiFromDevice()
 {
   nonlocal_outgoing_psi_bank_.DownloadToHost(stream_);
   delayed_local_psi_bank_.DownloadToHost(stream_);
-  boundary_psi_.DownloadToHost(stream_);
-}
-
-void
-AAHD_FLUDS::CopyBoundaryPsiToAngleSet(MeshContinuum& grid, AngleSet& angle_set)
-{
-  const std::vector<std::uint32_t>& as_angle_indices = angle_set.GetAngleIndices();
-  const auto& boundaries = angle_set.GetBoundaries();
-  for (const auto& [face_node, node_index] : common_data_.GetNodeTracker())
-  {
-    if (node_index.IsUndefined() or not node_index.IsBoundary() or not node_index.IsOutgoing())
-      continue;
-    const CellFace& face =
-      grid.local_cells[face_node.GetCellIndex()].faces[face_node.GetFaceIndex()];
-    auto bndry_it = boundaries.find(face.neighbor_id);
-    if (bndry_it == boundaries.end() or not bndry_it->second->IsReflecting())
-      continue;
-    double* src =
-      boundary_psi_.host_storage.data() + node_index.GetIndex() * num_groups_and_angles_;
-    for (const std::uint32_t& direction_num : as_angle_indices)
-    {
-      double* dest = bndry_it->second->PsiOutgoing(face_node.GetCellIndex(),
-                                                   face_node.GetFaceIndex(),
-                                                   face_node.GetFaceNodeIndex(),
-                                                   direction_num);
-      std::memcpy(dest, src, num_groups_ * sizeof(double));
-      src += num_groups_;
-    }
-  }
 }
 
 void

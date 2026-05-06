@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
+#include <limits>
 #include <vector>
 
 namespace opensn
@@ -15,25 +16,32 @@ namespace opensn
 class IsotropicBoundary : public SweepBoundary
 {
 public:
-  explicit IsotropicBoundary(unsigned int num_groups,
-                             std::vector<double> boundary_flux,
-                             CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN)
-    : SweepBoundary(LBSBoundaryType::ISOTROPIC, num_groups, coord_type),
-      boundary_flux_(std::move(boundary_flux))
-  {
-  }
+  explicit IsotropicBoundary(BoundaryBank& bank,
+                             const std::vector<LBSGroupset>& groupsets,
+                             const std::vector<double>& boundary_flux,
+                             double start_time,
+                             double end_time);
 
   double* PsiIncoming(std::uint32_t cell_local_id,
                       unsigned int face_num,
                       unsigned int fi,
                       unsigned int angle_num,
-                      unsigned int group_num) override
+                      int groupset_id,
+                      unsigned int group_idx) override
   {
-    return &boundary_flux_[group_num];
+    return GetBoundaryFlux(groupset_id) + group_idx;
   }
 
-private:
-  std::vector<double> boundary_flux_;
+  void UpdateBoundaryFlux(const std::vector<LBSGroupset>& groupsets) override;
+
+  std::uint64_t
+  GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing) override;
+
+protected:
+  bool current_state_ = false;
+  std::vector<double> active_boundary_flux_;
+  double start_time_;
+  double end_time_;
 };
 
 } // namespace opensn

@@ -15,13 +15,13 @@ namespace opensn
 {
 
 CBC_AngleSet::CBC_AngleSet(size_t id,
-                           unsigned int num_groups,
+                           const LBSGroupset& groupset,
                            const SPDS& spds,
                            std::shared_ptr<FLUDS>& fluds,
                            const std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                            const MPICommunicatorSet& comm_set)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
+  : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
     async_comm_(id, *fluds, comm_set)
 {
@@ -54,9 +54,8 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   async_comm_.SendData();
 
   // Check if boundaries allow for execution
-  for (auto& [bid, boundary] : boundaries_)
-    if (not boundary->CheckAnglesReadyStatus(angles_))
-      return AngleSetStatus::NOT_FINISHED;
+  if (not IsDependencyResolved())
+    return AngleSetStatus::NOT_FINISHED;
 
   bool all_tasks_completed = true;
   bool a_task_executed = true;
@@ -88,8 +87,11 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   if (all_tasks_completed and all_messages_sent)
   {
     // Update boundary readiness
-    for (auto& [bid, boundary] : boundaries_)
-      boundary->UpdateAnglesReadyStatus(angles_);
+    if (not following_angle_sets_.empty())
+    {
+      for (auto& angleset : following_angle_sets_)
+        angleset->DecrementCounter();
+    }
     executed_ = true;
     return AngleSetStatus::FINISHED;
   }
@@ -104,34 +106,6 @@ CBC_AngleSet::ResetSweepBuffers()
   async_comm_.Reset();
   fluds_->ClearLocalAndReceivePsi();
   executed_ = false;
-}
-
-const double*
-CBC_AngleSet::PsiBoundary(uint64_t boundary_id,
-                          unsigned int angle_num,
-                          uint64_t cell_local_id,
-                          unsigned int face_num,
-                          unsigned int fi,
-                          unsigned int g,
-                          bool surface_source_active)
-{
-  if (boundaries_[boundary_id]->IsReflecting())
-    return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
-
-  if (not surface_source_active)
-    return boundaries_[boundary_id]->ZeroFlux(g);
-
-  return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
-}
-
-double*
-CBC_AngleSet::PsiReflected(uint64_t boundary_id,
-                           unsigned int angle_num,
-                           uint64_t cell_local_id,
-                           unsigned int face_num,
-                           unsigned int fi)
-{
-  return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num);
 }
 
 } // namespace opensn

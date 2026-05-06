@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_structs.h"
+#include "framework/mesh/cell/cell.h"
 #include <set>
 #include <tuple>
 
@@ -11,64 +12,9 @@ namespace opensn
 {
 
 /**
- * Node on a face, which is also an edge in the sweep graph.
- * This class represents a node on a face. It stores the cell local index, the face index
- * within the cell and the index of the node relative to the face as compact 64-bit integer. This
- * class abstracts the node for usage with std::map and std::set.
- */
-class AAHD_FaceNode
-{
-public:
-  /// Default constructor.
-  constexpr AAHD_FaceNode() = default;
-  /// Member constructor.
-  constexpr AAHD_FaceNode(std::uint32_t cell_idx,
-                          std::uint16_t face_idx,
-                          std::uint16_t face_node_idx)
-    : value_(0)
-  {
-    value_ |= static_cast<std::uint64_t>(cell_idx) << 32;
-    value_ |= static_cast<std::uint64_t>(face_idx) << 16;
-    value_ |= static_cast<std::uint64_t>(face_node_idx);
-  }
-
-  /// Comparison operator for ordering.
-  constexpr bool operator<(const AAHD_FaceNode& other) const { return value_ < other.value_; }
-
-  /// Equality operator.
-  constexpr bool operator==(const AAHD_FaceNode& other) const { return value_ == other.value_; }
-
-  /// Get cell local index.
-  constexpr std::uint32_t GetCellIndex() const { return static_cast<std::uint32_t>(value_ >> 32); }
-
-  /// Get face index.
-  constexpr std::uint16_t GetFaceIndex() const
-  {
-    return static_cast<std::uint16_t>((value_ >> 16) & 0xFFFFU);
-  }
-
-  /// Get face node index.
-  constexpr std::uint16_t GetFaceNodeIndex() const
-  {
-    return static_cast<std::uint16_t>(value_ & 0xFFFFU);
-  }
-
-  /// Check if the face node is initialized.
-  constexpr bool IsInitialized() const
-  {
-    return value_ != std::numeric_limits<std::uint64_t>::max();
-  }
-
-private:
-  /// Core value.
-  std::uint64_t value_ = std::numeric_limits<std::uint64_t>::max();
-};
-
-/**
  * 64-bit integer encoding the index and the bank information of a face node.
  * \note The index must follow strict mutual-exclusion rules:
- *   - Always check boundary status BEFORE local status. Boundary instances are assigned
- *     as local, but their locations are actually set to an undefined value.
+ *   - Always check boundary status BEFORE local status.
  *   - Boundary and delayed status are mutually exclusive. Both cannot be true at the same time.
  *   - Boundary and non-local status are mutually exclusive. Both cannot be true at the same time.
  *   - Non-local outgoing and delayed status are mutually exclusive. The sweep scheduler does not
@@ -88,76 +34,70 @@ public:
    * Construct a non-boundary node index.
    * \param index Index into the corresponding bank. Cannot exceed 2^60 - 1.
    * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.
-   * \param is_local Flag indicating if the index is in a local bank.
-   * \param is_delayed Flag indicating if the index is in a delayed bank.
+   * \param is_local_or_reflecting Flag indicating if the index is in a local bank or
+   * reflecting boundary.
+   * \param is_delayed_or_angle_dependent Flag indicating if the index is in a delayed bank or an
+   * angle dependent boundary.
    * \param loc_index Index into delayed/non-delayed location dependencies/successors vector for
    * non-local nodes. Cannot exceed 2^21 - 1.
    */
-  AAHD_NodeIndex(std::uint64_t index, bool is_outgoing, bool is_local, bool is_delayed)
+  AAHD_NodeIndex(std::uint64_t index,
+                 bool is_outgoing,
+                 bool is_boundary,
+                 bool is_local_or_reflecting,
+                 bool is_delayed_or_angle_dependent)
   {
     if (index >= (std::uint64_t(1) << 60) - 1)
       throw std::runtime_error("Cannot hold an index greater than 2^60.");
     SetInOut(is_outgoing);
-    SetLocal(is_local);
-    SetDelayed(is_delayed);
-    SetBoundary(false);
-    SetIndex(index);
-    if (is_delayed && is_outgoing && !is_local)
-      throw std::runtime_error(
-        "Non-local outgoing nodes cannot be in delayed banks for AAHD FLUDS.");
-  }
-
-  /**
-   * Construct a boundary node index.
-   * \param index Index into the corresponding bank. Cannot exceed 2^40 - 1.
-   * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.
-   */
-  AAHD_NodeIndex(std::uint64_t index, bool is_outgoing)
-  {
-    if (index >= (std::uint64_t(1) << 60) - 1)
-      throw std::runtime_error("Cannot hold an index greater than 2^60.");
-    SetInOut(is_outgoing);
-    SetDelayed(false);
-    SetLocal(true);
-    SetBoundary(true);
+    SetBoundary(is_boundary);
+    SetLocalOrReflecting(is_local_or_reflecting);
+    SetDelayedOrAngleDependent(is_delayed_or_angle_dependent);
     SetIndex(index);
   }
 
   /// Check if the current index corresponds to a delayed bank.
-  constexpr bool IsDelayed() const noexcept { return (value_ & delayed_bit_mask) != 0; }
+  constexpr bool IsDelayed() const noexcept
+  {
+    return (value_ & delayed_or_angle_dependent_bit_mask) != 0;
+  }
+  /// Check if the current index corresponds to an angle dependent boundary.
+  constexpr bool IsAngleDependent() const noexcept { return IsDelayed(); }
 
   /// Check if the current index corresponds to a local bank.
-  constexpr bool IsLocal() const noexcept { return (value_ & local_bit_mask) != 0; }
+  constexpr bool IsLocal() const noexcept { return (value_ & local_or_reflecting_bit_mask) != 0; }
+  /// Check if the current index corresponds to a reflecting boundary.
+  constexpr bool IsReflecting() const noexcept { return IsLocal(); }
 
   /// Get the index into the bank.
   constexpr std::uint64_t GetIndex() const noexcept { return value_ & index_bit_mask; }
 
 private:
-  /// \name Delayed bit
+  /// \name Delayed/angle-dependent bit
   /// \{
   /// Third bit mask (``001`` followed by 61 zeros) - Bit 61
-  static constexpr std::uint64_t delayed_bit_mask = std::uint64_t(1) << (64 - 3);
-  /// Encode the value as delayed.
-  constexpr void SetDelayed(bool is_delayed) noexcept
+  static constexpr std::uint64_t delayed_or_angle_dependent_bit_mask = std::uint64_t(1) << (64 - 3);
+  /// Encode the value as delayed or angle dependent boundary.
+  constexpr void SetDelayedOrAngleDependent(bool is_delayed_or_angle_dependent) noexcept
   {
-    if (is_delayed)
-      value_ |= delayed_bit_mask;
+    if (is_delayed_or_angle_dependent)
+      value_ |= delayed_or_angle_dependent_bit_mask;
     else
-      value_ &= ~delayed_bit_mask;
+      value_ &= ~delayed_or_angle_dependent_bit_mask;
   }
   /// \}
 
-  /// \name Local bit
+  /// \name Local/reflecting bit
   /// \{
   /// Fourth bit mask (``0001`` followed by 60 zeros) - Bit 60
-  static constexpr std::uint64_t local_bit_mask = std::uint64_t(1) << (64 - 4);
+  static constexpr std::uint64_t local_or_reflecting_bit_mask = std::uint64_t(1) << (64 - 4);
   /// Encode the value as local.
-  constexpr void SetLocal(bool is_local) noexcept
+  constexpr void SetLocalOrReflecting(bool is_local_or_reflecting) noexcept
   {
-    if (is_local)
-      value_ |= local_bit_mask;
+    if (is_local_or_reflecting)
+      value_ |= local_or_reflecting_bit_mask;
     else
-      value_ &= ~local_bit_mask;
+      value_ &= ~local_or_reflecting_bit_mask;
   }
   /// \}
 
@@ -178,9 +118,9 @@ private:
 struct AAHD_DirectedEdgeNode
 {
   /// Upwind face node.
-  AAHD_FaceNode upwind_node;
+  FaceNode upwind_node;
   /// Downwind face node.
-  AAHD_FaceNode downwind_node;
+  FaceNode downwind_node;
 
   /// Check if the directed edge is initialized.
   constexpr bool IsInitialized() const
@@ -240,7 +180,7 @@ public:
   }
 
   /// Corresponding face node.
-  AAHD_FaceNode node;
+  FaceNode node;
 
 private:
   /// Tuple for ordering the non-local face nodes.
@@ -258,11 +198,14 @@ struct AAHD_FLUDSPointerSet : public FLUDSPointerSet
   double* __restrict__ delayed_local_psi_old = nullptr;
   /// Pointer to non-local old delayed incoming angular fluxes.
   double* __restrict__ nonlocal_delayed_incoming_psi_old = nullptr;
-  /// Pointer to boundary angular fluxes.
-  double* __restrict__ boundary_psi = nullptr;
 
   /// Get pointer to the incoming angular flux (if the face is not incoming, a nullptr is returned).
-  constexpr double* GetIncomingFluxPointer(const AAHD_NodeIndex& node_index) const noexcept
+  constexpr double* GetIncomingFluxPointer(const AAHD_NodeIndex& node_index,
+                                           unsigned int angle_group_idx,
+                                           unsigned int group_idx,
+                                           double* __restrict__ boundary,
+                                           const std::uint64_t* __restrict__ boundary_offset,
+                                           bool is_surface_source_active) const noexcept
   {
     // undefined case (parallel face) : all tests are true
     if (node_index.IsUndefined())
@@ -272,21 +215,24 @@ struct AAHD_FLUDSPointerSet : public FLUDSPointerSet
     if (node_index.IsOutgoing())
       return nullptr;
 
-    // boundary case : non-delayed and local tests are true
+    // boundary case
     if (node_index.IsBoundary())
     {
-      return boundary_psi + node_index.GetIndex() * stride_size;
+      unsigned int location = (node_index.IsAngleDependent()) ? angle_group_idx : group_idx;
+      if (node_index.IsReflecting() or is_surface_source_active)
+        return boundary + boundary_offset[node_index.GetIndex()] + location;
+      return boundary + location;
     }
     // local case
     if (node_index.IsLocal())
     {
       if (node_index.IsDelayed())
       {
-        return delayed_local_psi_old + node_index.GetIndex() * stride_size;
+        return delayed_local_psi_old + node_index.GetIndex() * stride_size + angle_group_idx;
       }
       else
       {
-        return local_psi + node_index.GetIndex() * stride_size;
+        return local_psi + node_index.GetIndex() * stride_size + angle_group_idx;
       }
     }
     // non-local case
@@ -294,47 +240,52 @@ struct AAHD_FLUDSPointerSet : public FLUDSPointerSet
     {
       if (node_index.IsDelayed())
       {
-        return nonlocal_delayed_incoming_psi_old + node_index.GetIndex() * stride_size;
+        return nonlocal_delayed_incoming_psi_old + node_index.GetIndex() * stride_size +
+               angle_group_idx;
       }
       else
       {
-        return nonlocal_incoming_psi + node_index.GetIndex() * stride_size;
+        return nonlocal_incoming_psi + node_index.GetIndex() * stride_size + angle_group_idx;
       }
     }
   }
 
   /// Get pointer to the outgoing angular flux (if the face is not outgoing, a nullptr is returned).
-  constexpr double* GetOutgoingFluxPointer(const AAHD_NodeIndex& node_index) const noexcept
+  constexpr double*
+  GetOutgoingFluxPointer(const AAHD_NodeIndex& node_index,
+                         unsigned int angle_group_idx,
+                         double* __restrict__ boundary,
+                         const std::uint64_t* __restrict__ boundary_offset) const noexcept
   {
     // undefined case (parallel face) : all tests are true
     if (node_index.IsUndefined())
       return nullptr;
 
     // incoming case : nullptr
-    if (!node_index.IsOutgoing())
+    if (not node_index.IsOutgoing())
       return nullptr;
 
     // boundary case : non-delayed and local tests are true
     if (node_index.IsBoundary())
     {
-      return boundary_psi + node_index.GetIndex() * stride_size;
+      return boundary + boundary_offset[node_index.GetIndex()] + angle_group_idx;
     }
     // local case
     if (node_index.IsLocal())
     {
       if (node_index.IsDelayed())
       {
-        return delayed_local_psi + node_index.GetIndex() * stride_size;
+        return delayed_local_psi + node_index.GetIndex() * stride_size + angle_group_idx;
       }
       else
       {
-        return local_psi + node_index.GetIndex() * stride_size;
+        return local_psi + node_index.GetIndex() * stride_size + angle_group_idx;
       }
     }
     // non-local case
     else
     {
-      return nonlocal_outgoing_psi + node_index.GetIndex() * stride_size;
+      return nonlocal_outgoing_psi + node_index.GetIndex() * stride_size + angle_group_idx;
     }
   }
 };
@@ -343,9 +294,6 @@ struct AAHD_FLUDSPointerSet : public FLUDSPointerSet
 
 namespace std
 {
-
-/// Print face node.
-ostream& operator<<(ostream& out, const opensn::AAHD_FaceNode& n);
 
 /// Print non-local face node.
 ostream& operator<<(ostream& out, const opensn::AAHD_NonLocalFaceNode& n);

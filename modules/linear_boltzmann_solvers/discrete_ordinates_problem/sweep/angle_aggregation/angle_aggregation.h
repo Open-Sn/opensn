@@ -13,7 +13,6 @@
 #include <memory>
 #include <map>
 #include <set>
-#include <unordered_map>
 #include <vector>
 
 namespace opensn
@@ -48,7 +47,8 @@ enum class AngleAggregationType
 class AngleAggregation
 {
 public:
-  AngleAggregation(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
+  AngleAggregation(const LBSGroupset& groupset,
+                   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                    std::shared_ptr<AngularQuadrature>& quadrature,
                    std::shared_ptr<MeshContinuum>& grid);
 
@@ -77,22 +77,30 @@ public:
     return grid_ ? grid_->GetCoordinateSystem() : CoordinateSystemType::UNDEFINED;
   }
 
+  int GetGroupsetID() const { return groupset_id_; }
+
   /// Resets all the outgoing intra-location and inter-location cyclic interfaces.
   void ZeroOutgoingDelayedPsi();
 
   /// Resets all the incoming intra-location and inter-location cyclic interfaces.
   void ZeroIncomingDelayedPsi();
 
-  /// Initializes reflecting boundary conditions.
-  void InitializeReflectingBCs();
-
   /// Establishes dependencies between angle sets for reflecting boundaries.
   void SetupAngleSetDependencies();
 
   /// Returns a map of following angle sets per angle set.
-  const std::unordered_map<AngleSet*, std::set<AngleSet*>>& GetFollowingAngleSetsMap() const
+  const std::map<AngleSet*, std::set<AngleSet*>>& GetFollowingAngleSetsMap() const
   {
     return following_angle_sets_map_;
+  }
+
+  /// Builds the map from direction number to angleset pointer
+  void BuildDirnumToAnglesetMap();
+
+  /// Gets the angle set for a given angle index.
+  AngleSet* GetAngleSetForAngleIndex(std::uint32_t angle_idx) const
+  {
+    return dir_to_angleset_.at(angle_idx);
   }
 
   /**
@@ -132,13 +140,15 @@ public:
   void SetDelayedPsiNew2Old();
 
 private:
+  int groupset_id_;
   bool num_ang_unknowns_avail_;
   std::pair<size_t, size_t> number_angular_unknowns_;
   std::shared_ptr<MeshContinuum> grid_;
   std::shared_ptr<AngularQuadrature> quadrature_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> boundaries_;
   std::vector<std::shared_ptr<AngleSet>> angle_set_groups_;
-  std::unordered_map<AngleSet*, std::set<AngleSet*>> following_angle_sets_map_;
+  std::map<std::uint32_t, AngleSet*> dir_to_angleset_;
+  std::map<AngleSet*, std::set<AngleSet*>> following_angle_sets_map_;
 };
 
 } // namespace opensn

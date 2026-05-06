@@ -23,7 +23,9 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
 
   // copy phi and src moments to device
   auto aah_sweep_chunk = static_cast<AAHDSweepChunk&>(sweep_chunk);
+  int groupset_id = angle_agg_.GetGroupsetID();
   aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
+  aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, true);
 
   // reset dependency counters and pre-post receives for all anglesets
   std::size_t num_anglesets = angle_agg_.GetNumAngleSets();
@@ -71,7 +73,8 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
     aahd_angle_set->WaitForDownstreamAndDelayed();
   }
 
-  // copy phi and outflow data back to host
+  // copy boundary, phi and outflow data back to host
+  aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, false);
   aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
 
   // reset all anglesets
@@ -83,6 +86,10 @@ void
 SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoAsyncFIFO");
+
+  // Reset dependency counter
+  for (auto& angle_set : angle_agg_)
+    angle_set->ResetDependencyCounter();
 
   auto& cbcd_sweep_chunk = static_cast<CBCDSweepChunk&>(sweep_chunk);
   // Copy phi and source moments to device
@@ -175,17 +182,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
     {
       if (executed[i] or boundary_data_set[i] or kernel_in_flight[i])
         continue;
-      auto* as = angle_sets[i];
-      bool boundaries_ready = true;
-      for (auto& [bid, boundary] : as->GetBoundaries())
-      {
-        if (not boundary->CheckAnglesReadyStatus(as->GetAngleIndices()))
-        {
-          boundaries_ready = false;
-          break;
-        }
-      }
-      if (boundaries_ready)
+      if (angle_sets[i]->IsDependencyResolved())
       {
         fluds_list[i]->CopyIncomingBoundaryPsiToDevice(cbcd_sweep_chunk, angle_sets[i]);
         boundary_data_set[i] = true;
@@ -236,8 +233,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
       bool all_done = (num_completed_tasks[i] == current_task_list.size());
       if (all_done and comm->SendData())
       {
-        for (auto& [bid, boundary] : angle_sets[i]->GetBoundaries())
-          boundary->UpdateAnglesReadyStatus(angle_sets[i]->GetAngleIndices());
+        angle_sets[i]->UpdateDependencyCounters();
         executed[i] = true;
         ++executed_anglesets;
         fluds_list[i]->CopySavedPsiFromDevice();
@@ -274,9 +270,6 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
   // Reset all
   for (auto& angle_set : angle_sets)
     angle_set->ResetSweepBuffers();
-
-  for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
-    bndry->ResetAnglesReadyStatus();
 }
 
 } // namespace opensn

@@ -22,7 +22,7 @@ class AAHD_AngleSet : public AngleSet
 {
 public:
   AAHD_AngleSet(size_t id,
-                unsigned int num_groups,
+                const LBSGroupset& groupset,
                 const SPDS& spds,
                 std::shared_ptr<FLUDS>& fluds,
                 std::vector<size_t>& angle_indices,
@@ -33,14 +33,6 @@ public:
   crb::Stream& GetStream() { return stream_; }
 
   std::uint32_t* GetDeviceAngleIndices() { return device_angle_indices_.get(); }
-
-  bool HasReflectingBoundaries() const { return has_reflecting_boundaries_; }
-
-  /// Update the starting latch and following angle sets.
-  void UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets) override;
-
-  /// Set the latch value to wait on before starting the sweep.
-  void ResetDependencyCounter();
 
   void InitializeDelayedUpstreamData() override;
 
@@ -62,37 +54,19 @@ public:
 
   bool ReceiveDelayedData() override { return true; }
 
-  const double* PsiBoundary(uint64_t boundary_id,
-                            unsigned int angle_num,
-                            uint64_t cell_local_id,
-                            unsigned int face_num,
-                            unsigned int fi,
-                            unsigned int g,
-                            bool surface_source_active) override
-  {
-    if (boundaries_[boundary_id]->IsReflecting())
-      return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
+  void SyncDeviceAngleIndices() override;
 
-    if (not surface_source_active)
-      return boundaries_[boundary_id]->ZeroFlux(g);
+  void AddBoundaryOffset(std::uint64_t offset) { host_boundary_offsets_.push_back(offset); }
 
-    return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
-  }
+  void CopyBoundaryOffsetToDevice();
 
-  double* PsiReflected(uint64_t boundary_id,
-                       unsigned int angle_num,
-                       uint64_t cell_local_id,
-                       unsigned int face_num,
-                       unsigned int fi) override
-  {
-    return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num);
-  }
+  std::uint64_t* GetDeviceBoudnaryOffset() { return device_boundary_offsets_.get(); }
 
   static std::mutex m;
 
 protected:
   /// Associated CUDA stream.
-  crb::Stream stream_;
+  crb::Stream stream_ = crb::Stream::get_null_stream();
 
   /// Asynchronous communicator.
   AAHD_ASynchronousCommunicator async_comm_;
@@ -100,18 +74,11 @@ protected:
   /// Angle indices on GPU.
   crb::DeviceMemory<std::uint32_t> device_angle_indices_;
 
-  /// Number of anglesets the current angle set depends on.
-  std::size_t num_dependencies_ = 0;
-  /// Counter for un-resolved dependencies.
-  std::size_t dependency_counter_ = 0;
-  /**
-   * List of AAHD_AngleSets waiting after this angle set.
-   * After this angle set completes its sweep chunk, it decrements the latches of the angle sets
-   * waiting after it to allow them to proceed.
-   */
-  std::vector<AAHD_AngleSet*> following_angle_sets_;
-  /// Flag indicating if the angleset is attached to any reflecting boundaries..
-  bool has_reflecting_boundaries_ = false;
+  /// Vector of offsets into the boundary bank.
+  std::vector<std::uint64_t> host_boundary_offsets_;
+
+  /// Boundary offset on GPU.
+  crb::DeviceMemory<std::uint64_t> device_boundary_offsets_;
 };
 
 } // namespace opensn

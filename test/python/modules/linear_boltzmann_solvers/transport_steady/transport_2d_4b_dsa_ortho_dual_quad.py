@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-2D LinearBSolver Same as 4a but with reflective BCs. DSA and TG
+2D LinearBSolver Same as 4b but with two different quadratures for each groupset. DSA and TG
 SDM: PWLD
-Test: WGS groups [0-62] Iteration    54 Residual 5.00021e-07 CONVERGED
-and   WGS groups [63-167] Iteration    56 Residual 9.73954e-07 CONVERGED
+Test: WGS groups [0-62] Iteration    76 Residual 7.14364e-07 CONVERGED
+and   WGS groups [63-167] Iteration   177 Residual 9.73942e-07 CONVERGED
 """
 
 import os
@@ -66,7 +66,8 @@ if __name__ == "__main__":
     mg_src1 = VolumetricSource(block_ids=[1], group_strength=strength)
 
     # Setup Physics
-    pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=1)
+    pquad1 = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=1)
+    pquad2 = GLCProductQuadrature2DXY(n_polar=8, n_azimuthal=8, scattering_order=1)
 
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -74,8 +75,9 @@ if __name__ == "__main__":
         groupsets=[
             {
                 "groups_from_to": [0, 62],
-                "angular_quadrature": pquad,
+                "angular_quadrature": pquad2,
                 "angle_aggregation_num_subsets": 1,
+                "angle_aggregation_type": "polar",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,
                 "l_max_its": 1000,
@@ -85,8 +87,9 @@ if __name__ == "__main__":
             },
             {
                 "groups_from_to": [63, num_groups - 1],
-                "angular_quadrature": pquad,
+                "angular_quadrature": pquad1,
                 "angle_aggregation_num_subsets": 1,
+                "angle_aggregation_type": "polar",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,
                 "l_max_its": 1000,

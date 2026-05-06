@@ -13,44 +13,23 @@ namespace opensn
 std::mutex AAHD_AngleSet::m;
 
 AAHD_AngleSet::AAHD_AngleSet(size_t id,
-                             unsigned int num_groups,
+                             const LBSGroupset& groupset,
                              const SPDS& spds,
                              std::shared_ptr<FLUDS>& fluds,
                              std::vector<size_t>& angle_indices,
                              std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                              int maximum_message_size,
                              const MPICommunicatorSet& comm_set)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
+  : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
     async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set),
     device_angle_indices_(angles_.size())
 {
   stream_ = crb::Stream();
-  std::dynamic_pointer_cast<AAHD_FLUDS>(fluds_)->GetStream() = stream_;
-  crb::MemoryPinningManager angle_indices_pinner_(angles_);
-  crb::copy(device_angle_indices_, angle_indices_pinner_, angles_.size());
-  has_reflecting_boundaries_ =
-    std::any_of(boundaries_.begin(),
-                boundaries_.end(),
-                [](auto& bndry_pair) { return bndry_pair.second->IsReflecting(); });
-}
-
-void
-AAHD_AngleSet::UpdateSweepDependencies(std::set<AngleSet*>& following_angle_sets)
-{
-  std::transform(following_angle_sets.begin(),
-                 following_angle_sets.end(),
-                 std::back_inserter(following_angle_sets_),
-                 [](AngleSet* as) { return static_cast<AAHD_AngleSet*>(as); });
-  for (auto* following_angle_set : following_angle_sets_)
-  {
-    ++(following_angle_set->num_dependencies_);
-  }
-}
-
-void
-AAHD_AngleSet::ResetDependencyCounter()
-{
-  dependency_counter_ = num_dependencies_;
+  auto aahd_fluds = std::dynamic_pointer_cast<AAHD_FLUDS>(fluds_);
+  aahd_fluds->GetStream() = stream_;
+  aahd_fluds->GetCommonData().AddAssociatedAngleSet(this);
+  crb::MemoryPinningManager<std::uint32_t> pin(angles_);
+  crb::copy(device_angle_indices_, pin, angles_.size());
 }
 
 void
@@ -94,11 +73,6 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
   auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
   auto& aahd_sweep_chunk = static_cast<AAHDSweepChunk&>(sweep_chunk);
 
-  aahd_fluds->CopyBoundaryToDevice(aahd_sweep_chunk.GetGrid(),
-                                   *this,
-                                   aahd_sweep_chunk.GetGroupset(),
-                                   aahd_sweep_chunk.IsSurfaceSourceActive());
-
   aahd_fluds->CopyNonLocalIncomingPsiToDevice();
   aahd_fluds->AllocateSaveAngularFlux(aahd_sweep_chunk.GetProblem(),
                                       aahd_sweep_chunk.GetGroupset());
@@ -107,21 +81,37 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
   aahd_fluds->CopySaveAngularFluxFromDevice();
   stream_.synchronize();
 
-  async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
-  if (has_reflecting_boundaries_)
-    aahd_fluds->CopyBoundaryPsiToAngleSet(aahd_sweep_chunk.GetGrid(), *this);
   if (not following_angle_sets_.empty())
   {
     std::scoped_lock lk(m);
     for (auto& following_as : following_angle_sets_)
-      --(following_as->dependency_counter_);
+      following_as->DecrementCounter();
   }
+  async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
 
   aahd_fluds->CopySaveAngularFluxToDestinationPsi(
     aahd_sweep_chunk.GetProblem(), aahd_sweep_chunk.GetGroupset(), *this);
 
   executed_ = true;
   return AngleSetStatus::FINISHED;
+}
+
+void
+AAHD_AngleSet::SyncDeviceAngleIndices()
+{
+  crb::MemoryPinningManager<std::uint32_t> pin(angles_);
+  crb::copy(device_angle_indices_, pin, angles_.size());
+}
+
+void
+AAHD_AngleSet::CopyBoundaryOffsetToDevice()
+{
+  host_boundary_offsets_.shrink_to_fit();
+  if (host_boundary_offsets_.empty())
+    return;
+  crb::MemoryPinningManager<std::uint64_t> pin(host_boundary_offsets_);
+  device_boundary_offsets_ = crb::DeviceMemory<std::uint64_t>(host_boundary_offsets_.size());
+  crb::copy(device_boundary_offsets_, pin, host_boundary_offsets_.size());
 }
 
 } // namespace opensn

@@ -56,7 +56,7 @@ public:
   double GetTime() const;
 
   /// Sets simulation time in seconds for time dependent problems.
-  void SetTime(double time);
+  virtual void SetTime(double time);
 
   /// Sets dt.
   void SetTimeStep(double dt);

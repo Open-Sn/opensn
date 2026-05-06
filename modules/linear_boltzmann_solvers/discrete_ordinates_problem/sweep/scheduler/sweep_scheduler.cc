@@ -16,6 +16,39 @@
 namespace opensn
 {
 
+namespace
+{
+
+bool
+Compare(const RuleValues& a, const RuleValues& b)
+{
+  if (a.depth_of_graph != b.depth_of_graph)
+    return a.depth_of_graph > b.depth_of_graph;
+  if (a.sign_of_omegax != b.sign_of_omegax)
+    return a.sign_of_omegax > b.sign_of_omegax;
+  if (a.sign_of_omegay != b.sign_of_omegay)
+    return a.sign_of_omegay > b.sign_of_omegay;
+  return a.sign_of_omegaz > b.sign_of_omegaz;
+}
+
+bool
+CompareCylindrical(const RuleValues& a, const RuleValues& b)
+{
+  if (a.sign_of_omegax != b.sign_of_omegax)
+    return a.sign_of_omegax > b.sign_of_omegax;
+  if (a.depth_of_graph != b.depth_of_graph)
+    return a.depth_of_graph > b.depth_of_graph;
+  if (a.sign_of_omegay != b.sign_of_omegay)
+    return a.sign_of_omegay > b.sign_of_omegay;
+  if (a.sign_of_omegaz != b.sign_of_omegaz)
+    return a.sign_of_omegaz > b.sign_of_omegaz;
+  if (a.azimuthal_order != b.azimuthal_order)
+    return a.azimuthal_order < b.azimuthal_order;
+  return a.set_index < b.set_index;
+}
+
+} // namespace
+
 SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
                                AngleAggregation& angle_agg,
                                SweepChunk& sweep_chunk)
@@ -23,16 +56,8 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::SweepScheduler");
 
-  angle_agg_.InitializeReflectingBCs();
-
   if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     InitializeAlgoDOG();
-
-  if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE ||
-      scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
-  {
-    angle_agg_.SetupAngleSetDependencies();
-  }
 
   if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
   {
@@ -140,48 +165,8 @@ SweepScheduler::InitializeAlgoDOG()
       throw std::runtime_error("InitializeAlgoDOG: Failed to find location depth");
   } // for anglesets
 
-  if (is_cylindrical)
-    SortRuleValuesDOGRZ();
-  else
-    SortRuleValuesDOGDefault();
-}
-
-void
-SweepScheduler::SortRuleValuesDOGRZ()
-{
-  std::stable_sort(rule_values_.begin(),
-                   rule_values_.end(),
-                   [](const RuleValues& a, const RuleValues& b)
-                   {
-                     if (a.sign_of_omegax != b.sign_of_omegax)
-                       return a.sign_of_omegax > b.sign_of_omegax;
-                     if (a.depth_of_graph != b.depth_of_graph)
-                       return a.depth_of_graph > b.depth_of_graph;
-                     if (a.sign_of_omegay != b.sign_of_omegay)
-                       return a.sign_of_omegay > b.sign_of_omegay;
-                     if (a.sign_of_omegaz != b.sign_of_omegaz)
-                       return a.sign_of_omegaz > b.sign_of_omegaz;
-                     if (a.azimuthal_order != b.azimuthal_order)
-                       return a.azimuthal_order < b.azimuthal_order;
-                     return a.set_index < b.set_index;
-                   });
-}
-
-void
-SweepScheduler::SortRuleValuesDOGDefault()
-{
-  std::stable_sort(rule_values_.begin(),
-                   rule_values_.end(),
-                   [](const RuleValues& a, const RuleValues& b)
-                   {
-                     if (a.depth_of_graph != b.depth_of_graph)
-                       return a.depth_of_graph > b.depth_of_graph;
-                     if (a.sign_of_omegax != b.sign_of_omegax)
-                       return a.sign_of_omegax > b.sign_of_omegax;
-                     if (a.sign_of_omegay != b.sign_of_omegay)
-                       return a.sign_of_omegay > b.sign_of_omegay;
-                     return a.sign_of_omegaz > b.sign_of_omegaz;
-                   });
+  std::stable_sort(
+    rule_values_.begin(), rule_values_.end(), is_cylindrical ? &CompareCylindrical : &Compare);
 }
 
 void
@@ -189,13 +174,22 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoDOG");
 
-  const bool is_cylindrical = angle_agg_.GetQuadrature()->GetDimension() == 2 &&
-                              angle_agg_.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL;
+  // Reset dependency counter
+  for (auto& angle_set : angle_agg_)
+    angle_set->ResetDependencyCounter();
 
-  if (is_cylindrical)
-    ScheduleAlgoDOGRZ(sweep_chunk);
-  else
-    ScheduleAlgoDOGDefault(sweep_chunk);
+  bool finished = false;
+  while (not finished)
+  {
+    finished = true;
+    for (auto& rule_value : rule_values_)
+    {
+      auto angleset = rule_value.angle_set;
+      AngleSetStatus status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+      if (status != AngleSetStatus::FINISHED)
+        finished = false;
+    }
+  }
 
   // Receive delayed data
   opensn::mpi_comm.barrier();
@@ -217,77 +211,16 @@ SweepScheduler::ScheduleAlgoDOG(SweepChunk& sweep_chunk)
   // Reset all
   for (auto& angle_set : angle_agg_)
     angle_set->ResetSweepBuffers();
-
-  for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
-    bndry->ResetAnglesReadyStatus();
-}
-
-void
-SweepScheduler::ScheduleAlgoDOGRZ(SweepChunk& sweep_chunk)
-{
-  bool finished = false;
-  std::unordered_set<AngleSet*> completed;
-  while (not finished)
-  {
-    finished = true;
-    for (auto& rule_value : rule_values_)
-    {
-      auto angleset = rule_value.angle_set;
-
-      auto dep_it = preceding_angle_sets_.find(angleset.get());
-      if (dep_it != preceding_angle_sets_.end())
-      {
-        bool deps_ready = true;
-        for (auto* dep : dep_it->second)
-        {
-          if (completed.find(dep) == completed.end())
-          {
-            deps_ready = false;
-            break;
-          }
-        }
-        if (!deps_ready)
-        {
-          AngleSetStatus status =
-            angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::READY_TO_EXECUTE);
-          if (status != AngleSetStatus::FINISHED)
-            finished = false;
-          else
-            completed.insert(angleset.get());
-          continue;
-        }
-      }
-
-      AngleSetStatus status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
-      if (status == AngleSetStatus::FINISHED)
-        completed.insert(angleset.get());
-      if (status != AngleSetStatus::FINISHED)
-        finished = false;
-    }
-  }
-}
-
-void
-SweepScheduler::ScheduleAlgoDOGDefault(SweepChunk& sweep_chunk)
-{
-  bool finished = false;
-  while (not finished)
-  {
-    finished = true;
-    for (auto& rule_value : rule_values_)
-    {
-      auto angleset = rule_value.angle_set;
-      AngleSetStatus status = angleset->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
-      if (status != AngleSetStatus::FINISHED)
-        finished = false;
-    }
-  }
 }
 
 void
 SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
 {
   CALI_CXX_MARK_SCOPE("SweepScheduler::ScheduleAlgoFIFO");
+
+  // Reset dependency counter
+  for (auto& angle_set : angle_agg_)
+    angle_set->ResetDependencyCounter();
 
   // Loop over AngleSetGroups
   bool finished = false;
@@ -323,9 +256,6 @@ SweepScheduler::ScheduleAlgoFIFO(SweepChunk& sweep_chunk)
   // Reset all
   for (auto& angle_set : angle_agg_)
     angle_set->ResetSweepBuffers();
-
-  for (const auto& [bid, bndry] : angle_agg_.GetSimBoundaries())
-    bndry->ResetAnglesReadyStatus();
 }
 
 #ifndef __OPENSN_WITH_GPU__

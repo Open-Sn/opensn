@@ -95,6 +95,7 @@ LBSGroupset::Init(int aid)
   id = aid;
   first_group = 0;
   last_group = 0;
+  size = 0;
   quadrature = nullptr;
   angle_agg = nullptr;
   master_num_ang_subsets = 1;
@@ -142,6 +143,7 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   last_group = groups_from_to[1];
   OpenSnInvalidArgumentIf(last_group < first_group,
                           "\"to\" field is less than the \"from\" field.");
+  size = last_group - first_group + 1;
 
   // Add quadrature
   quadrature = params.GetSharedPtrParam<AngularQuadrature>("angular_quadrature", false);
@@ -192,25 +194,25 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
 
 #ifndef __OPENSN_WITH_GPU__
 void
-LBSGroupset::InitializeGPUCarriers()
+LBSGroupset::InitializeQuadratureCarrier()
 {
 }
 
 void
-LBSGroupset::ResetGPUCarriers()
+LBSGroupset::ResetQuadratureCarrier()
 {
 }
 #endif // __OPENSN_WITH_GPU__
 
 LBSGroupset::~LBSGroupset()
 {
-  ResetGPUCarriers();
+  ResetQuadratureCarrier();
 }
 
 unsigned int
 LBSGroupset::GetNumGroups() const
 {
-  return last_group - first_group + 1;
+  return size;
 }
 
 } // namespace opensn

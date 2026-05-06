@@ -16,13 +16,13 @@ namespace opensn
 {
 
 CBCD_AngleSet::CBCD_AngleSet(size_t id,
-                             size_t num_groups,
+                             const LBSGroupset& groupset,
                              const SPDS& spds,
                              std::shared_ptr<FLUDS>& fluds,
                              const std::vector<size_t>& angle_indices,
                              std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                              const MPICommunicatorSet& comm_set)
-  : AngleSet(id, num_groups, spds, fluds, angle_indices, boundaries),
+  : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds)),
     async_comm_(id, *fluds, comm_set),
     stream_(),
@@ -62,32 +62,21 @@ CBCD_AngleSet::ResetSweepBuffers()
   executed_ = false;
 }
 
-const double*
-CBCD_AngleSet::PsiBoundary(uint64_t boundary_id,
-                           unsigned int angle_num,
-                           uint64_t cell_local_id,
-                           unsigned int face_num,
-                           unsigned int fi,
-                           unsigned int g,
-                           bool surface_source_active)
+void
+CBCD_AngleSet::UpdateDependencyCounters()
 {
-  if (boundaries_[boundary_id]->IsReflecting())
-    return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
-
-  if (not surface_source_active)
-    return boundaries_[boundary_id]->ZeroFlux(g);
-
-  return boundaries_[boundary_id]->PsiIncoming(cell_local_id, face_num, fi, angle_num, g);
+  if (not following_angle_sets_.empty())
+  {
+    for (auto& angleset : following_angle_sets_)
+      angleset->DecrementCounter();
+  }
 }
 
-double*
-CBCD_AngleSet::PsiReflected(uint64_t boundary_id,
-                            unsigned int angle_num,
-                            uint64_t cell_local_id,
-                            unsigned int face_num,
-                            unsigned int fi)
+void
+CBCD_AngleSet::SyncDeviceAngleIndices()
 {
-  return boundaries_[boundary_id]->PsiOutgoing(cell_local_id, face_num, fi, angle_num);
+  crb::MemoryPinningManager angle_indices_pinner_(angles_);
+  crb::copy(device_angle_indices_, angle_indices_pinner_, angles_.size());
 }
 
 } // namespace opensn
