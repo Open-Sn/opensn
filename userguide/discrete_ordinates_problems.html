@@ -483,8 +483,8 @@ function from the current state.</p>
 <h2><span class="section-number">11.9. </span>Angular-Flux Access<a class="headerlink" href="#angular-flux-access" title="Link to this heading"></a></h2>
 <p>The discrete-ordinates problem also exposes angular-flux data directly through
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPsi()</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">GetPsi()</span></code> returns a list of NumPy arrays that view the underlying angular-
-flux storage.</p>
+<p><code class="docutils literal notranslate"><span class="pre">GetPsi()</span></code> returns a list of NumPy arrays copied from the current angular-
+flux storage. Mutating the returned arrays does not mutate the problem.</p>
 <p>This is a specialized interface and is mainly useful when:</p>
 <ul class="simple">
 <li><p>a workflow needs direct access to angular-flux data,</p></li>

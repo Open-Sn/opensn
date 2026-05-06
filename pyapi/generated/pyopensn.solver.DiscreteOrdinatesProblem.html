@@ -332,8 +332,9 @@ alive.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesProblem.GetPsi">
 <span class="sig-name descname"><span class="pre">GetPsi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.GetPsi" title="Link to this definition"></a></dt>
-<dd><p>Return psi as a list of NumPy arrays (float64), using zero-copy views into the
-underlying data.</p>
+<dd><p>Return psi as a list of NumPy arrays (float64).</p>
+<p>The arrays are copies of the current angular-flux state. Mutating them does not
+mutate the problem.</p>
 </dd></dl>
 
 <dl class="py method">

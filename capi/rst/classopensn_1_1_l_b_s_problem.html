@@ -109,6 +109,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblemE">
 <span class="target" id="classopensn_1_1_l_b_s_problem"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LBSProblem</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_problem.html#_CPPv4N6opensn7ProblemE" title="opensn::Problem"><span class="n"><span class="pre">Problem</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_shared_from_this</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblemE" title="Link to this definition"></a><br /></dt>
 <dd><p>Base class for all Linear Boltzmann Solvers. </p>
+<p>Problems are created through derived-class factory functions. The factory function performs all constructor-time parsing and calls BuildRuntime before returning the shared pointer, so public methods operate on a fully built problem. </p>
 <p>Subclassed by <a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#classopensn_1_1_discrete_ordinates_problem"><span class="std std-ref">opensn::DiscreteOrdinatesProblem</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -123,7 +124,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem10LBSProblemERK10LBSProblem">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1af16da5fc00e0a9d68792758820af6558"></span><span class="sig-name descname"><span class="n"><span class="pre">LBSProblem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn10LBSProblem10LBSProblemERK10LBSProblem" title="opensn::LBSProblem::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem10LBSProblemERK10LBSProblem" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Construction and lifetime. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblemaSERK10LBSProblem">
@@ -138,7 +140,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem10GetOptionsEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1af3708db9dd4c467226108362af3ede90"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptionsE" title="opensn::LBSOptions"><span class="n"><span class="pre">LBSOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetOptions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem10GetOptionsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns a constant reference to the solver options. </p>
+<dd><p>Time and adjoint-mode controls. </p>
+<p>Returns a constant reference to the solver options. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -217,7 +220,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem7ZeroPhiEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a6262ca8f28a0b05a9651998210154b2c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroPhi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem7ZeroPhiEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Supported solution-vector operations. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem15CopyPhiNewToOldEv">
@@ -282,7 +286,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem15GetGeometryTypeEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1ad106ab0a4c2a0a9e478c124d186fdd8e"></span><a class="reference internal" href="enum_namespaceopensn_1adf77e264dc7d04180451c1c977ce8121.html#_CPPv4N6opensn12GeometryTypeE" title="opensn::GeometryType"><span class="n"><span class="pre">GeometryType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGeometryType</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem15GetGeometryTypeEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p><a class="reference internal" href="classopensn_1_1_problem.html#classopensn_1_1_problem"><span class="std std-ref">Problem</span></a> metadata and immutable access. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem13GetNumMomentsEv">
@@ -352,7 +357,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem14AddPointSourceENSt10shared_ptrI11PointSourceEE">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a1100d357006b4741400316a957e3c9e4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddPointSource</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_point_source.html#_CPPv4N6opensn11PointSourceE" title="opensn::PointSource"><span class="n"><span class="pre">PointSource</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">point_source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem14AddPointSourceENSt10shared_ptrI11PointSourceEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Adds a point source to the solver. </p>
+<dd><p><a class="reference internal" href="classopensn_1_1_problem.html#classopensn_1_1_problem"><span class="std std-ref">Problem</span></a> runtime reconfiguration. </p>
+<p>These methods are the public mutators available after construction. They refresh the runtime data owned by the problem where needed. Other mutable state accessors below are exposed for solvers and low-level I/O, not as general user-facing methods. Adds a point source to the solver. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -412,7 +418,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem17GetTotalXSCarrierEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a780daebc8eb488e3d7e12e0800f2676f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_total_x_s_carrier.html#_CPPv4N6opensn14TotalXSCarrierE" title="opensn::TotalXSCarrier"><span class="n"><span class="pre">TotalXSCarrier</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetTotalXSCarrier</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem17GetTotalXSCarrierEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Low-level device/runtime carriers used by solver components. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem17GetTotalXSCarrierEv">
@@ -462,7 +469,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem24GetSpatialDiscretizationEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a21ac7b57991aebee32c69d1dff4cdebc"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_spatial_discretization.html#_CPPv4N6opensn21SpatialDiscretizationE" title="opensn::SpatialDiscretization"><span class="n"><span class="pre">SpatialDiscretization</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetSpatialDiscretization</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem24GetSpatialDiscretizationEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Obtains a reference to the spatial discretization. </p>
+<dd><p>Discretization and local transport data. </p>
+<p>Obtains a reference to the spatial discretization. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -478,15 +486,21 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem21GetCellTransportViewsEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1af6f7a59b90c58ae930947e06babb999f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSViewE" title="opensn::CellLBSView"><span class="n"><span class="pre">CellLBSView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCellTransportViews</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem21GetCellTransportViewsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns a reference to the list of local cell transport views. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem21GetCellTransportViewsEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1ac3a6d06ad3143a12499e999b7cd124e4"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSViewE" title="opensn::CellLBSView"><span class="n"><span class="pre">CellLBSView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCellTransportViews</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem21GetCellTransportViewsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns read-only access to the list of local cell transport views. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem21GetCellTransportViewsEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1ac3a6d06ad3143a12499e999b7cd124e4"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSViewE" title="opensn::CellLBSView"><span class="n"><span class="pre">CellLBSView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCellTransportViews</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem21GetCellTransportViewsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns a const reference to the list of local cell transport views. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem19GetCellOutflowViewsEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a3ef3d08bba40d50425a07777fefb7681"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_outflow_view.html#_CPPv4N6opensn15CellOutflowViewE" title="opensn::CellOutflowView"><span class="n"><span class="pre">CellOutflowView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCellOutflowViews</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem19GetCellOutflowViewsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns read/write access to local cell outflow tallies. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem19GetCellOutflowViewsEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a95243a2e9187a5b7a322ca551a369072"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_outflow_view.html#_CPPv4N6opensn15CellOutflowViewE" title="opensn::CellOutflowView"><span class="n"><span class="pre">CellOutflowView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCellOutflowViews</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem19GetCellOutflowViewsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns read-only access to local cell outflow tallies. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -510,19 +524,14 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem16GetQMomentsLocalEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1ae2d64f27440d3de3362e61db730084b1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetQMomentsLocal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem16GetQMomentsLocalEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Read/write access to source moments vector. </p>
+<dd><p>Internal solver-state access. </p>
+<p>These mutable references are intentionally available to solver kernels, iterative methods, acceleration routines, and restart/flux I/O. User-facing code should prefer the explicit operations above or read-only field-function/query APIs. Read/write access to source moments vector. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem16GetQMomentsLocalEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a4aec521f97b549c43381ccd6454751c1"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetQMomentsLocal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem16GetQMomentsLocalEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Read access to source moments vector. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem21GetExtSrcMomentsLocalEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1add61f0f10dea3f97682854c581b28ea7"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetExtSrcMomentsLocal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem21GetExtSrcMomentsLocalEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Read/write access to exterior src moments vector. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -582,13 +591,14 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem26GetNumPhiIterativeUnknownsEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a79b103977590ad8bed4d24423eab56e1"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumPhiIterativeUnknowns</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem26GetNumPhiIterativeUnknownsEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Gets the local and global number of iterative unknowns. </p>
-<p>This normally is only the flux moments, however, the sweep based solvers might include delayed angular fluxes in this number. </p>
+<p>This is typically only the flux moments, however, the sweep based solvers might include delayed angular fluxes in this number. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem29CreateScalarFluxFieldFunctionEjj">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a738a77b1b8c46c628b40d7f42d5af70c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBasedE" title="opensn::FieldFunctionGridBased"><span class="n"><span class="pre">FieldFunctionGridBased</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreateScalarFluxFieldFunction</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem29CreateScalarFluxFieldFunctionEjj" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns a flux-moment field function for a given group and moment. </p>
+<dd><p>Field-function and postprocessing helpers. </p>
+<p>Returns a flux-moment field function for a given group and moment.</p>
 <p>The returned field function is created on demand from the current <code class="docutils literal notranslate"><span class="pre">phi_new</span></code> state. </p>
 </dd></dl>
 
@@ -674,7 +684,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem12BuildRuntimeEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a9b153ce5b6c4d9bf46ed89abb519e593"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildRuntime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem12BuildRuntimeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Build runtime data structures once all constructor-time configuration is complete. </p>
+<dd><p>Internal factory step: build runtime data after constructor-time configuration is complete. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -853,6 +863,11 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem19cell_outflow_views_E">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1af62fdae32db9d9e2681c88ca92fdd0ad"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_outflow_view.html#_CPPv4N6opensn15CellOutflowViewE" title="opensn::CellOutflowView"><span class="n"><span class="pre">CellOutflowView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_outflow_views_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem19cell_outflow_views_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem20flux_moments_uk_man_E">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1ad7553e5b68e974887cb95ff7bd6bebf5"></span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">flux_moments_uk_man_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem20flux_moments_uk_man_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -908,11 +923,6 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem12initialized_E">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a2b966579ab97c51af44274abc2ae6be7"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initialized_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem12initialized_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem17total_xs_carrier_E">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a218dbfc67274c0b102302991528447d6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_total_x_s_carrier.html#_CPPv4N6opensn14TotalXSCarrierE" title="opensn::TotalXSCarrier"><span class="n"><span class="pre">TotalXSCarrier</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">total_xs_carrier_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem17total_xs_carrier_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Data carriers needed to run the sweep on GPU. </p>
@@ -944,14 +954,6 @@
 <span class="target" id="classopensn_1_1_l_b_s_problem_1aeef65ee41c90d9af29ff3926a5ea2079"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_gpus_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem9use_gpus_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Flag indicating if GPU acceleration is enabled. </p>
 </dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">LBSSolverIO</span></dt>
-</dl>
 
 </div>
 </dd></dl>

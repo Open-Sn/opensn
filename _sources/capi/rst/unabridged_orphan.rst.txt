@@ -250,6 +250,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_l_b_s_restart_options.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_lebedev_orders_1_1_quadrature_point.rst
 
 .. toctree::
@@ -841,6 +846,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_cell_mapping.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_cell_outflow_view.rst
 
 .. toctree::
    :maxdepth: 1

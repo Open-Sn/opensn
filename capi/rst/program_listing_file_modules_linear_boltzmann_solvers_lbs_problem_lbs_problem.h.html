@@ -118,24 +118,30 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TotalXSCarrier</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OutflowCarrier</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshCarrier</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">LBSSolverIO</span><span class="p">;</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MemoryPinner</span><span class="p">;</span>
 
-<span class="c1">/// Base class for all Linear Boltzmann Solvers.</span>
+<span class="cm">/**</span>
+<span class="cm"> * Base class for all Linear Boltzmann Solvers.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Problems are created through derived-class factory functions. The factory</span>
+<span class="cm"> * function performs all constructor-time parsing and calls BuildRuntime</span>
+<span class="cm"> * before returning the shared pointer, so public methods operate on a fully</span>
+<span class="cm"> * built problem.</span>
+<span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Problem</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">enable_shared_from_this</span><span class="o">&lt;</span><span class="n">LBSProblem</span><span class="o">&gt;</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">RestartDataHook</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><span class="n">hid_t</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">LBSSolverIO</span><span class="p">;</span>
-
+<span class="w">  </span><span class="c1">/// Construction and lifetime.</span>
 <span class="w">  </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
 
 <span class="w">  </span><span class="o">~</span><span class="n">LBSProblem</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Time and adjoint-mode controls.</span>
 <span class="w">  </span><span class="c1">/// Returns a constant reference to the solver options.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">LBSOptions</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetOptions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
@@ -181,6 +187,7 @@
 <span class="w">  </span><span class="c1">/// Returns true if the problem is in adjoint mode.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjoint</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Supported solution-vector operations.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPhi</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyPhiNewToOld</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetPhiOldFrom</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_old</span><span class="p">);</span>
@@ -194,6 +201,8 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPrecursors</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroExtSrcMoments</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScaleExtSrcMoments</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">factor</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Problem metadata and immutable access.</span>
 <span class="w">  </span><span class="n">GeometryType</span><span class="w"> </span><span class="nf">GetGeometryType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns the number of moments for the solver.</span>
@@ -222,6 +231,14 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetGroupset</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumGroupsets</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Problem runtime reconfiguration.</span>
+<span class="cm">   *</span>
+<span class="cm">   * These methods are the public mutators available after construction.</span>
+<span class="cm">   * They refresh the runtime data owned by the problem where needed.</span>
+<span class="cm">   * Other mutable state accessors below are exposed for solvers and</span>
+<span class="cm">   * low-level I/O, not as general user-facing methods.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="c1">/// Adds a point source to the solver.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddPointSource</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointSource</span><span class="o">&gt;</span><span class="w"> </span><span class="n">point_source</span><span class="p">);</span>
 
@@ -252,6 +269,7 @@
 <span class="w">  </span><span class="c1">/// Obtains a reference to the grid.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGrid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Low-level device/runtime carriers used by solver components.</span>
 <span class="w">  </span><span class="n">TotalXSCarrier</span><span class="o">*</span><span class="w"> </span><span class="nf">GetTotalXSCarrier</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">total_xs_carrier_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">TotalXSCarrier</span><span class="o">*</span><span class="w"> </span><span class="nf">GetTotalXSCarrier</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">total_xs_carrier_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
@@ -267,6 +285,7 @@
 <span class="w">  </span><span class="n">MemoryPinner</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">GetPhiPinner</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">phi_pinner_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">MemoryPinner</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">GetPhiPinner</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">phi_pinner_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
+<span class="w">  </span><span class="c1">/// Discretization and local transport data.</span>
 <span class="w">  </span><span class="c1">/// Obtains a reference to the spatial discretization.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetSpatialDiscretization</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
@@ -276,11 +295,14 @@
 <span class="w">  </span><span class="c1">/// Returns read-only access to the unit ghost cell matrices.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">UnitCellMatrices</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetUnitGhostCellMatrices</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Returns a reference to the list of local cell transport views.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellTransportViews</span><span class="p">();</span>
-
-<span class="w">  </span><span class="c1">/// Returns a const reference to the list of local cell transport views.</span>
+<span class="w">  </span><span class="c1">/// Returns read-only access to the list of local cell transport views.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellTransportViews</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns read/write access to local cell outflow tallies.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellOutflowView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellOutflowViews</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Returns read-only access to local cell outflow tallies.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellOutflowView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellOutflowViews</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Obtains a reference to the unknown manager for flux-moments.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">UnknownManager</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetUnknownManager</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -291,14 +313,19 @@
 <span class="w">  </span><span class="c1">/// Returns the global node count for the flux-moments data structures.</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetGlobalNodeCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Internal solver-state access.</span>
+<span class="cm">   *</span>
+<span class="cm">   * These mutable references are intentionally available to solver kernels,</span>
+<span class="cm">   * iterative methods, acceleration routines, and restart/flux I/O. User-facing</span>
+<span class="cm">   * code should prefer the explicit operations above or read-only field-function/query</span>
+<span class="cm">   * APIs.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="c1">/// Read/write access to source moments vector.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetQMomentsLocal</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Read access to source moments vector.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetQMomentsLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">/// Read/write access to exterior src moments vector.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetExtSrcMomentsLocal</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Read access to exterior src moments vector.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetExtSrcMomentsLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -327,11 +354,13 @@
 <span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="nf">GetActiveSetSourceFunction</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Gets the local and global number of iterative unknowns. This normally is only the flux moments,</span>
-<span class="cm">   * however, the sweep based solvers might include delayed angular fluxes in this number.</span>
+<span class="cm">   * Gets the local and global number of iterative unknowns. This is</span>
+<span class="cm">   * typically only the flux moments, however, the sweep based solvers</span>
+<span class="cm">   * might include delayed angular fluxes in this number.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetNumPhiIterativeUnknowns</span><span class="p">();</span>
 
+<span class="w">  </span><span class="c1">/// Field-function and postprocessing helpers.</span>
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Returns a flux-moment field function for a given group and moment.</span>
 <span class="cm">   *</span>
@@ -347,19 +376,9 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReadRestartData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RestartDataHook</span><span class="o">&amp;</span><span class="w"> </span><span class="n">extra_reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteRestartData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RestartDataHook</span><span class="o">&amp;</span><span class="w"> </span><span class="n">extra_writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
 
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">TriggerRestartDump</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">options_</span><span class="p">.</span><span class="n">write_restart_time_interval</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">TriggerRestartDump</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">restart</span><span class="p">.</span><span class="n">IsWriteDue</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">last_restart_write_time</span><span class="p">;</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">write_restart_time_interval</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateRestartWriteTime</span><span class="p">()</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="n">options_</span><span class="p">.</span><span class="n">last_restart_write_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateRestartWriteTime</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">restart</span><span class="p">.</span><span class="n">MarkWriteComplete</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Makes a source-moments vector from scattering and fission based on the latest phi-solution.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">MakeSourceMomentsFromPhi</span><span class="p">();</span>
@@ -375,7 +394,7 @@
 <span class="w">  </span><span class="c1">/// Input parameters based construction.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Build runtime data structures once all constructor-time configuration is complete.</span>
+<span class="w">  </span><span class="c1">/// Internal factory step: build runtime data after constructor-time configuration is complete.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntime</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">();</span>
@@ -430,6 +449,7 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unit_cell_matrices_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unit_ghost_cell_matrices_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_transport_views_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellOutflowView</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_outflow_views_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">UnknownManager</span><span class="w"> </span><span class="n">flux_moments_uk_man_</span><span class="p">;</span>
 
@@ -443,8 +463,6 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">precursor_new_local_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="n">active_set_source_function_</span><span class="p">;</span>
-
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">initialized_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Data carriers needed to run the sweep on GPU.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">TotalXSCarrier</span><span class="o">&gt;</span><span class="w"> </span><span class="n">total_xs_carrier_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>

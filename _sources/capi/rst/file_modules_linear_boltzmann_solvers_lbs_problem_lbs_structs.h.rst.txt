@@ -78,6 +78,8 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_l_b_s_options`
 
+- :ref:`exhale_struct_structopensn_1_1_l_b_s_restart_options`
+
 
 Enums
 -----

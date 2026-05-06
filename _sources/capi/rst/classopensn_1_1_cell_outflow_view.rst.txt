@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_cell_outflow_view:
+
+Class CellOutflowView
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CellOutflowView
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

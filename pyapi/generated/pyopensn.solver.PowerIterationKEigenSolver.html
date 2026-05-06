@@ -193,10 +193,11 @@ Rate balance,
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">problem.options.read_restart_path</span></code> is set, restart data is read
-during <a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver.Initialize" title="pyopensn.solver.PowerIterationKEigenSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">problem.options.restart_writes_enabled</span></code> is
-true, timed restart dumps may be written during the outer iteration loop
-and a final restart dump is written when execution completes.</p>
+<p>If the problem was constructed with <code class="docutils literal notranslate"><span class="pre">options={'read_restart_path':</span> <span class="pre">...}</span></code>,
+restart data is read during <a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver.Initialize" title="pyopensn.solver.PowerIterationKEigenSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>. If it was constructed with
+<code class="docutils literal notranslate"><span class="pre">options={'restart_writes_enabled':</span> <span class="pre">True,</span> <span class="pre">...}</span></code>, timed restart dumps may
+be written during the outer iteration loop and a final restart dump is
+written when execution completes.</p>
 </dd></dl>
 
 </dd></dl>

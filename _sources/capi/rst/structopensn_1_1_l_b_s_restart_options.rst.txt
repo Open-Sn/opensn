@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_l_b_s_restart_options:
+
+Struct LBSRestartOptions
+========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::LBSRestartOptions
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

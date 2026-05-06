@@ -121,6 +121,8 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_l_b_s_options`
 
+- :ref:`exhale_struct_structopensn_1_1_l_b_s_restart_options`
+
 - :ref:`exhale_struct_structopensn_1_1_lebedev_orders_1_1_quadrature_point`
 
 - :ref:`exhale_struct_structopensn_1_1_linear_eigen_context`
@@ -358,6 +360,8 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_cell_l_b_s_view`
 
 - :ref:`exhale_class_classopensn_1_1_cell_mapping`
+
+- :ref:`exhale_class_classopensn_1_1_cell_outflow_view`
 
 - :ref:`exhale_class_classopensn_1_1_classic_richardson`
 

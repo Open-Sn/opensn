@@ -1384,6 +1384,8 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_a_a_h_sweep_data.html#_CPPv4N6opensn12AAHSweepDataE">opensn::AAHSweepData (C++ struct)</a>
 </li>
+      <li><a href="capi/rst/structopensn_1_1_a_a_h_sweep_data.html#_CPPv4N6opensn12AAHSweepData18cell_outflow_viewsE">opensn::AAHSweepData::cell_outflow_views (C++ member)</a>
+</li>
       <li><a href="capi/rst/structopensn_1_1_a_a_h_sweep_data.html#_CPPv4N6opensn12AAHSweepData20cell_transport_viewsE">opensn::AAHSweepData::cell_transport_views (C++ member)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_a_a_h_sweep_data.html#_CPPv4N6opensn12AAHSweepData15destination_phiE">opensn::AAHSweepData::destination_phi (C++ member)</a>
@@ -2204,6 +2206,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_b_c_sweep_chunk.html#_CPPv4N6opensn13CBCSweepChunk15cell_num_nodes_E">opensn::CBCSweepChunk::cell_num_nodes_ (C++ member)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_c_b_c_sweep_chunk.html#_CPPv4N6opensn13CBCSweepChunk18cell_outflow_view_E">opensn::CBCSweepChunk::cell_outflow_view_ (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_c_b_c_sweep_chunk.html#_CPPv4N6opensn13CBCSweepChunk20cell_transport_view_E">opensn::CBCSweepChunk::cell_transport_view_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_b_c_sweep_chunk.html#_CPPv4N6opensn13CBCSweepChunk6fluds_E">opensn::CBCSweepChunk::fluds_ (C++ member)</a>
@@ -2306,17 +2310,13 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSViewE">opensn::CellLBSView (C++ class)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSView10AddOutflowENSt6size_tEjd">opensn::CellLBSView::AddOutflow (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSView11CellLBSViewE6size_tijjiRK12MultiGroupXSdRKNSt6vectorIbEERKNSt6vectorIiEERKNSt6vectorIPK4CellEEb">opensn::CellLBSView::CellLBSView (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSView11CellLBSViewE6size_tijjRK12MultiGroupXSdRKNSt6vectorIbEERKNSt6vectorIiEERKNSt6vectorIPK4CellEE">opensn::CellLBSView::CellLBSView (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4NK6opensn11CellLBSView12FaceLocalityENSt6size_tE">opensn::CellLBSView::FaceLocality (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4NK6opensn11CellLBSView12FaceNeighborENSt6size_tE">opensn::CellLBSView::FaceNeighbor (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4NK6opensn11CellLBSView11GetNumNodesEv">opensn::CellLBSView::GetNumNodes (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4NK6opensn11CellLBSView10GetOutflowENSt6size_tEj">opensn::CellLBSView::GetOutflow (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4NK6opensn11CellLBSView9GetVolumeEv">opensn::CellLBSView::GetVolume (C++ function)</a>
 </li>
@@ -2327,8 +2327,6 @@
       <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4NK6opensn11CellLBSView6MapDOFE8uint64_t8uint64_tj">opensn::CellLBSView::MapDOF (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSView10ReassignXSERK12MultiGroupXS">opensn::CellLBSView::ReassignXS (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_cell_l_b_s_view.html#_CPPv4N6opensn11CellLBSView11ZeroOutflowENSt6size_tEj">opensn::CellLBSView::ZeroOutflow (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_cell_mapping.html#_CPPv4N6opensn11CellMappingE">opensn::CellMapping (C++ class)</a>
 </li>
@@ -2371,6 +2369,16 @@
       <li><a href="capi/rst/classopensn_1_1_cell_mapping.html#_CPPv4NK6opensn11CellMapping11ShapeValuesERK7Vector3R6VectorIdE">opensn::CellMapping::ShapeValues (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_cell_mapping.html#_CPPv4N6opensn11CellMappingD0Ev">opensn::CellMapping::~CellMapping (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_cell_outflow_view.html#_CPPv4N6opensn15CellOutflowViewE">opensn::CellOutflowView (C++ class)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_cell_outflow_view.html#_CPPv4N6opensn15CellOutflowView3AddENSt6size_tEjd">opensn::CellOutflowView::Add (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_cell_outflow_view.html#_CPPv4N6opensn15CellOutflowView15CellOutflowViewEijRKNSt6vectorIiEEb">opensn::CellOutflowView::CellOutflowView (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_cell_outflow_view.html#_CPPv4NK6opensn15CellOutflowView3GetENSt6size_tEj">opensn::CellOutflowView::Get (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_cell_outflow_view.html#_CPPv4N6opensn15CellOutflowView4ZeroENSt6size_tEj">opensn::CellOutflowView::Zero (C++ function)</a>
 </li>
       <li><a href="capi/rst/enum_namespaceopensn_1a44aeeb43cee5eee228e73624727fafa2.html#_CPPv4N6opensn8CellTypeE">opensn::CellType (C++ enum)</a>
 </li>
@@ -2768,6 +2776,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem21boundary_definitions_E">opensn::DiscreteOrdinatesProblem::boundary_definitions_ (C++ member)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem34boundary_runtime_data_initialized_E">opensn::DiscreteOrdinatesProblem::boundary_runtime_data_initialized_ (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18BoundaryDefinitionE">opensn::DiscreteOrdinatesProblem::BoundaryDefinition (C++ type)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem12BuildRuntimeEv">opensn::DiscreteOrdinatesProblem::BuildRuntime (C++ function)</a>
@@ -2860,6 +2870,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem22ReadProblemRestartDataE5hid_t">opensn::DiscreteOrdinatesProblem::ReadProblemRestartData (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem26RebuildBoundaryRuntimeDataEv">opensn::DiscreteOrdinatesProblem::RebuildBoundaryRuntimeData (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem25ReinitializeSolverSchemesEv">opensn::DiscreteOrdinatesProblem::ReinitializeSolverSchemes (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem23ReorientAdjointSolutionEv">opensn::DiscreteOrdinatesProblem::ReorientAdjointSolution (C++ function)</a>
@@ -2876,7 +2888,9 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem16SetBlockID2XSMapERK13BlockID2XSMap">opensn::DiscreteOrdinatesProblem::SetBlockID2XSMap (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetBoundaryOptionsERK15InputParameters">opensn::DiscreteOrdinatesProblem::SetBoundaryOptions (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetBoundaryOptionsERK15InputParameters">opensn::DiscreteOrdinatesProblem::SetBoundaryOptions (C++ function)</a>, <a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetBoundaryOptionsERKNSt6vectorI15InputParametersEEb">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem22SetBoundaryOptionsImplERK15InputParametersb">opensn::DiscreteOrdinatesProblem::SetBoundaryOptionsImpl (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSaveAngularFluxEb">opensn::DiscreteOrdinatesProblem::SetSaveAngularFlux (C++ function)</a>
 </li>
@@ -4080,8 +4094,6 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions28field_function_prefix_optionE">opensn::LBSOptions::field_function_prefix_option (C++ member)</a>
 </li>
-      <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions23last_restart_write_timeE">opensn::LBSOptions::last_restart_write_time (C++ member)</a>
-</li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions10LBSOptionsEv">opensn::LBSOptions::LBSOptions (C++ function)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions18max_ags_iterationsE">opensn::LBSOptions::max_ags_iterations (C++ member)</a>
@@ -4090,9 +4102,7 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions19power_default_kappaE">opensn::LBSOptions::power_default_kappa (C++ member)</a>
 </li>
-      <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions17read_restart_pathE">opensn::LBSOptions::read_restart_path (C++ member)</a>
-</li>
-      <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions22restart_writes_enabledE">opensn::LBSOptions::restart_writes_enabled (C++ member)</a>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions7restartE">opensn::LBSOptions::restart (C++ member)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions17save_angular_fluxE">opensn::LBSOptions::save_angular_flux (C++ member)</a>
 </li>
@@ -4103,12 +4113,6 @@
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions24verbose_inner_iterationsE">opensn::LBSOptions::verbose_inner_iterations (C++ member)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions24verbose_outer_iterationsE">opensn::LBSOptions::verbose_outer_iterations (C++ member)</a>
-</li>
-      <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions28write_delayed_psi_to_restartE">opensn::LBSOptions::write_delayed_psi_to_restart (C++ member)</a>
-</li>
-      <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions18write_restart_pathE">opensn::LBSOptions::write_restart_path (C++ member)</a>
-</li>
-      <li><a href="capi/rst/structopensn_1_1_l_b_s_options.html#_CPPv4N6opensn10LBSOptions27write_restart_time_intervalE">opensn::LBSOptions::write_restart_time_interval (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE">opensn::LBSProblem (C++ class)</a>
 </li>
@@ -4121,6 +4125,8 @@
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem19block_id_to_xs_map_E">opensn::LBSProblem::block_id_to_xs_map_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem12BuildRuntimeEv">opensn::LBSProblem::BuildRuntime (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem19cell_outflow_views_E">opensn::LBSProblem::cell_outflow_views_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem21cell_transport_views_E">opensn::LBSProblem::cell_transport_views_ (C++ member)</a>
 </li>
@@ -4154,9 +4160,11 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem16GetBlockID2XSMapEv">opensn::LBSProblem::GetBlockID2XSMap (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem21GetCellTransportViewsEv">opensn::LBSProblem::GetCellTransportViews (C++ function)</a>, <a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem21GetCellTransportViewsEv">[1]</a>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem19GetCellOutflowViewsEv">opensn::LBSProblem::GetCellOutflowViews (C++ function)</a>, <a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem19GetCellOutflowViewsEv">[1]</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem21GetExtSrcMomentsLocalEv">opensn::LBSProblem::GetExtSrcMomentsLocal (C++ function)</a>, <a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem21GetExtSrcMomentsLocalEv">[1]</a>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem21GetCellTransportViewsEv">opensn::LBSProblem::GetCellTransportViews (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem21GetExtSrcMomentsLocalEv">opensn::LBSProblem::GetExtSrcMomentsLocal (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem15GetGeometryTypeEv">opensn::LBSProblem::GetGeometryType (C++ function)</a>
 </li>
@@ -4243,8 +4251,6 @@
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem10groupsets_E">opensn::LBSProblem::groupsets_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem20InitializeBoundariesEv">opensn::LBSProblem::InitializeBoundaries (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem12initialized_E">opensn::LBSProblem::initialized_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem31InitializeSpatialDiscretizationEv">opensn::LBSProblem::InitializeSpatialDiscretization (C++ function)</a>
 </li>
@@ -4385,6 +4391,24 @@
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem12ZeroQMomentsEv">opensn::LBSProblem::ZeroQMoments (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemD0Ev">opensn::LBSProblem::~LBSProblem (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptionsE">opensn::LBSRestartOptions (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4NK6opensn17LBSRestartOptions10IsWriteDueEv">opensn::LBSRestartOptions::IsWriteDue (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions15last_write_timeE">opensn::LBSRestartOptions::last_write_time (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions17MarkWriteCompleteEv">opensn::LBSRestartOptions::MarkWriteComplete (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions9read_pathE">opensn::LBSRestartOptions::read_path (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions17write_delayed_psiE">opensn::LBSRestartOptions::write_delayed_psi (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions10write_pathE">opensn::LBSRestartOptions::write_path (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions19write_time_intervalE">opensn::LBSRestartOptions::write_time_interval (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions14writes_enabledE">opensn::LBSRestartOptions::writes_enabled (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_solver_i_o.html#_CPPv4N6opensn11LBSSolverIOE">opensn::LBSSolverIO (C++ class)</a>
 </li>
@@ -4628,6 +4652,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_logger.html#_CPPv4N6opensn6Logger11LogAllErrorEv">opensn::Logger::LogAllError (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_logger.html#_CPPv4N6opensn6Logger14LogAllVerbose0Ev">opensn::Logger::LogAllVerbose0 (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_logger.html#_CPPv4N6opensn6Logger14LogAllVerbose1Ev">opensn::Logger::LogAllVerbose1 (C++ function)</a>
@@ -4640,8 +4666,6 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_logger.html#_CPPv4N6opensn6LoggeraSERK6Logger">opensn::Logger::operator= (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_logger.html#_CPPv4N6opensn6Logger15SetColorEnabledEb">opensn::Logger::SetColorEnabled (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_logger.html#_CPPv4N6opensn6Logger12SetVerbosityEj">opensn::Logger::SetVerbosity (C++ function)</a>
@@ -5350,7 +5374,7 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrierE">opensn::OutflowCarrier (C++ class)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrier14AccumulateBackERNSt6vectorI11CellLBSViewEE">opensn::OutflowCarrier::AccumulateBack (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrier14AccumulateBackERNSt6vectorI15CellOutflowViewEE">opensn::OutflowCarrier::AccumulateBack (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrier9GetOffsetERKNSt8uint32_tERKNSt8uint32_tE">opensn::OutflowCarrier::GetOffset (C++ function)</a>
 </li>
@@ -7386,6 +7410,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunkE">opensn::SweepChunk (C++ class)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunk19cell_outflow_views_E">opensn::SweepChunk::cell_outflow_views_ (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunk21cell_transport_views_E">opensn::SweepChunk::cell_transport_views_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunk16destination_phi_E">opensn::SweepChunk::destination_phi_ (C++ member)</a>
@@ -7434,7 +7460,7 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunk5SweepER8AngleSet">opensn::SweepChunk::Sweep (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunk10SweepChunkERNSt6vectorIdEERNSt6vectorIdEERKNSt10shared_ptrI13MeshContinuumEERK21SpatialDiscretizationRKNSt6vectorI16UnitCellMatricesEERNSt6vectorI11CellLBSViewEERKNSt6vectorIdEERK11LBSGroupsetRK13BlockID2XSMapjjj">opensn::SweepChunk::SweepChunk (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunk10SweepChunkERNSt6vectorIdEERNSt6vectorIdEERKNSt10shared_ptrI13MeshContinuumEERK21SpatialDiscretizationRKNSt6vectorI16UnitCellMatricesEERKNSt6vectorI11CellLBSViewEERNSt6vectorI15CellOutflowViewEERKNSt6vectorIdEERK11LBSGroupsetRK13BlockID2XSMapjjj">opensn::SweepChunk::SweepChunk (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunk19unit_cell_matrices_E">opensn::SweepChunk::unit_cell_matrices_ (C++ member)</a>
 </li>
