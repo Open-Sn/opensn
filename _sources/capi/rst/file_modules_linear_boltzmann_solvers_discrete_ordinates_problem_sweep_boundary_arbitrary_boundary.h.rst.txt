@@ -34,9 +34,13 @@ Includes
 
 - ``framework/math/functions/function.h`` (:ref:`file_framework_math_functions_function.h`)
 
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
 - ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`)
+
+- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
 
 
 
@@ -53,6 +57,8 @@ Namespaces
 Classes
 -------
 
+
+- :ref:`exhale_struct_structopensn_1_1_arbitrary_boundary_1_1_extra_data`
 
 - :ref:`exhale_class_classopensn_1_1_arbitrary_boundary`
 

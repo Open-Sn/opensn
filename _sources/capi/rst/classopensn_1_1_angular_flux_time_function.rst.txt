@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_angular_flux_time_function:
+
+Class AngularFluxTimeFunction
+=============================
+
+- Defined in :ref:`file_framework_math_functions_function.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public std::function< double(int, int, double)>``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::AngularFluxTimeFunction
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -72,6 +72,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_definition.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_volume_postprocessor.h`

@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
+
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_structs.h`)
 
 - ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
@@ -66,8 +68,6 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_a_a_h_d___f_l_u_d_s_pointer_set`
 
-- :ref:`exhale_class_classopensn_1_1_a_a_h_d___face_node`
-
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___node_index`
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___non_local_face_node`
@@ -80,6 +80,4 @@ Functions
 - :ref:`exhale_function_namespacestd_1a7ef16e0b23291ac3cdf07c9adfa0c250`
 
 - :ref:`exhale_function_namespacestd_1a38a7ee27156f0e5bb69be8be630258c0`
-
-- :ref:`exhale_function_namespacestd_1a61be1731bebc888682d8ba4f2ab4c9d2`
 

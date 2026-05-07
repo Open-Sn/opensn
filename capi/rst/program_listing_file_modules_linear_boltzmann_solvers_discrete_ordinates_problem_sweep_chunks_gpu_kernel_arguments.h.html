@@ -99,6 +99,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_structs.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbcd_angle_set.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_carrier.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h&quot;</span>
@@ -139,13 +140,16 @@
 <span class="w">  </span><span class="n">Arguments</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem</span><span class="p">,</span>
 <span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
 <span class="w">            </span><span class="n">AngleSetType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">,</span>
-<span class="w">            </span><span class="n">FLUDSType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">)</span>
+<span class="w">            </span><span class="n">FLUDSType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
+<span class="w">            </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_active</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Get mesh and quadrature data</span>
 <span class="w">    </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">problem</span><span class="p">.</span><span class="n">GetMeshCarrier</span><span class="p">();</span>
 <span class="w">    </span><span class="n">mesh_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mesh</span><span class="o">-&gt;</span><span class="n">GetDevicePtr</span><span class="p">();</span>
-<span class="w">    </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">quadrature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">QuadratureCarrier</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">groupset</span><span class="p">.</span><span class="n">quad_carrier</span><span class="p">);</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">quadrature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">groupset</span><span class="p">.</span><span class="n">quad_carrier</span><span class="p">;</span>
 <span class="w">    </span><span class="n">quad_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">quadrature</span><span class="o">-&gt;</span><span class="n">GetDevicePtr</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// Get boundary</span>
+<span class="w">    </span><span class="n">boundary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">problem</span><span class="p">.</span><span class="n">GetBoundaryCarrier</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">GetDevicePtr</span><span class="p">(</span><span class="n">groupset</span><span class="p">.</span><span class="n">id</span><span class="p">);</span>
 <span class="w">    </span><span class="c1">// Copy source moment and destination phi data to GPU</span>
 <span class="w">    </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">problem</span><span class="p">.</span><span class="n">GetSourceMomentsPinner</span><span class="p">();</span>
 <span class="w">    </span><span class="n">src_moment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">GetDevicePtr</span><span class="p">();</span>
@@ -158,9 +162,13 @@
 <span class="w">    </span><span class="c1">// Copy angleset data to GPU</span>
 <span class="w">    </span><span class="n">directions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">angle_set</span><span class="p">.</span><span class="n">GetDeviceAngleIndices</span><span class="p">();</span>
 <span class="w">    </span><span class="n">angleset_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">angle_set</span><span class="p">.</span><span class="n">GetNumAngles</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">SweepType</span><span class="o">::</span><span class="n">AAH</span><span class="p">)</span>
+<span class="w">      </span><span class="n">boundary_offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">angle_set</span><span class="p">.</span><span class="n">GetDeviceBoudnaryOffset</span><span class="p">();</span>
 <span class="w">    </span><span class="c1">// Copy FLUDS data to GPU and retrieve the pointer set</span>
 <span class="w">    </span><span class="n">flud_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fluds</span><span class="p">.</span><span class="n">GetDevicePointerSet</span><span class="p">();</span>
 <span class="w">    </span><span class="n">flud_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fluds</span><span class="p">.</span><span class="n">GetCommonData</span><span class="p">().</span><span class="n">GetDeviceIndex</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// Copy surface source active</span>
+<span class="w">    </span><span class="n">is_surface_source_active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">is_active</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">// Mesh and quadrature</span>
@@ -169,8 +177,11 @@
 <span class="w">  </span><span class="c1">// Source moments and phi</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">src_moment</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">phi</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// Boundary</span>
+<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">boundary</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">// Angle set</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">directions</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">boundary_offset</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">angleset_size</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">// Group set</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_groups</span><span class="p">;</span>
@@ -179,6 +190,8 @@
 <span class="w">  </span><span class="c1">// FLUDS</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">__restrict__</span><span class="w"> </span><span class="n">flud_index</span><span class="p">;</span>
 <span class="w">  </span><span class="n">FLUDSPointerSetType</span><span class="w"> </span><span class="n">flud_data</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// Source active</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_surface_source_active</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn::gpu_kernel</span>

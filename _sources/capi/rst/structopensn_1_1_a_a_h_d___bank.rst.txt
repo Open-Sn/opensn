@@ -12,7 +12,6 @@ Inheritance Relationships
 Derived Types
 *************
 
-- ``public opensn::AAHD_BoundaryBank`` (:ref:`exhale_struct_structopensn_1_1_a_a_h_d___boundary_bank`)
 - ``public opensn::AAHD_DelayedLocalBank`` (:ref:`exhale_struct_structopensn_1_1_a_a_h_d___delayed_local_bank`)
 - ``public opensn::AAHD_NonLocalBank`` (:ref:`exhale_struct_structopensn_1_1_a_a_h_d___non_local_bank`)
 

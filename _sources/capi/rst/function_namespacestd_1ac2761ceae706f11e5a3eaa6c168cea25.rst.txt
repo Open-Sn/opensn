@@ -1,0 +1,14 @@
+.. _exhale_function_namespacestd_1ac2761ceae706f11e5a3eaa6c168cea25:
+
+Function std::operator<<(ostream&, const opensn::FaceNode&)
+===========================================================
+
+- Defined in :ref:`file_framework_mesh_cell_cell.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: std::operator<<(ostream&, const opensn::FaceNode&)
+   :project: opensn

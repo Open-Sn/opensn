@@ -67,8 +67,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#vacuum-boundaries">10.2.1. Vacuum Boundaries</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reflecting-boundaries">10.2.2. Reflecting Boundaries</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#isotropic-boundaries">10.2.3. Isotropic Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arbitrary-boundaries">10.2.4. Arbitrary Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#setting-and-replacing-boundary-conditions">10.2.5. Setting and Replacing Boundary Conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-windowed-isotropic-boundaries">10.2.4. Time-Windowed Isotropic Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arbitrary-boundaries">10.2.5. Arbitrary Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-dependent-arbitrary-boundaries">10.2.6. Time-Dependent Arbitrary Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setting-and-replacing-boundary-conditions">10.2.7. Setting and Replacing Boundary Conditions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#point-sources">10.3. Point Sources</a><ul>
@@ -87,7 +89,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#attaching-sources-at-problem-construction">10.5. Attaching Sources at Problem Construction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#replacing-sources-after-construction">10.6. Replacing Sources After Construction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#transient-source-behavior">10.7. Transient Source Behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-source-and-boundary-behavior">10.7. Transient Source and Boundary Behavior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#boundary-names-and-mesh-labels">10.8. Boundary Names and Mesh Labels</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#best-practices">10.9. Best Practices</a></li>
 </ul>
@@ -226,7 +228,10 @@ the inflow can depend on group and direction</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the boundary id on the mesh</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: one of the supported boundary-condition types</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">group_strength</span></code>: required for <code class="docutils literal notranslate"><span class="pre">&quot;isotropic&quot;</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">function</span></code>: required for <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">end_time</span></code>: optional active time window for
+<code class="docutils literal notranslate"><span class="pre">&quot;isotropic&quot;</span></code> boundaries</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function</span></code>: steady or time-independent callback for <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_function</span></code>: time-dependent callback for <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code></p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -289,6 +294,8 @@ boundary.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">group_strength</span></code> must have one entry per energy group</p></li>
 <li><p>the values are incoming boundary angular flux values</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">end_time</span></code> can be used to activate the boundary only
+during part of a transient calculation</p></li>
 <li><p>because OpenSn normalizes quadrature weights to sum to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>, a value
 <code class="docutils literal notranslate"><span class="pre">group_strength[g]</span> <span class="pre">=</span> <span class="pre">X</span></code> means “apply a uniform isotropic incoming angular
 flux of value <code class="docutils literal notranslate"><span class="pre">X</span></code> in group <code class="docutils literal notranslate"><span class="pre">g</span></code>” in OpenSn’s discrete convention</p></li>
@@ -300,8 +307,35 @@ problem when the intent is “inject a known incoming flux on this face” rathe
 than “create particles throughout a volume.”</p>
 </div>
 </section>
+<section id="time-windowed-isotropic-boundaries">
+<h3><span class="section-number">10.2.4. </span>Time-Windowed Isotropic Boundaries<a class="headerlink" href="#time-windowed-isotropic-boundaries" title="Link to this heading"></a></h3>
+<p>For transient problems, an isotropic boundary can be restricted to an active
+time interval with <code class="docutils literal notranslate"><span class="pre">start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">end_time</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;isotropic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;group_strength&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="s2">&quot;start_time&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="s2">&quot;end_time&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The boundary is active when:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">&gt;=</span> <span class="pre">start_time</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">&lt;=</span> <span class="pre">end_time</span></code></p></li>
+</ul>
+<p>Outside that interval, the isotropic inflow on that boundary is zero.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">end_time</span></code> are supported for <code class="docutils literal notranslate"><span class="pre">&quot;isotropic&quot;</span></code>
+boundaries only. They are not accepted for <code class="docutils literal notranslate"><span class="pre">&quot;vacuum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;reflecting&quot;</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code> boundaries.</p>
+</div>
+</section>
 <section id="arbitrary-boundaries">
-<h3><span class="section-number">10.2.4. </span>Arbitrary Boundaries<a class="headerlink" href="#arbitrary-boundaries" title="Link to this heading"></a></h3>
+<h3><span class="section-number">10.2.5. </span>Arbitrary Boundaries<a class="headerlink" href="#arbitrary-boundaries" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code> uses a Python callback wrapped in
 <code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxFunction</span></code>.</p>
 <p>The callback signature is:</p>
@@ -350,8 +384,52 @@ of value <code class="docutils literal notranslate"><span class="pre">X</span></
 that group. Do not multiply by quadrature weights in the callback.</p>
 </div>
 </section>
+<section id="time-dependent-arbitrary-boundaries">
+<h3><span class="section-number">10.2.6. </span>Time-Dependent Arbitrary Boundaries<a class="headerlink" href="#time-dependent-arbitrary-boundaries" title="Link to this heading"></a></h3>
+<p>For transient problems, arbitrary boundary inflow can depend on time by using
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxTimeFunction</span></code> and the <code class="docutils literal notranslate"><span class="pre">time_function</span></code>
+boundary entry.</p>
+<p>The callback signature is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bc_func</span><span class="p">(</span><span class="n">group_index</span><span class="p">,</span> <span class="n">direction_index</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularFluxTimeFunction</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">xmin_pulse</span><span class="p">(</span><span class="n">group_index</span><span class="p">,</span> <span class="n">direction_index</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">group_index</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">time</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+    <span class="k">return</span> <span class="mf">0.0</span>
+
+<span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;arbitrary&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;time_function&quot;</span><span class="p">:</span> <span class="n">AngularFluxTimeFunction</span><span class="p">(</span><span class="n">xmin_pulse</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Important behavior:</p>
+<ul class="simple">
+<li><p>an <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code> boundary must specify exactly one of <code class="docutils literal notranslate"><span class="pre">function</span></code> or
+<code class="docutils literal notranslate"><span class="pre">time_function</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">function</span></code> callbacks receive <code class="docutils literal notranslate"><span class="pre">(group_index,</span> <span class="pre">direction_index)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_function</span></code> callbacks receive <code class="docutils literal notranslate"><span class="pre">(group_index,</span> <span class="pre">direction_index,</span> <span class="pre">time)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">end_time</span></code> are not supported for arbitrary boundaries;
+put any active-window logic inside the callback</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The time argument is the problem time used by the transient sweep. This makes
+the boundary value part of the timestep solve rather than a Python-side
+boundary replacement between solves.</p>
+</div>
+</section>
 <section id="setting-and-replacing-boundary-conditions">
-<h3><span class="section-number">10.2.5. </span>Setting and Replacing Boundary Conditions<a class="headerlink" href="#setting-and-replacing-boundary-conditions" title="Link to this heading"></a></h3>
+<h3><span class="section-number">10.2.7. </span>Setting and Replacing Boundary Conditions<a class="headerlink" href="#setting-and-replacing-boundary-conditions" title="Link to this heading"></a></h3>
 <p>Boundary conditions can be provided in the problem constructor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
     <span class="o">...</span><span class="p">,</span>
@@ -696,15 +774,46 @@ drive a sequence of solves or a Python-controlled transient without
 reconstructing the entire problem.</p>
 </div>
 </section>
-<section id="transient-source-behavior">
-<h2><span class="section-number">10.7. </span>Transient Source Behavior<a class="headerlink" href="#transient-source-behavior" title="Link to this heading"></a></h2>
+<section id="transient-source-and-boundary-behavior">
+<h2><span class="section-number">10.7. </span>Transient Source and Boundary Behavior<a class="headerlink" href="#transient-source-and-boundary-behavior" title="Link to this heading"></a></h2>
 <p>For transient problems, time dependence can enter through:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">start_time</span></code> / <code class="docutils literal notranslate"><span class="pre">end_time</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">strength_function</span></code> callbacks</p></li>
+<li><p>boundary <code class="docutils literal notranslate"><span class="pre">start_time</span></code> / <code class="docutils literal notranslate"><span class="pre">end_time</span></code> windows on isotropic boundaries</p></li>
+<li><p>boundary <code class="docutils literal notranslate"><span class="pre">time_function</span></code> callbacks on arbitrary boundaries</p></li>
+<li><p>source <code class="docutils literal notranslate"><span class="pre">start_time</span></code> / <code class="docutils literal notranslate"><span class="pre">end_time</span></code> windows</p></li>
+<li><p>source <code class="docutils literal notranslate"><span class="pre">strength_function</span></code> callbacks</p></li>
 <li><p>explicit replacement of source objects between calls to
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></p></li>
 </ul>
+<p>Example of a time-windowed isotropic boundary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;isotropic&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group_strength&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
+        <span class="s2">&quot;start_time&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;end_time&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Example of a time-dependent arbitrary boundary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">AngularFluxTimeFunction</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">angular_inflow</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">group</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="mf">10.0</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+<span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;arbitrary&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;time_function&quot;</span><span class="p">:</span> <span class="n">AngularFluxTimeFunction</span><span class="p">(</span><span class="n">angular_inflow</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
 <p>Example of a time-windowed volumetric source:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">src</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span>
     <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -728,10 +837,11 @@ reconstructing the entire problem.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>There are two different design styles for transient sources. One is to keep a
-single source object and let it handle its own time dependence. The other is
-to replace source objects explicitly in the Python loop. Both are valid; the
-clearer choice depends on how much logic the source behavior really needs.</p>
+<p>There are two different design styles for transient driving terms. One is to
+keep a single boundary or source object and let it handle its own time
+dependence. The other is to replace objects explicitly in the Python loop.
+Both are valid; the clearer choice depends on how much logic the behavior
+really needs.</p>
 </div>
 </section>
 <section id="boundary-names-and-mesh-labels">
@@ -760,6 +870,10 @@ mesh.</p>
 physical model; they are the clearest and least error-prone options.</p></li>
 <li><p>Use isotropic boundaries for simple incoming-flux problems.</p></li>
 <li><p>Use arbitrary boundaries only when the inflow genuinely depends on angle.</p></li>
+<li><p>Prefer isotropic <code class="docutils literal notranslate"><span class="pre">start_time</span></code>/<code class="docutils literal notranslate"><span class="pre">end_time</span></code> windows for simple transient
+boundary pulses.</p></li>
+<li><p>Prefer <code class="docutils literal notranslate"><span class="pre">AngularFluxTimeFunction</span></code> when arbitrary boundary inflow must vary
+with time.</p></li>
 <li><p>Use volumetric sources based on block ids when source regions already align
 with the mesh labeling.</p></li>
 <li><p>Use logical volumes when the source region is geometric rather than material

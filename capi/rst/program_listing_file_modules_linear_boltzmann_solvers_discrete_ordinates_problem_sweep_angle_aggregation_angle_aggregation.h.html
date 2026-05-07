@@ -100,7 +100,6 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;set&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unordered_map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -135,7 +134,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">AngleAggregation</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">AngleAggregation</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">boundaries</span><span class="p">,</span>
+<span class="w">  </span><span class="n">AngleAggregation</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">boundaries</span><span class="p">,</span>
 <span class="w">                   </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngularQuadrature</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
 <span class="w">                   </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">);</span>
 
@@ -164,22 +164,33 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">grid_</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">grid_</span><span class="o">-&gt;</span><span class="n">GetCoordinateSystem</span><span class="p">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">CoordinateSystemType</span><span class="o">::</span><span class="n">UNDEFINED</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">GetGroupsetID</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">groupset_id_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="w">  </span><span class="c1">/// Resets all the outgoing intra-location and inter-location cyclic interfaces.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ZeroOutgoingDelayedPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Resets all the incoming intra-location and inter-location cyclic interfaces.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroIncomingDelayedPsi</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Initializes reflecting boundary conditions.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeReflectingBCs</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Resets dependencies between anglesets.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetAngleSetDependencies</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Establishes dependencies between angle sets for reflecting boundaries.</span>
+<span class="w">  </span><span class="c1">/// Establishes dependencies between anglesets for reflecting boundaries and cylindrical geometry.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetupAngleSetDependencies</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Returns a map of following angle sets per angle set.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetFollowingAngleSetsMap</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetFollowingAngleSetsMap</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">following_angle_sets_map_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Builds the map from direction number to angleset pointer</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">BuildDirnumToAnglesetMap</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Gets the angle set for a given angle index.</span>
+<span class="w">  </span><span class="n">AngleSet</span><span class="o">*</span><span class="w"> </span><span class="nf">GetAngleSetForAngleIndex</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">angle_idx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">dir_to_angleset_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">angle_idx</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
@@ -219,13 +230,15 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDelayedPsiNew2Old</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">num_ang_unknowns_avail_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">number_angular_unknowns_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngularQuadrature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quadrature_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">boundaries_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">boundaries_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">angle_set_groups_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*&gt;&gt;</span><span class="w"> </span><span class="n">following_angle_sets_map_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">dir_to_angleset_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">AngleSet</span><span class="o">*&gt;&gt;</span><span class="w"> </span><span class="n">following_angle_sets_map_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

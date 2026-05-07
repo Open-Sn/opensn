@@ -98,12 +98,14 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/linear_solver/linear_system_solver.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/unknown_manager/unknown_manager.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/utils/utils.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DiffusionMIPSolver</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QuadratureCarrier</span><span class="p">;</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Shared groupset state.</span>
@@ -127,10 +129,10 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSweepInfoFile</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">ev_tag</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_name</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Initialize carrier for copying quadrature data to GPU.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeGPUCarriers</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeQuadratureCarrier</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Delete carrier and deallocate memory on GPU.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetGPUCarriers</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetQuadratureCarrier</span><span class="p">();</span>
 
 <span class="w">  </span><span class="o">~</span><span class="n">LBSGroupset</span><span class="p">();</span>
 
@@ -142,6 +144,8 @@
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">first_group</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Last energy-group index in the groupset.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Number of groups in the groupset.</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">// Sweep/discrete-ordinates data kept in the shared groupset by design.</span>
 <span class="w">  </span><span class="c1">// This avoids duplicating generic groupset data.</span>
@@ -171,7 +175,7 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">wgdsa_string</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">tgdsa_string</span><span class="p">;</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">quad_carrier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">QuadratureCarrier</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quad_carrier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiffusionMIPSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">wgdsa_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiffusionMIPSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tgdsa_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>

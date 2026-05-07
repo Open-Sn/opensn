@@ -192,7 +192,7 @@ Program Listing for File aah_sweep_kernels.h
                                              cell_local_id,
                                              f,
                                              fj,
-                                             gs_gi,
+                                             0,
                                              data.surface_source_active);
    
                if (not psi)

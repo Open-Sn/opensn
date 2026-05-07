@@ -127,14 +127,14 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset21InitializeGPUCarriersEv">
-<span class="target" id="classopensn_1_1_l_b_s_groupset_1ab6c1e18cf1b66c87c3c3af3db26fd932"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeGPUCarriers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset21InitializeGPUCarriersEv" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset27InitializeQuadratureCarrierEv">
+<span class="target" id="classopensn_1_1_l_b_s_groupset_1ae327f3a8fec9c1d3afc4457f23469ee2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeQuadratureCarrier</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset27InitializeQuadratureCarrierEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Initialize carrier for copying quadrature data to GPU. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset16ResetGPUCarriersEv">
-<span class="target" id="classopensn_1_1_l_b_s_groupset_1ae852b0fc78b1cc9efb6b1beb0517b570"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResetGPUCarriers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset16ResetGPUCarriersEv" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset22ResetQuadratureCarrierEv">
+<span class="target" id="classopensn_1_1_l_b_s_groupset_1aa232483aace76683ec805baa36328a2e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResetQuadratureCarrier</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset22ResetQuadratureCarrierEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Delete carrier and deallocate memory on GPU. </p>
 </dd></dl>
 
@@ -167,6 +167,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset10last_groupE">
 <span class="target" id="classopensn_1_1_l_b_s_groupset_1a5243c103415d20e83c7cfd3de27f2a11"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">last_group</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset10last_groupE" title="Link to this definition"></a><br /></dt>
 <dd><p>Last energy-group index in the groupset. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset4sizeE">
+<span class="target" id="classopensn_1_1_l_b_s_groupset_1ad10290191dd04deb9a85fbe83b26d5c6"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset4sizeE" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of groups in the groupset. </p>
 </dd></dl>
 
 <dl class="cpp var">
@@ -276,7 +282,7 @@
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset12quad_carrierE">
-<span class="target" id="classopensn_1_1_l_b_s_groupset_1aed4eac50fd67827f7e8013b40d817c4a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">quad_carrier</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset12quad_carrierE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_l_b_s_groupset_1ac8c22c26a8a254f293570d58208767bc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_quadrature_carrier.html#_CPPv4N6opensn17QuadratureCarrierE" title="opensn::QuadratureCarrier"><span class="n"><span class="pre">QuadratureCarrier</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">quad_carrier</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset12quad_carrierE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">

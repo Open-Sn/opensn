@@ -510,13 +510,34 @@ to avoid hidden coupling between forward and adjoint setups.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>function: AngularFluxFunction, optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='arbitrary'</span></code>. Callable that returns incoming angular flux.</p>
+<dt>start_time: float, optional</dt><dd><p>Active start time for isotropic boundaries only. Defaults to -infinity.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>end_time: float, optional</dt><dd><p>Active end time for isotropic boundaries only. Defaults to infinity.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>function: AngularFluxFunction, optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='arbitrary'</span></code> unless <code class="docutils literal notranslate"><span class="pre">time_function</span></code> is supplied. Callable
+that returns incoming angular flux from group and direction.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>time_function: AngularFluxTimeFunction, optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='arbitrary'</span></code> unless <code class="docutils literal notranslate"><span class="pre">function</span></code> is supplied. Callable that
+returns incoming angular flux from group, direction, and time.</p>
 </dd>
 </dl>
 </li>
 </ul>
 </dd>
 </dl>
+<p>Isotropic boundaries may use <code class="docutils literal notranslate"><span class="pre">start_time</span></code>/<code class="docutils literal notranslate"><span class="pre">end_time</span></code> for simple on/off behavior.
+Arbitrary boundaries must specify exactly one of <code class="docutils literal notranslate"><span class="pre">function</span></code> or <code class="docutils literal notranslate"><span class="pre">time_function</span></code>; use
+<code class="docutils literal notranslate"><span class="pre">time_function</span></code> for time-dependent arbitrary inflow and handle any active window inside
+that callback.</p>
 </p></li>
 </ul>
 </dd>
@@ -810,13 +831,34 @@ groupset. Each dictionary supports:</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>function: AngularFluxFunction, optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='arbitrary'</span></code>. Callable that returns incoming angular flux.</p>
+<dt>start_time: float, optional</dt><dd><p>Active start time for isotropic boundaries only. Defaults to -infinity.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>end_time: float, optional</dt><dd><p>Active end time for isotropic boundaries only. Defaults to infinity.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>function: AngularFluxFunction, optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='arbitrary'</span></code> unless <code class="docutils literal notranslate"><span class="pre">time_function</span></code> is supplied. Callable
+that returns incoming angular flux from group and direction.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>time_function: AngularFluxTimeFunction, optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='arbitrary'</span></code> unless <code class="docutils literal notranslate"><span class="pre">function</span></code> is supplied. Callable that
+returns incoming angular flux from group, direction, and time.</p>
 </dd>
 </dl>
 </li>
 </ul>
 </dd>
 </dl>
+<p>Isotropic boundaries may use <code class="docutils literal notranslate"><span class="pre">start_time</span></code>/<code class="docutils literal notranslate"><span class="pre">end_time</span></code> for simple on/off behavior.
+Arbitrary boundaries must specify exactly one of <code class="docutils literal notranslate"><span class="pre">function</span></code> or <code class="docutils literal notranslate"><span class="pre">time_function</span></code>; use
+<code class="docutils literal notranslate"><span class="pre">time_function</span></code> for time-dependent arbitrary inflow and handle any active window inside
+that callback.</p>
 </p></li>
 <li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of point sources.</p></li>
 <li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of volumetric sources.</p></li>

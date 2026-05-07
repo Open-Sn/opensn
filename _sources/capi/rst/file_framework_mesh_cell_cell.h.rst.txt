@@ -62,6 +62,10 @@ Included By
 
 - :ref:`file_framework_mesh_unpartitioned_mesh_unpartitioned_mesh.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_reflecting_boundary.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_structs.h`
+
 
 
 
@@ -71,6 +75,8 @@ Namespaces
 
 - :ref:`namespace_opensn`
 
+- :ref:`namespace_std`
+
 
 Classes
 -------
@@ -79,6 +85,8 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_cell`
 
 - :ref:`exhale_class_classopensn_1_1_cell_face`
+
+- :ref:`exhale_class_classopensn_1_1_face_node`
 
 
 Enums
@@ -93,4 +101,6 @@ Functions
 
 
 - :ref:`exhale_function_namespaceopensn_1a710a6656bcc3d8df1f70994d9cede737`
+
+- :ref:`exhale_function_namespacestd_1ac2761ceae706f11e5a3eaa6c168cea25`
 

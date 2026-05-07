@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_boundary_carrier:
+
+Class BoundaryCarrier
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_carrier.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::BoundaryCarrier
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

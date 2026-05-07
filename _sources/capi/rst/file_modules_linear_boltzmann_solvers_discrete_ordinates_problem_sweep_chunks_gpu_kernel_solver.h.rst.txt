@@ -68,7 +68,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a8a672050f6cedc76e5450c195487aceb`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a47135ff384529d606496cc4320a0a80d`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1ad0664ab5f7db0b0a8b7ff5a12b77d96b`
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a037be16d0adaf37b53a8914357dbe8ad`
 

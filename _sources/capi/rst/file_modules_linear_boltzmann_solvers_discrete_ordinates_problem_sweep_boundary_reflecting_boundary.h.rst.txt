@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
+
 - ``limits``
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_sweep_boundary.h`)
@@ -51,6 +53,10 @@ Namespaces
 Classes
 -------
 
+
+- :ref:`exhale_struct_structopensn_1_1_reflecting_boundary_1_1_extra_data`
+
+- :ref:`exhale_struct_structopensn_1_1_reflecting_boundary_1_1_stride`
 
 - :ref:`exhale_class_classopensn_1_1_reflecting_boundary`
 

@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_reflecting_boundary_1_1_stride:
+
+Struct ReflectingBoundary::Stride
+=================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_reflecting_boundary.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_reflecting_boundary`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::ReflectingBoundary::Stride
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

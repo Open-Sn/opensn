@@ -50,11 +50,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_a_a_h_d___boundary_bank.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_a_a_h_d___delayed_local_bank.rst
 
 .. toctree::
@@ -90,12 +85,27 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_arbitrary_boundary_1_1_extra_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_balance_table.rst
 
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_boundary_common_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_boundary_condition.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_boundary_definition.rst
 
 .. toctree::
    :maxdepth: 1
@@ -435,7 +445,22 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_reflecting_boundary_1_1_extra_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_reflecting_boundary_1_1_stride.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_response_evaluator_1_1_boundary_source.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_rule_values.rst
 
 .. toctree::
    :maxdepth: 1
@@ -496,11 +521,6 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_sub_set_info.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   structopensn_1_1_sweep_scheduler_1_1_rule_values.rst
 
 .. toctree::
    :maxdepth: 1
@@ -650,11 +670,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_a_a_h_d___face_node.rst
-
-.. toctree::
-   :maxdepth: 1
-
    classopensn_1_1_a_a_h_d___f_l_u_d_s.rst
 
 .. toctree::
@@ -740,6 +755,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_angular_flux_time_function.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_angular_quadrature.rst
 
 .. toctree::
@@ -756,6 +776,16 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_boolean_logical_volume.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_boundary_bank.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_boundary_carrier.rst
 
 .. toctree::
    :maxdepth: 1
@@ -911,6 +941,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_extruder_mesh_generator.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_face_node.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2373,6 +2408,21 @@ Files
    :maxdepth: 1
 
    file_framework_mesh_logical_volume_boolean_logical_volume.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_bank.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_carrier.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_definition.h.rst
 
 .. toctree::
    :maxdepth: 1

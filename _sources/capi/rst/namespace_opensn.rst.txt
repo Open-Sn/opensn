@@ -45,8 +45,6 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_a_a_h_d___bank`
 
-- :ref:`exhale_struct_structopensn_1_1_a_a_h_d___boundary_bank`
-
 - :ref:`exhale_struct_structopensn_1_1_a_a_h_d___delayed_local_bank`
 
 - :ref:`exhale_struct_structopensn_1_1_a_a_h_d___directed_edge_node`
@@ -61,9 +59,15 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_angular_quadrature_1_1_harmonic_indices`
 
+- :ref:`exhale_struct_structopensn_1_1_arbitrary_boundary_1_1_extra_data`
+
 - :ref:`exhale_struct_structopensn_1_1_balance_table`
 
+- :ref:`exhale_struct_structopensn_1_1_boundary_common_data`
+
 - :ref:`exhale_struct_structopensn_1_1_boundary_condition`
+
+- :ref:`exhale_struct_structopensn_1_1_boundary_definition`
 
 - :ref:`exhale_struct_structopensn_1_1_boundary_node_info`
 
@@ -195,7 +199,13 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_ray_tracer_output_information`
 
+- :ref:`exhale_struct_structopensn_1_1_reflecting_boundary_1_1_extra_data`
+
+- :ref:`exhale_struct_structopensn_1_1_reflecting_boundary_1_1_stride`
+
 - :ref:`exhale_struct_structopensn_1_1_response_evaluator_1_1_boundary_source`
+
+- :ref:`exhale_struct_structopensn_1_1_rule_values`
 
 - :ref:`exhale_struct_structopensn_1_1_s_l_d_f_esq_quadrature_1_1_base_functor`
 
@@ -220,8 +230,6 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_storage`
 
 - :ref:`exhale_struct_structopensn_1_1_sub_set_info`
-
-- :ref:`exhale_struct_structopensn_1_1_sweep_scheduler_1_1_rule_values`
 
 - :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context`
 
@@ -281,8 +289,6 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___a_synchronous_communicator`
 
-- :ref:`exhale_class_classopensn_1_1_a_a_h_d___face_node`
-
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___f_l_u_d_s`
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___f_l_u_d_s_common_data`
@@ -317,6 +323,8 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_angular_flux_function`
 
+- :ref:`exhale_class_classopensn_1_1_angular_flux_time_function`
+
 - :ref:`exhale_class_classopensn_1_1_angular_quadrature`
 
 - :ref:`exhale_class_classopensn_1_1_arbitrary_boundary`
@@ -324,6 +332,10 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_asynchronous_communicator`
 
 - :ref:`exhale_class_classopensn_1_1_boolean_logical_volume`
+
+- :ref:`exhale_class_classopensn_1_1_boundary_bank`
+
+- :ref:`exhale_class_classopensn_1_1_boundary_carrier`
 
 - :ref:`exhale_class_classopensn_1_1_boundary_function`
 
@@ -386,6 +398,8 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_distributed_mesh_generator`
 
 - :ref:`exhale_class_classopensn_1_1_extruder_mesh_generator`
+
+- :ref:`exhale_class_classopensn_1_1_face_node`
 
 - :ref:`exhale_class_classopensn_1_1_field_function`
 

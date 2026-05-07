@@ -147,14 +147,6 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">};</span>
 
-<span class="c1">/// Boundary bank storage structure.</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">AAHD_BoundaryBank</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AAHD_Bank</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Member constructor.</span>
-<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
-<span class="p">};</span>
-
 <span class="c1">/// Non-local bank storage structure.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">AAHD_NonLocalBank</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AAHD_Bank</span>
 <span class="p">{</span>
@@ -269,19 +261,12 @@
 <span class="w">  </span><span class="c1">/// \{</span>
 <span class="w">  </span><span class="c1">/// Copy delayed local and delayed non-local incoming psi to device.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyDelayedPsiToDevice</span><span class="p">();</span>
-<span class="w">  </span><span class="c1">/// Copy boundary psi from angle set to device boundary storage.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyBoundaryToDevice</span><span class="p">(</span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
-<span class="w">                            </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">,</span>
-<span class="w">                            </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
-<span class="w">                            </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_surface_source_active</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// Copy non-local incoming psi to device.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyNonLocalIncomingPsiToDevice</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">/// Get device pointers for each bank in FLUDS.</span>
 <span class="w">  </span><span class="n">AAHD_FLUDSPointerSet</span><span class="w"> </span><span class="nf">GetDevicePointerSet</span><span class="p">();</span>
-<span class="w">  </span><span class="c1">/// Copy boundary psi, non-local outgoing and delayed local psi from device to host.</span>
+<span class="w">  </span><span class="c1">/// Copy non-local outgoing and delayed local psi from device to host.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyPsiFromDevice</span><span class="p">();</span>
-<span class="w">  </span><span class="c1">/// Copy boundary psi from contiguous boundary storage to angle set.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyBoundaryPsiToAngleSet</span><span class="p">(</span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// Copy save angular flux from device to host.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopySaveAngularFluxFromDevice</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">/// Copy save angular flux from host contiguous buffer to destination psi.</span>
@@ -318,14 +303,11 @@
 <span class="w">  </span><span class="c1">/// Non-local bank for outgoing angular fluxes.</span>
 <span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="w"> </span><span class="n">nonlocal_outgoing_psi_bank_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Storage for boundary angular fluxes.</span>
-<span class="w">  </span><span class="n">AAHD_BoundaryBank</span><span class="w"> </span><span class="n">boundary_psi_</span><span class="p">;</span>
-
 <span class="w">  </span><span class="c1">/// Storage for saved angular fluxes.</span>
 <span class="w">  </span><span class="n">AAHD_Bank</span><span class="w"> </span><span class="n">save_angular_flux_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Stream for asynchronous operations.</span>
-<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="w"> </span><span class="n">stream_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="w"> </span><span class="n">stream_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">::</span><span class="n">get_null_stream</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

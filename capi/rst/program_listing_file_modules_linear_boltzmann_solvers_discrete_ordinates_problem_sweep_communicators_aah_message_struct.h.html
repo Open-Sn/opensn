@@ -104,6 +104,8 @@
 <span class="c1">/// \brief Message details for each message passing.</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">AAH_MessageDetails</span>
 <span class="p">{</span>
+<span class="w">  </span><span class="c1">/// Member constructor.</span>
+<span class="w">  </span><span class="n">AAH_MessageDetails</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">bp</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">peer</span><span class="p">(</span><span class="n">p</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">s</span><span class="p">),</span><span class="w"> </span><span class="n">block_pos</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">  </span><span class="c1">/// MPI rank of the peer partition.</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">peer</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Size of the message (in number of doubles).</span>

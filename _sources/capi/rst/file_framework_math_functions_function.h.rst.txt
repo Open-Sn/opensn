@@ -48,6 +48,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_arbitrary_boundary.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_definition.h`
+
 
 
 
@@ -63,6 +65,8 @@ Classes
 
 
 - :ref:`exhale_class_classopensn_1_1_angular_flux_function`
+
+- :ref:`exhale_class_classopensn_1_1_angular_flux_time_function`
 
 - :ref:`exhale_class_classopensn_1_1_group_time_function`
 

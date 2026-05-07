@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_boundary_common_data:
+
+Struct BoundaryCommonData
+=========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_bank.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::BoundaryCommonData
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

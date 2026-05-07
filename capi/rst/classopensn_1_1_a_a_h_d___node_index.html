@@ -105,7 +105,7 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The index must follow strict mutual-exclusion rules:<ul class="simple">
-<li><p>Always check boundary status BEFORE local status. Boundary instances are assigned as local, but their locations are actually set to an undefined value.</p></li>
+<li><p>Always check boundary status BEFORE local status.</p></li>
 <li><p>Boundary and delayed status are mutually exclusive. Both cannot be true at the same time.</p></li>
 <li><p>Boundary and non-local status are mutually exclusive. Both cannot be true at the same time.</p></li>
 <li><p>Non-local outgoing and delayed status are mutually exclusive. The sweep scheduler does not distinguish between delayed and non-delayed non-local outgoing faces. For non-local outgoing faces, delayed status is always set to false. </p></li>
@@ -131,31 +131,17 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbb">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a37954c058f50946178a2697d97059427"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_outgoing</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_local</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_delayed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbb" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbbb">
+<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a8a2bca13520845604760e24bf9af18dd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_outgoing</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_boundary</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_local_or_reflecting</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_delayed_or_angle_dependent</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEbbbb" title="Link to this definition"></a><br /></dt>
 <dd><p>Construct a non-boundary node index. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>index</strong> – Index into the corresponding bank. Cannot exceed 2^60 - 1. </p></li>
 <li><p><strong>is_outgoing</strong> – Flag indicating if the node corresponds to an outgoing face. </p></li>
-<li><p><strong>is_local</strong> – Flag indicating if the index is in a local bank. </p></li>
-<li><p><strong>is_delayed</strong> – Flag indicating if the index is in a delayed bank. </p></li>
+<li><p><strong>is_local_or_reflecting</strong> – Flag indicating if the index is in a local bank or reflecting boundary. </p></li>
+<li><p><strong>is_delayed_or_angle_dependent</strong> – Flag indicating if the index is in a delayed bank or an angle dependent boundary. </p></li>
 <li><p><strong>loc_index</strong> – Index into delayed/non-delayed location dependencies/successors vector for non-local nodes. Cannot exceed 2^21 - 1. </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEb">
-<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a5c494f1d4a8ab6999d31eb3a1e7d2a90"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_NodeIndex</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_outgoing</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHD_NodeIndex14AAHD_NodeIndexENSt8uint64_tEb" title="Link to this definition"></a><br /></dt>
-<dd><p>Construct a boundary node index. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>index</strong> – Index into the corresponding bank. Cannot exceed 2^40 - 1. </p></li>
-<li><p><strong>is_outgoing</strong> – Flag indicating if the node corresponds to an outgoing face. </p></li>
 </ul>
 </dd>
 </dl>
@@ -168,9 +154,21 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex16IsAngleDependentEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1aab6b9450ee05495d27970aa03d623131"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsAngleDependent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex16IsAngleDependentEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Check if the current index corresponds to an angle dependent boundary. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex7IsLocalEv">
 <span class="target" id="classopensn_1_1_a_a_h_d___node_index_1aae4b4819d338829b61c20c7948a59f28"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsLocal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex7IsLocalEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Check if the current index corresponds to a local bank. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHD_NodeIndex12IsReflectingEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___node_index_1a43e9c4d3b7831f08667c2d84fc8b388c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsReflecting</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHD_NodeIndex12IsReflectingEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Check if the current index corresponds to a reflecting boundary. </p>
 </dd></dl>
 
 <dl class="cpp function">

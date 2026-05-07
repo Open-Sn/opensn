@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a47135ff384529d606496cc4320a0a80d:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1ad0664ab5f7db0b0a8b7ff5a12b77d96b:
 
 Template Function opensn::gpu_kernel::ComputeSurfaceIntegral
 ============================================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::ComputeSurfaceIntegral(double *, double *, CellView&, DirectionView&, const std::uint64_t *, const unsigned int&, const Arguments<t>&)
+.. doxygenfunction:: opensn::gpu_kernel::ComputeSurfaceIntegral(double *, double *, CellView&, DirectionView&, const std::uint64_t *, const unsigned int&, const unsigned int&, const Arguments<t>&)
    :project: opensn

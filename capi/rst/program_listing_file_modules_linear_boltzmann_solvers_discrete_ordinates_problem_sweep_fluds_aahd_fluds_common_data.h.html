@@ -102,7 +102,9 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
+<span class="k">class</span><span class="w"> </span><span class="nc">AAHD_AngleSet</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SweepBoundary</span><span class="p">;</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Random-access stack based FLUDS.</span>
@@ -120,7 +122,7 @@
 <span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Get constant reference to the face node tracker map.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">AAHD_FaceNode</span><span class="p">,</span><span class="w"> </span><span class="n">AAHD_NodeIndex</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNodeTracker</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">node_tracker_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">FaceNode</span><span class="p">,</span><span class="w"> </span><span class="n">AAHD_NodeIndex</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNodeTracker</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">node_tracker_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// \name Size getters</span>
 <span class="w">  </span><span class="c1">/// \{</span>
@@ -128,8 +130,6 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">GetLocalNodeStackSize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">local_node_stack_size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Get size of the delayed local face node stack.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">GetNumDelayedLocalNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">delayed_local_node_stack_size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="c1">/// Get size of the boundary face node bank.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">GetNumBoundaryNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">boundary_node_size_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Get sizes of the incoming non-local face node banks.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetNumNonLocalIncomingNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
@@ -165,12 +165,22 @@
 <span class="w">  </span><span class="c1">/// Get pointer to indexes on device.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">GetDeviceIndex</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">device_node_indexes_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
+<span class="w">  </span><span class="c1">/// Append an associated angle set pointer.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AddAssociatedAngleSet</span><span class="p">(</span><span class="n">AAHD_AngleSet</span><span class="o">*</span><span class="w"> </span><span class="n">as</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">associated_anglesets_</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">as</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Update node tarcker with boundary data and transfer all data to device.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">UpdateBoundaryAndSyncWithDevice</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">boundaries</span><span class="p">);</span>
+
 <span class="w">  </span><span class="c1">/// Destructor.</span>
 <span class="w">  </span><span class="o">~</span><span class="n">AAHD_FLUDSCommonData</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Map face node to its associated index in the corresponding bank.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">AAHD_FaceNode</span><span class="p">,</span><span class="w"> </span><span class="n">AAHD_NodeIndex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">node_tracker_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">FaceNode</span><span class="p">,</span><span class="w"> </span><span class="n">AAHD_NodeIndex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">node_tracker_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// List of anglesets associated to this sweep ordering.</span>
+<span class="w">  </span><span class="k">mutable</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAHD_AngleSet</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">associated_anglesets_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// \name Allocation sizes</span>
 <span class="w">  </span><span class="c1">/// \{</span>
@@ -178,8 +188,6 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">local_node_stack_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Size of the delayed local face node vector.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">delayed_local_node_stack_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Size of the boundary.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">boundary_node_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Size of the incoming non-local face nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nonlocal_incoming_node_sizes_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Offset of each location to its incoming non-local face nodes.</span>
@@ -209,9 +217,13 @@
 <span class="w">  </span><span class="c1">/// Compute the indexes for FAS face nodes.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeNodeIndexForDelayedLocalFaces</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// Compute the indexes for non-local face nodes.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeNodeIndexForBoundaryAndNonLocalFaces</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeNodeIndexForNonLocalFaces</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// Compute the index for parallel faces.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeNodeIndexForParallelFaces</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Compute the indexes for boundary face nodes.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeNodeIndexForBoundaryFaces</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">boundaries</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// Deallocate memory for flatten node indexes on device.</span>

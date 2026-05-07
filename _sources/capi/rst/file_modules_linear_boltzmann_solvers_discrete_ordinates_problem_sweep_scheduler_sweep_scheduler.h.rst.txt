@@ -62,7 +62,7 @@ Classes
 -------
 
 
-- :ref:`exhale_struct_structopensn_1_1_sweep_scheduler_1_1_rule_values`
+- :ref:`exhale_struct_structopensn_1_1_rule_values`
 
 - :ref:`exhale_class_classopensn_1_1_sweep_scheduler`
 
