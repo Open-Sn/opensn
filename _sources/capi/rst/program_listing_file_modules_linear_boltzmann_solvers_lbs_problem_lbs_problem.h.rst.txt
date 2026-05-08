@@ -298,7 +298,9 @@ Program Listing for File lbs_problem.h
      std::shared_ptr<FieldFunctionGridBased> CreateFieldFunction(
        const std::string& name, const std::string& xs_name, double power_normalization_target = -1.0);
    
-     bool ReadRestartData(const RestartDataHook& extra_reader = {});
+     bool ReadRestartData(const RestartDataHook& extra_reader = {},
+                          const std::filesystem::path& read_path = {},
+                          bool allow_transient_initialization_from_steady = false);
      bool WriteRestartData(const RestartDataHook& extra_writer = {});
    
      bool TriggerRestartDump() const { return options_.restart.IsWriteDue(); }
@@ -341,7 +343,8 @@ Program Listing for File lbs_problem.h
      void UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
                                      const std::string& xs_name,
                                      double power_normalization_target);
-     virtual bool ReadProblemRestartData(hid_t file_id);
+     virtual bool ReadProblemRestartData(hid_t file_id,
+                                         bool allow_transient_initialization_from_steady);
      virtual bool WriteProblemRestartData(hid_t file_id) const;
    
      LBSOptions options_;

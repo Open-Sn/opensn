@@ -300,7 +300,9 @@ flux storage, AGS behavior, and other global settings</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_mpi_message_size</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">restart_writes_enabled</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">write_delayed_psi_to_restart</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_angular_flux_to_restart</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">write_restart_time_interval</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">use_precursors</span></code></p></li>
@@ -319,7 +321,19 @@ flux storage, AGS behavior, and other global settings</p></li>
 active for the problem. The default is <code class="docutils literal notranslate"><span class="pre">True</span></code>. This should usually stay
 enabled for transient and k-eigen workflows unless you explicitly want a
 prompt-only model.</p>
-<p>The setting is treated as user intent and persists across later
+<p><code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code> reads a full restart for continuing a compatible solve.
+<code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code> reads restart data as an initial condition; this
+is the option to use when a <a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a> should
+start from a separately written steady-state restart. Full transient
+continuation restarts require angular flux state. If the problem has delayed
+sweep angular state, including partitioned parallel, reflected-boundary, or
+cyclic-sweep cases, continuation also requires delayed sweep angular-flux
+buffers in the restart. The steady-state initial-condition path can reconstruct
+angular state from flux moments if <code class="docutils literal notranslate"><span class="pre">write_angular_flux_to_restart</span></code> or
+<code class="docutils literal notranslate"><span class="pre">write_delayed_psi_to_restart</span></code> were disabled in the steady run.</p>
+<p>Restart files are rank-layout specific. Read restart files with the same MPI
+rank count and compatible problem definition used when writing them.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">use_precursors</span></code> setting is treated as user intent and persists across later
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetXSMap()</span></code> calls, even if the current cross-section map temporarily has
 no precursor-bearing material. If cross sections are swapped, existing
 precursor concentrations are remapped by local cell and precursor-family index;

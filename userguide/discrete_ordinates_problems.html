@@ -350,6 +350,33 @@ methods such as:</p>
 </ul>
 <p>There are also restart, precursor, and message-size options for more
 specialized workflows.</p>
+<p>Restart-related options include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">restart_writes_enabled</span></code>: enable restart dump writes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code>: file stem used when writing restart dumps. OpenSn
+appends the MPI rank and <code class="docutils literal notranslate"><span class="pre">.restart.h5</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code>: file stem used when reading a full restart. This is
+for continuing the same type of solve from restart state.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code>: file stem used when reading restart data as
+an initial condition. <a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a> can use a
+steady-state restart this way, then switch the problem to time-dependent mode.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_angular_flux_to_restart</span></code>: include stored angular fluxes in restart
+dumps when <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>. This is required for full transient
+continuation restarts, but optional when a steady-state restart is used only
+as a transient initial condition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_delayed_psi_to_restart</span></code>: include delayed sweep angular-flux buffers.
+Full continuation restarts require these buffers whenever the problem has
+delayed sweep angular state, including partitioned parallel,
+reflected-boundary, and cyclic-sweep cases. These buffers are optional for
+the steady-state-restart-as-transient-initial-condition workflow.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Restart files are rank-layout specific. A restart written with one MPI rank
+count should be read with the same rank count and a compatible problem
+definition. Changing from serial to parallel, or from one partition count to
+another, is not a supported restart workflow.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Problem options are where users should look for global transport behavior.
@@ -550,6 +577,10 @@ flux.</p>
 <li><p>response studies,</p></li>
 <li><p>source-driven workflows that reuse previously computed fields.</p></li>
 </ul>
+<p>For restartable solver state, prefer the restart options documented above over
+manual angular-flux files. Manual angular-flux files are useful when the
+workflow explicitly wants to manage angular fluxes, but restart dumps also carry
+flux moments, time metadata, precursor state, and solver-specific restart data.</p>
 </section>
 <section id="updating-the-problem-in-place">
 <h2><span class="section-number">11.12. </span>Updating the Problem In Place<a class="headerlink" href="#updating-the-problem-in-place" title="Link to this heading"></a></h2>

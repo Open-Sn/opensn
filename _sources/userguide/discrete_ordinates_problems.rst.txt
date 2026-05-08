@@ -212,6 +212,33 @@ The most important options for everyday use are:
 There are also restart, precursor, and message-size options for more
 specialized workflows.
 
+Restart-related options include:
+
+* ``restart_writes_enabled``: enable restart dump writes.
+* ``write_restart_path``: file stem used when writing restart dumps. OpenSn
+  appends the MPI rank and ``.restart.h5``.
+* ``read_restart_path``: file stem used when reading a full restart. This is
+  for continuing the same type of solve from restart state.
+* ``read_initial_condition_path``: file stem used when reading restart data as
+  an initial condition. :py:class:`pyopensn.solver.TransientSolver` can use a
+  steady-state restart this way, then switch the problem to time-dependent mode.
+* ``write_angular_flux_to_restart``: include stored angular fluxes in restart
+  dumps when ``save_angular_flux=True``. This is required for full transient
+  continuation restarts, but optional when a steady-state restart is used only
+  as a transient initial condition.
+* ``write_delayed_psi_to_restart``: include delayed sweep angular-flux buffers.
+  Full continuation restarts require these buffers whenever the problem has
+  delayed sweep angular state, including partitioned parallel,
+  reflected-boundary, and cyclic-sweep cases. These buffers are optional for
+  the steady-state-restart-as-transient-initial-condition workflow.
+
+.. warning::
+
+   Restart files are rank-layout specific. A restart written with one MPI rank
+   count should be read with the same rank count and a compatible problem
+   definition. Changing from serial to parallel, or from one partition count to
+   another, is not a supported restart workflow.
+
 .. note::
 
    Problem options are where users should look for global transport behavior.
@@ -437,6 +464,11 @@ These are useful for:
 * restart-like workflows,
 * response studies,
 * source-driven workflows that reuse previously computed fields.
+
+For restartable solver state, prefer the restart options documented above over
+manual angular-flux files. Manual angular-flux files are useful when the
+workflow explicitly wants to manage angular fluxes, but restart dumps also carry
+flux moments, time metadata, precursor state, and solver-specific restart data.
 
 Updating the Problem In Place
 =============================

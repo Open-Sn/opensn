@@ -100,7 +100,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-11-balance-and-leakage-checks">23.14. Example 11: Balance and Leakage Checks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-12-reusing-flux-data">23.15. Example 12: Reusing Flux Data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-13-writing-and-reading-restart-dumps">23.16. Example 13: Writing and Reading Restart Dumps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#choosing-a-template">23.17. Choosing a Template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-14-starting-a-transient-from-a-steady-state-restart">23.17. Example 14: Starting a Transient from a Steady-State Restart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-a-template">23.18. Choosing a Template</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
@@ -832,9 +833,103 @@ final restart dump at the end when restart output is enabled.</p>
 practice, that means the mesh, group structure, discretization, and related
 state layout must match the restart data being read.</p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Restart files are rank-layout specific. A restart written with <code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">-np</span>
+<span class="pre">4</span></code> should be read with <code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">-np</span> <span class="pre">4</span></code> and the same compatible problem
+layout. Reading a serial restart with a parallel run, or changing the MPI
+rank count, is not a supported workflow.</p>
+</div>
+</section>
+<section id="example-14-starting-a-transient-from-a-steady-state-restart">
+<h2><span class="section-number">23.17. </span>Example 14: Starting a Transient from a Steady-State Restart<a class="headerlink" href="#example-14-starting-a-transient-from-a-steady-state-restart" title="Link to this heading"></a></h2>
+<p>A common production workflow is to converge a steady-state problem, write a
+restart dump, and later use that steady-state solution as the initial condition
+for a transient calculation. Use <code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code> for this
+workflow.</p>
+<p>The steady-state input writes the restart. The angular-flux payloads are
+optional for this specific workflow because the transient initialization can
+reconstruct angular state from the flux moments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># steady_input.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">steady_source</span><span class="p">],</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;restart_writes_enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;write_restart_path&quot;</span><span class="p">:</span> <span class="s2">&quot;restart_data/steady_ic&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;write_angular_flux_to_restart&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;write_delayed_psi_to_restart&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">steady</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">steady</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">steady</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This writes rank-local restart files named like
+<code class="docutils literal notranslate"><span class="pre">restart_data/steady_ic0.restart.h5</span></code>,
+<code class="docutils literal notranslate"><span class="pre">restart_data/steady_ic1.restart.h5</span></code>, and so on.</p>
+<p>The transient input builds a compatible problem, points
+<code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code> at the same file stem, and lets
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a> switch the problem into
+time-dependent mode during initialization:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># transient_input.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">TransientSolver</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">transient_source</span><span class="p">],</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;read_initial_condition_path&quot;</span><span class="p">:</span> <span class="s2">&quot;restart_data/steady_ic&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">transient</span> <span class="o">=</span> <span class="n">TransientSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span>
+    <span class="n">theta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">stop_time</span><span class="o">=</span><span class="mf">1.0e-1</span><span class="p">,</span>
+    <span class="n">initial_state</span><span class="o">=</span><span class="s2">&quot;existing&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">transient</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">transient</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Important points:</p>
+<ul class="simple">
+<li><p>The transient problem should not be constructed with <code class="docutils literal notranslate"><span class="pre">time_dependent=True</span></code>
+when using <code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code>. The transient solver reads the
+initial condition first, then switches the problem to time-dependent mode.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> is still required on the transient problem because
+time-dependent transport stores angular fluxes.</p></li>
+<li><p>Full transient continuation restarts are different. If a transient run will
+later be continued with <code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code>, keep
+<code class="docutils literal notranslate"><span class="pre">write_angular_flux_to_restart=True</span></code> so the restart contains the angular
+flux state required for continuation. If the problem has delayed sweep
+angular state, including partitioned parallel, reflected-boundary, or
+cyclic-sweep cases, <code class="docutils literal notranslate"><span class="pre">write_delayed_psi_to_restart=True</span></code> is also required so
+delayed sweep buffers are carried into the continuation run.</p></li>
+<li><p>Reflected-boundary and delayed-neutron precursor cases are supported by this
+workflow. If the steady restart omits angular-flux payloads, the transient
+initialization reconstructs the needed angular state before the first time
+step.</p></li>
+</ul>
 </section>
 <section id="choosing-a-template">
-<h2><span class="section-number">23.17. </span>Choosing a Template<a class="headerlink" href="#choosing-a-template" title="Link to this heading"></a></h2>
+<h2><span class="section-number">23.18. </span>Choosing a Template<a class="headerlink" href="#choosing-a-template" title="Link to this heading"></a></h2>
 <p>As a practical guide:</p>
 <ul class="simple">
 <li><p>start from Example 1 for a basic fixed-source calculation,</p></li>
@@ -844,6 +939,8 @@ state layout must match the restart data being read.</p>
 <li><p>use Example 6 only when the nonlinear eigenvalue solve is specifically
 needed,</p></li>
 <li><p>use Example 13 when a workflow needs restartable transport state across runs,</p></li>
+<li><p>use Example 14 when a transient should start from a separately computed
+steady-state restart,</p></li>
 <li><p>add the post-processing patterns only after the solve itself is behaving
 correctly.</p></li>
 </ul>

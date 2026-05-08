@@ -51,6 +51,7 @@ Program Listing for File transient_solver.h
    
    private:
      bool ReadRestartData();
+     bool ReadInitialConditionData();
      bool WriteRestartData();
    
      std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;

@@ -867,10 +867,46 @@ that callback.</p>
 <li><p><strong>options</strong> (<em>Dict</em><em>, </em><em>default={}</em>) – <dl class="simple">
 <dt>A block of optional configuration parameters, including:</dt><dd><ul>
 <li><p>max_mpi_message_size: int, default=32768</p></li>
-<li><p>restart_writes_enabled: bool, default=False</p></li>
-<li><p>write_delayed_psi_to_restart: bool, default=True</p></li>
-<li><p>read_restart_path: str, default=’’</p></li>
-<li><p>write_restart_path: str, default=’’</p></li>
+<li><dl class="simple">
+<dt>restart_writes_enabled: bool, default=False</dt><dd><p>Enable restart dump writes for solvers that support restart output.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>write_delayed_psi_to_restart: bool, default=True</dt><dd><p>Include delayed sweep angular-flux buffers. Full continuation restarts require
+these buffers whenever the problem has delayed sweep angular state, including
+partitioned parallel, reflected-boundary, and cyclic-sweep cases. These buffers
+are optional when a steady-state restart is used only as a transient initial
+condition because the transient initialization can reconstruct angular state
+from the flux moments.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>write_angular_flux_to_restart: bool, default=True</dt><dd><p>Include stored angular fluxes in restart dumps when <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>.
+This is required for continuing a time-dependent restart, but optional when a
+steady-state restart is used only as a transient initial condition.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>read_restart_path: str, default=’’</dt><dd><p>File stem for reading a full restart. The number of MPI ranks and partitioned
+state layout must match the run that wrote the restart files.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>read_initial_condition_path: str, default=’’</dt><dd><p>File stem for reading restart data as an initial condition. A steady-state
+restart may be used by <code class="docutils literal notranslate"><span class="pre">TransientSolver</span></code> through this option.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>write_restart_path: str, default=’’</dt><dd><p>File stem for restart dump writes. OpenSn appends the MPI rank and
+<code class="docutils literal notranslate"><span class="pre">.restart.h5</span></code> to this stem.</p>
+</dd>
+</dl>
+</li>
 <li><p>write_restart_time_interval: int, default=0
 (must be 0 or &gt;=30)</p></li>
 <li><p>use_precursors: bool, default=True

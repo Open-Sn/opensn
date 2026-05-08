@@ -183,6 +183,9 @@ Rate balance,
 restart data is read during <a class="reference internal" href="#pyopensn.solver.SteadyStateSourceSolver.Initialize" title="pyopensn.solver.SteadyStateSourceSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>. If it was constructed with
 <code class="docutils literal notranslate"><span class="pre">options={'restart_writes_enabled':</span> <span class="pre">True,</span> <span class="pre">...}</span></code>, a restart dump is written
 after <a class="reference internal" href="#pyopensn.solver.SteadyStateSourceSolver.Execute" title="pyopensn.solver.SteadyStateSourceSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> completes.</p>
+<p>Restart files are rank-layout specific. A restart written with <code class="docutils literal notranslate"><span class="pre">N</span></code> MPI
+ranks must be read with the same rank count and a compatible problem
+definition.</p>
 </dd></dl>
 
 </dd></dl>

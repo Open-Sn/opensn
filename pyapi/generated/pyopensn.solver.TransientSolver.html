@@ -274,9 +274,25 @@ In “zero” mode, scalar flux vectors are reset to zero.</p></li>
 is required for transient problems.</p>
 <p>If the problem was constructed with <code class="docutils literal notranslate"><span class="pre">options={'read_restart_path':</span> <span class="pre">...}</span></code>,
 restart data is read during <a class="reference internal" href="#pyopensn.solver.TransientSolver.Initialize" title="pyopensn.solver.TransientSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>. If it was constructed with
+<code class="docutils literal notranslate"><span class="pre">options={'read_initial_condition_path':</span> <span class="pre">...}</span></code>, restart data is read as a
+transient initial condition during <a class="reference internal" href="#pyopensn.solver.TransientSolver.Initialize" title="pyopensn.solver.TransientSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>, then the problem is
+switched to time-dependent mode; a steady-state restart may be used in this
+mode. In this initial-condition path, stored angular fluxes and delayed
+sweep angular-flux buffers are optional in the steady-state restart; the
+transient solver reconstructs angular state from the loaded flux moments.
+If it was constructed with
 <code class="docutils literal notranslate"><span class="pre">options={'restart_writes_enabled':</span> <span class="pre">True,</span> <span class="pre">...}</span></code>, timed restart dumps may
 be written during <a class="reference internal" href="#pyopensn.solver.TransientSolver.Execute" title="pyopensn.solver.TransientSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> and a final restart dump is written when
 execution completes.</p>
+<p>A full transient continuation restart read with <code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code> is
+different from a steady-state initial-condition restart read with
+<code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code>. Full transient continuation restarts require
+angular flux state in the restart file; if the problem has delayed sweep
+angular state, including partitioned parallel, reflected-boundary, or
+cyclic-sweep cases, continuation also requires delayed sweep angular-flux
+buffers in the restart. Restart files are rank-layout specific: use the same MPI rank
+count and compatible problem definition when reading files written by a
+previous run.</p>
 </dd></dl>
 
 </dd></dl>

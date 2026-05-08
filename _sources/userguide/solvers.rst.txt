@@ -161,7 +161,9 @@ Problem options available in Python include:
 * ``max_mpi_message_size``
 * ``restart_writes_enabled``
 * ``write_delayed_psi_to_restart``
+* ``write_angular_flux_to_restart``
 * ``read_restart_path``
+* ``read_initial_condition_path``
 * ``write_restart_path``
 * ``write_restart_time_interval``
 * ``use_precursors``
@@ -181,7 +183,21 @@ active for the problem. The default is ``True``. This should usually stay
 enabled for transient and k-eigen workflows unless you explicitly want a
 prompt-only model.
 
-The setting is treated as user intent and persists across later
+``read_restart_path`` reads a full restart for continuing a compatible solve.
+``read_initial_condition_path`` reads restart data as an initial condition; this
+is the option to use when a :py:class:`pyopensn.solver.TransientSolver` should
+start from a separately written steady-state restart. Full transient
+continuation restarts require angular flux state. If the problem has delayed
+sweep angular state, including partitioned parallel, reflected-boundary, or
+cyclic-sweep cases, continuation also requires delayed sweep angular-flux
+buffers in the restart. The steady-state initial-condition path can reconstruct
+angular state from flux moments if ``write_angular_flux_to_restart`` or
+``write_delayed_psi_to_restart`` were disabled in the steady run.
+
+Restart files are rank-layout specific. Read restart files with the same MPI
+rank count and compatible problem definition used when writing them.
+
+The ``use_precursors`` setting is treated as user intent and persists across later
 :py:meth:`SetXSMap` calls, even if the current cross-section map temporarily has
 no precursor-bearing material. If cross sections are swapped, existing
 precursor concentrations are remapped by local cell and precursor-family index;

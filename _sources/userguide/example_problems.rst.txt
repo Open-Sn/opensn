@@ -741,6 +741,106 @@ This is useful when:
    practice, that means the mesh, group structure, discretization, and related
    state layout must match the restart data being read.
 
+.. warning::
+
+   Restart files are rank-layout specific. A restart written with ``mpirun -np
+   4`` should be read with ``mpirun -np 4`` and the same compatible problem
+   layout. Reading a serial restart with a parallel run, or changing the MPI
+   rank count, is not a supported workflow.
+
+Example 14: Starting a Transient from a Steady-State Restart
+============================================================
+
+A common production workflow is to converge a steady-state problem, write a
+restart dump, and later use that steady-state solution as the initial condition
+for a transient calculation. Use ``read_initial_condition_path`` for this
+workflow.
+
+The steady-state input writes the restart. The angular-flux payloads are
+optional for this specific workflow because the transient initialization can
+reconstruct angular state from the flux moments:
+
+.. code-block:: python
+
+   # steady_input.py
+   from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
+
+   phys = DiscreteOrdinatesProblem(
+       mesh=mesh,
+       num_groups=num_groups,
+       groupsets=groupsets,
+       xs_map=xs_map,
+       volumetric_sources=[steady_source],
+       boundary_conditions=boundary_conditions,
+       options={
+           "save_angular_flux": True,
+           "restart_writes_enabled": True,
+           "write_restart_path": "restart_data/steady_ic",
+           "write_angular_flux_to_restart": False,
+           "write_delayed_psi_to_restart": False,
+       },
+   )
+
+   steady = SteadyStateSourceSolver(problem=phys)
+   steady.Initialize()
+   steady.Execute()
+
+This writes rank-local restart files named like
+``restart_data/steady_ic0.restart.h5``,
+``restart_data/steady_ic1.restart.h5``, and so on.
+
+The transient input builds a compatible problem, points
+``read_initial_condition_path`` at the same file stem, and lets
+:py:class:`pyopensn.solver.TransientSolver` switch the problem into
+time-dependent mode during initialization:
+
+.. code-block:: python
+
+   # transient_input.py
+   from pyopensn.solver import DiscreteOrdinatesProblem, TransientSolver
+
+   phys = DiscreteOrdinatesProblem(
+       mesh=mesh,
+       num_groups=num_groups,
+       groupsets=groupsets,
+       xs_map=xs_map,
+       volumetric_sources=[transient_source],
+       boundary_conditions=boundary_conditions,
+       options={
+           "save_angular_flux": True,
+           "read_initial_condition_path": "restart_data/steady_ic",
+       },
+   )
+
+   transient = TransientSolver(
+       problem=phys,
+       dt=1.0e-3,
+       theta=1.0,
+       stop_time=1.0e-1,
+       initial_state="existing",
+   )
+   transient.Initialize()
+   transient.Execute()
+
+Important points:
+
+* The transient problem should not be constructed with ``time_dependent=True``
+  when using ``read_initial_condition_path``. The transient solver reads the
+  initial condition first, then switches the problem to time-dependent mode.
+* ``save_angular_flux=True`` is still required on the transient problem because
+  time-dependent transport stores angular fluxes.
+* Full transient continuation restarts are different. If a transient run will
+  later be continued with ``read_restart_path``, keep
+  ``write_angular_flux_to_restart=True`` so the restart contains the angular
+  flux state required for continuation. If the problem has delayed sweep
+  angular state, including partitioned parallel, reflected-boundary, or
+  cyclic-sweep cases, ``write_delayed_psi_to_restart=True`` is also required so
+  delayed sweep buffers are carried into the continuation run.
+* Reflected-boundary and delayed-neutron precursor cases are supported by this
+  workflow. If the steady restart omits angular-flux payloads, the transient
+  initialization reconstructs the needed angular state before the first time
+  step.
+
 Choosing a Template
 ===================
 
@@ -753,5 +853,7 @@ As a practical guide:
 * use Example 6 only when the nonlinear eigenvalue solve is specifically
   needed,
 * use Example 13 when a workflow needs restartable transport state across runs,
+* use Example 14 when a transient should start from a separately computed
+  steady-state restart,
 * add the post-processing patterns only after the solve itself is behaving
   correctly.

@@ -328,7 +328,8 @@
 <span class="cm">   * @{</span>
 <span class="cm">   */</span>
 
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">ReadProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">ReadProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">,</span>
+<span class="w">                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_transient_initialization_from_steady</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetDerivedSolutionVectors</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateBoundaryDefinition</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>

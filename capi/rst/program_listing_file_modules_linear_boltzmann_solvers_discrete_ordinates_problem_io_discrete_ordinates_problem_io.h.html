@@ -104,7 +104,9 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblemIO</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">ReadRestartData</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span><span class="w"> </span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">);</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">ReadRestartData</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">,</span>
+<span class="w">                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_transient_initialization_from_steady</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteRestartData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span><span class="w"> </span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">);</span>
 
