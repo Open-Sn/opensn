@@ -4,13 +4,69 @@
 #pragma once
 
 #include "framework/runtime.h"
+#include <cassert>
 #include <map>
-#include <vector>
-#include <type_traits>
 #include <set>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace opensn
 {
+
+class MatchedMessage
+{
+public:
+  MatchedMessage() = default;
+  MatchedMessage(MPI_Message message, const MPI_Status& status);
+  MatchedMessage(const MatchedMessage&) = delete;
+  MatchedMessage& operator=(const MatchedMessage&) = delete;
+  MatchedMessage(MatchedMessage&& other) noexcept;
+  MatchedMessage& operator=(MatchedMessage&& other) noexcept;
+
+  explicit operator bool() const noexcept { return message_ != MPI_MESSAGE_NULL; }
+
+  int source() const noexcept;
+
+  int tag() const noexcept;
+
+  template <typename T>
+  int count() const
+  {
+    assert(message_ != MPI_MESSAGE_NULL);
+    int n = 0;
+    const auto error_code = MPI_Get_count(&status_, mpi::mpi_datatype<T>(), &n);
+    assert(error_code == MPI_SUCCESS);
+    return n;
+  }
+
+  template <typename T>
+  mpi::Status recv(T* values, int n)
+  {
+    assert(message_ != MPI_MESSAGE_NULL);
+    assert(n >= 0);
+    assert((n == 0) or (values != nullptr));
+
+    MPI_Status status;
+    const auto error_code = MPI_Mrecv(values, n, mpi::mpi_datatype<T>(), &message_, &status);
+    assert(error_code == MPI_SUCCESS);
+    return {status};
+  }
+
+  template <typename T, typename A>
+  mpi::Status recv(std::vector<T, A>& values)
+  {
+    values.resize(count<T>());
+    return recv(values.empty() ? nullptr : values.data(), static_cast<int>(values.size()));
+  }
+
+private:
+  MPI_Message message_ = MPI_MESSAGE_NULL;
+  MPI_Status status_ = {};
+};
+
+/// Nonblocking matched probe. A valid returned message must be received exactly once.
+MatchedMessage IProbeMatchedMessage(int source, int tag, const mpi::Communicator& comm);
 
 /**
  * Given each location's local size (of items), builds a vector (dimension comm-size plus 1) of

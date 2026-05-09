@@ -2,9 +2,59 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mpi/mpi_utils.h"
+#include <cassert>
 
 namespace opensn
 {
+
+MatchedMessage::MatchedMessage(MPI_Message message, const MPI_Status& status)
+  : message_(message), status_(status)
+{
+}
+
+MatchedMessage::MatchedMessage(MatchedMessage&& other) noexcept
+  : message_(std::exchange(other.message_, MPI_MESSAGE_NULL)), status_(other.status_)
+{
+}
+
+MatchedMessage&
+MatchedMessage::operator=(MatchedMessage&& other) noexcept
+{
+  if (this != &other)
+  {
+    assert(message_ == MPI_MESSAGE_NULL);
+    message_ = std::exchange(other.message_, MPI_MESSAGE_NULL);
+    status_ = other.status_;
+  }
+  return *this;
+}
+
+int
+MatchedMessage::source() const noexcept
+{
+  return status_.MPI_SOURCE;
+}
+
+int
+MatchedMessage::tag() const noexcept
+{
+  return status_.MPI_TAG;
+}
+
+MatchedMessage
+IProbeMatchedMessage(int source, int tag, const mpi::Communicator& comm)
+{
+  int message_available = 0;
+  MPI_Message message = MPI_MESSAGE_NULL;
+  MPI_Status status = {};
+  [[maybe_unused]] const auto error_code =
+    MPI_Improbe(source, tag, static_cast<MPI_Comm>(comm), &message_available, &message, &status);
+  assert(error_code == MPI_SUCCESS);
+  if (message_available == 0)
+    return {};
+
+  return {message, status};
+}
 
 std::vector<uint64_t>
 BuildLocationExtents(uint64_t local_size, const mpi::Communicator& comm)

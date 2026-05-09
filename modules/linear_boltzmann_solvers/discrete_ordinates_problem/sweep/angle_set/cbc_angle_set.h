@@ -25,29 +25,38 @@ public:
                std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                const MPICommunicatorSet& comm_set);
 
+  /// Return the CBC asynchronous communicator.
   AsynchronousCommunicator* GetCommunicator() override;
 
-  void InitializeDelayedUpstreamData() override {}
+  /// Initialize delayed upstream storage and receive state.
+  void InitializeDelayedUpstreamData() override { async_comm_.InitializeDelayedUpstreamData(); }
 
+  /// Return the maximum number of buffered messages.
   int GetMaxBufferMessages() const override { return max_buffer_messages_; }
 
+  /// Set the maximum number of buffered messages.
   void SetMaxBufferMessages(int new_max) override { max_buffer_messages_ = new_max; }
 
+  /// Advance ready CBC tasks and progress asynchronous communication.
   AngleSetStatus AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission) override;
 
+  /// Flush pending CBC send buffers.
   AngleSetStatus FlushSendBuffers() override
   {
-    const bool all_messages_sent =
-      (not async_comm_.HasPendingCommunication()) or async_comm_.SendData();
+    const bool all_messages_sent = async_comm_.FlushSendBuffers();
     return all_messages_sent ? AngleSetStatus::MESSAGES_SENT : AngleSetStatus::MESSAGES_PENDING;
   }
 
+  /// Reset task and communication state before another sweep.
   void ResetSweepBuffers() override;
 
-  bool ReceiveDelayedData() override { return true; }
+  /// Receive delayed data until all delayed upstream locations are complete.
+  bool ReceiveDelayedData() override { return async_comm_.ReceiveDelayedData(); }
 
 protected:
+  /// CBC sweep-plane data structure.
   const CBC_SPDS& cbc_spds_;
+  /// Current CBC task list.
   const std::vector<Task>* task_list_ = nullptr;
   /// Unsatisfied dependency count by task.
   std::vector<unsigned int> remaining_dependencies_;
@@ -57,8 +66,11 @@ protected:
   std::vector<std::uint32_t> ready_tasks_;
   /// Reusable buffer for newly unlocked received tasks.
   std::vector<std::uint32_t> received_task_buffer_;
+  /// Number of completed tasks in the current sweep.
   std::size_t num_completed_tasks_ = 0;
+  /// Maximum number of buffered messages.
   int max_buffer_messages_ = 0;
+  /// CBC asynchronous communicator.
   CBC_AsynchronousCommunicator async_comm_;
 };
 
