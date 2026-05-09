@@ -515,11 +515,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_storage.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_sub_set_info.rst
 
 .. toctree::
@@ -900,6 +895,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_device_vector_mirror.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_diffusion_m_i_p_solver.rst
 
 .. toctree::
@@ -1211,11 +1211,6 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_log_stream.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   classopensn_1_1_memory_pinner.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2527,6 +2522,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_modules_diffusion_diffusion.h.rst
 
 .. toctree::
@@ -2868,11 +2868,6 @@ Files
    :maxdepth: 1
 
    file_framework_data_types_matrix3x3.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3268,11 +3263,6 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_steady_state_solver.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_modules_linear_boltzmann_solvers_lbs_problem_device_storage.h.rst
 
 .. toctree::
    :maxdepth: 1

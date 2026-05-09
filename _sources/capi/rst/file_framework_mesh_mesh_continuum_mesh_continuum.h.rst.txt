@@ -44,7 +44,7 @@ Includes
 
 - ``framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum_vertex_handler.h`)
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 
 

@@ -227,8 +227,6 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_s_t_d_g`
 
-- :ref:`exhale_struct_structopensn_1_1_storage`
-
 - :ref:`exhale_struct_structopensn_1_1_sub_set_info`
 
 - :ref:`exhale_struct_structopensn_1_1_sweep_w_g_s_context`
@@ -381,6 +379,8 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_dense_matrix`
 
+- :ref:`exhale_class_classopensn_1_1_device_vector_mirror`
+
 - :ref:`exhale_class_classopensn_1_1_diffusion_m_i_p_solver`
 
 - :ref:`exhale_class_classopensn_1_1_diffusion_p_w_l_c_solver`
@@ -504,8 +504,6 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_logical_volume_interface`
 
 - :ref:`exhale_class_classopensn_1_1_log_stream`
-
-- :ref:`exhale_class_classopensn_1_1_memory_pinner`
 
 - :ref:`exhale_class_classopensn_1_1_mesh_carrier`
 

@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_device_vector_mirror:
+
+Template Class DeviceVectorMirror
+=================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::DeviceVectorMirror
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

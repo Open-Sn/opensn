@@ -32,7 +32,7 @@ Includes
 
 - ``framework/math/nonlinear_solver/nonlinear_solver_context.h`` (:ref:`file_framework_math_nonlinear_solver_nonlinear_solver_context.h`)
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 

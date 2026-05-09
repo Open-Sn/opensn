@@ -1,10 +1,10 @@
 
-.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h:
+.. _program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h:
 
-Program Listing for File memory_pinner.h
-========================================
+Program Listing for File device_vector_mirror.h
+===============================================
 
-|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h>` (``modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h``)
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h>` (``modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h``)
 
 .. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
 
@@ -29,23 +29,23 @@ Program Listing for File memory_pinner.h
     * its associated memory on GPU.
     */
    template <typename T>
-   class MemoryPinner
+   class DeviceVectorMirror
    {
    public:
      /// Constructor.
-     MemoryPinner(std::vector<T>& src) : pinned_host_(src), device_(src.size()) {}
+     DeviceVectorMirror(std::vector<T>& src) : host_(src), device_(src.size()) {}
    
      /// Copy data to GPU.
-     void CopyToDevice() { crb::copy(device_, pinned_host_, pinned_host_.size()); }
+     void CopyToDevice() { crb::copy(device_, host_, host_.size()); }
    
      /// Copy data from GPU.
-     void CopyFromDevice() { crb::copy(pinned_host_, device_, pinned_host_.size()); }
+     void CopyFromDevice() { crb::copy(host_, device_, host_.size()); }
    
      /// Get pointer to device memory.
      inline T* GetDevicePtr() { return device_.get(); }
    
    protected:
-     crb::MemoryPinningManager<T> pinned_host_;
+     std::vector<T>& host_;
      crb::DeviceMemory<T> device_;
    };
    

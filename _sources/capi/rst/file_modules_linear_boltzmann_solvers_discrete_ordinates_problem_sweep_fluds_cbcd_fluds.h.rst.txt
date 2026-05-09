@@ -44,8 +44,6 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds.h`)
 
-- ``modules/linear_boltzmann_solvers/lbs_problem/device/storage.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_storage.h`)
-
 
 
 Included By

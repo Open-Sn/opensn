@@ -28,7 +28,7 @@ Program Listing for File arguments.h
    #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h"
-   #include "modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h"
+   #include "modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h"
    #include "caribou/main.hpp"
    #include <cstdint>
    #include <type_traits>
@@ -78,7 +78,7 @@ Program Listing for File arguments.h
        // Copy source moment and destination phi data to GPU
        auto* src = problem.GetSourceMomentsPinner();
        src_moment = src->GetDevicePtr();
-       MemoryPinner<double>* scalar_flux = problem.GetPhiPinner();
+       DeviceVectorMirror<double>* scalar_flux = problem.GetPhiPinner();
        phi = scalar_flux->GetDevicePtr();
        // Copy groupset data to GPU
        groupset_size = groupset.GetNumGroups();

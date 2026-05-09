@@ -103,7 +103,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;caribou/main.hpp&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;type_traits&gt;</span>
@@ -153,7 +153,7 @@
 <span class="w">    </span><span class="c1">// Copy source moment and destination phi data to GPU</span>
 <span class="w">    </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">problem</span><span class="p">.</span><span class="n">GetSourceMomentsPinner</span><span class="p">();</span>
 <span class="w">    </span><span class="n">src_moment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">src</span><span class="o">-&gt;</span><span class="n">GetDevicePtr</span><span class="p">();</span>
-<span class="w">    </span><span class="n">MemoryPinner</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">scalar_flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">problem</span><span class="p">.</span><span class="n">GetPhiPinner</span><span class="p">();</span>
+<span class="w">    </span><span class="n">DeviceVectorMirror</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">scalar_flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">problem</span><span class="p">.</span><span class="n">GetPhiPinner</span><span class="p">();</span>
 <span class="w">    </span><span class="n">phi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scalar_flux</span><span class="o">-&gt;</span><span class="n">GetDevicePtr</span><span class="p">();</span>
 <span class="w">    </span><span class="c1">// Copy groupset data to GPU</span>
 <span class="w">    </span><span class="n">groupset_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">groupset</span><span class="p">.</span><span class="n">GetNumGroups</span><span class="p">();</span>

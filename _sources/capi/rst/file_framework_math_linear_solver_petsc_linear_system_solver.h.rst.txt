@@ -34,7 +34,7 @@ Includes
 
 - ``framework/math/linear_solver/linear_system_solver.h`` (:ref:`file_framework_math_linear_solver_linear_system_solver.h`)
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 - ``petscksp.h``
 

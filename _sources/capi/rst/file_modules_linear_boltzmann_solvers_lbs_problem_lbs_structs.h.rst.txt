@@ -40,7 +40,7 @@ Includes
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 
 

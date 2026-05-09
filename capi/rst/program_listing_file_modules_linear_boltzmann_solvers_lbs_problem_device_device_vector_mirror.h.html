@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Program Listing for File memory_pinner.h &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Program Listing for File device_vector_mirror.h &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -73,7 +73,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Program Listing for File memory_pinner.h</li>
+      <li class="breadcrumb-item active">Program Listing for File device_vector_mirror.h</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -82,9 +82,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="program-listing-for-file-memory-pinner-h">
-<span id="program-listing-file-modules-linear-boltzmann-solvers-lbs-problem-device-memory-pinner-h"></span><h1>Program Listing for File memory_pinner.h<a class="headerlink" href="#program-listing-for-file-memory-pinner-h" title="Link to this heading"></a></h1>
-<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-device-memory-pinner-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h</span></code>)</p>
+  <section id="program-listing-for-file-device-vector-mirror-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-lbs-problem-device-device-vector-mirror-h"></span><h1>Program Listing for File device_vector_mirror.h<a class="headerlink" href="#program-listing-for-file-device-vector-mirror-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-device-device-vector-mirror-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h</span></code>)</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2025 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
 <span class="c1">// SPDX-License-Identifier: MIT</span>
 
@@ -104,23 +104,23 @@
 <span class="cm"> * its associated memory on GPU.</span>
 <span class="cm"> */</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">MemoryPinner</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeviceVectorMirror</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Constructor.</span>
-<span class="w">  </span><span class="n">MemoryPinner</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">src</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">pinned_host_</span><span class="p">(</span><span class="n">src</span><span class="p">),</span><span class="w"> </span><span class="n">device_</span><span class="p">(</span><span class="n">src</span><span class="p">.</span><span class="n">size</span><span class="p">())</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="n">DeviceVectorMirror</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">src</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">host_</span><span class="p">(</span><span class="n">src</span><span class="p">),</span><span class="w"> </span><span class="n">device_</span><span class="p">(</span><span class="n">src</span><span class="p">.</span><span class="n">size</span><span class="p">())</span><span class="w"> </span><span class="p">{}</span>
 
 <span class="w">  </span><span class="c1">/// Copy data to GPU.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CopyToDevice</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">device_</span><span class="p">,</span><span class="w"> </span><span class="n">pinned_host_</span><span class="p">,</span><span class="w"> </span><span class="n">pinned_host_</span><span class="p">.</span><span class="n">size</span><span class="p">());</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CopyToDevice</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">device_</span><span class="p">,</span><span class="w"> </span><span class="n">host_</span><span class="p">,</span><span class="w"> </span><span class="n">host_</span><span class="p">.</span><span class="n">size</span><span class="p">());</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Copy data from GPU.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CopyFromDevice</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">pinned_host_</span><span class="p">,</span><span class="w"> </span><span class="n">device_</span><span class="p">,</span><span class="w"> </span><span class="n">pinned_host_</span><span class="p">.</span><span class="n">size</span><span class="p">());</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CopyFromDevice</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">host_</span><span class="p">,</span><span class="w"> </span><span class="n">device_</span><span class="p">,</span><span class="w"> </span><span class="n">host_</span><span class="p">.</span><span class="n">size</span><span class="p">());</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Get pointer to device memory.</span>
 <span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">GetDevicePtr</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">device_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">MemoryPinningManager</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pinned_host_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">host_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">DeviceMemory</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">device_</span><span class="p">;</span>
 <span class="p">};</span>
 

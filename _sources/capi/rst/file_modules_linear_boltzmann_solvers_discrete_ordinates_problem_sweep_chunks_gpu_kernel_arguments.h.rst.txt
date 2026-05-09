@@ -58,7 +58,7 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/device/carrier/quadrature_carrier.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_quadrature_carrier.h`)
 
-- ``modules/linear_boltzmann_solvers/lbs_problem/device/memory_pinner.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
 

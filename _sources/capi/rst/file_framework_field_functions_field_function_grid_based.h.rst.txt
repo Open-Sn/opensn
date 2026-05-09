@@ -38,13 +38,13 @@ Includes
 
 - ``functional``
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 
 - ``utility``
 
-- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
 
 
 

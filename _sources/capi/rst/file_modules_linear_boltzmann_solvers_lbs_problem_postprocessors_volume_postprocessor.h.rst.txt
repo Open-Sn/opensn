@@ -34,7 +34,7 @@ Includes
 
 - ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`)
 

@@ -34,7 +34,7 @@ Includes
 
 - ``framework/parameters/parameter_block.h`` (:ref:`file_framework_parameters_parameter_block.h`)
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_bank.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_bank.h`)
 
@@ -48,7 +48,7 @@ Includes
 
 - ``tuple``
 
-- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
 
 
 

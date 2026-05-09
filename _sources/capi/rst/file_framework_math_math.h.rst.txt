@@ -52,7 +52,7 @@ Includes
 
 - ``iostream``
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 
 

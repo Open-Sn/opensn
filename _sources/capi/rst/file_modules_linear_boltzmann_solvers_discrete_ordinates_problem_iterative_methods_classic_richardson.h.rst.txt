@@ -34,13 +34,13 @@ Includes
 
 - ``functional``
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
 
-- ``vector`` (:ref:`file_framework_data_types_parallel_vector_ghosted_parallel_stl_vector.h`)
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
 
 
 

@@ -36,7 +36,7 @@ Includes
 
 - ``framework/object_factory.h`` (:ref:`file_framework_object_factory.h`)
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 
 

@@ -22,7 +22,6 @@ Subdirectories
 Files
 -----
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_storage.h`
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`
 
 

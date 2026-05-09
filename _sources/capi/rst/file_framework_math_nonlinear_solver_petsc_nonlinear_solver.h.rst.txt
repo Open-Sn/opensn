@@ -36,7 +36,7 @@ Includes
 
 - ``framework/math/nonlinear_solver/petsc_nonlinear_solver_options.h`` (:ref:`file_framework_math_nonlinear_solver_petsc_nonlinear_solver_options.h`)
 
-- ``memory`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_memory_pinner.h`)
+- ``memory``
 
 - ``petscsnes.h``
 
