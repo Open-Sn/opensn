@@ -207,14 +207,6 @@ struct AAHD_FLUDSPointerSet : public FLUDSPointerSet
                                            const std::uint64_t* __restrict__ boundary_offset,
                                            bool is_surface_source_active) const noexcept
   {
-    // undefined case (parallel face) : all tests are true
-    if (node_index.IsUndefined())
-      return nullptr;
-
-    // outgoing case : nullptr
-    if (node_index.IsOutgoing())
-      return nullptr;
-
     // boundary case
     if (node_index.IsBoundary())
     {
@@ -259,15 +251,7 @@ struct AAHD_FLUDSPointerSet : public FLUDSPointerSet
                          double* __restrict__ boundary,
                          const std::uint64_t* __restrict__ boundary_offset) const noexcept
   {
-    // undefined case (parallel face) : all tests are true
-    if (node_index.IsUndefined())
-      return nullptr;
-
-    // incoming case : nullptr
-    if (not node_index.IsOutgoing())
-      return nullptr;
-
-    // boundary case : non-delayed and local tests are true
+    // boundary case
     if (node_index.IsBoundary())
     {
       return boundary + boundary_offset[node_index.GetIndex()] + angle_group_idx;

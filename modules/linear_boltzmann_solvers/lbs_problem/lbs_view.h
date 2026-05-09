@@ -13,62 +13,6 @@ namespace opensn
 
 class Cell;
 
-/// Group-wise outflow tally for a cell.
-class CellOutflowView
-{
-public:
-  CellOutflowView(int num_faces,
-                  unsigned int num_groups,
-                  const std::vector<int>& face_locality,
-                  bool cell_on_boundary)
-    : num_faces_(num_faces), num_groups_(num_groups)
-  {
-    if (cell_on_boundary)
-    {
-      outflow_.resize(num_faces_);
-      for (std::size_t f = 0; f < num_faces_; ++f)
-        if (face_locality[f] < 0)
-          outflow_[f].assign(num_groups_, 0.0);
-    }
-  }
-
-  void Zero(std::size_t f, unsigned int g)
-  {
-    if (f >= num_faces_)
-      return;
-    assert(f < num_faces_ && "CellOutflowView::Zero face index out of range.");
-    assert(g < num_groups_ && "CellOutflowView::Zero group index out of range.");
-    if (f < outflow_.size() and g < outflow_[f].size())
-      outflow_[f][g] = 0.0;
-  }
-
-  void Add(std::size_t f, unsigned int g, double intS_mu_psi)
-  {
-    if (f >= num_faces_)
-      return;
-    assert(f < num_faces_ && "CellOutflowView::Add face index out of range.");
-    assert(g < num_groups_ && "CellOutflowView::Add group index out of range.");
-    if (f < outflow_.size() and g < outflow_[f].size())
-      outflow_[f][g] += intS_mu_psi;
-  }
-
-  double Get(std::size_t f, unsigned int g) const
-  {
-    if (f >= num_faces_)
-      return 0.0;
-    assert(f < num_faces_ && "CellOutflowView::Get face index out of range.");
-    assert(g < num_groups_ && "CellOutflowView::Get group index out of range.");
-    if (f < outflow_.size() and g < outflow_[f].size())
-      return outflow_[f][g];
-    return 0.0;
-  }
-
-private:
-  std::size_t num_faces_;
-  unsigned int num_groups_;
-  std::vector<std::vector<double>> outflow_;
-};
-
 /// Transport view of a cell.
 class CellLBSView
 {

@@ -361,6 +361,12 @@ LBSProblem::GetCellTransportViews() const
   return cell_transport_views_;
 }
 
+OutflowBank&
+LBSProblem::GetOutflowBank()
+{
+  return outflow_bank_;
+}
+
 std::vector<CellOutflowView>&
 LBSProblem::GetCellOutflowViews()
 {
@@ -1083,8 +1089,6 @@ LBSProblem::InitializeParrays()
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
   cell_transport_views_.reserve(grid_->local_cells.size());
-  cell_outflow_views_.clear();
-  cell_outflow_views_.reserve(grid_->local_cells.size());
   for (auto& cell : grid_->local_cells)
   {
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
@@ -1101,13 +1105,11 @@ LBSProblem::InitializeParrays()
     std::vector<bool> face_local_flags(num_faces, true);
     std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
     std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
-    bool cell_on_boundary = false;
     int f = 0;
     for (auto& face : cell.faces)
     {
       if (not face.has_neighbor)
       {
-        cell_on_boundary = true;
         face_local_flags[f] = false;
         face_locality[f] = -1;
       } // if bndry
@@ -1133,9 +1135,11 @@ LBSProblem::InitializeParrays()
                                        face_local_flags,
                                        face_locality,
                                        neighbor_cell_ptrs);
-    cell_outflow_views_.emplace_back(num_faces, num_groups_, face_locality, cell_on_boundary);
     block_MG_counter += num_nodes * num_groups_ * num_moments_;
   } // for local cell
+  cell_outflow_views_.clear();
+  outflow_bank_ = OutflowBank(*grid_, num_groups_);
+  cell_outflow_views_ = outflow_bank_.GetCellOutflowViews();
 
   // Populate grid nodal mappings
   // This is used in the Flux Data Structure (FLUDS).

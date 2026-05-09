@@ -84,7 +84,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
           FaceNode fn(cell.local_id, f, fnode);
-          node_tracker_[fn] = AAHD_NodeIndex();
+          node_tracker_[fn] = AAHD_NodeIndex(0, true, true, false, false);
         }
       }
     }

@@ -80,35 +80,34 @@ ComputeSurfaceIntegral(double* sweep_matrix,
     cell.GetFaceView(face, f);
     // determine if this face is incoming
     NodeIndexType<t> idx(cell_edge_data[face_node_counter]);
-    if (idx.IsUndefined() || idx.IsOutgoing())
+    if (not idx.IsUndefined() and not idx.IsOutgoing())
     {
-      face_node_counter += face.num_face_nodes;
-      continue;
-    }
-    double mu = direction.omega[0] * face.normal[0] + direction.omega[1] * face.normal[1] +
-                direction.omega[2] * face.normal[2];
-    // compute surface integral
-    for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
-    {
-      std::uint32_t i = face.cell_mapping_data[fi];
-      double* Ai = sweep_matrix + i * ndofs;
-      for (std::uint32_t fj = 0; fj < face.num_face_nodes; ++fj)
+      double mu = direction.omega[0] * face.normal[0] + direction.omega[1] * face.normal[1] +
+                  direction.omega[2] * face.normal[2];
+      // compute surface integral
+      for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
       {
-        std::uint32_t j = face.cell_mapping_data[fj];
-        double mu_Nij = -mu * face.M_surf_data[fi * face.num_face_nodes + fj];
-        Ai[j] += mu_Nij;
-        double* upwind_psi;
-        if constexpr (t == SweepType::AAH)
-          upwind_psi = args.flud_data.GetIncomingFluxPointer(cell_edge_data[face_node_counter + fj],
-                                                             angle_group_idx,
-                                                             group_idx,
-                                                             args.boundary,
-                                                             args.boundary_offset,
-                                                             args.is_surface_source_active);
-        else
-          upwind_psi = args.flud_data.GetIncomingFluxPointer(cell_edge_data[face_node_counter + fj],
-                                                             angle_group_idx);
-        psi[i] += *upwind_psi * mu_Nij;
+        std::uint32_t i = face.cell_mapping_data[fi];
+        double* Ai = sweep_matrix + i * ndofs;
+        for (std::uint32_t fj = 0; fj < face.num_face_nodes; ++fj)
+        {
+          std::uint32_t j = face.cell_mapping_data[fj];
+          double mu_Nij = -mu * face.M_surf_data[fi * face.num_face_nodes + fj];
+          Ai[j] += mu_Nij;
+          double* upwind_psi;
+          if constexpr (t == SweepType::AAH)
+            upwind_psi =
+              args.flud_data.GetIncomingFluxPointer(cell_edge_data[face_node_counter + fj],
+                                                    angle_group_idx,
+                                                    group_idx,
+                                                    args.boundary,
+                                                    args.boundary_offset,
+                                                    args.is_surface_source_active);
+          else
+            upwind_psi = args.flud_data.GetIncomingFluxPointer(
+              cell_edge_data[face_node_counter + fj], angle_group_idx);
+          psi[i] += *upwind_psi * mu_Nij;
+        }
       }
     }
     // update face node counter
@@ -180,33 +179,45 @@ WritePsiToFludsAndOutflow(double* psi,
     cell.GetFaceView(face, f);
     // determine if this face is outgoing
     NodeIndexType<t> idx(cell_edge_data[face_node_counter]);
-    if (idx.IsUndefined() || !idx.IsOutgoing())
+    if (not idx.IsUndefined() and idx.IsOutgoing())
     {
-      face_node_counter += face.num_face_nodes;
-      continue;
-    }
-    double mu = direction.omega[0] * face.normal[0] + direction.omega[1] * face.normal[1] +
-                direction.omega[2] * face.normal[2];
-    // loop over each face node
-    for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
-    {
-      std::uint32_t i = face.cell_mapping_data[fi];
-      // put copy psi to FLUDS
-      double* downwind_psi;
-      if constexpr (t == SweepType::AAH)
-        downwind_psi = args.flud_data.GetOutgoingFluxPointer(cell_edge_data[face_node_counter + fi],
-                                                             angle_group_idx,
-                                                             args.boundary,
-                                                             args.boundary_offset);
-      else
-        downwind_psi = args.flud_data.GetOutgoingFluxPointer(cell_edge_data[face_node_counter + fi],
-                                                             angle_group_idx);
-      *downwind_psi = psi[i];
-      // compute ouflow for boundary face
+      // compute outflow for boundary faces
       if (face.outflow != nullptr)
       {
-        double outflow = direction.weight * mu * face.IntS_shapeI_data[fi] * psi[i];
-        crb::atomic_add(face.outflow + args.groupset_start + group_idx, outflow);
+        const double mu = direction.omega[0] * face.normal[0] +
+                          direction.omega[1] * face.normal[1] + direction.omega[2] * face.normal[2];
+        for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
+        {
+          const std::uint32_t i = face.cell_mapping_data[fi];
+          const double outflow = direction.weight * mu * face.IntS_shapeI_data[fi] * psi[i];
+          crb::atomic_add(face.outflow + args.groupset_start + group_idx, outflow);
+        }
+      }
+      // skip for non reflecting boundary
+      bool write_downwind_psi = true;
+      if constexpr (t == SweepType::AAH)
+      {
+        if (idx.IsBoundary() && !idx.IsReflecting())
+        {
+          write_downwind_psi = false;
+        }
+      }
+      // write downwind psi
+      if (write_downwind_psi)
+      {
+        for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
+        {
+          std::uint32_t i = face.cell_mapping_data[fi];
+          NodeIndexType<t> node_index(cell_edge_data[face_node_counter + fi]);
+          // put copy psi to FLUDS
+          double* downwind_psi;
+          if constexpr (t == SweepType::AAH)
+            downwind_psi = args.flud_data.GetOutgoingFluxPointer(
+              node_index, angle_group_idx, args.boundary, args.boundary_offset);
+          else
+            downwind_psi = args.flud_data.GetOutgoingFluxPointer(node_index, angle_group_idx);
+          *downwind_psi = psi[i];
+        }
       }
     }
     face_node_counter += face.num_face_nodes;

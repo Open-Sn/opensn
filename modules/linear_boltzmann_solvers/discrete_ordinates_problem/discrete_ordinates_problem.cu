@@ -12,8 +12,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_carrier.h"
 
 namespace opensn
 {
@@ -163,6 +163,7 @@ DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
   src->CopyToDevice();
   DeviceVectorMirror<double>* phi = GetPhiPinner();
   phi->CopyToDevice();
+  outflow_carrier_->CopyToDevice();
 }
 
 void
@@ -172,9 +173,7 @@ DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
     return;
   auto* phi = GetPhiPinner();
   phi->CopyFromDevice();
-  auto* outflow = GetOutflowCarrier();
-  outflow->AccumulateBack(cell_outflow_views_);
-  outflow->Reset();
+  outflow_carrier_->CopyFromDevice();
 }
 
 } // namespace opensn

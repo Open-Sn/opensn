@@ -4,8 +4,8 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/carrier.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/total_xs_carrier.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_carrier.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include <cstdint>
 #include <vector>

@@ -6,6 +6,7 @@
 #include "modules/problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_bank.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
@@ -211,6 +212,9 @@ public:
   /// Returns read-only access to the list of local cell transport views.
   const std::vector<CellLBSView>& GetCellTransportViews() const;
 
+  /// Returns reference to the outflow contiguous memory manager.
+  OutflowBank& GetOutflowBank();
+
   /// Returns read/write access to local cell outflow tallies.
   std::vector<CellOutflowView>& GetCellOutflowViews();
 
@@ -362,6 +366,8 @@ protected:
   std::vector<UnitCellMatrices> unit_cell_matrices_;
   std::map<uint64_t, UnitCellMatrices> unit_ghost_cell_matrices_;
   std::vector<CellLBSView> cell_transport_views_;
+
+  OutflowBank outflow_bank_;
   std::vector<CellOutflowView> cell_outflow_views_;
 
   UnknownManager flux_moments_uk_man_;

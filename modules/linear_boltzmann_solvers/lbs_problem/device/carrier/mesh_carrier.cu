@@ -166,7 +166,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       bool is_boundary_face = not face.has_neighbor;
       if (is_boundary_face)
       {
-        face_outflow = reinterpret_cast<double*>(outflow.GetDevicePtr());
+        face_outflow = outflow.GetDevicePtr();
         face_outflow += outflow.GetOffset(cell.local_id, f);
       }
       *(outflow_data++) = face_outflow;

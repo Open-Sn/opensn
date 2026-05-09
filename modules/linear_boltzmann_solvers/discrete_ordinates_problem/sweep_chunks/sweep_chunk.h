@@ -6,6 +6,7 @@
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/outflow/cell_outflow_view.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include <functional>
