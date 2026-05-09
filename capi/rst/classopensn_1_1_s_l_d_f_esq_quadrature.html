@@ -147,28 +147,10 @@
 <span class="target" id="classopensn_1_1_s_l_d_f_esq_quadrature_1aa0d95d1ecbd1143a77c324772a22314f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LocallyRefine</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ref_dir</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cone_size</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dir_as_plane_normal</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature13LocallyRefineERK7Vector3db" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-types">Protected Types</p>
-<dl class="cpp enum-class">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimizationE">
-<span class="target" id="classopensn_1_1_s_l_d_f_esq_quadrature_1a9d8c9bb37db14580d8ef80170ff88a6f"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QuadraturePointOptimization</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimizationE" title="Link to this definition"></a><br /></dt>
-<dd><p><em>Values:</em></p>
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimization8CENTROIDE">
-<span class="target" id="classopensn_1_1_s_l_d_f_esq_quadrature_1a9d8c9bb37db14580d8ef80170ff88a6fa04597115f4cfe4f00ab913b138f9737c"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CENTROID</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimization8CENTROIDE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimization9EMPIRICALE">
-<span class="target" id="classopensn_1_1_s_l_d_f_esq_quadrature_1a9d8c9bb37db14580d8ef80170ff88a6faaded1d4ec069c2a5e90fb1ba36ddac7f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EMPIRICAL</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimization9EMPIRICALE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp enumerator">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimization8ISOLATEDE">
-<span class="target" id="classopensn_1_1_s_l_d_f_esq_quadrature_1a9d8c9bb37db14580d8ef80170ff88a6fa5c8781cb597c806ca9f578e950a4b49f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ISOLATED</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimization8ISOLATEDE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17SLDFEsqQuadrature18GetQuadratureOrderEv">
+<span class="target" id="classopensn_1_1_s_l_d_f_esq_quadrature_1ac46bcab58fbbf63c26f4de1e4a6c02b2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetQuadratureOrder</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn17SLDFEsqQuadrature18GetQuadratureOrderEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Quadrature-specific order parameter used by harmonic-selection rules. </p>
 </dd></dl>
 
 </div>
@@ -190,77 +172,6 @@
 <dd></dd></dl>
 
 </div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature20qp_optimization_typeE">
-<span class="target" id="classopensn_1_1_s_l_d_f_esq_quadrature_1ad9bf017c6cdacb9e9ae68cae0061d6c6"></span><a class="reference internal" href="#_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimizationE" title="opensn::SLDFEsqQuadrature::QuadraturePointOptimization"><span class="n"><span class="pre">QuadraturePointOptimization</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">qp_optimization_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimizationE" title="opensn::SLDFEsqQuadrature::QuadraturePointOptimization"><span class="n"><span class="pre">QuadraturePointOptimization</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N6opensn17SLDFEsqQuadrature27QuadraturePointOptimization9EMPIRICALE" title="opensn::SLDFEsqQuadrature::QuadraturePointOptimization::EMPIRICAL"><span class="n"><span class="pre">EMPIRICAL</span></span></a><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature20qp_optimization_typeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature12deployed_SQsE">
-<span class="target" id="classopensn_1_1_s_l_d_f_esq_quadrature_1ac055cfc2f39d9dfd1ec5f480b10ca40c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateralE" title="opensn::SLDFEsqQuadrature::SphericalQuadrilateral"><span class="n"><span class="pre">SphericalQuadrilateral</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deployed_SQs</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature12deployed_SQsE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateralE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SphericalQuadrilateral</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateralE" title="Link to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral17vertices_xy_tildeE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1ab682972624eea24926cdeaf96e7bc43e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertices_xy_tilde</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral17vertices_xy_tildeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral18vertices_xyz_primeE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1a460705a4a44ccf7e88fc2998cd8e79a0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertices_xyz_prime</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral18vertices_xyz_primeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral12vertices_xyzE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1af275fed9fc356b199d9eb75a761e2ad1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertices_xyz</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral12vertices_xyzE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral12centroid_xyzE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1ae75a4b0dbeeda1e94100b40eeae6b62d"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">centroid_xyz</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral12centroid_xyzE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral15rotation_matrixE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1a88b4260070199a0a0a1fd005a97688d1"></span><a class="reference internal" href="structopensn_1_1_matrix3x3.html#_CPPv4N6opensn9Matrix3x3E" title="opensn::Matrix3x3"><span class="n"><span class="pre">Matrix3x3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rotation_matrix</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral15rotation_matrixE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral18translation_vectorE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1a8aba412835f50674727ea009edcd43ff"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">translation_vector</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral18translation_vectorE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral14sub_sqr_pointsE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1a760675eec2a6fa29cf70731a7c5d66b5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sub_sqr_points</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral14sub_sqr_pointsE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral15sub_sqr_weightsE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1accc5b4d1d2b5659934b19eead16c36ac"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sub_sqr_weights</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral15sub_sqr_weightsE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral4areaE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1a98653a24e65d377f5d319ca262dcf652"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">area</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral4areaE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral15octant_modifierE">
-<span class="target" id="structopensn_1_1_s_l_d_f_esq_quadrature_1_1_spherical_quadrilateral_1a2cce4eb4f8aa89857952c1ca46cb7f48"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">octant_modifier</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17SLDFEsqQuadrature22SphericalQuadrilateral15octant_modifierE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
 </dd></dl>
 
 </section>

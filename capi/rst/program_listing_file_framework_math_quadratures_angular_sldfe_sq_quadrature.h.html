@@ -118,6 +118,8 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">LocallyRefine</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ref_dir</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">cone_size</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">dir_as_plane_normal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetQuadratureOrder</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">level_</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">GenerateRefinement</span><span class="p">();</span>
 
@@ -125,6 +127,7 @@
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">FilterQuadraturePoint</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">QuadraturePointOptimization</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="n">CENTROID</span><span class="p">,</span>
@@ -152,7 +155,6 @@
 <span class="w">  </span><span class="n">QuadraturePointOptimization</span><span class="w"> </span><span class="n">qp_optimization_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QuadraturePointOptimization</span><span class="o">::</span><span class="n">EMPIRICAL</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SphericalQuadrilateral</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deployed_SQs</span><span class="p">;</span>
 
-<span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">BaseFunctor</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">operator</span><span class="p">()(</span><span class="kt">double</span><span class="w"> </span><span class="n">mu</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">eta</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">xi</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>

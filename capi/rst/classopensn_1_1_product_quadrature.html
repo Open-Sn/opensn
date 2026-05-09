@@ -131,18 +131,27 @@
 <dd><p>Return constant reference to map_directions. </p>
 </dd></dl>
 
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17ProductQuadrature9polar_angE">
-<span class="target" id="classopensn_1_1_product_quadrature_1a30d59140ca3a024484e66d48532c10ed"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polar_ang</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17ProductQuadrature9polar_angE" title="Link to this definition"></a><br /></dt>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17ProductQuadrature14GetPolarAnglesEv">
+<span class="target" id="classopensn_1_1_product_quadrature_1af532c06ae8cd224c22b1a20368473c93"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetPolarAngles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17ProductQuadrature14GetPolarAnglesEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17ProductQuadrature9azimu_angE">
-<span class="target" id="classopensn_1_1_product_quadrature_1ae5d2b95c53b54be66663f98bff0f9c2f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">azimu_ang</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17ProductQuadrature9azimu_angE" title="Link to this definition"></a><br /></dt>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17ProductQuadrature18GetAzimuthalAnglesEv">
+<span class="target" id="classopensn_1_1_product_quadrature_1a5bac92c111b3ae4fc2dc32d3c3745330"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetAzimuthalAngles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17ProductQuadrature18GetAzimuthalAnglesEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17ProductQuadrature17GetNumPolarAnglesEv">
+<span class="target" id="classopensn_1_1_product_quadrature_1a5d44f0e74b40dace7d1520c93a171282"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumPolarAngles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn17ProductQuadrature17GetNumPolarAnglesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of polar angles used by harmonic-selection rules. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17ProductQuadrature21GetNumAzimuthalAnglesEv">
+<span class="target" id="classopensn_1_1_product_quadrature_1a3660ba1fd4751d5a33cf0775fff0b375"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumAzimuthalAngles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn17ProductQuadrature21GetNumAzimuthalAnglesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of azimuthal angles used by harmonic-selection rules. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -162,6 +171,16 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17ProductQuadrature10polar_ang_E">
+<span class="target" id="classopensn_1_1_product_quadrature_1afe235048fbb441088a6ed08aff01e39e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polar_ang_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17ProductQuadrature10polar_ang_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17ProductQuadrature10azimu_ang_E">
+<span class="target" id="classopensn_1_1_product_quadrature_1aeee11c6c32a87419d75fea7af727e782"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">azimu_ang_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17ProductQuadrature10azimu_ang_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17ProductQuadrature11weight_sum_E">
 <span class="target" id="classopensn_1_1_product_quadrature_1a34df7d32852a4910934557a2818ce987"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">weight_sum_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17ProductQuadrature11weight_sum_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -170,6 +189,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17ProductQuadrature15map_directions_E">
 <span class="target" id="classopensn_1_1_product_quadrature_1a38f992b98cbe71b26d06c58901a13cfb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">map_directions_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17ProductQuadrature15map_directions_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Linear indices of ordered directions mapped to polar level. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17ProductQuadrature8n_polar_E">
+<span class="target" id="classopensn_1_1_product_quadrature_1a26206530cb01a165bde6330fd31950b9"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_polar_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17ProductQuadrature8n_polar_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of polar angles specified for this product quadrature. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17ProductQuadrature12n_azimuthal_E">
+<span class="target" id="classopensn_1_1_product_quadrature_1a7572d18da6468cc225b70a516723d2ba"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_azimuthal_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17ProductQuadrature12n_azimuthal_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of azimuthal angles specified for this product quadrature. </p>
 </dd></dl>
 
 </div>

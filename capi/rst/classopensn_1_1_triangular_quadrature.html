@@ -130,13 +130,28 @@
 <dd><p>Return constant reference to map_directions. </p>
 </dd></dl>
 
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn20TriangularQuadrature9polar_angE">
-<span class="target" id="classopensn_1_1_triangular_quadrature_1a638ec046cb0a6025a82c6ef1cc1abe5d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polar_ang</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20TriangularQuadrature9polar_angE" title="Link to this definition"></a><br /></dt>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20TriangularQuadrature14GetPolarAnglesEv">
+<span class="target" id="classopensn_1_1_triangular_quadrature_1a0c4c390ef17ec1ee2162d12c21142b3e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetPolarAngles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20TriangularQuadrature14GetPolarAnglesEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Polar angles for each polar level. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20TriangularQuadrature31GetAzimuthalAnglesPerPolarLevelEv">
+<span class="target" id="classopensn_1_1_triangular_quadrature_1a348d130068d9f833efa2c33e8b6ae1c9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetAzimuthalAnglesPerPolarLevel</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20TriangularQuadrature31GetAzimuthalAnglesPerPolarLevelEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Azimuthal angles for each polar level. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20TriangularQuadrature17GetNumPolarAnglesEv">
+<span class="target" id="classopensn_1_1_triangular_quadrature_1a3f12cde3b878eac33b8bc4742693deba"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumPolarAngles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn20TriangularQuadrature17GetNumPolarAnglesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of polar angles used by harmonic-selection rules. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20TriangularQuadrature21GetNumAzimuthalAnglesEv">
+<span class="target" id="classopensn_1_1_triangular_quadrature_1af0ab21716d7a514f2af848b8dcc451fa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumAzimuthalAngles</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn20TriangularQuadrature21GetNumAzimuthalAnglesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of azimuthal angles used by harmonic-selection rules. </p>
 </dd></dl>
 
 </div>
@@ -157,6 +172,12 @@
 </dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20TriangularQuadrature10polar_ang_E">
+<span class="target" id="classopensn_1_1_triangular_quadrature_1a5302c2669aa29f0a4bb7a1c0bba2ab5e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">polar_ang_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20TriangularQuadrature10polar_ang_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Polar angles for each polar level. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn20TriangularQuadrature20azimuthal_per_polar_E">
 <span class="target" id="classopensn_1_1_triangular_quadrature_1a3905bbfacc8943e6c15ba8975165091c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">azimuthal_per_polar_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20TriangularQuadrature20azimuthal_per_polar_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Azimuthal angles for each polar level. </p>
@@ -167,6 +188,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn20TriangularQuadrature15map_directions_E">
 <span class="target" id="classopensn_1_1_triangular_quadrature_1a5c3b87b10835931cf2f70bbfe6a1367d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">map_directions_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn20TriangularQuadrature15map_directions_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Linear indices of ordered directions mapped to polar level. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20TriangularQuadrature8n_polar_E">
+<span class="target" id="classopensn_1_1_triangular_quadrature_1a0c68a3b9a44c7aced7737db7de4b1b53"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_polar_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn20TriangularQuadrature8n_polar_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of polar angles specified for this triangular quadrature. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20TriangularQuadrature12n_azimuthal_E">
+<span class="target" id="classopensn_1_1_triangular_quadrature_1a8346360e8e6a7ba46f73ad2b88d4e116"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">n_azimuthal_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn20TriangularQuadrature12n_azimuthal_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum number of azimuthal angles specified for this triangular quadrature. </p>
 </dd></dl>
 
 </div>
