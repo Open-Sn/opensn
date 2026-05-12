@@ -53,6 +53,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Quick Install Guide</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">OpenSn Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#install-development-tools">Install Development Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-with-docker">Install with Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-with-spack">Install with Spack</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#virtual-environments-recommended">Virtual environments (recommended)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#clone-opensn">Clone OpenSn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#install-dependencies">Install dependencies</a></li>
@@ -145,6 +147,19 @@ build (if not found on your system):</p>
 <li><p>VTK 9.3.0+</p></li>
 <li><p>Caliper 2.10+</p></li>
 </ol>
+</section>
+<section id="install-with-docker">
+<h2>Install with Docker<a class="headerlink" href="#install-with-docker" title="Link to this heading"></a></h2>
+<p>OpenSn provides a Dockerfile under <code class="docutils literal notranslate"><span class="pre">distribution/docker</span></code> for building and
+running OpenSn in an Ubuntu-based container.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">distribution/docker/README.md</span></code> for build and run instructions.</p>
+</section>
+<section id="install-with-spack">
+<h2>Install with Spack<a class="headerlink" href="#install-with-spack" title="Link to this heading"></a></h2>
+<p>OpenSn provides a local Spack package repository under <code class="docutils literal notranslate"><span class="pre">distribution/spack</span></code>.
+This can be used to install OpenSn and its dependency stack with Spack.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">distribution/spack/README.md</span></code> for install commands, supported variants,
+test behavior, executable lookup, and development workflows.</p>
 </section>
 <section id="virtual-environments-recommended">
 <h2>Virtual environments (recommended)<a class="headerlink" href="#virtual-environments-recommended" title="Link to this heading"></a></h2>

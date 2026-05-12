@@ -43,6 +43,23 @@ build (if not found on your system):
 4. VTK 9.3.0+
 5. Caliper 2.10+
 
+Install with Docker
+-------------------
+
+OpenSn provides a Dockerfile under ``distribution/docker`` for building and
+running OpenSn in an Ubuntu-based container.
+
+See ``distribution/docker/README.md`` for build and run instructions.
+
+Install with Spack
+------------------
+
+OpenSn provides a local Spack package repository under ``distribution/spack``.
+This can be used to install OpenSn and its dependency stack with Spack.
+
+See ``distribution/spack/README.md`` for install commands, supported variants,
+test behavior, executable lookup, and development workflows.
+
 Virtual environments (recommended)
 ----------------------------------
 
