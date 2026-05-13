@@ -40,8 +40,6 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h`
-
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_quadrature_carrier.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_total_xs_carrier.h`

@@ -68,5 +68,3 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_cell_l_b_s_view`
 
-- :ref:`exhale_class_classopensn_1_1_cell_outflow_view`
-

@@ -85,68 +85,73 @@
   <section id="class-outflowcarrier">
 <span id="exhale-class-classopensn-1-1-outflow-carrier"></span><h1>Class OutflowCarrier<a class="headerlink" href="#class-outflowcarrier" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-device-carrier-outflow-carrier-h"><span class="std std-ref">File outflow_carrier.h</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_lbs_problem_outflow_outflow_carrier.h.html#file-modules-linear-boltzmann-solvers-lbs-problem-outflow-outflow-carrier-h"><span class="std std-ref">File outflow_carrier.h</span></a></p></li>
 </ul>
-<section id="inheritance-relationships">
-<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
-<section id="base-type">
-<h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::Carrier</span></code> (<a class="reference internal" href="classopensn_1_1_carrier.html#exhale-class-classopensn-1-1-carrier"><span class="std std-ref">Class Carrier</span></a>)</p></li>
-</ul>
-</section>
-</section>
 <section id="class-documentation">
 <h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrierE">
-<span class="target" id="classopensn_1_1_outflow_carrier"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OutflowCarrier</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_carrier.html#_CPPv4N6opensn7CarrierE" title="opensn::Carrier"><span class="n"><span class="pre">Carrier</span></span></a><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrierE" title="Link to this definition"></a><br /></dt>
-<dd><p>Object managing outflow data on GPU. </p>
-<p>This class manages memory for storing group-wise outflow data for each boundary face and provides cleaner way to transfer the data back to the host. </p>
+<span class="target" id="classopensn_1_1_outflow_carrier"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OutflowCarrier</span></span></span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrierE" title="Link to this definition"></a><br /></dt>
+<dd><p>GPU-side carrier for boundary-face outflow tally storage. </p>
+<p>The carrier mirrors the <a class="reference internal" href="classopensn_1_1_outflow_bank.html#classopensn_1_1_outflow_bank"><span class="std std-ref">OutflowBank</span></a>’s contiguous host storage on the device and delegates boundary-face offset lookups to the bank. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier14OutflowCarrierER10LBSProblem">
 <span class="target" id="classopensn_1_1_outflow_carrier_1a18801274d5dfa092150c2ec544d487e0"></span><span class="sig-name descname"><span class="n"><span class="pre">OutflowCarrier</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lbs_problem</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier14OutflowCarrierER10LBSProblem" title="Link to this definition"></a><br /></dt>
-<dd><p>Constructor. </p>
+<dd><p>Construct a device carrier for a problem’s outflow bank. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The referenced outflow bank must outlive this carrier. </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lbs_problem</strong> – <a class="reference internal" href="classopensn_1_1_problem.html#classopensn_1_1_problem"><span class="std std-ref">Problem</span></a> that owns the host-side outflow bank. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier14AccumulateBackERNSt6vectorI15CellOutflowViewEE">
-<span class="target" id="classopensn_1_1_outflow_carrier_1aa928ba27462bfbb90633df0c45a7d058"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AccumulateBack</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell_outflow_view.html#_CPPv4N6opensn15CellOutflowViewE" title="opensn::CellOutflowView"><span class="n"><span class="pre">CellOutflowView</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell_outflow_views</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier14AccumulateBackERNSt6vectorI15CellOutflowViewEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Accumulate computed outflow on GPU back to CPU. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier12CopyToDeviceEv">
+<span class="target" id="classopensn_1_1_outflow_carrier_1aeb5fb15f991beaf6281b0db818cfe9de"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyToDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier12CopyToDeviceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy host outflow values to device storage. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier5ResetEv">
-<span class="target" id="classopensn_1_1_outflow_carrier_1a40b2b698566bec847c99fbd8ad94c3e7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reset</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier5ResetEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Zero-fill device and host memory, forcing flux accumulation to zero to reuse the allocated space for the next sweep. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier14CopyFromDeviceEv">
+<span class="target" id="classopensn_1_1_outflow_carrier_1a64d941d72bafb002a89cf057a27c13e2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CopyFromDevice</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier14CopyFromDeviceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Copy device outflow values to host storage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier12GetDevicePtrEv">
+<span class="target" id="classopensn_1_1_outflow_carrier_1a1e24efe0926bc324ea43a9b12f1625d5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetDevicePtr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier12GetDevicePtrEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the base pointer to device outflow storage. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Device pointer to the first outflow value, or null when no device storage exists. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier9GetOffsetERKNSt8uint32_tERKNSt8uint32_tE">
 <span class="target" id="classopensn_1_1_outflow_carrier_1a66a53432e70035f56fcb582838332f21"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetOffset</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell_local_idx</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">face_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier9GetOffsetERKNSt8uint32_tERKNSt8uint32_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>Get offset from cell local index and face index. </p>
-</dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier11outflow_mapE">
-<span class="target" id="classopensn_1_1_outflow_carrier_1aee141a03b35cf6316f8163d94b7257bd"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outflow_map</span></span></span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier11outflow_mapE" title="Link to this definition"></a><br /></dt>
-<dd><p>Maps boundary faces to their outflow memory offsets. </p>
-<p>This map associates each boundary face, which is identified by a tuple of cell local index and face index in the cell, with its corresponding offset in the contiguous outflow data stored on the device.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Non-boundary faces are not included in this map. </p>
-</div>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier10num_groupsE">
-<span class="target" id="classopensn_1_1_outflow_carrier_1ab2cef0e0ebcc97b2ea3e134c6a41daaa"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_groups</span></span></span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier10num_groupsE" title="Link to this definition"></a><br /></dt>
-<dd><p>Number of groups. </p>
+<dd><p>Return the first group offset for a boundary face. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cell_local_idx</strong> – <a class="reference internal" href="classopensn_1_1_cell.html#classopensn_1_1_cell"><span class="std std-ref">Cell</span></a> index local to the current process. </p></li>
+<li><p><strong>face_idx</strong> – <a class="reference internal" href="structopensn_1_1_face.html#structopensn_1_1_face"><span class="std std-ref">Face</span></a> index local to the cell. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">out_of_range</span></span></span> – If the cell-face pair does not identify a boundary face. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Offset of the face’s first group value in device outflow storage. </p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

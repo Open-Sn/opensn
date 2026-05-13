@@ -1290,6 +1290,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_outflow_bank.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_outflow_carrier.rst
 
 .. toctree::
@@ -2243,6 +2248,11 @@ Directories
 .. toctree::
    :maxdepth: 1
 
+   dir_modules_linear_boltzmann_solvers_lbs_problem_outflow.rst
+
+.. toctree::
+   :maxdepth: 1
+
    dir_modules_linear_boltzmann_solvers_lbs_problem_point_source.rst
 
 .. toctree::
@@ -2498,6 +2508,11 @@ Files
    :maxdepth: 1
 
    file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_lbs_problem_outflow_cell_outflow_view.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3007,7 +3022,12 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h.rst
+   file_modules_linear_boltzmann_solvers_lbs_problem_outflow_outflow_bank.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_lbs_problem_outflow_outflow_carrier.h.rst
 
 .. toctree::
    :maxdepth: 1

@@ -93,6 +93,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/problem.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_bank.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h&quot;</span>
@@ -298,6 +299,9 @@
 <span class="w">  </span><span class="c1">/// Returns read-only access to the list of local cell transport views.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellTransportViews</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Returns reference to the outflow contiguous memory manager.</span>
+<span class="w">  </span><span class="n">OutflowBank</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetOutflowBank</span><span class="p">();</span>
+
 <span class="w">  </span><span class="c1">/// Returns read/write access to local cell outflow tallies.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellOutflowView</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetCellOutflowViews</span><span class="p">();</span>
 
@@ -449,6 +453,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unit_cell_matrices_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">UnitCellMatrices</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unit_ghost_cell_matrices_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellLBSView</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_transport_views_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">OutflowBank</span><span class="w"> </span><span class="n">outflow_bank_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellOutflowView</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_outflow_views_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">UnknownManager</span><span class="w"> </span><span class="n">flux_moments_uk_man_</span><span class="p">;</span>

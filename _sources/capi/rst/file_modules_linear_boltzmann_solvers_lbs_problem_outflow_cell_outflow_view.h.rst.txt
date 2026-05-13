@@ -1,0 +1,66 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_outflow_cell_outflow_view.h:
+
+File cell_outflow_view.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_outflow>` (``modules/linear_boltzmann_solvers/lbs_problem/outflow``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/outflow/cell_outflow_view.h``)
+-----------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_outflow_cell_outflow_view.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cassert``
+
+- ``cstddef``
+
+- ``cstdint``
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_outflow_outflow_bank.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_cell_outflow_view`
+

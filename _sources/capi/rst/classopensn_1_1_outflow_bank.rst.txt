@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_outflow_bank:
+
+Class OutflowBank
+=================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_outflow_outflow_bank.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::OutflowBank
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

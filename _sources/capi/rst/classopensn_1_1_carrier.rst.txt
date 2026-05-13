@@ -13,7 +13,6 @@ Derived Types
 *************
 
 - ``public opensn::MeshCarrier`` (:ref:`exhale_class_classopensn_1_1_mesh_carrier`)
-- ``public opensn::OutflowCarrier`` (:ref:`exhale_class_classopensn_1_1_outflow_carrier`)
 - ``public opensn::QuadratureCarrier`` (:ref:`exhale_class_classopensn_1_1_quadrature_carrier`)
 - ``public opensn::TotalXSCarrier`` (:ref:`exhale_class_classopensn_1_1_total_x_s_carrier`)
 

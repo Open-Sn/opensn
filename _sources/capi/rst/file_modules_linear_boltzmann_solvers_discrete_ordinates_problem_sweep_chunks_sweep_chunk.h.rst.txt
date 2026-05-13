@@ -42,6 +42,8 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h`)
 
+- ``modules/linear_boltzmann_solvers/lbs_problem/outflow/cell_outflow_view.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_outflow_cell_outflow_view.h`)
+
 
 
 Included By

@@ -3,7 +3,7 @@
 Class CellOutflowView
 =====================
 
-- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h`
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_outflow_cell_outflow_view.h`
 
 
 Class Documentation

@@ -56,6 +56,8 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h`)
 
+- ``modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_bank.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_outflow_outflow_bank.h`)
+
 - ``modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_point_source_point_source.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_flags.h`)
@@ -81,8 +83,6 @@ Included By
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_main.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h`
-
-- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_total_xs_carrier.h`
 

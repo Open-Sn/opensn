@@ -34,11 +34,11 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/device/carrier/carrier.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_carrier.h`)
 
-- ``modules/linear_boltzmann_solvers/lbs_problem/device/carrier/outflow_carrier.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_outflow_carrier.h`)
-
 - ``modules/linear_boltzmann_solvers/lbs_problem/device/carrier/total_xs_carrier.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_total_xs_carrier.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_carrier.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_outflow_outflow_carrier.h`)
 
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
 
