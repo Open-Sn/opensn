@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868:
+
+Function opensn::CreateSquareMatrix(PetscInt, PetscInt)
+=======================================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CreateSquareMatrix(PetscInt, PetscInt)
+   :project: opensn

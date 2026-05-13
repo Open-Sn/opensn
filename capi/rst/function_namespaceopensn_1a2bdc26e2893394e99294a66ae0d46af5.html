@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Function opensn::CreateVector(int64_t, int64_t) &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Function opensn::CreateSquareMatrix(Mat&amp;, PetscInt, PetscInt) &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Function opensn::CreateVector(Vec&amp;, int64_t, int64_t)" href="function_namespaceopensn_1a6dd9caec061347d11166f1cc337d5d24.html" />
-    <link rel="prev" title="Function opensn::CreateSquareMatrix(Mat&amp;, int64_t, int64_t)" href="function_namespaceopensn_1a1f2c5dbaa6e73d57c19e32394ee48fdf.html" /> 
+    <link rel="next" title="Function opensn::CreateVector(PetscInt, PetscInt)" href="function_namespaceopensn_1aa23a89f962cc2d2ad9cc7d31bdc2b47b.html" />
+    <link rel="prev" title="Function opensn::CreateSquareMatrix(PetscInt, PetscInt)" href="function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -102,11 +102,11 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a02bf745eaa54424c59c3c552a90f192e.html">Function opensn::CopyVecToSTLvector</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1acca242ff67669370bc7d8cfa1d797de5.html">Function opensn::CopyVecToSTLvectorWithGhosts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8d036a041ad41ba72c34a1f49b9d02be.html">Function opensn::CreateCommonKrylovSolverSetup</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1c7469e26d640f176a31bf4a2e1a5dd4.html">Function opensn::CreateSquareMatrix(int64_t, int64_t)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1f2c5dbaa6e73d57c19e32394ee48fdf.html">Function opensn::CreateSquareMatrix(Mat&amp;, int64_t, int64_t)</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::CreateVector(int64_t, int64_t)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a6dd9caec061347d11166f1cc337d5d24.html">Function opensn::CreateVector(Vec&amp;, int64_t, int64_t)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8979e15cdd9c55b55be98f01fcc2e0fc.html">Function opensn::CreateVectorWithGhosts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868.html">Function opensn::CreateSquareMatrix(PetscInt, PetscInt)</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::CreateSquareMatrix(Mat&amp;, PetscInt, PetscInt)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aa23a89f962cc2d2ad9cc7d31bdc2b47b.html">Function opensn::CreateVector(PetscInt, PetscInt)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a19f6abef3b4a8567173206de39d6031d.html">Function opensn::CreateVector(Vec&amp;, PetscInt, PetscInt)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab6271f7ed1afb9d81103672fbeef6d7d.html">Function opensn::CreateVectorWithGhosts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a5ed5bb563b45f1906f828d406750c3c1.html">Function opensn::d2Legendredx2</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a42728ba3cf18aa0e98f4997376672d65.html">Template Function opensn::Determinant</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a6fba4337d1fd96234b6edbe19504b575.html">Function opensn::dLegendredx</a></li>
@@ -312,7 +312,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Function opensn::CreateVector(int64_t, int64_t)</li>
+      <li class="breadcrumb-item active">Function opensn::CreateSquareMatrix(Mat&amp;, PetscInt, PetscInt)</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -321,24 +321,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="function-opensn-createvector-int64-t-int64-t">
-<span id="exhale-function-namespaceopensn-1ab65a59c0547e6d04319bd9d22a6126b1"></span><h1>Function opensn::CreateVector(int64_t, int64_t)<a class="headerlink" href="#function-opensn-createvector-int64-t-int64-t" title="Link to this heading"></a></h1>
+  <section id="function-opensn-createsquarematrix-mat-petscint-petscint">
+<span id="exhale-function-namespaceopensn-1a2bdc26e2893394e99294a66ae0d46af5"></span><h1>Function opensn::CreateSquareMatrix(Mat&amp;, PetscInt, PetscInt)<a class="headerlink" href="#function-opensn-createsquarematrix-mat-petscint-petscint" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_framework_math_petsc_utils_petsc_utils.h.html#file-framework-math-petsc-utils-petsc-utils-h"><span class="std std-ref">File petsc_utils.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn12CreateVectorE7int64_t7int64_t">
-<span class="target" id="namespaceopensn_1ab65a59c0547e6d04319bd9d22a6126b1"></span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CreateVector</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">local_size</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">global_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12CreateVectorE7int64_t7int64_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Creates a general vector. </p>
-<p>This is a macro for: <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Vec</span> <span class="n">x</span><span class="p">;</span>
-<span class="n">VecCreate</span><span class="p">(</span><span class="n">opensn</span><span class="p">::</span><span class="n">mpi_comm</span><span class="p">,</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span>
-<span class="n">VecSetType</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">VECMPI</span><span class="p">);</span>
-<span class="n">VecSetSizes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">local_size</span><span class="p">,</span> <span class="n">global_size</span><span class="p">);</span>
-<span class="n">VecSetOption</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">VEC_IGNORE_NEGATIVE_INDICES</span><span class="p">,</span><span class="n">PETSC_TRUE</span><span class="p">);</span>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn18CreateSquareMatrixER3Mat8PetscInt8PetscInt">
+<span class="target" id="namespaceopensn_1a2bdc26e2893394e99294a66ae0d46af5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CreateSquareMatrix</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Mat</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">A</span></span>, <span class="n"><span class="pre">PetscInt</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">local_size</span></span>, <span class="n"><span class="pre">PetscInt</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">global_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn18CreateSquareMatrixER3Mat8PetscInt8PetscInt" title="Link to this definition"></a><br /></dt>
+<dd><p>Creates a general square matrix. </p>
+<p>This is a function for: <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MatCreate</span><span class="p">(</span><span class="n">opensn</span><span class="p">::</span><span class="n">mpi_comm</span><span class="p">,</span><span class="o">&amp;</span><span class="n">A</span><span class="p">);</span>
+<span class="n">MatSetType</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">MATMPIAIJ</span><span class="p">);</span>
+<span class="n">MatSetSizes</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">local_size</span><span class="p">,</span> <span class="n">local_size</span><span class="p">,</span>
+              <span class="n">global_size</span><span class="p">,</span> <span class="n">global_size</span><span class="p">);</span>
 
-<span class="k">return</span> <span class="n">x</span><span class="p">;</span>
+<span class="n">MatMPIAIJSetPreallocation</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">nullptr</span><span class="p">,</span>
+                          <span class="mi">0</span><span class="p">,</span> <span class="n">nullptr</span><span class="p">);</span>
+<span class="n">MatSetOption</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">MAT_NEW_NONZERO_ALLOCATION_ERR</span><span class="p">,</span> <span class="n">PETSC_FALSE</span><span class="p">);</span>
+<span class="n">MatSetOption</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">MAT_IGNORE_ZERO_ENTRIES</span><span class="p">,</span> <span class="n">PETSC_TRUE</span><span class="p">);</span>
 </pre></div>
 </div>
 </p>
@@ -351,8 +353,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="function_namespaceopensn_1a1f2c5dbaa6e73d57c19e32394ee48fdf.html" class="btn btn-neutral float-left" title="Function opensn::CreateSquareMatrix(Mat&amp;, int64_t, int64_t)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1a6dd9caec061347d11166f1cc337d5d24.html" class="btn btn-neutral float-right" title="Function opensn::CreateVector(Vec&amp;, int64_t, int64_t)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868.html" class="btn btn-neutral float-left" title="Function opensn::CreateSquareMatrix(PetscInt, PetscInt)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_namespaceopensn_1aa23a89f962cc2d2ad9cc7d31bdc2b47b.html" class="btn btn-neutral float-right" title="Function opensn::CreateVector(PetscInt, PetscInt)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

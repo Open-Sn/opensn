@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aa23a89f962cc2d2ad9cc7d31bdc2b47b:
+
+Function opensn::CreateVector(PetscInt, PetscInt)
+=================================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CreateVector(PetscInt, PetscInt)
+   :project: opensn

@@ -141,7 +141,7 @@
 <span class="cm"> * return x;</span>
 <span class="cm"> * \endcode</span>
 <span class="cm"> */</span>
-<span class="n">Vec</span><span class="w"> </span><span class="nf">CreateVector</span><span class="p">(</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
+<span class="n">Vec</span><span class="w"> </span><span class="nf">CreateVector</span><span class="p">(</span><span class="n">PetscInt</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Creates a general vector.</span>
@@ -154,7 +154,7 @@
 <span class="cm"> * VecSetOption(x,VEC_IGNORE_NEGATIVE_INDICES,PETSC_TRUE);</span>
 <span class="cm"> * \endcode</span>
 <span class="cm"> */</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">CreateVector</span><span class="p">(</span><span class="n">Vec</span><span class="o">&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">CreateVector</span><span class="p">(</span><span class="n">Vec</span><span class="o">&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Creates a general vector with ghost value support.</span>
@@ -174,9 +174,9 @@
 <span class="cm"> * return x;</span>
 <span class="cm"> * \endcode</span>
 <span class="cm"> */</span>
-<span class="n">Vec</span><span class="w"> </span><span class="nf">CreateVectorWithGhosts</span><span class="p">(</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span>
-<span class="w">                           </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">global_size</span><span class="p">,</span>
-<span class="w">                           </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">nghosts</span><span class="p">,</span>
+<span class="n">Vec</span><span class="w"> </span><span class="nf">CreateVectorWithGhosts</span><span class="p">(</span><span class="n">PetscInt</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">global_size</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">nghosts</span><span class="p">,</span>
 <span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ghost_indices</span><span class="p">);</span>
 
 <span class="cm">/**</span>
@@ -198,7 +198,7 @@
 <span class="cm"> * return A;</span>
 <span class="cm"> * \endcode</span>
 <span class="cm"> */</span>
-<span class="n">Mat</span><span class="w"> </span><span class="nf">CreateSquareMatrix</span><span class="p">(</span><span class="kt">int64_t</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
+<span class="n">Mat</span><span class="w"> </span><span class="nf">CreateSquareMatrix</span><span class="p">(</span><span class="n">PetscInt</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Creates a general square matrix.</span>
@@ -216,7 +216,7 @@
 <span class="cm"> * MatSetOption(A, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE);</span>
 <span class="cm"> * \endcode</span>
 <span class="cm"> */</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">CreateSquareMatrix</span><span class="p">(</span><span class="n">Mat</span><span class="o">&amp;</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">CreateSquareMatrix</span><span class="p">(</span><span class="n">Mat</span><span class="o">&amp;</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Initializes the sparsity pattern of a matrix.</span>
