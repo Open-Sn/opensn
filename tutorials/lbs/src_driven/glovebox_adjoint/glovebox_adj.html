@@ -185,7 +185,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseEvaluator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector3</span><span class="p">,</span> <span class="n">VectorSpatialFunction</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">,</span> \
                                <span class="n">FieldFunctionInterpolationLine</span><span class="p">,</span> \
                                <span class="n">FieldFunctionGridBased</span>
@@ -199,7 +198,7 @@
 <section id="Geometry">
 <h2><span class="section-number">5.3.5.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="3674c8d90d744e56813793c47a13aade" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="cb4eb2085c2844c4949565593eb6173e" src="../../../../_images/glovebox_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -218,9 +217,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="d3c7d9f8c3154128987d16ac08880c74" src="../../../../_images/glovebox_mesh.png" /></p>
-<p><img alt="7b41ad0868c94943817d885475220609" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
-<p><img alt="6e508cb901374076bf2394a7042a6169" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
+<p><img alt="d6bbe42509ce42888233dda0623f8b91" src="../../../../_images/glovebox_mesh.png" /></p>
+<p><img alt="b5304170bcb5480497166e8c8854f26b" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
+<p><img alt="6c7441597f6f48ba85490703973b9a78" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">5.3.5.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -305,7 +304,7 @@
 <section id="Adjoint-Source-Definition">
 <h3><span class="section-number">5.3.5.4.3. </span>Adjoint Source Definition<a class="headerlink" href="#Adjoint-Source-Definition" title="Link to this heading"></a></h3>
 <p>To solve the 2D transport problem using the adjoint operator, we first define the adjoint source <span class="math notranslate nohighlight">\(q^{\dagger}\)</span> over the detector volume, assigning a source strength equal to the absorption cross section of the detector, <span class="math notranslate nohighlight">\(\sigma_a^{\text{He3},g}\)</span>. By default, adjoint sources are distributed isotropically in angle across the source domain.</p>
-<p>To implement this, we create a <code class="docutils literal notranslate"><span class="pre">ResponseFunction</span></code>. A response function allows us to define the group-wise source strength, which can be used to specify responses in particular energy bins or, in this case, to capture the detector response. To record the response for a specific detector, we set the <code class="docutils literal notranslate"><span class="pre">logical_volume</span></code> of the adjoint source to the detector of interest.</p>
+<p>To implement this, we define the group-wise source strength directly from the detector absorption cross section. To record the response for a specific detector, we set the <code class="docutils literal notranslate"><span class="pre">logical_volume</span></code> of the adjoint source to the detector of interest.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -330,12 +329,8 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ResponseFunction</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">mat_id</span><span class="p">):</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">xs_he3</span><span class="o">.</span><span class="n">sigma_a</span>
-    <span class="k">return</span> <span class="n">response</span>
-<span class="n">response_func</span> <span class="o">=</span> <span class="n">VectorSpatialFunction</span><span class="p">(</span><span class="n">ResponseFunction</span><span class="p">)</span>
-
-<span class="n">adj_src</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">logical_volume</span><span class="o">=</span><span class="n">det_logvols</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">func</span><span class="o">=</span><span class="n">response_func</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Q_adj</span> <span class="o">=</span> <span class="n">xs_he3</span><span class="o">.</span><span class="n">sigma_a</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">adj_src</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">logical_volume</span><span class="o">=</span><span class="n">det_logvols</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="n">Q_adj</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -491,14 +486,14 @@
 </div>
 <p>Detector 1:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="9a50ab9fb6b24e909a9513a8921d597a" src="../../../../_images/det1_g3.png" /></p>
+<p><img alt="fc29022d47114687a6934048ead50cc7" src="../../../../_images/det1_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="d98c476b910d487e8cfacdd4a446c364" src="../../../../_images/det1_g52.png" /></p>
+<p><img alt="0e6c3567998b4df59a4a37daad0f3fcd" src="../../../../_images/det1_g52.png" /></p>
 <p>Detector 2:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="3c43cca3d0af49ad913ac580ecd58d96" src="../../../../_images/det2_g3.png" /></p>
+<p><img alt="7a12f31e06b94c1cad2db6460746cc9b" src="../../../../_images/det2_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="a10265edd2ce4d528aaa4d1d2fa2e694" src="../../../../_images/det2_g52.png" /></p>
+<p><img alt="98c30ff00dfa40c09fe152ddde7f84c5" src="../../../../_images/det2_g52.png" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
