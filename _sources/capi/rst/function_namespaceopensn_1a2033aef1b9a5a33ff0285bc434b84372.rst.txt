@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2033aef1b9a5a33ff0285bc434b84372:
+
+Function opensn::CaliperSweepScopeDepth
+=======================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperSweepScopeDepth()
+   :project: opensn

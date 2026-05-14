@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_caliper_phase_scope:
+
+Class CaliperPhaseScope
+=======================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CaliperPhaseScope
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

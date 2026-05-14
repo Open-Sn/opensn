@@ -1,0 +1,83 @@
+
+.. _file_framework_utils_caliper_scopes.h:
+
+File caliper_scopes.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_utils>` (``framework/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/utils/caliper_scopes.h``)
+-------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_utils_caliper_scopes.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``caliper/cali.h``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_caliper_phase_scope`
+
+- :ref:`exhale_class_classopensn_1_1_caliper_region_scope`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a9d1e938358c7182abec1cc40ebfaea18`
+
+- :ref:`exhale_function_namespaceopensn_1a8654c7fbbae4b4f6b46d4570d0e6d8e0`
+
+- :ref:`exhale_function_namespaceopensn_1aa00518be594cd63dbc19403ffa410071`
+
+- :ref:`exhale_function_namespaceopensn_1a84fba7378dcb007c24346c8ffb040afe`
+
+- :ref:`exhale_function_namespaceopensn_1a38de0828326079d914a3fbdb6c92d8c2`
+
+- :ref:`exhale_function_namespaceopensn_1a50cac4e3db4cc149010f8b8cb98f74cb`
+
+- :ref:`exhale_function_namespaceopensn_1ab468307d1f31785a29280f54f34d8c7d`
+
+- :ref:`exhale_function_namespaceopensn_1af52ef3efe9c5fab366e5297c5db74b50`
+
+- :ref:`exhale_function_namespaceopensn_1a2033aef1b9a5a33ff0285bc434b84372`
+
+- :ref:`exhale_function_namespaceopensn_1a77d7d4229aff1924a88e7fcb7f42a647`
+
+- :ref:`exhale_function_namespaceopensn_1ab3e402558e7f774a5e14936c42dcbe4c`
+
+- :ref:`exhale_function_namespaceopensn_1afa6022cc68f7658c311991d45c3ac6dc`
+

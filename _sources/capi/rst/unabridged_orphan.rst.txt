@@ -800,6 +800,16 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_caliper_phase_scope.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_caliper_region_scope.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_carrier.rst
 
 .. toctree::
@@ -2443,6 +2453,11 @@ Files
    :maxdepth: 1
 
    file_framework_data_types_byte_array.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_utils_caliper_scopes.h.rst
 
 .. toctree::
    :maxdepth: 1

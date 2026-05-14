@@ -30,8 +30,6 @@ Includes
 --------
 
 
-- ``caliper/cali.h``
-
 - ``cstdint``
 
 - ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)

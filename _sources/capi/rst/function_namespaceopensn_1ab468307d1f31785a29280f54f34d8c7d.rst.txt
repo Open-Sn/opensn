@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab468307d1f31785a29280f54f34d8c7d:
+
+Function opensn::CaliperSolvePhaseDepth
+=======================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperSolvePhaseDepth()
+   :project: opensn

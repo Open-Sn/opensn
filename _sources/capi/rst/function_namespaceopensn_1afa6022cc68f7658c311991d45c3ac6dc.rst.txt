@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1afa6022cc68f7658c311991d45c3ac6dc:
+
+Function opensn::CaliperWGSScopeDepth
+=====================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperWGSScopeDepth()
+   :project: opensn

@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_caliper_region_scope:
+
+Class CaliperRegionScope
+========================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CaliperRegionScope
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

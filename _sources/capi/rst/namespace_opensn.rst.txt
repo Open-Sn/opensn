@@ -341,6 +341,10 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_byte_array`
 
+- :ref:`exhale_class_classopensn_1_1_caliper_phase_scope`
+
+- :ref:`exhale_class_classopensn_1_1_caliper_region_scope`
+
 - :ref:`exhale_class_classopensn_1_1_carrier`
 
 - :ref:`exhale_class_classopensn_1_1_c_b_c___angle_set`
@@ -799,6 +803,30 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ab8dd289d1a78eb4563bd266a07f0ac43`
 
+- :ref:`exhale_function_namespaceopensn_1a9d1e938358c7182abec1cc40ebfaea18`
+
+- :ref:`exhale_function_namespaceopensn_1a8654c7fbbae4b4f6b46d4570d0e6d8e0`
+
+- :ref:`exhale_function_namespaceopensn_1aa00518be594cd63dbc19403ffa410071`
+
+- :ref:`exhale_function_namespaceopensn_1a84fba7378dcb007c24346c8ffb040afe`
+
+- :ref:`exhale_function_namespaceopensn_1a38de0828326079d914a3fbdb6c92d8c2`
+
+- :ref:`exhale_function_namespaceopensn_1a50cac4e3db4cc149010f8b8cb98f74cb`
+
+- :ref:`exhale_function_namespaceopensn_1ab468307d1f31785a29280f54f34d8c7d`
+
+- :ref:`exhale_function_namespaceopensn_1af52ef3efe9c5fab366e5297c5db74b50`
+
+- :ref:`exhale_function_namespaceopensn_1a2033aef1b9a5a33ff0285bc434b84372`
+
+- :ref:`exhale_function_namespaceopensn_1a77d7d4229aff1924a88e7fcb7f42a647`
+
+- :ref:`exhale_function_namespaceopensn_1ab3e402558e7f774a5e14936c42dcbe4c`
+
+- :ref:`exhale_function_namespaceopensn_1afa6022cc68f7658c311991d45c3ac6dc`
+
 - :ref:`exhale_function_namespaceopensn_1a710a6656bcc3d8df1f70994d9cede737`
 
 - :ref:`exhale_function_namespaceopensn_1a05be19174ce62742861ed510cedb0d3b`
@@ -877,9 +905,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a6fba4337d1fd96234b6edbe19504b575`
 
-- :ref:`exhale_function_namespaceopensn_1a7ceed89aee4a14a696ee2ffe7a165221`
-
 - :ref:`exhale_function_namespaceopensn_1a83267a6e1df77a97b0010a4d12450360`
+
+- :ref:`exhale_function_namespaceopensn_1a7ceed89aee4a14a696ee2ffe7a165221`
 
 - :ref:`exhale_function_namespaceopensn_1af44db9c1ce3bab159ed7d936f147e4f3`
 
@@ -1147,11 +1175,11 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a8a5a0b764bafcabf550979995200d07b`
 
+- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
+
 - :ref:`exhale_function_namespaceopensn_1af5d0740a6b08cd24f6f67db3c5eeb06c`
 
 - :ref:`exhale_function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610`
-
-- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
 
 - :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
 

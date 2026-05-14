@@ -31,6 +31,8 @@ Program Listing for File nonlinear_keigen_ags_solver.h
    
      ~NLKEigenvalueAGSSolver() override = default;
    
+     void Solve() override;
+   
    protected:
      void PreSetupCallback() override;
      void SetMonitor() override;

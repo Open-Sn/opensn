@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a77d7d4229aff1924a88e7fcb7f42a647:
+
+Function opensn::CaliperTransientScopeDepth
+===========================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperTransientScopeDepth()
+   :project: opensn

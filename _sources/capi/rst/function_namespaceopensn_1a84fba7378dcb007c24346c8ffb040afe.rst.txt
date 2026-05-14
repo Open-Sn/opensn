@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a84fba7378dcb007c24346c8ffb040afe:
+
+Function opensn::CaliperPIScopeDepth
+====================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperPIScopeDepth()
+   :project: opensn
