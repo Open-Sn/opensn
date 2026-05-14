@@ -41,7 +41,7 @@ build (if not found on your system):
 2. Boost 1.86+
 3. HDF5 1.14+
 4. VTK 9.3.0+
-5. Caliper 2.10+
+5. Caliper 2.11+
 
 Install with Docker
 -------------------
