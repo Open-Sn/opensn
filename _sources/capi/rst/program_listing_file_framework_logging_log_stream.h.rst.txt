@@ -17,6 +17,9 @@ Program Listing for File log_stream.h
    
    #include <iostream>
    #include <sstream>
+   #include <string_view>
+   #include <cctype>
+   #include <utility>
    #include "stringstream_color.h"
    
    namespace opensn
@@ -26,14 +29,26 @@ Program Listing for File log_stream.h
    class LogStream : public std::stringstream
    {
    public:
+     struct Header
+     {
+       std::string prefix;
+       std::string label;
+       std::string color;
+     };
+   
      LogStream(std::ostream* output_stream,
-               std::string header,
+               Header header,
                bool dummy_flag = false,
                bool use_color = false)
        : log_stream_(output_stream),
-         log_header_(std::move(header)),
+         header_(std::move(header)),
          dummy_(dummy_flag),
          use_color_(use_color)
+     {
+     }
+   
+     LogStream(std::ostream* output_stream, std::string header, bool dummy_flag = false)
+       : LogStream(output_stream, Header{std::move(header), "", ""}, dummy_flag, false)
      {
      }
    
@@ -56,12 +71,7 @@ Program Listing for File log_stream.h
          std::string oline;
          std::string reset_str = use_color_ ? StringStreamColor(StringStreamColorCode::RESET) : "";
          while (std::getline(iss, line))
-         {
-           oline += log_header_;
-           oline += line;
-           oline += reset_str;
-           oline += "\n";
-         }
+           AppendWrappedLine(oline, line, reset_str);
    
          if (!oline.empty())
            *log_stream_ << oline << std::flush;
@@ -73,8 +83,67 @@ Program Listing for File log_stream.h
      }
    
    private:
+     static constexpr std::size_t LINE_WRAP_WIDTH = 100;
+     static constexpr std::size_t CONTINUATION_INDENT = 4;
+   
+     static std::size_t FindWrapPosition(std::string_view text, std::size_t max_width)
+     {
+       if (text.size() <= max_width)
+         return std::string_view::npos;
+   
+       for (std::size_t i = max_width; i < text.size(); ++i)
+       {
+         if (std::isspace(static_cast<unsigned char>(text[i])))
+           return i;
+       }
+   
+       return max_width;
+     }
+   
+     static std::string_view TrimLeadingSpaces(std::string_view text)
+     {
+       while (not text.empty() and std::isspace(static_cast<unsigned char>(text.front())))
+         text.remove_prefix(1);
+   
+       return text;
+     }
+   
+     void
+     AppendWrappedLine(std::string& output, std::string_view line, const std::string& reset_str) const
+     {
+       bool first_piece = true;
+   
+       bool line_remaining = true;
+       while (line_remaining)
+       {
+         const auto header_width = first_piece ? header_.prefix.size() + header_.label.size()
+                                               : header_.prefix.size() + CONTINUATION_INDENT;
+         const auto content_width =
+           header_width < LINE_WRAP_WIDTH ? LINE_WRAP_WIDTH - header_width : LINE_WRAP_WIDTH;
+         const auto wrap_pos = FindWrapPosition(line, content_width);
+         const auto piece = wrap_pos == std::string_view::npos ? line : line.substr(0, wrap_pos);
+   
+         output += header_.prefix;
+         output += header_.color;
+         if (first_piece)
+           output += header_.label;
+         else
+           output += std::string(CONTINUATION_INDENT, ' ');
+   
+         output += piece;
+         output += reset_str;
+         output += "\n";
+   
+         first_piece = false;
+         line_remaining = wrap_pos != std::string_view::npos;
+   
+         if (line_remaining)
+           line = TrimLeadingSpaces(line.substr(wrap_pos));
+       }
+     }
+   
      std::ostream* log_stream_;
-     std::string log_header_;
+     Header header_;
      const bool dummy_;
      bool use_color_;
    };

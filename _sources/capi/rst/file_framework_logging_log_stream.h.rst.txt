@@ -30,11 +30,17 @@ Includes
 --------
 
 
+- ``cctype``
+
 - ``iostream``
 
 - ``sstream``
 
+- ``string_view``
+
 - ``stringstream_color.h`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``utility``
 
 
 
@@ -61,6 +67,8 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_dummy_stream`
 
 - :ref:`exhale_struct_structopensn_1_1_dummy_stream_1_1_dummy_stream_buffer`
+
+- :ref:`exhale_struct_structopensn_1_1_log_stream_1_1_header`
 
 - :ref:`exhale_class_classopensn_1_1_log_stream`
 

@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_log_stream_1_1_header:
+
+Struct LogStream::Header
+========================
+
+- Defined in :ref:`file_framework_logging_log_stream.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_log_stream`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::LogStream::Header
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

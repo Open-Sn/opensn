@@ -285,6 +285,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_log_stream_1_1_header.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_matrix3x3.rst
 
 .. toctree::

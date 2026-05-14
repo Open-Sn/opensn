@@ -6,6 +6,16 @@ Class LogStream
 - Defined in :ref:`file_framework_logging_log_stream.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_log_stream_1_1_header`
+
+
 Inheritance Relationships
 -------------------------
 
