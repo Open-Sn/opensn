@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a1ebff20284e4a2c5ec6d247084c1c10c:
+.. _exhale_function_namespaceopensn_1add4c336d68f7f5557eb0b450629548c7:
 
 Function opensn::ComputePointwiseChange
 =======================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::ComputePointwiseChange(std::vector<double>&, std::vector<double>&)
+.. doxygenfunction:: opensn::ComputePointwiseChange(const std::vector<double>&, const std::vector<double>&)
    :project: opensn
