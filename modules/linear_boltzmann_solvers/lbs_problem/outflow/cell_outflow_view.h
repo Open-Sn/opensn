@@ -13,8 +13,7 @@ namespace opensn
 /**
  * Non-owning view of group-wise outflow values for the faces of one local cell.
  *
- * Face offsets are relative to the first outflow value assigned to the cell. A negative face offset
- * marks a face that does not contribute outflow storage.
+ * Face offsets are relative to the first outflow value assigned to the cell.
  */
 class CellOutflowView
 {
@@ -24,7 +23,7 @@ public:
   /**
    * Construct a view for a cell with a fixed face count and energy group count.
    * \param num_faces Number of faces on the viewed cell.
-   * \param num_groups Number of energy groups stored per boundary face.
+   * \param num_groups Number of energy groups stored per face.
    */
   CellOutflowView(std::size_t num_faces, unsigned int num_groups)
     : num_faces_(num_faces), num_groups_(num_groups)
@@ -34,10 +33,10 @@ public:
   /// Return whether the view was initialized with at least one face or group.
   bool IsInitialized() const { return num_faces_ > 0 or num_groups_ > 0; }
 
-  /// Return whether boundary-face offset metadata has been allocated.
+  /// Return whether face offset metadata has been allocated.
   bool HasFaceOffsets() const { return not face_offsets_.empty(); }
 
-  /// Allocate boundary-face offset metadata.
+  /// Allocate face offset metadata.
   void InitializeFaceOffsets()
   {
     face_offsets_.reserve(num_faces_);
@@ -124,7 +123,7 @@ private:
   /// Number of faces on the viewed cell.
   std::size_t num_faces_ = 0;
 
-  /// Number of energy groups stored per boundary face.
+  /// Number of energy groups stored per face.
   unsigned int num_groups_ = 0;
 
   /// Pointer to the first outflow value for the viewed cell.
@@ -132,7 +131,7 @@ private:
 
   /**
    * Relative offset into the cell outflow array for each face.
-   * Non-boundary faces are assigned to -1.
+   * Faces without allocated outflow storage are assigned to -1.
    */
   std::vector<std::int64_t> face_offsets_;
 };

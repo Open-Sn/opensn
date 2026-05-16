@@ -65,6 +65,13 @@ public:
    */
   virtual double PostPowerIteration() = 0;
 
+  /**
+   * Return whether the most recent acceleration update permits the owning power iteration solver
+   * to declare convergence. Acceleration schemes can override this when a guarded or rejected
+   * update should force at least one additional transport iteration.
+   */
+  virtual bool AllowsPowerIterationConvergence() const { return true; }
+
   const std::string& GetName() const { return name_; }
 
 protected:

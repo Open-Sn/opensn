@@ -14,6 +14,62 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_1d_1g_cmfd.py",
+    "comment": "1D keigenvalue test using power iteration with aggregated CMFD acceleration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.9945456,
+        "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python sweeps:",
+        "goldvalue": 4880,
+        "abs_tol": 256
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_cmfd.py",
+    "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_limiter",
+    "comment": "1D CMFD correction limiter stress test with intentionally over-relaxed corrections",
+    "num_procs": 1,
+    "args": [
+      "cmfd_verbose=True",
+      "cmfd_limiter_stress=True",
+      "cmfd_relaxation=100.0",
+      "cmfd_correction_max_attempts=2",
+      "cmfd_correction_min_damping=1.0"
+    ],
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_METRIC c=correction i=0 m=skipped v=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_METRIC c=correction i=0 m=nonfinite_flux v=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_METRIC c=correction i=0 m=invalid_k v=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_2d_1a_qblock.py",
     "comment": "2D 2G keigenvalue test using power iteration",
     "num_procs": 4,
@@ -30,6 +86,32 @@
         "wordnum": 13,
         "gold": 0.5969127,
         "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1a_qblock_cmfd.py",
+    "comment": "2D 2G keigenvalue test using power iteration with CMFD acceleration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5969127,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_1a_qblock_cmfd_agg.py",
+    "comment": "2D 2G keigenvalue test using power iteration with aggregated CMFD acceleration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5969127,
+        "abs_tol": 2e-06
       }
     ]
   },
@@ -233,6 +315,32 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_3d_2g_exo_wedge_cmfd.py",
+    "comment": "3D 2G EXODUS wedge k-eigenvalue test using identity CMFD acceleration",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.9293377,
+        "abs_tol": 5e-06
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_exo_wedge_cmfd_agg.py",
+    "comment": "3D 2G EXODUS wedge k-eigenvalue test using rank-local aggregated CMFD acceleration",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.9293377,
+        "abs_tol": 5e-06
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_3d_2g_exo_pyramid.py",
     "comment": "3D_2G Infinite medium testing pyramid elements of EXODUSII; should agree with the hex model",
     "num_procs": 1,
@@ -308,6 +416,116 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_3d_1g_reflecting_cmfd_agg.py",
+    "comment": "3D 1G reflecting k-eigenvalue with aggregated CMFD acceleration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.995,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Balance=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_qblock.py",
+    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using straight power iteration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5028015,
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_qblock_cmfd_agg.py",
+    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using aggregated CMFD acceleration",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5028015,
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_qblock_8rank.py",
+    "comment": "8-rank 3D 2G heterogeneous qblock benchmark using straight power iteration",
+    "num_procs": 8,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5034951,
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_qblock_8rank_cmfd_agg.py",
+    "comment": "8-rank 3D 2G heterogeneous qblock benchmark using aggregated CMFD acceleration",
+    "num_procs": 8,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5034951,
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_unstructured_8rank.py",
+    "comment": "8-rank 3D 2G heterogeneous extruded-unstructured benchmark using straight power iteration",
+    "num_procs": 8,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 1.0441134,
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_unstructured_8rank_cmfd_agg.py",
+    "comment": "8-rank 3D 2G heterogeneous extruded-unstructured benchmark using rank-local aggregated CMFD acceleration",
+    "num_procs": 8,
+    "weight_class": "long",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 1.0441134,
+        "abs_tol": 5e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python sweeps:",
+        "goldvalue": 118,
+        "abs_tol": 32
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_METRIC c=coarse_mesh m=aggregation_ratio v=",
+        "goldvalue": 11.3388,
+        "abs_tol": 0.1
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_3d_5g_upscatter_solvers.py",
     "comment":
       "3D 5G infinite-medium k-eigenvalue test with five groupsets, upscatter, analytic reference, PI, and NLKE",
@@ -316,6 +534,12 @@
       {
         "type": "KeyValuePair",
         "key": "PowerIteration k-eigenvalue:",
+        "goldvalue": 0.647082071109,
+        "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PowerIterationCMFD k-eigenvalue:",
         "goldvalue": 0.647082071109,
         "abs_tol": 5e-06
       },

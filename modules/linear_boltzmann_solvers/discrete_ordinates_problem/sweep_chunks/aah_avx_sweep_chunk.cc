@@ -359,13 +359,9 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
 
-          if (is_boundary)
-          {
-            const double flux_i = mu_wt_f * IntF_shapeI(i);
-
-            for (size_t gsg = 0; gsg < gs_size; ++gsg)
-              cell_outflow_view.Add(f, gs_gi + gsg, flux_i * b[gsg * NumNodes + i]);
-          }
+          const double flux_i = mu_wt_f * IntF_shapeI(i);
+          for (size_t gsg = 0; gsg < gs_size; ++gsg)
+            cell_outflow_view.Add(f, gs_gi + gsg, flux_i * b[gsg * NumNodes + i]);
 
           double* psi = nullptr;
           if (is_local_face)

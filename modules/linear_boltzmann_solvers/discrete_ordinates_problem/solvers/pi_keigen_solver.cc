@@ -192,7 +192,8 @@ PowerIterationKEigenSolver::Execute()
     k_eff_prev = k_eff_;
     nit += 1;
 
-    converged = k_eff_change < std::max(k_tolerance_, 1.0e-12);
+    converged = k_eff_change < std::max(k_tolerance_, 1.0e-12) and
+                (not acceleration_ or acceleration_->AllowsPowerIterationConvergence());
 
     // Print iteration summary
     if (options.verbose_outer_iterations)
@@ -240,15 +241,7 @@ PowerIterationKEigenSolver::Execute()
     WriteRestartData();
 
   // Print summary
-  std::size_t total_num_sweeps = 0;
-  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
-  {
-    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
-    auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
-    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
-    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
-  }
+  const auto total_num_sweeps = GetNumSweeps();
 
   log.Log() << no_wrap << program_timer.GetTimeString() << " "
             << FormatKEigenFinalSummary("PI",
@@ -277,6 +270,21 @@ BalanceTable
 PowerIterationKEigenSolver::ComputeBalanceTable() const
 {
   return opensn::ComputeBalanceTable(*do_problem_, 1.0 / k_eff_);
+}
+
+std::size_t
+PowerIterationKEigenSolver::GetNumSweeps() const
+{
+  std::size_t total_num_sweeps = 0;
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
+    auto context = wgs_solver->GetContext();
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
+    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
+    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
+  }
+  return total_num_sweeps;
 }
 
 void

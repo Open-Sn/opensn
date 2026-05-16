@@ -21,6 +21,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import (
+        CMFDAcceleration,
         DiscreteOrdinatesProblem,
         NonLinearKEigenSolver,
         PowerIterationKEigenSolver,
@@ -148,6 +149,23 @@ def run_solver(name):
     problem = make_problem()
     if name == "PowerIteration":
         solver = PowerIterationKEigenSolver(problem=problem, max_iters=200, k_tol=1.0e-9)
+    elif name == "PowerIterationCMFD":
+        cmfd = CMFDAcceleration(
+            problem=problem,
+            coarse_mesh="local_aggregation",
+            aggregation_size=2,
+            relaxation=0.4,
+            update_scheme=True,
+            update_wgs_max_its=3,
+            update_wgs_abs_tol=1.0e-6,
+            l_abs_tol=1.0e-10,
+            max_iters=100,
+            pi_max_its=20,
+            pi_k_tol=1.0e-10,
+        )
+        solver = PowerIterationKEigenSolver(
+            problem=problem, acceleration=cmfd, max_iters=200, k_tol=1.0e-9
+        )
     elif name == "NonLinearKEigen":
         solver = NonLinearKEigenSolver(
             problem=problem,
@@ -185,7 +203,7 @@ if __name__ == "__main__":
         print(f"Expected k-eigenvalue: {EXPECTED_K:.12f}")
 
     failures = []
-    for solver_name in ("PowerIteration", "NonLinearKEigen"):
+    for solver_name in ("PowerIteration", "PowerIterationCMFD", "NonLinearKEigen"):
         name, k, error = run_solver(solver_name)
         if error > 5.0e-6:
             failures.append(f"{name} k={k:.12f} differs from expected {EXPECTED_K:.12f}.")

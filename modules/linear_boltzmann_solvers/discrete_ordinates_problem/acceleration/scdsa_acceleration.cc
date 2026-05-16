@@ -43,6 +43,9 @@ SCDSAAcceleration::Create(const ParameterBlock& params)
 SCDSAAcceleration::SCDSAAcceleration(const InputParameters& params)
   : DiscreteOrdinatesKEigenAcceleration(params), sdm_(params.GetParamValue<std::string>("sdm"))
 {
+  if (do_problem_.GetNumGroupsets() != 1)
+    throw std::logic_error(
+      "SCDSA acceleration is only implemented for problems with a single groupset.");
 }
 
 void

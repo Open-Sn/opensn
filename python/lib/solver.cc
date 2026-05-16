@@ -7,6 +7,7 @@
 #include "framework/runtime.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
@@ -1830,6 +1831,13 @@ WrapPIteration(py::module& slv)
     )"
   );
   pi_k_eigen_solver.def(
+    "GetNumSweeps",
+    &PowerIterationKEigenSolver::GetNumSweeps,
+    R"(
+    Return the total number of transport sweeps applied by all WGS solvers.
+    )"
+  );
+  pi_k_eigen_solver.def(
     "ComputeBalanceTable",
     [balance_table_to_dict](const PowerIterationKEigenSolver& self)
     {
@@ -1911,7 +1919,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     ----------
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
-    l_abs_tol: float, defauilt=1.0e-10
+    l_abs_tol: float, default=1.0e-10
         Absolute residual tolerance.
     max_iters: int, default=100
         Maximum allowable iterations.
@@ -1954,13 +1962,13 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     Warnings
     --------
        SMM acceleration is **experimental** and should be used with caution!
-       SMM accleration only supports problems with isotropic scattering.
+       SMM acceleration only supports problems with isotropic scattering.
 
     Parameters
     ----------
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
-    l_abs_tol: float, defauilt=1.0e-10
+    l_abs_tol: float, default=1.0e-10
         Absolute residual tolerance.
     max_iters: int, default=100
         Maximum allowable iterations.
@@ -1976,6 +1984,101 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         Spatial discretization method to use for the diffusion solver. Valid choices are:
             - 'pwld' : Piecewise Linear Discontinuous
             - 'pwlc' : Piecewise Linear Continuous
+    )"
+  );
+  // CMFD acceleration
+  auto cmfd_acceleration = py::class_<CMFDAcceleration,
+                                      std::shared_ptr<CMFDAcceleration>,
+                                      DiscreteOrdinatesKEigenAcceleration>(
+    slv,
+    "CMFDAcceleration",
+    R"(
+    Construct a CMFD accelerator for the power iteration k-eigenvalue solver.
+
+    Wrapper of :cpp:class:`opensn::CMFDAcceleration`.
+    )"
+  );
+  cmfd_acceleration.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return CMFDAcceleration::Create(kwargs_to_param_block(params));
+      }
+    ),
+    R"(
+    CMFD acceleration for the power iteration k-eigenvalue solver.
+
+    The accelerator applies after each power-iteration transport update, restricts all
+    energy groups to a rank-local or identity coarse mesh, and solves a net-current
+    corrected low-order diffusion balance system.
+
+    Warnings
+    --------
+       CMFD acceleration is under active development.
+
+    Parameters
+    ----------
+    problem: pyopensn.solver.DiscreteOrdinatesProblem
+        Existing DiscreteOrdinatesProblem instance.
+    l_abs_tol: float, default=1.0e-10
+        Absolute residual tolerance.
+    max_iters: int, default=100
+        Maximum allowable iterations.
+    verbose: bool, default=False
+        If true, enables verbose output.
+    petsc_options: str, default="ssss"
+        Additional PETSc options.
+    pi_max_its: int, default=5
+        Maximum allowable iterations for inner power iterations.
+    pi_k_tol: float, default=1.0e-10
+        k-eigenvalue tolerance for the inner power iterations.
+    coarse_mesh: str, default="local_aggregation"
+        Coarse-mesh construction method. Valid choices are:
+            - 'identity' : one CMFD coarse cell per transport cell
+            - 'local_aggregation' : connected same-material fine cells aggregated locally
+    aggregation_size: int, default=16
+        Target number of fine cells per aggregated coarse cell for local_aggregation.
+    relaxation: float, default=1.0
+        Relaxation factor applied to the CMFD scalar-flux correction.
+    correction_max_attempts: int, default=10
+        Maximum CMFD correction damping attempts before skipping the correction for the current
+        transport update.
+    correction_min_damping: float, default=1.0e-4
+        Minimum CMFD correction damping factor considered during correction limiting.
+    negative_flux_tolerance: float, default=1.0e-6
+        Allowed scalar-flux undershoot for accepting a CMFD correction.
+    adaptive_relaxation: bool, default=True
+        If true, adapts the starting CMFD correction relaxation based on accepted and rejected
+        corrections.
+    adaptive_relaxation_min: float, default=0.25
+        Minimum starting relaxation used by adaptive relaxation.
+    adaptive_relaxation_max: float, default=1.0
+        Maximum starting relaxation used by adaptive relaxation.
+    adaptive_relaxation_growth: float, default=1.25
+        Multiplier used after repeated strong accepted corrections.
+    adaptive_relaxation_reduction: float, default=0.75
+        Multiplier used after rejected or strongly damped corrections.
+    adaptive_relaxation_accept_fraction: float, default=0.5
+        Fraction of the starting relaxation required to treat an accepted correction as strong.
+    adaptive_relaxation_successes_to_grow: int, default=2
+        Number of consecutive strong accepted corrections before increasing relaxation.
+    inactive_iterations: int, default=1
+        Number of initial power iterations before applying CMFD corrections.
+    update_scheme: bool, default=True
+        If true, configures the transport solve as a loose update solve and applies CMFD after
+        each transport update.
+    update_wgs_max_its: int, default=4
+        Maximum WGS iterations used by the CMFD update scheme.
+    update_wgs_abs_tol: float, default=1.0e-4
+        WGS absolute tolerance used by the CMFD update scheme.
+    coarse_solver_policy: str, default="auto"
+        Coarse solver policy. Valid choices are:
+            - 'auto' : PETSc preonly+LU below ``direct_coarse_solve_threshold``, GMRES+Jacobi otherwise
+            - 'direct' : PETSc preonly+LU
+            - 'iterative' : GMRES+Jacobi
+            - 'petsc_options' : allow ``petsc_options`` to override the PETSc KSP/PC setup
+    direct_coarse_solve_threshold: int, default=5000
+        Maximum global CMFD unknown count for automatic direct coarse solves.
     )"
   );
   // clang-format on

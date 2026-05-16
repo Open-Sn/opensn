@@ -15,10 +15,10 @@ class LBSProblem;
 class OutflowBank;
 
 /**
- * GPU-side carrier for boundary-face outflow tally storage.
+ * GPU-side carrier for face outflow tally storage.
  *
  * The carrier mirrors the OutflowBank's contiguous host storage on the device and delegates
- * boundary-face offset lookups to the bank.
+ * face offset lookups to the bank.
  */
 class OutflowCarrier
 {
@@ -43,16 +43,16 @@ public:
   inline double* GetDevicePtr() { return device_outflows_.get(); }
 
   /**
-   * Return the first group offset for a boundary face.
+   * Return the first group offset for a face.
    * \param cell_local_idx Cell index local to the current process.
    * \param face_idx Face index local to the cell.
    * \return Offset of the face's first group value in device outflow storage.
-   * \throw std::out_of_range If the cell-face pair does not identify a boundary face.
+   * \throw std::out_of_range If the cell-face pair is not present.
    */
   std::uint64_t GetOffset(const std::uint32_t& cell_local_idx, const std::uint32_t& face_idx);
 
 private:
-  /// Host-side owner of outflow values and boundary-face offsets.
+  /// Host-side owner of outflow values and face offsets.
   OutflowBank& bank_;
 
   /// Device mirror of the host outflow value array.
