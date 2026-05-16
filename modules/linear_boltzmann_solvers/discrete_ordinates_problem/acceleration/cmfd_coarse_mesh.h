@@ -17,8 +17,10 @@ class MeshContinuum;
 struct CMFDFineFace
 {
   uint64_t cell_id = 0;
+  int cell_partition_id = 0;
   std::size_t face_index = 0;
   std::optional<uint64_t> neighbor_id;
+  int neighbor_partition_id = 0;
 };
 
 struct CMFDCoarseFace
@@ -46,10 +48,21 @@ struct CMFDCoarseCell
   std::vector<CMFDCoarseFace> faces;
 };
 
+struct CMFDLocalFineCellMembership
+{
+  uint64_t fine_cell_id = 0;
+  uint64_t coarse_cell_id = 0;
+  int coarse_cell_partition_id = 0;
+};
+
 class CMFDCoarseMesh
 {
 public:
   const std::vector<CMFDCoarseCell>& LocalCells() const { return local_cells_; }
+  const std::vector<CMFDLocalFineCellMembership>& LocalFineCellMemberships() const
+  {
+    return local_fine_cell_memberships_;
+  }
   const std::map<uint64_t, uint64_t>& FineToCoarseCellMap() const { return fine_to_coarse_cell_; }
   const CMFDCoarseCell& LocalCell(uint32_t local_id) const { return local_cells_.at(local_id); }
   const CMFDCoarseCell& LocalCellFromGlobalID(uint64_t coarse_cell_global_id) const;
@@ -63,9 +76,13 @@ public:
 
 private:
   void AddLocalCell(CMFDCoarseCell&& coarse_cell);
+  void AddLocalFineCellMembership(uint64_t fine_cell_id,
+                                  uint64_t coarse_cell_id,
+                                  int coarse_cell_partition_id);
   void BuildExteriorFaces(const MeshContinuum& grid);
 
   std::vector<CMFDCoarseCell> local_cells_;
+  std::vector<CMFDLocalFineCellMembership> local_fine_cell_memberships_;
   std::map<uint64_t, uint64_t> fine_to_coarse_cell_;
   std::map<uint64_t, uint32_t> coarse_to_local_cell_;
   std::size_t num_global_cells_ = 0;
@@ -74,6 +91,8 @@ public:
   static CMFDCoarseMesh BuildIdentity(const MeshContinuum& grid);
   static CMFDCoarseMesh BuildLocalAggregation(const MeshContinuum& grid,
                                               std::size_t target_fine_cells_per_coarse_cell);
+  static CMFDCoarseMesh BuildGlobalAggregation(const MeshContinuum& grid,
+                                               std::size_t target_fine_cells_per_coarse_cell);
 };
 
 } // namespace opensn

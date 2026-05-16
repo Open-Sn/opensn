@@ -14,6 +14,7 @@ TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
   const auto coarse_mesh = CMFDCoarseMesh::BuildIdentity(*grid);
 
   ASSERT_EQ(coarse_mesh.NumLocalCells(), grid->local_cells.size());
+  ASSERT_EQ(coarse_mesh.LocalFineCellMemberships().size(), grid->local_cells.size());
 
   for (const auto& fine_cell : grid->local_cells)
   {
@@ -38,6 +39,14 @@ TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
       EXPECT_DOUBLE_EQ(coarse_face.area, fine_face.area);
     }
   }
+
+  for (const auto& membership : coarse_mesh.LocalFineCellMemberships())
+  {
+    const auto& fine_cell = grid->cells[membership.fine_cell_id];
+    EXPECT_EQ(fine_cell.partition_id, opensn::mpi_comm.rank());
+    EXPECT_EQ(membership.coarse_cell_id, fine_cell.global_id);
+    EXPECT_EQ(membership.coarse_cell_partition_id, fine_cell.partition_id);
+  }
 }
 
 TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
@@ -58,6 +67,7 @@ TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
 
   ASSERT_EQ(coarse_mesh.NumGlobalCells(), expected_global_cells);
   ASSERT_EQ(coarse_mesh.NumLocalCells(), expected_local_cells);
+  ASSERT_EQ(coarse_mesh.LocalFineCellMemberships().size(), grid->local_cells.size());
 
   if (opensn::mpi_comm.size() > 1)
   {
@@ -71,6 +81,13 @@ TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
       }
       EXPECT_DOUBLE_EQ(coarse_cell.volume, expected_volume);
       EXPECT_FALSE(coarse_cell.faces.empty());
+    }
+    for (const auto& membership : coarse_mesh.LocalFineCellMemberships())
+    {
+      const auto& fine_cell = grid->cells[membership.fine_cell_id];
+      EXPECT_EQ(fine_cell.partition_id, opensn::mpi_comm.rank());
+      EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell.global_id), membership.coarse_cell_id);
+      EXPECT_EQ(membership.coarse_cell_partition_id, opensn::mpi_comm.rank());
     }
     return;
   }
@@ -156,4 +173,43 @@ TEST(CMFDCoarseMesh, LocalAggregationMergesFineFacesOnSameCoarseInterface)
   opensn::mpi_comm.all_reduce(
     found_merged_face ? 1 : 0, global_found_merged_face, mpi::op::max<int>());
   EXPECT_TRUE(global_found_merged_face != 0);
+}
+
+TEST(CMFDCoarseMesh, GlobalAggregationBuildsConnectedCoarseCells)
+{
+  const std::size_t target_fine_cells_per_coarse_cell = 2;
+  const unsigned int num_fine_cells =
+    opensn::mpi_comm.size() > 2 ? 2 * static_cast<unsigned int>(opensn::mpi_comm.size()) : 4;
+  auto grid = BuildLineMesh(static_cast<double>(num_fine_cells), num_fine_cells, 0.0);
+  const auto coarse_mesh =
+    CMFDCoarseMesh::BuildGlobalAggregation(*grid, target_fine_cells_per_coarse_cell);
+
+  const std::size_t expected_global_cells =
+    (grid->GetGlobalNumberOfCells() + target_fine_cells_per_coarse_cell - 1) /
+    target_fine_cells_per_coarse_cell;
+  ASSERT_EQ(coarse_mesh.NumGlobalCells(), expected_global_cells);
+  ASSERT_EQ(coarse_mesh.LocalFineCellMemberships().size(), grid->local_cells.size());
+
+  for (const auto& membership : coarse_mesh.LocalFineCellMemberships())
+  {
+    const auto& fine_cell = grid->cells[membership.fine_cell_id];
+    EXPECT_EQ(fine_cell.partition_id, opensn::mpi_comm.rank());
+    EXPECT_TRUE(coarse_mesh.HasCoarseCell(fine_cell.global_id));
+    EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell.global_id), membership.coarse_cell_id);
+  }
+
+  std::size_t local_owned_fine_cells = 0;
+  for (const auto& coarse_cell : coarse_mesh.LocalCells())
+  {
+    EXPECT_EQ(coarse_cell.partition_id, opensn::mpi_comm.rank());
+    EXPECT_LE(coarse_cell.fine_cell_ids.size(), target_fine_cells_per_coarse_cell);
+    EXPECT_FALSE(coarse_cell.fine_cell_ids.empty());
+    EXPECT_GT(coarse_cell.volume, 0.0);
+    local_owned_fine_cells += coarse_cell.fine_cell_ids.size();
+  }
+
+  std::size_t global_owned_fine_cells = 0;
+  opensn::mpi_comm.all_reduce(
+    local_owned_fine_cells, global_owned_fine_cells, mpi::op::sum<std::size_t>());
+  EXPECT_EQ(global_owned_fine_cells, grid->GetGlobalNumberOfCells());
 }

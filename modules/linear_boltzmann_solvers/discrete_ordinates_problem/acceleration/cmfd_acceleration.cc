@@ -125,9 +125,10 @@ CMFDAcceleration::GetInputParameters()
   params.AddOptionalParameter(
     "coarse_mesh",
     "local_aggregation",
-    "[developer/debug] CMFD coarse-mesh construction method. Use local_aggregation for "
-    "production calculations. identity creates one CMFD cell per transport cell and is intended "
-    "mainly for debugging and method comparisons.");
+    "CMFD coarse-mesh construction method. local_aggregation builds rank-local aggregates. "
+    "global_aggregation builds connected same-block aggregates that may span MPI ranks. identity "
+    "creates one CMFD cell per transport cell and is intended mainly for debugging and method "
+    "comparisons.");
   params.AddOptionalParameter("current_closure",
                               "auto",
                               "CMFD face-current closure. Valid choices are auto, net, and "
@@ -206,8 +207,9 @@ CMFDAcceleration::GetInputParameters()
                               "values make auto use direct solves for larger coarse systems; "
                               "choose values based on available host memory and acceptable "
                               "factorization cost.");
-  params.ConstrainParameterRange("coarse_mesh",
-                                 AllowableRangeList::New({"identity", "local_aggregation"}));
+  params.ConstrainParameterRange(
+    "coarse_mesh",
+    AllowableRangeList::New({"identity", "local_aggregation", "global_aggregation"}));
   params.ConstrainParameterRange("current_closure",
                                  AllowableRangeList::New({"auto", "net", "partial"}));
   params.ConstrainParameterRange(
@@ -304,6 +306,9 @@ CMFDAcceleration::Initialize()
     coarse_mesh_ = CMFDCoarseMesh::BuildIdentity(*do_problem_.GetGrid());
   else if (coarse_mesh_type_ == "local_aggregation")
     coarse_mesh_ = CMFDCoarseMesh::BuildLocalAggregation(*do_problem_.GetGrid(), aggregation_size_);
+  else if (coarse_mesh_type_ == "global_aggregation")
+    coarse_mesh_ =
+      CMFDCoarseMesh::BuildGlobalAggregation(*do_problem_.GetGrid(), aggregation_size_);
 
   ConfigureTransportSolve(update_wgs_max_its_, update_wgs_abs_tol_);
   log.Log() << no_wrap << program_timer.GetTimeString() << " CMFD configured "
@@ -1141,26 +1146,32 @@ CMFDAcceleration::BuildFaceCurrentCache()
   const auto& grid = *do_problem_.GetGrid();
   const auto& outflow_views = do_problem_.GetCellOutflowViews();
 
-  std::map<int, std::set<std::tuple<uint64_t, uint64_t, unsigned int>>> pid_request_sets;
+  std::map<int, std::set<std::tuple<uint64_t, std::size_t, uint64_t, unsigned int>>>
+    pid_request_sets;
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
   {
     for (const auto& face : coarse_cell.faces)
     {
-      if (not face.has_neighbor)
-        continue;
-
       for (const auto& fine_face : face.fine_faces)
       {
-        if (not fine_face.neighbor_id.has_value())
-          continue;
-        const uint64_t neighbor_id = fine_face.neighbor_id.value();
-        if (grid.IsCellLocal(neighbor_id))
-          continue;
+        if (fine_face.cell_partition_id != opensn::mpi_comm.rank())
+        {
+          auto& requests = pid_request_sets[fine_face.cell_partition_id];
+          for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+            requests.emplace(fine_face.cell_id,
+                             fine_face.face_index,
+                             fine_face.neighbor_id.value_or(std::numeric_limits<uint64_t>::max()),
+                             cg);
+        }
 
-        const auto& neighbor_cell = grid.cells[neighbor_id];
-        auto& requests = pid_request_sets[neighbor_cell.partition_id];
-        for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
-          requests.emplace(neighbor_id, fine_face.cell_id, cg);
+        const auto neighbor_id = fine_face.neighbor_id;
+        if (neighbor_id.has_value() and fine_face.neighbor_partition_id != opensn::mpi_comm.rank())
+        {
+          auto& requests = pid_request_sets[fine_face.neighbor_partition_id];
+          for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+            requests.emplace(
+              *neighbor_id, std::numeric_limits<std::size_t>::max(), fine_face.cell_id, cg);
+        }
       }
     }
   }
@@ -1169,10 +1180,11 @@ CMFDAcceleration::BuildFaceCurrentCache()
   for (const auto& [pid, request_set] : pid_request_sets)
   {
     auto& requests = pid_requests[pid];
-    requests.reserve(3 * request_set.size());
-    for (const auto& [owner_cell_gid, neighbor_cell_gid, cg] : request_set)
+    requests.reserve(4 * request_set.size());
+    for (const auto& [owner_cell_gid, owner_face_index, neighbor_cell_gid, cg] : request_set)
     {
       requests.push_back(owner_cell_gid);
+      requests.push_back(static_cast<uint64_t>(owner_face_index));
       requests.push_back(neighbor_cell_gid);
       requests.push_back(cg);
     }
@@ -1184,17 +1196,18 @@ CMFDAcceleration::BuildFaceCurrentCache()
   std::map<int, std::vector<double>> pid_response_values;
   for (const auto& [pid, requests] : received_requests)
   {
-    OpenSnLogicalErrorIf(requests.size() % 3 != 0, "Invalid CMFD face-current request buffer.");
+    OpenSnLogicalErrorIf(requests.size() % 4 != 0, "Invalid CMFD face-current request buffer.");
     auto& response_keys = pid_response_keys[pid];
     auto& response_values = pid_response_values[pid];
     response_keys.reserve(requests.size());
-    response_values.reserve(requests.size() / 3);
+    response_values.reserve(requests.size() / 4);
 
-    for (std::size_t r = 0; r < requests.size(); r += 3)
+    for (std::size_t r = 0; r < requests.size(); r += 4)
     {
       const auto owner_cell_gid = requests[r];
-      const auto neighbor_cell_gid = requests[r + 1];
-      const auto cg = static_cast<unsigned int>(requests[r + 2]);
+      const auto requested_face_index = static_cast<std::size_t>(requests[r + 1]);
+      const auto neighbor_cell_gid = requests[r + 2];
+      const auto cg = static_cast<unsigned int>(requests[r + 3]);
       const auto& owner_cell = grid.cells[owner_cell_gid];
       OpenSnInvalidArgumentIf(owner_cell.partition_id != opensn::mpi_comm.rank(),
                               "CMFD face-current request references a nonlocal owner cell.");
@@ -1202,10 +1215,17 @@ CMFDAcceleration::BuildFaceCurrentCache()
       bool found_face = false;
       double outflow = 0.0;
       const auto& outflow_view = outflow_views[owner_cell.local_id];
-      for (std::size_t f = 0; f < owner_cell.faces.size(); ++f)
+      const auto wildcard_face_index = std::numeric_limits<std::size_t>::max();
+      const std::size_t first_face =
+        requested_face_index == wildcard_face_index ? 0 : requested_face_index;
+      const std::size_t end_face = requested_face_index == wildcard_face_index
+                                     ? owner_cell.faces.size()
+                                     : requested_face_index + 1;
+      for (std::size_t f = first_face; f < end_face; ++f)
       {
         const auto& face = owner_cell.faces[f];
-        if (face.has_neighbor and face.neighbor_id == neighbor_cell_gid)
+        if ((face.has_neighbor and face.neighbor_id == neighbor_cell_gid) or
+            (not face.has_neighbor and neighbor_cell_gid == std::numeric_limits<uint64_t>::max()))
         {
           for (unsigned int g = FineGroupBegin(cg); g < FineGroupEnd(cg); ++g)
             outflow += outflow_view.Get(f, first_group_ + g);
@@ -1217,6 +1237,7 @@ CMFDAcceleration::BuildFaceCurrentCache()
       OpenSnLogicalErrorIf(not found_face,
                            "Unable to satisfy CMFD face-current request for neighbor face.");
       response_keys.push_back(owner_cell_gid);
+      response_keys.push_back(static_cast<uint64_t>(requested_face_index));
       response_keys.push_back(neighbor_cell_gid);
       response_keys.push_back(cg);
       response_values.push_back(outflow);
@@ -1232,16 +1253,18 @@ CMFDAcceleration::BuildFaceCurrentCache()
     OpenSnLogicalErrorIf(values_it == received_response_values.end(),
                          "Missing CMFD face-current response values.");
     const auto& values = values_it->second;
-    OpenSnLogicalErrorIf(keys.size() != 3 * values.size(),
+    OpenSnLogicalErrorIf(keys.size() != 4 * values.size(),
                          "Invalid CMFD face-current response buffer.");
 
     for (std::size_t r = 0; r < values.size(); ++r)
     {
-      const auto key_offset = 3 * r;
+      const auto key_offset = 4 * r;
       const auto owner_cell_gid = keys[key_offset];
-      const auto neighbor_cell_gid = keys[key_offset + 1];
-      const auto cg = static_cast<unsigned int>(keys[key_offset + 2]);
-      face_current_cache_[std::make_tuple(owner_cell_gid, neighbor_cell_gid, cg)] = values[r];
+      const auto owner_face_index = static_cast<std::size_t>(keys[key_offset + 1]);
+      const auto neighbor_cell_gid = keys[key_offset + 2];
+      const auto cg = static_cast<unsigned int>(keys[key_offset + 3]);
+      face_current_cache_[std::make_tuple(
+        owner_cell_gid, owner_face_index, neighbor_cell_gid, cg)] = values[r];
     }
   }
 }
@@ -1420,11 +1443,26 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
   double neighbor_partial_current = 0.0;
   for (const auto& fine_face : coarse_face.fine_faces)
   {
-    const auto& fine_cell = grid.cells[fine_face.cell_id];
     double owner_outflow = 0.0;
-    for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
-      owner_outflow +=
-        outflow_views[fine_cell.local_id].Get(fine_face.face_index, first_group_ + g);
+    if (fine_face.cell_partition_id == opensn::mpi_comm.rank())
+    {
+      const auto& fine_cell = grid.cells[fine_face.cell_id];
+      for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
+        owner_outflow +=
+          outflow_views[fine_cell.local_id].Get(fine_face.face_index, first_group_ + g);
+    }
+    else
+    {
+      const auto key =
+        std::make_tuple(fine_face.cell_id,
+                        fine_face.face_index,
+                        fine_face.neighbor_id.value_or(std::numeric_limits<uint64_t>::max()),
+                        coarse_group);
+      const auto cached_outflow = face_current_cache_.find(key);
+      OpenSnLogicalErrorIf(cached_outflow == face_current_cache_.end(),
+                           "Unable to find matching remote owner face for CMFD current.");
+      owner_outflow = cached_outflow->second;
+    }
     owner_partial_current += owner_outflow;
 
     const auto neighbor_id = fine_face.neighbor_id;
@@ -1433,14 +1471,14 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
       continue;
     }
 
-    if (grid.IsCellLocal(*neighbor_id))
+    if (fine_face.neighbor_partition_id == opensn::mpi_comm.rank())
     {
       const auto& neighbor_cell = grid.cells[*neighbor_id];
       bool found_face = false;
       for (std::size_t nf = 0; nf < neighbor_cell.faces.size(); ++nf)
       {
         const auto& neighbor_face = neighbor_cell.faces[nf];
-        if (neighbor_face.has_neighbor and neighbor_face.neighbor_id == fine_cell.global_id)
+        if (neighbor_face.has_neighbor and neighbor_face.neighbor_id == fine_face.cell_id)
         {
           double neighbor_outflow = 0.0;
           for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
@@ -1455,7 +1493,8 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
     }
     else
     {
-      const auto key = std::make_tuple(*neighbor_id, fine_cell.global_id, coarse_group);
+      const auto key = std::make_tuple(
+        *neighbor_id, std::numeric_limits<std::size_t>::max(), fine_face.cell_id, coarse_group);
       const auto neighbor_outflow = face_current_cache_.find(key);
       OpenSnLogicalErrorIf(neighbor_outflow == face_current_cache_.end(),
                            "Unable to find matching remote neighbor face for CMFD current.");

@@ -79,6 +79,42 @@ Common User Options
 
 These are the options most users should tune.
 
+``coarse_mesh``
+  Coarse-mesh construction method. The default is ``"local_aggregation"``.
+  ``"local_aggregation"`` builds connected same-block aggregates locally on
+  each MPI rank. ``"global_aggregation"`` builds connected same-block
+  aggregates that may span MPI ranks and can reduce the coarse problem size on
+  larger distributed meshes. ``"identity"`` creates one CMFD cell per transport
+  cell and is mainly useful for debugging and method comparisons.
+
+  Both aggregation modes are logical CMFD coarse-space constructions. They do
+  not repartition the transport mesh, create a new mesh, or change
+  the ownership of high-order transport cells. Transport sweeps, material
+  lookup, and angular-flux communication continue to use the original fine-mesh
+  partitioning.
+
+  With ``"global_aggregation"``, every CMFD coarse cell has a single owning MPI
+  rank even when its member fine cells span multiple ranks. Ownership is chosen
+  from the rank containing the largest number of member fine cells, with ties
+  resolved by the lower rank. Only the owner stores the full coarse cell and
+  owns the corresponding PETSc rows. Ranks that own member fine cells store
+  local fine-cell membership records so scalar fluxes, currents, and CMFD
+  corrections can be restricted to and prolonged from the coarse-cell owner.
+
+  ``"global_aggregation"`` currently has these restrictions:
+
+  * a coarse cell contains only connected fine cells from the same mesh block;
+  * connectivity is based on face-neighbor adjacency;
+  * disconnected regions with the same block id become separate coarse cells;
+  * ``aggregation_size`` is a target maximum, so boundary and disconnected
+    aggregates may contain fewer fine cells;
+  * no material homogenization across different blocks is performed.
+
+  The global mode gathers enough distributed cell and face metadata to build
+  the logical coarse graph consistently on all ranks. This is usually worthwhile
+  when rank-local aggregation creates too many small coarse cells, but it can
+  increase setup memory and communication compared with ``"local_aggregation"``.
+
 ``current_closure``
   Face-current closure used in the CMFD operator. Valid choices are ``"auto"``,
   ``"net"``, and ``"partial"``. The default is ``"auto"``. The automatic mode
@@ -96,12 +132,13 @@ These are the options most users should tune.
   selection is not robust.
 
 ``aggregation_size``
-  Target number of fine cells per local aggregated CMFD coarse cell. The default
-  is ``32``. Larger values reduce the cost of the coarse solve but make the
-  coarse correction less detailed. Smaller values increase coarse-system cost
-  but can improve robustness. For lattice problems, values from roughly 8 to 64
-  are typical exploration points. Use wall time and final k agreement, not only
-  the number of power iterations, when comparing values.
+  Target number of fine cells per aggregated CMFD coarse cell for
+  ``"local_aggregation"`` and ``"global_aggregation"``. The default is ``32``.
+  Larger values reduce the cost of the coarse solve but make the coarse
+  correction less detailed. Smaller values increase coarse-system cost but can
+  improve robustness. For lattice problems, values from roughly 8 to 64 are
+  typical exploration points. Use wall time and final k agreement, not only the
+  number of power iterations, when comparing values.
 
 ``group_aggregation_size``
   Number of transport energy groups per CMFD coarse energy group. This is not
@@ -158,12 +195,6 @@ Developer And Debug Options
 The following options remain available for investigations, regression tests, and
 method development. Production inputs should usually leave them at their
 defaults.
-
-``coarse_mesh``
-  Coarse-mesh construction method. The default is ``"local_aggregation"``.
-  ``"identity"`` creates one CMFD cell per transport cell and is mainly useful
-  for debugging and method comparisons. Production inputs should normally use
-  ``"local_aggregation"``.
 
 ``inactive_iterations``
   Number of initial power iterations before applying CMFD corrections. The

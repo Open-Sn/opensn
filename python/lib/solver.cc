@@ -2021,7 +2021,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     correction relaxation, and a transport-current balance gate before outer power
     iteration is allowed to converge.
 
-    Most users should tune only the common controls: ``current_closure``,
+    Most users should tune only the common controls: ``coarse_mesh``, ``current_closure``,
     ``aggregation_size``, ``group_aggregation_size``, ``relaxation``,
     ``update_wgs_max_its``, ``update_wgs_abs_tol``, and
     ``balance_residual_tolerance``. Parameters marked "developer/debug" are exposed for
@@ -2031,6 +2031,19 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     ----------
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
+    coarse_mesh: str, default="local_aggregation"
+        Common option. Coarse-mesh construction method. Valid choices are:
+            - 'identity' : one CMFD coarse cell per transport cell
+            - 'local_aggregation' : connected same-block fine cells aggregated locally
+            - 'global_aggregation' : connected same-block fine cells aggregated across MPI ranks
+        ``"local_aggregation"`` is the conservative default. ``"global_aggregation"`` can
+        reduce the coarse problem size on larger distributed meshes. Global aggregation is a
+        logical CMFD coarse-space construction: it does not repartition the transport mesh or
+        change fine-cell ownership. Each global coarse cell has one owning rank, while ranks
+        owning member fine cells keep membership records for restriction and prolongation.
+        Aggregates are connected by face adjacency, remain within one mesh block, and may be
+        smaller than ``aggregation_size`` near boundaries or disconnected regions. ``"identity"``
+        is primarily for debugging and method comparisons.
     current_closure: str, default="auto"
         Common option. CMFD face-current closure. Valid choices are:
             - 'auto' : choose net, partial, or a blend from early coarse-balance behavior
@@ -2041,7 +2054,8 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         automatic selection is not robust.
     aggregation_size: int, default=32
         Common option. Target number of fine cells per aggregated coarse cell for
-        ``coarse_mesh="local_aggregation"``. Larger values reduce CMFD matrix size and
+        ``coarse_mesh="local_aggregation"`` or ``coarse_mesh="global_aggregation"``.
+        Larger values reduce CMFD matrix size and
         setup/solve cost, but make the spatial correction less detailed. Smaller values
         increase the coarse-system cost but may improve robustness.
     group_aggregation_size: int, default=1
@@ -2094,12 +2108,6 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     pi_k_tol: float, default=1.0e-8
         Developer/debug. k-eigenvalue tolerance for CMFD coarse power iterations. This
         is separate from the outer ``PowerIterationKEigenSolver`` k tolerance.
-    coarse_mesh: str, default="local_aggregation"
-        Developer/debug. Coarse-mesh construction method. Valid choices are:
-            - 'identity' : one CMFD coarse cell per transport cell
-            - 'local_aggregation' : connected same-material fine cells aggregated locally
-        ``"local_aggregation"`` is the production path. ``"identity"`` is primarily for
-        debugging and method comparisons.
     correction_max_attempts: int, default=10
         Developer/debug. Maximum CMFD correction damping attempts before skipping the
         correction for the current transport update. Each failed attempt halves the

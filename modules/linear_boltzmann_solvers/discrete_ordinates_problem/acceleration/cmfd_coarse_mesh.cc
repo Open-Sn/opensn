@@ -7,10 +7,12 @@
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
+#include <algorithm>
 #include <cmath>
 #include <deque>
 #include <set>
 #include <tuple>
+#include <vector>
 
 namespace opensn
 {
@@ -23,6 +25,28 @@ struct CoarseCellMetadata
   int partition_id = 0;
   unsigned int block_id = 0;
   Vector3 centroid;
+};
+
+struct GlobalFineFaceInfo
+{
+  std::size_t face_index = 0;
+  bool has_neighbor = false;
+  uint64_t neighbor_id = 0;
+  int neighbor_partition_id = 0;
+  unsigned int neighbor_block_id = 0;
+  Vector3 normal;
+  Vector3 centroid;
+  double area = 0.0;
+};
+
+struct GlobalFineCellInfo
+{
+  uint64_t global_id = 0;
+  int partition_id = 0;
+  unsigned int block_id = 0;
+  Vector3 centroid;
+  double volume = 0.0;
+  std::vector<GlobalFineFaceInfo> faces;
 };
 
 using CoarseFaceKey = std::tuple<bool, uint64_t, int64_t, int64_t, int64_t>;
@@ -144,6 +168,120 @@ BuildRemoteCoarseCellMetadataMap(const MeshContinuum& grid,
   return metadata;
 }
 
+std::vector<int>
+BuildDisplacements(const std::vector<int>& counts)
+{
+  std::vector<int> displacements(counts.size(), 0);
+  int offset = 0;
+  for (std::size_t i = 0; i < counts.size(); ++i)
+  {
+    displacements[i] = offset;
+    offset += counts[i];
+  }
+  return displacements;
+}
+
+std::map<uint64_t, GlobalFineCellInfo>
+BuildGlobalFineCellInfoMap(const MeshContinuum& grid)
+{
+  std::vector<uint64_t> local_keys;
+  std::vector<double> local_values;
+
+  for (const auto& cell : grid.local_cells)
+  {
+    local_keys.push_back(cell.global_id);
+    local_keys.push_back(static_cast<uint64_t>(cell.partition_id));
+    local_keys.push_back(static_cast<uint64_t>(cell.block_id));
+    local_keys.push_back(static_cast<uint64_t>(cell.faces.size()));
+
+    local_values.push_back(cell.centroid.x);
+    local_values.push_back(cell.centroid.y);
+    local_values.push_back(cell.centroid.z);
+    local_values.push_back(cell.volume);
+
+    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    {
+      const auto& face = cell.faces[f];
+      local_keys.push_back(static_cast<uint64_t>(f));
+      local_keys.push_back(face.has_neighbor ? 1 : 0);
+      local_keys.push_back(face.neighbor_id);
+      local_keys.push_back(static_cast<uint64_t>(
+        face.has_neighbor ? grid.cells[face.neighbor_id].partition_id : cell.partition_id));
+      local_keys.push_back(static_cast<uint64_t>(
+        face.has_neighbor ? grid.cells[face.neighbor_id].block_id : cell.block_id));
+
+      local_values.push_back(face.normal.x);
+      local_values.push_back(face.normal.y);
+      local_values.push_back(face.normal.z);
+      local_values.push_back(face.centroid.x);
+      local_values.push_back(face.centroid.y);
+      local_values.push_back(face.centroid.z);
+      local_values.push_back(face.area);
+    }
+  }
+
+  const int local_key_count = static_cast<int>(local_keys.size());
+  const int local_value_count = static_cast<int>(local_values.size());
+  std::vector<int> key_counts(opensn::mpi_comm.size(), 0);
+  std::vector<int> value_counts(opensn::mpi_comm.size(), 0);
+  opensn::mpi_comm.all_gather(local_key_count, key_counts);
+  opensn::mpi_comm.all_gather(local_value_count, value_counts);
+  const auto key_displacements = BuildDisplacements(key_counts);
+  const auto value_displacements = BuildDisplacements(value_counts);
+
+  std::vector<uint64_t> global_keys;
+  std::vector<double> global_values;
+  opensn::mpi_comm.all_gather(local_keys, global_keys, key_counts, key_displacements);
+  opensn::mpi_comm.all_gather(local_values, global_values, value_counts, value_displacements);
+
+  std::map<uint64_t, GlobalFineCellInfo> cell_info;
+  std::size_t key_index = 0;
+  std::size_t value_index = 0;
+  while (key_index < global_keys.size())
+  {
+    OpenSnLogicalErrorIf(key_index + 4 > global_keys.size() or
+                           value_index + 4 > global_values.size(),
+                         "Invalid CMFD global fine-cell metadata buffer.");
+    GlobalFineCellInfo cell;
+    cell.global_id = global_keys[key_index++];
+    cell.partition_id = static_cast<int>(global_keys[key_index++]);
+    cell.block_id = static_cast<unsigned int>(global_keys[key_index++]);
+    const auto num_faces = static_cast<std::size_t>(global_keys[key_index++]);
+    cell.centroid = Vector3(
+      global_values[value_index], global_values[value_index + 1], global_values[value_index + 2]);
+    value_index += 3;
+    cell.volume = global_values[value_index++];
+    cell.faces.reserve(num_faces);
+
+    for (std::size_t f = 0; f < num_faces; ++f)
+    {
+      OpenSnLogicalErrorIf(key_index + 5 > global_keys.size() or
+                             value_index + 7 > global_values.size(),
+                           "Invalid CMFD global fine-face metadata buffer.");
+      GlobalFineFaceInfo face;
+      face.face_index = static_cast<std::size_t>(global_keys[key_index++]);
+      face.has_neighbor = global_keys[key_index++] != 0;
+      face.neighbor_id = global_keys[key_index++];
+      face.neighbor_partition_id = static_cast<int>(global_keys[key_index++]);
+      face.neighbor_block_id = static_cast<unsigned int>(global_keys[key_index++]);
+      face.normal = Vector3(
+        global_values[value_index], global_values[value_index + 1], global_values[value_index + 2]);
+      value_index += 3;
+      face.centroid = Vector3(
+        global_values[value_index], global_values[value_index + 1], global_values[value_index + 2]);
+      value_index += 3;
+      face.area = global_values[value_index++];
+      cell.faces.push_back(face);
+    }
+
+    cell_info[cell.global_id] = std::move(cell);
+  }
+
+  OpenSnLogicalErrorIf(value_index != global_values.size(),
+                       "Unused CMFD global fine-cell metadata values.");
+  return cell_info;
+}
+
 } // namespace
 
 void
@@ -152,8 +290,17 @@ CMFDCoarseMesh::AddLocalCell(CMFDCoarseCell&& coarse_cell)
   coarse_cell.local_id = static_cast<uint32_t>(local_cells_.size());
   coarse_to_local_cell_[coarse_cell.global_id] = coarse_cell.local_id;
   for (const auto fine_cell_id : coarse_cell.fine_cell_ids)
-    fine_to_coarse_cell_[fine_cell_id] = coarse_cell.global_id;
+    AddLocalFineCellMembership(fine_cell_id, coarse_cell.global_id, coarse_cell.partition_id);
   local_cells_.push_back(std::move(coarse_cell));
+}
+
+void
+CMFDCoarseMesh::AddLocalFineCellMembership(const uint64_t fine_cell_id,
+                                           const uint64_t coarse_cell_id,
+                                           const int coarse_cell_partition_id)
+{
+  fine_to_coarse_cell_[fine_cell_id] = coarse_cell_id;
+  local_fine_cell_memberships_.push_back({fine_cell_id, coarse_cell_id, coarse_cell_partition_id});
 }
 
 void
@@ -198,8 +345,11 @@ CMFDCoarseMesh::BuildExteriorFaces(const MeshContinuum& grid)
         coarse_face.area += fine_face.area;
         coarse_face.fine_faces.push_back(
           {fine_cell.global_id,
+           fine_cell.partition_id,
            f,
-           fine_face.has_neighbor ? std::optional<uint64_t>(fine_face.neighbor_id) : std::nullopt});
+           fine_face.has_neighbor ? std::optional<uint64_t>(fine_face.neighbor_id) : std::nullopt,
+           fine_face.has_neighbor ? grid.cells[fine_face.neighbor_id].partition_id
+                                  : fine_cell.partition_id});
 
         if (fine_face.has_neighbor)
         {
@@ -266,8 +416,11 @@ CMFDCoarseMesh::BuildIdentity(const MeshContinuum& grid)
       coarse_face.area = fine_face.area;
       coarse_face.fine_faces.push_back(
         {fine_cell.global_id,
+         fine_cell.partition_id,
          coarse_cell.faces.size(),
-         fine_face.has_neighbor ? std::optional<uint64_t>(fine_face.neighbor_id) : std::nullopt});
+         fine_face.has_neighbor ? std::optional<uint64_t>(fine_face.neighbor_id) : std::nullopt,
+         fine_face.has_neighbor ? grid.cells[fine_face.neighbor_id].partition_id
+                                : fine_cell.partition_id});
       coarse_cell.faces.push_back(coarse_face);
     }
 
@@ -342,16 +495,216 @@ CMFDCoarseMesh::BuildLocalAggregation(const MeshContinuum& grid,
   coarse_mesh.num_global_cells_ = coarse_extents.back();
 
   coarse_mesh.fine_to_coarse_cell_.clear();
+  coarse_mesh.local_fine_cell_memberships_.clear();
   coarse_mesh.coarse_to_local_cell_.clear();
   for (auto& coarse_cell : coarse_mesh.local_cells_)
   {
     coarse_cell.global_id = coarse_extents[opensn::mpi_comm.rank()] + coarse_cell.local_id;
     coarse_mesh.coarse_to_local_cell_[coarse_cell.global_id] = coarse_cell.local_id;
     for (const auto fine_cell_id : coarse_cell.fine_cell_ids)
-      coarse_mesh.fine_to_coarse_cell_[fine_cell_id] = coarse_cell.global_id;
+      coarse_mesh.AddLocalFineCellMembership(
+        fine_cell_id, coarse_cell.global_id, coarse_cell.partition_id);
   }
 
   coarse_mesh.BuildExteriorFaces(grid);
+
+  return coarse_mesh;
+}
+
+CMFDCoarseMesh
+CMFDCoarseMesh::BuildGlobalAggregation(const MeshContinuum& grid,
+                                       const std::size_t target_fine_cells_per_coarse_cell)
+{
+  OpenSnInvalidArgumentIf(target_fine_cells_per_coarse_cell == 0,
+                          "CMFD aggregation size must be greater than zero.");
+
+  const auto fine_cell_info = BuildGlobalFineCellInfoMap(grid);
+
+  std::map<unsigned int, std::vector<uint64_t>> block_cells;
+  std::map<uint64_t, std::vector<uint64_t>> graph;
+  for (const auto& [cell_id, cell] : fine_cell_info)
+  {
+    block_cells[cell.block_id].push_back(cell_id);
+    auto& neighbors = graph[cell_id];
+    for (const auto& face : cell.faces)
+    {
+      if (not face.has_neighbor)
+        continue;
+      const auto neighbor_it = fine_cell_info.find(face.neighbor_id);
+      if (neighbor_it == fine_cell_info.end())
+        continue;
+      if (neighbor_it->second.block_id == cell.block_id)
+        neighbors.push_back(face.neighbor_id);
+    }
+  }
+
+  struct Aggregate
+  {
+    uint64_t global_id = 0;
+    int partition_id = 0;
+    unsigned int block_id = 0;
+    Vector3 centroid;
+    double volume = 0.0;
+    std::vector<uint64_t> fine_cell_ids;
+  };
+
+  std::vector<Aggregate> aggregates;
+  std::map<uint64_t, uint64_t> fine_to_coarse;
+  for (auto& [block_id, cells] : block_cells)
+  {
+    std::sort(cells.begin(), cells.end());
+    std::set<uint64_t> assigned;
+    for (const auto seed_cell_id : cells)
+    {
+      if (assigned.count(seed_cell_id) > 0)
+        continue;
+
+      Aggregate aggregate;
+      aggregate.global_id = static_cast<uint64_t>(aggregates.size());
+      aggregate.block_id = block_id;
+
+      std::deque<uint64_t> queue;
+      queue.push_back(seed_cell_id);
+      assigned.insert(seed_cell_id);
+      while (not queue.empty() and
+             aggregate.fine_cell_ids.size() < target_fine_cells_per_coarse_cell)
+      {
+        const auto fine_cell_id = queue.front();
+        queue.pop_front();
+        const auto& fine_cell = fine_cell_info.at(fine_cell_id);
+        aggregate.fine_cell_ids.push_back(fine_cell_id);
+        aggregate.volume += fine_cell.volume;
+        aggregate.centroid += fine_cell.centroid * fine_cell.volume;
+
+        auto neighbors = graph.at(fine_cell_id);
+        std::sort(neighbors.begin(), neighbors.end());
+        for (const auto neighbor_id : neighbors)
+        {
+          if (assigned.count(neighbor_id) > 0 or
+              aggregate.fine_cell_ids.size() + queue.size() >= target_fine_cells_per_coarse_cell)
+            continue;
+          assigned.insert(neighbor_id);
+          queue.push_back(neighbor_id);
+        }
+      }
+
+      OpenSnLogicalErrorIf(aggregate.volume <= 0.0, "CMFD coarse cell has non-positive volume.");
+      aggregate.centroid = aggregate.centroid / aggregate.volume;
+      for (const auto fine_cell_id : aggregate.fine_cell_ids)
+        fine_to_coarse[fine_cell_id] = aggregate.global_id;
+      aggregates.push_back(std::move(aggregate));
+    }
+  }
+
+  std::vector<std::map<int, std::size_t>> aggregate_rank_counts(aggregates.size());
+  for (const auto& aggregate : aggregates)
+    for (const auto fine_cell_id : aggregate.fine_cell_ids)
+      ++aggregate_rank_counts[aggregate.global_id][fine_cell_info.at(fine_cell_id).partition_id];
+
+  for (auto& aggregate : aggregates)
+  {
+    int owner = 0;
+    std::size_t owner_count = 0;
+    for (const auto& [rank, count] : aggregate_rank_counts[aggregate.global_id])
+      if (count > owner_count or (count == owner_count and rank < owner))
+      {
+        owner = rank;
+        owner_count = count;
+      }
+    aggregate.partition_id = owner;
+  }
+
+  std::map<uint64_t, int> coarse_owner;
+  std::map<uint64_t, unsigned int> coarse_block;
+  std::map<uint64_t, Vector3> coarse_centroid;
+  for (const auto& aggregate : aggregates)
+  {
+    coarse_owner[aggregate.global_id] = aggregate.partition_id;
+    coarse_block[aggregate.global_id] = aggregate.block_id;
+    coarse_centroid[aggregate.global_id] = aggregate.centroid;
+  }
+
+  CMFDCoarseMesh coarse_mesh;
+  coarse_mesh.num_global_cells_ = aggregates.size();
+
+  for (const auto& local_fine_cell : grid.local_cells)
+  {
+    const auto coarse_cell_id = fine_to_coarse.at(local_fine_cell.global_id);
+    coarse_mesh.AddLocalFineCellMembership(
+      local_fine_cell.global_id, coarse_cell_id, coarse_owner.at(coarse_cell_id));
+  }
+
+  for (const auto& aggregate : aggregates)
+  {
+    if (aggregate.partition_id != opensn::mpi_comm.rank())
+      continue;
+
+    CMFDCoarseCell coarse_cell;
+    coarse_cell.global_id = aggregate.global_id;
+    coarse_cell.partition_id = aggregate.partition_id;
+    coarse_cell.block_id = aggregate.block_id;
+    coarse_cell.centroid = aggregate.centroid;
+    coarse_cell.volume = aggregate.volume;
+    coarse_cell.fine_cell_ids = aggregate.fine_cell_ids;
+
+    std::map<CoarseFaceKey, CMFDCoarseFace> face_map;
+    for (const auto fine_cell_id : aggregate.fine_cell_ids)
+    {
+      const auto& fine_cell = fine_cell_info.at(fine_cell_id);
+      for (const auto& fine_face : fine_cell.faces)
+      {
+        const uint64_t neighbor_coarse_id =
+          fine_face.has_neighbor ? fine_to_coarse.at(fine_face.neighbor_id) : fine_face.neighbor_id;
+        if (fine_face.has_neighbor and neighbor_coarse_id == aggregate.global_id)
+          continue;
+
+        const auto face_key =
+          MakeCoarseFaceKey(fine_face.has_neighbor, neighbor_coarse_id, fine_face.normal);
+        auto& coarse_face = face_map[face_key];
+        if (coarse_face.area == 0.0)
+        {
+          coarse_face.has_neighbor = fine_face.has_neighbor;
+          coarse_face.neighbor_id = neighbor_coarse_id;
+        }
+
+        coarse_face.normal += fine_face.normal * fine_face.area;
+        coarse_face.centroid += fine_face.centroid * fine_face.area;
+        coarse_face.area += fine_face.area;
+        coarse_face.fine_faces.push_back(
+          {fine_cell.global_id,
+           fine_cell.partition_id,
+           fine_face.face_index,
+           fine_face.has_neighbor ? std::optional<uint64_t>(fine_face.neighbor_id) : std::nullopt,
+           fine_face.neighbor_partition_id});
+
+        if (fine_face.has_neighbor)
+        {
+          coarse_face.neighbor_partition_id = coarse_owner.at(neighbor_coarse_id);
+          coarse_face.neighbor_block_id = coarse_block.at(neighbor_coarse_id);
+          coarse_face.neighbor_centroid = coarse_centroid.at(neighbor_coarse_id);
+        }
+        else
+        {
+          coarse_face.neighbor_partition_id = aggregate.partition_id;
+          coarse_face.neighbor_block_id = aggregate.block_id;
+          coarse_face.neighbor_centroid = aggregate.centroid;
+        }
+      }
+    }
+
+    coarse_cell.faces.reserve(face_map.size());
+    for (auto& [_, coarse_face] : face_map)
+    {
+      OpenSnLogicalErrorIf(coarse_face.area <= 0.0, "CMFD coarse face has non-positive area.");
+      coarse_face.centroid = coarse_face.centroid / coarse_face.area;
+      coarse_face.normal = coarse_face.normal.Normalized();
+      coarse_cell.faces.push_back(std::move(coarse_face));
+    }
+
+    coarse_cell.local_id = static_cast<uint32_t>(coarse_mesh.local_cells_.size());
+    coarse_mesh.coarse_to_local_cell_[coarse_cell.global_id] = coarse_cell.local_id;
+    coarse_mesh.local_cells_.push_back(std::move(coarse_cell));
+  }
 
   return coarse_mesh;
 }
