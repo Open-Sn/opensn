@@ -221,6 +221,9 @@ public:
   /// Returns read-only access to local cell outflow tallies.
   const std::vector<CellOutflowView>& GetCellOutflowViews() const;
 
+  /// Rebuilds face outflow storage, optionally including internal faces.
+  void ConfigureOutflowStorage(bool include_internal_faces);
+
   /// Obtains a reference to the unknown manager for flux-moments.
   const UnknownManager& GetUnknownManager() const;
 
@@ -369,6 +372,7 @@ protected:
 
   OutflowBank outflow_bank_;
   std::vector<CellOutflowView> cell_outflow_views_;
+  bool store_internal_outflows_ = false;
 
   UnknownManager flux_moments_uk_man_;
 

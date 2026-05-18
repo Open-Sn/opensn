@@ -4,7 +4,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_vector_tools.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/runtime.h"
@@ -38,16 +37,6 @@ CoarseGroupEnd(const unsigned int coarse_group,
 }
 
 } // namespace
-
-std::vector<double>
-CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
-                       const LBSGroupset& groupset,
-                       const CMFDCoarseMesh& coarse_mesh,
-                       const std::vector<double>& phi)
-{
-  return CMFDRestrictScalarFlux(
-    do_problem, groupset.first_group, groupset.GetNumGroups(), 1, coarse_mesh, phi);
-}
 
 std::vector<double>
 CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
@@ -117,53 +106,6 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
 }
 
 void
-CMFDProlongateScalarFluxCorrection(const DiscreteOrdinatesProblem& do_problem,
-                                   const LBSGroupset& groupset,
-                                   const CMFDCoarseMesh& coarse_mesh,
-                                   const std::vector<double>& coarse_delta_phi,
-                                   std::vector<double>& phi)
-{
-  CMFDProlongateScalarFluxCorrection(
-    do_problem, groupset.first_group, groupset.GetNumGroups(), coarse_mesh, coarse_delta_phi, phi);
-}
-
-void
-CMFDProlongateScalarFluxCorrection(const DiscreteOrdinatesProblem& do_problem,
-                                   const unsigned int first_group,
-                                   const unsigned int num_groups,
-                                   const CMFDCoarseMesh& coarse_mesh,
-                                   const std::vector<double>& coarse_delta_phi,
-                                   std::vector<double>& phi)
-{
-  const auto& transport_views = do_problem.GetCellTransportViews();
-
-  OpenSnInvalidArgumentIf(coarse_delta_phi.size() != coarse_mesh.NumLocalCells() * num_groups,
-                          "Coarse scalar flux correction vector size mismatch.");
-  OpenSnInvalidArgumentIf(phi.size() != do_problem.GetPhiNewLocal().size(),
-                          "Output scalar flux vector size does not match the transport problem.");
-
-  for (const auto& coarse_cell : coarse_mesh.LocalCells())
-  {
-    const auto coarse_offset = coarse_cell.local_id * num_groups;
-
-    for (const uint64_t fine_cell_id : coarse_cell.fine_cell_ids)
-    {
-      const auto& fine_cell = do_problem.GetGrid()->cells[fine_cell_id];
-      OpenSnInvalidArgumentIf(fine_cell.partition_id != opensn::mpi_comm.rank(),
-                              "CMFD prolongation currently requires local fine cells.");
-
-      const auto& transport_view = transport_views[fine_cell.local_id];
-      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
-      {
-        const auto phi_map = transport_view.MapDOF(i, 0, first_group);
-        for (unsigned int gsg = 0; gsg < num_groups; ++gsg)
-          phi[phi_map + gsg] += coarse_delta_phi[coarse_offset + gsg];
-      }
-    }
-  }
-}
-
-void
 CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
                               const unsigned int first_group,
                               const unsigned int num_groups,
@@ -202,9 +144,9 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
         for (unsigned int cg = 0; cg < num_coarse_groups; ++cg)
         {
           const double denominator = coarse_phi_old[coarse_offset + cg];
-          const double ratio =
-            std::fabs(denominator) > 1.0e-14 ? coarse_phi_new[coarse_offset + cg] / denominator
-                                             : 1.0;
+          const double ratio = std::fabs(denominator) > 1.0e-14
+                                 ? coarse_phi_new[coarse_offset + cg] / denominator
+                                 : 1.0;
           for (unsigned int gsg = CoarseGroupBegin(cg, group_aggregation_size);
                gsg < CoarseGroupEnd(cg, num_groups, group_aggregation_size);
                ++gsg)

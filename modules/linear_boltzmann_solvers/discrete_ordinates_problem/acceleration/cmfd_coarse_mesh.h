@@ -49,10 +49,6 @@ struct CMFDCoarseCell
 class CMFDCoarseMesh
 {
 public:
-  static CMFDCoarseMesh BuildIdentity(const MeshContinuum& grid);
-  static CMFDCoarseMesh BuildLocalAggregation(const MeshContinuum& grid,
-                                              std::size_t target_fine_cells_per_coarse_cell);
-
   const std::vector<CMFDCoarseCell>& LocalCells() const { return local_cells_; }
   const std::map<uint64_t, uint64_t>& FineToCoarseCellMap() const { return fine_to_coarse_cell_; }
   const CMFDCoarseCell& LocalCell(uint32_t local_id) const { return local_cells_.at(local_id); }
@@ -73,6 +69,11 @@ private:
   std::map<uint64_t, uint64_t> fine_to_coarse_cell_;
   std::map<uint64_t, uint32_t> coarse_to_local_cell_;
   std::size_t num_global_cells_ = 0;
+
+public:
+  static CMFDCoarseMesh BuildIdentity(const MeshContinuum& grid);
+  static CMFDCoarseMesh BuildLocalAggregation(const MeshContinuum& grid,
+                                              std::size_t target_fine_cells_per_coarse_cell);
 };
 
 } // namespace opensn

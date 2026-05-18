@@ -51,6 +51,9 @@ public:
    */
   std::uint64_t GetOffset(const std::uint32_t& cell_local_idx, const std::uint32_t& face_idx);
 
+  /// Return whether a face has device outflow storage.
+  bool HasOffset(const std::uint32_t& cell_local_idx, const std::uint32_t& face_idx);
+
 private:
   /// Host-side owner of outflow values and face offsets.
   OutflowBank& bank_;

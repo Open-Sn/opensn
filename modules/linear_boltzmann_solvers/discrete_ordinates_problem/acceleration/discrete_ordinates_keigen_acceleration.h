@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/parameters/input_parameters.h"
+#include <string>
 
 namespace opensn
 {
@@ -71,6 +72,13 @@ public:
    * update should force at least one additional transport iteration.
    */
   virtual bool AllowsPowerIterationConvergence() const { return true; }
+
+  /**
+   * Optional compact convergence information appended to the owning power iteration
+   * status line. Acceleration schemes that gate convergence should expose the active
+   * gate here so users can tell why PI is still iterating.
+   */
+  virtual std::string GetPowerIterationConvergenceInfo() const { return {}; }
 
   const std::string& GetName() const { return name_; }
 

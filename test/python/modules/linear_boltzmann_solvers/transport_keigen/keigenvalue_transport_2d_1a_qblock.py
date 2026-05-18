@@ -74,10 +74,16 @@ if __name__ == "__main__":
             {"name": "ymin", "type": "reflecting"},
         ],
         options={
-            "verbose_inner_iterations": False,
+            "verbose_inner_iterations": True,
             "verbose_outer_iterations": True,
         }
     )
     k_solver = PowerIterationKEigenSolver(problem=phys)
     k_solver.Initialize()
     k_solver.Execute()
+
+    k = k_solver.GetEigenvalue()
+    sweeps = k_solver.GetNumSweeps()
+    if rank == 0:
+        print(f"Python k-eigenvalue: {k}")
+        print(f"Python sweeps: {sweeps}")

@@ -1,4 +1,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
+#include "framework/mpi/mpi_utils.h"
+#include "framework/runtime.h"
 #include "test/unit/common/mesh_builders.h"
 #include "gtest/gtest.h"
 
@@ -6,7 +8,9 @@ using namespace opensn;
 
 TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
 {
-  auto grid = BuildLineMesh(2.0, 2, 0.0);
+  const unsigned int num_fine_cells =
+    opensn::mpi_comm.size() > 2 ? static_cast<unsigned int>(opensn::mpi_comm.size()) : 2;
+  auto grid = BuildLineMesh(static_cast<double>(num_fine_cells), num_fine_cells, 0.0);
   const auto coarse_mesh = CMFDCoarseMesh::BuildIdentity(*grid);
 
   ASSERT_EQ(coarse_mesh.NumLocalCells(), grid->local_cells.size());
@@ -38,12 +42,40 @@ TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
 
 TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
 {
-  auto grid = BuildLineMesh(4.0, 4, 0.0);
-  const auto coarse_mesh = CMFDCoarseMesh::BuildLocalAggregation(*grid, 2);
+  const std::size_t target_fine_cells_per_coarse_cell = 2;
+  const unsigned int num_fine_cells =
+    opensn::mpi_comm.size() > 2 ? 2 * static_cast<unsigned int>(opensn::mpi_comm.size()) : 4;
+  auto grid = BuildLineMesh(static_cast<double>(num_fine_cells), num_fine_cells, 0.0);
+  const auto coarse_mesh =
+    CMFDCoarseMesh::BuildLocalAggregation(*grid, target_fine_cells_per_coarse_cell);
+
+  const std::size_t expected_local_cells =
+    (grid->local_cells.size() + target_fine_cells_per_coarse_cell - 1) /
+    target_fine_cells_per_coarse_cell;
+  std::size_t expected_global_cells = 0;
+  opensn::mpi_comm.all_reduce(
+    expected_local_cells, expected_global_cells, mpi::op::sum<std::size_t>());
+
+  ASSERT_EQ(coarse_mesh.NumGlobalCells(), expected_global_cells);
+  ASSERT_EQ(coarse_mesh.NumLocalCells(), expected_local_cells);
+
+  if (opensn::mpi_comm.size() > 1)
+  {
+    for (const auto& coarse_cell : coarse_mesh.LocalCells())
+    {
+      double expected_volume = 0.0;
+      for (const auto fine_cell_id : coarse_cell.fine_cell_ids)
+      {
+        EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell_id), coarse_cell.global_id);
+        expected_volume += grid->cells[fine_cell_id].volume;
+      }
+      EXPECT_DOUBLE_EQ(coarse_cell.volume, expected_volume);
+      EXPECT_FALSE(coarse_cell.faces.empty());
+    }
+    return;
+  }
 
   ASSERT_EQ(coarse_mesh.NumLocalCells(), 2);
-  ASSERT_EQ(coarse_mesh.NumGlobalCells(), 2);
-
   const auto& first = coarse_mesh.LocalCell(0);
   const auto& second = coarse_mesh.LocalCell(1);
 
@@ -86,10 +118,22 @@ TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
 
 TEST(CMFDCoarseMesh, LocalAggregationMergesFineFacesOnSameCoarseInterface)
 {
-  auto grid = BuildSquareMesh(2.0, 2, 0.0);
-  const auto coarse_mesh = CMFDCoarseMesh::BuildLocalAggregation(*grid, 2);
+  const std::size_t target_fine_cells_per_coarse_cell = 2;
+  const unsigned int num_cells_per_dimension = opensn::mpi_comm.size() > 1 ? 4 : 2;
+  auto grid =
+    BuildSquareMesh(static_cast<double>(num_cells_per_dimension), num_cells_per_dimension, 0.0);
+  const auto coarse_mesh =
+    CMFDCoarseMesh::BuildLocalAggregation(*grid, target_fine_cells_per_coarse_cell);
 
-  ASSERT_EQ(coarse_mesh.NumLocalCells(), 2);
+  const std::size_t expected_local_cells =
+    (grid->local_cells.size() + target_fine_cells_per_coarse_cell - 1) /
+    target_fine_cells_per_coarse_cell;
+  std::size_t expected_global_cells = 0;
+  opensn::mpi_comm.all_reduce(
+    expected_local_cells, expected_global_cells, mpi::op::sum<std::size_t>());
+
+  ASSERT_EQ(coarse_mesh.NumGlobalCells(), expected_global_cells);
+  ASSERT_EQ(coarse_mesh.NumLocalCells(), expected_local_cells);
 
   bool found_merged_face = false;
   for (const auto& coarse_cell : coarse_mesh.LocalCells())
@@ -108,5 +152,8 @@ TEST(CMFDCoarseMesh, LocalAggregationMergesFineFacesOnSameCoarseInterface)
     }
   }
 
-  EXPECT_TRUE(found_merged_face);
+  int global_found_merged_face = 0;
+  opensn::mpi_comm.all_reduce(
+    found_merged_face ? 1 : 0, global_found_merged_face, mpi::op::max<int>());
+  EXPECT_TRUE(global_found_merged_face != 0);
 }

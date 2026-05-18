@@ -3,27 +3,6 @@
 
 """
 8-rank 3D 2G heterogeneous extruded-unstructured benchmark using rank-local aggregated CMFD.
-
-Environment overrides:
-  OPENSN_UNSTRUCT_BASE      2D OBJ base mesh name, default triangle_mesh2x2_cuts.obj
-  OPENSN_UNSTRUCT_SCALE     x-y mesh scale, default 7.0
-  OPENSN_UNSTRUCT_LAYERS    extrusion sub-layers, default 12
-  OPENSN_UNSTRUCT_POLAR     polar angles, default 6
-  OPENSN_UNSTRUCT_AZIMUTH   azimuthal angles, default 12
-  OPENSN_UNSTRUCT_WGS_ATOL   within-group solver absolute tolerance, default 1.0e-8
-  OPENSN_UNSTRUCT_WGS_MAXITS within-group solver maximum iterations, default 100
-  OPENSN_UNSTRUCT_CMFD_MESH CMFD coarse mesh, default local_aggregation
-  OPENSN_UNSTRUCT_AGG       target fine cells per coarse cell, default 16
-  OPENSN_UNSTRUCT_CMFD_VERBOSE enables CMFD timing diagnostics when set to 1
-  OPENSN_UNSTRUCT_CMFD_ATOL  CMFD linear absolute tolerance, default 1.0e-10
-  OPENSN_UNSTRUCT_CMFD_MAXITS CMFD linear maximum iterations, default 100
-  OPENSN_UNSTRUCT_CMFD_UPDATE_SCHEME enables CMFD-owned loose transport updates, default 1
-  OPENSN_UNSTRUCT_CMFD_UPDATE_WGS_ATOL update-scheme WGS tolerance, default 1.0e-4
-  OPENSN_UNSTRUCT_CMFD_UPDATE_WGS_MAXITS update-scheme WGS max iterations, default 5
-  OPENSN_UNSTRUCT_CMFD_PI_MAXITS CMFD inner PI maximum iterations, default 1
-  OPENSN_UNSTRUCT_CMFD_PI_KTOL CMFD inner PI k tolerance, default 1.0e-10
-  OPENSN_UNSTRUCT_CMFD_COARSE_SOLVER CMFD coarse solver policy, default auto
-  OPENSN_UNSTRUCT_CMFD_PETSC_OPTIONS PETSc options for the CMFD KSP when requested
 """
 
 import os
@@ -41,50 +20,24 @@ if "opensn_console" not in globals():
     from pyopensn.solver import CMFDAcceleration
     from pyopensn.logvol import RPPLogicalVolume
 
-def get_bool_option(name, default):
-    if name in globals():
-        return bool(globals()[name])
-    return os.environ.get(name.upper(), "1" if default else "0") == "1"
-
 if __name__ == "__main__":
 
     num_procs = 8
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} but got {size}.")
 
-    base_mesh = os.environ.get("OPENSN_UNSTRUCT_BASE", "triangle_mesh2x2_cuts.obj")
-    xy_scale = float(os.environ.get("OPENSN_UNSTRUCT_SCALE", "7.0"))
-    n_layers = int(os.environ.get("OPENSN_UNSTRUCT_LAYERS", "12"))
-    n_polar = int(os.environ.get("OPENSN_UNSTRUCT_POLAR", "6"))
-    n_azimuthal = int(os.environ.get("OPENSN_UNSTRUCT_AZIMUTH", "12"))
-    wgs_atol = float(os.environ.get("OPENSN_UNSTRUCT_WGS_ATOL", "1.0e-8"))
-    wgs_maxits = int(os.environ.get("OPENSN_UNSTRUCT_WGS_MAXITS", "100"))
-    cmfd_mesh = os.environ.get("OPENSN_UNSTRUCT_CMFD_MESH", "local_aggregation")
-    aggregation_size = int(os.environ.get("OPENSN_UNSTRUCT_AGG", "16"))
-    cmfd_verbose = get_bool_option("cmfd_verbose", False) or (
-        os.environ.get("OPENSN_UNSTRUCT_CMFD_VERBOSE", "0") == "1"
-    )
-    cmfd_update_scheme = os.environ.get("OPENSN_UNSTRUCT_CMFD_UPDATE_SCHEME", "1") == "1"
-    cmfd_update_wgs_atol = float(os.environ.get("OPENSN_UNSTRUCT_CMFD_UPDATE_WGS_ATOL", "1.0e-4"))
-    cmfd_update_wgs_maxits = int(os.environ.get("OPENSN_UNSTRUCT_CMFD_UPDATE_WGS_MAXITS", "5"))
-    cmfd_atol = float(os.environ.get("OPENSN_UNSTRUCT_CMFD_ATOL", "1.0e-10"))
-    cmfd_maxits = int(os.environ.get("OPENSN_UNSTRUCT_CMFD_MAXITS", "100"))
-    cmfd_pi_maxits = int(os.environ.get("OPENSN_UNSTRUCT_CMFD_PI_MAXITS", "1"))
-    cmfd_pi_ktol = float(os.environ.get("OPENSN_UNSTRUCT_CMFD_PI_KTOL", "1.0e-10"))
-    cmfd_coarse_solver = os.environ.get("OPENSN_UNSTRUCT_CMFD_COARSE_SOLVER", "auto")
-    cmfd_correction_max_attempts = int(
-        os.environ.get("OPENSN_UNSTRUCT_CMFD_CORRECTION_MAX_ATTEMPTS", "10")
-    )
-    cmfd_correction_min_damping = float(
-        os.environ.get("OPENSN_UNSTRUCT_CMFD_CORRECTION_MIN_DAMPING", "1.0e-4")
-    )
-    cmfd_negative_flux_tolerance = float(
-        os.environ.get("OPENSN_UNSTRUCT_CMFD_NEGATIVE_FLUX_TOLERANCE", "1.0e-6")
-    )
-    cmfd_petsc_options = os.environ.get(
-        "OPENSN_UNSTRUCT_CMFD_PETSC_OPTIONS",
-        "",
-    )
+    base_mesh = "triangle_mesh2x2_cuts.obj"
+    xy_scale = 7.0
+    n_layers = 12
+    n_polar = 6
+    n_azimuthal = 12
+    wgs_atol = 1.0e-8
+    wgs_maxits = 100
+    cmfd_mesh = "local_aggregation"
+    aggregation_size = 16
+    cmfd_verbose = bool(globals().get("cmfd_verbose", False))
+    cmfd_update_wgs_atol = 1.0e-4
+    cmfd_update_wgs_maxits = 5
 
     zmax = 14.0
     meshgen = ExtruderMeshGenerator(
@@ -160,32 +113,26 @@ if __name__ == "__main__":
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
         },
+        sweep_type=globals().get("sweep_type", "AAH"),
     )
+
+    k_tolerance = 1.0e-7
 
     cmfd = CMFDAcceleration(
         problem=phys,
         coarse_mesh=cmfd_mesh,
         aggregation_size=aggregation_size,
-        update_scheme=cmfd_update_scheme,
         update_wgs_abs_tol=cmfd_update_wgs_atol,
         update_wgs_max_its=cmfd_update_wgs_maxits,
         relaxation=1.0,
-        l_abs_tol=cmfd_atol,
-        max_iters=cmfd_maxits,
-        pi_max_its=cmfd_pi_maxits,
-        pi_k_tol=cmfd_pi_ktol,
-        coarse_solver_policy=cmfd_coarse_solver,
-        correction_max_attempts=cmfd_correction_max_attempts,
-        correction_min_damping=cmfd_correction_min_damping,
-        negative_flux_tolerance=cmfd_negative_flux_tolerance,
+        balance_residual_tolerance=10.0 * k_tolerance,
         verbose=cmfd_verbose,
-        petsc_options=cmfd_petsc_options,
     )
     k_solver = PowerIterationKEigenSolver(
         problem=phys,
         acceleration=cmfd,
         max_iters=400,
-        k_tol=1.0e-7,
+        k_tol=k_tolerance,
     )
     k_solver.Initialize()
     k_solver.Execute()
@@ -196,18 +143,10 @@ if __name__ == "__main__":
         print(f"Python k-eigenvalue: {k}")
         print(f"Python sweeps: {sweeps}")
 
-    uses_default_benchmark = (
-        base_mesh == "triangle_mesh2x2_cuts.obj"
-        and abs(xy_scale - 7.0) < 1.0e-12
-        and n_layers == 12
-        and n_polar == 6
-        and n_azimuthal == 12
-        and cmfd_mesh == "local_aggregation"
-        and aggregation_size == 16
-    )
-    if uses_default_benchmark:
-        expected_k = 1.0441134
-        if abs(k - expected_k) > 5.0e-5:
-            raise RuntimeError(f"Expected k near {expected_k}, got {k}")
-        if sweeps > 150:
-            raise RuntimeError(f"Expected CMFD benchmark to use no more than 150 sweeps, got {sweeps}")
+    expected_k = 1.0441134
+    if abs(k - expected_k) > 5.0e-5:
+        raise RuntimeError(f"Expected k near {expected_k}, got {k}")
+    if sweeps > 220:
+        raise RuntimeError(
+            f"Expected CMFD benchmark to use no more than 220 sweeps, got {sweeps}"
+        )

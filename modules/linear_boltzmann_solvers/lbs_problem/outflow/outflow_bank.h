@@ -26,8 +26,10 @@ public:
    * Construct outflow storage and cell-local views for a mesh.
    * \param grid Local mesh used to discover cell faces.
    * \param num_groups Number of energy groups stored per face.
+   * \param include_internal_faces If true, allocate storage for internal faces in addition to
+   * physical boundary faces.
    */
-  OutflowBank(const MeshContinuum& grid, unsigned int num_groups);
+  OutflowBank(const MeshContinuum& grid, unsigned int num_groups, bool include_internal_faces);
 
   /**
    * Transfer cell-local outflow views to the caller.
@@ -48,6 +50,9 @@ public:
    * \throw std::out_of_range If the cell-face pair is not present.
    */
   std::uint64_t GetOffset(std::uint32_t cell_local_idx, std::uint32_t face_idx) const;
+
+  /// Return whether a face has contiguous outflow storage.
+  bool HasOffset(std::uint32_t cell_local_idx, std::uint32_t face_idx) const;
 
   /// Return the number of contiguous outflow values.
   std::size_t GetSize() const { return outflows_.size(); }

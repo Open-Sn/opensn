@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-3D 2G heterogeneous qblock k-eigenvalue benchmark using aggregated CMFD acceleration.
+3D 2G heterogeneous qblock k-eigenvalue benchmark using aggregated CMFD
+acceleration, one groupset per transport group, and P1 transport moments.
 """
 
 import os
@@ -21,29 +22,16 @@ if "opensn_console" not in globals():
     from pyopensn.logvol import RPPLogicalVolume
 
 
-def get_option(name, default):
-    return globals()[name] if name in globals() else default
-
-
-def get_bool_option(name, default):
-    value = get_option(name, default)
-    if isinstance(value, bool):
-        return value
-    if isinstance(value, str):
-        return value.lower() in ("true", "1", "yes", "on")
-    return bool(value)
-
-
 if __name__ == "__main__":
 
     num_procs = 4
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} but got {size}.")
 
-    N = 8
-    L = 14.0
-    dx = L / N
-    nodes = [i * dx for i in range(N + 1)]
+    n = 8
+    length = 14.0
+    dx = length / n
+    nodes = [i * dx for i in range(n + 1)]
     meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes])
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
@@ -65,23 +53,26 @@ if __name__ == "__main__":
     xss["1"].LoadFromOpenSn("../../../../assets/xs/xs_fuel_g2.xs")
     num_groups = xss["0"].num_groups
 
-    phys = DiscreteOrdinatesProblem(
-        mesh=grid,
-        num_groups=num_groups,
-        groupsets=[
+    quad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=1)
+    groupsets = []
+    for group in range(num_groups):
+        groupsets.append(
             {
-                "groups_from_to": [0, num_groups - 1],
-                "angular_quadrature": GLCProductQuadrature3DXYZ(
-                    n_polar=4, n_azimuthal=8, scattering_order=1
-                ),
+                "groups_from_to": [group, group],
+                "angular_quadrature": quad,
                 "angle_aggregation_type": "single",
                 "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-8,
                 "l_max_its": 100,
                 "gmres_restart_interval": 30,
-            },
-        ],
+            }
+        )
+
+    phys = DiscreteOrdinatesProblem(
+        mesh=grid,
+        num_groups=num_groups,
+        groupsets=groupsets,
         xs_map=[
             {"block_ids": [0], "xs": xss["0"]},
             {"block_ids": [1], "xs": xss["1"]},
@@ -96,20 +87,18 @@ if __name__ == "__main__":
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
         },
-        sweep_type=get_option("sweep_type", "AAH"),
+        sweep_type=globals().get("sweep_type", "AAH"),
     )
 
-    k_tolerance = float(get_option("k_tolerance", 1.0e-6))
+    k_tolerance = 1.0e-6
 
     cmfd = CMFDAcceleration(
         problem=phys,
         aggregation_size=8,
-        group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 1)),
+        group_aggregation_size=1,
         relaxation=1.0,
-        balance_residual_tolerance=float(
-            get_option("cmfd_balance_residual_tolerance", 10.0 * k_tolerance)
-        ),
-        verbose=get_bool_option("cmfd_verbose", False),
+        balance_residual_tolerance=10.0 * k_tolerance,
+        verbose=True,
     )
     k_solver = PowerIterationKEigenSolver(
         problem=phys,

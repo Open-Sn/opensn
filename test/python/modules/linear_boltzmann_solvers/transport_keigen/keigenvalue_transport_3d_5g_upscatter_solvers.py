@@ -142,29 +142,31 @@ def make_problem():
             "max_ags_iterations": 200,
             "ags_tolerance": 1.0e-10,
         },
+        sweep_type=globals().get("sweep_type", "AAH"),
     )
 
 
 def run_solver(name):
     problem = make_problem()
+    k_tolerance = 1.0e-9
     if name == "PowerIteration":
-        solver = PowerIterationKEigenSolver(problem=problem, max_iters=200, k_tol=1.0e-9)
+        solver = PowerIterationKEigenSolver(problem=problem, max_iters=200, k_tol=k_tolerance)
     elif name == "PowerIterationCMFD":
         cmfd = CMFDAcceleration(
             problem=problem,
             coarse_mesh="local_aggregation",
             aggregation_size=2,
             relaxation=0.4,
-            update_scheme=True,
             update_wgs_max_its=3,
             update_wgs_abs_tol=1.0e-6,
             l_abs_tol=1.0e-10,
             max_iters=100,
             pi_max_its=20,
             pi_k_tol=1.0e-10,
+            balance_residual_tolerance=10.0 * k_tolerance,
         )
         solver = PowerIterationKEigenSolver(
-            problem=problem, acceleration=cmfd, max_iters=200, k_tol=1.0e-9
+            problem=problem, acceleration=cmfd, max_iters=200, k_tol=k_tolerance
         )
     elif name == "NonLinearKEigen":
         solver = NonLinearKEigenSolver(

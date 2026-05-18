@@ -183,7 +183,8 @@ CMFDCoarseMesh::BuildExteriorFaces(const MeshContinuum& grid)
                                             ? MapFineCell(fine_face.neighbor_id)
                                             : ghost_fine_to_coarse.at(fine_face.neighbor_id))
                                        : fine_face.neighbor_id;
-        const auto face_key = MakeCoarseFaceKey(fine_face.has_neighbor, neighbor_id, fine_face.normal);
+        const auto face_key =
+          MakeCoarseFaceKey(fine_face.has_neighbor, neighbor_id, fine_face.normal);
         auto& coarse_face = face_map[face_key];
 
         if (coarse_face.area == 0.0)

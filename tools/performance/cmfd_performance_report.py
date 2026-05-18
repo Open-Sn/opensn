@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import subprocess
 import sys
@@ -90,16 +89,16 @@ def parse_func_evals(output: str) -> int | None:
 def parse_cmfd_metrics(output: str) -> dict[str, list[float]]:
     metrics: dict[str, list[float]] = {}
     for line in output.splitlines():
-        if "CMFD_METRIC" not in line:
+        if "CMFD_ACCEL" not in line:
             continue
         fields = {}
         for token in line.split():
             if "=" in token:
                 key, value = token.split("=", 1)
                 fields[key] = value
-        category = fields.get("c")
-        metric = fields.get("m")
-        value = fields.get("v")
+        category = fields.get("category")
+        metric = fields.get("metric")
+        value = fields.get("value")
         if category is None or metric is None or value is None:
             continue
         metrics.setdefault(f"{category}.{metric}", []).append(float(value))
@@ -153,7 +152,11 @@ def metric_value(metrics: dict[str, list[float]], key: str, default: str = "n/a"
     values = metrics.get(key, [])
     if not values:
         return default
-    value = max(values) if key.endswith((".skipped", ".invalid_k", ".nonfinite_flux")) else values[-1]
+    value = (
+        max(values)
+        if key.endswith((".skipped", ".invalid_k", ".nonfinite_flux"))
+        else values[-1]
+    )
     return fmt_float(value)
 
 
@@ -183,7 +186,11 @@ def k_difference(reference: RunMetrics, metric: RunMetrics | None) -> float | No
     return abs(reference.k_eff - metric.k_eff)
 
 
-def print_report(rows: list[tuple[RunMetrics, RunMetrics, RunMetrics | None, RunMetrics | None, RunMetrics | None]]):
+def print_report(
+    rows: list[
+        tuple[RunMetrics, RunMetrics, RunMetrics | None, RunMetrics | None, RunMetrics | None]
+    ],
+) -> None:
     header = (
         "case",
         "pi_sweeps",
@@ -272,7 +279,9 @@ def main() -> int:
 
     selected_cases = [CASES[name] for name in (args.case or ["unstructured8"])]
     all_metrics: list[RunMetrics] = []
-    report_rows: list[tuple[RunMetrics, RunMetrics, RunMetrics | None, RunMetrics | None, RunMetrics | None]] = []
+    report_rows: list[
+        tuple[RunMetrics, RunMetrics, RunMetrics | None, RunMetrics | None, RunMetrics | None]
+    ] = []
     for case in selected_cases:
         baseline = run_case(args.exe, case, "pi", case.baseline, ())
         cmfd = run_case(args.exe, case, "cmfd", case.cmfd, case.cmfd_args)
@@ -291,7 +300,9 @@ def main() -> int:
             if case.smm is not None
             else None
         )
-        all_metrics.extend(metric for metric in (baseline, cmfd, nlke, scdsa, smm) if metric is not None)
+        all_metrics.extend(
+            metric for metric in (baseline, cmfd, nlke, scdsa, smm) if metric is not None
+        )
         report_rows.append((baseline, cmfd, nlke, scdsa, smm))
         failed = any(
             metric is not None and metric.returncode != 0
@@ -299,7 +310,10 @@ def main() -> int:
         )
         if failed:
             write_outputs(args.output_dir, all_metrics)
-            print(f"Case {case.name} failed; rerun with --output-dir to retain output.", file=sys.stderr)
+            print(
+                f"Case {case.name} failed; rerun with --output-dir to retain output.",
+                file=sys.stderr,
+            )
             return 1
 
     print_report(report_rows)

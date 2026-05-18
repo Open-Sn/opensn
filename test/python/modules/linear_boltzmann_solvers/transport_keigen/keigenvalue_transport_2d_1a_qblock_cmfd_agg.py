@@ -74,24 +74,23 @@ if __name__ == "__main__":
         options={
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
-        }
+        },
+        sweep_type=globals().get("sweep_type", "AAH"),
     )
+
+    k_tolerance = 1.0e-8
 
     cmfd = CMFDAcceleration(
         problem=phys,
-        coarse_mesh="local_aggregation",
         aggregation_size=8,
         relaxation=1.0,
-        l_abs_tol=1.0e-10,
-        max_iters=100,
-        verbose=False,
-        petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi",
+        balance_residual_tolerance=10.0 * k_tolerance,
     )
     k_solver = PowerIterationKEigenSolver(
         problem=phys,
         acceleration=cmfd,
         max_iters=400,
-        k_tol=1.0e-8,
+        k_tol=k_tolerance,
     )
     k_solver.Initialize()
     k_solver.Execute()

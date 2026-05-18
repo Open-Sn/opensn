@@ -19,15 +19,45 @@ if "opensn_console" not in globals():
     from pyopensn.solver import NonLinearKEigenSolver
     from pyopensn.solver import CMFDAcceleration, SCDSAAcceleration, SMMAcceleration
 
+
 def get_bool_option(name, default):
     if name in globals():
         return bool(globals()[name])
-    return os.environ.get(name.upper(), "1" if default else "0") == "1"
+    return default
+
 
 def get_option(name, default):
     if name in globals():
         return globals()[name]
-    return os.environ.get(name.upper(), default)
+    return default
+
+
+def make_groupsets(num_groups, pquad, inner_linear_method, l_max_its):
+    groupset_mode = get_option("groupset_mode", "single")
+    if groupset_mode == "single":
+        group_ranges = [(0, num_groups - 1)]
+    elif groupset_mode == "one_group_per_groupset":
+        group_ranges = [(g, g) for g in range(num_groups)]
+    else:
+        if rank == 0:
+            print("Error: 'groupset_mode' must be 'single' or 'one_group_per_groupset'")
+        sys.exit(1)
+
+    groupsets = []
+    for first_group, last_group in group_ranges:
+        groupsets.append(
+            {
+                "groups_from_to": (first_group, last_group),
+                "angular_quadrature": pquad,
+                "inner_linear_method": inner_linear_method,
+                "l_max_its": l_max_its,
+                "l_abs_tol": 1.0e-10,
+                "angle_aggregation_type": "polar",
+                "angle_aggregation_num_subsets": 1,
+            }
+        )
+    return groupsets
+
 
 if __name__ == "__main__":
     asset_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../assets"))
@@ -92,17 +122,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
-        groupsets=[
-            {
-                "groups_from_to": (0, num_groups - 1),
-                "angular_quadrature": pquad,
-                "inner_linear_method": inner_linear_method,
-                "l_max_its": l_max_its,
-                "l_abs_tol": 1.0e-10,
-                "angle_aggregation_type": "polar",
-                "angle_aggregation_num_subsets": 1,
-            },
-        ],
+        groupsets=make_groupsets(num_groups, pquad, inner_linear_method, l_max_its),
         xs_map=xs_map,
         boundary_conditions=[
             {"name": "xmin", "type": "reflecting"},
@@ -118,10 +138,12 @@ if __name__ == "__main__":
     )
 
     # Execute Solver
+    k_tolerance = 1.0e-8
+
     if k_method == "pi":
         k_solver = PowerIterationKEigenSolver(
             problem=phys,
-            k_tol=1.0e-8,
+            k_tol=k_tolerance,
         )
     elif k_method == "pi_cmfd":
         cmfd = CMFDAcceleration(
@@ -129,23 +151,9 @@ if __name__ == "__main__":
             coarse_mesh=get_option("cmfd_coarse_mesh", "local_aggregation"),
             aggregation_size=int(get_option("cmfd_aggregation_size", 16)),
             group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 1)),
-            update_scheme=get_bool_option("cmfd_update_scheme", True),
             update_wgs_max_its=int(get_option("cmfd_update_wgs_max_its", 4)),
             update_wgs_abs_tol=float(get_option("cmfd_update_wgs_abs_tol", 1.0e-4)),
             relaxation=float(get_option("cmfd_relaxation", 1.0)),
-            adaptive_relaxation=get_bool_option("cmfd_adaptive_relaxation", True),
-            adaptive_relaxation_min=float(get_option("cmfd_adaptive_relaxation_min", 0.25)),
-            adaptive_relaxation_max=float(get_option("cmfd_adaptive_relaxation_max", 1.0)),
-            adaptive_relaxation_growth=float(get_option("cmfd_adaptive_relaxation_growth", 1.25)),
-            adaptive_relaxation_reduction=float(
-                get_option("cmfd_adaptive_relaxation_reduction", 0.75)
-            ),
-            adaptive_relaxation_accept_fraction=float(
-                get_option("cmfd_adaptive_relaxation_accept_fraction", 0.5)
-            ),
-            adaptive_relaxation_successes_to_grow=int(
-                get_option("cmfd_adaptive_relaxation_successes_to_grow", 2)
-            ),
             inactive_iterations=int(get_option("cmfd_inactive_iterations", 1)),
             l_abs_tol=float(get_option("cmfd_l_abs_tol", 1.0e-10)),
             max_iters=int(get_option("cmfd_l_max_its", 100)),
@@ -155,12 +163,15 @@ if __name__ == "__main__":
             correction_max_attempts=int(get_option("cmfd_correction_max_attempts", 10)),
             correction_min_damping=float(get_option("cmfd_correction_min_damping", 1.0e-4)),
             negative_flux_tolerance=float(get_option("cmfd_negative_flux_tolerance", 1.0e-6)),
+            balance_residual_tolerance=float(
+                get_option("cmfd_balance_residual_tolerance", 10.0 * k_tolerance)
+            ),
             verbose=get_bool_option("cmfd_verbose", False),
         )
         k_solver = PowerIterationKEigenSolver(
             problem=phys,
             acceleration=cmfd,
-            k_tol=1.0e-8,
+            k_tol=k_tolerance,
         )
     elif k_method == "pi_scdsa":
         scdsa = SCDSAAcceleration(

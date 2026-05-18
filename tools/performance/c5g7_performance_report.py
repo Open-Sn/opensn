@@ -67,16 +67,16 @@ def parse_func_evals(output: str) -> int | None:
 def parse_cmfd_metrics(output: str) -> dict[str, list[float]]:
     metrics: dict[str, list[float]] = {}
     for line in output.splitlines():
-        if "CMFD_METRIC" not in line:
+        if "CMFD_ACCEL" not in line:
             continue
         fields = {}
         for token in line.split():
             if "=" in token:
                 key, value = token.split("=", 1)
                 fields[key] = value
-        category = fields.get("c")
-        metric = fields.get("m")
-        value = fields.get("v")
+        category = fields.get("category")
+        metric = fields.get("metric")
+        value = fields.get("value")
         if category is not None and metric is not None and value is not None:
             metrics.setdefault(f"{category}.{metric}", []).append(float(value))
     return metrics
@@ -100,7 +100,12 @@ def py_assignment(name: str, value: str) -> str:
     return f'{name}="{escaped}"'
 
 
-def build_command(exe: Path, ranks: int, mesh_type: str, method: str) -> list[str]:
+def build_command(
+    exe: Path,
+    ranks: int,
+    mesh_type: str,
+    method: str,
+) -> list[str]:
     cmd = [
         "mpirun",
         "-np",
@@ -115,11 +120,23 @@ def build_command(exe: Path, ranks: int, mesh_type: str, method: str) -> list[st
         py_assignment("k_method", method),
     ]
     if method == "pi_cmfd":
-        cmd.extend(["--py", "cmfd_verbose=True"])
+        cmd.extend(
+            [
+                "--py",
+                "cmfd_verbose=True",
+                "--py",
+                "cmfd_group_aggregation_size=4",
+            ]
+        )
     return cmd
 
 
-def run_method(exe: Path, ranks: int, mesh_type: str, method: str) -> RunMetrics:
+def run_method(
+    exe: Path,
+    ranks: int,
+    mesh_type: str,
+    method: str,
+) -> RunMetrics:
     cmd = build_command(exe, ranks, mesh_type, method)
     print(f"Running c5g7:{mesh_type}:{method}: {' '.join(cmd)}", flush=True)
     completed = subprocess.run(
@@ -158,7 +175,11 @@ def work_label(metric: RunMetrics) -> str:
 
 
 def relative_time(reference: RunMetrics | None, metric: RunMetrics) -> float | None:
-    if reference is None or reference.elapsed_seconds is None or metric.elapsed_seconds in (None, 0):
+    if (
+        reference is None
+        or reference.elapsed_seconds is None
+        or metric.elapsed_seconds in (None, 0)
+    ):
         return None
     return reference.elapsed_seconds / metric.elapsed_seconds
 
@@ -175,7 +196,11 @@ def metric_value(metrics: dict[str, list[float]] | None, key: str, default: str 
     values = metrics.get(key, [])
     if not values:
         return default
-    value = max(values) if key.endswith((".skipped", ".invalid_k", ".nonfinite_flux")) else values[-1]
+    value = (
+        max(values)
+        if key.endswith((".skipped", ".invalid_k", ".nonfinite_flux"))
+        else values[-1]
+    )
     return fmt_float(value)
 
 
@@ -199,7 +224,11 @@ def print_report(metrics: list[RunMetrics]) -> None:
     for metric in metrics:
         cmfd_speedup = (
             metric.elapsed_seconds / cmfd.elapsed_seconds
-            if cmfd is not None and metric.elapsed_seconds is not None and cmfd.elapsed_seconds not in (None, 0)
+            if (
+                cmfd is not None
+                and metric.elapsed_seconds is not None
+                and cmfd.elapsed_seconds not in (None, 0)
+            )
             else None
         )
         values = (
@@ -236,7 +265,15 @@ def main() -> int:
     args = parser.parse_args()
 
     selected_methods = args.method or list(DEFAULT_METHODS)
-    metrics = [run_method(args.exe, args.ranks, args.mesh_type, method) for method in selected_methods]
+    metrics = [
+        run_method(
+            args.exe,
+            args.ranks,
+            args.mesh_type,
+            method,
+        )
+        for method in selected_methods
+    ]
     write_outputs(args.output_dir, metrics)
 
     failed = [metric for metric in metrics if metric.returncode != 0]

@@ -139,6 +139,7 @@ PowerIterationKEigenSolver::Execute()
 
   // Start power iterations
   unsigned int nit = 0;
+  num_power_iterations_ = 0;
   bool converged = false;
   CALI_CXX_MARK_LOOP_BEGIN(pi_iteration, "PIIteration");
   while (nit < max_iters_)
@@ -191,6 +192,7 @@ PowerIterationKEigenSolver::Execute()
     k_eff_change = std::fabs(k_eff_ - k_eff_prev) / k_eff_;
     k_eff_prev = k_eff_;
     nit += 1;
+    num_power_iterations_ = nit;
 
     converged = k_eff_change < std::max(k_tolerance_, 1.0e-12) and
                 (not acceleration_ or acceleration_->AllowsPowerIterationConvergence());
@@ -210,13 +212,9 @@ PowerIterationKEigenSolver::Execute()
       }
 
       const auto ags_summary = ags_solver->GetLastSolveSummary();
-      const auto ags_status =
-        HasIterationStatus(ags_summary) ? ags_summary.status : IterationStatus::NONE;
-      const auto inner_status =
-        MostSevereIterationStatus(ags_status, MostSevereIterationStatus(wgs_summaries));
-      const auto outer_status =
-        IterationStatusFromSolve(converged, nit >= max_iters_, inner_status);
-      log.Log() << no_wrap << program_timer.GetTimeString() << " "
+      const auto outer_status = IterationStatusFromSolve(converged, nit >= max_iters_);
+      std::ostringstream iter_info;
+      iter_info << program_timer.GetTimeString() << " "
                 << FormatKEigenOuterIteration("PI",
                                               nit,
                                               k_eff_,
@@ -225,6 +223,13 @@ PowerIterationKEigenSolver::Execute()
                                               ags_summary,
                                               wgs_summaries,
                                               outer_status);
+      log.Log() << no_wrap << iter_info.str();
+      if (acceleration_)
+      {
+        const auto acceleration_info = acceleration_->GetPowerIterationConvergenceInfo();
+        if (not acceleration_info.empty())
+          log.Log() << no_wrap << program_timer.GetTimeString() << " " << acceleration_info;
+      }
     }
 
     if (options.restart.writes_enabled and do_problem_->TriggerRestartDump())

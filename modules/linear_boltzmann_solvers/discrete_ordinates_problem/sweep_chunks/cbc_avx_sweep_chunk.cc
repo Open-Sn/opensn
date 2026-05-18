@@ -47,7 +47,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
   constexpr std::size_t matrix_size =
     static_cast<std::size_t>(NumNodes) * static_cast<std::size_t>(NumNodes);
-  constexpr auto idx = [](std::size_t i, std::size_t j) -> std::size_t { return i * NumNodes + j; };
+  constexpr auto Idx = [](std::size_t i, std::size_t j) -> std::size_t { return i * NumNodes + j; };
 
   std::array<double, matrix_size> mass_matrix{};
   PRAGMA_UNROLL
@@ -55,7 +55,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
   {
     PRAGMA_UNROLL
     for (std::size_t j = 0; j < NumNodes; ++j)
-      mass_matrix[idx(i, j)] = M(i, j);
+      mass_matrix[Idx(i, j)] = M(i, j);
   }
 
   auto& moment_dof_map = sweep_chunk.workspace_.moment_dof_map;
@@ -119,7 +119,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
     {
       PRAGMA_UNROLL
       for (std::size_t j = 0; j < NumNodes; ++j)
-        Amat[idx(i, j)] = omega.Dot(G(i, j));
+        Amat[Idx(i, j)] = omega.Dot(G(i, j));
     }
 
     for (std::size_t f = 0; f < cell_num_faces; ++f)
@@ -171,7 +171,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
           const double mu_Nij = mu_f * Ms_f(i, j);
-          Amat[idx(i, j)] += mu_Nij;
+          Amat[Idx(i, j)] += mu_Nij;
 
           if (not psi)
             continue;
@@ -231,7 +231,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         for (std::size_t i = 0; i < NumNodes; ++i)
         {
           double value = 0.0;
-          const auto* row = &mass_matrix[idx(i, 0)];
+          const auto* row = &mass_matrix[Idx(i, 0)];
           PRAGMA_UNROLL
           for (std::size_t j = 0; j < NumNodes; ++j)
             value += row[j] * nodal_source[j];
@@ -262,21 +262,21 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         {
           PRAGMA_UNROLL
           for (std::size_t j = 0; j < NumNodes; ++j)
-            A[idx(i, j)] = Amat[idx(i, j)] + sigma_tg * mass_matrix[idx(i, j)];
+            A[Idx(i, j)] = Amat[Idx(i, j)] + sigma_tg * mass_matrix[Idx(i, j)];
         }
 
         auto* __restrict bg = &b[gsg * NumNodes];
 
         for (std::size_t pivot = 0; pivot < NumNodes; ++pivot)
         {
-          const double inv = 1.0 / A[idx(pivot, pivot)];
+          const double inv = 1.0 / A[Idx(pivot, pivot)];
           for (std::size_t row = pivot + 1; row < NumNodes; ++row)
           {
-            const double factor = A[idx(row, pivot)] * inv;
+            const double factor = A[Idx(row, pivot)] * inv;
             bg[row] -= factor * bg[pivot];
             PRAGMA_UNROLL
             for (std::size_t col = pivot + 1; col < NumNodes; ++col)
-              A[idx(row, col)] -= factor * A[idx(pivot, col)];
+              A[Idx(row, col)] -= factor * A[Idx(pivot, col)];
           }
         }
 
@@ -284,8 +284,8 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         {
           PRAGMA_UNROLL
           for (std::size_t col = pivot + 1; col < NumNodes; ++col)
-            bg[pivot] -= A[idx(pivot, col)] * bg[col];
-          bg[pivot] /= A[idx(pivot, pivot)];
+            bg[pivot] -= A[Idx(pivot, col)] * bg[col];
+          bg[pivot] /= A[Idx(pivot, pivot)];
         }
       }
 
@@ -361,12 +361,9 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
       {
         const int i = cell_mapping.MapFaceNode(f, fi);
 
-        if (is_boundary_face)
-        {
-          const double flux_i = mu_wt_f * IntF_shapeI(i);
-          for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
-            cell_outflow_view.Add(f, gs_gi + gsg, flux_i * b[gsg * NumNodes + i]);
-        }
+        const double flux_i = mu_wt_f * IntF_shapeI(i);
+        for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
+          cell_outflow_view.Add(f, gs_gi + gsg, flux_i * b[gsg * NumNodes + i]);
 
         double* psi = nullptr;
         if (is_local_face)

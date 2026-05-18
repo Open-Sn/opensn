@@ -41,10 +41,12 @@ if "opensn_console" not in globals():
     )
     from pyopensn.logvol import RPPLogicalVolume
 
+
 def get_string_option(name, default):
     if name in globals():
         return str(globals()[name])
     return os.environ.get(name.upper(), default)
+
 
 if __name__ == "__main__":
 

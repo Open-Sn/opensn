@@ -64,7 +64,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     const auto& M_surf = unit_mats.intS_shapeI_shapeJ;
 
     const size_t matrix_size = static_cast<size_t>(NumNodes) * static_cast<size_t>(NumNodes);
-    auto idx = [](int i, int j) -> size_t
+    auto Idx = [](int i, int j) -> size_t
     { return static_cast<size_t>(i) * static_cast<size_t>(NumNodes) + static_cast<size_t>(j); };
 
     std::array<double, matrix_size> mass_matrix{};
@@ -73,7 +73,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     {
       PRAGMA_UNROLL
       for (int j = 0; j < NumNodes; ++j)
-        mass_matrix[idx(i, j)] = M(i, j);
+        mass_matrix[Idx(i, j)] = M(i, j);
     }
 
     std::array<double, matrix_size> Amat{};
@@ -115,7 +115,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
       {
         PRAGMA_UNROLL
         for (int j = 0; j < NumNodes; ++j)
-          Amat[idx(i, j)] = omega.Dot(G(i, j));
+          Amat[Idx(i, j)] = omega.Dot(G(i, j));
       }
 
       for (size_t f = 0; f < cell_num_faces; ++f)
@@ -162,7 +162,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
           {
             const int i = cell_mapping.MapFaceNode(f, fi);
             const double mu_Nij = mu_f * Ms_f(i, j);
-            Amat[idx(i, j)] += mu_Nij;
+            Amat[Idx(i, j)] += mu_Nij;
 
             if (not psi)
               continue;
@@ -208,7 +208,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
             for (int i = 0; i < NumNodes; ++i)
             {
               double value = 0.0;
-              const double* row = &mass_matrix[idx(i, 0)];
+              const double* row = &mass_matrix[Idx(i, 0)];
               PRAGMA_UNROLL
               for (int j = 0; j < NumNodes; ++j)
                 value += row[j] * nodal_source[j];
@@ -229,7 +229,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
               for (int i = 0; i < NumNodes; ++i)
               {
                 double value = 0.0;
-                const double* row = &mass_matrix[idx(i, 0)];
+                const double* row = &mass_matrix[Idx(i, 0)];
                 PRAGMA_UNROLL
                 for (int j = 0; j < NumNodes; ++j)
                 {
@@ -267,21 +267,21 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
           {
             PRAGMA_UNROLL
             for (int j = 0; j < NumNodes; ++j)
-              A[idx(i, j)] = Amat[idx(i, j)] + sigma_tg * mass_matrix[idx(i, j)];
+              A[Idx(i, j)] = Amat[Idx(i, j)] + sigma_tg * mass_matrix[Idx(i, j)];
           }
 
           double* __restrict bg = &b[gsg * NumNodes];
 
           for (int pivot = 0; pivot < NumNodes; ++pivot)
           {
-            const double inv = 1.0 / A[idx(pivot, pivot)];
+            const double inv = 1.0 / A[Idx(pivot, pivot)];
             for (int row = pivot + 1; row < NumNodes; ++row)
             {
-              const double factor = A[idx(row, pivot)] * inv;
+              const double factor = A[Idx(row, pivot)] * inv;
               bg[row] -= factor * bg[pivot];
               PRAGMA_UNROLL
               for (int col = pivot + 1; col < NumNodes; ++col)
-                A[idx(row, col)] -= factor * A[idx(pivot, col)];
+                A[Idx(row, col)] -= factor * A[Idx(pivot, col)];
             }
           }
 
@@ -289,8 +289,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
           {
             PRAGMA_UNROLL
             for (int col = pivot + 1; col < NumNodes; ++col)
-              bg[pivot] -= A[idx(pivot, col)] * bg[col];
-            bg[pivot] /= A[idx(pivot, pivot)];
+              bg[pivot] -= A[Idx(pivot, col)] * bg[col];
+            bg[pivot] /= A[Idx(pivot, pivot)];
           }
         }
 

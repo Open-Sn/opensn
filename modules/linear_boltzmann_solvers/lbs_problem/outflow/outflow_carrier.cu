@@ -42,4 +42,10 @@ OutflowCarrier::GetOffset(const std::uint32_t& cell_local_idx, const std::uint32
   return bank_.GetOffset(cell_local_idx, face_idx);
 }
 
+bool
+OutflowCarrier::HasOffset(const std::uint32_t& cell_local_idx, const std::uint32_t& face_idx)
+{
+  return bank_.HasOffset(cell_local_idx, face_idx);
+}
+
 } // namespace opensn

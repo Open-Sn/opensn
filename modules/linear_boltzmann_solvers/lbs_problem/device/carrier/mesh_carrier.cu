@@ -163,8 +163,8 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       // pointer to outflow
       double** outflow_data = reinterpret_cast<double**>(face_data);
       double* face_outflow = nullptr;
-      face_outflow = outflow.GetDevicePtr();
-      face_outflow += outflow.GetOffset(cell.local_id, f);
+      if (outflow.GetDevicePtr() != nullptr and outflow.HasOffset(cell.local_id, f))
+        face_outflow = outflow.GetDevicePtr() + outflow.GetOffset(cell.local_id, f);
       *(outflow_data++) = face_outflow;
       face_data = reinterpret_cast<char*>(outflow_data);
       // normal vector
