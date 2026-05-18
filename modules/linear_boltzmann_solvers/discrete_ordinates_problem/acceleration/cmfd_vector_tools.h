@@ -21,6 +21,12 @@ std::vector<double> CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_pr
 std::vector<double> CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
                                            unsigned int first_group,
                                            unsigned int num_groups,
+                                           unsigned int group_aggregation_size,
+                                           const CMFDCoarseMesh& coarse_mesh,
+                                           const std::vector<double>& phi);
+std::vector<double> CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
+                                           unsigned int first_group,
+                                           unsigned int num_groups,
                                            const CMFDCoarseMesh& coarse_mesh,
                                            const std::vector<double>& phi);
 
@@ -38,5 +44,17 @@ void CMFDProlongateScalarFluxCorrection(const DiscreteOrdinatesProblem& do_probl
                                         const CMFDCoarseMesh& coarse_mesh,
                                         const std::vector<double>& coarse_delta_phi,
                                         std::vector<double>& phi);
+
+/**
+ * Scale fine scalar-flux moments by coarse-cell, coarse-group ratios.
+ */
+void CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
+                                   unsigned int first_group,
+                                   unsigned int num_groups,
+                                   unsigned int group_aggregation_size,
+                                   const CMFDCoarseMesh& coarse_mesh,
+                                   const std::vector<double>& coarse_phi_old,
+                                   const std::vector<double>& coarse_phi_new,
+                                   std::vector<double>& phi);
 
 } // namespace opensn

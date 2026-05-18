@@ -461,6 +461,29 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_3d_2g_qblock_cmfd_agg.py",
+    "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_energy_agg",
+    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using spatial and energy-group aggregated CMFD acceleration",
+    "num_procs": 4,
+    "args": [
+      "--py cmfd_group_aggregation_size=2"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_METRIC c=coarse_mesh m=energy_coarse_groups v=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5028015,
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_3d_2g_qblock_8rank.py",
     "comment": "8-rank 3D 2G heterogeneous qblock benchmark using straight power iteration",
     "num_procs": 8,

@@ -16,6 +16,8 @@
 namespace opensn
 {
 
+class MultiGroupXS;
+
 class CMFDAcceleration : public DiscreteOrdinatesKEigenAcceleration
 {
 public:
@@ -77,10 +79,30 @@ private:
   double ComputeCoarseFissionProduction(const std::vector<double>& coarse_phi) const;
   std::size_t LocalUnknownCount() const;
   std::size_t GlobalUnknownCount() const;
-  PetscInt MapDOF(uint64_t coarse_cell_global_id, unsigned int group) const;
+  PetscInt MapDOF(uint64_t coarse_cell_global_id, unsigned int coarse_group) const;
   double ComputeOutwardCurrent(const CMFDCoarseCell& coarse_cell,
                                std::size_t face_index,
-                               unsigned int group) const;
+                               unsigned int coarse_group) const;
+  unsigned int FineGroupBegin(unsigned int coarse_group) const;
+  unsigned int FineGroupEnd(unsigned int coarse_group) const;
+  double CondensedRemovalXS(const MultiGroupXS& xs,
+                            const std::vector<double>& fine_coarse_phi,
+                            const CMFDCoarseCell& coarse_cell,
+                            unsigned int coarse_group) const;
+  double CondensedDiffusionCoefficient(const MultiGroupXS& xs,
+                                       const std::vector<double>& fine_coarse_phi,
+                                       const CMFDCoarseCell& coarse_cell,
+                                       unsigned int coarse_group) const;
+  double CondensedScatterXS(const MultiGroupXS& xs,
+                            const std::vector<double>& fine_coarse_phi,
+                            const CMFDCoarseCell& coarse_cell,
+                            unsigned int row_coarse_group,
+                            unsigned int col_coarse_group) const;
+  double CondensedProductionXS(const MultiGroupXS& xs,
+                               const std::vector<double>& fine_coarse_phi,
+                               const CMFDCoarseCell& coarse_cell,
+                               unsigned int row_coarse_group,
+                               unsigned int col_coarse_group) const;
   void LogTimingSummary(double transport_time,
                         double restrict_old_time,
                         double restrict_new_time,
@@ -105,8 +127,8 @@ private:
                                 bool skipped_correction);
   double ApplyFluxCorrectionWithDamping(const std::vector<double>& transport_phi_new,
                                         const std::vector<double>& coarse_phi,
+                                        double old_fission_production,
                                         double transport_k_eff,
-                                        double cmfd_k_eff,
                                         double& applied_damping,
                                         unsigned int& attempts,
                                         FluxUpdateDiagnostics& diagnostics,
@@ -119,6 +141,7 @@ private:
 
   const std::string coarse_mesh_type_;
   const int aggregation_size_;
+  const unsigned int group_aggregation_size_;
   const double relaxation_;
   const unsigned int correction_max_attempts_;
   const double correction_min_damping_;
@@ -138,6 +161,7 @@ private:
   const std::size_t direct_coarse_solve_threshold_;
   const unsigned int first_group_ = 0;
   const unsigned int num_groups_;
+  const unsigned int num_coarse_groups_;
   unsigned int outer_iteration_ = 0;
   bool last_update_allows_convergence_ = true;
   double current_relaxation_ = 0.0;
@@ -145,6 +169,8 @@ private:
   double last_restrict_old_time_ = 0.0;
   double transport_start_time_ = 0.0;
   CMFDCoarseMesh coarse_mesh_;
+  std::vector<double> coarse_phi_old_fine_;
+  std::vector<double> coarse_phi_new_fine_;
   std::vector<double> coarse_phi_old_;
   std::vector<double> coarse_phi_new_;
   std::map<std::tuple<uint64_t, unsigned int>, double> coarse_phi_cache_;

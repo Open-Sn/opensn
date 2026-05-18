@@ -13,6 +13,9 @@ CMFD restricts the all-groups scalar flux and net face currents to a coarse
 mesh, solves a coarse diffusion-like k-eigenvalue balance equation with
 nonlinear current corrections, and prolongs a bounded scalar-flux correction
 back to the transport solution.
+By default the low-order system preserves every transport energy group, but
+transport groups can also be collapsed into coarse energy groups with
+``group_aggregation_size``.
 
 Basic Usage
 ===========
@@ -48,6 +51,7 @@ The CMFD accelerator currently supports:
   update,
 * identity coarse meshes,
 * rank-local same-material cell aggregation,
+* optional energy-group aggregation in the CMFD low-order system,
 * reflecting and non-reflecting boundary treatment,
 * scalar-flux correction limiting,
 * P0 CMFD acceleration for transport problems with P0 or higher-order
@@ -71,6 +75,9 @@ Current limitations are:
   selected automatically.
 * The correction is a scalar-flux correction. Angular flux and higher scattering
   moments remain governed by the high-order transport solve.
+* Energy-group aggregation with ``group_aggregation_size > 1`` is experimental.
+  It reduces the low-order system size but should be checked against
+  uncollapsed CMFD or a transport reference before production use.
 
 Important Parameters
 ====================
@@ -83,6 +90,13 @@ Important Parameters
 ``aggregation_size``
   Target number of fine cells per local aggregated coarse cell. This only
   applies when ``coarse_mesh="local_aggregation"``. The default is ``16``.
+
+``group_aggregation_size``
+  Target number of transport energy groups per CMFD coarse group. The default
+  is ``1``, which keeps one CMFD unknown per transport group in each coarse
+  cell. Values greater than one collapse adjacent transport groups in the
+  low-order system and use multiplicative prolongation to apply the coarse
+  correction back to every fine group in the coarse group.
 
 ``update_scheme``
   If ``True``, CMFD configures each groupset WGS solver as a loose transport
@@ -144,6 +158,8 @@ Coarse-mesh diagnostics include:
 
 * ``global_fine_cells``
 * ``global_coarse_cells``
+* ``group_aggregation_size``
+* ``energy_coarse_groups``
 * ``aggregation_ratio``
 * ``global_unknowns``
 * ``max_fine_cells_per_coarse_cell``
@@ -175,6 +191,7 @@ For k-eigenvalue problems where normal power iteration is slow, start with:
        problem=phys,
        coarse_mesh="local_aggregation",
        aggregation_size=16,
+       group_aggregation_size=1,
        update_scheme=True,
        update_wgs_max_its=4,
        update_wgs_abs_tol=1.0e-4,

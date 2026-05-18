@@ -20,6 +20,17 @@ if "opensn_console" not in globals():
     from pyopensn.solver import CMFDAcceleration
     from pyopensn.logvol import RPPLogicalVolume
 
+def get_option(name, default):
+    return globals()[name] if name in globals() else default
+
+def get_bool_option(name, default):
+    value = get_option(name, default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.lower() in ("true", "1", "yes", "on")
+    return bool(value)
+
 if __name__ == "__main__":
 
     num_procs = 4
@@ -88,9 +99,11 @@ if __name__ == "__main__":
         problem=phys,
         coarse_mesh="local_aggregation",
         aggregation_size=8,
+        group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 1)),
         relaxation=1.0,
         l_abs_tol=1.0e-10,
         max_iters=100,
+        update_scheme=get_bool_option("cmfd_update_scheme", True),
         verbose=False,
         petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi",
     )

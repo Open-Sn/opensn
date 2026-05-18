@@ -2038,6 +2038,9 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'local_aggregation' : connected same-material fine cells aggregated locally
     aggregation_size: int, default=16
         Target number of fine cells per aggregated coarse cell for local_aggregation.
+    group_aggregation_size: int, default=1
+        Target number of transport energy groups per CMFD coarse group. A value of 1 preserves
+        the full transport group structure in the low-order system.
     relaxation: float, default=1.0
         Relaxation factor applied to the CMFD scalar-flux correction.
     correction_max_attempts: int, default=10

@@ -80,6 +80,9 @@ CMFDAcceleration::GetInputParameters()
     "coarse_mesh", "local_aggregation", "CMFD coarse-mesh construction method.");
   params.AddOptionalParameter(
     "aggregation_size", 16, "Target number of fine cells per aggregated CMFD coarse cell.");
+  params.AddOptionalParameter("group_aggregation_size",
+                              1,
+                              "Target number of transport energy groups per CMFD coarse group.");
   params.AddOptionalParameter(
     "relaxation", 1.0, "Relaxation factor applied to the CMFD scalar-flux correction.");
   params.AddOptionalParameter("correction_max_attempts",
@@ -140,6 +143,7 @@ CMFDAcceleration::GetInputParameters()
     "coarse_solver_policy",
     AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
   params.ConstrainParameterRange("aggregation_size", AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange("group_aggregation_size", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("relaxation", AllowableRangeLowLimit::New(0.0));
   params.ConstrainParameterRange("correction_max_attempts", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("correction_min_damping", AllowableRangeLowLimit::New(0.0));
@@ -172,6 +176,8 @@ CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
   : DiscreteOrdinatesKEigenAcceleration(params),
     coarse_mesh_type_(params.GetParamValue<std::string>("coarse_mesh")),
     aggregation_size_(params.GetParamValue<int>("aggregation_size")),
+    group_aggregation_size_(
+      static_cast<unsigned int>(params.GetParamValue<int>("group_aggregation_size"))),
     relaxation_(params.GetParamValue<double>("relaxation")),
     correction_max_attempts_(params.GetParamValue<unsigned int>("correction_max_attempts")),
     correction_min_damping_(params.GetParamValue<double>("correction_min_damping")),
@@ -192,7 +198,8 @@ CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
     coarse_solver_policy_(params.GetParamValue<std::string>("coarse_solver_policy")),
     direct_coarse_solve_threshold_(
       static_cast<std::size_t>(params.GetParamValue<int>("direct_coarse_solve_threshold"))),
-    num_groups_(do_problem_.GetNumGroups())
+    num_groups_(do_problem_.GetNumGroups()),
+    num_coarse_groups_((num_groups_ + group_aggregation_size_ - 1) / group_aggregation_size_)
 {
   OpenSnInvalidArgumentIf(adaptive_relaxation_max_ < adaptive_relaxation_min_,
                           "CMFD adaptive_relaxation_max must be >= adaptive_relaxation_min.");
@@ -227,12 +234,17 @@ CMFDAcceleration::Initialize()
 
   log.Log() << "Initialized CMFD coarse mesh with " << coarse_mesh_.NumLocalCells()
             << " local coarse cells.";
+  if (group_aggregation_size_ > 1)
+    log.Log0Warning() << "CMFD energy-group aggregation is experimental; verify the accelerated "
+                         "k-eigenvalue against an uncollapsed CMFD or transport reference.";
   LogCoarseMeshDiagnostics(ComputeCoarseMeshDiagnostics());
 }
 
 void
 CMFDAcceleration::PreExecute()
 {
+  coarse_phi_old_fine_.clear();
+  coarse_phi_new_fine_.clear();
   coarse_phi_old_.clear();
   coarse_phi_new_.clear();
   coarse_phi_cache_.clear();
@@ -246,8 +258,15 @@ void
 CMFDAcceleration::PrePowerIteration()
 {
   const double t0 = NowSeconds();
-  coarse_phi_old_ =
+  coarse_phi_old_fine_ =
     CMFDRestrictScalarFlux(do_problem_, first_group_, num_groups_, coarse_mesh_, phi_old_local_);
+  coarse_phi_old_ =
+    CMFDRestrictScalarFlux(do_problem_,
+                           first_group_,
+                           num_groups_,
+                           group_aggregation_size_,
+                           coarse_mesh_,
+                           phi_old_local_);
   last_restrict_old_time_ = NowSeconds() - t0;
   transport_start_time_ = NowSeconds();
 }
@@ -260,8 +279,15 @@ CMFDAcceleration::PostPowerIteration()
     transport_start_time_ > 0.0 ? post_start_time - transport_start_time_ : 0.0;
 
   double t0 = NowSeconds();
-  coarse_phi_new_ =
+  coarse_phi_new_fine_ =
     CMFDRestrictScalarFlux(do_problem_, first_group_, num_groups_, coarse_mesh_, phi_new_local_);
+  coarse_phi_new_ =
+    CMFDRestrictScalarFlux(do_problem_,
+                           first_group_,
+                           num_groups_,
+                           group_aggregation_size_,
+                           coarse_mesh_,
+                           phi_new_local_);
   const double restrict_new_time = NowSeconds() - t0;
 
   t0 = NowSeconds();
@@ -344,8 +370,8 @@ CMFDAcceleration::PostPowerIteration()
   bool skipped_correction = false;
   k_eff = ApplyFluxCorrectionWithDamping(phi_new_local_,
                                          coarse_phi,
+                                         F_old,
                                          transport_k_eff,
-                                         k_eff,
                                          applied_damping,
                                          correction_attempts,
                                          correction_diagnostics,
@@ -387,19 +413,176 @@ CMFDAcceleration::PostPowerIteration()
 std::size_t
 CMFDAcceleration::LocalUnknownCount() const
 {
-  return coarse_mesh_.NumLocalCells() * num_groups_;
+  return coarse_mesh_.NumLocalCells() * num_coarse_groups_;
 }
 
 std::size_t
 CMFDAcceleration::GlobalUnknownCount() const
 {
-  return coarse_mesh_.NumGlobalCells() * num_groups_;
+  return coarse_mesh_.NumGlobalCells() * num_coarse_groups_;
 }
 
 PetscInt
-CMFDAcceleration::MapDOF(const uint64_t coarse_cell_global_id, const unsigned int group) const
+CMFDAcceleration::MapDOF(const uint64_t coarse_cell_global_id,
+                         const unsigned int coarse_group) const
 {
-  return static_cast<PetscInt>(coarse_cell_global_id * num_groups_ + group);
+  return static_cast<PetscInt>(coarse_cell_global_id * num_coarse_groups_ + coarse_group);
+}
+
+unsigned int
+CMFDAcceleration::FineGroupBegin(const unsigned int coarse_group) const
+{
+  return coarse_group * group_aggregation_size_;
+}
+
+unsigned int
+CMFDAcceleration::FineGroupEnd(const unsigned int coarse_group) const
+{
+  return std::min(num_groups_, (coarse_group + 1) * group_aggregation_size_);
+}
+
+double
+CMFDAcceleration::CondensedRemovalXS(const MultiGroupXS& xs,
+                                     const std::vector<double>& fine_coarse_phi,
+                                     const CMFDCoarseCell& coarse_cell,
+                                     const unsigned int coarse_group) const
+{
+  const auto& sigma_t = xs.GetSigmaTotal();
+  const auto& scatter = xs.GetTransferMatrix(0);
+  const bool has_flux = not fine_coarse_phi.empty();
+  const auto fine_offset = coarse_cell.local_id * num_groups_;
+  double denominator = 0.0;
+  for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
+    denominator += has_flux ? fine_coarse_phi[fine_offset + g] : 1.0;
+
+  double numerator = 0.0;
+  for (unsigned int gp = FineGroupBegin(coarse_group); gp < FineGroupEnd(coarse_group); ++gp)
+    numerator += sigma_t[gp] * (has_flux ? fine_coarse_phi[fine_offset + gp] : 1.0);
+
+  for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
+    for (const auto& [_, gp, sigma_s] : scatter.Row(g))
+      if (gp >= FineGroupBegin(coarse_group) and gp < FineGroupEnd(coarse_group))
+        numerator -= sigma_s * (has_flux ? fine_coarse_phi[fine_offset + gp] : 1.0);
+
+  if (std::fabs(denominator) <= 1.0e-30)
+  {
+    numerator = 0.0;
+    denominator = 0.0;
+    for (unsigned int gp = FineGroupBegin(coarse_group); gp < FineGroupEnd(coarse_group); ++gp)
+    {
+      numerator += sigma_t[gp];
+      denominator += 1.0;
+    }
+    for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
+      for (const auto& [_, gp, sigma_s] : scatter.Row(g))
+        if (gp >= FineGroupBegin(coarse_group) and gp < FineGroupEnd(coarse_group))
+          numerator -= sigma_s;
+  }
+  return numerator / denominator;
+}
+
+double
+CMFDAcceleration::CondensedDiffusionCoefficient(const MultiGroupXS& xs,
+                                                const std::vector<double>& fine_coarse_phi,
+                                                const CMFDCoarseCell& coarse_cell,
+                                                const unsigned int coarse_group) const
+{
+  const auto& diffusion_coeff = xs.GetDiffusionCoefficient();
+  const bool has_flux = not fine_coarse_phi.empty();
+  const auto fine_offset = coarse_cell.local_id * num_groups_;
+  double numerator = 0.0;
+  double denominator = 0.0;
+  for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
+  {
+    const double phi = has_flux ? fine_coarse_phi[fine_offset + g] : 1.0;
+    numerator += diffusion_coeff[g] * phi;
+    denominator += phi;
+  }
+  if (std::fabs(denominator) <= 1.0e-30)
+  {
+    numerator = 0.0;
+    denominator = 0.0;
+    for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
+    {
+      numerator += diffusion_coeff[g];
+      denominator += 1.0;
+    }
+  }
+  return numerator / denominator;
+}
+
+double
+CMFDAcceleration::CondensedScatterXS(const MultiGroupXS& xs,
+                                     const std::vector<double>& fine_coarse_phi,
+                                     const CMFDCoarseCell& coarse_cell,
+                                     const unsigned int row_coarse_group,
+                                     const unsigned int col_coarse_group) const
+{
+  const auto& scatter = xs.GetTransferMatrix(0);
+  const bool has_flux = not fine_coarse_phi.empty();
+  const auto fine_offset = coarse_cell.local_id * num_groups_;
+  double numerator = 0.0;
+  double denominator = 0.0;
+  for (unsigned int gp = FineGroupBegin(col_coarse_group); gp < FineGroupEnd(col_coarse_group);
+       ++gp)
+    denominator += has_flux ? fine_coarse_phi[fine_offset + gp] : 1.0;
+
+  for (unsigned int g = FineGroupBegin(row_coarse_group); g < FineGroupEnd(row_coarse_group); ++g)
+    for (const auto& [_, gp, sigma_s] : scatter.Row(g))
+      if (gp >= FineGroupBegin(col_coarse_group) and gp < FineGroupEnd(col_coarse_group))
+        numerator += sigma_s * (has_flux ? fine_coarse_phi[fine_offset + gp] : 1.0);
+
+  if (std::fabs(denominator) <= 1.0e-30)
+  {
+    numerator = 0.0;
+    denominator = 0.0;
+    for (unsigned int gp = FineGroupBegin(col_coarse_group); gp < FineGroupEnd(col_coarse_group);
+         ++gp)
+      denominator += 1.0;
+    for (unsigned int g = FineGroupBegin(row_coarse_group); g < FineGroupEnd(row_coarse_group);
+         ++g)
+      for (const auto& [_, gp, sigma_s] : scatter.Row(g))
+        if (gp >= FineGroupBegin(col_coarse_group) and gp < FineGroupEnd(col_coarse_group))
+          numerator += sigma_s;
+  }
+  return numerator / denominator;
+}
+
+double
+CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
+                                        const std::vector<double>& fine_coarse_phi,
+                                        const CMFDCoarseCell& coarse_cell,
+                                        const unsigned int row_coarse_group,
+                                        const unsigned int col_coarse_group) const
+{
+  const auto& F = xs.GetProductionMatrix();
+  const bool has_flux = not fine_coarse_phi.empty();
+  const auto fine_offset = coarse_cell.local_id * num_groups_;
+  double numerator = 0.0;
+  double denominator = 0.0;
+  for (unsigned int gp = FineGroupBegin(col_coarse_group); gp < FineGroupEnd(col_coarse_group);
+       ++gp)
+  {
+    const double phi = has_flux ? fine_coarse_phi[fine_offset + gp] : 1.0;
+    denominator += phi;
+    for (unsigned int g = FineGroupBegin(row_coarse_group); g < FineGroupEnd(row_coarse_group);
+         ++g)
+      numerator += F[g][gp] * phi;
+  }
+  if (std::fabs(denominator) <= 1.0e-30)
+  {
+    numerator = 0.0;
+    denominator = 0.0;
+    for (unsigned int gp = FineGroupBegin(col_coarse_group); gp < FineGroupEnd(col_coarse_group);
+         ++gp)
+    {
+      denominator += 1.0;
+      for (unsigned int g = FineGroupBegin(row_coarse_group); g < FineGroupEnd(row_coarse_group);
+           ++g)
+        numerator += F[g][gp];
+    }
+  }
+  return numerator / denominator;
 }
 
 void
@@ -478,9 +661,10 @@ CMFDAcceleration::BuildCoarseFluxCache()
 
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
   {
-    const auto offset = coarse_cell.local_id * num_groups_;
-    for (unsigned int g = 0; g < num_groups_; ++g)
-      coarse_phi_cache_[std::make_tuple(coarse_cell.global_id, g)] = coarse_phi_new_[offset + g];
+    const auto offset = coarse_cell.local_id * num_coarse_groups_;
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+      coarse_phi_cache_[std::make_tuple(coarse_cell.global_id, cg)] =
+        coarse_phi_new_[offset + cg];
   }
 
   std::map<int, std::set<std::pair<uint64_t, unsigned int>>> pid_request_sets;
@@ -492,8 +676,8 @@ CMFDAcceleration::BuildCoarseFluxCache()
         continue;
 
       auto& requests = pid_request_sets[face.neighbor_partition_id];
-      for (unsigned int g = 0; g < num_groups_; ++g)
-        requests.emplace(face.neighbor_id, g);
+      for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+        requests.emplace(face.neighbor_id, cg);
     }
   }
 
@@ -524,14 +708,14 @@ CMFDAcceleration::BuildCoarseFluxCache()
     for (std::size_t r = 0; r < requests.size(); r += 2)
     {
       const auto coarse_cell_gid = requests[r];
-      const auto g = static_cast<unsigned int>(requests[r + 1]);
+      const auto cg = static_cast<unsigned int>(requests[r + 1]);
       OpenSnInvalidArgumentIf(not coarse_mesh_.HasLocalCoarseCell(coarse_cell_gid),
                               "CMFD coarse-flux request references a nonlocal coarse cell.");
 
       const auto coarse_local_id = coarse_mesh_.LocalCellFromGlobalID(coarse_cell_gid).local_id;
-      const auto value = coarse_phi_new_[coarse_local_id * num_groups_ + g];
+      const auto value = coarse_phi_new_[coarse_local_id * num_coarse_groups_ + cg];
       response_keys.push_back(coarse_cell_gid);
-      response_keys.push_back(g);
+      response_keys.push_back(cg);
       response_values.push_back(value);
     }
   }
@@ -551,8 +735,8 @@ CMFDAcceleration::BuildCoarseFluxCache()
     {
       const auto key_offset = 2 * r;
       const auto coarse_cell_gid = keys[key_offset];
-      const auto g = static_cast<unsigned int>(keys[key_offset + 1]);
-      coarse_phi_cache_[std::make_tuple(coarse_cell_gid, g)] = values[r];
+      const auto cg = static_cast<unsigned int>(keys[key_offset + 1]);
+      coarse_phi_cache_[std::make_tuple(coarse_cell_gid, cg)] = values[r];
     }
   }
 }
@@ -581,8 +765,8 @@ CMFDAcceleration::BuildFaceCurrentCache()
 
         const auto& neighbor_cell = grid.cells[neighbor_id];
         auto& requests = pid_request_sets[neighbor_cell.partition_id];
-        for (unsigned int g = 0; g < num_groups_; ++g)
-          requests.emplace(neighbor_id, fine_face.cell_id, g);
+        for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+          requests.emplace(neighbor_id, fine_face.cell_id, cg);
       }
     }
   }
@@ -592,11 +776,11 @@ CMFDAcceleration::BuildFaceCurrentCache()
   {
     auto& requests = pid_requests[pid];
     requests.reserve(3 * request_set.size());
-    for (const auto& [owner_cell_gid, neighbor_cell_gid, g] : request_set)
+    for (const auto& [owner_cell_gid, neighbor_cell_gid, cg] : request_set)
     {
       requests.push_back(owner_cell_gid);
       requests.push_back(neighbor_cell_gid);
-      requests.push_back(g);
+      requests.push_back(cg);
     }
   }
 
@@ -616,7 +800,7 @@ CMFDAcceleration::BuildFaceCurrentCache()
     {
       const auto owner_cell_gid = requests[r];
       const auto neighbor_cell_gid = requests[r + 1];
-      const auto g = static_cast<unsigned int>(requests[r + 2]);
+      const auto cg = static_cast<unsigned int>(requests[r + 2]);
       const auto& owner_cell = grid.cells[owner_cell_gid];
       OpenSnInvalidArgumentIf(owner_cell.partition_id != opensn::mpi_comm.rank(),
                               "CMFD face-current request references a nonlocal owner cell.");
@@ -629,7 +813,8 @@ CMFDAcceleration::BuildFaceCurrentCache()
         const auto& face = owner_cell.faces[f];
         if (face.has_neighbor and face.neighbor_id == neighbor_cell_gid)
         {
-          outflow = outflow_view.Get(f, g);
+          for (unsigned int g = FineGroupBegin(cg); g < FineGroupEnd(cg); ++g)
+            outflow += outflow_view.Get(f, first_group_ + g);
           found_face = true;
           break;
         }
@@ -639,7 +824,7 @@ CMFDAcceleration::BuildFaceCurrentCache()
                            "Unable to satisfy CMFD face-current request for neighbor face.");
       response_keys.push_back(owner_cell_gid);
       response_keys.push_back(neighbor_cell_gid);
-      response_keys.push_back(g);
+      response_keys.push_back(cg);
       response_values.push_back(outflow);
     }
   }
@@ -661,8 +846,8 @@ CMFDAcceleration::BuildFaceCurrentCache()
       const auto key_offset = 3 * r;
       const auto owner_cell_gid = keys[key_offset];
       const auto neighbor_cell_gid = keys[key_offset + 1];
-      const auto g = static_cast<unsigned int>(keys[key_offset + 2]);
-      face_current_cache_[std::make_tuple(owner_cell_gid, neighbor_cell_gid, g)] = values[r];
+      const auto cg = static_cast<unsigned int>(keys[key_offset + 2]);
+      face_current_cache_[std::make_tuple(owner_cell_gid, neighbor_cell_gid, cg)] = values[r];
     }
   }
 }
@@ -677,14 +862,12 @@ CMFDAcceleration::AssembleOperator()
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
   {
     const auto& xs = *xs_map.at(coarse_cell.block_id);
-    const auto& diffusion_coeff = xs.GetDiffusionCoefficient();
-    const auto& sigma_removal = xs.GetSigmaRemoval();
-    const auto& scatter = xs.GetTransferMatrix(0);
 
-    for (unsigned int g = 0; g < num_groups_; ++g)
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
     {
-      const auto row = MapDOF(coarse_cell.global_id, g);
-      double diag = sigma_removal[g] * coarse_cell.volume;
+      const auto row = MapDOF(coarse_cell.global_id, cg);
+      double diag = CondensedRemovalXS(xs, coarse_phi_new_fine_, coarse_cell, cg) *
+                    coarse_cell.volume;
 
       for (std::size_t f = 0; f < coarse_cell.faces.size(); ++f)
       {
@@ -692,31 +875,36 @@ CMFDAcceleration::AssembleOperator()
         if (face.has_neighbor)
         {
           const auto& neighbor_xs = *xs_map.at(face.neighbor_block_id);
-          const auto& neighbor_diffusion_coeff = neighbor_xs.GetDiffusionCoefficient();
 
           const double owner_distance_to_face =
             ProjectedDistanceToFace(coarse_cell.centroid, face.centroid, face.normal);
           const double neighbor_distance_to_face =
             ProjectedDistanceToFace(face.neighbor_centroid, face.centroid, face.normal);
-          const double coeff = InterfaceDiffusionCoefficient(diffusion_coeff[g],
-                                                             neighbor_diffusion_coeff[g],
-                                                             owner_distance_to_face,
-                                                             neighbor_distance_to_face,
-                                                             face.area);
+          const std::vector<double> unweighted_spectrum;
+          const double coeff =
+            InterfaceDiffusionCoefficient(CondensedDiffusionCoefficient(
+                                            xs, coarse_phi_new_fine_, coarse_cell, cg),
+                                          CondensedDiffusionCoefficient(neighbor_xs,
+                                                                       unweighted_spectrum,
+                                                                       coarse_cell,
+                                                                       cg),
+                                          owner_distance_to_face,
+                                          neighbor_distance_to_face,
+                                          face.area);
           double current_correction = 0.0;
           if (not coarse_phi_new_.empty())
           {
             const auto neighbor_coarse_gid = face.neighbor_id;
-            const auto phi_owner = coarse_phi_new_[coarse_cell.local_id * num_groups_ + g];
+            const auto phi_owner = coarse_phi_new_[coarse_cell.local_id * num_coarse_groups_ + cg];
             const auto phi_neighbor_it =
-              coarse_phi_cache_.find(std::make_tuple(neighbor_coarse_gid, g));
+              coarse_phi_cache_.find(std::make_tuple(neighbor_coarse_gid, cg));
             if (phi_neighbor_it != coarse_phi_cache_.end())
             {
               const auto phi_neighbor = phi_neighbor_it->second;
               const auto phi_sum = phi_owner + phi_neighbor;
               if (std::fabs(phi_sum) > 1.0e-14)
               {
-                const double transport_current = ComputeOutwardCurrent(coarse_cell, f, g);
+                const double transport_current = ComputeOutwardCurrent(coarse_cell, f, cg);
                 current_correction =
                   (transport_current - coeff * (phi_owner - phi_neighbor)) / phi_sum;
               }
@@ -724,7 +912,7 @@ CMFDAcceleration::AssembleOperator()
           }
 
           diag += coeff + current_correction;
-          const auto col = MapDOF(face.neighbor_id, g);
+          const auto col = MapDOF(face.neighbor_id, cg);
           OpenSnPETScCall(MatSetValue(A_, row, col, -coeff + current_correction, ADD_VALUES));
         }
         else
@@ -737,19 +925,20 @@ CMFDAcceleration::AssembleOperator()
             double boundary_coeff = 0.5 * face.area;
             if (not coarse_phi_new_.empty())
             {
-              const auto phi_owner = coarse_phi_new_[coarse_cell.local_id * num_groups_ + g];
+              const auto phi_owner = coarse_phi_new_[coarse_cell.local_id * num_coarse_groups_ + cg];
               if (std::fabs(phi_owner) > 1.0e-14)
-                boundary_coeff = ComputeOutwardCurrent(coarse_cell, f, g) / phi_owner;
+                boundary_coeff = ComputeOutwardCurrent(coarse_cell, f, cg) / phi_owner;
             }
             diag += boundary_coeff;
           }
         }
       }
 
-      for (const auto& [_, gp, sigma_s] : scatter.Row(g))
-        if (gp >= first_group_ and gp < first_group_ + num_groups_ and gp != g)
+      for (unsigned int cgp = 0; cgp < num_coarse_groups_; ++cgp)
+        if (cgp != cg)
         {
-          const auto col = MapDOF(coarse_cell.global_id, gp - first_group_);
+          const auto sigma_s = CondensedScatterXS(xs, coarse_phi_new_fine_, coarse_cell, cg, cgp);
+          const auto col = MapDOF(coarse_cell.global_id, cgp);
           OpenSnPETScCall(MatSetValue(A_, row, col, -sigma_s * coarse_cell.volume, ADD_VALUES));
         }
 
@@ -766,18 +955,19 @@ CMFDAcceleration::AssembleOperator()
 double
 CMFDAcceleration::ComputeOutwardCurrent(const CMFDCoarseCell& coarse_cell,
                                         const std::size_t face_index,
-                                        const unsigned int group) const
+                                        const unsigned int coarse_group) const
 {
   const auto& grid = *do_problem_.GetGrid();
   const auto& coarse_face = coarse_cell.faces.at(face_index);
   const auto& outflow_views = do_problem_.GetCellOutflowViews();
-  const auto g = first_group_ + group;
 
   double current = 0.0;
   for (const auto& fine_face : coarse_face.fine_faces)
   {
     const auto& fine_cell = grid.cells[fine_face.cell_id];
-    const double owner_outflow = outflow_views[fine_cell.local_id].Get(fine_face.face_index, g);
+    double owner_outflow = 0.0;
+    for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
+      owner_outflow += outflow_views[fine_cell.local_id].Get(fine_face.face_index, first_group_ + g);
 
     if (not fine_face.neighbor_id.has_value())
     {
@@ -795,7 +985,10 @@ CMFDAcceleration::ComputeOutwardCurrent(const CMFDCoarseCell& coarse_cell,
         const auto& neighbor_face = neighbor_cell.faces[nf];
         if (neighbor_face.has_neighbor and neighbor_face.neighbor_id == fine_cell.global_id)
         {
-          current += owner_outflow - outflow_views[neighbor_cell.local_id].Get(nf, g);
+          double neighbor_outflow = 0.0;
+          for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
+            neighbor_outflow += outflow_views[neighbor_cell.local_id].Get(nf, first_group_ + g);
+          current += owner_outflow - neighbor_outflow;
           found_face = true;
           break;
         }
@@ -805,7 +998,7 @@ CMFDAcceleration::ComputeOutwardCurrent(const CMFDCoarseCell& coarse_cell,
     }
     else
     {
-      const auto key = std::make_tuple(neighbor_id, fine_cell.global_id, g);
+      const auto key = std::make_tuple(neighbor_id, fine_cell.global_id, coarse_group);
       const auto neighbor_outflow = face_current_cache_.find(key);
       OpenSnLogicalErrorIf(neighbor_outflow == face_current_cache_.end(),
                            "Unable to find matching remote neighbor face for CMFD current.");
@@ -820,7 +1013,8 @@ std::vector<double>
 CMFDAcceleration::SolveCoarseSystem(const double k_eff,
                                     const std::vector<double>& coarse_source_phi) const
 {
-  OpenSnInvalidArgumentIf(coarse_source_phi.size() != coarse_mesh_.NumLocalCells() * num_groups_,
+  OpenSnInvalidArgumentIf(coarse_source_phi.size() !=
+                            coarse_mesh_.NumLocalCells() * num_coarse_groups_,
                           "Coarse source scalar flux vector size mismatch.");
 
   AssembleRHS(rhs_, k_eff, coarse_source_phi);
@@ -829,10 +1023,12 @@ CMFDAcceleration::SolveCoarseSystem(const double k_eff,
   OpenSnPETScCall(VecDuplicate(rhs_, &x));
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
   {
-    const auto coarse_offset = coarse_cell.local_id * num_groups_;
-    for (unsigned int g = 0; g < num_groups_; ++g)
-      OpenSnPETScCall(VecSetValue(
-        x, MapDOF(coarse_cell.global_id, g), coarse_phi_new_[coarse_offset + g], INSERT_VALUES));
+    const auto coarse_offset = coarse_cell.local_id * num_coarse_groups_;
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+      OpenSnPETScCall(VecSetValue(x,
+                                  MapDOF(coarse_cell.global_id, cg),
+                                  coarse_phi_new_[coarse_offset + cg],
+                                  INSERT_VALUES));
   }
   OpenSnPETScCall(VecAssemblyBegin(x));
   OpenSnPETScCall(VecAssemblyEnd(x));
@@ -851,8 +1047,8 @@ CMFDAcceleration::SolveCoarseSystem(const double k_eff,
   std::vector<int64_t> indices;
   indices.reserve(coarse_phi_new_.size());
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
-    for (unsigned int g = 0; g < num_groups_; ++g)
-      indices.push_back(MapDOF(coarse_cell.global_id, g));
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+      indices.push_back(MapDOF(coarse_cell.global_id, cg));
 
   std::vector<double> coarse_phi;
   CopyGlobalVecToSTLvector(x, indices, coarse_phi);
@@ -868,7 +1064,8 @@ CMFDAcceleration::AssembleRHS(Vec rhs,
 {
   const auto& xs_map = do_problem_.GetBlockID2XSMap();
 
-  OpenSnInvalidArgumentIf(coarse_source_phi.size() != coarse_mesh_.NumLocalCells() * num_groups_,
+  OpenSnInvalidArgumentIf(coarse_source_phi.size() !=
+                            coarse_mesh_.NumLocalCells() * num_coarse_groups_,
                           "Coarse source scalar flux vector size mismatch.");
 
   OpenSnPETScCall(VecSet(rhs, 0.0));
@@ -878,17 +1075,15 @@ CMFDAcceleration::AssembleRHS(Vec rhs,
     if (not xs.IsFissionable())
       continue;
 
-    const auto& F = xs.GetProductionMatrix();
-    const auto coarse_offset = coarse_cell.local_id * num_groups_;
-    for (unsigned int g = 0; g < num_groups_; ++g)
+    const auto coarse_offset = coarse_cell.local_id * num_coarse_groups_;
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
     {
       double rhs_value = 0.0;
-      for (unsigned int gp = 0; gp < num_groups_; ++gp)
-      {
-        rhs_value += F[g][gp] * coarse_source_phi[coarse_offset + gp];
-      }
+      for (unsigned int cgp = 0; cgp < num_coarse_groups_; ++cgp)
+        rhs_value += CondensedProductionXS(xs, coarse_phi_new_fine_, coarse_cell, cg, cgp) *
+                     coarse_source_phi[coarse_offset + cgp];
       rhs_value *= coarse_cell.volume / k_eff;
-      const auto row = MapDOF(coarse_cell.global_id, g);
+      const auto row = MapDOF(coarse_cell.global_id, cg);
       OpenSnPETScCall(VecSetValue(rhs, row, rhs_value, ADD_VALUES));
     }
   }
@@ -901,7 +1096,7 @@ CMFDAcceleration::ComputeBalanceResidual(const double k_eff,
                                          const std::vector<double>& coarse_phi,
                                          const std::vector<double>& coarse_source_phi) const
 {
-  OpenSnInvalidArgumentIf(coarse_phi.size() != coarse_mesh_.NumLocalCells() * num_groups_,
+  OpenSnInvalidArgumentIf(coarse_phi.size() != coarse_mesh_.NumLocalCells() * num_coarse_groups_,
                           "Coarse scalar flux vector size mismatch.");
 
   Vec x = nullptr;
@@ -914,10 +1109,10 @@ CMFDAcceleration::ComputeBalanceResidual(const double k_eff,
   OpenSnPETScCall(VecSet(x, 0.0));
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
   {
-    const auto coarse_offset = coarse_cell.local_id * num_groups_;
-    for (unsigned int g = 0; g < num_groups_; ++g)
+    const auto coarse_offset = coarse_cell.local_id * num_coarse_groups_;
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
       OpenSnPETScCall(VecSetValue(
-        x, MapDOF(coarse_cell.global_id, g), coarse_phi[coarse_offset + g], INSERT_VALUES));
+        x, MapDOF(coarse_cell.global_id, cg), coarse_phi[coarse_offset + cg], INSERT_VALUES));
   }
   OpenSnPETScCall(VecAssemblyBegin(x));
   OpenSnPETScCall(VecAssemblyEnd(x));
@@ -946,7 +1141,7 @@ CMFDAcceleration::ComputeCoarseFissionProduction(const std::vector<double>& coar
 {
   const auto& xs_map = do_problem_.GetBlockID2XSMap();
 
-  OpenSnInvalidArgumentIf(coarse_phi.size() != coarse_mesh_.NumLocalCells() * num_groups_,
+  OpenSnInvalidArgumentIf(coarse_phi.size() != coarse_mesh_.NumLocalCells() * num_coarse_groups_,
                           "Coarse scalar flux vector size mismatch.");
 
   double local_production = 0.0;
@@ -956,15 +1151,11 @@ CMFDAcceleration::ComputeCoarseFissionProduction(const std::vector<double>& coar
     if (not xs.IsFissionable())
       continue;
 
-    const auto& F = xs.GetProductionMatrix();
-    const auto coarse_offset = coarse_cell.local_id * num_groups_;
-    for (unsigned int g = 0; g < num_groups_; ++g)
-    {
-      for (unsigned int gp = 0; gp < num_groups_; ++gp)
-      {
-        local_production += F[g][gp] * coarse_phi[coarse_offset + gp] * coarse_cell.volume;
-      }
-    }
+    const auto coarse_offset = coarse_cell.local_id * num_coarse_groups_;
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+      for (unsigned int cgp = 0; cgp < num_coarse_groups_; ++cgp)
+        local_production += CondensedProductionXS(xs, coarse_phi_new_fine_, coarse_cell, cg, cgp) *
+                            coarse_phi[coarse_offset + cgp] * coarse_cell.volume;
   }
 
   double global_production = 0.0;
@@ -1068,6 +1259,10 @@ CMFDAcceleration::LogCoarseMeshDiagnostics(const CoarseMeshDiagnostics& diagnost
   log.Log() << "CMFD_METRIC c=coarse_mesh m=global_fine_cells v=" << diagnostics.global_fine_cells;
   log.Log() << "CMFD_METRIC c=coarse_mesh m=global_coarse_cells v="
             << diagnostics.global_coarse_cells;
+  log.Log() << "CMFD_METRIC c=coarse_mesh m=group_aggregation_size v="
+            << group_aggregation_size_;
+  log.Log() << "CMFD_METRIC c=coarse_mesh m=energy_coarse_groups v="
+            << num_coarse_groups_;
   log.Log() << "CMFD_METRIC c=coarse_mesh m=aggregation_ratio v=" << aggregation_ratio;
   log.Log() << "CMFD_METRIC c=coarse_mesh m=global_unknowns v=" << GlobalUnknownCount();
   log.Log() << "CMFD_METRIC c=coarse_mesh m=max_fine_cells_per_coarse_cell v="
@@ -1159,8 +1354,8 @@ CMFDAcceleration::UpdateAdaptiveRelaxation(const double starting_relaxation,
 double
 CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& transport_phi_new,
                                                  const std::vector<double>& coarse_phi,
+                                                 const double old_fission_production,
                                                  const double transport_k_eff,
-                                                 const double cmfd_k_eff,
                                                  double& applied_damping,
                                                  unsigned int& attempts,
                                                  FluxUpdateDiagnostics& diagnostics,
@@ -1190,11 +1385,23 @@ CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& tran
     std::vector<double> coarse_delta_phi(unrelaxed_coarse_delta_phi.size(), 0.0);
     for (size_t i = 0; i < unrelaxed_coarse_delta_phi.size(); ++i)
       coarse_delta_phi[i] = damping * unrelaxed_coarse_delta_phi[i];
+    std::vector<double> candidate_coarse_phi(coarse_phi_new_.size(), 0.0);
+    for (size_t i = 0; i < candidate_coarse_phi.size(); ++i)
+      candidate_coarse_phi[i] = coarse_phi_new_[i] + coarse_delta_phi[i];
 
     auto candidate_phi_new = transport_phi_new;
-    CMFDProlongateScalarFluxCorrection(
-      do_problem_, first_group_, num_groups_, coarse_mesh_, coarse_delta_phi, candidate_phi_new);
-    const double candidate_k_eff = transport_k_eff + damping * (cmfd_k_eff - transport_k_eff);
+    CMFDProlongateScalarFluxRatio(do_problem_,
+                                  first_group_,
+                                  num_groups_,
+                                  group_aggregation_size_,
+                                  coarse_mesh_,
+                                  coarse_phi_new_,
+                                  candidate_coarse_phi,
+                                  candidate_phi_new);
+    const double candidate_fission_production =
+      ComputeFissionProduction(do_problem_, candidate_phi_new);
+    const double candidate_k_eff =
+      candidate_fission_production / old_fission_production * solver_->GetEigenvalue();
     diagnostics = AnalyzeFluxUpdate(candidate_phi_new, candidate_k_eff);
     if (IsAcceptableFluxUpdate(diagnostics, min_allowed_scalar_flux))
     {

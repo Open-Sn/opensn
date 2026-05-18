@@ -128,6 +128,7 @@ if __name__ == "__main__":
             problem=phys,
             coarse_mesh=get_option("cmfd_coarse_mesh", "local_aggregation"),
             aggregation_size=int(get_option("cmfd_aggregation_size", 16)),
+            group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 1)),
             update_scheme=get_bool_option("cmfd_update_scheme", True),
             update_wgs_max_its=int(get_option("cmfd_update_wgs_max_its", 4)),
             update_wgs_abs_tol=float(get_option("cmfd_update_wgs_abs_tol", 1.0e-4)),
