@@ -14,6 +14,7 @@
 #include "framework/utils/timer.h"
 #include "caliper/cali.h"
 #include <petscsnes.h>
+#include <cmath>
 
 namespace opensn
 {
@@ -137,6 +138,8 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
 
   // Compute final k_eff
   double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiNewLocal());
+  OpenSnLogicalErrorIf(k_eff <= 0.0 or not std::isfinite(k_eff),
+                       "NLKE produced a non-positive or non-finite final k-effective.");
   nl_context_ptr->kresid_func_context.k_eff = k_eff;
 
   PetscInt number_of_func_evals = 0;

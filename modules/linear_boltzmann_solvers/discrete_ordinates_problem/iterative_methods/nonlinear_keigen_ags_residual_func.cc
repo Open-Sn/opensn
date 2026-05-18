@@ -12,6 +12,7 @@
 
 #include "caliper/cali.h"
 #include <petscsnes.h>
+#include <cmath>
 
 namespace opensn
 {
@@ -74,6 +75,8 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   }
 
   const double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
+  if (k_eff <= 0.0 or not std::isfinite(k_eff))
+    return SNESSetFunctionDomainError(snes);
   lbs_problem->ScaleQMoments(1.0 / k_eff);
 
   {

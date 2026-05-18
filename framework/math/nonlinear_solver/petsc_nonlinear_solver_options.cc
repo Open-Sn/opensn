@@ -47,8 +47,8 @@ PETScNonLinearSolverOptions::GetInputParameters()
   params.AddOptionalParameter("l_abs_tol", 1.0e-8, "Linear absolute tolerance");
   params.AddOptionalParameter("l_div_tol", 1.0e6, "Linear divergence tolerance");
   params.AddOptionalParameter("l_max_its", 100, "Linear maximum iterations");
-  params.AddOptionalParameter("l_gmres_restart_intvl", 30, "GMRes restart interval");
-  params.AddOptionalParameter("l_gmres_breakdown_tol", 1.0e6, "GMRes breakdown tolerance");
+  params.AddOptionalParameter("l_gmres_restart_intvl", 30, "GMRES restart interval");
+  params.AddOptionalParameter("l_gmres_breakdown_tol", 0.1, "GMRES breakdown tolerance");
 
   params.ConstrainParameterRange("nl_method",
                                  AllowableRangeList::New({"JFNK", "PJFNK", "NEWTON", "LINEAR"}));

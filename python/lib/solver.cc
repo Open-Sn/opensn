@@ -1661,6 +1661,10 @@ WrapNLKEigen(py::module& slv)
     Non-linear k-eigenvalue solver.
 
     Wrapper of :cpp:class:`opensn::NonLinearKEigenSolver`.
+
+    Supports one or more groupsets when the groupsets run without WGDSA/TGDSA.
+    If WGDSA or TGDSA is enabled on any groupset, the nonlinear k-eigen solve
+    must use a single groupset.
     )"
   );
   non_linear_k_eigen_solver.def(
@@ -1677,6 +1681,9 @@ WrapNLKEigen(py::module& slv)
     ----------
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing discrete ordinates problem instance.
+        Multiple groupsets are supported when groupset WGDSA/TGDSA is disabled.
+        If WGDSA or TGDSA is enabled on any groupset, the nonlinear k-eigen
+        solve must use a single groupset.
     nl_abs_tol: float, default=1.0e-8
         Non-linear absolute tolerance.
     nl_rel_tol: float, default=1.0e-8
@@ -1695,12 +1702,19 @@ WrapNLKEigen(py::module& slv)
         Linear algorithm maximum iterations.
     l_gmres_restart_intvl: int, default=30
         GMRES restart interval.
-    l_gmres_breakdown_tol: float, default=1.0e6
+    l_gmres_breakdown_tol: float, default=0.1
         GMRES breakdown tolerance.
     reset_phi0: bool, default=True
         If true, reinitializes scalar fluxes to 1.0.
     num_initial_power_iterations: int, default=0
         Number of initial power iterations before the non-linear solve.
+
+    Notes
+    -----
+    PETSc convergence failures and iteration limits are reported through the
+    solver status and log output, consistent with the other transport solvers.
+    Invalid residual states are reported to PETSc as function-domain
+    errors so SNES can backtrack or terminate with the appropriate reason.
     )"
   );
   non_linear_k_eigen_solver.def(
