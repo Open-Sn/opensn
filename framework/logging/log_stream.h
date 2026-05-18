@@ -6,7 +6,6 @@
 #include <iostream>
 #include <sstream>
 #include <string_view>
-#include <cctype>
 #include <utility>
 #include "stringstream_color.h"
 
@@ -71,7 +70,7 @@ public:
   }
 
 private:
-  static constexpr std::size_t LINE_WRAP_WIDTH = 100;
+  static constexpr std::size_t LINE_WRAP_WIDTH = 150;
   static constexpr std::size_t CONTINUATION_INDENT = 4;
 
   static std::size_t FindWrapPosition(std::string_view text, std::size_t max_width)
@@ -79,18 +78,21 @@ private:
     if (text.size() <= max_width)
       return std::string_view::npos;
 
-    for (std::size_t i = max_width; i < text.size(); ++i)
-    {
-      if (std::isspace(static_cast<unsigned char>(text[i])))
+    const auto search_limit = std::min(max_width, text.size() - 1);
+    for (std::size_t i = search_limit; i > 0; --i)
+      if (text[i] == ' ')
         return i;
-    }
 
-    return max_width;
+    for (std::size_t i = max_width + 1; i < text.size(); ++i)
+      if (text[i] == ' ')
+        return i;
+
+    return std::string_view::npos;
   }
 
   static std::string_view TrimLeadingSpaces(std::string_view text)
   {
-    while (not text.empty() and std::isspace(static_cast<unsigned char>(text.front())))
+    while (not text.empty() and text.front() == ' ')
       text.remove_prefix(1);
 
     return text;
