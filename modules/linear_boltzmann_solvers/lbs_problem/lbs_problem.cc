@@ -14,6 +14,7 @@
 #include "framework/data_types/allowable_range.h"
 #include "framework/utils/error.h"
 #include "framework/utils/caliper_scopes.h"
+#include "framework/utils/timer.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <iomanip>
@@ -1008,7 +1009,7 @@ LBSProblem::InitializeSpatialDiscretization()
   OpenSnLogicalErrorIf(not discretization_,
                        GetName() + ": Missing spatial discretization. Construct the problem "
                                    "through its factory Create(...) entry point.");
-  log.Log() << "Initializing spatial discretization metadata.\n";
+  log.Log() << program_timer.GetTimeString() << " Initializing spatial discretization metadata.\n";
 
   ComputeUnitIntegrals();
 }
@@ -1018,7 +1019,7 @@ LBSProblem::ComputeUnitIntegrals()
 {
   CALI_CXX_MARK_SCOPE("UnitIntegrals");
 
-  log.Log() << "Computing unit integrals.\n";
+  log.Log() << program_timer.GetTimeString() << " Computing unit integrals.\n";
   const auto& sdm = *discretization_;
 
   const size_t num_local_cells = grid_->local_cells.size();
@@ -1041,9 +1042,9 @@ LBSProblem::ComputeUnitIntegrals()
   mpi_comm.all_reduce(num_local_ucms.data(), 2, num_global_ucms.data(), mpi::op::sum<size_t>());
 
   opensn::mpi_comm.barrier();
-  log.Log() << "Ghost cell unit cell-matrix ratio: "
+  log.Log() << program_timer.GetTimeString() << " Ghost cell unit cell-matrix ratio: "
             << (double)num_global_ucms[1] * 100 / (double)num_global_ucms[0] << "%";
-  log.Log() << "Cell matrices computed.";
+  log.Log() << program_timer.GetTimeString() << " Cell matrices computed.";
 }
 
 void
@@ -1051,7 +1052,7 @@ LBSProblem::InitializeParrays()
 {
   CALI_CXX_MARK_SCOPE("ParallelArrays");
 
-  log.Log() << "Initializing parallel arrays."
+  log.Log() << program_timer.GetTimeString() << " Initializing parallel arrays."
             << " G=" << num_groups_ << " M=" << num_moments_ << std::endl;
 
   // Initialize unknown
@@ -1173,7 +1174,7 @@ LBSProblem::InitializeParrays()
   grid_local_comm_set_ = grid_->MakeMPILocalCommunicatorSet();
 
   opensn::mpi_comm.barrier();
-  log.Log() << "Done with parallel arrays." << std::endl;
+  log.Log() << program_timer.GetTimeString() << " Done with parallel arrays." << std::endl;
 }
 
 #ifndef __OPENSN_WITH_GPU__

@@ -578,7 +578,8 @@ DiscreteOrdinatesProblem::BuildRuntime()
     TGDSA::Init(*this, groupset);
   }
 
-  log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
+  if (options_.verbose_inner_iterations)
+    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
 
   // Initialize runtime boundary data
   RebuildBoundaryRuntimeData();
@@ -1946,9 +1947,6 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
   } // for so_grouping
 
   groupset.angle_agg->BuildDirnumToAnglesetMap();
-
-  if (options_.verbose_inner_iterations)
-    log.Log() << program_timer.GetTimeString() << " Initialized angle aggregation.";
 
   opensn::mpi_comm.barrier();
 }
