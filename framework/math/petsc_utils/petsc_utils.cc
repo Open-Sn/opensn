@@ -258,7 +258,7 @@ KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* /* context *
   buff << program_timer.GetTimeString() << " " << ksp_name << " iteration = " << n;
   AppendNumericField(buff, "residual", rnorm / rhs_norm, Scientific(6));
 
-  log.Log() << buff.str();
+  log.Log() << no_wrap << buff.str();
 
   return PETSC_SUCCESS;
 }

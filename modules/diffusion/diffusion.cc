@@ -26,7 +26,7 @@ LogDiffusionSolveStart(const std::string& name, Vec rhs)
   std::ostringstream out;
   out << name << " solve";
   AppendNumericField(out, "rhs_norm", rhs_norm, Scientific(6));
-  log.Log() << program_timer.GetTimeString() << " " << out.str();
+  log.Log() << no_wrap << program_timer.GetTimeString() << " " << out.str();
 }
 
 void
@@ -48,7 +48,7 @@ LogDiffusionSolveFinal(const std::string& name, KSP ksp, Vec x)
   AppendNumericField(out, "solution_norm", solution_norm, Scientific(6));
   if (log.GetVerbosity() >= 2)
     out << ", detail = " << GetPETScConvergedReasonstring(reason);
-  log.Log() << program_timer.GetTimeString() << " " << out.str();
+  log.Log() << no_wrap << program_timer.GetTimeString() << " " << out.str();
 }
 
 } // namespace

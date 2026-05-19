@@ -115,7 +115,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
         MostSevereIterationStatus(ags_status, MostSevereIterationStatus(wgs_summaries));
       const auto outer_status =
         IterationStatusFromSolve(converged, nit >= max_iterations, inner_status);
-      log.Log() << program_timer.GetTimeString() << " "
+      log.Log() << no_wrap << program_timer.GetTimeString() << " "
                 << FormatKEigenOuterIteration("PI",
                                               nit,
                                               k_eff,
@@ -141,7 +141,7 @@ PowerIterationKEigenSolver(LBSProblem& lbs_problem,
       total_sweeps += wgs_context->counter_applications_of_inv_op;
   }
 
-  log.Log() << program_timer.GetTimeString() << " "
+  log.Log() << no_wrap << program_timer.GetTimeString() << " "
             << FormatKEigenFinalSummary("PI",
                                         k_eff,
                                         k_eff_change,

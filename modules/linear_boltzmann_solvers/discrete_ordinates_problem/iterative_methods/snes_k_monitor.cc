@@ -38,7 +38,7 @@ KEigenSNESMonitor(SNES snes, PetscInt iter, PetscReal rnorm, void* ctx)
     if (log.GetVerbosity() >= 2)
       out << ", detail = " << GetPETScConvergedReasonstring(linear_reason);
   }
-  log.Log() << program_timer.GetTimeString() << " " << out.str();
+  log.Log() << no_wrap << program_timer.GetTimeString() << " " << out.str();
 
   return 0;
 }
@@ -52,7 +52,7 @@ KEigenKSPMonitor(KSP /*ksp*/, PetscInt iter, PetscReal rnorm, void* ctx)
   iter_info << program_timer.GetTimeString() << " NLKE inner"
             << " iteration = " << iter;
   AppendNumericField(iter_info, "residual", rnorm, Scientific(6));
-  log.Log() << iter_info.str();
+  log.Log() << no_wrap << iter_info.str();
 
   return 0;
 }

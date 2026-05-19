@@ -260,7 +260,7 @@ WGSLinearSolver::PostSolveCallback()
     if (report_nonfatal and (gs_context_ptr->last_solve.status == IterationStatus::FAILED or
                              gs_context_ptr->last_solve.status == IterationStatus::LIMIT))
     {
-      log.Log() << program_timer.GetTimeString() << " "
+      log.Log() << no_wrap << program_timer.GetTimeString() << " "
                 << FormatIterationSummary("WGS groups [" + std::to_string(groupset.first_group) +
                                             "-" + std::to_string(groupset.last_group) + "]",
                                           gs_context_ptr->last_solve);

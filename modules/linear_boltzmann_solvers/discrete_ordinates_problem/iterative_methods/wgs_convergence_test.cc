@@ -68,7 +68,7 @@ GSConvergenceTest(
   }
 
   if (context->log_info)
-    log.Log() << iter_info.str();
+    log.Log() << no_wrap << iter_info.str();
 
   return PETSC_SUCCESS;
 }
