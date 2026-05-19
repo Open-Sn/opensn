@@ -30,8 +30,6 @@ Includes
 --------
 
 
-- ``cctype``
-
 - ``iostream``
 
 - ``sstream``
