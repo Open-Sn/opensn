@@ -12,6 +12,20 @@
 namespace opensn
 {
 
+inline int
+NoWrapStreamIndex()
+{
+  static const int index = std::ios_base::xalloc();
+  return index;
+}
+
+inline std::ostream&
+no_wrap(std::ostream& stream)
+{
+  stream.iword(NoWrapStreamIndex()) = 1;
+  return stream;
+}
+
 /// Log stream for adding header information to a string stream.
 class LogStream : public std::stringstream
 {
@@ -57,8 +71,14 @@ public:
       std::string line;
       std::string oline;
       std::string reset_str = use_color_ ? StringStreamColor(StringStreamColorCode::RESET) : "";
+      const bool wrap_lines = this->iword(NoWrapStreamIndex()) == 0;
       while (std::getline(iss, line))
-        AppendWrappedLine(oline, line, reset_str);
+      {
+        if (wrap_lines)
+          AppendWrappedLine(oline, line, reset_str);
+        else
+          AppendUnwrappedLine(oline, line, reset_str);
+      }
 
       if (!oline.empty())
         *log_stream_ << oline << std::flush;
@@ -96,6 +116,18 @@ private:
       text.remove_prefix(1);
 
     return text;
+  }
+
+  void AppendUnwrappedLine(std::string& output,
+                           std::string_view line,
+                           const std::string& reset_str) const
+  {
+    output += header_.prefix;
+    output += header_.color;
+    output += header_.label;
+    output += line;
+    output += reset_str;
+    output += "\n";
   }
 
   void

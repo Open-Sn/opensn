@@ -92,7 +92,7 @@ AGSLinearSolver::Solve()
     iter_stats << FormatNestedStatusCounts("WGS", wgs_summaries);
 
     if (print_ags_stats)
-      log.Log() << iter_stats.str();
+      log.Log() << no_wrap << iter_stats.str();
 
     // Restore qmoms
     lbs_problem_.SetQMomentsFrom(saved_qmoms);
@@ -126,7 +126,8 @@ AGSLinearSolver::Solve()
   last_solve_.metric_value = last_error;
   if (print_ags_stats and (last_solve_.status == IterationStatus::FAILED or
                            last_solve_.status == IterationStatus::LIMIT))
-    log.Log() << program_timer.GetTimeString() << " " << FormatIterationSummary("AGS", last_solve_);
+    log.Log() << no_wrap << program_timer.GetTimeString() << " "
+              << FormatIterationSummary("AGS", last_solve_);
 
   for (const auto& solver : wgs_solvers_)
   {
@@ -163,14 +164,14 @@ AGSLinearSolver::Solve()
     AppendNumericField(
       sweep_timing, "sweep_time_per_unknown", sweep_time_per_unknown, Scientific(6));
     sweep_timing << " ns";
-    log.Log() << program_timer.GetTimeString() << " " << sweep_timing.str();
+    log.Log() << no_wrap << program_timer.GetTimeString() << " " << sweep_timing.str();
 
     std::stringstream sweep_work;
     sweep_work << label;
     AppendNumericField(sweep_work, "unknowns", num_unknowns, false);
     AppendNumericField(sweep_work, "lagged_unknowns", num_delayed_unknowns);
     AppendNumericField(sweep_work, "lagged_pct", delayed_unknown_percent, Fixed(2));
-    log.Log() << program_timer.GetTimeString() << " " << sweep_work.str();
+    log.Log() << no_wrap << program_timer.GetTimeString() << " " << sweep_work.str();
 
     sweep_context->ResetAccumulatedSweepStats();
   }

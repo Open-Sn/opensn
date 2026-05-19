@@ -155,7 +155,7 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
                                       PETScSolverStatusToIterationStatus(status));
   if (log.GetVerbosity() >= 2)
     summary << ", detail = " << GetPETScConvergedReasonstring(reason);
-  log.Log() << program_timer.GetTimeString() << " " << summary.str();
+  log.Log() << no_wrap << program_timer.GetTimeString() << " " << summary.str();
 }
 
 } // namespace opensn

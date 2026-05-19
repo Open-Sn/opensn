@@ -137,14 +137,6 @@ WGSLinearSolver::PreSolveCallback()
 {
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   gs_context_ptr->last_solve = {};
-  auto& groupset = gs_context_ptr->groupset;
-  auto& do_problem = gs_context_ptr->do_problem;
-  if (do_problem.GetOptions().verbose_inner_iterations)
-  {
-    log.Log() << "Solving groupset " << groupset.id << " with " << this->GetIterativeMethodName()
-              << " (groups " << groupset.first_group << "-" << groupset.last_group << ", "
-              << groupset.quadrature->GetNumAngles() << " angles)\n";
-  }
   gs_context_ptr->PreSolveCallback();
 }
 
@@ -268,7 +260,7 @@ WGSLinearSolver::PostSolveCallback()
     if (report_nonfatal and (gs_context_ptr->last_solve.status == IterationStatus::FAILED or
                              gs_context_ptr->last_solve.status == IterationStatus::LIMIT))
     {
-      log.Log() << program_timer.GetTimeString() << " "
+      log.Log() << no_wrap << program_timer.GetTimeString() << " "
                 << FormatIterationSummary("WGS groups [" + std::to_string(groupset.first_group) +
                                             "-" + std::to_string(groupset.last_group) + "]",
                                           gs_context_ptr->last_solve);

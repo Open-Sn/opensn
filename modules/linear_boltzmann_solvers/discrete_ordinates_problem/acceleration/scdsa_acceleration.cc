@@ -224,7 +224,7 @@ SCDSAAcceleration::PostPowerIteration()
       AppendNumericField(out, "lambda_change", lambda_change, Scientific(6));
       if (status != IterationStatus::NONE)
         out << ", status = " << IterationStatusName(status);
-      log.Log() << program_timer.GetTimeString() << " " << out.str();
+      log.Log() << no_wrap << program_timer.GetTimeString() << " " << out.str();
     }
 
     if (converged)
