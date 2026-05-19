@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a84b675bfbf054453addd93c485875f14:
+
+Function opensn::NoWrapStreamIndex
+==================================
+
+- Defined in :ref:`file_framework_logging_log_stream.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::NoWrapStreamIndex()
+   :project: opensn

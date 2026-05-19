@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1aba6bd2f49e2e42cd961df2a01567b3d5:
+
+Function opensn::no_wrap
+========================
+
+- Defined in :ref:`file_framework_logging_log_stream.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::no_wrap(std::ostream&)
+   :project: opensn

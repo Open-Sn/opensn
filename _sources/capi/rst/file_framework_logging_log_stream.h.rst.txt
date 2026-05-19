@@ -70,3 +70,12 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_log_stream`
 
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1aba6bd2f49e2e42cd961df2a01567b3d5`
+
+- :ref:`exhale_function_namespaceopensn_1a84b675bfbf054453addd93c485875f14`
+
