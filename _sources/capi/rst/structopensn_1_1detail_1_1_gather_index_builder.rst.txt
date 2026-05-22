@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1detail_1_1_gather_index_builder:
+
+Template Struct GatherIndexBuilder
+==================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::detail::GatherIndexBuilder
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

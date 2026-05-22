@@ -18,6 +18,7 @@ Derived Types
 - ``public opensn::AAHSweepChunkTD`` (:ref:`exhale_class_classopensn_1_1_a_a_h_sweep_chunk_t_d`)
 - ``public opensn::CBCDSweepChunk`` (:ref:`exhale_class_classopensn_1_1_c_b_c_d_sweep_chunk`)
 - ``public opensn::CBCSweepChunk`` (:ref:`exhale_class_classopensn_1_1_c_b_c_sweep_chunk`)
+- ``public opensn::CBCSweepChunkTD`` (:ref:`exhale_class_classopensn_1_1_c_b_c_sweep_chunk_t_d`)
 
 
 Class Documentation

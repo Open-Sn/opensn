@@ -1,0 +1,27 @@
+
+.. _namespace_opensn__detail:
+
+Namespace opensn::detail
+========================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn__detail__anonymous_namespace{avx_sweep_chunk_utils.h}`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1detail_1_1_gather_index_builder`

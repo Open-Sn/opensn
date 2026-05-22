@@ -34,7 +34,9 @@ Includes
 
 - ``cstddef``
 
-- ``functional``
+- ``cstdint``
+
+- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 
@@ -43,6 +45,10 @@ Includes
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_cbcd_structs.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds.h`)
+
+- ``unordered_map``
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
 
 
 

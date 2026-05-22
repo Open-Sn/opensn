@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a43f4b1a9f4b90c04d2af338f4f363c34:
+
+Template Function opensn::CBC_Sweep_Generic
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_kernels.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CBC_Sweep_Generic(SweepChunkT&, AngleSet&)
+   :project: opensn

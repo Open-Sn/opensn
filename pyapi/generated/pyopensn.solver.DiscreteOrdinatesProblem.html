@@ -937,11 +937,13 @@ Print outer solver progress, including PI/NLKE iterations and transient steps.</
 </dl>
 <p>These options are applied at problem creation.</p>
 </p></li>
-<li><p><strong>sweep_type</strong> (<em>str</em><em>, </em><em>default=&quot;AAH&quot;</em>) – The sweep type to use. Must be one of <cite>AAH</cite> or <cite>CBC</cite>. Defaults to <cite>AAH</cite>.</p></li>
+<li><p><strong>sweep_type</strong> (<em>str</em><em>, </em><em>default=&quot;AAH&quot;</em>) – The sweep type to use. Must be one of <cite>AAH</cite> or <cite>CBC</cite>. Defaults to <cite>AAH</cite>.
+Both sweep types support time-dependent (transient) mode.</p></li>
 <li><p><strong>time_dependent</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, the problem starts in time-dependent mode. Otherwise it starts in
-steady-state mode. Requires <code class="docutils literal notranslate"><span class="pre">options.save_angular_flux=True</span></code>.</p></li>
-<li><p><strong>use_gpus</strong> (<em>bool</em><em>, </em><em>default=False</em>) – A flag specifying whether GPU acceleration is used for the sweep. Currently, only <code class="docutils literal notranslate"><span class="pre">AAH</span></code> is
-supported.</p></li>
+steady-state mode. Requires <code class="docutils literal notranslate"><span class="pre">options.save_angular_flux=True</span></code>.
+Both <code class="docutils literal notranslate"><span class="pre">AAH</span></code> and <code class="docutils literal notranslate"><span class="pre">CBC</span></code> sweep types support time-dependent mode.</p></li>
+<li><p><strong>use_gpus</strong> (<em>bool</em><em>, </em><em>default=False</em>) – A flag specifying whether GPU acceleration is used for the sweep. Both
+<code class="docutils literal notranslate"><span class="pre">`AAH`</span></code> and <code class="docutils literal notranslate"><span class="pre">`CBC`</span></code> sweep types support GPU acceleration.</p></li>
 </ul>
 </dd>
 </dl>

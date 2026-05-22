@@ -16,6 +16,16 @@ Namespaces
 .. toctree::
    :maxdepth: 1
 
+   namespace_opensn__detail.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   namespace_opensn__detail__anonymous_namespace{avx_sweep_chunk_utils.h}.rst
+
+.. toctree::
+   :maxdepth: 1
+
    namespace_opensn__EmpiricalHarmonicRules.rst
 
 .. toctree::
@@ -125,7 +135,42 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_b_c___f_l_u_d_s_1_1_incoming_nonlocal_psi.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_b_c_d___asynchronous_communicator_1_1_buffer_item.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_b_c_d___asynchronous_communicator_1_1_message_key.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_b_c_d___asynchronous_communicator_1_1_message_key_hash.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_c_b_c_d___f_l_u_d_s_pointer_set.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_b_c_sweep_workspace.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_cell_face_key.rst
 
 .. toctree::
    :maxdepth: 1
@@ -136,6 +181,11 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_cylindrical_spatial_weight_function.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1detail_1_1_gather_index_builder.rst
 
 .. toctree::
    :maxdepth: 1
@@ -356,6 +406,11 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_ortho_mesh_attributes.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_outgoing_face_psi.rst
 
 .. toctree::
    :maxdepth: 1
@@ -635,6 +690,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structstd_1_1hash_3_01opensn_1_1_cell_face_key_01_4.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_a_a_h___angle_set.rst
 
 .. toctree::
@@ -845,6 +905,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_c_b_c_d___asynchronous_communicator.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_c_b_c_d___f_l_u_d_s.rst
 
 .. toctree::
@@ -866,6 +931,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_c_b_c_sweep_chunk.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_c_b_c_sweep_chunk_t_d.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2427,6 +2497,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_framework_mesh_logical_volume_boolean_logical_volume.h.rst
 
 .. toctree::
@@ -2497,7 +2572,22 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_chunk_td.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_kernels.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_cbcd_angle_set.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbcd_async_comm.h.rst
 
 .. toctree::
    :maxdepth: 1

@@ -79,5 +79,3 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1aa9b93a1e6b8cdf6eda2f96c2848de8c2`
 
-- :ref:`exhale_function_namespaceopensn_1ad137c5d303e39cb4af7e7e2bebd821a1`
-

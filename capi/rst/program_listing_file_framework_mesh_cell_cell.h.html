@@ -93,6 +93,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/byte_array.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
@@ -103,6 +104,14 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span><span class="p">;</span>
+
+<span class="c1">/// Key identifying a face by global cell ID and local face ID.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">CellFaceKey</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_global_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">face_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">CellFaceKey</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
+<span class="p">};</span>
 
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">CellType</span>
 <span class="p">{</span>
@@ -282,6 +291,37 @@
 
 <span class="c1">/// Print face node.</span>
 <span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">ostream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">opensn</span><span class="o">::</span><span class="n">FaceNode</span><span class="o">&amp;</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Hash functor for `CellFaceKey`.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Adapted from Wolfgang Brehm&#39;s answer to mitigate systematic hash collisions in unordered maps</span>
+<span class="cm"> * keyed by aggregate types (https://stackoverflow.com/a/50978188).</span>
+<span class="cm"> */</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">hash</span><span class="o">&lt;</span><span class="n">opensn</span><span class="o">::</span><span class="n">CellFaceKey</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">operator</span><span class="p">()(</span><span class="k">const</span><span class="w"> </span><span class="n">opensn</span><span class="o">::</span><span class="n">CellFaceKey</span><span class="o">&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x9e3779b97f4a7c15ULL</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">cell_hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Mix</span><span class="p">(</span><span class="n">key</span><span class="p">.</span><span class="n">cell_global_id</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">face_hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Mix</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">key</span><span class="p">.</span><span class="n">face_id</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">      </span><span class="n">Mix</span><span class="p">(</span><span class="n">cell_hash</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="p">(</span><span class="n">face_hash</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">cell_hash</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">cell_hash</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">))));</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">Mix</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">multiplier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xe9846afb1a615dULL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">^=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span>
+<span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">multiplier</span><span class="p">;</span>
+<span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">^=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span>
+<span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">multiplier</span><span class="p">;</span>
+<span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">^=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">28</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace std</span>
 </pre></div>

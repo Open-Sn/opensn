@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a8c6fa2a80e30a3aa2fe8a3c1d4e0d766:
+
+Template Function opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::MakeGatherIndex
+===============================================================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::MakeGatherIndex(int)
+   :project: opensn

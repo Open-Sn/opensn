@@ -93,6 +93,7 @@
 <h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item.html#exhale-struct-structopensn-1-1-c-b-c-asynchronous-communicator-1-1-buffer-item"><span class="std std-ref">Struct CBC_AsynchronousCommunicator::BufferItem</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer.html#exhale-struct-structopensn-1-1-c-b-c-asynchronous-communicator-1-1-send-peer"><span class="std std-ref">Struct CBC_AsynchronousCommunicator::SendPeer</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -110,102 +111,192 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicatorE">
 <span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CBC_AsynchronousCommunicator</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_asynchronous_communicator.html#_CPPv4N6opensn24AsynchronousCommunicatorE" title="opensn::AsynchronousCommunicator"><span class="n"><span class="pre">AsynchronousCommunicator</span></span></a><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicatorE" title="Link to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Host CBC asynchronous communicator. </p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator28CBC_AsynchronousCommunicatorE6size_tR5FLUDSRK18MPICommunicatorSet">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a0cdb8e53cfcc81199caea926522024ea"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CBC_AsynchronousCommunicator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_set_id</span></span>, <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE" title="opensn::FLUDS"><span class="n"><span class="pre">FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fluds</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_m_p_i_communicator_set.html#_CPPv4N6opensn18MPICommunicatorSetE" title="opensn::MPICommunicatorSet"><span class="n"><span class="pre">MPICommunicatorSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">comm_set</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator28CBC_AsynchronousCommunicatorE6size_tR5FLUDSRK18MPICommunicatorSet" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator28CBC_AsynchronousCommunicatorENSt6size_tER5FLUDSRK18MPICommunicatorSet">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a900ac1c685ca3646a7523d164ae39bd0"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CBC_AsynchronousCommunicator</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_set_id</span></span>, <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE" title="opensn::FLUDS"><span class="n"><span class="pre">FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fluds</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_m_p_i_communicator_set.html#_CPPv4N6opensn18MPICommunicatorSetE" title="opensn::MPICommunicatorSet"><span class="n"><span class="pre">MPICommunicatorSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">comm_set</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator28CBC_AsynchronousCommunicatorENSt6size_tER5FLUDSRK18MPICommunicatorSet" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator26InitGetDownwindMessageDataEi8uint64_tj6size_t6size_t">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1ab023dfd3ebff894355a9c74ed9521ab3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">InitGetDownwindMessageData</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">location_id</span></span>, <span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_global_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_id</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_set_id</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data_size</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator26InitGetDownwindMessageDataEi8uint64_tj6size_t6size_t" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator20QueueDownwindMessageENSt6size_tENSt6size_tENSt4spanIKdEE">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a6c93a234bcffb6271597ad40d979ec3e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QueueDownwindMessage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">peer_index</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">incoming_face_slot</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">outgoing_face_psi</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator20QueueDownwindMessageENSt6size_tENSt6size_tENSt4spanIKdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Queue downwind nonlocal face psi for asynchronous send. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peer_index</strong> – SPDS-successor peer index. </p></li>
+<li><p><strong>incoming_face_slot</strong> – Receiver-side incoming face slot. </p></li>
+<li><p><strong>outgoing_face_psi</strong> – <a class="reference internal" href="structopensn_1_1_face.html#structopensn_1_1_face"><span class="std std-ref">Face</span></a> psi values to append to the destination send buffer. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendDataEv">
 <span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a5f5373d5cb80b97214a793d478045a25"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SendData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendDataEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Start or progress pending nonblocking sends. </p>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator11ReceiveDataEv">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a704b17b551a38eb47a31d720f2358527"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReceiveData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator11ReceiveDataEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator11ReceiveDataERNSt6vectorINSt8uint32_tEEE">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a88ecdf57ba9a2d6d44340b5d9f0bdb42"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReceiveData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cells_who_received_data</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator11ReceiveDataERNSt6vectorINSt8uint32_tEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Receive all currently available nonlocal face psi. </p>
+<p>The output vector is cleared, then populated with local task IDs whose received face data was stored in the CBC <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn28CBC_AsynchronousCommunicator23HasPendingCommunicationEv">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a1f0ac29d90d3af8dfb93b4645e243885"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasPendingCommunication</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK6opensn28CBC_AsynchronousCommunicator23HasPendingCommunicationEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return whether sends remain in flight. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator5ResetEv">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a0c8c10ee045384099e8d5415f8f53f41"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator5ResetEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-types">Protected Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10MessageKeyE">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1ac642d55f128697a8c83089e3c77f2f5c"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MessageKey</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10MessageKeyE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator11CellFaceKeyE">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a48cb04f5896698a72e343b4ec7f35a27"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CellFaceKey</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator11CellFaceKeyE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a0c8c10ee045384099e8d5415f8f53f41"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator5ResetEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Clear pending send and receive state. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator28MergeDeplocsOutgoingMessagesERNSt3mapI11CellFaceKeyNSt6vectorIdEEEE">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a8951492fda277d0f514a9b3412fd7882"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MergeDeplocsOutgoingMessages</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator11CellFaceKeyE" title="opensn::CBC_AsynchronousCommunicator::CellFaceKey"><span class="n"><span class="pre">CellFaceKey</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">received_messages</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator28MergeDeplocsOutgoingMessagesERNSt3mapI11CellFaceKeyNSt6vectorIdEEEE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator17GetOpenSendBufferENSt6size_tE">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1ad78ad24945794ad59f5af38ab43285e9"></span><a class="reference internal" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItemE" title="opensn::CBC_AsynchronousCommunicator::BufferItem"><span class="n"><span class="pre">BufferItem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetOpenSendBuffer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">peer_index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator17GetOpenSendBufferENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the open send buffer for a destination peer. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator13angle_set_id_E">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a48dd441872d55bc20588aec8526d7b2b"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">angle_set_id_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator13angle_set_id_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1acb7c32fb53fc9473f37b905f79716d78"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">angle_set_id_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator13angle_set_id_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Angle-set MPI message tag. </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator23outgoing_message_queue_E">
-<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a741470a7590f903be8cb6f5058b56a04"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10MessageKeyE" title="opensn::CBC_AsynchronousCommunicator::MessageKey"><span class="n"><span class="pre">MessageKey</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outgoing_message_queue_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator23outgoing_message_queue_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator13receive_comm_E">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1af5c0c53cd7da8c046bf1aed07f027aba"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">mpi</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Communicator</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">receive_comm_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator13receive_comm_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Communicator used for incoming face psi. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10cbc_fluds_E">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a880030796a917837c7bc25519b382c38"></span><a class="reference internal" href="classopensn_1_1_c_b_c___f_l_u_d_s.html#_CPPv4N6opensn9CBC_FLUDSE" title="opensn::CBC_FLUDS"><span class="n"><span class="pre">CBC_FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">cbc_fluds_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10cbc_fluds_E" title="Link to this definition"></a><br /></dt>
+<dd><p>CBC <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a> receiving nonlocal face psi. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator20num_receive_sources_E">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1aa677b47e9a51bcaaee792f4293bbb1bc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_receive_sources_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator20num_receive_sources_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Number of upstream locations that may send face psi. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator12send_buffer_E">
 <span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a681ec3e7f1fa960bdea9c7bfad1b60d5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItemE" title="opensn::CBC_AsynchronousCommunicator::BufferItem"><span class="n"><span class="pre">BufferItem</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">send_buffer_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator12send_buffer_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Active nonblocking send buffers. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator14send_requests_E">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a60fc7da50c39724213523ab999346898"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">mpi</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">send_requests_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator14send_requests_E" title="Link to this definition"></a><br /></dt>
+<dd><p>MPI requests matching <code class="docutils literal notranslate"><span class="pre">send_buffer_</span></code>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator22reusable_send_buffers_E">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1ab1ec44c2df999be7d8db240921ec9dcf"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItemE" title="opensn::CBC_AsynchronousCommunicator::BufferItem"><span class="n"><span class="pre">BufferItem</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reusable_send_buffers_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator22reusable_send_buffers_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Cleared send buffers available for reuse. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator15receive_buffer_E">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1ada912084501df3d10a116cd035468c12"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">receive_buffer_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator15receive_buffer_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Receive buffer for one packed MPI message. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator11send_peers_E">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a5b2dada3704b7bc82234ab06396b3a27"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendPeerE" title="opensn::CBC_AsynchronousCommunicator::SendPeer"><span class="n"><span class="pre">SendPeer</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">send_peers_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator11send_peers_E" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a> successor communication endpoints. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator25open_send_buffer_indices_E">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a7dc5e45978028222dc2ce51c16c6f090"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">open_send_buffer_indices_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator25open_send_buffer_indices_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Open send-buffer index by successor peer. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-static-attributes">Protected Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator20INVALID_BUFFER_INDEXE">
+<span class="target" id="classopensn_1_1_c_b_c___asynchronous_communicator_1a0ca00bda37373449b54091f4c4600c3d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">INVALID_BUFFER_INDEX</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator20INVALID_BUFFER_INDEXE" title="Link to this definition"></a><br /></dt>
+<dd><p>Sentinel for no open send buffer. </p>
+</dd></dl>
 
 </div>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItemE">
 <span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferItem</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItemE" title="Link to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Destination-batched send buffer. </p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem11destinationE">
-<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1a23d441d2d89b7a5febabfb26dd70b439"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">destination</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem11destinationE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem10peer_indexE">
+<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1a19e6a6eb94cf56a683797c7201a3652d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">peer_index</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem10peer_indexE" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a> successor index. </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem11mpi_requestE">
-<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1ada7ddd51bff31bce0fff47848d4a3350"></span><span class="n"><span class="pre">mpi</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Request</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mpi_request</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem11mpi_requestE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem4commE">
+<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1a7b50ba00e8aaeb3217d1513f9bbcf859"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">mpi</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Communicator</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">comm</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem4commE" title="Link to this definition"></a><br /></dt>
+<dd><p>MPI communicator for the successor. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem4rankE">
+<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1a7568d87d5951bb23c6c48baaeec0c9c8"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rank</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem4rankE" title="Link to this definition"></a><br /></dt>
+<dd><p>Rank within the successor communicator. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem14send_initiatedE">
 <span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1a8f84b3df78629361c023a103e09d8d7e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">send_initiated</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem14send_initiatedE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Nonblocking-send state. </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem9completedE">
-<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1ab15b13ea5942ed1e89a1c65eb44cbacd"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">completed</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem9completedE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem4dataE">
+<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1ac127caa207635454ec68ddad755c133f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem4dataE" title="Link to this definition"></a><br /></dt>
+<dd><p>Serialized face-psi data. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendPeerE">
+<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SendPeer</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendPeerE" title="Link to this definition"></a><br /></dt>
+<dd><p>Destination location for nonlocal face psi. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendPeer4commE">
+<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer_1a4f5058716dc608c2b36c6df31ccd8ab2"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">mpi</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Communicator</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">comm</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendPeer4commE" title="Link to this definition"></a><br /></dt>
+<dd><p>MPI communicator for the destination. </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem10data_arrayE">
-<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item_1a41387f779aa61a1ae1536106e20f7add"></span><a class="reference internal" href="classopensn_1_1_byte_array.html#_CPPv4N6opensn9ByteArrayE" title="opensn::ByteArray"><span class="n"><span class="pre">ByteArray</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">data_array</span></span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator10BufferItem10data_arrayE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendPeer4rankE">
+<span class="target" id="structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer_1a8a0b8f40089fa323c46d49bbae1000f4"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rank</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn28CBC_AsynchronousCommunicator8SendPeer4rankE" title="Link to this definition"></a><br /></dt>
+<dd><p>Rank within the destination communicator. </p>
+</dd></dl>
 
 </div>
 </dd></dl>

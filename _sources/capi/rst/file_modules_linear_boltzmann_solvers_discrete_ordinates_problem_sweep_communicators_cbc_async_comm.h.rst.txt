@@ -34,13 +34,13 @@ Includes
 
 - ``cstdint``
 
-- ``framework/data_types/byte_array.h`` (:ref:`file_framework_data_types_byte_array.h`)
-
-- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+- ``limits``
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_async_comm.h`)
 
 - ``mpicpp-lite/mpicpp-lite.h``
+
+- ``span``
 
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
 
@@ -52,7 +52,7 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_cbc_angle_set.h`
 
-- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_cbcd_angle_set.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_kernels.h`
 
 
 
@@ -69,6 +69,8 @@ Classes
 
 
 - :ref:`exhale_struct_structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item`
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer`
 
 - :ref:`exhale_class_classopensn_1_1_c_b_c___asynchronous_communicator`
 

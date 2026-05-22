@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a5867617dd749d582d1b0a7ae36773e6b:
+
+Function opensn::QueueNonlocalOutgoingPsi
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_kernels.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::QueueNonlocalOutgoingPsi(CBCSweepWorkspace&, CBC_AsynchronousCommunicator&)
+   :project: opensn

@@ -423,7 +423,6 @@ dependencies.</p></li>
 feedback-arc-set edges and lagging the corresponding angular-flux
 dependencies.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">CBC</span></code> does not support local sweep cycles.</p></li>
-<li><p>time-dependent discrete-ordinates problems are restricted to <code class="docutils literal notranslate"><span class="pre">AAH</span></code>.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -433,8 +432,12 @@ fluxes are always lagged.</p>
 </div>
 <p>Practical recommendation:</p>
 <ul class="simple">
-<li><p>keep <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code> unless there is a specific reason to choose
-<code class="docutils literal notranslate"><span class="pre">CBC</span></code> and the sweep graph is known to be compatible with it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AAH</span></code> remains the default production choice and is the safer option for
+most users, particularly for problems with cyclic sweep dependencies.</p></li>
+<li><p>Both <code class="docutils literal notranslate"><span class="pre">AAH</span></code> and <code class="docutils literal notranslate"><span class="pre">CBC</span></code> support time-dependent (transient) mode.</p></li>
+<li><p>Choose <code class="docutils literal notranslate"><span class="pre">CBC</span></code> only when the sweep graph is known to be acyclic or when
+you have verified it meets the acyclicity requirement for your specific
+problem.</p></li>
 </ul>
 </section>
 <section id="problem-modes">

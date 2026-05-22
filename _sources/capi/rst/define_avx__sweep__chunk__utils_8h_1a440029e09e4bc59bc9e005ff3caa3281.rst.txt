@@ -1,0 +1,14 @@
+.. _exhale_define_avx__sweep__chunk__utils_8h_1a440029e09e4bc59bc9e005ff3caa3281:
+
+Define PRAGMA_UNROLL
+====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: PRAGMA_UNROLL
+   :project: opensn

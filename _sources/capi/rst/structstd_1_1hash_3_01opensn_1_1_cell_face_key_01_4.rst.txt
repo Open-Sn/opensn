@@ -1,0 +1,17 @@
+.. _exhale_struct_structstd_1_1hash_3_01opensn_1_1_cell_face_key_01_4:
+
+Template Struct hash< opensn::CellFaceKey >
+===========================================
+
+- Defined in :ref:`file_framework_mesh_cell_cell.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: std::hash< opensn::CellFaceKey >
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -14,6 +14,7 @@ Nested Types
 ************
 
 - :ref:`exhale_struct_structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item`
+- :ref:`exhale_struct_structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer`
 
 
 Inheritance Relationships

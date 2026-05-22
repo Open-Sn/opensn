@@ -1,0 +1,149 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbcd_async_comm.h:
+
+Program Listing for File cbcd_async_comm.h
+==========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbcd_async_comm.h>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h"
+   #include "framework/data_types/byte_array.h"
+   #include "mpicpp-lite/mpicpp-lite.h"
+   #include <cstddef>
+   #include <cstdint>
+   #include <unordered_map>
+   #include <vector>
+   
+   namespace opensn
+   {
+   
+   namespace mpi = mpicpp_lite;
+   
+   class MPICommunicatorSet;
+   class ByteArray;
+   class FLUDS;
+   class CBCD_FLUDS;
+   
+   /// Device CBC asynchronous communicator.
+   class CBCD_AsynchronousCommunicator : public AsynchronousCommunicator
+   {
+   public:
+     explicit CBCD_AsynchronousCommunicator(std::size_t angle_set_id,
+                                            FLUDS& fluds,
+                                            const MPICommunicatorSet& comm_set);
+   
+     /**
+      * Return writable outgoing face-psi storage for a downwind face.
+      *
+      * The storage is zero-initialized only when a destination-face entry is first created.
+      *
+      * \param location_id Destination location ID.
+      * \param cell_global_id Downstream cell global ID.
+      * \param face_id Downstream face ID.
+      * \param data_size Number of psi values for the destination face.
+      * \return Outgoing face-psi storage for the specified destination face.
+      */
+     std::vector<double>& InitGetDownwindMessageData(int location_id,
+                                                     std::uint64_t cell_global_id,
+                                                     unsigned int face_id,
+                                                     std::size_t data_size);
+   
+     /// Start or progress pending nonblocking sends.
+     bool SendData();
+   
+     /// Receive available nonlocal face psi and return cells with newly received face data.
+     std::vector<std::uint64_t> ReceiveData();
+   
+     /// Clear queued outgoing messages and send buffers.
+     void Reset()
+     {
+       outgoing_message_queue_.clear();
+       send_buffer_.clear();
+     }
+   
+   protected:
+     /// Angle-set MPI message tag.
+     const std::size_t angle_set_id_;
+     /// CBCD FLUDS receiving nonlocal face psi.
+     CBCD_FLUDS& cbcd_fluds_;
+   
+     /// Key for one outgoing nonlocal face message.
+     struct MessageKey
+     {
+       /// Destination location.
+       int location_id = 0;
+       /// Downstream cell global ID.
+       std::uint64_t cell_global_id = 0;
+       /// Downstream face ID.
+       unsigned int face_id = 0;
+       bool operator==(const MessageKey&) const = default;
+     };
+   
+     /**
+      * Hash functor for `MessageKey`.
+      *
+      * Adapted from Wolfgang Brehm's answer to mitigate systematic hash collisions in unordered maps
+      * keyed by aggregate types (https://stackoverflow.com/a/50978188).
+      */
+     struct MessageKeyHash
+     {
+       /// Return a mixed hash for a message key.
+       std::size_t operator()(const MessageKey& key) const noexcept
+       {
+         auto seed = Mix(static_cast<std::uint64_t>(static_cast<std::uint32_t>(key.location_id)));
+         seed = Combine(seed, Mix(key.cell_global_id));
+         seed = Combine(seed, Mix(static_cast<std::uint64_t>(key.face_id)));
+         return static_cast<std::size_t>(seed);
+       }
+   
+     private:
+       static std::uint64_t Combine(std::uint64_t seed, std::uint64_t value) noexcept
+       {
+         constexpr std::uint64_t offset = 0x9e3779b97f4a7c15ULL;
+         return Mix(seed ^ (value + offset + (seed << 6) + (seed >> 2)));
+       }
+   
+       static std::uint64_t Mix(std::uint64_t value) noexcept
+       {
+         constexpr std::uint64_t multiplier = 0xe9846afb1a615dULL;
+         value ^= value >> 32;
+         value *= multiplier;
+         value ^= value >> 32;
+         value *= multiplier;
+         value ^= value >> 28;
+         return value;
+       }
+     };
+   
+     /// Queued outgoing face psi by destination face.
+     std::unordered_map<MessageKey, std::vector<double>, MessageKeyHash> outgoing_message_queue_;
+   
+     /// Destination-batched nonblocking send buffer.
+     struct BufferItem
+     {
+       /// Destination location.
+       int destination = 0;
+       /// Active nonblocking send request.
+       mpi::Request mpi_request;
+       /// Nonblocking-send state.
+       bool send_initiated = false;
+       /// Send completion state.
+       bool completed = false;
+       /// Serialized face-psi data.
+       ByteArray data_array;
+     };
+   
+     /// Active nonblocking send buffers.
+     std::vector<BufferItem> send_buffer_;
+   };
+   
+   } // namespace opensn

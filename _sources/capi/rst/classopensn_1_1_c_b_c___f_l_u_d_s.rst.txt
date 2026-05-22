@@ -6,6 +6,16 @@ Class CBC_FLUDS
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_cbc_fluds.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c___f_l_u_d_s_1_1_incoming_nonlocal_psi`
+
+
 Inheritance Relationships
 -------------------------
 

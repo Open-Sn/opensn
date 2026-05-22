@@ -91,6 +91,7 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/avx_sweep_chunk_utils.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/spatial_discretization/spatial_discretization.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
@@ -99,16 +100,6 @@
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
-
-<span class="c1">// experimental, to be moved to a higher level header file</span>
-<span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">simd_width</span><span class="w"> </span><span class="o">=</span>
-<span class="cp">#if __AVX512F__</span>
-<span class="w">  </span><span class="mi">8</span><span class="p">;</span><span class="w"> </span><span class="c1">// 8 lanes (512-bit, doubles)</span>
-<span class="cp">#elif __AVX2__</span>
-<span class="w">  </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="c1">// 4 lanes (256-bit, doubles)</span>
-<span class="cp">#else</span>
-<span class="w">  </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// scalar</span>
-<span class="cp">#endif</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
 

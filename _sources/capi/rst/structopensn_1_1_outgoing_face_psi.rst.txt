@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_outgoing_face_psi:
+
+Struct OutgoingFacePsi
+======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_kernels.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::OutgoingFacePsi
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

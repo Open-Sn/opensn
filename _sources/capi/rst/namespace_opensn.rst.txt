@@ -30,6 +30,8 @@ Namespaces
 ----------
 
 
+- :ref:`namespace_opensn__detail`
+
 - :ref:`namespace_opensn__EmpiricalHarmonicRules`
 
 - :ref:`namespace_opensn__gpu_kernel`
@@ -75,7 +77,21 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item`
 
+- :ref:`exhale_struct_structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer`
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c___f_l_u_d_s_1_1_incoming_nonlocal_psi`
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c_d___asynchronous_communicator_1_1_buffer_item`
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c_d___asynchronous_communicator_1_1_message_key`
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c_d___asynchronous_communicator_1_1_message_key_hash`
+
 - :ref:`exhale_struct_structopensn_1_1_c_b_c_d___f_l_u_d_s_pointer_set`
+
+- :ref:`exhale_struct_structopensn_1_1_c_b_c_sweep_workspace`
+
+- :ref:`exhale_struct_structopensn_1_1_cell_face_key`
 
 - :ref:`exhale_struct_structopensn_1_1_cell_view`
 
@@ -164,6 +180,8 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_object_factory_1_1_object_registry_entry`
 
 - :ref:`exhale_struct_structopensn_1_1_ortho_mesh_attributes`
+
+- :ref:`exhale_struct_structopensn_1_1_outgoing_face_psi`
 
 - :ref:`exhale_struct_structopensn_1_1_parameter_block_1_1_is_bool`
 
@@ -359,6 +377,8 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_c_b_c_d___angle_set`
 
+- :ref:`exhale_class_classopensn_1_1_c_b_c_d___asynchronous_communicator`
+
 - :ref:`exhale_class_classopensn_1_1_c_b_c_d___f_l_u_d_s`
 
 - :ref:`exhale_class_classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data`
@@ -368,6 +388,8 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_c_b_c_d_sweep_chunk`
 
 - :ref:`exhale_class_classopensn_1_1_c_b_c_sweep_chunk`
+
+- :ref:`exhale_class_classopensn_1_1_c_b_c_sweep_chunk_t_d`
 
 - :ref:`exhale_class_classopensn_1_1_cell`
 
@@ -827,6 +849,10 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1afa6022cc68f7658c311991d45c3ac6dc`
 
+- :ref:`exhale_function_namespaceopensn_1aa9ca386f03b5ddb2b24b371a1aa1d655`
+
+- :ref:`exhale_function_namespaceopensn_1a43f4b1a9f4b90c04d2af338f4f363c34`
+
 - :ref:`exhale_function_namespaceopensn_1a710a6656bcc3d8df1f70994d9cede737`
 
 - :ref:`exhale_function_namespaceopensn_1a05be19174ce62742861ed510cedb0d3b`
@@ -905,9 +931,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a6fba4337d1fd96234b6edbe19504b575`
 
-- :ref:`exhale_function_namespaceopensn_1a83267a6e1df77a97b0010a4d12450360`
-
 - :ref:`exhale_function_namespaceopensn_1a7ceed89aee4a14a696ee2ffe7a165221`
+
+- :ref:`exhale_function_namespaceopensn_1a83267a6e1df77a97b0010a4d12450360`
 
 - :ref:`exhale_function_namespaceopensn_1af44db9c1ce3bab159ed7d936f147e4f3`
 
@@ -1095,9 +1121,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ac159b18f31e51140a2b82a1789bb5195`
 
-- :ref:`exhale_function_namespaceopensn_1a9c06eab1eaeb4f37a44d6a2165710292`
-
 - :ref:`exhale_function_namespaceopensn_1ae7b499513b903d1588322ea3e6fbfcca`
+
+- :ref:`exhale_function_namespaceopensn_1a9c06eab1eaeb4f37a44d6a2165710292`
 
 - :ref:`exhale_function_namespaceopensn_1a073c22c5a84f641da97dabf6ee200eb6`
 
@@ -1113,6 +1139,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ab417388b7303220280cdc5b909321247`
 
+- :ref:`exhale_function_namespaceopensn_1aea0875e79fa1c52b9ad73b19a74c78e0`
+
 - :ref:`exhale_function_namespaceopensn_1a9688d61ff656e2e7974e1b8553913cd4`
 
 - :ref:`exhale_function_namespaceopensn_1a7cc9e85017c12c498d06e91d9fe9d6e1`
@@ -1120,6 +1148,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a09c0dff065711e5f707227d9aca35e80`
 
 - :ref:`exhale_function_namespaceopensn_1a1c36c8d4ab7c73dd14d760aa62e10594`
+
+- :ref:`exhale_function_namespaceopensn_1a5867617dd749d582d1b0a7ae36773e6b`
 
 - :ref:`exhale_function_namespaceopensn_1aedd0f5ead795b19fced71e8a58ebf554`
 
@@ -1129,11 +1159,11 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a66d063a5930d52b5e36dfb7571799817`
 
-- :ref:`exhale_function_namespaceopensn_1aea72142b190ab466352b392df242bcde`
-
 - :ref:`exhale_function_namespaceopensn_1aaf78d2f2764a5e7e5ea187aa45f776b6`
 
 - :ref:`exhale_function_namespaceopensn_1a1bea552a3cd9dec00e2872622a33d676`
+
+- :ref:`exhale_function_namespaceopensn_1aea72142b190ab466352b392df242bcde`
 
 - :ref:`exhale_function_namespaceopensn_1af19640fd7bf1b121d528bd8ff125963b`
 
@@ -1179,11 +1209,11 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a8a5a0b764bafcabf550979995200d07b`
 
-- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
-
 - :ref:`exhale_function_namespaceopensn_1af5d0740a6b08cd24f6f67db3c5eeb06c`
 
 - :ref:`exhale_function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610`
+
+- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
 
 - :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
 

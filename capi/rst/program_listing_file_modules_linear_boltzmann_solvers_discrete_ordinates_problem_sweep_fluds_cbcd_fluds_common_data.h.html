@@ -100,7 +100,7 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="p">;</span>
 
-<span class="c1">/// Common data for CBCD_FLUDS</span>
+<span class="c1">/// Device CBC FLUDS common data.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CBCD_FLUDSCommonData</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FLUDSCommonData</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
@@ -110,54 +110,58 @@
 
 <span class="w">  </span><span class="o">~</span><span class="n">CBCD_FLUDSCommonData</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Get number of incoming boundary face nodes.</span>
+<span class="w">  </span><span class="c1">/// Return the number of incoming boundary face nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumIncomingBoundaryNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_incoming_boundary_nodes_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Get number of outgoing boundary face nodes.</span>
+<span class="w">  </span><span class="c1">/// Return the number of outgoing boundary face nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumOutgoingBoundaryNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_outgoing_boundary_nodes_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Get number of incoming non-local face nodes.</span>
+<span class="w">  </span><span class="c1">/// Return the number of incoming nonlocal face nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumIncomingNonlocalNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_incoming_nonlocal_nodes_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Get number of outgoing non-local face nodes.</span>
+<span class="w">  </span><span class="c1">/// Return the number of outgoing nonlocal face nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumOutgoingNonlocalNodes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_outgoing_nonlocal_nodes_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Get incoming boundary node map.</span>
+<span class="w">  </span><span class="c1">/// Return the number of incoming nonlocal faces.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumIncomingNonlocalFaces</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_incoming_nonlocal_faces_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Return the number of outgoing nonlocal faces.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumOutgoingNonlocalFaces</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_outgoing_nonlocal_faces_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Return the incoming boundary node map.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BoundaryNodeInfo</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetIncomingBoundaryNodeMap</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">incoming_boundary_node_map_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Get outgoing boundary node map.</span>
+<span class="w">  </span><span class="c1">/// Return the outgoing boundary node map.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BoundaryNodeInfo</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetOutgoingBoundaryNodeMap</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">cell_to_outgoing_boundary_nodes_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Get incoming nonlocal node map.</span>
+<span class="w">  </span><span class="c1">/// Return the incoming nonlocal node map.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">NonlocalNodeInfo</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetIncomingNonlocalNodeMap</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">cell_to_incoming_nonlocal_nodes_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Get outgoing nonlocal node map.</span>
+<span class="w">  </span><span class="c1">/// Return the outgoing nonlocal node map.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">NonlocalNodeInfo</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetOutgoingNonlocalNodeMap</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">cell_to_outgoing_nonlocal_nodes_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Get pointer to cell-face-node map on device.</span>
+<span class="w">  </span><span class="c1">/// Return the device cell-face-node index map.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">GetDeviceIndex</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">device_cell_face_node_map_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Number of incoming boundary face nodes.</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_incoming_boundary_nodes_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Number of outgoing boundary face nodes.</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_outgoing_boundary_nodes_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Number of incoming non-local face nodes.</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_incoming_nonlocal_nodes_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Number of outgoing non-local face nodes.</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_outgoing_nonlocal_nodes_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_incoming_boundary_nodes_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_outgoing_boundary_nodes_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_incoming_nonlocal_faces_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_incoming_nonlocal_nodes_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_outgoing_nonlocal_faces_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_outgoing_nonlocal_nodes_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Device pointer to cell-face-node map for angular flux buffer access.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="n">device_cell_face_node_map_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Map from incoming face boundary node to indexing metadata.</span>
@@ -169,10 +173,7 @@
 <span class="w">  </span><span class="c1">/// Map from cell to outgoing nonlocal nodes.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">NonlocalNodeInfo</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">cell_to_outgoing_nonlocal_nodes_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Compute cell-face-node map for device angular flux buffer access, and</span>
-<span class="cm">   * create auxiliary indexing maps for boundary and non-local nodes for host access.</span>
-<span class="cm">   */</span>
+<span class="w">  </span><span class="c1">/// Compute device and host angular-flux indexing maps.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyFlattenedNodeIndexToDevice</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">);</span>
 <span class="w">  </span><span class="c1">/// Deallocate device memory for cell-face-node map.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">DeallocateDeviceMemory</span><span class="p">();</span>

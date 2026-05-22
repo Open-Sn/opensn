@@ -90,75 +90,46 @@
 
 <span class="cp">#pragma once</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_kernels.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h&quot;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">CellMapping</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
 
-<span class="cm">/**</span>
-<span class="cm"> * Implements the core sweep operation for a single cell within the</span>
-<span class="cm"> * cell-by-cell (CBC) sweep algorithm.</span>
-<span class="cm"> *</span>
-<span class="cm"> * This class is responsible for performing the discrete ordinates transport</span>
-<span class="cm"> * calculation on a given cell for all angles and groups managed by its</span>
-<span class="cm"> * current AngleSet</span>
-<span class="cm"> * It interacts with a CBC_FLUDS object to obtain upwind angular flux data</span>
-<span class="cm"> * (from local neighbors, MPI remote buffers, or boundaries) and to store</span>
-<span class="cm"> * outgoing angular flux data (to local neighbors or MPI send buffers)</span>
-<span class="cm"> */</span>
+<span class="c1">/// Host CBC sweep chunk.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CBCSweepChunk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">SweepChunk</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">CBCSweepChunk</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem</span><span class="p">,</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Set the current AngleSet</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetAngleSet</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Set the current cell to be swept</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetCell</span><span class="p">(</span><span class="n">Cell</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">cell_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Performs the discrete ordinates sweep calculation for the currently</span>
-<span class="cm">   * set cell, for all angles and groups within the provided AngleSet.</span>
-<span class="cm">   *</span>
-<span class="cm">   * It:</span>
-<span class="cm">   * - Assembles the local transport equation system for each angle and group</span>
-<span class="cm">   * - Retrieves upwind angular fluxes from local neighbors, remote locations</span>
-<span class="cm">   *   (via MPI data managed by CBC_FLUDS), or boundaries</span>
-<span class="cm">   * - Solves the local system for the outgoing angular fluxes at the cell nodes</span>
-<span class="cm">   * - Updates the global scalar flux moments</span>
-<span class="cm">   * - If save_angular_flux is true, stores the computed angular fluxes into</span>
-<span class="cm">   *   the global angular flux vector</span>
-<span class="cm">   * - Propagates outgoing angular fluxes to local downwind neighbors or stages</span>
-<span class="cm">   *   them for MPI transmission to remote downwind neighbors</span>
-<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Sweep</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">CBC_FLUDS</span><span class="o">*</span><span class="w"> </span><span class="n">fluds_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">gs_size_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">gs_gi_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles_in_as_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">group_stride_</span><span class="p">;</span><span class="w"> </span><span class="c1">// Stride for consecutive angles</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">group_angle_stride_</span><span class="p">;</span><span class="w"> </span><span class="c1">// Stride for consecutive spatial DOFs</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">surface_source_active_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">bool</span><span class="w"> </span><span class="n">time_dependent</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SweepChunkT</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">friend</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">CBC_Sweep_Generic</span><span class="p">(</span><span class="n">SweepChunkT</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
 
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">*</span><span class="w"> </span><span class="n">cell_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell_local_id_</span><span class="p">;</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CellMapping</span><span class="o">*</span><span class="w"> </span><span class="n">cell_mapping_</span><span class="p">;</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CellLBSView</span><span class="o">*</span><span class="w"> </span><span class="n">cell_transport_view_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">CellOutflowView</span><span class="o">*</span><span class="w"> </span><span class="n">cell_outflow_view_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">cell_num_faces_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">cell_num_nodes_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">NumNodes</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">time_dependent</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SweepChunkT</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">friend</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">CBC_Sweep_FixedN</span><span class="p">(</span><span class="n">SweepChunkT</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
 
-<span class="w">  </span><span class="n">DenseMatrix</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">G_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">DenseMatrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">M_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DenseMatrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">M_surf_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">IntS_shapeI_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">CBC_FLUDS</span><span class="o">*</span><span class="w"> </span><span class="n">fluds_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">CBC_AsynchronousCommunicator</span><span class="o">*</span><span class="w"> </span><span class="n">async_comm_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">group_block_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">CBCSweepWorkspace</span><span class="w"> </span><span class="n">workspace_</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">SweepFunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="n">CBCSweepChunk</span><span class="o">::*</span><span class="p">)(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">SweepFunc</span><span class="w"> </span><span class="n">sweep_impl_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Sweep_Generic</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">NumNodes</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">Sweep_FixedN</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

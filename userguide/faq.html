@@ -195,6 +195,9 @@ be used.</p>
 <p><code class="docutils literal notranslate"><span class="pre">AAH</span></code> is the general default and is the safer choice for most users.</p>
 <p>It supports the delayed-angular-flux machinery used to break intra-partition
 cyclic sweep dependencies.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">AAH</span></code> and <code class="docutils literal notranslate"><span class="pre">CBC</span></code> support time-dependent (transient) mode. Choose <code class="docutils literal notranslate"><span class="pre">CBC</span></code>
+only if the sweep graph is known to be acyclic or has been verified to meet
+<code class="docutils literal notranslate"><span class="pre">CBC</span></code>’s acyclicity requirements for your specific problem.</p>
 </section>
 <section id="do-i-need-to-export-field-functions-during-every-run">
 <h2><span class="section-number">29.9. </span>Do I need to export field functions during every run?<a class="headerlink" href="#do-i-need-to-export-field-functions-during-every-run" title="Link to this heading"></a></h2>

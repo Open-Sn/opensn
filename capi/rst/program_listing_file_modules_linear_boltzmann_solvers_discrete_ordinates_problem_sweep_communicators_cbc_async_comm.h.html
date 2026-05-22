@@ -91,67 +91,108 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/byte_array.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mpicpp-lite/mpicpp-lite.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
-
-<span class="k">namespace</span><span class="w"> </span><span class="nn">mpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">mpicpp_lite</span><span class="p">;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;span&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">MPICommunicatorSet</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">ByteArray</span><span class="p">;</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">mpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">mpicpp_lite</span><span class="p">;</span>
 
+<span class="k">class</span><span class="w"> </span><span class="nc">MPICommunicatorSet</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CBC_FLUDS</span><span class="p">;</span>
+
+<span class="c1">/// Host CBC asynchronous communicator.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CBC_AsynchronousCommunicator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">CBC_AsynchronousCommunicator</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">CBC_AsynchronousCommunicator</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
 <span class="w">                                        </span><span class="n">FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
-<span class="w">                                        </span><span class="k">const</span><span class="w"> </span><span class="n">MPICommunicatorSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm_set</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="p">(</span><span class="n">fluds</span><span class="p">,</span><span class="w"> </span><span class="n">comm_set</span><span class="p">),</span><span class="w"> </span><span class="n">angle_set_id_</span><span class="p">(</span><span class="n">angle_set_id</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">                                        </span><span class="k">const</span><span class="w"> </span><span class="n">MPICommunicatorSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm_set</span><span class="p">);</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">InitGetDownwindMessageData</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">location_id</span><span class="p">,</span>
-<span class="w">                                                  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_global_id</span><span class="p">,</span>
-<span class="w">                                                  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">face_id</span><span class="p">,</span>
-<span class="w">                                                  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
-<span class="w">                                                  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">data_size</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Queue downwind nonlocal face psi for asynchronous send.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param peer_index SPDS-successor peer index.</span>
+<span class="cm">   * \param incoming_face_slot Receiver-side incoming face slot.</span>
+<span class="cm">   * \param outgoing_face_psi Face psi values to append to the destination send buffer.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">QueueDownwindMessage</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">peer_index</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">incoming_face_slot</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">outgoing_face_psi</span><span class="p">);</span>
 
+<span class="w">  </span><span class="c1">/// Start or progress pending nonblocking sends.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">SendData</span><span class="p">();</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ReceiveData</span><span class="p">();</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Receive all currently available nonlocal face psi.</span>
+<span class="cm">   *</span>
+<span class="cm">   * The output vector is cleared, then populated with local task IDs whose received face data was</span>
+<span class="cm">   * stored in the CBC FLUDS.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReceiveData</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">cells_who_received_data</span><span class="p">);</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Reset</span><span class="p">()</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="n">outgoing_message_queue_</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
-<span class="w">    </span><span class="n">send_buffer_</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Return whether sends remain in flight.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasPendingCommunication</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">send_buffer_</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Clear pending send and receive state.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Reset</span><span class="p">();</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Angle-set MPI message tag.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Communicator used for incoming face psi.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">receive_comm_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// CBC FLUDS receiving nonlocal face psi.</span>
+<span class="w">  </span><span class="n">CBC_FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cbc_fluds_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Number of upstream locations that may send face psi.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_receive_sources_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">// location_id, cell_global_id, face_id</span>
-<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">MessageKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">MessageKey</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">outgoing_message_queue_</span><span class="p">;</span>
-
+<span class="w">  </span><span class="c1">/// Destination-batched send buffer.</span>
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">BufferItem</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">destination</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="n">mpi</span><span class="o">::</span><span class="n">Request</span><span class="w"> </span><span class="n">mpi_request</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// SPDS successor index.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">peer_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// MPI communicator for the successor.</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">*</span><span class="w"> </span><span class="n">comm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Rank within the successor communicator.</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Nonblocking-send state.</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">send_initiated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">completed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-<span class="w">    </span><span class="n">ByteArray</span><span class="w"> </span><span class="n">data_array</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Serialized face-psi data.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
 <span class="w">  </span><span class="p">};</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BufferItem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">send_buffer_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">// cell_global_id, face_id</span>
-<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">CellFaceKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MergeDeplocsOutgoingMessages</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">CellFaceKey</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">received_messages</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Destination location for nonlocal face psi.</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">SendPeer</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">/// MPI communicator for the destination.</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">*</span><span class="w"> </span><span class="n">comm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Rank within the destination communicator.</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">/// Return the open send buffer for a destination peer.</span>
+<span class="w">  </span><span class="n">BufferItem</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetOpenSendBuffer</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">peer_index</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Active nonblocking send buffers.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BufferItem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">send_buffer_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// MPI requests matching `send_buffer_`.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span><span class="w"> </span><span class="n">send_requests_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Cleared send buffers available for reuse.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">BufferItem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reusable_send_buffers_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Receive buffer for one packed MPI message.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">receive_buffer_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// SPDS successor communication endpoints.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SendPeer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">send_peers_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Open send-buffer index by successor peer.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">open_send_buffer_indices_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Sentinel for no open send buffer.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">INVALID_BUFFER_INDEX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

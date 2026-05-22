@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_cell_face_key:
+
+Struct CellFaceKey
+==================
+
+- Defined in :ref:`file_framework_mesh_cell_cell.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::CellFaceKey
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

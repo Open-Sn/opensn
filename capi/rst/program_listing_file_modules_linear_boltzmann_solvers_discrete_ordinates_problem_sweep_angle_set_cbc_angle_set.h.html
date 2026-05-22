@@ -92,36 +92,40 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CBC_SPDS</span><span class="p">;</span>
 
+<span class="c1">/// Host CBC angle set.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CBC_AngleSet</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AngleSet</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">CBC_AngleSet</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
+<span class="w">  </span><span class="n">CBC_AngleSet</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
 <span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
 <span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">,</span>
 <span class="w">               </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FLUDS</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
-<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">angle_indices</span><span class="p">,</span>
-<span class="w">               </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">boundaries</span><span class="p">,</span>
+<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">angle_indices</span><span class="p">,</span>
+<span class="w">               </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">boundaries</span><span class="p">,</span>
 <span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">MPICommunicatorSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm_set</span><span class="p">);</span>
 
 <span class="w">  </span><span class="n">AsynchronousCommunicator</span><span class="o">*</span><span class="w"> </span><span class="nf">GetCommunicator</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeDelayedUpstreamData</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
 
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetMaxBufferMessages</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetMaxBufferMessages</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">max_buffer_messages_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetMaxBufferMessages</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">new_max</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetMaxBufferMessages</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">new_max</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">max_buffer_messages_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_max</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="n">AngleSetStatus</span><span class="w"> </span><span class="nf">AngleSetAdvance</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">,</span><span class="w"> </span><span class="n">AngleSetStatus</span><span class="w"> </span><span class="n">permission</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">AngleSetStatus</span><span class="w"> </span><span class="nf">FlushSendBuffers</span><span class="p">()</span><span class="w"> </span><span class="k">override</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">all_messages_sent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async_comm_</span><span class="p">.</span><span class="n">SendData</span><span class="p">();</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">all_messages_sent</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">async_comm_</span><span class="p">.</span><span class="n">HasPendingCommunication</span><span class="p">())</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">async_comm_</span><span class="p">.</span><span class="n">SendData</span><span class="p">();</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">all_messages_sent</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">AngleSetStatus</span><span class="o">::</span><span class="n">MESSAGES_SENT</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AngleSetStatus</span><span class="o">::</span><span class="n">MESSAGES_PENDING</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
@@ -131,7 +135,17 @@
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CBC_SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cbc_spds_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;</span><span class="w"> </span><span class="n">current_task_list_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">task_list_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Unsatisfied dependency count by task.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">remaining_dependencies_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Task completion flags.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">completed_tasks_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Ready task stack.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ready_tasks_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Reusable buffer for newly unlocked received tasks.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">received_task_buffer_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_completed_tasks_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_buffer_messages_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">  </span><span class="n">CBC_AsynchronousCommunicator</span><span class="w"> </span><span class="n">async_comm_</span><span class="p">;</span>
 <span class="p">};</span>
 

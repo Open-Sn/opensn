@@ -1,0 +1,22 @@
+
+.. _namespace_opensn__detail__anonymous_namespace{avx_sweep_chunk_utils.h}:
+
+Namespace opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}
+======================================================================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a8c6fa2a80e30a3aa2fe8a3c1d4e0d766`
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a3db0570f3538995fda1215f6c1786612`

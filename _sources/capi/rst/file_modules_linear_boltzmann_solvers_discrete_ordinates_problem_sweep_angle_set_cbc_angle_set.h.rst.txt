@@ -30,9 +30,13 @@ Includes
 --------
 
 
+- ``cstdint``
+
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h`)
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_device_vector_mirror.h`)
 
 
 

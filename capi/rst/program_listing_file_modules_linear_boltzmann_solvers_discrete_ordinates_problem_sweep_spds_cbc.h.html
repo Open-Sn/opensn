@@ -96,11 +96,12 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
+<span class="c1">/// CBC sweep-plane data structure.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CBC_SPDS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">SPDS</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Constructs a cell-by-cell sweep-plane data strcture (SPDS) with the given direction and grid.</span>
+<span class="cm">   * Constructs a cell-by-cell sweep-plane data structure (SPDS) with the given direction and grid.</span>
 <span class="cm">   *</span>
 <span class="cm">   * \param omega The angular direction vector.</span>
 <span class="cm">   * \param grid Reference to the grid.</span>
@@ -108,7 +109,6 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">CBC_SPDS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_cycles</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Returns the cell-by-cell task list.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetTaskList</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>

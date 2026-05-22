@@ -1,0 +1,89 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h:
+
+File avx_sweep_chunk_utils.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/avx_sweep_chunk_utils.h``)
+-----------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``cstddef``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_sweep_chunk.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_opensn__detail`
+
+- :ref:`namespace_opensn__detail__anonymous_namespace{avx_sweep_chunk_utils.h}`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1detail_1_1_gather_index_builder`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ad137c5d303e39cb4af7e7e2bebd821a1`
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a8c6fa2a80e30a3aa2fe8a3c1d4e0d766`
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a3db0570f3538995fda1215f6c1786612`
+
+
+Defines
+-------
+
+
+- :ref:`exhale_define_avx__sweep__chunk__utils_8h_1a440029e09e4bc59bc9e005ff3caa3281`
+
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1a82e7b6a54db1102e3e42267b43b093d4`
+

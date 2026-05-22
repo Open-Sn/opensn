@@ -87,6 +87,15 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_cbc_fluds.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-cbc-fluds-h"><span class="std std-ref">File cbc_fluds.h</span></a></p></li>
 </ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_c_b_c___f_l_u_d_s_1_1_incoming_nonlocal_psi.html#exhale-struct-structopensn-1-1-c-b-c-f-l-u-d-s-1-1-incoming-nonlocal-psi"><span class="std std-ref">Struct CBC_FLUDS::IncomingNonlocalPsi</span></a></p></li>
+</ul>
+</section>
+</section>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
 <section id="base-type">
@@ -101,97 +110,112 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDSE">
 <span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CBC_FLUDS</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE" title="opensn::FLUDS"><span class="n"><span class="pre">FLUDS</span></span></a><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDSE" title="Link to this definition"></a><br /></dt>
-<dd><p>Flux data structures (<a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a>) specific to the cell-by-cell (CBC) sweep algorithm. </p>
-<p>This class manages the storage and access of angular flux data during a CBC sweep</p>
-<p>It provides methods to access:<ul class="simple">
-<li><p>Upwind angular flux data from local neighbor cells</p></li>
-<li><p>Storage locations for downwind angular flux data for the current cell</p></li>
-<li><p>Upwind angular flux data received from remote MPI ranks </p></li>
-</ul>
-</p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS11CellFaceKeyE">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a778ce35d44381e106f07a8171b5d554d"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CellFaceKey</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS11CellFaceKeyE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
+<dd><p>Host CBC <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a>. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS9CBC_FLUDSEj6size_tRK19CBC_FLUDSCommonDataRK14UnknownManagerRK21SpatialDiscretization">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a1282e6c0228b526cfbd3a29110e56afd"></span><span class="sig-name descname"><span class="n"><span class="pre">CBC_FLUDS</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_groups</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_angles</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_c_b_c___f_l_u_d_s_common_data.html#_CPPv4N6opensn19CBC_FLUDSCommonDataE" title="opensn::CBC_FLUDSCommonData"><span class="n"><span class="pre">CBC_FLUDSCommonData</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">common_data</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">psi_uk_man</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_spatial_discretization.html#_CPPv4N6opensn21SpatialDiscretizationE" title="opensn::SpatialDiscretization"><span class="n"><span class="pre">SpatialDiscretization</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sdm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS9CBC_FLUDSEj6size_tRK19CBC_FLUDSCommonDataRK14UnknownManagerRK21SpatialDiscretization" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS9CBC_FLUDSEjNSt6size_tERK19CBC_FLUDSCommonDataRK14UnknownManagerRK21SpatialDiscretization">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a5427b871ab6123299247e5342cdde805"></span><span class="sig-name descname"><span class="n"><span class="pre">CBC_FLUDS</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_groups</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_angles</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_c_b_c___f_l_u_d_s_common_data.html#_CPPv4N6opensn19CBC_FLUDSCommonDataE" title="opensn::CBC_FLUDSCommonData"><span class="n"><span class="pre">CBC_FLUDSCommonData</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">common_data</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_unknown_manager.html#_CPPv4N6opensn14UnknownManagerE" title="opensn::UnknownManager"><span class="n"><span class="pre">UnknownManager</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">psi_uk_man</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_spatial_discretization.html#_CPPv4N6opensn21SpatialDiscretizationE" title="opensn::SpatialDiscretization"><span class="n"><span class="pre">SpatialDiscretization</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sdm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS9CBC_FLUDSEjNSt6size_tERK19CBC_FLUDSCommonDataRK14UnknownManagerRK21SpatialDiscretization" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn9CBC_FLUDS13GetCommonDataEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a44c93a5932eeb29031dfb7f719388ede"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_f_l_u_d_s_common_data.html#_CPPv4N6opensn15FLUDSCommonDataE" title="opensn::FLUDSCommonData"><span class="n"><span class="pre">FLUDSCommonData</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCommonData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn9CBC_FLUDS13GetCommonDataEv" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a81f9fe9f0d8b29a8609b10488404ccf5"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_c_b_c___f_l_u_d_s_common_data.html#_CPPv4N6opensn19CBC_FLUDSCommonDataE" title="opensn::CBC_FLUDSCommonData"><span class="n"><span class="pre">CBC_FLUDSCommonData</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCommonData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn9CBC_FLUDS13GetCommonDataEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS9UpwindPsiERK4Cellj6size_t">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1afad289e4e756731310891e69f5649684"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">UpwindPsi</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">face_neighbor</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adj_cell_node</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_ss_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS9UpwindPsiERK4Cellj6size_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Given a local upwind neighbor cell, a node index on this cell, and an angleset subset index, this function returns a pointer to the start of the group data for the specified node and angle. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS9UpwindPsiERK4CelljNSt6size_tE">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a547bc4b2ec569b4773c575667b2c3810"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">UpwindPsi</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">face_neighbor</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adj_cell_node</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_ss_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS9UpwindPsiERK4CelljNSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return local upwind cell psi for a mapped face node. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>face_neighbor</strong> – Local upwind neighbor cell. </p></li>
+<li><p><strong>adj_cell_node</strong> – Mapped node in the upwind cell. </p></li>
+<li><p><strong>as_ss_idx</strong> – Angle-set subset index. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Local upwind cell psi for the specified node and angle subset. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS11OutgoingPsiERK4Cellj6size_t">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a5b781399b2202bd88292aac41ba9ee80"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">OutgoingPsi</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_node</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_ss_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS11OutgoingPsiERK4Cellj6size_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Given a local cell, a node index on this cell, and an angleset subset index, this function returns a pointer to the start of the group data for the specified node and angle for writing its just solved angular fluxes. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS11OutgoingPsiERK4CelljNSt6size_tE">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1ad9192696be6144a499060243e14ad550"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">OutgoingPsi</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_node</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_ss_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS11OutgoingPsiERK4CelljNSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return writable outgoing cell psi for a cell node. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cell</strong> – Local cell. </p></li>
+<li><p><strong>cell_node</strong> – Local cell node. </p></li>
+<li><p><strong>as_ss_idx</strong> – Angle-set subset index. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Local outgoing cell psi for the specified node and angle subset. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS11NLUpwindPsiE8uint64_tjj6size_t">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1aee03dd0c8d1f40c547bb48bb145f1bb1"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NLUpwindPsi</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_global_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_node_mapped</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_ss_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS11NLUpwindPsiE8uint64_tjj6size_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Given a remote upwind cell’s global ID, a face ID on this cell, a node index on this face, and an angleset subset index, this function returns a pointer to the start of the group data for the specified face node and angle. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS11NLUpwindPsiENSt6size_tEjNSt6size_tE">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1af0afbc81937b9d2fdfe336cbdefd79a5"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NLUpwindPsi</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">incoming_face_slot</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_node_mapped</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_ss_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS11NLUpwindPsiENSt6size_tEjNSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return received nonlocal upwind face psi for a mapped face node. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>incoming_face_slot</strong> – Incoming nonlocal face slot. </p></li>
+<li><p><strong>face_node_mapped</strong> – Mapped upwind face node. </p></li>
+<li><p><strong>as_ss_idx</strong> – Angle-set subset index. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Received face psi, or nullptr if the slot has not been received this sweep epoch. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS13NLOutgoingPsiEPNSt6vectorIdEE6size_t6size_t">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1ad6856c0e3828755c3af034f10b2eb244"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NLOutgoingPsi</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">psi_nonlocal_outgoing</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_node</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_ss_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS13NLOutgoingPsiEPNSt6vectorIdEE6size_t6size_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Given a pointer to a vector holding the non-local outgoing psi data for a face, a node index on this face, and an angleset subset index, this function returns a pointer to the start of the group data for the specified face node and angle. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS13NLOutgoingPsiEPNSt6vectorIdEENSt6size_tENSt6size_tE">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a6cea0226dad7e8984dc402bfcfc5c725"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NLOutgoingPsi</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">psi_nonlocal_outgoing</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_node</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">as_ss_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS13NLOutgoingPsiEPNSt6vectorIdEENSt6size_tENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return writable nonlocal outgoing face psi for a face node. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psi_nonlocal_outgoing</strong> – Nonlocal outgoing face storage. </p></li>
+<li><p><strong>face_node</strong> – <a class="reference internal" href="structopensn_1_1_face.html#structopensn_1_1_face"><span class="std std-ref">Face</span></a> node. </p></li>
+<li><p><strong>as_ss_idx</strong> – Angle-set subset index. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Writable face psi for the specified face node and angle subset. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS23ClearLocalAndReceivePsiEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a034e7a25f249740d756344b2b79659c7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearLocalAndReceivePsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS23ClearLocalAndReceivePsiEv" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a034e7a25f249740d756344b2b79659c7"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearLocalAndReceivePsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS23ClearLocalAndReceivePsiEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS12ClearSendPsiEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1aa0aa231b3a5fad0b2a7366ef12d54008"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearSendPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS12ClearSendPsiEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS24AllocateInternalLocalPsiEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a8a1a50993ddb67ef80ec19c44643040d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllocateInternalLocalPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS24AllocateInternalLocalPsiEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS19AllocateOutgoingPsiEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1aeecf7937c65bdcb0f2855cb4b8f78480"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllocateOutgoingPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS19AllocateOutgoingPsiEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS23AllocateDelayedLocalPsiEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a8450587316073dc14ec6a08b9e5b0ecf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllocateDelayedLocalPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS23AllocateDelayedLocalPsiEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS26AllocatePrelocIOutgoingPsiEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a53f65f08141566e4f85259453201ba04"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllocatePrelocIOutgoingPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS26AllocatePrelocIOutgoingPsiEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS33AllocateDelayedPrelocIOutgoingPsiEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a885f7d6862397c42fe3ee3b37218c367"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllocateDelayedPrelocIOutgoingPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS33AllocateDelayedPrelocIOutgoingPsiEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS26GetDeplocsOutgoingMessagesEv">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1afc3e8ce1c563fb650f171e2bde363b46"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn9CBC_FLUDS11CellFaceKeyE" title="opensn::CBC_FLUDS::CellFaceKey"><span class="n"><span class="pre">CellFaceKey</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetDeplocsOutgoingMessages</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS26GetDeplocsOutgoingMessagesEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS32PrepareIncomingNonlocalPsiBySlotENSt6size_tENSt6size_tE">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a1d1883957ac68ad86fa8f98d253437f7"></span><a class="reference internal" href="#_CPPv4N6opensn9CBC_FLUDS19IncomingNonlocalPsiE" title="opensn::CBC_FLUDS::IncomingNonlocalPsi"><span class="n"><span class="pre">IncomingNonlocalPsi</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrepareIncomingNonlocalPsiBySlot</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">incoming_face_slot</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS32PrepareIncomingNonlocalPsiBySlotENSt6size_tENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Prepare incoming nonlocal face-psi storage and return the owning local cell. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>incoming_face_slot</strong> – Incoming nonlocal face slot. </p></li>
+<li><p><strong>data_size</strong> – Number of psi values to store for the face. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Prepared face-psi storage and associated local cell ID. </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -212,42 +236,63 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS28num_angles_in_gs_quadrature_E">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a92df5e7ad99304fc640387e006d5e530"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_angles_in_gs_quadrature_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS28num_angles_in_gs_quadrature_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS26num_quadrature_local_dofs_E">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1ac889d7463fc35a68b39f9c8bfbadc36d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_quadrature_local_dofs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS26num_quadrature_local_dofs_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS23num_local_spatial_dofs_E">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1ad1b7c02787c2870f759b2b5ca9720046"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_local_spatial_dofs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS23num_local_spatial_dofs_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS20local_psi_data_size_E">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a6822330d2138e44cb08c9799f4bbd3f4"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">local_psi_data_size_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS20local_psi_data_size_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS15local_psi_data_E">
 <span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a87e1fbcc53a990122ce14d267f4aebf6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">local_psi_data_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS15local_psi_data_E" title="Link to this definition"></a><br /></dt>
-<dd><p>Layout for storage for local angular fluxes: spatial DOF major -&gt; angle in angleset major -&gt; group in groupset major. </p>
+<dd><p>Spatial DOF -&gt; angleset subset -&gt; group major layout. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS22boundryI_incoming_psi_E">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a3fd84eb2ea03dd19c26951a9313cea4f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundryI_incoming_psi_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS22boundryI_incoming_psi_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS22incoming_nonlocal_psi_E">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1af87c4263426f4105b60c4b659e858e0e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">incoming_nonlocal_psi_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS22incoming_nonlocal_psi_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Contiguous storage for received nonlocal face psi. </p>
+</dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS26deplocs_outgoing_messages_E">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a1164cd840d8691402f31591cc350fdde"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn9CBC_FLUDS11CellFaceKeyE" title="opensn::CBC_FLUDS::CellFaceKey"><span class="n"><span class="pre">CellFaceKey</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deplocs_outgoing_messages_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS26deplocs_outgoing_messages_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS30incoming_nonlocal_psi_offsets_E">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1ac81824e40ba048f893d93ff7b260f647"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">incoming_nonlocal_psi_offsets_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS30incoming_nonlocal_psi_offsets_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Offsets into received nonlocal face-psi storage. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS19incoming_psi_epoch_E">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1a9334db240c4be323b5db11f963fc947c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">incoming_psi_epoch_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS19incoming_psi_epoch_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Receive epoch for each nonlocal face slot. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS18current_psi_epoch_E">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1afd6fde1d66ecf02c8711db757d9eeff6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">current_psi_epoch_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS18current_psi_epoch_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Current receive epoch. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS15cell_psi_start_E">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_1ad1eaa5493417e1c3cfaa146d1c5e3677"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_psi_start_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS15cell_psi_start_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Local angular-flux storage offset by local cell. </p>
+</dd></dl>
 
 </div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS19IncomingNonlocalPsiE">
+<span class="target" id="structopensn_1_1_c_b_c___f_l_u_d_s_1_1_incoming_nonlocal_psi"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IncomingNonlocalPsi</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS19IncomingNonlocalPsiE" title="Link to this definition"></a><br /></dt>
+<dd><p>Incoming nonlocal face psi and owning local cell. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS19IncomingNonlocalPsi3psiE">
+<span class="target" id="structopensn_1_1_c_b_c___f_l_u_d_s_1_1_incoming_nonlocal_psi_1a4d98299fce9e586df499a01b2c945299"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">psi</span></span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS19IncomingNonlocalPsi3psiE" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="structopensn_1_1_face.html#structopensn_1_1_face"><span class="std std-ref">Face</span></a> psi storage. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn9CBC_FLUDS19IncomingNonlocalPsi13cell_local_idE">
+<span class="target" id="structopensn_1_1_c_b_c___f_l_u_d_s_1_1_incoming_nonlocal_psi_1ac0f3a4b1d9b66472aac22f205409f1ef"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_local_id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn9CBC_FLUDS19IncomingNonlocalPsi13cell_local_idE" title="Link to this definition"></a><br /></dt>
+<dd><p>Local cell associated with the received face data. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>

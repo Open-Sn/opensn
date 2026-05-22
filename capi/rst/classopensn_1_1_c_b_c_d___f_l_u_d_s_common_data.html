@@ -101,7 +101,7 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn20CBCD_FLUDSCommonDataE">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CBCD_FLUDSCommonData</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_f_l_u_d_s_common_data.html#_CPPv4N6opensn15FLUDSCommonDataE" title="opensn::FLUDSCommonData"><span class="n"><span class="pre">FLUDSCommonData</span></span></a><a class="headerlink" href="#_CPPv4N6opensn20CBCD_FLUDSCommonDataE" title="Link to this definition"></a><br /></dt>
-<dd><p>Common data for <a class="reference internal" href="classopensn_1_1_c_b_c_d___f_l_u_d_s.html#classopensn_1_1_c_b_c_d___f_l_u_d_s"><span class="std std-ref">CBCD_FLUDS</span></a>. </p>
+<dd><p>Device CBC <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a> common data. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -117,55 +117,67 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumIncomingBoundaryNodesEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1ac8569563cd547cb9694d8c97066c4dcf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumIncomingBoundaryNodes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumIncomingBoundaryNodesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get number of incoming boundary face nodes. </p>
+<dd><p>Return the number of incoming boundary face nodes. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumOutgoingBoundaryNodesEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1a0a52bb39eaa8dd8f9ee11ca051bec4b9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumOutgoingBoundaryNodes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumOutgoingBoundaryNodesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get number of outgoing boundary face nodes. </p>
+<dd><p>Return the number of outgoing boundary face nodes. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumIncomingNonlocalNodesEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1a546bacb277c52a00c33ff799e0da5e4a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumIncomingNonlocalNodes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumIncomingNonlocalNodesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get number of incoming non-local face nodes. </p>
+<dd><p>Return the number of incoming nonlocal face nodes. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumOutgoingNonlocalNodesEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1ac0585a9784f655acfe6fb3a4cd65a1e7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumOutgoingNonlocalNodes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumOutgoingNonlocalNodesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get number of outgoing non-local face nodes. </p>
+<dd><p>Return the number of outgoing nonlocal face nodes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumIncomingNonlocalFacesEv">
+<span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1ace26edc4da9742bced0a3dc8e8d153d2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumIncomingNonlocalFaces</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumIncomingNonlocalFacesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the number of incoming nonlocal faces. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumOutgoingNonlocalFacesEv">
+<span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1a403d0ae52f9d3b261927210799573c69"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumOutgoingNonlocalFaces</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData27GetNumOutgoingNonlocalFacesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the number of outgoing nonlocal faces. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData26GetIncomingBoundaryNodeMapEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1af3e2cd6c1d7654b194c20c32447db799"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_boundary_node_info.html#_CPPv4N6opensn16BoundaryNodeInfoE" title="opensn::BoundaryNodeInfo"><span class="n"><span class="pre">BoundaryNodeInfo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetIncomingBoundaryNodeMap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData26GetIncomingBoundaryNodeMapEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get incoming boundary node map. </p>
+<dd><p>Return the incoming boundary node map. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData26GetOutgoingBoundaryNodeMapEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1a48210ae04940800e7e7fa155b17f3392"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_boundary_node_info.html#_CPPv4N6opensn16BoundaryNodeInfoE" title="opensn::BoundaryNodeInfo"><span class="n"><span class="pre">BoundaryNodeInfo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetOutgoingBoundaryNodeMap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData26GetOutgoingBoundaryNodeMapEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get outgoing boundary node map. </p>
+<dd><p>Return the outgoing boundary node map. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData26GetIncomingNonlocalNodeMapEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1ad8190817624a8f30b27d8097b0309d75"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_nonlocal_node_info.html#_CPPv4N6opensn16NonlocalNodeInfoE" title="opensn::NonlocalNodeInfo"><span class="n"><span class="pre">NonlocalNodeInfo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetIncomingNonlocalNodeMap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData26GetIncomingNonlocalNodeMapEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get incoming nonlocal node map. </p>
+<dd><p>Return the incoming nonlocal node map. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData26GetOutgoingNonlocalNodeMapEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1a3ad61f427c93422a3a1a10c6063460c8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_nonlocal_node_info.html#_CPPv4N6opensn16NonlocalNodeInfoE" title="opensn::NonlocalNodeInfo"><span class="n"><span class="pre">NonlocalNodeInfo</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetOutgoingNonlocalNodeMap</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData26GetOutgoingNonlocalNodeMapEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get outgoing nonlocal node map. </p>
+<dd><p>Return the outgoing nonlocal node map. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn20CBCD_FLUDSCommonData14GetDeviceIndexEv">
 <span class="target" id="classopensn_1_1_c_b_c_d___f_l_u_d_s_common_data_1a3a041321b487bd05437465f963ca4e03"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetDeviceIndex</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn20CBCD_FLUDSCommonData14GetDeviceIndexEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Get pointer to cell-face-node map on device. </p>
+<dd><p>Return the device cell-face-node index map. </p>
 </dd></dl>
 
 </div>
