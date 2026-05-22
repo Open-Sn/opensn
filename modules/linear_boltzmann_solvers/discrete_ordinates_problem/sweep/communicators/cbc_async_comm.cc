@@ -176,7 +176,7 @@ CBC_AsynchronousCommunicator::ReceiveData(std::vector<std::uint32_t>& cells_who_
 
   const auto tag = static_cast<int>(angle_set_id_);
   mpi::Status status;
-  while (receive_comm_.iprobe(ANY_SOURCE, tag, status))
+  while (receive_comm_.iprobe(mpi::ANY_SOURCE, tag, status))
   {
     const auto num_items = status.count<char>();
     receive_buffer_.resize(num_items);
