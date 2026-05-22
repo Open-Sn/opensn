@@ -15,7 +15,7 @@ namespace crb = caribou;
 namespace opensn
 {
 
-/// CBC sweep chunk for device.
+/// Device CBC sweep chunk.
 class CBCDSweepChunk : public SweepChunk
 {
 public:
@@ -39,7 +39,7 @@ public:
   std::vector<crb::Stream>& GetStreams() { return streams_list_; }
 
   using SweepChunk::Sweep;
-  void Sweep(const std::vector<std::uint32_t>& cell_local_ids, size_t angle_set_id);
+  void Sweep(const std::vector<std::uint32_t>& cell_local_ids, std::size_t angle_set_id);
 
 private:
   DiscreteOrdinatesProblem& problem_;

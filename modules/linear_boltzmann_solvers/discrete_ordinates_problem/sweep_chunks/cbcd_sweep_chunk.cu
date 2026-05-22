@@ -48,7 +48,7 @@ CBCDSweepChunk::CBCDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
 }
 
 void
-CBCDSweepChunk::Sweep(const std::vector<std::uint32_t>& cell_local_ids, size_t angle_set_id)
+CBCDSweepChunk::Sweep(const std::vector<std::uint32_t>& cell_local_ids, std::size_t angle_set_id)
 {
   auto* fluds = fluds_list_[angle_set_id];
   auto* device_saved_psi = fluds->GetSavedAngularFluxDevicePointer();

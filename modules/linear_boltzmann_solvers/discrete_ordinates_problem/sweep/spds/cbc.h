@@ -9,11 +9,12 @@
 namespace opensn
 {
 
+/// CBC sweep-plane data structure.
 class CBC_SPDS : public SPDS
 {
 public:
   /**
-   * Constructs a cell-by-cell sweep-plane data strcture (SPDS) with the given direction and grid.
+   * Constructs a cell-by-cell sweep-plane data structure (SPDS) with the given direction and grid.
    *
    * \param omega The angular direction vector.
    * \param grid Reference to the grid.
@@ -21,7 +22,6 @@ public:
    */
   CBC_SPDS(const Vector3& omega, const std::shared_ptr<MeshContinuum>& grid, bool allow_cycles);
 
-  /// Returns the cell-by-cell task list.
   const std::vector<Task>& GetTaskList() const;
 
 protected:

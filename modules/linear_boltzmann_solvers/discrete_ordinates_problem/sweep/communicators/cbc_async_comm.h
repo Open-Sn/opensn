@@ -4,67 +4,108 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h"
-#include "framework/data_types/byte_array.h"
 #include "mpicpp-lite/mpicpp-lite.h"
-#include <map>
-#include <vector>
-#include <cstdint>
 #include <cstddef>
-
-namespace mpi = mpicpp_lite;
+#include <cstdint>
+#include <limits>
+#include <span>
+#include <vector>
 
 namespace opensn
 {
 
-class MPICommunicatorSet;
-class ByteArray;
+namespace mpi = mpicpp_lite;
 
+class MPICommunicatorSet;
+class CBC_FLUDS;
+
+/// Host CBC asynchronous communicator.
 class CBC_AsynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
-  explicit CBC_AsynchronousCommunicator(size_t angle_set_id,
+  explicit CBC_AsynchronousCommunicator(std::size_t angle_set_id,
                                         FLUDS& fluds,
-                                        const MPICommunicatorSet& comm_set)
-    : AsynchronousCommunicator(fluds, comm_set), angle_set_id_(angle_set_id)
-  {
-  }
+                                        const MPICommunicatorSet& comm_set);
 
-  std::vector<double>& InitGetDownwindMessageData(int location_id,
-                                                  uint64_t cell_global_id,
-                                                  unsigned int face_id,
-                                                  size_t angle_set_id,
-                                                  size_t data_size) override;
+  /**
+   * Queue downwind nonlocal face psi for asynchronous send.
+   *
+   * \param peer_index SPDS-successor peer index.
+   * \param incoming_face_slot Receiver-side incoming face slot.
+   * \param outgoing_face_psi Face psi values to append to the destination send buffer.
+   */
+  void QueueDownwindMessage(std::size_t peer_index,
+                            std::size_t incoming_face_slot,
+                            std::span<const double> outgoing_face_psi);
 
+  /// Start or progress pending nonblocking sends.
   bool SendData();
 
-  std::vector<uint64_t> ReceiveData();
+  /**
+   * Receive all currently available nonlocal face psi.
+   *
+   * The output vector is cleared, then populated with local task IDs whose received face data was
+   * stored in the CBC FLUDS.
+   */
+  void ReceiveData(std::vector<std::uint32_t>& cells_who_received_data);
 
-  void Reset()
-  {
-    outgoing_message_queue_.clear();
-    send_buffer_.clear();
-  }
+  /// Return whether sends remain in flight.
+  bool HasPendingCommunication() const noexcept { return not send_buffer_.empty(); }
+
+  /// Clear pending send and receive state.
+  void Reset();
 
 protected:
-  const size_t angle_set_id_;
+  /// Angle-set MPI message tag.
+  const std::size_t angle_set_id_;
+  /// Communicator used for incoming face psi.
+  const mpi::Communicator& receive_comm_;
+  /// CBC FLUDS receiving nonlocal face psi.
+  CBC_FLUDS& cbc_fluds_;
+  /// Number of upstream locations that may send face psi.
+  std::size_t num_receive_sources_ = 0;
 
-  // location_id, cell_global_id, face_id
-  using MessageKey = std::tuple<int, uint64_t, unsigned int>;
-  std::map<MessageKey, std::vector<double>> outgoing_message_queue_;
-
+  /// Destination-batched send buffer.
   struct BufferItem
   {
-    int destination = 0;
-    mpi::Request mpi_request;
+    /// SPDS successor index.
+    std::size_t peer_index = 0;
+    /// MPI communicator for the successor.
+    const mpi::Communicator* comm = nullptr;
+    /// Rank within the successor communicator.
+    int rank = 0;
+    /// Nonblocking-send state.
     bool send_initiated = false;
-    bool completed = false;
-    ByteArray data_array;
+    /// Serialized face-psi data.
+    std::vector<char> data;
   };
-  std::vector<BufferItem> send_buffer_;
 
-  // cell_global_id, face_id
-  using CellFaceKey = std::pair<uint64_t, unsigned int>;
-  void MergeDeplocsOutgoingMessages(std::map<CellFaceKey, std::vector<double>>& received_messages);
+  /// Destination location for nonlocal face psi.
+  struct SendPeer
+  {
+    /// MPI communicator for the destination.
+    const mpi::Communicator* comm = nullptr;
+    /// Rank within the destination communicator.
+    int rank = 0;
+  };
+
+  /// Return the open send buffer for a destination peer.
+  BufferItem& GetOpenSendBuffer(std::size_t peer_index);
+
+  /// Active nonblocking send buffers.
+  std::vector<BufferItem> send_buffer_;
+  /// MPI requests matching `send_buffer_`.
+  std::vector<mpi::Request> send_requests_;
+  /// Cleared send buffers available for reuse.
+  std::vector<BufferItem> reusable_send_buffers_;
+  /// Receive buffer for one packed MPI message.
+  std::vector<char> receive_buffer_;
+  /// SPDS successor communication endpoints.
+  std::vector<SendPeer> send_peers_;
+  /// Open send-buffer index by successor peer.
+  std::vector<std::size_t> open_send_buffer_indices_;
+  /// Sentinel for no open send buffer.
+  static constexpr std::size_t INVALID_BUFFER_INDEX = std::numeric_limits<std::size_t>::max();
 };
 
 } // namespace opensn

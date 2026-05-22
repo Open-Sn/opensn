@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/avx_sweep_chunk_utils.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include <cstdint>
@@ -12,16 +13,6 @@
 
 namespace opensn
 {
-
-// experimental, to be moved to a higher level header file
-static constexpr size_t simd_width =
-#if __AVX512F__
-  8; // 8 lanes (512-bit, doubles)
-#elif __AVX2__
-  4; // 4 lanes (256-bit, doubles)
-#else
-  1; // scalar
-#endif
 
 class DiscreteOrdinatesProblem;
 

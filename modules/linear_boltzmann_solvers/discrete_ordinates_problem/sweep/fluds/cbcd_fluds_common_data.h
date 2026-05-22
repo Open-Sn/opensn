@@ -13,7 +13,7 @@ namespace opensn
 
 class SpatialDiscretization;
 
-/// Common data for CBCD_FLUDS
+/// Device CBC FLUDS common data.
 class CBCD_FLUDSCommonData : public FLUDSCommonData
 {
 public:
@@ -23,54 +23,58 @@ public:
 
   ~CBCD_FLUDSCommonData() override;
 
-  /// Get number of incoming boundary face nodes.
+  /// Return the number of incoming boundary face nodes.
   std::size_t GetNumIncomingBoundaryNodes() const { return num_incoming_boundary_nodes_; }
 
-  /// Get number of outgoing boundary face nodes.
+  /// Return the number of outgoing boundary face nodes.
   std::size_t GetNumOutgoingBoundaryNodes() const { return num_outgoing_boundary_nodes_; }
 
-  /// Get number of incoming non-local face nodes.
+  /// Return the number of incoming nonlocal face nodes.
   std::size_t GetNumIncomingNonlocalNodes() const { return num_incoming_nonlocal_nodes_; }
 
-  /// Get number of outgoing non-local face nodes.
+  /// Return the number of outgoing nonlocal face nodes.
   std::size_t GetNumOutgoingNonlocalNodes() const { return num_outgoing_nonlocal_nodes_; }
 
-  /// Get incoming boundary node map.
+  /// Return the number of incoming nonlocal faces.
+  std::size_t GetNumIncomingNonlocalFaces() const { return num_incoming_nonlocal_faces_; }
+
+  /// Return the number of outgoing nonlocal faces.
+  std::size_t GetNumOutgoingNonlocalFaces() const { return num_outgoing_nonlocal_faces_; }
+
+  /// Return the incoming boundary node map.
   const std::vector<BoundaryNodeInfo>& GetIncomingBoundaryNodeMap() const
   {
     return incoming_boundary_node_map_;
   }
 
-  /// Get outgoing boundary node map.
+  /// Return the outgoing boundary node map.
   const std::map<std::uint64_t, std::vector<BoundaryNodeInfo>>& GetOutgoingBoundaryNodeMap() const
   {
     return cell_to_outgoing_boundary_nodes_;
   }
 
-  /// Get incoming nonlocal node map.
+  /// Return the incoming nonlocal node map.
   const std::map<std::uint64_t, std::vector<NonlocalNodeInfo>>& GetIncomingNonlocalNodeMap() const
   {
     return cell_to_incoming_nonlocal_nodes_;
   }
 
-  /// Get outgoing nonlocal node map.
+  /// Return the outgoing nonlocal node map.
   const std::map<std::uint64_t, std::vector<NonlocalNodeInfo>>& GetOutgoingNonlocalNodeMap() const
   {
     return cell_to_outgoing_nonlocal_nodes_;
   }
 
-  /// Get pointer to cell-face-node map on device.
+  /// Return the device cell-face-node index map.
   const std::uint64_t* GetDeviceIndex() const { return device_cell_face_node_map_; }
 
 private:
-  /// Number of incoming boundary face nodes.
-  size_t num_incoming_boundary_nodes_;
-  /// Number of outgoing boundary face nodes.
-  size_t num_outgoing_boundary_nodes_;
-  /// Number of incoming non-local face nodes.
-  size_t num_incoming_nonlocal_nodes_;
-  /// Number of outgoing non-local face nodes.
-  size_t num_outgoing_nonlocal_nodes_;
+  std::size_t num_incoming_boundary_nodes_;
+  std::size_t num_outgoing_boundary_nodes_;
+  std::size_t num_incoming_nonlocal_faces_;
+  std::size_t num_incoming_nonlocal_nodes_;
+  std::size_t num_outgoing_nonlocal_faces_;
+  std::size_t num_outgoing_nonlocal_nodes_;
   /// Device pointer to cell-face-node map for angular flux buffer access.
   std::uint64_t* device_cell_face_node_map_;
   /// Map from incoming face boundary node to indexing metadata.
@@ -82,10 +86,7 @@ private:
   /// Map from cell to outgoing nonlocal nodes.
   std::map<std::uint64_t, std::vector<NonlocalNodeInfo>> cell_to_outgoing_nonlocal_nodes_;
 
-  /**
-   * Compute cell-face-node map for device angular flux buffer access, and
-   * create auxiliary indexing maps for boundary and non-local nodes for host access.
-   */
+  /// Compute device and host angular-flux indexing maps.
   void CopyFlattenedNodeIndexToDevice(const SpatialDiscretization& sdm);
   /// Deallocate device memory for cell-face-node map.
   void DeallocateDeviceMemory();
