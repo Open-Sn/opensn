@@ -91,8 +91,113 @@
     ]
   },
   {
+    "file": "transient_time_dependent_boundary_cbc.py",
+    "comment": "Time-dependent isotropic and arbitrary boundary conditions (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE01_ISO_PULSE_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE02_DELAYED_ISO_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE03_ISO_WINDOW_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE04_INACTIVE_ISO_ZERO_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE05_INACTIVE_ARBITRARY_ZERO_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE06_ARBITRARY_CALLED_EACH_STEP_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE07_MULTIGROUP_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE08_MULTI_ARBITRARY_CONSTANT_EQUIV_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE09_MULTI_ARBITRARY_WINDOWS_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE10_REFLECTING_ARBITRARY_ISO_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE11_INVALID_ISO_BOUNDS_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TD_BOUNDARY_CASE12_ARBITRARY_REJECTS_BOUNDS_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_2d_mixed_time_dependent_bcs.py",
     "comment": "2D mixed time-dependent boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_MIXED_2D_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_2d_mixed_time_dependent_bcs_cbc.py",
+    "comment": "2D mixed time-dependent boundary conditions (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -119,8 +224,36 @@
     ]
   },
   {
+    "file": "transient_3d_mixed_time_dependent_bcs_cbc.py",
+    "comment": "3D mixed time-dependent boundary conditions (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_MIXED_3D_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_2d_adjacent_reflecting_arbitrary_bcs.py",
     "comment": "2D adjacent reflecting and arbitrary boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_ADJACENT_REFLECTING_ARBITRARY_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_2d_adjacent_reflecting_arbitrary_bcs_cbc.py",
+    "comment": "2D adjacent reflecting and arbitrary boundary conditions (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -147,8 +280,36 @@
     ]
   },
   {
+    "file": "transient_3d_adjacent_reflecting_arbitrary_bcs_cbc.py",
+    "comment": "3D adjacent reflecting and arbitrary boundary conditions (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_ADJACENT_REFLECTING_ARBITRARY_3D_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_2d_opposing_reflecting_arbitrary_bcs.py",
     "comment": "2D opposing reflecting and arbitrary boundary conditions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_OPPOSING_REFLECTING_ARBITRARY_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_2d_opposing_reflecting_arbitrary_bcs_cbc.py",
+    "comment": "2D opposing reflecting and arbitrary boundary conditions (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -175,6 +336,20 @@
     ]
   },
   {
+    "file": "transient_3d_opposing_reflecting_arbitrary_bcs_cbc.py",
+    "comment": "3D opposing reflecting and arbitrary boundary conditions (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TD_OPPOSING_REFLECTING_ARBITRARY_3D_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_init_from_steady_restart.py",
     "comment": "Transient initial condition loaded directly from a steady-state restart",
     "num_procs": 4,
@@ -189,8 +364,36 @@
     ]
   },
   {
+    "file": "transient_init_from_steady_restart_cbc.py",
+    "comment": "Transient initial condition loaded directly from a steady-state restart (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "STEADY_RESTART_IC_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_precursors_from_steady_restart.py",
     "comment": "Delayed precursor transient initialized from a steady-state restart",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRECURSOR_RESTART_IC_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_precursors_from_steady_restart_cbc.py",
+    "comment": "Delayed precursor transient initialized from a steady-state restart (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -247,6 +450,20 @@
   {
     "file": "transient_zero_1d_restart.py",
     "comment": "1D 2-group scattered transient restart reproduces a continuous four-step solve",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TRANSIENT_RESTART_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_zero_1d_restart_cbc.py",
+    "comment": "1D 2-group scattered transient restart reproduces a continuous four-step solve (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -557,8 +774,36 @@
     ]
   },
   {
+    "file": "transient_keigen_1d_precursor_count_xs_swap_cbc.py",
+    "comment": "1D delayed transient XS swap across fissionability and precursor counts (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRECURSOR_SWAP_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_init_precursor_count_xs_swap.py",
     "comment": "1D prompt-to-delayed transient XS swap from 0 to 2 precursor families",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRECURSOR_INTRO_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_init_precursor_count_xs_swap_cbc.py",
+    "comment": "1D prompt-to-delayed transient XS swap from 0 to 2 precursor families (CBC)",
     "num_procs": 4,
     "checks": [
       {
