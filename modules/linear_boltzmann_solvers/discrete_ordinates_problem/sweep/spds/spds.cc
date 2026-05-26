@@ -378,7 +378,7 @@ SPDS::PopulateCellRelationships(
   std::vector<std::set<std::pair<std::uint32_t, double>>>& cell_successors)
 {
 
-  constexpr double tolerance = 1.0e-16;
+  constexpr double tolerance = FACE_ORIENTATION_TOLERANCE;
 
   constexpr auto FOPARALLEL = FaceOrientation::PARALLEL;
   constexpr auto FOINCOMING = FaceOrientation::INCOMING;
@@ -504,7 +504,7 @@ SPDS::PopulateCellRelationships(
 void
 SPDS::PrintGhostedGraph() const
 {
-  constexpr double tolerance = 1.0e-16;
+  constexpr double tolerance = FACE_ORIENTATION_TOLERANCE;
 
   for (int p = 0; p < opensn::mpi_comm.size(); ++p)
   {

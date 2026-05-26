@@ -15,6 +15,8 @@ class Cell;
 class SPDS;
 class MeshContinuum;
 
+inline constexpr double FACE_ORIENTATION_TOLERANCE = 1.0e-12;
+
 enum class FaceOrientation : short
 {
   PARALLEL = -1,
