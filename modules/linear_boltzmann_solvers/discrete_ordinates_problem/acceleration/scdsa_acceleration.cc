@@ -51,6 +51,8 @@ SCDSAAcceleration::SCDSAAcceleration(const InputParameters& params)
 void
 SCDSAAcceleration::Initialize()
 {
+  CheckAAHSingleSweepStability();
+
   front_wgs_solver_ = do_problem_.GetWGSSolver(front_gs_.id);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");

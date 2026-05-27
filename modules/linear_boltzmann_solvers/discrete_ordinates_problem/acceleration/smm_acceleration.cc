@@ -64,6 +64,8 @@ SMMAcceleration::SMMAcceleration(const InputParameters& params)
 void
 SMMAcceleration::Initialize()
 {
+  CheckAAHSingleSweepStability();
+
   const auto& sdm = do_problem_.GetSpatialDiscretization();
   const auto num_groups = do_problem_.GetNumGroups();
   const auto num_gs_groups = front_gs_.GetNumGroups();

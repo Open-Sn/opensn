@@ -55,6 +55,18 @@ DiscreteOrdinatesKEigenAcceleration::DiscreteOrdinatesKEigenAcceleration(
     solver_(nullptr),
     name_(params.GetParamValue<std::string>("name"))
 {
+}
+
+void
+DiscreteOrdinatesKEigenAcceleration::Initialize(PowerIterationKEigenSolver& solver)
+{
+  solver_ = &solver;
+  Initialize();
+}
+
+void
+DiscreteOrdinatesKEigenAcceleration::CheckAAHSingleSweepStability() const
+{
   // If using the AAH solver with one sweep, a few iterations need to be done
   // to get rid of the junk in the unconverged lagged angular fluxes.  Five
   // sweeps is a guess at how many initial sweeps are necessary.
@@ -64,13 +76,6 @@ DiscreteOrdinatesKEigenAcceleration::DiscreteOrdinatesKEigenAcceleration(
                              "the presence of lagged angular fluxes.  Multiple sweeps are "
                              "allowed, however, the number of sweeps required to get sensible "
                              "results is not well studied and problem dependent.");
-}
-
-void
-DiscreteOrdinatesKEigenAcceleration::Initialize(PowerIterationKEigenSolver& solver)
-{
-  solver_ = &solver;
-  Initialize();
 }
 
 std::vector<uint64_t>

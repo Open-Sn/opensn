@@ -102,6 +102,9 @@ protected:
   /// Copies back only the scalar moments to a lbs primary flux vector.
   void ProjectBackPhi0(const std::vector<double>& input, std::vector<double>& output) const;
 
+  /// Guard used by acceleration methods that are not stable with one AAH sweep.
+  void CheckAAHSingleSweepStability() const;
+
   /// The associated DiscreteOrdinatesProblem problem
   DiscreteOrdinatesProblem& do_problem_;
 
