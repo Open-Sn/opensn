@@ -45,7 +45,6 @@ DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
 std::shared_ptr<FLUDS>
 DiscreteOrdinatesProblem::CreateCBCD_FLUDS(std::size_t num_groups,
                                            std::size_t num_angles,
-                                           std::size_t num_local_cells,
                                            const FLUDSCommonData& common_data,
                                            const UnknownManager& psi_uk_man,
                                            const SpatialDiscretization& sdm,
@@ -53,7 +52,6 @@ DiscreteOrdinatesProblem::CreateCBCD_FLUDS(std::size_t num_groups,
 {
   return std::make_shared<CBCD_FLUDS>(num_groups,
                                       num_angles,
-                                      num_local_cells,
                                       dynamic_cast<const CBCD_FLUDSCommonData&>(common_data),
                                       psi_uk_man,
                                       sdm,

@@ -390,6 +390,10 @@ Reasonable values:
 For CPU ``AAH`` and ``CBC`` sweeps, selected cyclic dependencies are lagged and
 resolved by the groupset iteration.
 
+K-eigenvalue acceleration rejects ``l_max_its=1`` for ``AAH`` and for ``CBC``
+when delayed angular degrees of freedom are present. Allowing cycles does not
+remove this restriction.
+
 For most users, this is not the first iterative-method parameter to tune, but it
 is part of the groupset solve setup and can matter on meshes whose sweep
 dependencies contain cycles.

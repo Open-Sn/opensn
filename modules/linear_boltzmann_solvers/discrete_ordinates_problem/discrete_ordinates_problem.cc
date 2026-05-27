@@ -475,6 +475,14 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
                           ").");
   }
 
+#if defined(__OPENSN_WITH_GPU__) && !defined(__OPENSN_USE_GPU_AWARE_MPI__)
+  // GPU CBC sweeps pass device buffers to MPI and have no host-staged path. The condition is the
+  // same on every rank.
+  if (use_gpus_ and sweep_type_ == "CBC" and opensn::mpi_comm.size() > 1)
+    errors.emplace_back("GPU sweep_type=\"CBC\" on more than one MPI rank requires a GPU-aware MPI "
+                        "library and OpenSn configured with -DOPENSN_USE_GPU_AWARE_MPI=ON.");
+#endif
+
   // The fused scheduler is only for GPU AAH sweeps.
   if (options_.fused_aao_sweep and (not use_gpus_ or sweep_type_ != "AAH"))
     errors.emplace_back("fused_aao_sweep requires sweep_type=\"AAH\" and use_gpus=True.");
