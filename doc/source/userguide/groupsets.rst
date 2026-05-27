@@ -257,6 +257,7 @@ Allowing cycles
 
 ``allow_cycles`` controls whether the sweep construction is allowed to break
 cyclic dependencies where the chosen sweep path supports that behavior.
+For CPU sweeps, this includes ``AAH`` and ``CBC``.
 
 Most users will not need to set this field explicitly, but it belongs to the
 groupset because it is part of the transport-sweep behavior for that energy

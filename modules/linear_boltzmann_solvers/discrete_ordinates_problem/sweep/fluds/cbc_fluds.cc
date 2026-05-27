@@ -11,6 +11,19 @@
 namespace opensn
 {
 
+namespace
+{
+
+void
+UpdateSpanVector(std::vector<std::vector<double>>& data, std::vector<std::span<double>>& views)
+{
+  views.resize(data.size());
+  for (std::size_t i = 0; i < data.size(); ++i)
+    views[i] = std::span<double>(data[i]);
+}
+
+} // namespace
+
 CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
                      std::size_t num_angles,
                      const CBC_FLUDSCommonData& common_data,
@@ -66,11 +79,35 @@ CBC_FLUDS::UpwindPsi(const Cell& face_neighbor, unsigned int adj_cell_node, std:
 }
 
 double*
+CBC_FLUDS::DelayedUpwindPsi(std::uint32_t cell_local_id,
+                            unsigned int face_id,
+                            unsigned int face_node_mapped,
+                            std::size_t as_ss_idx)
+{
+  const auto& info = common_data_.DelayedLocalFace(cell_local_id, face_id);
+  const auto index =
+    (info.slot_address + face_node_mapped) * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return &delayed_local_psi_old_[index];
+}
+
+double*
 CBC_FLUDS::OutgoingPsi(const Cell& cell, unsigned int cell_node, std::size_t as_ss_idx)
 {
   const auto index =
     cell_psi_start_[cell.local_id] + cell_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
   return &local_psi_data_[index];
+}
+
+double*
+CBC_FLUDS::DelayedLocalOutgoingPsi(std::uint32_t cell_local_id,
+                                   unsigned int face_id,
+                                   unsigned int face_node,
+                                   std::size_t as_ss_idx)
+{
+  const auto& info = common_data_.DelayedLocalFace(cell_local_id, face_id);
+  const auto index =
+    (info.slot_address + face_node) * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return &delayed_local_psi_[index];
 }
 
 double*
@@ -88,6 +125,17 @@ CBC_FLUDS::NLUpwindPsi(std::size_t incoming_face_slot,
     as_ss_idx * num_groups_;                    // Offset to start of data for angle_set_index
 
   return &incoming_nonlocal_psi_[slot_offset + dof_map];
+}
+
+double*
+CBC_FLUDS::DelayedNLUpwindPsi(const CBC_FLUDSCommonData::DelayedNonlocalFaceInfo& info,
+                              unsigned int face_node_mapped,
+                              std::size_t as_ss_idx)
+{
+  auto& psi = delayed_prelocI_outgoing_psi_old_[info.prelocI];
+  const auto index =
+    (info.slot_address + face_node_mapped) * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return &psi[index];
 }
 
 double*
@@ -111,6 +159,62 @@ CBC_FLUDS::ClearLocalAndReceivePsi()
     ++current_psi_epoch_;
 }
 
+void
+CBC_FLUDS::AllocateDelayedLocalPsi()
+{
+  const auto size = common_data_.NumDelayedLocalFaceNodes() * num_groups_and_angles_;
+  delayed_local_psi_.assign(size, 0.0);
+  delayed_local_psi_old_.assign(size, 0.0);
+  delayed_local_psi_view_ = std::span<double>(delayed_local_psi_);
+  delayed_local_psi_old_view_ = std::span<double>(delayed_local_psi_old_);
+}
+
+void
+CBC_FLUDS::AllocateDelayedPrelocIOutgoingPsi()
+{
+  const auto num_delayed_dependencies = spds_.GetDelayedLocationDependencies().size();
+  delayed_prelocI_outgoing_psi_.resize(num_delayed_dependencies);
+  delayed_prelocI_outgoing_psi_old_.resize(num_delayed_dependencies);
+
+  for (std::size_t prelocI = 0; prelocI < num_delayed_dependencies; ++prelocI)
+  {
+    const auto size = common_data_.DelayedPrelocIFaceNodeCount(prelocI) * num_groups_and_angles_;
+    delayed_prelocI_outgoing_psi_[prelocI].assign(size, 0.0);
+    delayed_prelocI_outgoing_psi_old_[prelocI].assign(size, 0.0);
+  }
+
+  UpdateSpanVector(delayed_prelocI_outgoing_psi_, delayed_prelocI_outgoing_psi_view_);
+  UpdateSpanVector(delayed_prelocI_outgoing_psi_old_, delayed_prelocI_outgoing_psi_old_view_);
+}
+
+void
+CBC_FLUDS::SetDelayedLocalPsiOldToNew()
+{
+  delayed_local_psi_ = delayed_local_psi_old_;
+  delayed_local_psi_view_ = std::span<double>(delayed_local_psi_);
+}
+
+void
+CBC_FLUDS::SetDelayedLocalPsiNewToOld()
+{
+  delayed_local_psi_old_ = delayed_local_psi_;
+  delayed_local_psi_old_view_ = std::span<double>(delayed_local_psi_old_);
+}
+
+void
+CBC_FLUDS::SetDelayedOutgoingPsiOldToNew()
+{
+  delayed_prelocI_outgoing_psi_ = delayed_prelocI_outgoing_psi_old_;
+  UpdateSpanVector(delayed_prelocI_outgoing_psi_, delayed_prelocI_outgoing_psi_view_);
+}
+
+void
+CBC_FLUDS::SetDelayedOutgoingPsiNewToOld()
+{
+  delayed_prelocI_outgoing_psi_old_ = delayed_prelocI_outgoing_psi_;
+  UpdateSpanVector(delayed_prelocI_outgoing_psi_old_, delayed_prelocI_outgoing_psi_old_view_);
+}
+
 CBC_FLUDS::IncomingNonlocalPsi
 CBC_FLUDS::PrepareIncomingNonlocalPsiBySlot(std::size_t incoming_face_slot, std::size_t data_size)
 {
@@ -120,6 +224,22 @@ CBC_FLUDS::PrepareIncomingNonlocalPsiBySlot(std::size_t incoming_face_slot, std:
 
   return {std::span<double>(incoming_nonlocal_psi_.data() + slot_begin, data_size),
           common_data_.IncomingFaceCell(incoming_face_slot)};
+}
+
+std::size_t
+CBC_FLUDS::GetDelayedNonlocalPsiSize(std::size_t delayed_face_slot) const
+{
+  return common_data_.DelayedNonlocalFaceNodeCount(delayed_face_slot) * num_groups_and_angles_;
+}
+
+std::span<double>
+CBC_FLUDS::PrepareIncomingDelayedNonlocalPsiBySlot(std::size_t delayed_face_slot,
+                                                   std::size_t data_size)
+{
+  const auto& info = common_data_.DelayedNonlocalFaceBySlot(delayed_face_slot);
+  auto& psi = delayed_prelocI_outgoing_psi_[info.prelocI];
+  const auto begin = info.slot_address * num_groups_and_angles_;
+  return {psi.data() + begin, data_size};
 }
 
 } // namespace opensn

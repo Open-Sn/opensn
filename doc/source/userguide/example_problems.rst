@@ -541,6 +541,10 @@ problem type and a compatible quadrature.
    solver.Initialize()
    solver.Execute()
 
+The curvilinear problem supports CPU ``AAH`` and ``CBC`` sweep types. Use
+``AAH`` as the default; choose ``CBC`` when the cell-by-cell sweep path is
+desired.
+
 Example 9: Updating a Problem In Place
 ======================================
 
