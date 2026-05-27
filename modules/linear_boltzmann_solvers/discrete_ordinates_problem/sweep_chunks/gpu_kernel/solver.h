@@ -54,18 +54,19 @@ AddAtIndex(double* array, std::uint32_t index, double value)
  * Return an array entry whose index is known only at run time (see AddAtIndex).
  *
  * \tparam n Array length.
- * \tparam ndofs Cell DOF count.
+ * \tparam register_resident Whether the array is kept in registers (compile-time indices only).
+ * \tparam T Entry type.
  * \param array Array to read.
  * \param index Index of the entry.
  * \return Value of the entry.
  */
-template <std::size_t n, std::size_t ndofs = n>
-__CRB_DEVICE_FUNC__ double
-ValueAtIndex(const double* array, std::uint32_t index)
+template <std::size_t n, bool register_resident = (n <= max_register_resident_dofs), typename T>
+__CRB_DEVICE_FUNC__ T
+ValueAtIndex(const T* array, std::uint32_t index)
 {
-  if constexpr (ndofs <= max_register_resident_dofs)
+  if constexpr (register_resident)
   {
-    double value = 0.0;
+    T value{};
     _Pragma("unroll") for (std::uint32_t k = 0; k < n; ++k)
     {
       if (k == index)

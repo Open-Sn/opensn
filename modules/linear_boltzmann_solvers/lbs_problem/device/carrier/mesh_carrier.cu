@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
+#include <array>
 #include <format>
+#include <utility>
 
 namespace opensn
 {
@@ -160,6 +162,31 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       // number of face node
       std::uint64_t* num_face_nodes_data = reinterpret_cast<std::uint64_t*>(face_data);
       std::size_t num_face_nodes = face_node_mappings[f].size();
+      // The device sweep holds a face's per-node data in arrays of the cell's DOF count.
+      if (num_face_nodes > cell_num_nodes)
+      {
+        throw std::runtime_error(
+          std::format("GPU acceleration error: face {} of cell local ID {} has {} nodes, more than "
+                      "the {} nodes of its cell.",
+                      f,
+                      cell->local_id,
+                      num_face_nodes,
+                      cell_num_nodes));
+      }
+      // Register-resident face assembly requires a unique face node for each mapped cell node.
+      std::array<bool, LBSProblem::max_dofs_gpu> on_face{};
+      for (const int node : face_node_mappings[f])
+      {
+        if (node < 0 or std::cmp_greater_equal(node, cell_num_nodes) or on_face[node])
+          throw std::runtime_error(
+            std::format("GPU acceleration error: face {} of cell local ID {} maps a face node to "
+                        "cell node {}, which is out of range or repeated (the cell has {} nodes).",
+                        f,
+                        cell->local_id,
+                        node,
+                        cell_num_nodes));
+        on_face[node] = true;
+      }
       *(num_face_nodes_data++) = num_face_nodes;
       face_data = reinterpret_cast<char*>(num_face_nodes_data);
       // pointer to outflow

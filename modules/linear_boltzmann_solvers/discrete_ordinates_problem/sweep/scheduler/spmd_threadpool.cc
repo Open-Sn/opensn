@@ -37,10 +37,17 @@ SPMD_ThreadPool::Start(std::size_t n)
   epoch_states_.assign(n, EpochState{0, 0});
   outstanding_ = 0;
 
-  for (std::size_t i = 0; i < n; ++i)
-    worker_threads_.emplace_back(&SPMD_ThreadPool::InfiniteLoop, this, i);
-
   workers_initialized_ = true;
+  try
+  {
+    for (std::size_t i = 0; i < n; ++i)
+      worker_threads_.emplace_back(&SPMD_ThreadPool::InfiniteLoop, this, i);
+  }
+  catch (...)
+  {
+    Stop();
+    throw;
+  }
 }
 
 void
