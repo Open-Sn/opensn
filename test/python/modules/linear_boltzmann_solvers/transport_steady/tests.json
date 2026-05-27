@@ -1,5 +1,19 @@
 [
   {
+    "file": "transport_3d_reflecting_groupsets_cbc_gpu.py",
+    "comment": "3D PWLD transport with reflecting boundaries and multiple groupsets (CBC)",
+    "num_procs": 4,
+    "requires_gpu": "True",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
     "file": "1g_infinite_pure_absorber_balance_gmres.py",
     "comment": "Infinite, 1g, pure absorber, with balance using GMRES",
     "num_procs": 3,

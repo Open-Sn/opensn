@@ -61,6 +61,16 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
     pool_.Resize(angle_agg_.GetNumAngleSets());
     execution_order_.reserve(angle_agg_.GetNumAngleSets());
   }
+  else if (scheduler_type_ == SchedulingAlgorithm::ASYNC_FIFO)
+  {
+    constexpr std::size_t num_communicator_threads = 1;
+    const auto worker_limit = opensn_num_threads > num_communicator_threads
+                                ? opensn_num_threads - num_communicator_threads
+                                : 1;
+    const auto num_workers =
+      std::max<std::size_t>(1, std::min(angle_agg_.GetNumAngleSets(), worker_limit));
+    pool_.Resize(num_workers);
+  }
 
   // Initialize delayed upstream data
   for (auto& angset : angle_agg_)
