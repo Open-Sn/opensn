@@ -6,3 +6,4 @@ KEigen
    :maxdepth: 1
 
    pincell_example
+   cmfd
