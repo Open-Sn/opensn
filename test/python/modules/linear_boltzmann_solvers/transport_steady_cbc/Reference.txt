@@ -23,16 +23,9 @@
 [0]          Sweep Time/Unknown (ns):       84.3762
 [0]          Number of unknowns per sweep:  12902400
 [0]
-[0]
-[0]
-[0]
-[0]  ********** Solving groupset 1 with KRYLOV_GMRES.
-[0]
 [0]  Quadrature number of angles: 32
 [0]  Groups 63 167
 [0]
-[0]  Total number of angular unknowns: 21504000
-[0]  Number of lagged angular unknowns: 152880(0.71%)
 [0]  00:00:03 Computing b
 [0]  00:00:03 WGS groups [63-167] Iteration     0 Residual         1
 [0]  00:00:04 WGS groups [63-167] Iteration     1 Residual  0.416501

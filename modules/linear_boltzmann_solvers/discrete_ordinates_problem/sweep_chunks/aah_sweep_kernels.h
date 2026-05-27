@@ -286,12 +286,9 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
 
-          if (is_boundary_face)
-          {
-            for (size_t gsg = 0; gsg < gs_size; ++gsg)
-              cell_outflow_view.Add(
-                f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
-          }
+          for (size_t gsg = 0; gsg < gs_size; ++gsg)
+            cell_outflow_view.Add(
+              f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
 
           double* psi = nullptr;
           if (is_local_face)

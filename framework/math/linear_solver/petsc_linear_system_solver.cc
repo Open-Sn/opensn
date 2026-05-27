@@ -33,6 +33,9 @@ PETScLinearSolver::~PETScLinearSolver()
 void
 PETScLinearSolver::ApplyToleranceOptions()
 {
+  if (ksp_ == nullptr)
+    return;
+
   OpenSnPETScCall(KSPSetTolerances(ksp_,
                                    tolerance_options.residual_relative,
                                    tolerance_options.residual_absolute,

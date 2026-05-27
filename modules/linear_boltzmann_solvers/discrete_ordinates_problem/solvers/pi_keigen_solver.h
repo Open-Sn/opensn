@@ -22,6 +22,10 @@ public:
   void Execute() override;
   /// Return the current k-eigenvalue
   double GetEigenvalue() const { return k_eff_; }
+  /// Return the number of completed power iterations.
+  unsigned int GetNumPowerIterations() const { return num_power_iterations_; }
+  /// Return the total number of transport sweeps applied by all WGS solvers.
+  std::size_t GetNumSweeps() const;
 
   BalanceTable ComputeBalanceTable() const;
 
@@ -42,6 +46,7 @@ protected:
   double k_tolerance_;
   double F_prev_;
   bool reset_phi0_;
+  unsigned int num_power_iterations_ = 0;
 
   std::vector<double>& q_moments_local_;
   std::vector<double>& phi_old_local_;

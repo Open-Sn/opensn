@@ -51,6 +51,9 @@ SMMAcceleration::SMMAcceleration(const InputParameters& params)
     psi_new_local_(do_problem_.GetPsiNewLocal()),
     dimension_(0)
 {
+  if (do_problem_.GetNumGroupsets() != 1)
+    throw std::logic_error(
+      "SMM acceleration is only implemented for problems with a single groupset.");
   if (do_problem_.GetScatteringOrder() != 0)
     throw std::runtime_error("SMM acceleration is only supported with P0 scattering");
   OpenSnInvalidArgumentIf(

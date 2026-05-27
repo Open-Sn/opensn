@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/parameters/input_parameters.h"
+#include <string>
 
 namespace opensn
 {
@@ -64,6 +65,20 @@ public:
    * Returns the k-eigenvalue from the acceleration solve.
    */
   virtual double PostPowerIteration() = 0;
+
+  /**
+   * Return whether the most recent acceleration update permits the owning power iteration solver
+   * to declare convergence. Acceleration schemes can override this when a guarded or rejected
+   * update should force at least one additional transport iteration.
+   */
+  virtual bool AllowsPowerIterationConvergence() const { return true; }
+
+  /**
+   * Optional compact convergence information appended to the owning power iteration
+   * status line. Acceleration schemes that gate convergence should expose the active
+   * gate here so users can tell why PI is still iterating.
+   */
+  virtual std::string GetPowerIterationConvergenceInfo() const { return {}; }
 
   const std::string& GetName() const { return name_; }
 

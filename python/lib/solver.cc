@@ -7,6 +7,7 @@
 #include "framework/runtime.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/scdsa_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
@@ -1091,7 +1092,7 @@ WrapLBS(py::module& slv)
       const bool rz_ortho = (coord_sys == CoordinateSystemType::CYLINDRICAL &&
                              mesh_type == MeshType::ORTHOGONAL && dim == 2);
 
-      auto to_rz_name = [](const std::string& name)
+      auto ToRZName = [](const std::string& name)
       {
         if (name == "xmin") return std::string("rmin");
         if (name == "xmax") return std::string("rmax");
@@ -1115,7 +1116,7 @@ WrapLBS(py::module& slv)
         std::copy(grp_wise_leakage.begin(), grp_wise_leakage.end(), np_vector_data);
         std::string name = allowed_bd_ids.at(bndry_id);
         if (rz_ortho)
-          name = to_rz_name(name);
+          name = ToRZName(name);
         result[py::str(name)] = std::move(np_vector);
       }
 
@@ -1311,7 +1312,7 @@ WrapLBS(py::module& slv)
 void
 WrapSteadyState(py::module& slv)
 {
-  const auto balance_table_to_dict = [](const BalanceTable& table)
+  const auto BalanceTableToDict = [](const BalanceTable& table)
   {
     py::dict values;
     values["absorption_rate"] = table.absorption_rate;
@@ -1373,9 +1374,9 @@ WrapSteadyState(py::module& slv)
   );
   steady_state_solver.def(
     "ComputeBalanceTable",
-    [balance_table_to_dict](const SteadyStateSourceSolver& self)
+    [BalanceTableToDict](const SteadyStateSourceSolver& self)
     {
-      return balance_table_to_dict(self.ComputeBalanceTable());
+      return BalanceTableToDict(self.ComputeBalanceTable());
     },
     R"(
     Compute and return the global balance table using the solver's normalization.
@@ -1414,7 +1415,7 @@ WrapSteadyState(py::module& slv)
 void
 WrapTransient(py::module& slv)
 {
-  const auto balance_table_to_dict = [](const BalanceTable& table)
+  const auto BalanceTableToDict = [](const BalanceTable& table)
   {
     py::dict values;
     values["absorption_rate"] = table.absorption_rate;
@@ -1571,9 +1572,9 @@ WrapTransient(py::module& slv)
     "Clear the PostAdvance callback by passing None.");
   transient_solver.def(
     "ComputeBalanceTable",
-    [balance_table_to_dict](const TransientSolver& self)
+    [BalanceTableToDict](const TransientSolver& self)
     {
-      return balance_table_to_dict(self.ComputeBalanceTable());
+      return BalanceTableToDict(self.ComputeBalanceTable());
     },
     R"(
     Compute and return the global balance table using the solver's normalization.
@@ -1633,7 +1634,7 @@ WrapTransient(py::module& slv)
 void
 WrapNLKEigen(py::module& slv)
 {
-  const auto balance_table_to_dict = [](const BalanceTable& table)
+  const auto BalanceTableToDict = [](const BalanceTable& table)
   {
     py::dict values;
     values["absorption_rate"] = table.absorption_rate;
@@ -1714,9 +1715,9 @@ WrapNLKEigen(py::module& slv)
   );
   non_linear_k_eigen_solver.def(
     "ComputeBalanceTable",
-    [balance_table_to_dict](const NonLinearKEigenSolver& self)
+    [BalanceTableToDict](const NonLinearKEigenSolver& self)
     {
-      return balance_table_to_dict(self.ComputeBalanceTable());
+      return BalanceTableToDict(self.ComputeBalanceTable());
     },
     R"(
     Compute and return the global balance table using the solver's normalization.
@@ -1756,7 +1757,7 @@ WrapNLKEigen(py::module& slv)
 void
 WrapPIteration(py::module& slv)
 {
-  const auto balance_table_to_dict = [](const BalanceTable& table)
+  const auto BalanceTableToDict = [](const BalanceTable& table)
   {
     py::dict values;
     values["absorption_rate"] = table.absorption_rate;
@@ -1830,10 +1831,24 @@ WrapPIteration(py::module& slv)
     )"
   );
   pi_k_eigen_solver.def(
+    "GetNumPowerIterations",
+    &PowerIterationKEigenSolver::GetNumPowerIterations,
+    R"(
+    Return the number of completed power iterations.
+    )"
+  );
+  pi_k_eigen_solver.def(
+    "GetNumSweeps",
+    &PowerIterationKEigenSolver::GetNumSweeps,
+    R"(
+    Return the total number of transport sweeps applied by all WGS solvers.
+    )"
+  );
+  pi_k_eigen_solver.def(
     "ComputeBalanceTable",
-    [balance_table_to_dict](const PowerIterationKEigenSolver& self)
+    [BalanceTableToDict](const PowerIterationKEigenSolver& self)
     {
-      return balance_table_to_dict(self.ComputeBalanceTable());
+      return BalanceTableToDict(self.ComputeBalanceTable());
     },
     R"(
     Compute and return the global balance table using the solver's normalization.
@@ -1911,7 +1926,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     ----------
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
-    l_abs_tol: float, defauilt=1.0e-10
+    l_abs_tol: float, default=1.0e-10
         Absolute residual tolerance.
     max_iters: int, default=100
         Maximum allowable iterations.
@@ -1954,13 +1969,13 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     Warnings
     --------
        SMM acceleration is **experimental** and should be used with caution!
-       SMM accleration only supports problems with isotropic scattering.
+       SMM acceleration only supports problems with isotropic scattering.
 
     Parameters
     ----------
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
-    l_abs_tol: float, defauilt=1.0e-10
+    l_abs_tol: float, default=1.0e-10
         Absolute residual tolerance.
     max_iters: int, default=100
         Maximum allowable iterations.
@@ -1976,6 +1991,150 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         Spatial discretization method to use for the diffusion solver. Valid choices are:
             - 'pwld' : Piecewise Linear Discontinuous
             - 'pwlc' : Piecewise Linear Continuous
+    )"
+  );
+  // CMFD acceleration
+  auto cmfd_acceleration = py::class_<CMFDAcceleration,
+                                      std::shared_ptr<CMFDAcceleration>,
+                                      DiscreteOrdinatesKEigenAcceleration>(
+    slv,
+    "CMFDAcceleration",
+    R"(
+    Construct a CMFD accelerator for the power iteration k-eigenvalue solver.
+
+    Wrapper of :cpp:class:`opensn::CMFDAcceleration`.
+    )"
+  );
+  cmfd_acceleration.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return CMFDAcceleration::Create(kwargs_to_param_block(params));
+      }
+    ),
+    R"(
+    CMFD acceleration for the power iteration k-eigenvalue solver.
+
+    With CMFD, each power iteration performs a configured number of high-order WGS
+    transport update iterations, then applies a bounded low-order scalar-flux correction.
+    The defaults use one WGS update iteration, automatic current closure, fixed
+    correction relaxation, and a transport-current balance gate before outer power
+    iteration is allowed to converge.
+
+    Most users should tune only the common controls: ``current_closure``,
+    ``aggregation_size``, ``group_aggregation_size``, ``relaxation``,
+    ``update_wgs_max_its``, ``update_wgs_abs_tol``, and
+    ``balance_residual_tolerance``. Parameters marked "developer/debug" are exposed for
+    investigations and regression testing, but normally should be left at their defaults.
+
+    Parameters
+    ----------
+    problem: pyopensn.solver.DiscreteOrdinatesProblem
+        Existing DiscreteOrdinatesProblem instance.
+    current_closure: str, default="auto"
+        Common option. CMFD face-current closure. Valid choices are:
+            - 'auto' : choose net, partial, or a blend from early coarse-balance behavior
+            - 'net' : match the signed transport current across each coarse face
+            - 'partial' : build face coupling from outgoing partial currents on both sides
+        ``"auto"`` is recommended for production use. A fixed closure is useful when
+        comparing methods, reproducing a benchmark setting, or diagnosing a case where
+        automatic selection is not robust.
+    aggregation_size: int, default=32
+        Common option. Target number of fine cells per aggregated coarse cell for
+        ``coarse_mesh="local_aggregation"``. Larger values reduce CMFD matrix size and
+        setup/solve cost, but make the spatial correction less detailed. Smaller values
+        increase the coarse-system cost but may improve robustness.
+    group_aggregation_size: int, default=1
+        Common option. Number of transport energy groups per CMFD coarse group, not the
+        final number of coarse groups. A value of 1 preserves the full transport group
+        structure in the low-order system. To target ``N`` total coarse groups, use
+        ``(num_groups + N - 1) // N``.
+    relaxation: float, default=0.5
+        Common option. Relaxation factor applied to the CMFD scalar-flux correction.
+        This is the requested correction strength. The correction limiter may damp or
+        skip an individual correction if the requested update would produce an invalid
+        k-eigenvalue, non-finite flux, or excessive negative scalar flux.
+    update_wgs_max_its: int, default=1
+        Common option. Maximum WGS iterations used before each CMFD correction. The
+        default performs one transport update iteration per power iteration; larger
+        values make each transport update more accurate but more expensive.
+    update_wgs_abs_tol: float, default=1.0e-12
+        Common option. WGS absolute tolerance used before each CMFD correction. When
+        ``update_wgs_max_its=1``, this tolerance is normally not the stopping criterion
+        because only one WGS iteration is allowed. It matters when more WGS iterations
+        are allowed.
+    balance_residual_tolerance: float, default=1.0e-6
+        Common option. Restricted transport-current balance residual tolerance required
+        before CMFD permits outer power-iteration convergence. This prevents false
+        convergence when ``k_eff_change`` is small but the CMFD-restricted transport
+        balance is still inconsistent. This is a consistency guard, not an estimate of
+        the k-eigenvalue error. For large 3D cases it may need to be looser than the
+        outer ``k_tol``; choose it tight enough to prevent false convergence but not so
+        tight that it forces unnecessary asymptotic balance iterations.
+    l_abs_tol: float, default=1.0e-7
+        Developer/debug. Absolute residual tolerance for each CMFD coarse linear solve.
+        This affects the low-order linear solve, not the outer transport convergence.
+    max_iters: int, default=100
+        Developer/debug. Maximum iterations for each CMFD coarse linear solve. Increase
+        only if the coarse KSP solve is reaching its iteration limit. CMFD skips a
+        correction when any coarse linear solve fails to converge within this limit. If
+        the log reports ``correction = skipped (coarse_linear_solve_not_converged)``,
+        use a direct coarse solve for modest coarse systems, increase this limit for
+        iterative solves, or provide stronger ``petsc_options``.
+    verbose: bool, default=False
+        Developer/debug. If true, prints CMFD diagnostic and timing metrics. These are
+        useful for regression tests and performance studies but can be noisy in production.
+    petsc_options: str, default=""
+        Developer/debug. Additional PETSc options for the CMFD coarse solver. Used only
+        for solver experiments, especially with ``coarse_solver_policy="petsc_options"``.
+    pi_max_its: int, default=50
+        Developer/debug. Maximum inner power iterations for the CMFD coarse k solve.
+        Increase only if the coarse k solve is not converging enough to give useful
+        corrections.
+    pi_k_tol: float, default=1.0e-8
+        Developer/debug. k-eigenvalue tolerance for CMFD coarse power iterations. This
+        is separate from the outer ``PowerIterationKEigenSolver`` k tolerance.
+    coarse_mesh: str, default="local_aggregation"
+        Developer/debug. Coarse-mesh construction method. Valid choices are:
+            - 'identity' : one CMFD coarse cell per transport cell
+            - 'local_aggregation' : connected same-material fine cells aggregated locally
+        ``"local_aggregation"`` is the production path. ``"identity"`` is primarily for
+        debugging and method comparisons.
+    correction_max_attempts: int, default=10
+        Developer/debug. Maximum CMFD correction damping attempts before skipping the
+        correction for the current transport update. Each failed attempt halves the
+        damping. If the log reports ``correction = skipped (negative_flux_guard)``,
+        first reduce ``relaxation`` or use finer spatial/energy aggregation; changing
+        this option is mainly for diagnostics.
+    correction_min_damping: float, default=1.0e-4
+        Developer/debug. Minimum CMFD correction damping factor considered during correction
+        limiting. If no admissible correction is found above this damping, CMFD skips
+        the correction for that transport update.
+    negative_flux_tolerance: float, default=1.0e-6
+        Developer/debug. Allowed scalar-flux undershoot for accepting a CMFD correction.
+        Corrections producing scalar flux below this guard are damped or skipped. Raising
+        this value can hide unstable corrections and should be accompanied by final-k and
+        scalar-flux checks.
+    inactive_iterations: int, default=0
+        Developer/debug. Number of initial power iterations before applying CMFD
+        corrections. Transport update controls are still used during these
+        iterations.
+    coarse_solver_policy: str, default="auto"
+        Developer/debug. Coarse solver policy. Valid choices are:
+            - 'auto' : PETSc preonly+LU below ``direct_coarse_solve_threshold``
+              global unknowns, GMRES+Jacobi otherwise
+            - 'direct' : PETSc preonly+LU
+            - 'iterative' : GMRES+Jacobi
+            - 'petsc_options' : allow ``petsc_options`` to override the PETSc KSP/PC setup
+        CMFD corrections from unconverged coarse linear solves are always skipped.
+        The skipped correction uses the unaccelerated transport update for that power
+        iteration; after repeated skipped corrections, CMFD returns the raw transport
+        k update so that power iteration can continue to move.
+    direct_coarse_solve_threshold: int, default=20000
+        Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
+        solves when ``coarse_solver_policy="auto"``. Larger values make ``"auto"`` use
+        direct solves for larger coarse systems; choose values based on available host
+        memory and acceptable factorization cost.
     )"
   );
   // clang-format on

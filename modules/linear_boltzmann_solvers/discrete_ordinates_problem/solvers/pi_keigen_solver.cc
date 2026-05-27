@@ -139,6 +139,7 @@ PowerIterationKEigenSolver::Execute()
 
   // Start power iterations
   unsigned int nit = 0;
+  num_power_iterations_ = 0;
   bool converged = false;
   CALI_CXX_MARK_LOOP_BEGIN(pi_iteration, "PIIteration");
   while (nit < max_iters_)
@@ -191,8 +192,10 @@ PowerIterationKEigenSolver::Execute()
     k_eff_change = std::fabs(k_eff_ - k_eff_prev) / k_eff_;
     k_eff_prev = k_eff_;
     nit += 1;
+    num_power_iterations_ = nit;
 
-    converged = k_eff_change < std::max(k_tolerance_, 1.0e-12);
+    converged = k_eff_change < std::max(k_tolerance_, 1.0e-12) and
+                (not acceleration_ or acceleration_->AllowsPowerIterationConvergence());
 
     // Print iteration summary
     if (options.verbose_outer_iterations)
@@ -209,13 +212,9 @@ PowerIterationKEigenSolver::Execute()
       }
 
       const auto ags_summary = ags_solver->GetLastSolveSummary();
-      const auto ags_status =
-        HasIterationStatus(ags_summary) ? ags_summary.status : IterationStatus::NONE;
-      const auto inner_status =
-        MostSevereIterationStatus(ags_status, MostSevereIterationStatus(wgs_summaries));
-      const auto outer_status =
-        IterationStatusFromSolve(converged, nit >= max_iters_, inner_status);
-      log.Log() << no_wrap << program_timer.GetTimeString() << " "
+      const auto outer_status = IterationStatusFromSolve(converged, nit >= max_iters_);
+      std::ostringstream iter_info;
+      iter_info << program_timer.GetTimeString() << " "
                 << FormatKEigenOuterIteration("PI",
                                               nit,
                                               k_eff_,
@@ -224,6 +223,13 @@ PowerIterationKEigenSolver::Execute()
                                               ags_summary,
                                               wgs_summaries,
                                               outer_status);
+      log.Log() << no_wrap << iter_info.str();
+      if (acceleration_)
+      {
+        const auto acceleration_info = acceleration_->GetPowerIterationConvergenceInfo();
+        if (not acceleration_info.empty())
+          log.Log() << no_wrap << program_timer.GetTimeString() << " " << acceleration_info;
+      }
     }
 
     if (options.restart.writes_enabled and do_problem_->TriggerRestartDump())
@@ -240,15 +246,7 @@ PowerIterationKEigenSolver::Execute()
     WriteRestartData();
 
   // Print summary
-  std::size_t total_num_sweeps = 0;
-  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
-  {
-    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
-    auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
-    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
-    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
-  }
+  const auto total_num_sweeps = GetNumSweeps();
 
   log.Log() << no_wrap << program_timer.GetTimeString() << " "
             << FormatKEigenFinalSummary("PI",
@@ -277,6 +275,21 @@ BalanceTable
 PowerIterationKEigenSolver::ComputeBalanceTable() const
 {
   return opensn::ComputeBalanceTable(*do_problem_, 1.0 / k_eff_);
+}
+
+std::size_t
+PowerIterationKEigenSolver::GetNumSweeps() const
+{
+  std::size_t total_num_sweeps = 0;
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
+    auto context = wgs_solver->GetContext();
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
+    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
+    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
+  }
+  return total_num_sweeps;
 }
 
 void

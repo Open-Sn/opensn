@@ -460,6 +460,7 @@ Discrete ordinates k-eigen acceleration
 
    solver.SCDSAAcceleration
    solver.SMMAcceleration
+   solver.CMFDAcceleration
 
 
 Settings

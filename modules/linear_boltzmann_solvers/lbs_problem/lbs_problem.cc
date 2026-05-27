@@ -13,8 +13,8 @@
 #include "framework/runtime.h"
 #include "framework/data_types/allowable_range.h"
 #include "framework/utils/error.h"
-#include "framework/utils/caliper_scopes.h"
 #include "framework/utils/timer.h"
+#include "framework/utils/caliper_scopes.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <iomanip>
@@ -379,6 +379,17 @@ const std::vector<CellOutflowView>&
 LBSProblem::GetCellOutflowViews() const
 {
   return cell_outflow_views_;
+}
+
+void
+LBSProblem::ConfigureOutflowStorage(const bool include_internal_faces)
+{
+  store_internal_outflows_ = include_internal_faces;
+  cell_outflow_views_.clear();
+  outflow_bank_ = OutflowBank(*grid_, num_groups_, store_internal_outflows_);
+  cell_outflow_views_ = outflow_bank_.GetCellOutflowViews();
+  ResetGPUCarriers();
+  InitializeGPUExtras();
 }
 
 const UnknownManager&
@@ -1139,7 +1150,7 @@ LBSProblem::InitializeParrays()
     block_MG_counter += num_nodes * num_groups_ * num_moments_;
   } // for local cell
   cell_outflow_views_.clear();
-  outflow_bank_ = OutflowBank(*grid_, num_groups_);
+  outflow_bank_ = OutflowBank(*grid_, num_groups_, store_internal_outflows_);
   cell_outflow_views_ = outflow_bank_.GetCellOutflowViews();
 
   // Populate grid nodal mappings

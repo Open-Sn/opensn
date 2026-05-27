@@ -21,6 +21,44 @@
   },
   {
     "file": "c5g7.py",
+    "outfileprefix": "c5g7_pi_cmfd",
+    "comment": "2D C5G7 with PI and CMFD acceleration",
+    "num_procs": 32,
+    "args": [
+      "k_method=\"pi_cmfd\"",
+      "mesh_type=\"coarse\""
+    ],
+    "weight_class": "long",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 1.192559,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "c5g7_one_group_per_groupset.py",
+    "outfileprefix": "c5g7_pi_cmfd_one_group_per_groupset",
+    "comment": "2D C5G7 with PI and CMFD acceleration using one transport group per groupset",
+    "num_procs": 32,
+    "args": [
+      "k_method=\"pi_cmfd\"",
+      "mesh_type=\"coarse\""
+    ],
+    "weight_class": "long",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 1.192559,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "c5g7.py",
     "outfileprefix": "c5g7_pi_scdsa",
     "comment": "2D C5G7 with PI and SCDSA acceleration",
     "num_procs": 32,

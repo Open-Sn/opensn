@@ -12,12 +12,55 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
+    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver
     from pyopensn.solver import NonLinearKEigenSolver
-    from pyopensn.solver import SCDSAAcceleration, SMMAcceleration
+    from pyopensn.solver import CMFDAcceleration, SCDSAAcceleration, SMMAcceleration
+
+
+def get_bool_option(name, default):
+    if name in globals():
+        return bool(globals()[name])
+    return default
+
+
+def get_option(name, default):
+    if name in globals():
+        return globals()[name]
+    return default
+
+
+def make_groupsets(num_groups, pquad, inner_linear_method, l_max_its):
+    groupset_mode = get_option("groupset_mode", "single")
+    if groupset_mode == "single":
+        group_ranges = [(0, num_groups - 1)]
+    elif groupset_mode == "one_group_per_groupset":
+        group_ranges = [(g, g) for g in range(num_groups)]
+    else:
+        if rank == 0:
+            print("Error: 'groupset_mode' must be 'single' or 'one_group_per_groupset'")
+        sys.exit(1)
+
+    groupsets = []
+    for first_group, last_group in group_ranges:
+        groupsets.append(
+            {
+                "groups_from_to": (first_group, last_group),
+                "angular_quadrature": pquad,
+                "inner_linear_method": inner_linear_method,
+                "l_max_its": l_max_its,
+                "l_abs_tol": 1.0e-10,
+                "angle_aggregation_type": "polar",
+                "angle_aggregation_num_subsets": 1,
+            }
+        )
+    return groupsets
+
 
 if __name__ == "__main__":
+    asset_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../assets"))
 
     # Mesh
     mesh_types = ['coarse', 'fine']
@@ -26,20 +69,21 @@ if __name__ == "__main__":
             print("Error: 'mesh_type' must be one of: 'coarse', 'fine'")
         sys.exit(1)
 
-    k_methods = ['pi', 'pi_scdsa', 'pi_scdsa_pwlc', 'pi_smm', 'pi_smm_pwld', 'jfnk']
+    k_methods = ['pi', 'pi_cmfd', 'pi_scdsa', 'pi_scdsa_pwlc', 'pi_smm', 'pi_smm_pwld', 'jfnk']
     if k_method not in k_methods:
         if rank == 0:
             print("Error: 'k_method' must be one of: "
-                  "'pi', 'pi_scdsa', 'pi_scdsa_pwlc','pi_smm', 'pi_smm_pwld', 'jfnk'")
+                  "'pi', 'pi_cmfd', 'pi_scdsa', 'pi_scdsa_pwlc', 'pi_smm', "
+                  "'pi_smm_pwld', 'jfnk'")
         sys.exit(1)
 
     if rank == 0:
         print(f"Running C5G7 with mesh_type = {mesh_type} and k_method = {k_method}\n")
 
     if mesh_type == "coarse":
-        mesh_file = "../../../../../assets/mesh/c5g7/2d_c5g7_coarse.msh"
+        mesh_file = os.path.join(asset_dir, "mesh/c5g7/2d_c5g7_coarse.msh")
     else:
-        mesh_file = "../../../../../assets/mesh/c5g7/2d_c5g7_refined.msh"
+        mesh_file = os.path.join(asset_dir, "mesh/c5g7/2d_c5g7_refined.msh")
     meshgen = FromFileMeshGenerator(filename=mesh_file)
     grid = meshgen.Execute()
     grid.SetOrthogonalBoundaries()
@@ -49,13 +93,13 @@ if __name__ == "__main__":
     for m in range(7):
         xss.append(MultiGroupXS())
 
-    xss[0].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_water.xs")
-    xss[1].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_UO2.xs")
-    xss[2].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_7pMOX.xs")
-    xss[3].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_guide_tube.xs")
-    xss[4].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_4_3pMOX.xs")
-    xss[5].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_8_7pMOX.xs")
-    xss[6].LoadFromOpenSn("../../../../../assets/xs/c5g7/XS_fission_chamber.xs")
+    xss[0].LoadFromOpenSn(os.path.join(asset_dir, "xs/c5g7/XS_water.xs"))
+    xss[1].LoadFromOpenSn(os.path.join(asset_dir, "xs/c5g7/XS_UO2.xs"))
+    xss[2].LoadFromOpenSn(os.path.join(asset_dir, "xs/c5g7/XS_7pMOX.xs"))
+    xss[3].LoadFromOpenSn(os.path.join(asset_dir, "xs/c5g7/XS_guide_tube.xs"))
+    xss[4].LoadFromOpenSn(os.path.join(asset_dir, "xs/c5g7/XS_4_3pMOX.xs"))
+    xss[5].LoadFromOpenSn(os.path.join(asset_dir, "xs/c5g7/XS_8_7pMOX.xs"))
+    xss[6].LoadFromOpenSn(os.path.join(asset_dir, "xs/c5g7/XS_fission_chamber.xs"))
 
     num_groups = xss[0].num_groups
 
@@ -78,17 +122,7 @@ if __name__ == "__main__":
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
-        groupsets=[
-            {
-                "groups_from_to": (0, num_groups - 1),
-                "angular_quadrature": pquad,
-                "inner_linear_method": inner_linear_method,
-                "l_max_its": l_max_its,
-                "l_abs_tol": 1.0e-10,
-                "angle_aggregation_type": "polar",
-                "angle_aggregation_num_subsets": 1,
-            },
-        ],
+        groupsets=make_groupsets(num_groups, pquad, inner_linear_method, l_max_its),
         xs_map=xs_map,
         boundary_conditions=[
             {"name": "xmin", "type": "reflecting"},
@@ -104,10 +138,40 @@ if __name__ == "__main__":
     )
 
     # Execute Solver
+    k_tolerance = 1.0e-8
+
     if k_method == "pi":
         k_solver = PowerIterationKEigenSolver(
             problem=phys,
-            k_tol=1.0e-8,
+            k_tol=k_tolerance,
+        )
+    elif k_method == "pi_cmfd":
+        cmfd = CMFDAcceleration(
+            problem=phys,
+            coarse_mesh=get_option("cmfd_coarse_mesh", "local_aggregation"),
+            aggregation_size=int(get_option("cmfd_aggregation_size", 16)),
+            group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 1)),
+            update_wgs_max_its=int(get_option("cmfd_update_wgs_max_its", 4)),
+            update_wgs_abs_tol=float(get_option("cmfd_update_wgs_abs_tol", 1.0e-4)),
+            relaxation=float(get_option("cmfd_relaxation", 1.0)),
+            inactive_iterations=int(get_option("cmfd_inactive_iterations", 1)),
+            l_abs_tol=float(get_option("cmfd_l_abs_tol", 1.0e-10)),
+            max_iters=int(get_option("cmfd_l_max_its", 100)),
+            pi_max_its=int(get_option("cmfd_pi_max_its", 5)),
+            pi_k_tol=float(get_option("cmfd_pi_k_tol", 1.0e-10)),
+            coarse_solver_policy=get_option("cmfd_coarse_solver_policy", "auto"),
+            correction_max_attempts=int(get_option("cmfd_correction_max_attempts", 10)),
+            correction_min_damping=float(get_option("cmfd_correction_min_damping", 1.0e-4)),
+            negative_flux_tolerance=float(get_option("cmfd_negative_flux_tolerance", 1.0e-6)),
+            balance_residual_tolerance=float(
+                get_option("cmfd_balance_residual_tolerance", 10.0 * k_tolerance)
+            ),
+            verbose=get_bool_option("cmfd_verbose", False),
+        )
+        k_solver = PowerIterationKEigenSolver(
+            problem=phys,
+            acceleration=cmfd,
+            k_tol=k_tolerance,
         )
     elif k_method == "pi_scdsa":
         scdsa = SCDSAAcceleration(
@@ -173,3 +237,10 @@ if __name__ == "__main__":
 
     k_solver.Initialize()
     k_solver.Execute()
+
+    k = k_solver.GetEigenvalue()
+    if rank == 0:
+        print(f"Python method: {k_method}")
+        print(f"Python k-eigenvalue: {k}")
+        if hasattr(k_solver, "GetNumSweeps"):
+            print(f"Python sweeps: {k_solver.GetNumSweeps()}")

@@ -164,10 +164,11 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
       } // if boundary
     } // for f
 
-    // Outflow: The group-wise outflow was determined during a solve so we just accumulate it here.
+    // Outflow: Only physical boundary leakage contributes to the global particle balance.
     for (size_t f = 0; f < cell.faces.size(); ++f)
-      for (unsigned int g = 0; g < num_groups; ++g)
-        local_out_flow += outflow_view.Get(f, g);
+      if (not cell.faces[f].has_neighbor)
+        for (unsigned int g = 0; g < num_groups; ++g)
+          local_out_flow += outflow_view.Get(f, g);
 
     // Absorption and sources
     const auto& xs = transport_view.GetXS();

@@ -18,39 +18,40 @@ Merge(const std::uint32_t& high, const std::uint32_t& low)
 
 } // namespace
 
-OutflowBank::OutflowBank(const MeshContinuum& grid, unsigned int num_groups)
+OutflowBank::OutflowBank(const MeshContinuum& grid,
+                         unsigned int num_groups,
+                         bool include_internal_faces)
   : views_(grid.local_cells.size())
 {
   for (const auto& cell : grid.local_cells)
     views_[cell.local_id] = CellOutflowView(cell.faces.size(), num_groups);
 
-  std::vector<std::int64_t> cell_offsets(grid.local_cells.size());
-  cell_offsets.assign(cell_offsets.size(), static_cast<std::int64_t>(-1));
+  std::vector<std::int64_t> cell_offsets(grid.local_cells.size(), -1);
 
-  std::size_t num_boundary_faces = 0;
+  std::size_t num_faces = 0;
   for (const auto& cell : grid.local_cells)
   {
-    std::int64_t face_offset_count = 0;
+    auto& cell_view = views_[cell.local_id];
+    cell_view.InitializeFaceOffsets();
+    std::size_t cell_num_stored_faces = 0;
+
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {
       const auto& face = cell.faces[f];
-      if (face.has_neighbor)
+      if (face.has_neighbor and not include_internal_faces)
         continue;
 
-      auto& cell_view = views_[cell.local_id];
-      if (not cell_view.HasFaceOffsets())
-      {
-        cell_view.InitializeFaceOffsets();
-        cell_offsets[cell.local_id] = static_cast<std::int64_t>(num_boundary_faces);
-      }
-      cell_view.SetFaceOffset(f, face_offset_count * num_groups);
-      ++face_offset_count;
-      cellface_map_[Merge(cell.local_id, f)] = num_boundary_faces * num_groups;
-      num_boundary_faces++;
+      if (cell_num_stored_faces == 0)
+        cell_offsets[cell.local_id] = static_cast<std::int64_t>(num_faces);
+
+      cell_view.SetFaceOffset(f, static_cast<std::int64_t>(cell_num_stored_faces) * num_groups);
+      cellface_map_[Merge(cell.local_id, f)] = num_faces * num_groups;
+      ++num_faces;
+      ++cell_num_stored_faces;
     }
   }
 
-  const std::size_t size = num_boundary_faces * num_groups;
+  const std::size_t size = num_faces * num_groups;
   outflows_.reserve(size);
   outflows_.assign(size, 0.0);
   for (std::size_t cell_local_idx = 0; cell_local_idx < grid.local_cells.size(); ++cell_local_idx)
@@ -66,6 +67,12 @@ std::uint64_t
 OutflowBank::GetOffset(std::uint32_t cell_local_idx, std::uint32_t face_idx) const
 {
   return cellface_map_.at(Merge(cell_local_idx, face_idx));
+}
+
+bool
+OutflowBank::HasOffset(std::uint32_t cell_local_idx, std::uint32_t face_idx) const
+{
+  return cellface_map_.count(Merge(cell_local_idx, face_idx)) != 0;
 }
 
 } // namespace opensn
