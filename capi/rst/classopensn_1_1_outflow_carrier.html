@@ -92,8 +92,8 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrierE">
 <span class="target" id="classopensn_1_1_outflow_carrier"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OutflowCarrier</span></span></span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrierE" title="Link to this definition"></a><br /></dt>
-<dd><p>GPU-side carrier for boundary-face outflow tally storage. </p>
-<p>The carrier mirrors the <a class="reference internal" href="classopensn_1_1_outflow_bank.html#classopensn_1_1_outflow_bank"><span class="std std-ref">OutflowBank</span></a>’s contiguous host storage on the device and delegates boundary-face offset lookups to the bank. </p>
+<dd><p>GPU-side carrier for face outflow tally storage. </p>
+<p>The carrier mirrors the <a class="reference internal" href="classopensn_1_1_outflow_bank.html#classopensn_1_1_outflow_bank"><span class="std std-ref">OutflowBank</span></a>’s contiguous host storage on the device and delegates face offset lookups to the bank. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -137,7 +137,7 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier9GetOffsetERKNSt8uint32_tERKNSt8uint32_tE">
 <span class="target" id="classopensn_1_1_outflow_carrier_1a66a53432e70035f56fcb582838332f21"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetOffset</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell_local_idx</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">face_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier9GetOffsetERKNSt8uint32_tERKNSt8uint32_tE" title="Link to this definition"></a><br /></dt>
-<dd><p>Return the first group offset for a boundary face. </p>
+<dd><p>Return the first group offset for a face. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -146,12 +146,18 @@
 </ul>
 </dd>
 <dt class="field-even">Throws<span class="colon">:</span></dt>
-<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">out_of_range</span></span></span> – If the cell-face pair does not identify a boundary face. </p>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">out_of_range</span></span></span> – If the cell-face pair is not present. </p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Offset of the face’s first group value in device outflow storage. </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14OutflowCarrier9HasOffsetERKNSt8uint32_tERKNSt8uint32_tE">
+<span class="target" id="classopensn_1_1_outflow_carrier_1a47d86705b9c04dfc80d1a36c5741f7d3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasOffset</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell_local_idx</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">face_idx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14OutflowCarrier9HasOffsetERKNSt8uint32_tERKNSt8uint32_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return whether a face has device outflow storage. </p>
 </dd></dl>
 
 </div>

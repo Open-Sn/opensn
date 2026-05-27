@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyopensn.solver.CMFDAcceleration &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pyopensn.context.SetVerbosityLevel" href="pyopensn.context.SetVerbosityLevel.html" />
+    <link rel="prev" title="pyopensn.solver.SMMAcceleration" href="pyopensn.solver.SMMAcceleration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#math">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#angular-quadrature">Angular quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#field-functions">Field functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#mesh">Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#logical-volume">Logical volume</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#response-evaluator">Response evaluator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#source">Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#cross-section">Cross section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#problem">Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#solvers">Solvers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#acceleration-methods">Acceleration methods</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#discrete-ordinates-k-eigen-acceleration-base-class">Discrete ordinates k-eigen acceleration base class</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#discrete-ordinates-k-eigen-acceleration">Discrete ordinates k-eigen acceleration</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.SCDSAAcceleration.html">pyopensn.solver.SCDSAAcceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.SMMAcceleration.html">pyopensn.solver.SMMAcceleration</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.CMFDAcceleration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#settings">Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Python API</a></li>
+      <li class="breadcrumb-item active">pyopensn.solver.CMFDAcceleration</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyopensn-solver-cmfdacceleration">
+<h1>pyopensn.solver.CMFDAcceleration<a class="headerlink" href="#pyopensn-solver-cmfdacceleration" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">CMFDAcceleration</span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration" title="Link to this definition"></a></dt>
+<dd><p>Construct a CMFD accelerator for the power iteration k-eigenvalue solver.</p>
+<p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAccelerationE" title="opensn::CMFDAcceleration"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::CMFDAcceleration</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.__init__" title="Link to this definition"></a></dt>
+<dd><p>CMFD acceleration for the power iteration k-eigenvalue solver.</p>
+<p>With CMFD, each power iteration performs a configured number of high-order WGS
+transport update iterations, then applies a bounded low-order scalar-flux correction.
+The defaults use one WGS update iteration, automatic current closure, fixed
+correction relaxation, and a transport-current balance gate before outer power
+iteration is allowed to converge.</p>
+<p>Most users should tune only the common controls: <code class="docutils literal notranslate"><span class="pre">current_closure</span></code>,
+<code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>, <code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code>, <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>,
+<code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code>, <code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>. Parameters marked “developer/debug” are exposed for
+investigations and regression testing, but normally should be left at their defaults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
+<li><p><strong>current_closure</strong> (<em>str</em><em>, </em><em>default=&quot;auto&quot;</em>) – <dl class="simple">
+<dt>Common option. CMFD face-current closure. Valid choices are:</dt><dd><ul>
+<li><p>’auto’ : choose net, partial, or a blend from early coarse-balance behavior</p></li>
+<li><p>’net’ : match the signed transport current across each coarse face</p></li>
+<li><p>’partial’ : build face coupling from outgoing partial currents on both sides</p></li>
+</ul>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> is recommended for production use. A fixed closure is useful when
+comparing methods, reproducing a benchmark setting, or diagnosing a case where
+automatic selection is not robust.</p>
+</p></li>
+<li><p><strong>aggregation_size</strong> (<em>int</em><em>, </em><em>default=32</em>) – Common option. Target number of fine cells per aggregated coarse cell for
+<code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;local_aggregation&quot;</span></code>. Larger values reduce CMFD matrix size and
+setup/solve cost, but make the spatial correction less detailed. Smaller values
+increase the coarse-system cost but may improve robustness.</p></li>
+<li><p><strong>group_aggregation_size</strong> (<em>int</em><em>, </em><em>default=1</em>) – Common option. Number of transport energy groups per CMFD coarse group, not the
+final number of coarse groups. A value of 1 preserves the full transport group
+structure in the low-order system. To target <code class="docutils literal notranslate"><span class="pre">N</span></code> total coarse groups, use
+<code class="docutils literal notranslate"><span class="pre">(num_groups</span> <span class="pre">+</span> <span class="pre">N</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">//</span> <span class="pre">N</span></code>.</p></li>
+<li><p><strong>relaxation</strong> (<em>float</em><em>, </em><em>default=0.5</em>) – Common option. Relaxation factor applied to the CMFD scalar-flux correction.
+This is the requested correction strength. The correction limiter may damp or
+skip an individual correction if the requested update would produce an invalid
+k-eigenvalue, non-finite flux, or excessive negative scalar flux.</p></li>
+<li><p><strong>update_wgs_max_its</strong> (<em>int</em><em>, </em><em>default=1</em>) – Common option. Maximum WGS iterations used before each CMFD correction. The
+default performs one transport update iteration per power iteration; larger
+values make each transport update more accurate but more expensive.</p></li>
+<li><p><strong>update_wgs_abs_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-12</em>) – Common option. WGS absolute tolerance used before each CMFD correction. When
+<code class="docutils literal notranslate"><span class="pre">update_wgs_max_its=1</span></code>, this tolerance is normally not the stopping criterion
+because only one WGS iteration is allowed. It matters when more WGS iterations
+are allowed.</p></li>
+<li><p><strong>balance_residual_tolerance</strong> (<em>float</em><em>, </em><em>default=1.0e-6</em>) – Common option. Restricted transport-current balance residual tolerance required
+before CMFD permits outer power-iteration convergence. This prevents false
+convergence when <code class="docutils literal notranslate"><span class="pre">k_eff_change</span></code> is small but the CMFD-restricted transport
+balance is still inconsistent. This is a consistency guard, not an estimate of
+the k-eigenvalue error. For large 3D cases it may need to be looser than the
+outer <code class="docutils literal notranslate"><span class="pre">k_tol</span></code>; choose it tight enough to prevent false convergence but not so
+tight that it forces unnecessary asymptotic balance iterations.</p></li>
+<li><p><strong>l_abs_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-7</em>) – Developer/debug. Absolute residual tolerance for each CMFD coarse linear solve.
+This affects the low-order linear solve, not the outer transport convergence.</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default=100</em>) – Developer/debug. Maximum iterations for each CMFD coarse linear solve. Increase
+only if the coarse KSP solve is reaching its iteration limit. CMFD skips a
+correction when any coarse linear solve fails to converge within this limit. If
+the log reports <code class="docutils literal notranslate"><span class="pre">correction</span> <span class="pre">=</span> <span class="pre">skipped</span> <span class="pre">(coarse_linear_solve_not_converged)</span></code>,
+use a direct coarse solve for modest coarse systems, increase this limit for
+iterative solves, or provide stronger <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code>.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Developer/debug. If true, prints CMFD diagnostic and timing metrics. These are
+useful for regression tests and performance studies but can be noisy in production.</p></li>
+<li><p><strong>petsc_options</strong> (<em>str</em><em>, </em><em>default=&quot;&quot;</em>) – Developer/debug. Additional PETSc options for the CMFD coarse solver. Used only
+for solver experiments, especially with <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;petsc_options&quot;</span></code>.</p></li>
+<li><p><strong>pi_max_its</strong> (<em>int</em><em>, </em><em>default=50</em>) – Developer/debug. Maximum inner power iterations for the CMFD coarse k solve.
+Increase only if the coarse k solve is not converging enough to give useful
+corrections.</p></li>
+<li><p><strong>pi_k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-8</em>) – Developer/debug. k-eigenvalue tolerance for CMFD coarse power iterations. This
+is separate from the outer <code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver</span></code> k tolerance.</p></li>
+<li><p><strong>coarse_mesh</strong> (<em>str</em><em>, </em><em>default=&quot;local_aggregation&quot;</em>) – <dl class="simple">
+<dt>Developer/debug. Coarse-mesh construction method. Valid choices are:</dt><dd><ul>
+<li><p>’identity’ : one CMFD coarse cell per transport cell</p></li>
+<li><p>’local_aggregation’ : connected same-material fine cells aggregated locally</p></li>
+</ul>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> is the production path. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code> is primarily for
+debugging and method comparisons.</p>
+</p></li>
+<li><p><strong>correction_max_attempts</strong> (<em>int</em><em>, </em><em>default=10</em>) – Developer/debug. Maximum CMFD correction damping attempts before skipping the
+correction for the current transport update. Each failed attempt halves the
+damping. If the log reports <code class="docutils literal notranslate"><span class="pre">correction</span> <span class="pre">=</span> <span class="pre">skipped</span> <span class="pre">(negative_flux_guard)</span></code>,
+first reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code> or use finer spatial/energy aggregation; changing
+this option is mainly for diagnostics.</p></li>
+<li><p><strong>correction_min_damping</strong> (<em>float</em><em>, </em><em>default=1.0e-4</em>) – Developer/debug. Minimum CMFD correction damping factor considered during correction
+limiting. If no admissible correction is found above this damping, CMFD skips
+the correction for that transport update.</p></li>
+<li><p><strong>negative_flux_tolerance</strong> (<em>float</em><em>, </em><em>default=1.0e-6</em>) – Developer/debug. Allowed scalar-flux undershoot for accepting a CMFD correction.
+Corrections producing scalar flux below this guard are damped or skipped. Raising
+this value can hide unstable corrections and should be accompanied by final-k and
+scalar-flux checks.</p></li>
+<li><p><strong>inactive_iterations</strong> (<em>int</em><em>, </em><em>default=0</em>) – Developer/debug. Number of initial power iterations before applying CMFD
+corrections. Transport update controls are still used during these
+iterations.</p></li>
+<li><p><strong>coarse_solver_policy</strong> (<em>str</em><em>, </em><em>default=&quot;auto&quot;</em>) – <dl class="simple">
+<dt>Developer/debug. Coarse solver policy. Valid choices are:</dt><dd><ul>
+<li><p>’auto’ : PETSc preonly+LU below <code class="docutils literal notranslate"><span class="pre">direct_coarse_solve_threshold</span></code>
+global unknowns, GMRES+Jacobi otherwise</p></li>
+<li><p>’direct’ : PETSc preonly+LU</p></li>
+<li><p>’iterative’ : GMRES+Jacobi</p></li>
+<li><p>’petsc_options’ : allow <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code> to override the PETSc KSP/PC setup</p></li>
+</ul>
+</dd>
+</dl>
+<p>CMFD corrections from unconverged coarse linear solves are always skipped.
+The skipped correction uses the unaccelerated transport update for that power
+iteration; after repeated skipped corrections, CMFD returns the raw transport
+k update so that power iteration can continue to move.</p>
+</p></li>
+<li><p><strong>direct_coarse_solve_threshold</strong> (<em>int</em><em>, </em><em>default=20000</em>) – Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
+solves when <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;auto&quot;</span></code>. Larger values make <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> use
+direct solves for larger coarse systems; choose values based on available host
+memory and acceptable factorization cost.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyopensn.solver.SMMAcceleration.html" class="btn btn-neutral float-left" title="pyopensn.solver.SMMAcceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyopensn.context.SetVerbosityLevel.html" class="btn btn-neutral float-right" title="pyopensn.context.SetVerbosityLevel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

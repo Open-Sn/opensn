@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>10. Boundary Conditions and Sources &mdash; OpenSn 1.0.1 documentation</title>
+  <title>11. Boundary Conditions and Sources &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="11. Discrete-Ordinates Problems" href="discrete_ordinates_problems.html" />
-    <link rel="prev" title="9. Iterative Methods" href="iterative_methods.html" /> 
+    <link rel="next" title="12. Discrete-Ordinates Problems" href="discrete_ordinates_problems.html" />
+    <link rel="prev" title="10. CMFD Acceleration" href="cmfd_acceleration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -61,58 +61,59 @@
 <li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">10. Boundary Conditions and Sources</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">10.1. Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#boundary-conditions">10.2. Boundary Conditions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#vacuum-boundaries">10.2.1. Vacuum Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reflecting-boundaries">10.2.2. Reflecting Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#isotropic-boundaries">10.2.3. Isotropic Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time-windowed-isotropic-boundaries">10.2.4. Time-Windowed Isotropic Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#arbitrary-boundaries">10.2.5. Arbitrary Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time-dependent-arbitrary-boundaries">10.2.6. Time-Dependent Arbitrary Boundaries</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#setting-and-replacing-boundary-conditions">10.2.7. Setting and Replacing Boundary Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">10. CMFD Acceleration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">11. Boundary Conditions and Sources</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">11.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#boundary-conditions">11.2. Boundary Conditions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#vacuum-boundaries">11.2.1. Vacuum Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reflecting-boundaries">11.2.2. Reflecting Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#isotropic-boundaries">11.2.3. Isotropic Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-windowed-isotropic-boundaries">11.2.4. Time-Windowed Isotropic Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arbitrary-boundaries">11.2.5. Arbitrary Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-dependent-arbitrary-boundaries">11.2.6. Time-Dependent Arbitrary Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setting-and-replacing-boundary-conditions">11.2.7. Setting and Replacing Boundary Conditions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#point-sources">10.3. Point Sources</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#constant-point-source">10.3.1. Constant Point Source</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time-windowed-point-sources">10.3.2. Time-Windowed Point Sources</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#functional-point-sources">10.3.3. Functional Point Sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#point-sources">11.3. Point Sources</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#constant-point-source">11.3.1. Constant Point Source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-windowed-point-sources">11.3.2. Time-Windowed Point Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functional-point-sources">11.3.3. Functional Point Sources</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#volumetric-sources">10.4. Volumetric Sources</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#block-id-based-volumetric-sources">10.4.1. Block-ID-Based Volumetric Sources</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#logical-volume-based-volumetric-sources">10.4.2. Logical-Volume-Based Volumetric Sources</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#spatial-functional-volumetric-sources">10.4.3. Spatial Functional Volumetric Sources</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#group-time-functional-volumetric-sources">10.4.4. Group-Time Functional Volumetric Sources</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time-windowed-volumetric-sources">10.4.5. Time-Windowed Volumetric Sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#volumetric-sources">11.4. Volumetric Sources</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#block-id-based-volumetric-sources">11.4.1. Block-ID-Based Volumetric Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#logical-volume-based-volumetric-sources">11.4.2. Logical-Volume-Based Volumetric Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spatial-functional-volumetric-sources">11.4.3. Spatial Functional Volumetric Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#group-time-functional-volumetric-sources">11.4.4. Group-Time Functional Volumetric Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-windowed-volumetric-sources">11.4.5. Time-Windowed Volumetric Sources</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#attaching-sources-at-problem-construction">10.5. Attaching Sources at Problem Construction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#replacing-sources-after-construction">10.6. Replacing Sources After Construction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#transient-source-and-boundary-behavior">10.7. Transient Source and Boundary Behavior</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#boundary-names-and-mesh-labels">10.8. Boundary Names and Mesh Labels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#best-practices">10.9. Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#attaching-sources-at-problem-construction">11.5. Attaching Sources at Problem Construction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#replacing-sources-after-construction">11.6. Replacing Sources After Construction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-source-and-boundary-behavior">11.7. Transient Source and Boundary Behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#boundary-names-and-mesh-labels">11.8. Boundary Names and Mesh Labels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#best-practices">11.9. Best Practices</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">12. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">13. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">14. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">15. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">16. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">17. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">18. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">19. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">20. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">23. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">24. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">25. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">27. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">28. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">29. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">30. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -139,7 +140,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">10. </span>Boundary Conditions and Sources</li>
+      <li class="breadcrumb-item active"><span class="section-number">11. </span>Boundary Conditions and Sources</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -149,7 +150,7 @@
            <div itemprop="articleBody">
              
   <section id="boundary-conditions-and-sources">
-<h1><span class="section-number">10. </span>Boundary Conditions and Sources<a class="headerlink" href="#boundary-conditions-and-sources" title="Link to this heading"></a></h1>
+<h1><span class="section-number">11. </span>Boundary Conditions and Sources<a class="headerlink" href="#boundary-conditions-and-sources" title="Link to this heading"></a></h1>
 <p>Boundary conditions and sources are the primary drivers of a transport problem:</p>
 <ul class="simple">
 <li><p>boundary conditions drive particles through domain faces</p></li>
@@ -170,7 +171,7 @@ is handled through boundary conditions.</p>
 <li><p>how time dependence works for transient problems</p></li>
 </ul>
 <section id="overview">
-<h2><span class="section-number">10.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>OpenSn handles boundaries and sources through the problem constructor and the
 corresponding problem-level setter methods. The following interfaces are
 available for specifying boundary conditions and sources:</p>
@@ -207,7 +208,7 @@ boundary-condition types and simple point or volumetric source objects.</p>
 </div>
 </section>
 <section id="boundary-conditions">
-<h2><span class="section-number">10.2. </span>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.2. </span>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h2>
 <p>Boundary conditions are defined on
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> using the
 <code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code> constructor argument or
@@ -251,7 +252,7 @@ normalization.</p>
 </pre></div>
 </div>
 <section id="vacuum-boundaries">
-<h3><span class="section-number">10.2.1. </span>Vacuum Boundaries<a class="headerlink" href="#vacuum-boundaries" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.2.1. </span>Vacuum Boundaries<a class="headerlink" href="#vacuum-boundaries" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;vacuum&quot;</span></code> means no incoming angular flux is prescribed on that boundary.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">}</span>
@@ -265,7 +266,7 @@ transport problems.</p>
 </div>
 </section>
 <section id="reflecting-boundaries">
-<h3><span class="section-number">10.2.2. </span>Reflecting Boundaries<a class="headerlink" href="#reflecting-boundaries" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.2.2. </span>Reflecting Boundaries<a class="headerlink" href="#reflecting-boundaries" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;reflecting&quot;</span></code> mirrors the outgoing angular flux back into the domain.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">}</span>
@@ -280,7 +281,7 @@ an intended periodic-like repeated structure.</p>
 </div>
 </section>
 <section id="isotropic-boundaries">
-<h3><span class="section-number">10.2.3. </span>Isotropic Boundaries<a class="headerlink" href="#isotropic-boundaries" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.2.3. </span>Isotropic Boundaries<a class="headerlink" href="#isotropic-boundaries" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;isotropic&quot;</span></code> applies a group-wise isotropic incoming angular flux on the
 boundary.</p>
 <p>Example:</p>
@@ -308,7 +309,7 @@ than “create particles throughout a volume.”</p>
 </div>
 </section>
 <section id="time-windowed-isotropic-boundaries">
-<h3><span class="section-number">10.2.4. </span>Time-Windowed Isotropic Boundaries<a class="headerlink" href="#time-windowed-isotropic-boundaries" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.2.4. </span>Time-Windowed Isotropic Boundaries<a class="headerlink" href="#time-windowed-isotropic-boundaries" title="Link to this heading"></a></h3>
 <p>For transient problems, an isotropic boundary can be restricted to an active
 time interval with <code class="docutils literal notranslate"><span class="pre">start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">end_time</span></code>.</p>
 <p>Example:</p>
@@ -335,7 +336,7 @@ or <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&
 </div>
 </section>
 <section id="arbitrary-boundaries">
-<h3><span class="section-number">10.2.5. </span>Arbitrary Boundaries<a class="headerlink" href="#arbitrary-boundaries" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.2.5. </span>Arbitrary Boundaries<a class="headerlink" href="#arbitrary-boundaries" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code> uses a Python callback wrapped in
 <code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxFunction</span></code>.</p>
 <p>The callback signature is:</p>
@@ -385,7 +386,7 @@ that group. Do not multiply by quadrature weights in the callback.</p>
 </div>
 </section>
 <section id="time-dependent-arbitrary-boundaries">
-<h3><span class="section-number">10.2.6. </span>Time-Dependent Arbitrary Boundaries<a class="headerlink" href="#time-dependent-arbitrary-boundaries" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.2.6. </span>Time-Dependent Arbitrary Boundaries<a class="headerlink" href="#time-dependent-arbitrary-boundaries" title="Link to this heading"></a></h3>
 <p>For transient problems, arbitrary boundary inflow can depend on time by using
 <code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxTimeFunction</span></code> and the <code class="docutils literal notranslate"><span class="pre">time_function</span></code>
 boundary entry.</p>
@@ -429,7 +430,7 @@ boundary replacement between solves.</p>
 </div>
 </section>
 <section id="setting-and-replacing-boundary-conditions">
-<h3><span class="section-number">10.2.7. </span>Setting and Replacing Boundary Conditions<a class="headerlink" href="#setting-and-replacing-boundary-conditions" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.2.7. </span>Setting and Replacing Boundary Conditions<a class="headerlink" href="#setting-and-replacing-boundary-conditions" title="Link to this heading"></a></h3>
 <p>Boundary conditions can be provided in the problem constructor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
     <span class="o">...</span><span class="p">,</span>
@@ -466,7 +467,7 @@ only the boundary driving conditions are changing.</p>
 </section>
 </section>
 <section id="point-sources">
-<h2><span class="section-number">10.3. </span>Point Sources<a class="headerlink" href="#point-sources" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.3. </span>Point Sources<a class="headerlink" href="#point-sources" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.source.PointSource</span></code></a> represents a multi-group isotropic point
 source.</p>
 <p>Constructor options:</p>
@@ -479,7 +480,7 @@ source.</p>
 </ul>
 <p>Exactly one of <code class="docutils literal notranslate"><span class="pre">strength</span></code> or <code class="docutils literal notranslate"><span class="pre">strength_function</span></code> must be provided.</p>
 <section id="constant-point-source">
-<h3><span class="section-number">10.3.1. </span>Constant Point Source<a class="headerlink" href="#constant-point-source" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.3.1. </span>Constant Point Source<a class="headerlink" href="#constant-point-source" title="Link to this heading"></a></h3>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">PointSource</span>
 
@@ -499,7 +500,7 @@ clearer model.</p>
 </div>
 </section>
 <section id="time-windowed-point-sources">
-<h3><span class="section-number">10.3.2. </span>Time-Windowed Point Sources<a class="headerlink" href="#time-windowed-point-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.3.2. </span>Time-Windowed Point Sources<a class="headerlink" href="#time-windowed-point-sources" title="Link to this heading"></a></h3>
 <p>For non-callback point sources, activity can be limited in time with
 <code class="docutils literal notranslate"><span class="pre">start_time</span></code> and <code class="docutils literal notranslate"><span class="pre">end_time</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">psrc</span> <span class="o">=</span> <span class="n">PointSource</span><span class="p">(</span>
@@ -522,7 +523,7 @@ turns on and off at known times but does not otherwise change shape.</p>
 </div>
 </section>
 <section id="functional-point-sources">
-<h3><span class="section-number">10.3.3. </span>Functional Point Sources<a class="headerlink" href="#functional-point-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.3.3. </span>Functional Point Sources<a class="headerlink" href="#functional-point-sources" title="Link to this heading"></a></h3>
 <p>Instead of a fixed vector, a point source can use <code class="docutils literal notranslate"><span class="pre">strength_function</span></code>.</p>
 <p>The callback may accept either:</p>
 <ul class="simple">
@@ -555,7 +556,7 @@ behavior, the fixed-strength plus start/end-time path is easier to read.</p>
 </section>
 </section>
 <section id="volumetric-sources">
-<h2><span class="section-number">10.4. </span>Volumetric Sources<a class="headerlink" href="#volumetric-sources" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.4. </span>Volumetric Sources<a class="headerlink" href="#volumetric-sources" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.source.VolumetricSource</span></code></a> represents a multi-group isotropic
 volumetric source.</p>
 <p>It can be defined over:</p>
@@ -586,7 +587,7 @@ volumetric source.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">strength_function</span></code></p></li>
 </ul>
 <section id="block-id-based-volumetric-sources">
-<h3><span class="section-number">10.4.1. </span>Block-ID-Based Volumetric Sources<a class="headerlink" href="#block-id-based-volumetric-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.4.1. </span>Block-ID-Based Volumetric Sources<a class="headerlink" href="#block-id-based-volumetric-sources" title="Link to this heading"></a></h3>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
 
@@ -605,7 +606,7 @@ source region already matches the material or mesh-region labeling.</p>
 </div>
 </section>
 <section id="logical-volume-based-volumetric-sources">
-<h3><span class="section-number">10.4.2. </span>Logical-Volume-Based Volumetric Sources<a class="headerlink" href="#logical-volume-based-volumetric-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.4.2. </span>Logical-Volume-Based Volumetric Sources<a class="headerlink" href="#logical-volume-based-volumetric-sources" title="Link to this heading"></a></h3>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
@@ -634,7 +635,7 @@ labeling.</p>
 </div>
 </section>
 <section id="spatial-functional-volumetric-sources">
-<h3><span class="section-number">10.4.3. </span>Spatial Functional Volumetric Sources<a class="headerlink" href="#spatial-functional-volumetric-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.4.3. </span>Spatial Functional Volumetric Sources<a class="headerlink" href="#spatial-functional-volumetric-sources" title="Link to this heading"></a></h3>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.math.VectorSpatialFunction.html#pyopensn.math.VectorSpatialFunction" title="pyopensn.math.VectorSpatialFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.VectorSpatialFunction</span></code></a> when the source varies in
 space.</p>
 <p>The callback signature is:</p>
@@ -669,7 +670,7 @@ profile but does not need custom angular structure.</p>
 </div>
 </section>
 <section id="group-time-functional-volumetric-sources">
-<h3><span class="section-number">10.4.4. </span>Group-Time Functional Volumetric Sources<a class="headerlink" href="#group-time-functional-volumetric-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.4.4. </span>Group-Time Functional Volumetric Sources<a class="headerlink" href="#group-time-functional-volumetric-sources" title="Link to this heading"></a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">strength_function</span></code> when the volumetric source varies by group and time
 but not by space within its selected region.</p>
 <p>The callback may accept either:</p>
@@ -701,7 +702,7 @@ the source object itself between solves or timesteps instead.</p>
 </div>
 </section>
 <section id="time-windowed-volumetric-sources">
-<h3><span class="section-number">10.4.5. </span>Time-Windowed Volumetric Sources<a class="headerlink" href="#time-windowed-volumetric-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.4.5. </span>Time-Windowed Volumetric Sources<a class="headerlink" href="#time-windowed-volumetric-sources" title="Link to this heading"></a></h3>
 <p>For constant-strength or spatial-function sources, <code class="docutils literal notranslate"><span class="pre">start_time</span></code> and
 <code class="docutils literal notranslate"><span class="pre">end_time</span></code> provide a simple activation window.</p>
 <p>Example:</p>
@@ -723,7 +724,7 @@ callback that reproduces the same logic.</p>
 </section>
 </section>
 <section id="attaching-sources-at-problem-construction">
-<h2><span class="section-number">10.5. </span>Attaching Sources at Problem Construction<a class="headerlink" href="#attaching-sources-at-problem-construction" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.5. </span>Attaching Sources at Problem Construction<a class="headerlink" href="#attaching-sources-at-problem-construction" title="Link to this heading"></a></h2>
 <p>Both point and volumetric sources can be passed directly to the problem
 constructor.</p>
 <p>Example:</p>
@@ -744,7 +745,7 @@ constructor.</p>
 <p>This is the cleanest pattern when the driving terms are known up front.</p>
 </section>
 <section id="replacing-sources-after-construction">
-<h2><span class="section-number">10.6. </span>Replacing Sources After Construction<a class="headerlink" href="#replacing-sources-after-construction" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.6. </span>Replacing Sources After Construction<a class="headerlink" href="#replacing-sources-after-construction" title="Link to this heading"></a></h2>
 <p>Problem objects also expose:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetPointSources" title="pyopensn.solver.LBSProblem.SetPointSources"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetPointSources()</span></code></a></p></li>
@@ -775,7 +776,7 @@ reconstructing the entire problem.</p>
 </div>
 </section>
 <section id="transient-source-and-boundary-behavior">
-<h2><span class="section-number">10.7. </span>Transient Source and Boundary Behavior<a class="headerlink" href="#transient-source-and-boundary-behavior" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.7. </span>Transient Source and Boundary Behavior<a class="headerlink" href="#transient-source-and-boundary-behavior" title="Link to this heading"></a></h2>
 <p>For transient problems, time dependence can enter through:</p>
 <ul class="simple">
 <li><p>boundary <code class="docutils literal notranslate"><span class="pre">start_time</span></code> / <code class="docutils literal notranslate"><span class="pre">end_time</span></code> windows on isotropic boundaries</p></li>
@@ -845,7 +846,7 @@ really needs.</p>
 </div>
 </section>
 <section id="boundary-names-and-mesh-labels">
-<h2><span class="section-number">10.8. </span>Boundary Names and Mesh Labels<a class="headerlink" href="#boundary-names-and-mesh-labels" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.8. </span>Boundary Names and Mesh Labels<a class="headerlink" href="#boundary-names-and-mesh-labels" title="Link to this heading"></a></h2>
 <p>Boundary-condition entries refer to mesh boundary ids, not geometric
 directions in the abstract.</p>
 <p>Typical boundary ids on orthogonal Cartesian meshes are:</p>
@@ -864,7 +865,7 @@ directions in the abstract.</p>
 mesh.</p>
 </section>
 <section id="best-practices">
-<h2><span class="section-number">10.9. </span>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<h2><span class="section-number">11.9. </span>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Use vacuum and reflecting boundaries whenever they represent the actual
 physical model; they are the clearest and least error-prone options.</p></li>
@@ -898,8 +899,8 @@ flexibility.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="iterative_methods.html" class="btn btn-neutral float-left" title="9. Iterative Methods" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="discrete_ordinates_problems.html" class="btn btn-neutral float-right" title="11. Discrete-Ordinates Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cmfd_acceleration.html" class="btn btn-neutral float-left" title="10. CMFD Acceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="discrete_ordinates_problems.html" class="btn btn-neutral float-right" title="12. Discrete-Ordinates Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

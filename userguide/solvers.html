@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>12. Solvers &mdash; OpenSn 1.0.1 documentation</title>
+  <title>13. Solvers &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="23. Example Problems" href="example_problems.html" />
-    <link rel="prev" title="11. Discrete-Ordinates Problems" href="discrete_ordinates_problems.html" /> 
+    <link rel="next" title="24. Example Problems" href="example_problems.html" />
+    <link rel="prev" title="12. Discrete-Ordinates Problems" href="discrete_ordinates_problems.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -61,53 +61,54 @@
 <li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">12. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#overview">13. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#base-classes">14. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#lbs-problem">15. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#discrete-ordinates-problem">16. Discrete Ordinates Problem</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#time-dependent-and-steady-state-modes">16.1. Time-Dependent and Steady-State Modes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#angular-flux-specific-features">16.2. Angular-Flux-Specific Features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#discreteordinatescurvilinearproblem">16.3. DiscreteOrdinatesCurvilinearProblem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">10. CMFD Acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">11. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">12. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">13. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">14. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#base-classes">15. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lbs-problem">16. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#discrete-ordinates-problem">17. Discrete Ordinates Problem</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#time-dependent-and-steady-state-modes">17.1. Time-Dependent and Steady-State Modes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#angular-flux-specific-features">17.2. Angular-Flux-Specific Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discreteordinatescurvilinearproblem">17.3. DiscreteOrdinatesCurvilinearProblem</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#steady-state-source-solver">17. Steady-State Source Solver</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#constructor">17.1. Constructor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#gpu-support">17.2. GPU support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#how-it-operates">17.3. How It Operates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#adjoint-steady-state-solves">17.4. Adjoint Steady-State Solves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#steady-state-source-solver">18. Steady-State Source Solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#constructor">18.1. Constructor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpu-support">18.2. GPU support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-it-operates">18.3. How It Operates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adjoint-steady-state-solves">18.4. Adjoint Steady-State Solves</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#transient-solver">18. Transient Solver</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">18.1. GPU support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">18.2. Constructor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#using-execute">18.3. Using Execute</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#using-an-explicit-python-timestep-loop">18.4. Using an Explicit Python Timestep Loop</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#balance-reporting">18.5. Balance Reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transient-solver">19. Transient Solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">19.1. GPU support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">19.2. Constructor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-execute">19.3. Using Execute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-an-explicit-python-timestep-loop">19.4. Using an Explicit Python Timestep Loop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#balance-reporting">19.5. Balance Reporting</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id3">19.1. Constructor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">19.2. GPU support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">19.3. How It Operates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#power-iteration-k-eigen-solver">20. Power Iteration k-Eigen Solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">20.1. Constructor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">20.2. GPU support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">20.3. How It Operates</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id6">20.1. Constructor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id7">20.2. GPU support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">21.1. Constructor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">21.2. GPU support</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#field-functions-and-solver-output">23. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">24. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">25. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">27. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">28. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">29. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">30. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -134,7 +135,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">12. </span>Solvers</li>
+      <li class="breadcrumb-item active"><span class="section-number">13. </span>Solvers</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -144,7 +145,7 @@
            <div itemprop="articleBody">
              
   <section id="solvers">
-<h1><span class="section-number">12. </span>Solvers<a class="headerlink" href="#solvers" title="Link to this heading"></a></h1>
+<h1><span class="section-number">13. </span>Solvers<a class="headerlink" href="#solvers" title="Link to this heading"></a></h1>
 <p>The OpenSn solver interface is built around two components:</p>
 <ul class="simple">
 <li><p>a <em>problem</em> object that defines the transport model, mesh, groupsets,
@@ -174,7 +175,7 @@ whether the associated problem configuration supports GPU sweeps.</p>
 </div>
 </section>
 <section id="overview">
-<h1><span class="section-number">13. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<h1><span class="section-number">14. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
 <p>The usual workflow is:</p>
 <ol class="arabic simple">
 <li><p>Construct a problem.</p></li>
@@ -208,7 +209,7 @@ model; the solver choice mainly determines how that model is driven.</p>
 </div>
 </section>
 <section id="base-classes">
-<h1><span class="section-number">14. </span>Base Classes<a class="headerlink" href="#base-classes" title="Link to this heading"></a></h1>
+<h1><span class="section-number">15. </span>Base Classes<a class="headerlink" href="#base-classes" title="Link to this heading"></a></h1>
 <p>All solver objects derive from <a class="reference internal" href="../pyapi/generated/pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.Solver</span></code></a>, which
 provides:</p>
 <ul class="simple">
@@ -239,7 +240,7 @@ groupset iteration settings next.</p>
 </div>
 </section>
 <section id="lbs-problem">
-<h1><span class="section-number">15. </span>LBS Problem<a class="headerlink" href="#lbs-problem" title="Link to this heading"></a></h1>
+<h1><span class="section-number">16. </span>LBS Problem<a class="headerlink" href="#lbs-problem" title="Link to this heading"></a></h1>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem</span></code></a> is the shared base for the linear
 Boltzmann problem classes. The Python API on this base class provides common
 operations such as:</p>
@@ -268,7 +269,7 @@ level.</p>
 </div>
 </section>
 <section id="discrete-ordinates-problem">
-<h1><span class="section-number">16. </span>Discrete Ordinates Problem<a class="headerlink" href="#discrete-ordinates-problem" title="Link to this heading"></a></h1>
+<h1><span class="section-number">17. </span>Discrete Ordinates Problem<a class="headerlink" href="#discrete-ordinates-problem" title="Link to this heading"></a></h1>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is the standard Cartesian
 discrete ordinates problem class.</p>
 <p>Its constructor takes the main transport-model inputs:</p>
@@ -372,7 +373,7 @@ precursor treatment, and stored output.</p></li>
 </ul>
 </div>
 <section id="time-dependent-and-steady-state-modes">
-<h2><span class="section-number">16.1. </span>Time-Dependent and Steady-State Modes<a class="headerlink" href="#time-dependent-and-steady-state-modes" title="Link to this heading"></a></h2>
+<h2><span class="section-number">17.1. </span>Time-Dependent and Steady-State Modes<a class="headerlink" href="#time-dependent-and-steady-state-modes" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> can operate in either
 steady-state or time-dependent mode.</p>
 <p>Use:</p>
@@ -412,7 +413,7 @@ problem is currently in the wrong mode.</p>
 </div>
 </section>
 <section id="angular-flux-specific-features">
-<h2><span class="section-number">16.2. </span>Angular-Flux-Specific Features<a class="headerlink" href="#angular-flux-specific-features" title="Link to this heading"></a></h2>
+<h2><span class="section-number">17.2. </span>Angular-Flux-Specific Features<a class="headerlink" href="#angular-flux-specific-features" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> also provides:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetBoundaryOptions()</span></code></p></li>
@@ -433,7 +434,7 @@ postprocessing, but it also increases memory use.</p>
 </div>
 </section>
 <section id="discreteordinatescurvilinearproblem">
-<h2><span class="section-number">16.3. </span>DiscreteOrdinatesCurvilinearProblem<a class="headerlink" href="#discreteordinatescurvilinearproblem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">17.3. </span>DiscreteOrdinatesCurvilinearProblem<a class="headerlink" href="#discreteordinatescurvilinearproblem" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a> is the
 curvilinear companion to the Cartesian problem class.</p>
 <p>It uses the same general structure as
@@ -453,7 +454,7 @@ cosmetic variant of the Cartesian problem.</p>
 </section>
 </section>
 <section id="steady-state-source-solver">
-<h1><span class="section-number">17. </span>Steady-State Source Solver<a class="headerlink" href="#steady-state-source-solver" title="Link to this heading"></a></h1>
+<h1><span class="section-number">18. </span>Steady-State Source Solver<a class="headerlink" href="#steady-state-source-solver" title="Link to this heading"></a></h1>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver" title="pyopensn.solver.SteadyStateSourceSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.SteadyStateSourceSolver</span></code></a> is the standard source-driven
 steady-state transport solver.</p>
 <p>Use it when:</p>
@@ -463,14 +464,14 @@ steady-state transport solver.</p>
 boundary conditions rather than an eigenvalue solve</p></li>
 </ul>
 <section id="constructor">
-<h2><span class="section-number">17.1. </span>Constructor<a class="headerlink" href="#constructor" title="Link to this heading"></a></h2>
+<h2><span class="section-number">18.1. </span>Constructor<a class="headerlink" href="#constructor" title="Link to this heading"></a></h2>
 <p>The constructor takes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
 </ul>
 </section>
 <section id="gpu-support">
-<h2><span class="section-number">17.2. </span>GPU support<a class="headerlink" href="#gpu-support" title="Link to this heading"></a></h2>
+<h2><span class="section-number">18.2. </span>GPU support<a class="headerlink" href="#gpu-support" title="Link to this heading"></a></h2>
 <p>This solver can run with GPU acceleration when the associated
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is configured for GPU
 sweeps. In practice, that means:</p>
@@ -488,7 +489,7 @@ sweeps. In practice, that means:</p>
 </div>
 </section>
 <section id="how-it-operates">
-<h2><span class="section-number">17.3. </span>How It Operates<a class="headerlink" href="#how-it-operates" title="Link to this heading"></a></h2>
+<h2><span class="section-number">18.3. </span>How It Operates<a class="headerlink" href="#how-it-operates" title="Link to this heading"></a></h2>
 <p>At a high level, the steady-state solver:</p>
 <ol class="arabic simple">
 <li><p>checks that the problem is in steady-state mode,</p></li>
@@ -521,7 +522,7 @@ first solver to reach for.</p>
 </div>
 </section>
 <section id="adjoint-steady-state-solves">
-<h2><span class="section-number">17.4. </span>Adjoint Steady-State Solves<a class="headerlink" href="#adjoint-steady-state-solves" title="Link to this heading"></a></h2>
+<h2><span class="section-number">18.4. </span>Adjoint Steady-State Solves<a class="headerlink" href="#adjoint-steady-state-solves" title="Link to this heading"></a></h2>
 <p>The same steady-state solver is also used for adjoint transport solves.</p>
 <p>An adjoint solution answers a different question than a forward solution.
 Instead of computing the particle field produced by a physical source, it
@@ -586,7 +587,7 @@ the adjoint form.</p>
 </section>
 </section>
 <section id="transient-solver">
-<h1><span class="section-number">18. </span>Transient Solver<a class="headerlink" href="#transient-solver" title="Link to this heading"></a></h1>
+<h1><span class="section-number">19. </span>Transient Solver<a class="headerlink" href="#transient-solver" title="Link to this heading"></a></h1>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a> advances a
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> in time.</p>
 <p>Use it when:</p>
@@ -596,11 +597,11 @@ the adjoint form.</p>
 update</p></li>
 </ul>
 <section id="id1">
-<h2><span class="section-number">18.1. </span>GPU support<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2><span class="section-number">19.1. </span>GPU support<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>Transient solves do not currently support GPU acceleration.</p>
 </section>
 <section id="id2">
-<h2><span class="section-number">18.2. </span>Constructor<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2><span class="section-number">19.2. </span>Constructor<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p>The transient solver constructor takes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing
@@ -642,7 +643,7 @@ state the problem currently holds.</p>
 </div>
 </section>
 <section id="using-execute">
-<h2><span class="section-number">18.3. </span>Using Execute<a class="headerlink" href="#using-execute" title="Link to this heading"></a></h2>
+<h2><span class="section-number">19.3. </span>Using Execute<a class="headerlink" href="#using-execute" title="Link to this heading"></a></h2>
 <p>The simplest transient pattern is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetTimeDependentMode</span><span class="p">()</span>
 
@@ -706,7 +707,7 @@ manual loop.</p>
 </div>
 </section>
 <section id="using-an-explicit-python-timestep-loop">
-<h2><span class="section-number">18.4. </span>Using an Explicit Python Timestep Loop<a class="headerlink" href="#using-an-explicit-python-timestep-loop" title="Link to this heading"></a></h2>
+<h2><span class="section-number">19.4. </span>Using an Explicit Python Timestep Loop<a class="headerlink" href="#using-an-explicit-python-timestep-loop" title="Link to this heading"></a></h2>
 <p>You can also drive the transient manually with <code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code>.</p>
 <p>This is useful when:</p>
 <ul class="simple">
@@ -762,7 +763,7 @@ time march is conceptually fixed and Python only needs hooks. A manual
 </div>
 </section>
 <section id="balance-reporting">
-<h2><span class="section-number">18.5. </span>Balance Reporting<a class="headerlink" href="#balance-reporting" title="Link to this heading"></a></h2>
+<h2><span class="section-number">19.5. </span>Balance Reporting<a class="headerlink" href="#balance-reporting" title="Link to this heading"></a></h2>
 <p><code class="xref py py-meth docutils literal notranslate"><span class="pre">TransientSolver.ComputeBalanceTable()</span></code> returns a global timestep balance
 summary that includes:</p>
 <ul class="simple">
@@ -782,7 +783,7 @@ a physically consistent inventory update.</p>
 </section>
 </section>
 <section id="power-iteration-k-eigen-solver">
-<h1><span class="section-number">19. </span>Power Iteration k-Eigen Solver<a class="headerlink" href="#power-iteration-k-eigen-solver" title="Link to this heading"></a></h1>
+<h1><span class="section-number">20. </span>Power Iteration k-Eigen Solver<a class="headerlink" href="#power-iteration-k-eigen-solver" title="Link to this heading"></a></h1>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a> solves the k-eigenvalue
 problem with outer power iteration.</p>
 <p>Use it when:</p>
@@ -791,7 +792,7 @@ problem with outer power iteration.</p>
 <li><p>the usual power-iteration convergence behavior is acceptable</p></li>
 </ul>
 <section id="id3">
-<h2><span class="section-number">19.1. </span>Constructor<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<h2><span class="section-number">20.1. </span>Constructor<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <p>The constructor takes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing
@@ -802,7 +803,7 @@ problem with outer power iteration.</p>
 </ul>
 </section>
 <section id="id4">
-<h2><span class="section-number">19.2. </span>GPU support<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<h2><span class="section-number">20.2. </span>GPU support<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <p>This solver can run with GPU acceleration when the associated
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is configured for GPU
 sweeps. The same problem-side restrictions apply as for steady-state source
@@ -821,7 +822,7 @@ supported non-curvilinear problem.</p>
 </div>
 </section>
 <section id="id5">
-<h2><span class="section-number">19.3. </span>How It Operates<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<h2><span class="section-number">20.3. </span>How It Operates<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <p>At a high level, the solver:</p>
 <ol class="arabic simple">
 <li><p>optionally resets the starting scalar flux</p></li>
@@ -856,7 +857,7 @@ other methods.</p>
 </section>
 </section>
 <section id="nonlinear-k-eigen-solver">
-<h1><span class="section-number">20. </span>Nonlinear k-Eigen Solver<a class="headerlink" href="#nonlinear-k-eigen-solver" title="Link to this heading"></a></h1>
+<h1><span class="section-number">21. </span>Nonlinear k-Eigen Solver<a class="headerlink" href="#nonlinear-k-eigen-solver" title="Link to this heading"></a></h1>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a> solves the k-eigenvalue
 problem with a nonlinear solve strategy rather than outer power iteration.</p>
 <p>Use it when:</p>
@@ -867,7 +868,7 @@ problem with a nonlinear solve strategy rather than outer power iteration.</p>
 nonlinear solve</p></li>
 </ul>
 <section id="id6">
-<h2><span class="section-number">20.1. </span>Constructor<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<h2><span class="section-number">21.1. </span>Constructor<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
 <p>The constructor takes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
@@ -882,7 +883,7 @@ nonlinear solve</p></li>
 </ul>
 </section>
 <section id="id7">
-<h2><span class="section-number">20.2. </span>GPU support<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<h2><span class="section-number">21.2. </span>GPU support<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
 <p>This solver does not currently provide a supported GPU execution path.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonLinearKEigenSolver</span><span class="p">(</span>
@@ -931,7 +932,7 @@ behavior or controls. That keeps the initial setup simpler.</p>
 </section>
 </section>
 <section id="initialization-order-and-common-patterns">
-<h1><span class="section-number">21. </span>Initialization Order and Common Patterns<a class="headerlink" href="#initialization-order-and-common-patterns" title="Link to this heading"></a></h1>
+<h1><span class="section-number">22. </span>Initialization Order and Common Patterns<a class="headerlink" href="#initialization-order-and-common-patterns" title="Link to this heading"></a></h1>
 <p>A few patterns are worth making explicit.</p>
 <p>Steady-state source solve:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -985,7 +986,7 @@ solve step.</p>
 </div>
 </section>
 <section id="field-functions-and-solver-output">
-<h1><span class="section-number">22. </span>Field Functions and Solver Output<a class="headerlink" href="#field-functions-and-solver-output" title="Link to this heading"></a></h1>
+<h1><span class="section-number">23. </span>Field Functions and Solver Output<a class="headerlink" href="#field-functions-and-solver-output" title="Link to this heading"></a></h1>
 <p>Problem objects, not solver objects, own the field-function accessors.</p>
 <p>Common post-solve access patterns are:</p>
 <ul class="simple">
@@ -1021,8 +1022,8 @@ problem configuration.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="discrete_ordinates_problems.html" class="btn btn-neutral float-left" title="11. Discrete-Ordinates Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="example_problems.html" class="btn btn-neutral float-right" title="23. Example Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="discrete_ordinates_problems.html" class="btn btn-neutral float-left" title="12. Discrete-Ordinates Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="example_problems.html" class="btn btn-neutral float-right" title="24. Example Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

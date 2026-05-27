@@ -1,0 +1,9 @@
+﻿pyopensn.solver.CMFDAcceleration
+================================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: CMFDAcceleration
+   :special-members: __init__
+   :members:
+   :inherited-members:

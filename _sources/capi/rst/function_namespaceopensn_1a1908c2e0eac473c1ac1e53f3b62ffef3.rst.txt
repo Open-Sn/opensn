@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1908c2e0eac473c1ac1e53f3b62ffef3:
+
+Function opensn::CMFDProlongateScalarFluxRatio
+==============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem&, unsigned int, unsigned int, unsigned int, const CMFDCoarseMesh&, const std::vector<double>&, const std::vector<double>&, std::vector<double>&)
+   :project: opensn

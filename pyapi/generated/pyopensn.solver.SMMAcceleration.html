@@ -26,7 +26,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="pyopensn.context.SetVerbosityLevel" href="pyopensn.context.SetVerbosityLevel.html" />
+    <link rel="next" title="pyopensn.solver.CMFDAcceleration" href="pyopensn.solver.CMFDAcceleration.html" />
     <link rel="prev" title="pyopensn.solver.SCDSAAcceleration" href="pyopensn.solver.SCDSAAcceleration.html" /> 
 </head>
 
@@ -71,6 +71,7 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html#discrete-ordinates-k-eigen-acceleration">Discrete ordinates k-eigen acceleration</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.SCDSAAcceleration.html">pyopensn.solver.SCDSAAcceleration</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.SMMAcceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.CMFDAcceleration.html">pyopensn.solver.CMFDAcceleration</a></li>
 </ul>
 </li>
 </ul>
@@ -121,13 +122,13 @@
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>SMM acceleration is <strong>experimental</strong> and should be used with caution!
-SMM accleration only supports problems with isotropic scattering.</p>
+SMM acceleration only supports problems with isotropic scattering.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
-<li><p><strong>l_abs_tol</strong> (<em>float</em><em>, </em><em>defauilt=1.0e-10</em>) – Absolute residual tolerance.</p></li>
+<li><p><strong>l_abs_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-10</em>) – Absolute residual tolerance.</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum allowable iterations.</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, enables verbose output.</p></li>
 <li><p><strong>petsc_options</strong> (<em>str</em><em>, </em><em>default=&quot;ssss&quot;</em>) – Additional PETSc options.</p></li>
@@ -155,7 +156,7 @@ SMM accleration only supports problems with isotropic scattering.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="pyopensn.solver.SCDSAAcceleration.html" class="btn btn-neutral float-left" title="pyopensn.solver.SCDSAAcceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pyopensn.context.SetVerbosityLevel.html" class="btn btn-neutral float-right" title="pyopensn.context.SetVerbosityLevel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pyopensn.solver.CMFDAcceleration.html" class="btn btn-neutral float-right" title="pyopensn.solver.CMFDAcceleration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

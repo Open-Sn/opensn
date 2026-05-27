@@ -1,0 +1,91 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_coarse_mesh.h:
+
+Program Listing for File cmfd_coarse_mesh.h
+===========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_coarse_mesh.h>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/data_types/vector3.h"
+   #include <cstddef>
+   #include <cstdint>
+   #include <map>
+   #include <optional>
+   #include <vector>
+   
+   namespace opensn
+   {
+   class MeshContinuum;
+   
+   struct CMFDFineFace
+   {
+     uint64_t cell_id = 0;
+     std::size_t face_index = 0;
+     std::optional<uint64_t> neighbor_id;
+   };
+   
+   struct CMFDCoarseFace
+   {
+     bool has_neighbor = false;
+     uint64_t neighbor_id = 0;
+     int neighbor_partition_id = 0;
+     unsigned int neighbor_block_id = 0;
+     Vector3 neighbor_centroid;
+     Vector3 normal;
+     Vector3 centroid;
+     double area = 0.0;
+     std::vector<CMFDFineFace> fine_faces;
+   };
+   
+   struct CMFDCoarseCell
+   {
+     uint64_t global_id = 0;
+     uint32_t local_id = 0;
+     int partition_id = 0;
+     unsigned int block_id = 0;
+     Vector3 centroid;
+     double volume = 0.0;
+     std::vector<uint64_t> fine_cell_ids;
+     std::vector<CMFDCoarseFace> faces;
+   };
+   
+   class CMFDCoarseMesh
+   {
+   public:
+     const std::vector<CMFDCoarseCell>& LocalCells() const { return local_cells_; }
+     const std::map<uint64_t, uint64_t>& FineToCoarseCellMap() const { return fine_to_coarse_cell_; }
+     const CMFDCoarseCell& LocalCell(uint32_t local_id) const { return local_cells_.at(local_id); }
+     const CMFDCoarseCell& LocalCellFromGlobalID(uint64_t coarse_cell_global_id) const;
+   
+     bool HasCoarseCell(uint64_t fine_cell_global_id) const;
+     bool HasLocalCoarseCell(uint64_t coarse_cell_global_id) const;
+     uint64_t MapFineCell(uint64_t fine_cell_global_id) const;
+   
+     size_t NumLocalCells() const { return local_cells_.size(); }
+     size_t NumGlobalCells() const { return num_global_cells_; }
+   
+   private:
+     void AddLocalCell(CMFDCoarseCell&& coarse_cell);
+     void BuildExteriorFaces(const MeshContinuum& grid);
+   
+     std::vector<CMFDCoarseCell> local_cells_;
+     std::map<uint64_t, uint64_t> fine_to_coarse_cell_;
+     std::map<uint64_t, uint32_t> coarse_to_local_cell_;
+     std::size_t num_global_cells_ = 0;
+   
+   public:
+     static CMFDCoarseMesh BuildIdentity(const MeshContinuum& grid);
+     static CMFDCoarseMesh BuildLocalAggregation(const MeshContinuum& grid,
+                                                 std::size_t target_fine_cells_per_coarse_cell);
+   };
+   
+   } // namespace opensn

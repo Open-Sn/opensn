@@ -22,6 +22,7 @@ Inheritance Relationships
 Derived Types
 *************
 
+- ``public opensn::CMFDAcceleration`` (:ref:`exhale_class_classopensn_1_1_c_m_f_d_acceleration`)
 - ``public opensn::SCDSAAcceleration`` (:ref:`exhale_class_classopensn_1_1_s_c_d_s_a_acceleration`)
 - ``public opensn::SMMAcceleration`` (:ref:`exhale_class_classopensn_1_1_s_m_m_acceleration`)
 

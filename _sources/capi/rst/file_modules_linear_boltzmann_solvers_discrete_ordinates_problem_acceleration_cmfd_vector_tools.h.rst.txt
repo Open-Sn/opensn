@@ -1,0 +1,56 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h:
+
+File cmfd_vector_tools.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_vector_tools.h``)
+-------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a1908c2e0eac473c1ac1e53f3b62ffef3`
+
+- :ref:`exhale_function_namespaceopensn_1a1003ac6b77f9886c19dfdfd94c977d46`
+
+- :ref:`exhale_function_namespaceopensn_1adf1a3da59a6e53ac9c5775d31c928702`
+

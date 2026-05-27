@@ -100,8 +100,7 @@
 <span class="cm">/**</span>
 <span class="cm"> * Non-owning view of group-wise outflow values for the faces of one local cell.</span>
 <span class="cm"> *</span>
-<span class="cm"> * Face offsets are relative to the first outflow value assigned to the cell. A negative face offset</span>
-<span class="cm"> * marks a face that does not contribute outflow storage.</span>
+<span class="cm"> * Face offsets are relative to the first outflow value assigned to the cell.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CellOutflowView</span>
 <span class="p">{</span>
@@ -111,7 +110,7 @@
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Construct a view for a cell with a fixed face count and energy group count.</span>
 <span class="cm">   * \param num_faces Number of faces on the viewed cell.</span>
-<span class="cm">   * \param num_groups Number of energy groups stored per boundary face.</span>
+<span class="cm">   * \param num_groups Number of energy groups stored per face.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">CellOutflowView</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_faces</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">)</span>
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">num_faces_</span><span class="p">(</span><span class="n">num_faces</span><span class="p">),</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">(</span><span class="n">num_groups</span><span class="p">)</span>
@@ -121,10 +120,10 @@
 <span class="w">  </span><span class="c1">/// Return whether the view was initialized with at least one face or group.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">IsInitialized</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_faces_</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">num_groups_</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Return whether boundary-face offset metadata has been allocated.</span>
+<span class="w">  </span><span class="c1">/// Return whether face offset metadata has been allocated.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">HasFaceOffsets</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">face_offsets_</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Allocate boundary-face offset metadata.</span>
+<span class="w">  </span><span class="c1">/// Allocate face offset metadata.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeFaceOffsets</span><span class="p">()</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="n">face_offsets_</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">num_faces_</span><span class="p">);</span>
@@ -211,7 +210,7 @@
 <span class="w">  </span><span class="c1">/// Number of faces on the viewed cell.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_faces_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Number of energy groups stored per boundary face.</span>
+<span class="w">  </span><span class="c1">/// Number of energy groups stored per face.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Pointer to the first outflow value for the viewed cell.</span>
@@ -219,7 +218,7 @@
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Relative offset into the cell outflow array for each face.</span>
-<span class="cm">   * Non-boundary faces are assigned to -1.</span>
+<span class="cm">   * Faces without allocated outflow storage are assigned to -1.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">int64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">face_offsets_</span><span class="p">;</span>
 <span class="p">};</span>

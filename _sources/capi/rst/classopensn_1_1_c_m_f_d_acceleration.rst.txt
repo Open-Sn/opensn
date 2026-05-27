@@ -1,0 +1,38 @@
+.. _exhale_class_classopensn_1_1_c_m_f_d_acceleration:
+
+Class CMFDAcceleration
+======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_acceleration.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_balance_residual`
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics`
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::DiscreteOrdinatesKEigenAcceleration`` (:ref:`exhale_class_classopensn_1_1_discrete_ordinates_k_eigen_acceleration`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CMFDAcceleration
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -93,7 +93,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15CellOutflowViewE">
 <span class="target" id="classopensn_1_1_cell_outflow_view"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CellOutflowView</span></span></span><a class="headerlink" href="#_CPPv4N6opensn15CellOutflowViewE" title="Link to this definition"></a><br /></dt>
 <dd><p>Non-owning view of group-wise outflow values for the faces of one local cell. </p>
-<p><a class="reference internal" href="structopensn_1_1_face.html#structopensn_1_1_face"><span class="std std-ref">Face</span></a> offsets are relative to the first outflow value assigned to the cell. A negative face offset marks a face that does not contribute outflow storage. </p>
+<p><a class="reference internal" href="structopensn_1_1_face.html#structopensn_1_1_face"><span class="std std-ref">Face</span></a> offsets are relative to the first outflow value assigned to the cell. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -109,7 +109,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>num_faces</strong> – Number of faces on the viewed cell. </p></li>
-<li><p><strong>num_groups</strong> – Number of energy groups stored per boundary face. </p></li>
+<li><p><strong>num_groups</strong> – Number of energy groups stored per face. </p></li>
 </ul>
 </dd>
 </dl>
@@ -124,13 +124,13 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn15CellOutflowView14HasFaceOffsetsEv">
 <span class="target" id="classopensn_1_1_cell_outflow_view_1a52d0c58cb4877ef213fc7fab265c6215"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasFaceOffsets</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn15CellOutflowView14HasFaceOffsetsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Return whether boundary-face offset metadata has been allocated. </p>
+<dd><p>Return whether face offset metadata has been allocated. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15CellOutflowView21InitializeFaceOffsetsEv">
 <span class="target" id="classopensn_1_1_cell_outflow_view_1a6fbbe179398bad8737d787fc530c3b7b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeFaceOffsets</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15CellOutflowView21InitializeFaceOffsetsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Allocate boundary-face offset metadata. </p>
+<dd><p>Allocate face offset metadata. </p>
 </dd></dl>
 
 <dl class="cpp function">

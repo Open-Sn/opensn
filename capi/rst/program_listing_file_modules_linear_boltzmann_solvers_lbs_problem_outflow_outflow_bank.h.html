@@ -99,10 +99,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span><span class="p">;</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Contiguous storage manager for local boundary-face outflow tallies.</span>
+<span class="cm"> * Contiguous storage manager for local face outflow tallies.</span>
 <span class="cm"> *</span>
 <span class="cm"> * The bank owns the outflow values and builds one CellOutflowView per local cell. Each view stores</span>
-<span class="cm"> * offsets into the bank&#39;s contiguous storage for the cell&#39;s boundary faces.</span>
+<span class="cm"> * offsets into the bank&#39;s contiguous storage for every cell face.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OutflowBank</span>
 <span class="p">{</span>
@@ -111,10 +111,12 @@
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Construct outflow storage and cell-local views for a mesh.</span>
-<span class="cm">   * \param grid Local mesh used to discover boundary faces.</span>
-<span class="cm">   * \param num_groups Number of energy groups stored per boundary face.</span>
+<span class="cm">   * \param grid Local mesh used to discover cell faces.</span>
+<span class="cm">   * \param num_groups Number of energy groups stored per face.</span>
+<span class="cm">   * \param include_internal_faces If true, allocate storage for internal faces in addition to</span>
+<span class="cm">   * physical boundary faces.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">OutflowBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">);</span>
+<span class="w">  </span><span class="n">OutflowBank</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">include_internal_faces</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Transfer cell-local outflow views to the caller.</span>
@@ -128,27 +130,30 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetOutflowData</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">outflows_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Return the first group offset for a boundary face.</span>
+<span class="cm">   * Return the first group offset for a face.</span>
 <span class="cm">   * \param cell_local_idx Cell index local to the current process.</span>
 <span class="cm">   * \param face_idx Face index local to the cell.</span>
 <span class="cm">   * \return Offset of the face&#39;s first group value in the contiguous outflow storage.</span>
-<span class="cm">   * \throw std::out_of_range If the cell-face pair does not identify a boundary face.</span>
+<span class="cm">   * \throw std::out_of_range If the cell-face pair is not present.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">GetOffset</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">face_idx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Return whether a face has contiguous outflow storage.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasOffset</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">face_idx</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Return the number of contiguous outflow values.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetSize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">outflows_</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Group-wise outflow values for all local boundary faces.</span>
+<span class="cm">   * Group-wise outflow values for all local faces.</span>
 <span class="cm">   * Energy groups are the most contiguous index.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">outflows_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Map from packed cell-face indices to contiguous outflow offsets.</span>
-<span class="cm">   * Each offset points to the first energy group for the boundary face.</span>
+<span class="cm">   * Each offset points to the first energy group for the face.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cellface_map_</span><span class="p">;</span>
 

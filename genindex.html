@@ -183,6 +183,8 @@
 </li>
         <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.__init__">(pyopensn.response.ResponseEvaluator method)</a>
 </li>
+        <li><a href="pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration.__init__">(pyopensn.solver.CMFDAcceleration method)</a>
+</li>
         <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.__init__">(pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
 </li>
         <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.__init__">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
@@ -301,6 +303,8 @@
 </li>
       </ul></li>
       <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.ClearForwardSources">ClearForwardSources() (pyopensn.response.ResponseEvaluator method)</a>
+</li>
+      <li><a href="pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration">CMFDAcceleration (class in pyopensn.solver)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine">Combine() (pyopensn.xs.MultiGroupXS static method)</a>
 </li>
@@ -764,6 +768,10 @@
         <li><a href="pyapi/generated/pyopensn.aquad.TriangularQuadrature.html#pyopensn.aquad.TriangularQuadrature.GetNumPolarAngles">(pyopensn.aquad.TriangularQuadrature method)</a>
 </li>
       </ul></li>
+      <li><a href="pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver.GetNumPowerIterations">GetNumPowerIterations() (pyopensn.solver.PowerIterationKEigenSolver method)</a>
+</li>
+      <li><a href="pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver.GetNumSweeps">GetNumSweeps() (pyopensn.solver.PowerIterationKEigenSolver method)</a>
+</li>
       <li><a href="pyapi/generated/pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature.GetOmega">GetOmega() (pyopensn.aquad.AngularQuadrature method)</a>
 
       <ul>
@@ -2986,6 +2994,144 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_classic_richardson.html#_CPPv4N6opensn17ClassicRichardsonD0Ev">opensn::ClassicRichardson::~ClassicRichardson (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAccelerationE">opensn::CMFDAcceleration (C++ class)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration31AllowsPowerIterationConvergenceEv">opensn::CMFDAcceleration::AllowsPowerIterationConvergence (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_balance_residual.html#_CPPv4N6opensn16CMFDAcceleration15BalanceResidualE">opensn::CMFDAcceleration::BalanceResidual (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_balance_residual.html#_CPPv4N6opensn16CMFDAcceleration15BalanceResidual7max_absE">opensn::CMFDAcceleration::BalanceResidual::max_abs (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_balance_residual.html#_CPPv4N6opensn16CMFDAcceleration15BalanceResidual11relative_l2E">opensn::CMFDAcceleration::BalanceResidual::relative_l2 (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration16CMFDAccelerationERK15InputParameters">opensn::CMFDAcceleration::CMFDAcceleration (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnosticsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics19global_coarse_cellsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::global_coarse_cells (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics32global_faces_per_coarse_cell_sumE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::global_faces_per_coarse_cell_sum (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics17global_fine_cellsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::global_fine_cells (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics32global_max_faces_per_coarse_cellE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::global_max_faces_per_coarse_cell (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics37global_max_fine_cells_per_coarse_cellE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::global_max_fine_cells_per_coarse_cell (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics30global_undersized_coarse_cellsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::global_undersized_coarse_cells (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics18local_coarse_cellsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::local_coarse_cells (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics31local_faces_per_coarse_cell_sumE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::local_faces_per_coarse_cell_sum (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics16local_fine_cellsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::local_fine_cells (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics31local_max_faces_per_coarse_cellE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::local_max_faces_per_coarse_cell (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics36local_max_fine_cells_per_coarse_cellE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::local_max_fine_cells_per_coarse_cell (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics29local_undersized_coarse_cellsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::local_undersized_coarse_cells (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration6CreateERK14ParameterBlock">opensn::CMFDAcceleration::Create (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21FluxUpdateDiagnosticsE">opensn::CMFDAcceleration::FluxUpdateDiagnostics (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21FluxUpdateDiagnostics13has_invalid_kE">opensn::CMFDAcceleration::FluxUpdateDiagnostics::has_invalid_k (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21FluxUpdateDiagnostics18has_nonfinite_fluxE">opensn::CMFDAcceleration::FluxUpdateDiagnostics::has_nonfinite_flux (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21FluxUpdateDiagnostics15min_scalar_fluxE">opensn::CMFDAcceleration::FluxUpdateDiagnostics::min_scalar_flux (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration13GetCoarseMeshEv">opensn::CMFDAcceleration::GetCoarseMesh (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration18GetInputParametersEv">opensn::CMFDAcceleration::GetInputParameters (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration32GetPowerIterationConvergenceInfoEv">opensn::CMFDAcceleration::GetPowerIterationConvergenceInfo (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration10InitializeEv">opensn::CMFDAcceleration::Initialize (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration18PostPowerIterationEv">opensn::CMFDAcceleration::PostPowerIteration (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration10PreExecuteEv">opensn::CMFDAcceleration::PreExecute (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration17PrePowerIterationEv">opensn::CMFDAcceleration::PrePowerIteration (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAccelerationD0Ev">opensn::CMFDAcceleration::~CMFDAcceleration (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCellE">opensn::CMFDCoarseCell (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCell8block_idE">opensn::CMFDCoarseCell::block_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCell8centroidE">opensn::CMFDCoarseCell::centroid (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCell5facesE">opensn::CMFDCoarseCell::faces (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCell13fine_cell_idsE">opensn::CMFDCoarseCell::fine_cell_ids (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCell9global_idE">opensn::CMFDCoarseCell::global_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCell8local_idE">opensn::CMFDCoarseCell::local_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCell12partition_idE">opensn::CMFDCoarseCell::partition_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_cell.html#_CPPv4N6opensn14CMFDCoarseCell6volumeE">opensn::CMFDCoarseCell::volume (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFaceE">opensn::CMFDCoarseFace (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace4areaE">opensn::CMFDCoarseFace::area (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace8centroidE">opensn::CMFDCoarseFace::centroid (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace10fine_facesE">opensn::CMFDCoarseFace::fine_faces (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace12has_neighborE">opensn::CMFDCoarseFace::has_neighbor (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace17neighbor_block_idE">opensn::CMFDCoarseFace::neighbor_block_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace17neighbor_centroidE">opensn::CMFDCoarseFace::neighbor_centroid (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace11neighbor_idE">opensn::CMFDCoarseFace::neighbor_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace21neighbor_partition_idE">opensn::CMFDCoarseFace::neighbor_partition_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_coarse_face.html#_CPPv4N6opensn14CMFDCoarseFace6normalE">opensn::CMFDCoarseFace::normal (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMeshE">opensn::CMFDCoarseMesh (C++ class)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh13BuildIdentityERK13MeshContinuum">opensn::CMFDCoarseMesh::BuildIdentity (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh21BuildLocalAggregationERK13MeshContinuumNSt6size_tE">opensn::CMFDCoarseMesh::BuildLocalAggregation (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh19FineToCoarseCellMapEv">opensn::CMFDCoarseMesh::FineToCoarseCellMap (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh13HasCoarseCellE8uint64_t">opensn::CMFDCoarseMesh::HasCoarseCell (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh18HasLocalCoarseCellE8uint64_t">opensn::CMFDCoarseMesh::HasLocalCoarseCell (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh9LocalCellE8uint32_t">opensn::CMFDCoarseMesh::LocalCell (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh21LocalCellFromGlobalIDE8uint64_t">opensn::CMFDCoarseMesh::LocalCellFromGlobalID (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh10LocalCellsEv">opensn::CMFDCoarseMesh::LocalCells (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh11MapFineCellE8uint64_t">opensn::CMFDCoarseMesh::MapFineCell (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh14NumGlobalCellsEv">opensn::CMFDCoarseMesh::NumGlobalCells (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh13NumLocalCellsEv">opensn::CMFDCoarseMesh::NumLocalCells (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFaceE">opensn::CMFDFineFace (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFace7cell_idE">opensn::CMFDFineFace::cell_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFace10face_indexE">opensn::CMFDFineFace::face_index (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFace11neighbor_idE">opensn::CMFDFineFace::neighbor_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/function_namespaceopensn_1a1908c2e0eac473c1ac1e53f3b62ffef3.html#_CPPv4N6opensn29CMFDProlongateScalarFluxRatioERK24DiscreteOrdinatesProblemjjjRK14CMFDCoarseMeshRKNSt6vectorIdEERKNSt6vectorIdEERNSt6vectorIdEE">opensn::CMFDProlongateScalarFluxRatio (C++ function)</a>
+</li>
+      <li><a href="capi/rst/function_namespaceopensn_1a1003ac6b77f9886c19dfdfd94c977d46.html#_CPPv4N6opensn22CMFDRestrictScalarFluxERK24DiscreteOrdinatesProblemjjRK14CMFDCoarseMeshRKNSt6vectorIdEE">opensn::CMFDRestrictScalarFlux (C++ function)</a>, <a href="capi/rst/function_namespaceopensn_1adf1a3da59a6e53ac9c5775d31c928702.html#_CPPv4N6opensn22CMFDRestrictScalarFluxERK24DiscreteOrdinatesProblemjjjRK14CMFDCoarseMeshRKNSt6vectorIdEE">[1]</a>
+</li>
       <li><a href="capi/rst/function_namespaceopensn_1a97d808c24531d22343e840533a950f11.html#_CPPv4N6opensn23CommunicateGhostEntriesE3Vec">opensn::CommunicateGhostEntries (C++ function)</a>
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1a3fce481e799298c868cf51dad203166b.html#_CPPv4N6opensn31CommunicateLocationDependenciesERKNSt6vectorIiEERNSt6vectorINSt6vectorIiEEEE">opensn::CommunicateLocationDependencies (C++ function)</a>
@@ -3258,6 +3404,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4N6opensn35DiscreteOrdinatesKEigenAccelerationE">opensn::DiscreteOrdinatesKEigenAcceleration (C++ class)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration31AllowsPowerIterationConvergenceEv">opensn::DiscreteOrdinatesKEigenAcceleration::AllowsPowerIterationConvergence (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4N6opensn35DiscreteOrdinatesKEigenAcceleration12CopyOnlyPhi0ERKNSt6vectorIdEERNSt6vectorIdEE">opensn::DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0 (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4N6opensn35DiscreteOrdinatesKEigenAcceleration17diffusion_solver_E">opensn::DiscreteOrdinatesKEigenAcceleration::diffusion_solver_ (C++ member)</a>
@@ -3271,6 +3419,8 @@
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4N6opensn35DiscreteOrdinatesKEigenAcceleration18GetInputParametersEv">opensn::DiscreteOrdinatesKEigenAcceleration::GetInputParameters (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration7GetNameEv">opensn::DiscreteOrdinatesKEigenAcceleration::GetName (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration32GetPowerIterationConvergenceInfoEv">opensn::DiscreteOrdinatesKEigenAcceleration::GetPowerIterationConvergenceInfo (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_k_eigen_acceleration.html#_CPPv4N6opensn35DiscreteOrdinatesKEigenAcceleration11ghost_info_E">opensn::DiscreteOrdinatesKEigenAcceleration::ghost_info_ (C++ member)</a>
 </li>
@@ -4738,6 +4888,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem20ComputeUnitIntegralsEv">opensn::LBSProblem::ComputeUnitIntegrals (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem23ConfigureOutflowStorageEb">opensn::LBSProblem::ConfigureOutflowStorage (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem15CopyPhiNewToOldEv">opensn::LBSProblem::CopyPhiNewToOld (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4NK6opensn10LBSProblem24CreateEmptyFieldFunctionERKNSt6stringE">opensn::LBSProblem::CreateEmptyFieldFunction (C++ function)</a>
@@ -4956,6 +5108,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem14source_pinner_E">opensn::LBSProblem::source_pinner_ (C++ member)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem24store_internal_outflows_E">opensn::LBSProblem::store_internal_outflows_ (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem6theta_E">opensn::LBSProblem::theta_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblem5time_E">opensn::LBSProblem::time_ (C++ member)</a>
@@ -5064,6 +5218,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_lebedev_quadrature2_d_x_y.html#_CPPv4N6opensn21LebedevQuadrature2DXYE">opensn::LebedevQuadrature2DXY (C++ class)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_lebedev_quadrature2_d_x_y.html#_CPPv4NK6opensn21LebedevQuadrature2DXY7GetNameEv">opensn::LebedevQuadrature2DXY::GetName (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_lebedev_quadrature2_d_x_y.html#_CPPv4NK6opensn21LebedevQuadrature2DXY18GetQuadratureOrderEv">opensn::LebedevQuadrature2DXY::GetQuadratureOrder (C++ function)</a>
@@ -5132,8 +5288,6 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_linear_system_context.html#_CPPv4N6opensn19LinearSystemContext21custom_residual_scaleE">opensn::LinearSystemContext::custom_residual_scale (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/structopensn_1_1_linear_system_context.html#_CPPv4N6opensn19LinearSystemContext19residual_scale_typeE">opensn::LinearSystemContext::residual_scale_type (C++ member)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_linear_system_context.html#_CPPv4N6opensn19LinearSystemContext8rhs_normE">opensn::LinearSystemContext::rhs_norm (C++ member)</a>
@@ -5992,7 +6146,9 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_outflow_bank.html#_CPPv4NK6opensn11OutflowBank7GetSizeEv">opensn::OutflowBank::GetSize (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_outflow_bank.html#_CPPv4N6opensn11OutflowBank11OutflowBankERK13MeshContinuumj">opensn::OutflowBank::OutflowBank (C++ function)</a>, <a href="capi/rst/classopensn_1_1_outflow_bank.html#_CPPv4N6opensn11OutflowBank11OutflowBankEv">[1]</a>
+      <li><a href="capi/rst/classopensn_1_1_outflow_bank.html#_CPPv4NK6opensn11OutflowBank9HasOffsetENSt8uint32_tENSt8uint32_tE">opensn::OutflowBank::HasOffset (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_outflow_bank.html#_CPPv4N6opensn11OutflowBank11OutflowBankERK13MeshContinuumjb">opensn::OutflowBank::OutflowBank (C++ function)</a>, <a href="capi/rst/classopensn_1_1_outflow_bank.html#_CPPv4N6opensn11OutflowBank11OutflowBankEv">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrierE">opensn::OutflowCarrier (C++ class)</a>
 </li>
@@ -6003,6 +6159,8 @@
       <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrier12GetDevicePtrEv">opensn::OutflowCarrier::GetDevicePtr (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrier9GetOffsetERKNSt8uint32_tERKNSt8uint32_tE">opensn::OutflowCarrier::GetOffset (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrier9HasOffsetERKNSt8uint32_tERKNSt8uint32_tE">opensn::OutflowCarrier::HasOffset (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_outflow_carrier.html#_CPPv4N6opensn14OutflowCarrier14OutflowCarrierER10LBSProblem">opensn::OutflowCarrier::OutflowCarrier (C++ function)</a>
 </li>
@@ -6750,6 +6908,10 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver18GetInputParametersEv">opensn::PowerIterationKEigenSolver::GetInputParameters (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4NK6opensn26PowerIterationKEigenSolver21GetNumPowerIterationsEv">opensn::PowerIterationKEigenSolver::GetNumPowerIterations (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4NK6opensn26PowerIterationKEigenSolver12GetNumSweepsEv">opensn::PowerIterationKEigenSolver::GetNumSweeps (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver10groupsets_E">opensn::PowerIterationKEigenSolver::groupsets_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver10InitializeEv">opensn::PowerIterationKEigenSolver::Initialize (C++ function)</a>
@@ -6761,6 +6923,8 @@
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver12k_tolerance_E">opensn::PowerIterationKEigenSolver::k_tolerance_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver10max_iters_E">opensn::PowerIterationKEigenSolver::max_iters_ (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver21num_power_iterations_E">opensn::PowerIterationKEigenSolver::num_power_iterations_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver14phi_new_local_E">opensn::PowerIterationKEigenSolver::phi_new_local_ (C++ member)</a>
 </li>

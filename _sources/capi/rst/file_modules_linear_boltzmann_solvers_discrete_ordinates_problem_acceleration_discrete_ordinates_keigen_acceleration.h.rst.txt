@@ -32,11 +32,15 @@ Includes
 
 - ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
 
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
 
 
 Included By
 -----------
 
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_acceleration.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_scdsa_acceleration.h`
 

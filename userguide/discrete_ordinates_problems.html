@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>11. Discrete-Ordinates Problems &mdash; OpenSn 1.0.1 documentation</title>
+  <title>12. Discrete-Ordinates Problems &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="12. Solvers" href="solvers.html" />
-    <link rel="prev" title="10. Boundary Conditions and Sources" href="boundary_conditions_sources.html" /> 
+    <link rel="next" title="13. Solvers" href="solvers.html" />
+    <link rel="prev" title="11. Boundary Conditions and Sources" href="boundary_conditions_sources.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -61,70 +61,71 @@
 <li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">11. Discrete-Ordinates Problems</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">11.1. Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#constructor-summary">11.2. Constructor Summary</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#constructor-inputs">11.3. Constructor Inputs</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#mesh">11.3.1. <code class="docutils literal notranslate"><span class="pre">mesh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#num-groups">11.3.2. <code class="docutils literal notranslate"><span class="pre">num_groups</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#groupsets">11.3.3. <code class="docutils literal notranslate"><span class="pre">groupsets</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#xs-map">11.3.4. <code class="docutils literal notranslate"><span class="pre">xs_map</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#boundary-conditions">11.3.5. <code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#point-sources-and-volumetric-sources">11.3.6. <code class="docutils literal notranslate"><span class="pre">point_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">volumetric_sources</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#options">11.3.7. <code class="docutils literal notranslate"><span class="pre">options</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sweep-type">11.3.8. <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#use-gpus">11.3.9. <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time-dependent">11.3.10. <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">10. CMFD Acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">11. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">12. Discrete-Ordinates Problems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">12.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constructor-summary">12.2. Constructor Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constructor-inputs">12.3. Constructor Inputs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mesh">12.3.1. <code class="docutils literal notranslate"><span class="pre">mesh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#num-groups">12.3.2. <code class="docutils literal notranslate"><span class="pre">num_groups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#groupsets">12.3.3. <code class="docutils literal notranslate"><span class="pre">groupsets</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xs-map">12.3.4. <code class="docutils literal notranslate"><span class="pre">xs_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#boundary-conditions">12.3.5. <code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#point-sources-and-volumetric-sources">12.3.6. <code class="docutils literal notranslate"><span class="pre">point_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">volumetric_sources</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#options">12.3.7. <code class="docutils literal notranslate"><span class="pre">options</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sweep-type">12.3.8. <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-gpus">12.3.9. <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-dependent">12.3.10. <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#shared-lbs-interface">11.4. Shared LBS Interface</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#problem-options">11.5. Problem Options</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#setting-options-after-construction">11.5.1. Setting options after construction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shared-lbs-interface">12.4. Shared LBS Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#problem-options">12.5. Problem Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setting-options-after-construction">12.5.1. Setting options after construction</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id1">11.6. <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#problem-modes">11.7. Problem Modes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">11.7.1. <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">11.7.2. <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#adjoint-mode">11.7.3. Adjoint Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">12.6. <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#problem-modes">12.7. Problem Modes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">12.7.1. <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">12.7.2. <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adjoint-mode">12.7.3. Adjoint Mode</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#field-function-interface">11.8. Field-Function Interface</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#angular-flux-access">11.9. Angular-Flux Access</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#balance-and-leakage">11.10. Balance and Leakage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#computebalance">11.10.1. <code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#computeleakage">11.10.2. <code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#field-function-interface">12.8. Field-Function Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#angular-flux-access">12.9. Angular-Flux Access</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#balance-and-leakage">12.10. Balance and Leakage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#computebalance">12.10.1. <code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#computeleakage">12.10.2. <code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#writing-and-reading-transport-state">11.11. Writing and Reading Transport State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#updating-the-problem-in-place">11.12. Updating the Problem In Place</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#updating-a-problem-after-construction">11.12.1. Updating a Problem After Construction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing-and-reading-transport-state">12.11. Writing and Reading Transport State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-the-problem-in-place">12.12. Updating the Problem In Place</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#updating-a-problem-after-construction">12.12.1. Updating a Problem After Construction</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#discreteordinatescurvilinearproblem">11.13. DiscreteOrdinatesCurvilinearProblem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#typical-construction-patterns">11.14. Typical Construction Patterns</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">11.15. Practical Guidance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discreteordinatescurvilinearproblem">12.13. DiscreteOrdinatesCurvilinearProblem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#typical-construction-patterns">12.14. Typical Construction Patterns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">12.15. Practical Guidance</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">13. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">14. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">15. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">16. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">17. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">18. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">19. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">20. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">23. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">24. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">25. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">27. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">28. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">29. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">30. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -151,7 +152,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">11. </span>Discrete-Ordinates Problems</li>
+      <li class="breadcrumb-item active"><span class="section-number">12. </span>Discrete-Ordinates Problems</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -161,7 +162,7 @@
            <div itemprop="articleBody">
              
   <section id="discrete-ordinates-problems">
-<h1><span class="section-number">11. </span>Discrete-Ordinates Problems<a class="headerlink" href="#discrete-ordinates-problems" title="Link to this heading"></a></h1>
+<h1><span class="section-number">12. </span>Discrete-Ordinates Problems<a class="headerlink" href="#discrete-ordinates-problems" title="Link to this heading"></a></h1>
 <p>The discrete-ordinates problem object is the center of OpenSn inputs. It gathers
 the mesh, materials, groupsets, sources, boundary conditions, problem options,
 and transport state into one object that can then be driven by a solver.</p>
@@ -171,7 +172,7 @@ and transport state into one object that can then be driven by a solver.</p>
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a></p></li>
 </ul>
 <section id="overview">
-<h2><span class="section-number">11.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> for Cartesian
 discrete-ordinates problems. This is the standard problem class for most
 steady-state, transient, and k-eigenvalue workflows.</p>
@@ -215,7 +216,7 @@ only decides how that already-defined model is advanced or converged.</p>
 </div>
 </section>
 <section id="constructor-summary">
-<h2><span class="section-number">11.2. </span>Constructor Summary<a class="headerlink" href="#constructor-summary" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.2. </span>Constructor Summary<a class="headerlink" href="#constructor-summary" title="Link to this heading"></a></h2>
 <p>The main constructor inputs are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">mesh</span></code>: a <a class="reference internal" href="../pyapi/generated/pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.mesh.MeshContinuum</span></code></a></p></li>
@@ -254,15 +255,15 @@ only decides how that already-defined model is advanced or converged.</p>
 see them in one place.</p>
 </section>
 <section id="constructor-inputs">
-<h2><span class="section-number">11.3. </span>Constructor Inputs<a class="headerlink" href="#constructor-inputs" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.3. </span>Constructor Inputs<a class="headerlink" href="#constructor-inputs" title="Link to this heading"></a></h2>
 <section id="mesh">
-<h3><span class="section-number">11.3.1. </span><code class="docutils literal notranslate"><span class="pre">mesh</span></code><a class="headerlink" href="#mesh" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.1. </span><code class="docutils literal notranslate"><span class="pre">mesh</span></code><a class="headerlink" href="#mesh" title="Link to this heading"></a></h3>
 <p>This is the transport mesh.</p>
 <p>It must already exist and already carry the block ids and boundary labels that
 the rest of the problem will use.</p>
 </section>
 <section id="num-groups">
-<h3><span class="section-number">11.3.2. </span><code class="docutils literal notranslate"><span class="pre">num_groups</span></code><a class="headerlink" href="#num-groups" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.2. </span><code class="docutils literal notranslate"><span class="pre">num_groups</span></code><a class="headerlink" href="#num-groups" title="Link to this heading"></a></h3>
 <p>This is the total number of energy groups in the problem.</p>
 <p>It must be consistent with:</p>
 <ul class="simple">
@@ -272,7 +273,7 @@ the rest of the problem will use.</p>
 </ul>
 </section>
 <section id="groupsets">
-<h3><span class="section-number">11.3.3. </span><code class="docutils literal notranslate"><span class="pre">groupsets</span></code><a class="headerlink" href="#groupsets" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.3. </span><code class="docutils literal notranslate"><span class="pre">groupsets</span></code><a class="headerlink" href="#groupsets" title="Link to this heading"></a></h3>
 <p>This is the list of groupset dictionaries that define angular quadratures,
 inner iteration, angle aggregation, and optional DSA configuration.</p>
 <p>Groupsets are detailed separately in <a class="reference internal" href="groupsets.html"><span class="doc">Groupsets</span></a>, but from the problem
@@ -280,26 +281,26 @@ perspective they define how the energy range is partitioned for transport
 iterations.</p>
 </section>
 <section id="xs-map">
-<h3><span class="section-number">11.3.4. </span><code class="docutils literal notranslate"><span class="pre">xs_map</span></code><a class="headerlink" href="#xs-map" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.4. </span><code class="docutils literal notranslate"><span class="pre">xs_map</span></code><a class="headerlink" href="#xs-map" title="Link to this heading"></a></h3>
 <p>This maps mesh block ids to cross-section objects.</p>
 <p>Every block id used in the transport region should be assigned an XS object.</p>
 </section>
 <section id="boundary-conditions">
-<h3><span class="section-number">11.3.5. </span><code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code><a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.5. </span><code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code><a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h3>
 <p>This is the list of transport boundary-condition dictionaries. The names used
 here must match the boundary ids on the mesh.</p>
 </section>
 <section id="point-sources-and-volumetric-sources">
-<h3><span class="section-number">11.3.6. </span><code class="docutils literal notranslate"><span class="pre">point_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">volumetric_sources</span></code><a class="headerlink" href="#point-sources-and-volumetric-sources" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.6. </span><code class="docutils literal notranslate"><span class="pre">point_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">volumetric_sources</span></code><a class="headerlink" href="#point-sources-and-volumetric-sources" title="Link to this heading"></a></h3>
 <p>These are optional source objects added at construction time.</p>
 </section>
 <section id="options">
-<h3><span class="section-number">11.3.7. </span><code class="docutils literal notranslate"><span class="pre">options</span></code><a class="headerlink" href="#options" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.7. </span><code class="docutils literal notranslate"><span class="pre">options</span></code><a class="headerlink" href="#options" title="Link to this heading"></a></h3>
 <p>This dictionary holds problem-level behavior that is not naturally part of the
 mesh, source, or groupset definitions.</p>
 </section>
 <section id="sweep-type">
-<h3><span class="section-number">11.3.8. </span><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code><a class="headerlink" href="#sweep-type" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.8. </span><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code><a class="headerlink" href="#sweep-type" title="Link to this heading"></a></h3>
 <p>This selects the sweep type:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;AAH&quot;</span></code>: the aggregated sweeper with cycle breaking</p></li>
@@ -307,16 +308,16 @@ mesh, source, or groupset definitions.</p>
 </ul>
 </section>
 <section id="use-gpus">
-<h3><span class="section-number">11.3.9. </span><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code><a class="headerlink" href="#use-gpus" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.9. </span><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code><a class="headerlink" href="#use-gpus" title="Link to this heading"></a></h3>
 <p>This requests GPU acceleration where supported.</p>
 </section>
 <section id="time-dependent">
-<h3><span class="section-number">11.3.10. </span><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code><a class="headerlink" href="#time-dependent" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.10. </span><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code><a class="headerlink" href="#time-dependent" title="Link to this heading"></a></h3>
 <p>This puts the problem into time-dependent mode at construction time.</p>
 </section>
 </section>
 <section id="shared-lbs-interface">
-<h2><span class="section-number">11.4. </span>Shared LBS Interface<a class="headerlink" href="#shared-lbs-interface" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.4. </span>Shared LBS Interface<a class="headerlink" href="#shared-lbs-interface" title="Link to this heading"></a></h2>
 <p>Because <code class="xref py py-class docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code> derives from
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem</span></code></a>, it also exposes the common LBS problem
 methods such as:</p>
@@ -333,7 +334,7 @@ methods such as:</p>
 </ul>
 </section>
 <section id="problem-options">
-<h2><span class="section-number">11.5. </span>Problem Options<a class="headerlink" href="#problem-options" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.5. </span>Problem Options<a class="headerlink" href="#problem-options" title="Link to this heading"></a></h2>
 <p>The Python API exposes problem options through the constructor and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetOptions()</span></code>.</p>
 <p>The most important options for everyday use are:</p>
@@ -384,7 +385,7 @@ If a setting changes how the entire problem behaves rather than how one
 groupset behaves, it usually belongs here.</p>
 </div>
 <section id="setting-options-after-construction">
-<h3><span class="section-number">11.5.1. </span>Setting options after construction<a class="headerlink" href="#setting-options-after-construction" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.5.1. </span>Setting options after construction<a class="headerlink" href="#setting-options-after-construction" title="Link to this heading"></a></h3>
 <p>Problem options can also be changed after construction:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span>
     <span class="n">verbose_inner_iterations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -398,7 +399,7 @@ definition is reused.</p>
 </section>
 </section>
 <section id="id1">
-<h2><span class="section-number">11.6. </span><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code><a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.6. </span><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code><a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>The Python API exposes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;AAH&quot;</span></code></p></li>
@@ -441,9 +442,9 @@ problem.</p></li>
 </ul>
 </section>
 <section id="problem-modes">
-<h2><span class="section-number">11.7. </span>Problem Modes<a class="headerlink" href="#problem-modes" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.7. </span>Problem Modes<a class="headerlink" href="#problem-modes" title="Link to this heading"></a></h2>
 <section id="id2">
-<h3><span class="section-number">11.7.1. </span><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code><a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.7.1. </span><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code><a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p>If <code class="docutils literal notranslate"><span class="pre">time_dependent=True</span></code>, the problem starts in time-dependent mode.</p>
 <p>Important requirement:</p>
 <ul class="simple">
@@ -464,7 +465,7 @@ it belongs on the problem object and must be consistent with the solver used
 later.</p>
 </section>
 <section id="id3">
-<h3><span class="section-number">11.7.2. </span><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code><a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.7.2. </span><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code><a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code> requests GPU acceleration for supported sweep paths.</p>
 <p>Current restrictions:</p>
 <ul class="simple">
@@ -477,7 +478,7 @@ later.</p>
 already running correctly on the CPU.</p>
 </section>
 <section id="adjoint-mode">
-<h3><span class="section-number">11.7.3. </span>Adjoint Mode<a class="headerlink" href="#adjoint-mode" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.7.3. </span>Adjoint Mode<a class="headerlink" href="#adjoint-mode" title="Link to this heading"></a></h3>
 <p>Adjoint mode is controlled at the problem level because it changes the meaning
 of the transport problem itself, not just the iterative algorithm.</p>
 <p>It can be set at construction time through options or later with
@@ -487,7 +488,7 @@ deliberate about when they switch it on.</p>
 </section>
 </section>
 <section id="field-function-interface">
-<h2><span class="section-number">11.8. </span>Field-Function Interface<a class="headerlink" href="#field-function-interface" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.8. </span>Field-Function Interface<a class="headerlink" href="#field-function-interface" title="Link to this heading"></a></h2>
 <p>The problem object is also where users access transport outputs.</p>
 <p>The main field-function accessors are:</p>
 <ul class="simple">
@@ -510,7 +511,7 @@ function from the current state.</p>
 </div>
 </section>
 <section id="angular-flux-access">
-<h2><span class="section-number">11.9. </span>Angular-Flux Access<a class="headerlink" href="#angular-flux-access" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.9. </span>Angular-Flux Access<a class="headerlink" href="#angular-flux-access" title="Link to this heading"></a></h2>
 <p>The discrete-ordinates problem also exposes angular-flux data directly through
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPsi()</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">GetPsi()</span></code> returns a list of NumPy arrays copied from the current angular-
@@ -529,14 +530,14 @@ Only enable and use it when the calculation actually requires it.</p>
 </div>
 </section>
 <section id="balance-and-leakage">
-<h2><span class="section-number">11.10. </span>Balance and Leakage<a class="headerlink" href="#balance-and-leakage" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.10. </span>Balance and Leakage<a class="headerlink" href="#balance-and-leakage" title="Link to this heading"></a></h2>
 <p>The Cartesian discrete-ordinates problem exposes two important diagnostics:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalance()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></p></li>
 </ul>
 <section id="computebalance">
-<h3><span class="section-number">11.10.1. </span><code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code><a class="headerlink" href="#computebalance" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.10.1. </span><code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code><a class="headerlink" href="#computebalance" title="Link to this heading"></a></h3>
 <p>This computes the particle balance for the problem and returns a dictionary of
 balance terms.</p>
 <p>It is useful for:</p>
@@ -547,7 +548,7 @@ balance terms.</p>
 </ul>
 </section>
 <section id="computeleakage">
-<h3><span class="section-number">11.10.2. </span><code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code><a class="headerlink" href="#computeleakage" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.10.2. </span><code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code><a class="headerlink" href="#computeleakage" title="Link to this heading"></a></h3>
 <p>This computes boundary leakage and returns a dictionary mapping boundary names
 to group-wise NumPy arrays.</p>
 <p>Example:</p>
@@ -563,7 +564,7 @@ flux.</p>
 </section>
 </section>
 <section id="writing-and-reading-transport-state">
-<h2><span class="section-number">11.11. </span>Writing and Reading Transport State<a class="headerlink" href="#writing-and-reading-transport-state" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.11. </span>Writing and Reading Transport State<a class="headerlink" href="#writing-and-reading-transport-state" title="Link to this heading"></a></h2>
 <p>The problem object also exposes file-based state helpers such as:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">WriteFluxMoments()</span></code></p></li>
@@ -586,7 +587,7 @@ workflow explicitly wants to manage angular fluxes, but restart dumps also carry
 flux moments, time metadata, precursor state, and solver-specific restart data.</p>
 </section>
 <section id="updating-the-problem-in-place">
-<h2><span class="section-number">11.12. </span>Updating the Problem In Place<a class="headerlink" href="#updating-the-problem-in-place" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.12. </span>Updating the Problem In Place<a class="headerlink" href="#updating-the-problem-in-place" title="Link to this heading"></a></h2>
 <p>Several parts of the problem can be updated after construction.</p>
 <p>The most important methods are:</p>
 <ul class="simple">
@@ -598,7 +599,7 @@ flux moments, time metadata, precursor state, and solver-specific restart data.<
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetTimeDependentMode()</span></code></p></li>
 </ul>
 <section id="updating-a-problem-after-construction">
-<h3><span class="section-number">11.12.1. </span>Updating a Problem After Construction<a class="headerlink" href="#updating-a-problem-after-construction" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.12.1. </span>Updating a Problem After Construction<a class="headerlink" href="#updating-a-problem-after-construction" title="Link to this heading"></a></h3>
 <p>One of the strengths of the problem API is that major parts of the model can be
 replaced without rebuilding the entire problem object.</p>
 <p>Examples:</p>
@@ -625,7 +626,7 @@ replaced without rebuilding the entire problem object.</p>
 </section>
 </section>
 <section id="discreteordinatescurvilinearproblem">
-<h2><span class="section-number">11.13. </span>DiscreteOrdinatesCurvilinearProblem<a class="headerlink" href="#discreteordinatescurvilinearproblem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.13. </span>DiscreteOrdinatesCurvilinearProblem<a class="headerlink" href="#discreteordinatescurvilinearproblem" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a> is the
 curvilinear companion to the Cartesian problem class.</p>
 <p>It uses the same general construction pattern, but currently requires:</p>
@@ -654,7 +655,7 @@ problem.</p></li>
 </div>
 </section>
 <section id="typical-construction-patterns">
-<h2><span class="section-number">11.14. </span>Typical Construction Patterns<a class="headerlink" href="#typical-construction-patterns" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.14. </span>Typical Construction Patterns<a class="headerlink" href="#typical-construction-patterns" title="Link to this heading"></a></h2>
 <p>A few patterns show up repeatedly:</p>
 <ul class="simple">
 <li><p>source-driven steady-state problem plus <code class="docutils literal notranslate"><span class="pre">SteadyStateSourceSolver</span></code></p></li>
@@ -664,7 +665,7 @@ problem.</p></li>
 </ul>
 </section>
 <section id="practical-guidance">
-<h2><span class="section-number">11.15. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.15. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
 <p>As a rule:</p>
 <ul class="simple">
 <li><p>use <code class="xref py py-class docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code> unless the curvilinear class is
@@ -689,8 +690,8 @@ options.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="boundary_conditions_sources.html" class="btn btn-neutral float-left" title="10. Boundary Conditions and Sources" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="solvers.html" class="btn btn-neutral float-right" title="12. Solvers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="boundary_conditions_sources.html" class="btn btn-neutral float-left" title="11. Boundary Conditions and Sources" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="solvers.html" class="btn btn-neutral float-right" title="13. Solvers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

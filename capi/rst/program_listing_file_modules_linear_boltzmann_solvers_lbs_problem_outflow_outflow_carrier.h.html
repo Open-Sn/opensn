@@ -102,10 +102,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">OutflowBank</span><span class="p">;</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * GPU-side carrier for boundary-face outflow tally storage.</span>
+<span class="cm"> * GPU-side carrier for face outflow tally storage.</span>
 <span class="cm"> *</span>
 <span class="cm"> * The carrier mirrors the OutflowBank&#39;s contiguous host storage on the device and delegates</span>
-<span class="cm"> * boundary-face offset lookups to the bank.</span>
+<span class="cm"> * face offset lookups to the bank.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OutflowCarrier</span>
 <span class="p">{</span>
@@ -130,16 +130,19 @@
 <span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">GetDevicePtr</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">device_outflows_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Return the first group offset for a boundary face.</span>
+<span class="cm">   * Return the first group offset for a face.</span>
 <span class="cm">   * \param cell_local_idx Cell index local to the current process.</span>
 <span class="cm">   * \param face_idx Face index local to the cell.</span>
 <span class="cm">   * \return Offset of the face&#39;s first group value in device outflow storage.</span>
-<span class="cm">   * \throw std::out_of_range If the cell-face pair does not identify a boundary face.</span>
+<span class="cm">   * \throw std::out_of_range If the cell-face pair is not present.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetOffset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">face_idx</span><span class="p">);</span>
 
+<span class="w">  </span><span class="c1">/// Return whether a face has device outflow storage.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasOffset</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">face_idx</span><span class="p">);</span>
+
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Host-side owner of outflow values and boundary-face offsets.</span>
+<span class="w">  </span><span class="c1">/// Host-side owner of outflow values and face offsets.</span>
 <span class="w">  </span><span class="n">OutflowBank</span><span class="o">&amp;</span><span class="w"> </span><span class="n">bank_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Device mirror of the host outflow value array.</span>

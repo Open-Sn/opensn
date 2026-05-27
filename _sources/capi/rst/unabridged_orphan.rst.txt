@@ -180,6 +180,36 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_c_m_f_d_acceleration_1_1_balance_residual.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_m_f_d_coarse_cell.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_m_f_d_coarse_face.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_m_f_d_fine_face.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_cylindrical_spatial_weight_function.rst
 
 .. toctree::
@@ -966,6 +996,16 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_classic_richardson.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_c_m_f_d_acceleration.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_c_m_f_d_coarse_mesh.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2628,6 +2668,21 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_classic_richardson.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_acceleration.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_coarse_mesh.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h.rst
 
 .. toctree::
    :maxdepth: 1

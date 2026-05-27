@@ -14,6 +14,7 @@ OpenSn User Guide (Draft)
    Angular Quadratures <angular_quadratures>
    Groupsets <groupsets>
    Iterative Methods <iterative_methods>
+   CMFD Acceleration <cmfd_acceleration>
    Boundary Conditions and Sources <boundary_conditions_sources>
    Discrete-Ordinates Problems <discrete_ordinates_problems>
    Solvers <solvers>

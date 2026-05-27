@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_c_m_f_d_coarse_cell:
+
+Struct CMFDCoarseCell
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_coarse_mesh.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::CMFDCoarseCell
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

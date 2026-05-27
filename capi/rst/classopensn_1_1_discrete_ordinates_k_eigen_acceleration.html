@@ -101,6 +101,7 @@
 <section id="derived-types">
 <h3>Derived Types<a class="headerlink" href="#derived-types" title="Link to this heading"></a></h3>
 <ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::CMFDAcceleration</span></code> (<a class="reference internal" href="classopensn_1_1_c_m_f_d_acceleration.html#exhale-class-classopensn-1-1-c-m-f-d-acceleration"><span class="std std-ref">Class CMFDAcceleration</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::SCDSAAcceleration</span></code> (<a class="reference internal" href="classopensn_1_1_s_c_d_s_a_acceleration.html#exhale-class-classopensn-1-1-s-c-d-s-a-acceleration"><span class="std std-ref">Class SCDSAAcceleration</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::SMMAcceleration</span></code> (<a class="reference internal" href="classopensn_1_1_s_m_m_acceleration.html#exhale-class-classopensn-1-1-s-m-m-acceleration"><span class="std std-ref">Class SMMAcceleration</span></a>)</p></li>
 </ul>
@@ -112,7 +113,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn35DiscreteOrdinatesKEigenAccelerationE">
 <span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiscreteOrdinatesKEigenAcceleration</span></span></span><a class="headerlink" href="#_CPPv4N6opensn35DiscreteOrdinatesKEigenAccelerationE" title="Link to this definition"></a><br /></dt>
 <dd><p>Base class for LBS acceleration methods. </p>
-<p>Subclassed by <a class="reference internal" href="classopensn_1_1_s_c_d_s_a_acceleration.html#classopensn_1_1_s_c_d_s_a_acceleration"><span class="std std-ref">opensn::SCDSAAcceleration</span></a>, <a class="reference internal" href="classopensn_1_1_s_m_m_acceleration.html#classopensn_1_1_s_m_m_acceleration"><span class="std std-ref">opensn::SMMAcceleration</span></a></p>
+<p>Subclassed by <a class="reference internal" href="classopensn_1_1_c_m_f_d_acceleration.html#classopensn_1_1_c_m_f_d_acceleration"><span class="std std-ref">opensn::CMFDAcceleration</span></a>, <a class="reference internal" href="classopensn_1_1_s_c_d_s_a_acceleration.html#classopensn_1_1_s_c_d_s_a_acceleration"><span class="std std-ref">opensn::SCDSAAcceleration</span></a>, <a class="reference internal" href="classopensn_1_1_s_m_m_acceleration.html#classopensn_1_1_s_m_m_acceleration"><span class="std std-ref">opensn::SMMAcceleration</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -163,6 +164,20 @@
 <p>Must be overridden.</p>
 <p>Called by the owning solver at the end of the power iteration loop after transport is solved.</p>
 <p>Returns the k-eigenvalue from the acceleration solve. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration31AllowsPowerIterationConvergenceEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1ad2e1a133f5a6b8705e99a7c0dd5caa80"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AllowsPowerIterationConvergence</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration31AllowsPowerIterationConvergenceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return whether the most recent acceleration update permits the owning power iteration solver to declare convergence. </p>
+<p>Acceleration schemes can override this when a guarded or rejected update should force at least one additional transport iteration. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration32GetPowerIterationConvergenceInfoEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1aa068d0abca182d93fb171fe10667709f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetPowerIterationConvergenceInfo</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration32GetPowerIterationConvergenceInfoEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Optional compact convergence information appended to the owning power iteration status line. </p>
+<p>Acceleration schemes that gate convergence should expose the active gate here so users can tell why PI is still iterating. </p>
 </dd></dl>
 
 <dl class="cpp function">

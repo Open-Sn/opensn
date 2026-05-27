@@ -1,0 +1,74 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_acceleration.h:
+
+File cmfd_acceleration.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_acceleration.h``)
+-------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_acceleration.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``limits``
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``memory``
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_coarse_mesh.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h`)
+
+- ``petscksp.h``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``tuple``
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_balance_residual`
+
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics`
+
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics`
+
+- :ref:`exhale_class_classopensn_1_1_c_m_f_d_acceleration`
+

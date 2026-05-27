@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1003ac6b77f9886c19dfdfd94c977d46:
+
+Function opensn::CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem&, unsigned int, unsigned int, const CMFDCoarseMesh&, const std::vector<double>&)
+=======================================================================================================================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem&, unsigned int, unsigned int, const CMFDCoarseMesh&, const std::vector<double>&)
+   :project: opensn
