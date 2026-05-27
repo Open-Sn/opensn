@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/spmd_threadpool.h"
+#include <cstddef>
 #include <set>
 #include <unordered_map>
 
@@ -30,7 +31,7 @@ struct RuleValues
   int sign_of_omegay;
   int sign_of_omegaz;
   int azimuthal_order;
-  size_t set_index;
+  std::size_t set_index;
 
   explicit RuleValues(std::shared_ptr<AngleSet>& ref_as)
     : angle_set(ref_as),
@@ -78,7 +79,7 @@ private:
 
   std::vector<RuleValues> rule_values_;
 
-  /// Angle set dependencies (preceding sets) used by DOG scheduling.
+  /// Angle set dependencies (preceding sets) used by RZ scheduling.
   std::unordered_map<AngleSet*, std::set<AngleSet*>> preceding_angle_sets_;
 
   SPMD_ThreadPool pool_;
