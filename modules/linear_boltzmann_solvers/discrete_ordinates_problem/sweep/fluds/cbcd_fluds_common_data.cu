@@ -2,162 +2,201 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh/mesh.h"
-#include "caribou/main.hpp"
-#include <cinttypes>
-
-namespace crb = caribou;
+#include <algorithm>
+#include <cstddef>
+#include <limits>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <unordered_map>
 
 namespace opensn
 {
 
-void
-CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization& sdm)
+namespace
 {
-  const Mesh& grid = *(spds_.GetGrid());
+
+// Number of uint64 entries per flattened cell-index header: first face-node entry and count.
+inline constexpr std::size_t CBCD_CELL_INDEX_HEADER_ENTRIES = 2;
+
+} // namespace
+
+CBCD_FLUDSCommonData::CBCD_FLUDSCommonData(
+  const SPDS& spds,
+  const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
+  const SpatialDiscretization& sdm)
+  : FLUDSCommonData(spds, grid_nodal_mappings)
+{
+  const Mesh& grid = *spds_.GetGrid();
+  const auto& cbc_spds = dynamic_cast<const CBC_SPDS&>(spds_);
   const std::size_t num_local_cells = grid.GetLocalCellCount();
-  std::uint64_t total_face_nodes = 0;
-  for (const auto& cell : grid.GetLocalCells())
-    for (std::uint32_t f = 0; f < cell->faces.size(); ++f)
-      total_face_nodes += sdm.GetCellMapping(*cell).GetNumFaceNodes(f);
-  std::vector<std::size_t> cell_spatial_dof_offsets(num_local_cells);
-  std::size_t current_dof_offset = 0;
-  for (const auto& cell : grid.GetLocalCells())
+  const auto& face_orientations = spds_.GetCellFaceOrientations();
+
+  std::size_t num_face_nodes_total = 0;
+  for (const auto& cell_ptr : grid.GetLocalCells())
+    for (std::size_t f = 0; f < cell_ptr->faces.size(); ++f)
+      num_face_nodes_total += sdm.GetCellMapping(*cell_ptr).GetNumFaceNodes(f);
+  std::vector<std::uint64_t> node_indexes(CBCD_CELL_INDEX_HEADER_ENTRIES * num_local_cells +
+                                          num_face_nodes_total);
+  std::size_t next_node = CBCD_CELL_INDEX_HEADER_ENTRIES * num_local_cells;
+
+  cell_to_incoming_nonlocal_face_offsets_.assign(num_local_cells + 1, 0);
+  cell_to_outgoing_nonlocal_face_offsets_.assign(num_local_cells + 1, 0);
+
+  const auto PeerIndex =
+    [](std::unordered_map<int, std::uint32_t>& indices, std::vector<int>& partitions, int partition)
   {
-    cell_spatial_dof_offsets[cell->local_id] = current_dof_offset;
-    current_dof_offset += sdm.GetCellMapping(*cell).GetNumNodes();
-  }
-  const std::size_t offsets_size = 2 * num_local_cells;
-  const std::size_t total_size = offsets_size + total_face_nodes;
-  std::vector<std::uint64_t> local_map(total_size);
-  std::uint64_t* cell_offsets_ptr = local_map.data();
-  std::uint64_t* indices_ptr = local_map.data() + offsets_size;
-  std::uint64_t current_index_offset = offsets_size;
-  std::uint64_t local_indices_filled = 0;
-  // Iterate over cells to fill the map and populate metadata structures
-  for (const auto& cell : grid.GetLocalCells())
+    const auto [it, inserted] =
+      indices.try_emplace(partition, static_cast<std::uint32_t>(partitions.size()));
+    if (inserted)
+      partitions.push_back(partition);
+    return it->second;
+  };
+  std::unordered_map<int, std::uint32_t> source_indices;
+  std::unordered_map<int, std::uint32_t> destination_indices;
+
+  // Both peers order shared faces by the downwind cell's global ID and face index.
+  using FaceKey = std::tuple<std::uint32_t, std::uint64_t, unsigned int>;
+  struct IncomingFace
   {
-    cell_offsets_ptr[static_cast<std::size_t>(2) * cell->local_id] = current_index_offset;
-    std::uint64_t num_cell_nodes = 0;
-    for (std::size_t f = 0; f < cell->faces.size(); ++f)
+    FaceKey key;
+    CBCD_IncomingNonlocalFace face;
+  };
+  struct OutgoingFace
+  {
+    FaceKey key;
+    std::uint32_t face_index;
+  };
+  std::vector<IncomingFace> incoming_faces;
+  std::vector<OutgoingFace> outgoing_faces;
+
+  for (const auto& cell_ptr : grid.GetLocalCells())
+  {
+    const auto& cell = *cell_ptr;
+    const auto cell_local_id = static_cast<std::uint32_t>(cell.local_id);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto cell_node_begin = next_node;
+    std::uint32_t num_cell_incoming_faces = 0;
+    std::uint32_t num_cell_outgoing_faces = 0;
+    for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {
-      const CellFace& face = cell->faces[f];
-      const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell->local_id][f];
-      const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell->local_id][f];
-      const std::size_t num_face_nodes = sdm.GetCellMapping(*cell).GetNumFaceNodes(f);
-      const bool is_outgoing_face = (orientation == FaceOrientation::OUTGOING);
-      const bool is_incoming_face = (orientation == FaceOrientation::INCOMING);
-      const bool is_local_face = face.IsNeighborLocal(&grid);
-      const bool is_boundary_face = not face.has_neighbor;
+      const auto& face = cell.faces[f];
+      const auto orientation = face_orientations[cell_local_id][f];
+      const auto& face_node_mapping = grid_nodal_mappings_[cell_local_id][f].face_node_mapping_;
+      const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
+      auto* nodes = node_indexes.data() + next_node;
+      next_node += num_face_nodes;
 
-      if ((not is_local_face) and (not is_boundary_face))
+      if (orientation != FaceOrientation::INCOMING and orientation != FaceOrientation::OUTGOING)
       {
-        if (is_incoming_face)
-          ++num_incoming_nonlocal_faces_;
-        else if (is_outgoing_face)
-          ++num_outgoing_nonlocal_faces_;
+        std::fill_n(nodes, num_face_nodes, CBCD_NodeIndex().GetCoreValue());
+        continue;
       }
+      const bool outgoing = orientation == FaceOrientation::OUTGOING;
 
-      for (std::size_t fn = 0; fn < num_face_nodes; ++fn)
+      if (not face.has_neighbor)
       {
-        CBCD_NodeIndex node_index;
-
-        if (is_incoming_face)
+        auto& faces = outgoing ? outgoing_boundary_faces_ : incoming_boundary_faces_;
+        auto& num_nodes = outgoing ? num_outgoing_boundary_nodes_ : num_incoming_boundary_nodes_;
+        // Bound the total so each storage offset plus its face-node index stays representable.
+        const auto max_boundary_nodes = std::numeric_limits<std::uint32_t>::max();
+        if (num_nodes > max_boundary_nodes or num_face_nodes > max_boundary_nodes - num_nodes)
+          throw std::length_error(
+            "Device CBC: boundary-node offsets exceed their 32-bit range for " +
+            std::string(outgoing ? "outgoing" : "incoming") + " face " + std::to_string(f) +
+            " of cell " + std::to_string(cell.global_id) + " (local " +
+            std::to_string(cell.local_id) + ").");
+        faces.push_back({face.neighbor_id,
+                         cell_local_id,
+                         f,
+                         static_cast<std::uint32_t>(num_nodes),
+                         static_cast<std::uint16_t>(num_face_nodes)});
+        for (std::size_t fn = 0; fn < num_face_nodes; ++fn)
+          nodes[fn] = CBCD_NodeIndex(num_nodes++, outgoing).GetCoreValue();
+      }
+      else if (face.IsNeighborLocal(&grid))
+      {
+        const std::uint64_t slot_offset = cbc_spds.GetLocalFaceSlotNodeOffset(cell_local_id, f);
+        // The slot holds the face's values in the upwind cell's node order.
+        for (std::size_t fn = 0; fn < num_face_nodes; ++fn)
+          nodes[fn] =
+            CBCD_NodeIndex(slot_offset + (outgoing ? fn : face_node_mapping[fn]), outgoing, true)
+              .GetCoreValue();
+      }
+      else
+      {
+        const int partition = grid.GetGlobalCell(face.neighbor_id).partition_id;
+        if (outgoing)
         {
-          if (is_local_face)
-          {
-            std::uint32_t nbr_local_idx = face.GetNeighborLocalID(&grid);
-            std::uint32_t adj_cell_node = face_nodal_mapping.cell_node_mapping_[fn];
-            const std::uint64_t index = cell_spatial_dof_offsets[nbr_local_idx] + adj_cell_node;
-            node_index = CBCD_NodeIndex(index, is_outgoing_face, is_local_face);
-          }
-          else if (not is_boundary_face)
-          {
-            node_index =
-              CBCD_NodeIndex(num_incoming_nonlocal_nodes_, is_outgoing_face, is_local_face);
-            cell_to_incoming_nonlocal_nodes_[cell->local_id].emplace_back(
-              NonlocalNodeInfo{cell->local_id,
-                               cell->global_id,
-                               static_cast<unsigned int>(f),
-                               fn,
-                               face_nodal_mapping.face_node_mapping_[fn],
-                               static_cast<std::uint64_t>(num_incoming_nonlocal_nodes_)});
-            ++num_incoming_nonlocal_nodes_;
-          }
-          else
-          {
-            node_index = CBCD_NodeIndex(num_incoming_boundary_nodes_, is_outgoing_face);
-            incoming_boundary_node_map_.emplace_back(
-              BoundaryNodeInfo{cell->local_id,
-                               static_cast<unsigned int>(f),
-                               fn,
-                               static_cast<std::uint64_t>(num_incoming_boundary_nodes_),
-                               face.neighbor_id});
-            ++num_incoming_boundary_nodes_;
-          }
-        }
-        else if (is_outgoing_face)
-        {
-          if (is_local_face)
-          {
-            const int cell_node = sdm.GetCellMapping(*cell).MapFaceNode(f, fn);
-            const std::uint64_t index = cell_spatial_dof_offsets[cell->local_id] + cell_node;
-            node_index = CBCD_NodeIndex(index, is_outgoing_face, is_local_face);
-          }
-          else if (not is_boundary_face)
-          {
-            node_index =
-              CBCD_NodeIndex(num_outgoing_nonlocal_nodes_, is_outgoing_face, is_local_face);
-            cell_to_outgoing_nonlocal_nodes_[cell->local_id].emplace_back(
-              NonlocalNodeInfo{cell->local_id,
-                               cell->global_id,
-                               static_cast<unsigned int>(f),
-                               fn,
-                               face_nodal_mapping.face_node_mapping_[fn],
-                               static_cast<std::uint64_t>(num_outgoing_nonlocal_nodes_)});
-            ++num_outgoing_nonlocal_nodes_;
-          }
-          else
-          {
-            node_index = CBCD_NodeIndex(num_outgoing_boundary_nodes_, is_outgoing_face);
-            cell_to_outgoing_boundary_nodes_[cell->local_id].emplace_back(
-              BoundaryNodeInfo{cell->local_id,
-                               static_cast<unsigned int>(f),
-                               fn,
-                               static_cast<std::uint64_t>(num_outgoing_boundary_nodes_),
-                               face.neighbor_id});
-            ++num_outgoing_boundary_nodes_;
-          }
+          const auto destination =
+            PeerIndex(destination_indices, destination_partitions_, partition);
+          outgoing_faces.push_back(
+            {{destination,
+              face.neighbor_id,
+              static_cast<unsigned int>(grid_nodal_mappings_[cell_local_id][f].associated_face_)},
+             static_cast<std::uint32_t>(outgoing_nonlocal_faces_.size())});
+          outgoing_nonlocal_faces_.push_back(
+            {destination, 0, static_cast<std::uint16_t>(num_face_nodes)});
+          for (std::size_t fn = 0; fn < num_face_nodes; ++fn)
+            nodes[fn] =
+              CBCD_NodeIndex::Nonlocal(num_cell_outgoing_faces, face_node_mapping[fn], true)
+                .GetCoreValue();
+          ++num_cell_outgoing_faces;
         }
         else
         {
-          node_index = CBCD_NodeIndex();
+          const auto source = PeerIndex(source_indices, incoming_source_partitions_, partition);
+          const auto face_index =
+            cell_to_incoming_nonlocal_face_offsets_[cell_local_id] + num_cell_incoming_faces;
+          incoming_faces.push_back(
+            {{source, cell.global_id, f},
+             {face_index, cell_local_id, static_cast<std::uint16_t>(num_face_nodes)}});
+          num_incoming_nonlocal_nodes_ += num_face_nodes;
+          for (std::size_t fn = 0; fn < num_face_nodes; ++fn)
+            nodes[fn] = CBCD_NodeIndex::Nonlocal(num_cell_incoming_faces, fn, false).GetCoreValue();
+          ++num_cell_incoming_faces;
         }
-        indices_ptr[local_indices_filled++] = node_index.GetCoreValue();
       }
-      num_cell_nodes += num_face_nodes;
     }
-    cell_offsets_ptr[2 * cell->local_id + 1] = num_cell_nodes;
-    current_index_offset += num_cell_nodes;
+    node_indexes[CBCD_CELL_INDEX_HEADER_ENTRIES * std::size_t{cell_local_id}] = cell_node_begin;
+    node_indexes[CBCD_CELL_INDEX_HEADER_ENTRIES * std::size_t{cell_local_id} + 1] =
+      next_node - cell_node_begin;
+    cell_to_incoming_nonlocal_face_offsets_[cell_local_id + 1] =
+      cell_to_incoming_nonlocal_face_offsets_[cell_local_id] + num_cell_incoming_faces;
+    cell_to_outgoing_nonlocal_face_offsets_[cell_local_id + 1] =
+      cell_to_outgoing_nonlocal_face_offsets_[cell_local_id] + num_cell_outgoing_faces;
   }
-  if (local_map.empty())
-    return;
-  crb::HostVector<std::uint64_t> host_mem(local_map.begin(), local_map.end());
-  crb::DeviceMemory<std::uint64_t> device_mem(local_map.size());
-  crb::copy(device_mem, host_mem, host_mem.size());
-  device_cell_face_node_map_ = device_mem.release();
+
+  std::sort(incoming_faces.begin(),
+            incoming_faces.end(),
+            [](const IncomingFace& lhs, const IncomingFace& rhs) { return lhs.key < rhs.key; });
+  source_to_incoming_face_offsets_.assign(incoming_source_partitions_.size() + 1, 0);
+  incoming_nonlocal_faces_.reserve(incoming_faces.size());
+  for (const auto& incoming : incoming_faces)
+  {
+    ++source_to_incoming_face_offsets_[std::get<0>(incoming.key) + 1];
+    incoming_nonlocal_faces_.push_back(incoming.face);
+  }
+  for (std::size_t i = 0; i < incoming_source_partitions_.size(); ++i)
+    source_to_incoming_face_offsets_[i + 1] += source_to_incoming_face_offsets_[i];
+
+  std::sort(outgoing_faces.begin(),
+            outgoing_faces.end(),
+            [](const OutgoingFace& lhs, const OutgoingFace& rhs) { return lhs.key < rhs.key; });
+  std::vector<std::uint32_t> num_destination_faces(destination_partitions_.size(), 0);
+  for (const auto& outgoing : outgoing_faces)
+    outgoing_nonlocal_faces_[outgoing.face_index].destination_face_index =
+      num_destination_faces[std::get<0>(outgoing.key)]++;
+
+  if (not node_indexes.empty())
+  {
+    device_node_indexes_ = crb::DeviceMemory<std::uint64_t>(node_indexes.size());
+    crb::copy(device_node_indexes_, node_indexes, node_indexes.size());
+  }
 }
 
-void
-CBCD_FLUDSCommonData::DeallocateDeviceMemory()
-{
-  if (device_cell_face_node_map_ != nullptr)
-  {
-    crb::DeviceMemory<std::uint64_t> device_cell_face_node_map(device_cell_face_node_map_);
-    device_cell_face_node_map.reset();
-    device_cell_face_node_map_ = nullptr;
-  }
-}
 } // namespace opensn

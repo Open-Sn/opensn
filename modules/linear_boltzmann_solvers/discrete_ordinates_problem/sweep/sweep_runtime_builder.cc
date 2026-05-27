@@ -1357,7 +1357,9 @@ BuildSweepRuntime(const std::string& problem_name,
     if (sweep_type == "AAH")
       detail::BuildAAHGPUFludsCommonData(runtime, discretization, grid_nodal_mappings);
     else if (sweep_type == "CBC")
-      detail::BuildCBCGPUFludsCommonData(runtime, discretization, grid_nodal_mappings);
+      RunSweepSetupCollectively(
+        [&] { detail::BuildCBCGPUFludsCommonData(runtime, discretization, grid_nodal_mappings); },
+        "CBC");
   }
 
   return runtime;

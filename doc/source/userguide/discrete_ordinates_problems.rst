@@ -216,6 +216,17 @@ before the next starts, which serializes the small batches that form when angle
 sets become ready a few at a time on multiple ranks. More lanes help until the
 ready work no longer fills them. The option is ignored unless ``fused_aao_sweep=True``.
 
+GPU CBC sweep kernel
+--------------------
+
+For each groupset and rank, GPU CBC selects a specialized kernel when all
+local cells have the same number of degrees of freedom (DOFs) and that count
+is 2, 3, 4, 6, or 8. Other ranks use a kernel that handles every supported
+count. OpenSn logs the choice at verbosity 1 (``-v 1``).
+
+The kernels agree to round-off. With ``deterministic_sweeps``, repeated runs
+with the same setup remain bitwise reproducible.
+
 ``time_dependent``
 ------------------
 

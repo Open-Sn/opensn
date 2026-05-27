@@ -17,6 +17,8 @@ after the reorientation gives P1 moments of the wrong sign near the detector. Th
 reference for the adjoint uncollided path is the single-scatter integral of
 uncollided_adjoint_reciprocity.py.
 
+sweep_type selects AAH (default) or CBC. use_gpus=True accelerates only the collided solve.
+
 Checks:
   UncollidedAdjointTransposeMaxRelDiff: max |(-1)^ell phi_adj - phi_fwd^T| / max |phi_fwd^T| (0 to
     round-off).
@@ -68,6 +70,8 @@ POINT = (1.27, 1.61, 1.43)
 STRENGTH = [0.3, 1.0]
 NUM_GROUPS = 2
 NUM_MOMENTS = 4
+SWEEP_TYPE = globals().get("sweep_type", "AAH")
+USE_GPUS = globals().get("use_gpus", False)
 
 
 def remove(file_name):
@@ -146,6 +150,8 @@ def solve(grid, xs, adjoint, tag):
         ],
         xs_map=[{"block_ids": [0], "xs": xs}],
         uncollided_flux=file_name,
+        sweep_type=SWEEP_TYPE,
+        use_gpus=USE_GPUS,
         options={"adjoint": adjoint, "verbose_inner_iterations": False},
     )
     solver = SteadyStateSourceSolver(problem=problem)

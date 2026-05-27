@@ -2511,6 +2511,35 @@
     "outfileprefix": "transport_fixed_source_verification_cbc_gpu",
     "num_procs": 2,
     "requires_gpu": true,
+    "weight_class": "short",
+    "env": {"OPENSN_NUM_THREADS": "1"},
+    "args": [
+      "sweep_type=\"CBC\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "FSV_SLAB_IN_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ERR", "goldvalue": 0, "abs_tol": 5e-05},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_ARBITRARY_DIFF", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_1D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_3D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D_AGS", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_POINT_PROD_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_POINT_BALANCE", "goldvalue": 0, "abs_tol": 1e-08}
+    ]
+  },
+  {
+    "file": "transport_fixed_source_verification.py",
+    "comment": "Multiworker GPU CBC checks PWLD slab convergence, infinite-medium flux, boundary equivalence, and point-source balance.",
+    "outfileprefix": "transport_fixed_source_verification_cbc_gpu_threads4",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "weight_class": "short",
+    "env": {"OPENSN_NUM_THREADS": "4"},
     "args": [
       "sweep_type=\"CBC\"",
       "use_gpus=True"

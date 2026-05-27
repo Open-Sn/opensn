@@ -86,11 +86,8 @@ DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
 std::shared_ptr<FLUDS>
 DiscreteOrdinatesProblem::CreateCBCD_FLUDS(std::size_t num_groups,
                                            std::size_t num_angles,
-                                           std::size_t num_local_cells,
                                            const FLUDSCommonData& common_data,
-                                           const UnknownManager& psi_uk_man,
-                                           const SpatialDiscretization& sdm,
-                                           bool save_angular_flux)
+                                           const SpatialDiscretization& sdm)
 {
   throw std::runtime_error(
     "DiscreteOrdinatesProblem::CreateCBCD_FLUDS : OPENSN_WITH_CUDA not enabled.");
@@ -202,13 +199,8 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         std::shared_ptr<FLUDS> fluds;
         if (use_gpus_)
         {
-          fluds = CreateCBCD_FLUDS(gs_num_grps,
-                                   angle_indices.size(),
-                                   grid_->GetLocalCellCount(),
-                                   fluds_common_data,
-                                   groupset.psi_uk_man_,
-                                   *discretization_,
-                                   (not GetPsiNewLocal()[groupset.id].empty()));
+          fluds = CreateCBCD_FLUDS(
+            gs_num_grps, angle_indices.size(), fluds_common_data, *discretization_);
         }
         else
         {

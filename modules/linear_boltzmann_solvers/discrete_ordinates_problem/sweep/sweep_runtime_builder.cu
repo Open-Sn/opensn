@@ -66,31 +66,7 @@ BuildCBCGPUFludsCommonData(SweepRuntime& runtime,
                            const SpatialDiscretization& discretization,
                            const std::vector<CellFaceNodalMapping>& grid_nodal_mappings)
 {
-  struct WorkItem
-  {
-    std::shared_ptr<AngularQuadrature> quadrature;
-    std::shared_ptr<SPDS> spds;
-  };
-  std::vector<WorkItem> work;
-  for (const auto& quadrature : runtime.quadrature_order)
-  {
-    const auto& spds_list = runtime.quadrature_spds_map.at(quadrature);
-    for (const auto& spds : spds_list)
-      work.push_back({quadrature, spds});
-  }
-  if (work.empty())
-    return;
-
-  constexpr size_t nthreads = 1;
-  log.Log() << program_timer.GetTimeString() << " FLUDS construction: " << work.size()
-            << " angles (" << nthreads << " threads(s)).";
-  std::vector<std::unique_ptr<CBCD_FLUDSCommonData>> result(work.size());
-  for (size_t i = 0; i < work.size(); ++i)
-    result[i] =
-      std::make_unique<CBCD_FLUDSCommonData>(*work[i].spds, grid_nodal_mappings, discretization);
-  for (size_t i = 0; i < work.size(); ++i)
-    runtime.quadrature_fluds_commondata_map[work[i].quadrature].push_back(std::move(result[i]));
-  log.Log() << program_timer.GetTimeString() << " FLUDS construction done.";
+  BuildGPUFludsCommonData<CBCD_FLUDSCommonData>(runtime, discretization, grid_nodal_mappings);
 }
 
 } // namespace opensn::detail

@@ -104,6 +104,10 @@ Practical guidance:
   problem is steady-state or transient.
 * The batch system or manual GPU binding determines which GPU is associated
   with each MPI rank.
+* For each groupset, GPU CBC uses ``max(OPENSN_NUM_THREADS, 2) - 1`` sweep
+  workers per MPI rank, capped by the number of angle sets, plus one MPI
+  progress thread. Each sweep worker owns a GPU stream. The default
+  ``OPENSN_NUM_THREADS=1`` gives one sweep worker and one progress thread.
 
 .. note::
 
@@ -114,9 +118,10 @@ Practical guidance:
 GPU-aware MPI
 -------------
 
-With ``-DOPENSN_USE_GPU_AWARE_MPI=ON``, AAH sweeps on the GPU pass device
-buffers directly to MPI instead of copying them through host memory. The MPI
-library must support the GPU backend. CMake checks the library when it can:
+With ``-DOPENSN_USE_GPU_AWARE_MPI=ON``, GPU AAH and CBC pass device
+angular-flux buffers directly to MPI. The MPI library must support the GPU
+backend. With the option disabled, AAH stages fluxes through host memory and
+CBC uses mapped page-locked host memory. CMake's checks depend on the MPI library.
 
 * Cray MPICH: CMake links the GPU Transport Layer library (``libmpi_gtl_hsa``
   for HIP, ``libmpi_gtl_cuda`` for CUDA). Set ``MPICH_GPU_SUPPORT_ENABLED=1``

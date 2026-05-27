@@ -403,7 +403,8 @@ public:
    * Flag indicating if OpenSn is compiled with GPU-aware MPI.
    * This flag enables fast non-copy path for AAH sweep. Data are transferred between MPI ranks
    * without copied back from the host. This acceleration significantly reduces sweep time for
-   * intra-node GPU data transfers.
+   * intra-node GPU data transfers. Device CBC passes device flux buffers to GPU-aware MPI
+   * and uses mapped page-locked host buffers otherwise.
    * \note Memory error will be thrown when MPI library is not compiled with GPU support.
    */
   static constexpr bool use_gpu_aware_mpi =

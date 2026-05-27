@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/sweep_scheduler.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
@@ -65,6 +66,8 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
     pool_.Resize(angle_agg_.GetNumAngleSets());
     execution_order_.reserve(angle_agg_.GetNumAngleSets());
   }
+  else if (scheduler_type_ == SchedulingAlgorithm::ASYNC_FIFO)
+    pool_.Resize(CBCD_NumSweepWorkers(angle_agg_.GetNumAngleSets(), opensn_num_threads));
 
   // Initialize delayed upstream data
   for (auto& angset : angle_agg_)
