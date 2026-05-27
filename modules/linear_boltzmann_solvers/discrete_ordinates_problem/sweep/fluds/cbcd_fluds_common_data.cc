@@ -12,37 +12,34 @@ CBCD_FLUDSCommonData::CBCD_FLUDSCommonData(
   const SPDS& spds,
   const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
   const SpatialDiscretization& sdm)
-  : FLUDSCommonData(spds, grid_nodal_mappings),
-    num_incoming_boundary_nodes_(0),
-    num_outgoing_boundary_nodes_(0),
-    num_incoming_nonlocal_faces_(0),
-    num_incoming_nonlocal_nodes_(0),
-    num_outgoing_nonlocal_faces_(0),
-    num_outgoing_nonlocal_nodes_(0),
-    device_cell_face_node_map_(nullptr),
-    incoming_boundary_node_map_(),
-    cell_to_outgoing_boundary_nodes_(),
-    cell_to_incoming_nonlocal_nodes_(),
-    cell_to_outgoing_nonlocal_nodes_()
+  : FLUDSCommonData(spds, grid_nodal_mappings)
 {
-  CopyFlattenedNodeIndexToDevice(sdm);
+  BuildMetadataAndCopyNodeIndex(sdm);
 }
 
 CBCD_FLUDSCommonData::~CBCD_FLUDSCommonData()
 {
-  DeallocateDeviceMemory();
+  DeallocateDeviceNodeIndex();
 }
 
 #ifndef __OPENSN_WITH_GPU__
 void
-CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization& sdm)
+CBCD_FLUDSCommonData::BuildMetadataAndCopyNodeIndex(const SpatialDiscretization& sdm)
 {
 }
 
 void
-CBCD_FLUDSCommonData::DeallocateDeviceMemory()
+CBCD_FLUDSCommonData::DeallocateDeviceNodeIndex()
 {
 }
 #endif
+
+const IncomingNonlocalFace&
+CBCD_FLUDSCommonData::GetIncomingNonlocalFace(const std::uint32_t source_partition_index,
+                                              const std::uint32_t incoming_face_index) const
+{
+  const auto begin = source_to_incoming_face_offsets_[source_partition_index];
+  return incoming_nonlocal_faces_[incoming_face_indices_by_source_[begin + incoming_face_index]];
+}
 
 } // namespace opensn
