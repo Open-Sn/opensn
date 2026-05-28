@@ -243,6 +243,16 @@ Example:
    #include <string>
    #include <map>
 
+Lambdas
+~~~~~~~
+
+Named lambdas should use `Pascal` style.
+
+.. code-block:: c++
+
+   auto MyLambda = [](...) { ... };
+
+
 Command-line parameters
 -----------------------
 
