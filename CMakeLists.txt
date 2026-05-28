@@ -202,6 +202,12 @@ if(NOT ${PETSC_HAVE_PTSCOTCH} MATCHES 1)
   message(FATAL_ERROR "PETSc has not been configured with PTSCOTCH\n")
 endif()
 
+# Check PETSc includes support for SuperLU_DIST
+check_symbol_exists(PETSC_HAVE_SUPERLU_DIST "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_HAVE_SUPERLU_DIST)
+if(NOT ${PETSC_HAVE_SUPERLU_DIST} MATCHES 1 OR NOT PETSC_HAVE_SUPERLU_DIST)
+  message(FATAL_ERROR "PETSc has not been configured with SuperLU_DIST")
+endif()
+
 # Check PetscScalar is double
 check_symbol_exists(PETSC_USE_REAL_DOUBLE "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_USE_REAL_DOUBLE)
 if(NOT PETSC_USE_REAL_DOUBLE)
