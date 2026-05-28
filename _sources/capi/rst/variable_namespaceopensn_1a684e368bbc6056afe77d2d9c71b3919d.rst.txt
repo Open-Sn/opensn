@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a684e368bbc6056afe77d2d9c71b3919d:
+
+Variable opensn::FACE_ORIENTATION_TOLERANCE
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::FACE_ORIENTATION_TOLERANCE
+   :project: opensn

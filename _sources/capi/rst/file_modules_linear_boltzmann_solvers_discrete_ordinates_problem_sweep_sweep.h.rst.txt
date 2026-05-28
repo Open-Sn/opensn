@@ -90,3 +90,10 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a09c0dff065711e5f707227d9aca35e80`
 
+
+Variables
+---------
+
+
+- :ref:`exhale_variable_namespaceopensn_1a684e368bbc6056afe77d2d9c71b3919d`
+
