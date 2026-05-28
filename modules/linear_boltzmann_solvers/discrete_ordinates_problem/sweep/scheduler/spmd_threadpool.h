@@ -96,6 +96,7 @@ public:
       for (std::size_t i = 0; i < n; ++i)
         ++epoch_states_[i].request;
     }
+    cv_start_.notify_all();
     WaitAll();
   }
 
