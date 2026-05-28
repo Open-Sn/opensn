@@ -605,7 +605,7 @@ desired outer method and a power field is wanted for post processing.</p>
     <span class="n">l_div_tol</span><span class="o">=</span><span class="mf">1.0e6</span><span class="p">,</span>
     <span class="n">l_max_its</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
     <span class="n">l_gmres_restart_intvl</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">l_gmres_breakdown_tol</span><span class="o">=</span><span class="mf">1.0e6</span><span class="p">,</span>
+    <span class="n">l_gmres_breakdown_tol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
     <span class="n">reset_phi0</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">num_initial_power_iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
 <span class="p">)</span>
@@ -618,7 +618,9 @@ desired outer method and a power field is wanted for post processing.</p>
 <p>The nonlinear k-eigen solver has its own linear solver controls. These are
 separate from the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> used in the standard
 transport solve path. Groupset linear solver options are not used with the
-nonlinear k-eigen solver.</p>
+nonlinear k-eigen solver. Multiple groupsets are supported when the groupsets
+run without WGDSA/TGDSA. If WGDSA or TGDSA is enabled on any groupset, the
+nonlinear k-eigen solve must use a single groupset.</p>
 </div>
 </section>
 <section id="example-8-curvilinear-problem">

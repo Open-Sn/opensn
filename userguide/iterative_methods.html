@@ -787,6 +787,9 @@ problem</p></li>
 internal linear solves are controlled by the <code class="docutils literal notranslate"><span class="pre">l_*</span></code> parameters on
 <code class="docutils literal notranslate"><span class="pre">NonLinearKEigenSolver</span></code>, not by the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> or the
 groupset <code class="docutils literal notranslate"><span class="pre">l_*</span></code> settings.</p>
+<p>The nonlinear k-eigen solver supports multiple groupsets, but WGDSA/TGDSA
+preconditioning is currently restricted to single-groupset nonlinear k-eigen
+solves.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>This is different from the other solver paths discussed in this section.

@@ -468,6 +468,10 @@ AGS convergence before blaming the outer eigen method.</p></li>
 <ul class="simple">
 <li><p>remember that its internal linear-solver settings are solver-level controls,
 not the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> configuration</p></li>
+<li><p>multiple groupsets are supported, but WGDSA/TGDSA preconditioning is currently
+single-groupset only for nonlinear k-eigen solves</p></li>
+<li><p>PETSc convergence limits and failed convergence reasons are reported as solver
+statuses; invalid physical or numerical states are errors</p></li>
 </ul>
 </section>
 <section id="what-to-check-first-when-convergence-looks-bad">

@@ -98,6 +98,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id6">21.1. Constructor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id7">21.2. GPU support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groupsets-and-dsa">21.3. Groupsets and DSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#statuses-and-errors">21.4. Statuses and errors</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
@@ -899,6 +901,15 @@ nonlinear solve</p></li>
 <span class="nb">print</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">GetEigenvalue</span><span class="p">())</span>
 </pre></div>
 </div>
+</section>
+<section id="groupsets-and-dsa">
+<h2><span class="section-number">21.3. </span>Groupsets and DSA<a class="headerlink" href="#groupsets-and-dsa" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">NonLinearKEigenSolver</span></code> supports one or more groupsets. When multiple
+groupsets are present, the nonlinear residual operates over the full set of
+groupsets and the groupset-to-groupset coupling is part of the nonlinear solve.</p>
+<p>WGDSA and TGDSA preconditioning are currently supported only for single-groupset
+nonlinear k-eigen solves. A nonlinear k-eigen solve with multiple groupsets must
+run without groupset WGDSA/TGDSA enabled.</p>
 <p>Important distinction:</p>
 <ul class="simple">
 <li><p>this solver does <strong>not</strong> use the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> setting for
@@ -915,6 +926,18 @@ look first at the <code class="docutils literal notranslate"><span class="pre">n
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>, not at the groupset inner
 solver method.</p>
 </div>
+</section>
+<section id="statuses-and-errors">
+<h2><span class="section-number">21.4. </span>Statuses and errors<a class="headerlink" href="#statuses-and-errors" title="Link to this heading"></a></h2>
+<p>Like the other PETSc-backed transport solvers, this solver reports PETSc
+convergence reasons through its final status and log output. Iteration limits,
+function-evaluation limits, and failed PETSc convergence reasons are reported as
+solver statuses rather than exceptions.</p>
+<p>Invalid numerical states that are not valid solver iterates, such as
+non-positive or non-finite fission production in the initial or final state, are
+treated as errors. Invalid states encountered inside the SNES residual are
+reported to PETSc as function-domain errors so the PETSc line search can
+backtrack or terminate with the appropriate SNES reason.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The nonlinear solver’s internal GMRES controls have the same memory tradeoff

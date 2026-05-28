@@ -490,7 +490,7 @@ The nonlinear solver is configured through its own solver-level tolerances.
        l_div_tol=1.0e6,
        l_max_its=50,
        l_gmres_restart_intvl=30,
-       l_gmres_breakdown_tol=1.0e6,
+       l_gmres_breakdown_tol=0.1,
        reset_phi0=True,
        num_initial_power_iterations=2,
    )
@@ -502,7 +502,9 @@ The nonlinear solver is configured through its own solver-level tolerances.
    The nonlinear k-eigen solver has its own linear solver controls. These are
    separate from the groupset ``inner_linear_method`` used in the standard
    transport solve path. Groupset linear solver options are not used with the
-   nonlinear k-eigen solver.
+   nonlinear k-eigen solver. Multiple groupsets are supported when the groupsets
+   run without WGDSA/TGDSA. If WGDSA or TGDSA is enabled on any groupset, the
+   nonlinear k-eigen solve must use a single groupset.
 
 Example 8: Curvilinear Problem
 ==============================
