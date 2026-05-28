@@ -189,6 +189,9 @@
 <span class="w">  </span><span class="c1">/// Copies back only the scalar moments to a lbs primary flux vector.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ProjectBackPhi0</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">output</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Guard used by acceleration methods that are not stable with one AAH sweep.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckAAHSingleSweepStability</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// The associated DiscreteOrdinatesProblem problem</span>
 <span class="w">  </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span>
 
