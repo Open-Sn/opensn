@@ -563,7 +563,8 @@ AAH_FLUDSCommonData::DeSerializeCellInfo(std::vector<CompactCellView>& cell_view
   num_face_dofs = (*face_indices)[0];
   auto num_cells = (*face_indices)[1];
 
-  cell_views.resize(num_cells);
+  cell_views.clear();
+  cell_views.reserve(num_cells);
 
   int k = 2;
   int64_t last_cell = -1;

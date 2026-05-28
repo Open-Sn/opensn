@@ -136,7 +136,7 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
   const int comm_size = opensn::mpi_comm.size();
   std::vector<double> row(comm_size, 0.0);
 
-  constexpr double tolerance = 1.0e-16;
+  constexpr double tolerance = FACE_ORIENTATION_TOLERANCE;
 
   for (const auto& cell : grid_->local_cells)
   {
