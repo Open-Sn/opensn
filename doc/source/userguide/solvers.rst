@@ -800,6 +800,17 @@ Example:
    solver.Execute()
    print(solver.GetEigenvalue())
 
+Groupsets and DSA
+-----------------
+
+``NonLinearKEigenSolver`` supports one or more groupsets. When multiple
+groupsets are present, the nonlinear residual operates over the full set of
+groupsets and the groupset-to-groupset coupling is part of the nonlinear solve.
+
+WGDSA and TGDSA preconditioning are currently supported only for single-groupset
+nonlinear k-eigen solves. A nonlinear k-eigen solve with multiple groupsets must
+run without groupset WGDSA/TGDSA enabled.
+
 Important distinction:
 
 * this solver does **not** use the groupset ``inner_linear_method`` setting for
@@ -815,6 +826,20 @@ Important distinction:
    look first at the ``nl_*`` and ``l_*`` options on
    :py:class:`pyopensn.solver.NonLinearKEigenSolver`, not at the groupset inner
    solver method.
+
+Statuses and errors
+-------------------
+
+Like the other PETSc-backed transport solvers, this solver reports PETSc
+convergence reasons through its final status and log output. Iteration limits,
+function-evaluation limits, and failed PETSc convergence reasons are reported as
+solver statuses rather than exceptions.
+
+Invalid numerical states that are not valid solver iterates, such as
+non-positive or non-finite fission production in the initial or final state, are
+treated as errors. Invalid states encountered inside the SNES residual are
+reported to PETSc as function-domain errors so the PETSc line search can
+backtrack or terminate with the appropriate SNES reason.
 
 .. warning::
 

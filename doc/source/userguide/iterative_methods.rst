@@ -680,6 +680,10 @@ internal linear solves are controlled by the ``l_*`` parameters on
 ``NonLinearKEigenSolver``, not by the groupset ``inner_linear_method`` or the
 groupset ``l_*`` settings.
 
+The nonlinear k-eigen solver supports multiple groupsets, but WGDSA/TGDSA
+preconditioning is currently restricted to single-groupset nonlinear k-eigen
+solves.
+
 .. important::
 
    This is different from the other solver paths discussed in this section.

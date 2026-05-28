@@ -13,6 +13,7 @@
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <cmath>
 
 namespace opensn
 {
@@ -39,8 +40,8 @@ NonLinearKEigenSolver::GetInputParameters()
   params.AddOptionalParameter("l_rel_tol", 1.0e-8, "Linear relative tolerance");
   params.AddOptionalParameter("l_div_tol", 1.0e6, "Linear divergence tolerance");
   params.AddOptionalParameter("l_max_its", 50, "Linear maximum iterations");
-  params.AddOptionalParameter("l_gmres_restart_intvl", 30, "GMRes restart interval");
-  params.AddOptionalParameter("l_gmres_breakdown_tol", 1.0e6, "GMRes breakdown tolerance");
+  params.AddOptionalParameter("l_gmres_restart_intvl", 30, "GMRES restart interval");
+  params.AddOptionalParameter("l_gmres_breakdown_tol", 0.1, "GMRES breakdown tolerance");
   params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
   params.AddOptionalParameter("num_initial_power_iterations",
                               0,
@@ -121,8 +122,9 @@ NonLinearKEigenSolver::Execute()
   }
 
   const double production = ComputeFissionProduction(*do_problem_, do_problem_->GetPhiOldLocal());
-  OpenSnLogicalErrorIf(production == 0.0,
-                       GetName() + ": Initial guess has zero fission production.");
+  OpenSnLogicalErrorIf(production <= 0.0 or not std::isfinite(production),
+                       GetName() +
+                         ": Initial guess has non-positive or non-finite fission production.");
   const double normalization = initial_k_eff / production;
   LBSVecOps::ScalePhiVector(*do_problem_, PhiSTLOption::PHI_OLD, normalization);
   LBSVecOps::ScalePhiVector(*do_problem_, PhiSTLOption::PHI_NEW, normalization);
@@ -132,6 +134,8 @@ NonLinearKEigenSolver::Execute()
     nl_solver_.Setup();
   }
   nl_solver_.Solve();
+  if (not nl_solver_.IsConverged())
+    log.Log0Warning() << GetName() << ": Nonlinear solve failed to converge.";
 
   if (do_problem_->GetOptions().use_precursors)
   {

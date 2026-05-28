@@ -32,7 +32,7 @@ public:
   double l_div_tol = 1.0e6;
   int l_max_its = 100;
   int l_gmres_restart_intvl = 30;
-  double l_gmres_breakdown_tol = 1.0e6;
+  double l_gmres_breakdown_tol = 0.1;
 
 public:
   static InputParameters GetInputParameters();

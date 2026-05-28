@@ -343,6 +343,10 @@ For the nonlinear k-eigen solver in particular:
 
 * remember that its internal linear-solver settings are solver-level controls,
   not the groupset ``inner_linear_method`` configuration
+* multiple groupsets are supported, but WGDSA/TGDSA preconditioning is currently
+  single-groupset only for nonlinear k-eigen solves
+* PETSc convergence limits and failed convergence reasons are reported as solver
+  statuses; invalid physical or numerical states are errors
 
 What to Check First When Convergence Looks Bad
 ==============================================

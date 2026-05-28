@@ -9,6 +9,7 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include <petscsnes.h>
+#include <cmath>
 
 namespace opensn
 {
@@ -19,7 +20,7 @@ KEigenSNESMonitor(SNES snes, PetscInt iter, PetscReal rnorm, void* ctx)
   auto& residual_context = *static_cast<KResidualFunctionContext*>(ctx);
 
   double k_eff = residual_context.k_eff;
-  double reactivity = (k_eff - 1.0) / k_eff;
+  const bool valid_k_eff = k_eff != 0.0 and std::isfinite(k_eff);
 
   KSP ksp = nullptr;
   OpenSnPETScCall(SNESGetKSP(snes, &ksp));
@@ -31,7 +32,8 @@ KEigenSNESMonitor(SNES snes, PetscInt iter, PetscReal rnorm, void* ctx)
   out << "NLKE outer iteration = " << iter;
   AppendNumericField(out, "residual", rnorm, Scientific(6));
   AppendNumericField(out, "k_eff", k_eff, Fixed(7));
-  AppendNumericField(out, "rho_pcm", reactivity * 1.0e5, Fixed(2));
+  if (valid_k_eff)
+    AppendNumericField(out, "rho_pcm", ((k_eff - 1.0) / k_eff) * 1.0e5, Fixed(2));
   if (inner_status != IterationStatus::NONE)
   {
     out << FormatNestedStatusSummary("NLKE inners", inner_status);
