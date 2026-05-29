@@ -18,14 +18,13 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/solver_scheme.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/math/functions/function.h"
 #include "framework/data_types/allowable_range.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_linear_solver.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/classic_richardson.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/transient_source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
@@ -641,24 +640,17 @@ DiscreteOrdinatesProblem::RebuildBoundaryRuntimeData()
 void
 DiscreteOrdinatesProblem::InitializeSolverSchemes()
 {
-  ags_solver_.reset();
-  wgs_solvers_.clear();
-  wgs_contexts_.clear();
-  InitializeWGSContexts();
-  InitializeWGSSolvers();
-
-  ags_solver_ = std::make_shared<AGSLinearSolver>(*this, wgs_solvers_);
-  if (groupsets_.size() == 1)
-  {
-    ags_solver_->SetMaxIterations(1);
-    ags_solver_->SetVerbosity(false);
-  }
-  else
-  {
-    ags_solver_->SetMaxIterations(options_.max_ags_iterations);
-    ags_solver_->SetVerbosity(options_.verbose_inner_iterations);
-  }
-  ags_solver_->SetTolerance(options_.ags_tolerance);
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeSolverSchemes");
+  auto solver_scheme =
+    BuildSolvers(*this,
+                 active_set_source_function_,
+                 [this](LBSGroupset& groupset) { return SetSweepChunk(groupset); });
+  ags_solver_ = std::move(solver_scheme.ags_solver);
+  wgs_contexts_ = std::move(solver_scheme.wgs_contexts);
+  wgs_solvers_ = std::move(solver_scheme.wgs_solvers);
+  max_groupset_size_ = solver_scheme.max_groupset_size;
+  max_level_size_ = solver_scheme.max_level_size;
+  max_angleset_size_ = solver_scheme.max_angleset_size;
 }
 
 void
@@ -1092,74 +1084,9 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
 }
 
 void
-DiscreteOrdinatesProblem::InitializeWGSContexts()
-{
-
-  // Determine max size and number of matrices along sweep front
-  max_groupset_size_ = 0;
-  max_level_size_ = 0;
-  max_angleset_size_ = 0;
-  for (auto& groupset : groupsets_)
-  {
-    // Max groupset size
-    max_groupset_size_ = std::max(max_groupset_size_, groupset.GetNumGroups());
-
-    for (auto& angleset : *(groupset.angle_agg))
-    {
-      // Max level size
-      const auto& spds = angleset->GetSPDS();
-      const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
-      for (const auto& level : levelized_spls)
-        max_level_size_ = std::max(max_level_size_, level.size());
-
-      // Max angleset size
-      max_angleset_size_ = std::max(max_angleset_size_, angleset->GetAngleIndices().size());
-    }
-  }
-
-  wgs_contexts_.clear();
-  for (auto& groupset : groupsets_)
-  {
-    std::shared_ptr<SweepChunk> sweep_chunk = SetSweepChunk(groupset);
-    auto sweep_wgs_context_ptr = std::make_shared<SweepWGSContext>(
-      *this,
-      groupset,
-      active_set_source_function_,
-      APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,
-      APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES,
-      options_.verbose_inner_iterations,
-      sweep_chunk);
-    wgs_contexts_.push_back(sweep_wgs_context_ptr);
-  }
-}
-
-void
-DiscreteOrdinatesProblem::InitializeWGSSolvers()
-{
-
-  OpenSnLogicalErrorIf(wgs_contexts_.empty(),
-                       GetName() + ": Cannot initialize WGS solvers before WGS contexts.");
-  OpenSnLogicalErrorIf(wgs_contexts_.size() != groupsets_.size(),
-                       GetName() + ": WGS context count does not match groupset count.");
-
-  for (size_t gsid = 0; gsid < groupsets_.size(); ++gsid)
-  {
-    auto& groupset = groupsets_[gsid];
-    const auto& sweep_wgs_context_ptr = wgs_contexts_[gsid];
-    OpenSnLogicalErrorIf(not sweep_wgs_context_ptr, GetName() + ": Null WGS context.");
-    if (groupset.iterative_method == LinearSystemSolver::IterativeMethod::CLASSIC_RICHARDSON)
-    {
-      wgs_solvers_.push_back(std::make_shared<ClassicRichardson>(
-        sweep_wgs_context_ptr, options_.verbose_inner_iterations));
-    }
-    else
-      wgs_solvers_.push_back(std::make_shared<WGSLinearSolver>(sweep_wgs_context_ptr));
-  }
-}
-
-void
 DiscreteOrdinatesProblem::ReorientAdjointSolution()
 {
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ReorientAdjointSolution");
 
   for (const auto& groupset : groupsets_)
   {

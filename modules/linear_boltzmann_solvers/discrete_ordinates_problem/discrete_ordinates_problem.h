@@ -192,11 +192,6 @@ protected:
   void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }
   void ResetMode(SweepChunkMode target_mode);
 
-  void InitializeWGSContexts();
-
-  /// Initializes Within-GroupSet solvers.
-  void InitializeWGSSolvers();
-
   void InitializeBoundaryCarrier();
 
   /**
@@ -229,11 +224,6 @@ protected:
 
   /// Sets up the sweep chunk for the given discretization method.
   virtual std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset);
-
-  std::shared_ptr<SweepChunk> CreateSweepChunk(LBSGroupset& groupset)
-  {
-    return SetSweepChunk(groupset);
-  }
   /** @} */
 
   /**
