@@ -142,10 +142,10 @@ find_package(MPI REQUIRED)
 find_package(mpicpp-lite 2.6 REQUIRED)
 
 find_package(HDF5 REQUIRED COMPONENTS C HL)
-find_package(Boost CONFIG)
+find_package(Boost 1.86 CONFIG)
 if (NOT Boost_FOUND)
   message(STATUS "Boost CONFIG not found, falling back to module mode")
-  find_package(Boost REQUIRED)
+  find_package(Boost 1.86 REQUIRED)
 endif()
 
 find_package(VTK QUIET)
