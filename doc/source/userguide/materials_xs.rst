@@ -267,6 +267,82 @@ fission production. This is useful for advanced data preparation, but most user
 inputs are clearer when written in terms of ``SIGMA_F``, ``NU`` or
 ``NU_PROMPT``/``NU_DELAYED``, and the corresponding spectra.
 
+Delayed-Neutron Data and Solver Behavior
+----------------------------------------
+
+Delayed-neutron data has two related but distinct roles in OpenSn:
+
+* it contributes delayed fission production to steady-state and k-eigenvalue
+  fission sources, and
+* it can define precursor concentrations for time-dependent delayed-neutron
+  evolution.
+
+These roles are intentionally not controlled by the same switch. If a
+steady-state or k-eigenvalue problem uses cross sections with delayed-neutron
+data, OpenSn includes delayed neutron production in the steady fission source
+and in fission-production normalization. The steady eigenvalue therefore
+corresponds to total fission production, prompt plus delayed. This is true even
+when the problem option ``use_precursors`` is ``False``.
+
+For transient problems, ``use_precursors`` controls whether delayed-neutron
+precursor state is stored and evolved:
+
+* ``use_precursors=True`` uses prompt production and precursor-mediated delayed
+  production.
+* ``use_precursors=False`` is a prompt-only transient, even if the cross-section
+  file contains delayed-neutron data.
+
+This distinction is useful when a steady k-eigenvalue solve is used only to
+prepare an initial condition. The steady solve still computes the physical
+total-production eigenvalue, while a later transient can deliberately choose
+whether to evolve delayed precursors.
+
+.. important::
+
+   If delayed-neutron production is active and any fissionable material in the
+   active cross-section map contains precursor data, all fissionable materials
+   in that map must contain compatible precursor data. Non-fissionable materials
+   may have zero precursors. This avoids solving a mixed prompt-only and
+   prompt-plus-delayed fission model by accident.
+
+Native OpenSn delayed data is interpreted as follows:
+
+* ``NU_PROMPT`` and ``CHI_PROMPT`` define the prompt fission production matrix.
+* ``NU_DELAYED`` defines the delayed fission production by source group.
+* ``PRECURSOR_FRACTIONAL_YIELDS`` partitions delayed production among precursor
+  families. The yields are normalized when read.
+* ``CHI_DELAYED`` defines each precursor family's delayed emission spectrum by
+  destination group.
+* ``PRECURSOR_DECAY_CONSTANTS`` are used for precursor concentrations and
+  transient evolution; they do not change the steady-state k-eigenvalue.
+
+For steady-state source assembly and k-eigenvalue normalization, OpenSn adds the
+delayed term
+
+.. math::
+
+   \sum_j \chi_{d,j,g}\,\gamma_j\,\nu_{d,g'}\Sigma_{f,g'}\phi_{g'}
+
+to the prompt production matrix contribution. Here ``j`` is the precursor family
+index, ``g`` is the destination group, and ``g'`` is the source group.
+
+When the native ``PRODUCTION_MATRIX`` form is used, delayed-neutron precursor
+data is currently not allowed in the same material. This avoids ambiguity over
+whether the matrix already contains delayed production.
+
+Practical guidance:
+
+* For production steady-state or k-eigenvalue calculations, leave delayed data in
+  the XS when it exists. Do not disable ``use_precursors`` to try to remove
+  delayed neutron production from a steady eigenvalue solve.
+* For production transients with delayed-neutron physics, use
+  ``options={"use_precursors": True, "save_angular_flux": True}``.
+* Use ``use_precursors=False`` with delayed XS data only when a prompt-only
+  transient is intentional.
+* If a k-eigenvalue changes when delayed data is removed from the XS, that is
+  expected. If it changes only because ``use_precursors`` was toggled in a
+  steady-state calculation, that is not expected.
+
 Loading OpenMC MGXS Files
 =========================
 
@@ -314,7 +390,8 @@ Example:
    information, prompt and delayed fission production, precursor decay
    constants, and delayed emission spectra. If ``chi-prompt`` is not present,
    OpenSn falls back to the steady fission spectrum ``chi`` as the prompt
-   spectrum.
+   spectrum. Once imported, the same steady-state and transient delayed-neutron
+   behavior described above applies.
 
 What OpenMC Import Expects
 --------------------------

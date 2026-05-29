@@ -23,6 +23,8 @@ import math
 import os
 import sys
 
+ASSET_XS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../assets/xs"))
+
 if "opensn_console" not in globals():
     from mpi4py import MPI
     size = MPI.COMM_WORLD.size
@@ -113,7 +115,6 @@ if __name__ == "__main__":
             "use_precursors": True,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
-            "verbose_ags_iterations": False,
         },
     )
 
@@ -136,8 +137,14 @@ if __name__ == "__main__":
     k_eff = nu_sigma_f / sigma_a
     rho = (k_eff - 1.0) / k_eff
 
-    beta = read_precursor_value("xs1g_delayed_super_1p.cxs", "PRECURSOR_FRACTIONAL_YIELDS",)
-    lam = read_precursor_value("xs1g_delayed_super_1p.cxs", "PRECURSOR_DECAY_CONSTANTS",)
+    beta = read_precursor_value(
+        os.path.join(ASSET_XS_DIR, "xs1g_delayed_super_1p.cxs"),
+        "PRECURSOR_FRACTIONAL_YIELDS",
+    )
+    lam = read_precursor_value(
+        os.path.join(ASSET_XS_DIR, "xs1g_delayed_super_1p.cxs"),
+        "PRECURSOR_DECAY_CONSTANTS",
+    )
     Lambda = 1.0 / (v * nu_sigma_f)
 
     dt = 1.0e-2

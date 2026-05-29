@@ -943,6 +943,7 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
                                         const unsigned int col_coarse_group) const
 {
   const auto& F = xs.GetProductionMatrix();
+  const bool include_delayed_production = UseDelayedNeutronProduction(do_problem_);
   const bool has_flux = not fine_coarse_phi.empty();
   const auto fine_offset = coarse_cell.local_id * num_groups_;
   double numerator = 0.0;
@@ -953,7 +954,11 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
     const double phi = has_flux ? fine_coarse_phi[fine_offset + gp] : 1.0;
     denominator += phi;
     for (unsigned int g = FineGroupBegin(row_coarse_group); g < FineGroupEnd(row_coarse_group); ++g)
+    {
       numerator += F[g][gp] * phi;
+      if (include_delayed_production)
+        numerator += ComputeDelayedFissionProduction(xs, g, gp) * phi;
+    }
   }
   if (std::fabs(denominator) <= 1.0e-30)
   {
@@ -965,7 +970,11 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
       denominator += 1.0;
       for (unsigned int g = FineGroupBegin(row_coarse_group); g < FineGroupEnd(row_coarse_group);
            ++g)
+      {
         numerator += F[g][gp];
+        if (include_delayed_production)
+          numerator += ComputeDelayedFissionProduction(xs, g, gp);
+      }
     }
   }
   return numerator / denominator;
