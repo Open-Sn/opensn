@@ -570,6 +570,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_solver_scheme.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_source_flags.rst
 
 .. toctree::
@@ -3393,6 +3398,11 @@ Files
    :maxdepth: 1
 
    file_modules_solver.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_solver_scheme.h.rst
 
 .. toctree::
    :maxdepth: 1

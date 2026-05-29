@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a45093feece0959be2b7efc220a91f80d:
+
+Function opensn::BuildSolvers
+=============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_solver_scheme.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::BuildSolvers(DiscreteOrdinatesProblem&, const SetSourceFunction&, const SweepChunkFactory&)
+   :project: opensn

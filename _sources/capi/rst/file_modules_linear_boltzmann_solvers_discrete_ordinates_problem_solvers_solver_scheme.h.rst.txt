@@ -1,0 +1,74 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_solver_scheme.h:
+
+File solver_scheme.h
+====================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/solver_scheme.h``)
+----------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_solver_scheme.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstddef``
+
+- ``functional``
+
+- ``memory``
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_flags.h`)
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_solver_scheme`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a45093feece0959be2b7efc220a91f80d`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_namespaceopensn_1a0771bf570639d0d589493415608d3750`
+

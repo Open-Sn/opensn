@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_solver_scheme:
+
+Struct SolverScheme
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_solvers_solver_scheme.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SolverScheme
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:
