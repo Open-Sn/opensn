@@ -1185,13 +1185,15 @@ WrapLBS(py::module& slv)
           - write_restart_time_interval: int, default=0
             (must be 0 or >=30)
           - use_precursors: bool, default=True
-            Enable delayed-neutron precursor treatment. This is treated as user intent and remains
-            active across later ``SetXSMap`` calls, even if the current XS map temporarily contains
-            no precursor-bearing material. When XS maps are swapped, existing precursor
+            Enable delayed-neutron precursor storage and transient precursor evolution. Steady-state
+            fission sources include delayed neutron production whenever the active XS map contains
+            delayed data, independent of this option. This option is treated as user intent and
+            remains active across later ``SetXSMap`` calls, even if the current XS map temporarily
+            contains no precursor-bearing material. When XS maps are swapped, existing precursor
             concentrations are remapped by cell and precursor-family index; new families start at
-            zero and removed families are discarded. If any fissionable material in the active map
-            has precursor data and ``use_precursors=True``, all fissionable materials in that map
-            must have precursor data. Non-fissionable materials may have zero precursors.
+            zero and removed families are discarded. If delayed-neutron production is active and any
+            fissionable material in the active map has precursor data, all fissionable materials in
+            that map must have precursor data. Non-fissionable materials may have zero precursors.
           - use_source_moments: bool, default=False
             Use the problem's source moments as the fixed source instead of its
             volumetric and point sources. Provide them (e.g. with ``ReadSourceMoments``)
@@ -1751,11 +1753,12 @@ WrapLBS(py::module& slv)
               ``.restart.h5`` to this stem.
           - write_restart_time_interval: int, default=0
           - use_precursors: bool, default=True
-            Enable delayed-neutron precursor treatment. This remains active across later
-            ``SetXSMap`` calls, even if the current map temporarily has no precursor-bearing
-            material. When XS maps change, precursor concentrations are remapped by cell and
-            precursor-family index; newly introduced families start at zero and removed families
-            are discarded.
+            Enable delayed-neutron precursor storage and transient precursor evolution. Steady-state
+            fission sources include delayed neutron production whenever the active XS map contains
+            delayed data, independent of this option. This remains active across later ``SetXSMap``
+            calls, even if the current map temporarily has no precursor-bearing material. When XS
+            maps change, precursor concentrations are remapped by cell and precursor-family index;
+            newly introduced families start at zero and removed families are discarded.
           - use_source_moments: bool, default=False
             Use the problem's source moments as the fixed source instead of its
             volumetric and point sources. Provide them (e.g. with ``ReadSourceMoments``)

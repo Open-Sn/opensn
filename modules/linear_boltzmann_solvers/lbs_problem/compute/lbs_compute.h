@@ -9,6 +9,15 @@ namespace opensn
 {
 
 class LBSProblem;
+class MultiGroupXS;
+
+/// Returns true when delayed neutron production contributes to transport sources.
+bool UseDelayedNeutronProduction(const LBSProblem& lbs_problem);
+
+/// Computes the delayed fission production from a source group to a destination group.
+double ComputeDelayedFissionProduction(const MultiGroupXS& xs,
+                                       unsigned int to_group,
+                                       unsigned int from_group);
 
 /**
  * Compute the total fission production in the problem.
