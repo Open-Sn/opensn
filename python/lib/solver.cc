@@ -727,6 +727,13 @@ WrapLBS(py::module& slv)
               Verbose WGDSA output.
           - wgdsa_petsc_options: str, default=''
               PETSc options string for the WGDSA solver.
+          - wgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
+              WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve below
+              ``wgdsa_direct_solve_threshold`` global unknowns and an iterative solve
+              otherwise. ``petsc_options`` lets ``wgdsa_petsc_options`` control the
+              PETSc KSP/PC setup.
+          - wgdsa_direct_solve_threshold: int, default=20000
+              Maximum global WGDSA diffusion unknown count for the automatic direct solve.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
@@ -737,6 +744,13 @@ WrapLBS(py::module& slv)
               Verbose TGDSA output.
           - tgdsa_petsc_options: str, default=''
               PETSc options string for the TGDSA solver.
+          - tgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
+              TGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve below
+              ``tgdsa_direct_solve_threshold`` global unknowns and an iterative solve
+              otherwise. ``petsc_options`` lets ``tgdsa_petsc_options`` control the
+              PETSc KSP/PC setup.
+          - tgdsa_direct_solve_threshold: int, default=20000
+              Maximum global TGDSA diffusion unknown count for the automatic direct solve.
     xs_map : List[Dict], default=[]
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:
           - block_ids: List[int] (required)
@@ -1214,6 +1228,13 @@ WrapLBS(py::module& slv)
               Verbose WGDSA output.
           - wgdsa_petsc_options: str, default=''
               PETSc options string for the WGDSA solver.
+          - wgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
+              WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve below
+              ``wgdsa_direct_solve_threshold`` global unknowns and an iterative solve
+              otherwise. ``petsc_options`` lets ``wgdsa_petsc_options`` control the
+              PETSc KSP/PC setup.
+          - wgdsa_direct_solve_threshold: int, default=20000
+              Maximum global WGDSA diffusion unknown count for the automatic direct solve.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
@@ -1223,6 +1244,14 @@ WrapLBS(py::module& slv)
           - tgdsa_verbose: bool, default=False
               Verbose TGDSA output.
           - tgdsa_petsc_options: str, default=''
+              PETSc options string for the TGDSA solver.
+          - tgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
+              TGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve below
+              ``tgdsa_direct_solve_threshold`` global unknowns and an iterative solve
+              otherwise. ``petsc_options`` lets ``tgdsa_petsc_options`` control the
+              PETSc KSP/PC setup.
+          - tgdsa_direct_solve_threshold: int, default=20000
+              Maximum global TGDSA diffusion unknown count for the automatic direct solve.
     xs_map : list of dict
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:
           - block_ids: List[int] (required)
@@ -2135,7 +2164,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         iterations.
     coarse_solver_policy: str, default="auto"
         Developer/debug. Coarse solver policy. Valid choices are:
-            - 'auto' : PETSc preonly+LU below ``direct_coarse_solve_threshold``
+            - 'auto' : PETSc preonly+LU below ``coarse_direct_solve_threshold``
               global unknowns, GMRES+Jacobi otherwise
             - 'direct' : PETSc preonly+LU
             - 'iterative' : GMRES+Jacobi
@@ -2144,7 +2173,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         The skipped correction uses the unaccelerated transport update for that power
         iteration; after repeated skipped corrections, CMFD returns the raw transport
         k update so that power iteration can continue to move.
-    direct_coarse_solve_threshold: int, default=20000
+    coarse_direct_solve_threshold: int, default=20000
         Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
         solves when ``coarse_solver_policy="auto"``. Larger values make ``"auto"`` use
         direct solves for larger coarse systems; choose values based on available host

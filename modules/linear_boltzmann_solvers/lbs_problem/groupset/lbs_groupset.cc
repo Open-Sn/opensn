@@ -58,6 +58,16 @@ LBSGroupset::GetInputParameters()
   params.AddOptionalParameter(
     "wgdsa_l_abs_tol", 1.0e-4, "Within-group DSA linear absolute tolerance");
   params.AddOptionalParameter("wgdsa_l_max_its", 30, "Within-group DSA linear maximum iterations");
+  params.AddOptionalParameter("wgdsa_solver_policy",
+                              "auto",
+                              "Within-group DSA diffusion solver policy. auto uses a serial "
+                              "direct PETSc LU solve below wgdsa_direct_solve_threshold global "
+                              "unknowns and iterative CG/BoomerAMG otherwise. direct, iterative, "
+                              "and petsc_options force a specific path.");
+  params.AddOptionalParameter("wgdsa_direct_solve_threshold",
+                              20000,
+                              "Maximum global unknown count for the automatic WGDSA direct PETSc "
+                              "LU path.");
   params.AddOptionalParameter(
     "wgdsa_verbose", false, "If true, WGDSA routines will print verbosely");
   params.AddOptionalParameter("wgdsa_petsc_options", "", "PETSc options to pass to WGDSA solver");
@@ -67,6 +77,16 @@ LBSGroupset::GetInputParameters()
     "apply_tgdsa", false, "Flag to turn on Two-Grid Acceleration for this groupset");
   params.AddOptionalParameter("tgdsa_l_abs_tol", 1.0e-4, "Two-Grid DSA linear absolute tolerance");
   params.AddOptionalParameter("tgdsa_l_max_its", 30, "Two-Grid DSA linear maximum iterations");
+  params.AddOptionalParameter("tgdsa_solver_policy",
+                              "auto",
+                              "Two-grid DSA diffusion solver policy. auto uses a serial direct "
+                              "PETSc LU solve below tgdsa_direct_solve_threshold global unknowns "
+                              "and iterative CG/BoomerAMG otherwise. direct, iterative, and "
+                              "petsc_options force a specific path.");
+  params.AddOptionalParameter("tgdsa_direct_solve_threshold",
+                              20000,
+                              "Maximum global unknown count for the automatic TGDSA direct PETSc "
+                              "LU path.");
   params.AddOptionalParameter(
     "tgdsa_verbose", false, "If true, TGDSA routines will print verbosely");
   params.AddOptionalParameter("tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
@@ -82,6 +102,14 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange(
+    "wgdsa_solver_policy",
+    AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
+  params.ConstrainParameterRange(
+    "tgdsa_solver_policy",
+    AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
+  params.ConstrainParameterRange("wgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange("tgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
 
   return params;
 }
@@ -111,6 +139,10 @@ LBSGroupset::Init(int aid)
   tgdsa_max_iters = 30;
   wgdsa_tol = 1.0e-4;
   tgdsa_tol = 1.0e-4;
+  wgdsa_solver_policy = "auto";
+  tgdsa_solver_policy = "auto";
+  wgdsa_direct_solve_threshold = 20000;
+  tgdsa_direct_solve_threshold = 20000;
   wgdsa_verbose = false;
   tgdsa_verbose = false;
   wgdsa_solver = nullptr;
@@ -184,6 +216,11 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
 
   wgdsa_max_iters = params.GetParamValue<unsigned int>("wgdsa_l_max_its");
   tgdsa_max_iters = params.GetParamValue<unsigned int>("tgdsa_l_max_its");
+
+  wgdsa_solver_policy = params.GetParamValue<std::string>("wgdsa_solver_policy");
+  tgdsa_solver_policy = params.GetParamValue<std::string>("tgdsa_solver_policy");
+  wgdsa_direct_solve_threshold = params.GetParamValue<unsigned int>("wgdsa_direct_solve_threshold");
+  tgdsa_direct_solve_threshold = params.GetParamValue<unsigned int>("tgdsa_direct_solve_threshold");
 
   wgdsa_verbose = params.GetParamValue<bool>("wgdsa_verbose");
   tgdsa_verbose = params.GetParamValue<bool>("tgdsa_verbose");

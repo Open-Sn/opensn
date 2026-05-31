@@ -37,11 +37,15 @@ The main groupset fields exposed in the Python API are:
 * ``wgdsa_l_max_its``
 * ``wgdsa_verbose``
 * ``wgdsa_petsc_options``
+* ``wgdsa_solver_policy``
+* ``wgdsa_direct_solve_threshold``
 * ``apply_tgdsa``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
 * ``tgdsa_verbose``
 * ``tgdsa_petsc_options``
+* ``tgdsa_solver_policy``
+* ``tgdsa_direct_solve_threshold``
 
 The simplest valid pattern is one groupset covering all groups:
 
@@ -303,10 +307,14 @@ with associated controls:
 * ``wgdsa_l_max_its``
 * ``wgdsa_verbose``
 * ``wgdsa_petsc_options``
+* ``wgdsa_solver_policy``
+* ``wgdsa_direct_solve_threshold``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
 * ``tgdsa_verbose``
 * ``tgdsa_petsc_options``
+* ``tgdsa_solver_policy``
+* ``tgdsa_direct_solve_threshold``
 
 ``apply_wgdsa``
 ~~~~~~~~~~~~~~~
@@ -329,6 +337,15 @@ The main WGDSA controls are:
 * ``wgdsa_l_max_its``
 * ``wgdsa_verbose``
 * ``wgdsa_petsc_options``
+* ``wgdsa_solver_policy``
+* ``wgdsa_direct_solve_threshold``
+
+``wgdsa_solver_policy`` controls the PETSc solver setup for the WGDSA diffusion
+correction. ``"auto"`` uses a direct PETSc LU solve when the global WGDSA
+diffusion unknown count is at or below ``wgdsa_direct_solve_threshold`` and an
+iterative solve otherwise. ``"direct"`` and ``"iterative"`` force those paths,
+and ``"petsc_options"`` lets ``wgdsa_petsc_options`` define the KSP/PC setup.
+The default threshold is ``20000`` global unknowns.
 
 ``apply_tgdsa``
 ~~~~~~~~~~~~~~~
@@ -349,6 +366,12 @@ The main TGDSA controls are:
 * ``tgdsa_l_max_its``
 * ``tgdsa_verbose``
 * ``tgdsa_petsc_options``
+* ``tgdsa_solver_policy``
+* ``tgdsa_direct_solve_threshold``
+
+``tgdsa_solver_policy`` and ``tgdsa_direct_solve_threshold`` have the same
+meaning for the TGDSA diffusion correction solve that the corresponding WGDSA
+options have for WGDSA. The default threshold is ``20000`` global unknowns.
 
 When to think about DSA
 ~~~~~~~~~~~~~~~~~~~~~~~

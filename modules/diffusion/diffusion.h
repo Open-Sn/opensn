@@ -33,6 +33,8 @@ public:
     bool verbose = false;
     /// For debugging only (very expensive)
     bool perform_symmetry_check = false;
+    std::string solver_policy = "auto";
+    PetscInt direct_solve_threshold = 20000;
     std::string additional_options_string;
     double penalty_factor = 4.0;
   } options;
@@ -122,6 +124,7 @@ protected:
 
   Mat A_ = nullptr;
   Vec rhs_ = nullptr;
+  Vec x_ = nullptr;
   KSP ksp_ = nullptr;
 
   const bool requires_ghosts_;

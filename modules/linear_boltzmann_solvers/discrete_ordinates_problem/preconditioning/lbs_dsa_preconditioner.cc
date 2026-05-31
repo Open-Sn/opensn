@@ -10,6 +10,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "caliper/cali.h"
+#include <vector>
 
 namespace opensn
 {

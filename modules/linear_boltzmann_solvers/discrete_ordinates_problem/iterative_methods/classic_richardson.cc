@@ -18,6 +18,7 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <memory>
+#include <vector>
 
 namespace opensn
 {
