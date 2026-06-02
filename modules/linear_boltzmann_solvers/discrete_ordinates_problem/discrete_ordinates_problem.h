@@ -267,7 +267,6 @@ protected:
   std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::unique_ptr<FLUDSCommonData>>>
     quadrature_fluds_commondata_map_;
 
-  std::vector<int> verbose_sweep_angles_;
   const std::string sweep_type_;
   /** @} */
 
@@ -295,9 +294,6 @@ protected:
   std::size_t max_angleset_size_ = 0;
   /// Max group-set size.
   unsigned int max_groupset_size_ = 0;
-
-  std::shared_ptr<GridFaceHistogram> grid_face_histogram_ = nullptr;
-
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<std::vector<double>> psi_old_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
@@ -325,7 +321,6 @@ private:
   std::vector<double>
   ComputeAngularFieldFunctionData(size_t groupset_id, unsigned int group, size_t angle) const;
 
-  void CreateAAHD_FLUDSCommonData();
   void UpdateAAHD_FLUDSCommonDataWithBoundary();
   std::shared_ptr<FLUDS> CreateAAHD_FLUDS(unsigned int num_groups,
                                           std::size_t num_angles,
@@ -341,7 +336,6 @@ private:
                       const MPICommunicatorSet& in_comm_set);
   std::shared_ptr<SweepChunk> CreateAAHD_SweepChunk(LBSGroupset& groupset);
 
-  void CreateCBCD_FLUDSCommonData();
   std::shared_ptr<FLUDS> CreateCBCD_FLUDS(std::size_t num_groups,
                                           std::size_t num_angles,
                                           std::size_t num_local_cells,
@@ -359,16 +353,6 @@ private:
                       std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                       const MPICommunicatorSet& in_comm_set);
   std::shared_ptr<SweepChunk> CreateCBCDSweepChunk(LBSGroupset& groupset);
-
-  /**
-   * This routine groups angle-indices to groups sharing the same sweep ordering. It also takes
-   * geometry into account.
-   */
-  std::pair<UniqueSOGroupings, DirIDToSOMap>
-  AssociateSOsAndDirections(std::shared_ptr<MeshContinuum> grid,
-                            const AngularQuadrature& quadrature,
-                            AngleAggregationType agg_type,
-                            GeometryType lbs_geo_type);
 
   void UpdateAngularFluxStorage();
   void UpdateAngularFluxFieldFunction(FieldFunctionGridBased& ff,
