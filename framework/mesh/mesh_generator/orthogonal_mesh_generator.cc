@@ -638,7 +638,7 @@ OrthogonalMeshGenerator::Execute()
     for (const auto vid : raw_cell->vertex_ids)
       vertices_needed.push_back(vid);
 
-    grid_ptr->cells.PushBack(SetupCell(*raw_cell, cell_gid, local_cell_pids.at(cell_gid)));
+    grid_ptr->AddGlobalCell(SetupCell(*raw_cell, cell_gid, local_cell_pids.at(cell_gid)));
   }
 
   SortUnique(vertices_needed);

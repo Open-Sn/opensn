@@ -139,6 +139,12 @@ public:
   size_t GhostCellCount() const { return global_cell_id_to_nonlocal_id_map_.size(); }
 
   /**
+   * Adds a new cell to the appropriate category (local or ghost).
+   * @param new_cell The cell to add.
+   */
+  void AddGlobalCell(std::shared_ptr<Cell> new_cell);
+
+  /**
    * Returns the cell global ids of all ghost cells. These are cells that neighbors to this
    * partition's cells but are on a different partition.
    */
