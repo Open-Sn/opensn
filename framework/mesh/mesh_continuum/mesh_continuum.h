@@ -145,6 +145,13 @@ public:
   std::vector<uint64_t> GetGhostGlobalIDs() const;
 
   /**
+   * Returns the local storage address of a ghost cell. If the ghost is not truly a ghost then -1 is
+   * returned, but is wasteful and therefore the user of this function should implement code to
+   * prevent it.
+   */
+  uint64_t GetGhostLocalID(uint64_t cell_global_index) const;
+
+  /**
    * Populates a face histogram.
    *
    * \param master_tolerance Multiple histograms will only be attempted
