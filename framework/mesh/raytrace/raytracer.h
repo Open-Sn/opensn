@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/data_types/vector3.h"
 
