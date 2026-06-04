@@ -148,7 +148,7 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
       for (const auto vid : cell->vertex_ids)
         grid_ptr->vertices.Insert(vid, input_umesh->GetVertices()[vid]);
 
-      grid_ptr->cells.PushBack(std::move(cell));
+      grid_ptr->AddGlobalCell(std::move(cell));
     }
     ++cell_global_id;
   } // for raw_cell

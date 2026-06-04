@@ -15,12 +15,6 @@ class GlobalCellHandler
   friend class MeshContinuum;
 
 public:
-  /**
-   * Adds a new cell to the appropriate category (local or ghost).
-   * @param new_cell The cell to add.
-   */
-  void PushBack(std::shared_ptr<Cell> new_cell);
-
   /// Returns a reference to a cell given its global cell index.
   Cell& operator[](uint64_t cell_global_index);
 

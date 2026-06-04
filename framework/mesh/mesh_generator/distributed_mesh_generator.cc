@@ -291,7 +291,7 @@ DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
   for (const auto& [pidgid, raw_cell] : cells)
   {
     const auto& [cell_pid, cell_global_id] = pidgid;
-    grid_ptr->cells.PushBack(SetupCell(raw_cell, cell_global_id, cell_pid));
+    grid_ptr->AddGlobalCell(SetupCell(raw_cell, cell_global_id, cell_pid));
   }
 
   grid_ptr->SetDimension(mesh_info.dimension);
