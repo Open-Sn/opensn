@@ -166,7 +166,7 @@ WrapMesh(py::module& mesh)
         }
       }
       // change ghost cells
-      std::vector<std::uint64_t> ghost_ids = self.cells.GetGhostGlobalIDs();
+      std::vector<std::uint64_t> ghost_ids = self.GetGhostGlobalIDs();
       for (std::uint64_t ghost_id : ghost_ids)
       {
         Cell& cell = self.cells[ghost_id];

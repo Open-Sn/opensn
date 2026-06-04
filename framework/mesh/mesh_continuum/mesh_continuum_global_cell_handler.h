@@ -27,15 +27,6 @@ public:
   /// Returns a const reference to a cell given its global cell index.
   const Cell& operator[](uint64_t cell_global_index) const;
 
-  /// Returns the the total number of ghost cells
-  size_t GhostCellCount() const { return global_to_ghost_map_.size(); }
-
-  /**
-   * Returns the cell global ids of all ghost cells. These are cells that neighbors to this
-   * partition's cells but are on a different partition.
-   */
-  std::vector<uint64_t> GetGhostGlobalIDs() const;
-
   /**
    * Returns the local storage address of a ghost cell. If the ghost is not truly a ghost then -1 is
    * returned, but is wasteful and therefore the user of this function should implement code to

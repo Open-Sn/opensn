@@ -136,7 +136,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
 
   // If the point source lies on a partition boundary, ghost cells must be
   // added to the total volume.
-  auto ghost_global_ids = grid->cells.GetGhostGlobalIDs();
+  auto ghost_global_ids = grid->GetGhostGlobalIDs();
   for (uint64_t global_id : ghost_global_ids)
   {
     const auto& nbr_cell = grid->cells[global_id];

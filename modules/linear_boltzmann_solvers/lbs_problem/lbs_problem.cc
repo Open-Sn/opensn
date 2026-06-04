@@ -925,7 +925,7 @@ LBSProblem::InitializeMaterials()
         (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
       ++invalid_mat_cell_count;
   }
-  const auto& ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
+  const auto& ghost_cell_ids = grid_->GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
     const auto& cell = grid_->cells[cell_id];
@@ -1040,7 +1040,7 @@ LBSProblem::ComputeUnitIntegrals()
     unit_cell_matrices_[cell.local_id] =
       ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
 
-  const auto ghost_ids = grid_->cells.GetGhostGlobalIDs();
+  const auto ghost_ids = grid_->GetGhostGlobalIDs();
   for (auto ghost_id : ghost_ids)
     unit_ghost_cell_matrices_[ghost_id] =
       ComputeUnitCellIntegrals(sdm, grid_->cells[ghost_id], grid_->GetCoordinateSystem());

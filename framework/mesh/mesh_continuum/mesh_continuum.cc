@@ -134,7 +134,7 @@ MeshContinuum::ComputeGeometricInfo()
   for (auto& cell : local_cells)
     cell.ComputeGeometricInfo(this);
 
-  for (const auto& ghost_id : cells.GetGhostGlobalIDs())
+  for (const auto& ghost_id : GetGhostGlobalIDs())
     cells[ghost_id].ComputeGeometricInfo(this);
 }
 
@@ -236,6 +236,18 @@ MeshContinuum::SetOrthogonalBoundaries()
 
   mpi_comm.barrier();
   log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
+}
+
+std::vector<uint64_t>
+MeshContinuum::GetGhostGlobalIDs() const
+{
+  std::vector<uint64_t> ids;
+  ids.reserve(GhostCellCount());
+
+  for (const auto& cell : ghost_cells_)
+    ids.push_back(cell->global_id);
+
+  return ids;
 }
 
 std::shared_ptr<GridFaceHistogram>
@@ -627,7 +639,7 @@ MeshContinuum::SetUniformBlockID(const unsigned int blk_id)
   for (auto& cell : local_cells)
     cell.block_id = blk_id;
 
-  const auto& ghost_ids = cells.GetGhostGlobalIDs();
+  const auto& ghost_ids = GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
     cells[ghost_id].block_id = blk_id;
 
@@ -651,7 +663,7 @@ MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol,
     }
   }
 
-  const auto& ghost_ids = cells.GetGhostGlobalIDs();
+  const auto& ghost_ids = GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = cells[ghost_id];
