@@ -54,7 +54,7 @@ jobs:
           build/test/opensn-unit
       - name: upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nightly-logs-build-${{ matrix.tag }}
           path: ${{ runner.temp }}/logs/*_log.txt
@@ -88,7 +88,7 @@ jobs:
             --run-log "$RUNNER_TEMP/logs/nightly_native_${{ matrix.tag }}_log.txt"
       - name: upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nightly-logs-native-${{ matrix.tag }}
           path: ${{ runner.temp }}/logs/*_log.txt
@@ -122,7 +122,7 @@ jobs:
             --run-log "$RUNNER_TEMP/logs/nightly_cuda_${{ matrix.tag }}_log.txt"
       - name: upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nightly-logs-cuda-${{ matrix.tag }}
           path: ${{ runner.temp }}/logs/*_log.txt
@@ -149,7 +149,7 @@ jobs:
             --run-log "$RUNNER_TEMP/logs/nightly_sanitize_log.txt"
       - name: upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nightly-logs-sanitize
           path: ${{ runner.temp }}/logs/*_log.txt

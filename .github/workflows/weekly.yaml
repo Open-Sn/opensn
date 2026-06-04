@@ -29,7 +29,7 @@ jobs:
           build/test/opensn-unit
       - name: upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: weekly-logs
           path: ${{ runner.temp }}/logs/*_log.txt
