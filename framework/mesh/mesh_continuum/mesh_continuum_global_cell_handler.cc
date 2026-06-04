@@ -54,16 +54,4 @@ GlobalCellHandler::operator[](uint64_t cell_global_index) const
                           " not found.");
 }
 
-uint64_t
-GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
-{
-  auto foreign_location = global_to_ghost_map_.find(cell_global_index);
-
-  if (foreign_location != global_to_ghost_map_.end())
-    return foreign_location->second;
-
-  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
-                          " not found.");
-}
-
 } // namespace opensn

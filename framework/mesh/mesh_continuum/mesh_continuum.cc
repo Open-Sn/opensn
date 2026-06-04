@@ -250,6 +250,18 @@ MeshContinuum::GetGhostGlobalIDs() const
   return ids;
 }
 
+uint64_t
+MeshContinuum::GetGhostLocalID(uint64_t cell_global_index) const
+{
+  auto foreign_location = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
+
+  if (foreign_location != global_cell_id_to_nonlocal_id_map_.end())
+    return foreign_location->second;
+
+  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
+                          " not found.");
+}
+
 std::shared_ptr<GridFaceHistogram>
 MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_tolerance) const
 {
