@@ -135,6 +135,15 @@ public:
   /// Defines the standard x/y/z min/max boundaries.
   void SetOrthogonalBoundaries();
 
+  /// Returns the the total number of ghost cells
+  size_t GhostCellCount() const { return global_cell_id_to_nonlocal_id_map_.size(); }
+
+  /**
+   * Returns the cell global ids of all ghost cells. These are cells that neighbors to this
+   * partition's cells but are on a different partition.
+   */
+  std::vector<uint64_t> GetGhostGlobalIDs() const;
+
   /**
    * Populates a face histogram.
    *
@@ -245,6 +254,7 @@ private:
   std::vector<std::shared_ptr<Cell>> ghost_cells_;
 
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
+  /// Global to ghost ID map
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
 
 public:

@@ -281,8 +281,8 @@ MeshGenerator::ComputeAndPrintStats(const std::shared_ptr<MeshContinuum>& grid)
   mpi_comm.all_reduce(num_local_cells, min_num_local_cells, mpi::op::min<size_t>());
 
   const size_t avg_num_local_cells = num_global_cells / mpi_comm.size();
-  const size_t num_local_ghosts = grid->cells.GhostCellCount();
-  const double local_ghost_to_local_cell_ratio =
+  const size_t num_local_ghosts = grid->GhostCellCount();
+  const auto local_ghost_to_local_cell_ratio =
     static_cast<double>(num_local_ghosts) / static_cast<double>(num_local_cells);
 
   double average_ghost_ratio = 0.0;
