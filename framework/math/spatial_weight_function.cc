@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/spatial_weight_function.h"
-#include "framework/mesh/mesh.h"
 #include <stdexcept>
 
 namespace opensn

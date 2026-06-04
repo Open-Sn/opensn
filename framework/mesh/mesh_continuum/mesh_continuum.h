@@ -4,13 +4,13 @@
 #pragma once
 
 #include "framework/data_types/ndarray.h"
-#include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h"
 #include "framework/math/geometry.h"
 #include <memory>
 #include <array>
+#include <cstddef>
 
 namespace opensn
 {
@@ -18,6 +18,61 @@ class MPICommunicatorSet;
 class GridFaceHistogram;
 class MeshGenerator;
 class LogicalVolume;
+
+constexpr std::string_view
+ToString(CoordinateSystemType type) noexcept
+{
+  switch (type)
+  {
+    case CoordinateSystemType::UNDEFINED:
+      return "UNDEFINED";
+    case CoordinateSystemType::CARTESIAN:
+      return "CARTESIAN";
+    case CoordinateSystemType::CYLINDRICAL:
+      return "CYLINDRICAL";
+    case CoordinateSystemType::SPHERICAL:
+      return "SPHERICAL";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+enum MeshType : int
+{
+  ORTHOGONAL,
+  UNSTRUCTURED
+};
+
+constexpr std::string_view
+ToString(MeshType type) noexcept
+{
+  switch (type)
+  {
+    case ORTHOGONAL:
+      return "UNDEFINED";
+    case UNSTRUCTURED:
+      return "CARTESIAN";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+enum BoundaryID : int
+{
+  XMIN = 0,
+  XMAX = 1,
+  YMIN = 2,
+  YMAX = 3,
+  ZMIN = 4,
+  ZMAX = 5
+};
+
+struct OrthoMeshAttributes
+{
+  size_t Nx = 0;
+  size_t Ny = 0;
+  size_t Nz = 0;
+};
 
 /// Encapsulates all the necessary information required to fully define a computational domain.
 class MeshContinuum

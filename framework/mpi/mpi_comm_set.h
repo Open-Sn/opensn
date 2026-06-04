@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 
