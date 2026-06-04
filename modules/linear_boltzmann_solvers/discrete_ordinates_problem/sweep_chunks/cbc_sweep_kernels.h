@@ -5,7 +5,7 @@
 
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"

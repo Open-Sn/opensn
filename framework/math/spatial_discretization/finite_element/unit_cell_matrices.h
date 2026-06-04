@@ -6,7 +6,7 @@
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector3.h"
 #include "framework/math/geometry.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 
 namespace opensn
