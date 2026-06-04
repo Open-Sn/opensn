@@ -27,13 +27,6 @@ public:
   /// Returns a const reference to a cell given its global cell index.
   const Cell& operator[](uint64_t cell_global_index) const;
 
-  /**
-   * Returns the local storage address of a ghost cell. If the ghost is not truly a ghost then -1 is
-   * returned, but is wasteful and therefore the user of this function should implement code to
-   * prevent it.
-   */
-  uint64_t GetGhostLocalID(uint64_t cell_global_index) const;
-
 private:
   explicit GlobalCellHandler(std::vector<std::shared_ptr<Cell>>& native_cells,
                              std::vector<std::shared_ptr<Cell>>& foreign_cells,
