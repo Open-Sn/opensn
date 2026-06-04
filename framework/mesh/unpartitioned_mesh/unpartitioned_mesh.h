@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include <map>
 #include <array>
