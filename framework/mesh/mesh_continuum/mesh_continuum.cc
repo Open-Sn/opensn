@@ -167,6 +167,13 @@ MeshContinuum::MakeBoundaryID(const std::string& boundary_name) const
 }
 
 void
+MeshContinuum::SetBoundaryName(std::uint64_t id, const std::string& name)
+{
+  boundary_id_map_[id] = name;
+  boundary_name_map_[name] = id;
+}
+
+void
 MeshContinuum::SetOrthogonalBoundaries()
 {
   log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
@@ -194,8 +201,7 @@ MeshContinuum::SetOrthogonalBoundaries()
   for (auto& name : boundary_names)
   {
     uint64_t bndry_id = MakeBoundaryID(name);
-    GetBoundaryIDMap()[bndry_id] = name;
-    GetBoundaryNameMap()[name] = bndry_id;
+    SetBoundaryName(bndry_id, name);
   }
 
   const Vector3 ihat(1.0, 0.0, 0.0);
@@ -675,8 +681,7 @@ MeshContinuum::SetUniformBoundaryID(const std::string& boundary_name)
       face.neighbor_id = bndry_id;
     }
   }
-  GetBoundaryIDMap()[bndry_id] = boundary_name;
-  GetBoundaryNameMap()[boundary_name] = bndry_id;
+  SetBoundaryName(bndry_id, boundary_name);
 }
 
 void
@@ -685,8 +690,6 @@ MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
                                               const bool sense)
 {
   // Check if name already has id
-  auto& grid_bndry_id_map = GetBoundaryIDMap();
-  auto& grid_bndry_name_map = GetBoundaryNameMap();
   uint64_t bndry_id = MakeBoundaryID(boundary_name);
 
   // Loop over cells
@@ -708,10 +711,9 @@ MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
   int global_num_faces_modified = 0;
   mpi_comm.all_reduce(num_faces_modified, global_num_faces_modified, mpi::op::sum<int>());
 
-  if (global_num_faces_modified > 0 and grid_bndry_id_map.count(bndry_id) == 0)
+  if (global_num_faces_modified > 0 and boundary_id_map_.count(bndry_id) == 0)
   {
-    grid_bndry_id_map[bndry_id] = boundary_name;
-    grid_bndry_name_map[boundary_name] = bndry_id;
+    SetBoundaryName(bndry_id, boundary_name);
   }
 }
 

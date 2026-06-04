@@ -365,9 +365,8 @@ std::shared_ptr<MeshContinuum>
 SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 {
   auto grid_ptr = MeshContinuum::New();
-  grid_ptr->GetBoundaryIDMap() = mesh_info.boundary_id_map;
   for (auto& [id, name] : mesh_info.boundary_id_map)
-    grid_ptr->GetBoundaryNameMap()[name] = id;
+    grid_ptr->SetBoundaryName(id, name);
 
   auto& cells = mesh_info.cells;
   auto& vertices = mesh_info.vertices;

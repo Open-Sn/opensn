@@ -69,6 +69,14 @@ public:
    */
   uint64_t MakeBoundaryID(const std::string& boundary_name) const;
 
+  /**
+   * Associate boundary name with a boundary ID
+   *
+   * \param id Boundary ID
+   * \param name Boundary name to associate with ``id``
+   */
+  void SetBoundaryName(std::uint64_t id, const std::string& name);
+
   /// Defines the standard x/y/z min/max boundaries.
   void SetOrthogonalBoundaries();
 
