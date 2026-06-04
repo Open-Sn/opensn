@@ -49,7 +49,7 @@ PieceWiseLinearContinuous::OrderNodes()
 
   // Now we add the partitions associated with the
   // ghost cells.
-  const auto ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid_->GetGhostGlobalIDs();
   for (const uint64_t ghost_id : ghost_cell_ids)
   {
     const auto& ghost_cell = grid_->cells[ghost_id];

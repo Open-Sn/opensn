@@ -71,7 +71,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   // Collect ghost cell ids needing block addresses
   std::map<int, std::vector<uint64_t>> ghost_cell_ids_consolidated;
 
-  for (uint64_t global_id : grid_->cells.GetGhostGlobalIDs())
+  for (uint64_t global_id : grid_->GetGhostGlobalIDs())
   {
     const auto& cell = grid_->cells[global_id];
     const int locI = cell.partition_id;

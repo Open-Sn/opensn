@@ -54,18 +54,6 @@ GlobalCellHandler::operator[](uint64_t cell_global_index) const
                           " not found.");
 }
 
-std::vector<uint64_t>
-GlobalCellHandler::GetGhostGlobalIDs() const
-{
-  std::vector<uint64_t> ids;
-  ids.reserve(GhostCellCount());
-
-  for (auto& cell : ghost_cells_ref_)
-    ids.push_back(cell->global_id);
-
-  return ids;
-}
-
 uint64_t
 GlobalCellHandler::GetGhostLocalID(uint64_t cell_global_index) const
 {
