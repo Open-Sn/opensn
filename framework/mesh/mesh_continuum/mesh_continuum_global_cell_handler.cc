@@ -8,22 +8,6 @@
 namespace opensn
 {
 
-void
-GlobalCellHandler::PushBack(std::shared_ptr<Cell> new_cell)
-{
-  if (new_cell->partition_id == opensn::mpi_comm.rank())
-  {
-    new_cell->local_id = local_cells_ref_.size();
-    local_cells_ref_.push_back(std::move(new_cell));
-    global_to_local_map_[local_cells_ref_.back()->global_id] = local_cells_ref_.size() - 1;
-  }
-  else
-  {
-    ghost_cells_ref_.push_back(std::move(new_cell));
-    global_to_ghost_map_[ghost_cells_ref_.back()->global_id] = ghost_cells_ref_.size() - 1;
-  }
-}
-
 Cell&
 GlobalCellHandler::operator[](uint64_t cell_global_index)
 {
