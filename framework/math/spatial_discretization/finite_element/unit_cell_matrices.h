@@ -8,7 +8,6 @@
 #include "framework/math/geometry.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh.h"
 
 namespace opensn
 {
