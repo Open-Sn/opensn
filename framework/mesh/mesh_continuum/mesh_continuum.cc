@@ -238,6 +238,22 @@ MeshContinuum::SetOrthogonalBoundaries()
   log.Log() << program_timer.GetTimeString() << " Done setting orthogonal boundaries.";
 }
 
+void
+MeshContinuum::AddGlobalCell(std::shared_ptr<Cell> new_cell)
+{
+  if (new_cell->partition_id == opensn::mpi_comm.rank())
+  {
+    new_cell->local_id = local_cells_.size();
+    local_cells_.push_back(std::move(new_cell));
+    global_cell_id_to_local_id_map_[local_cells_.back()->global_id] = local_cells_.size() - 1;
+  }
+  else
+  {
+    ghost_cells_.push_back(std::move(new_cell));
+    global_cell_id_to_nonlocal_id_map_[ghost_cells_.back()->global_id] = ghost_cells_.size() - 1;
+  }
+}
+
 std::vector<uint64_t>
 MeshContinuum::GetGhostGlobalIDs() const
 {
