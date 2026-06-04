@@ -280,9 +280,8 @@ std::shared_ptr<MeshContinuum>
 DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
 {
   auto grid_ptr = MeshContinuum::New();
-  grid_ptr->GetBoundaryIDMap() = mesh_info.boundary_id_map;
   for (auto& [id, name] : mesh_info.boundary_id_map)
-    grid_ptr->GetBoundaryNameMap()[name] = id;
+    grid_ptr->SetBoundaryName(id, name);
 
   auto& vertices = mesh_info.vertices;
   for (const auto& [vid, vertex] : vertices)
