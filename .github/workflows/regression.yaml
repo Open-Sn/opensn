@@ -53,7 +53,7 @@ jobs:
           mpirun -np 4 build/test/opensn-unit
       - name: upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: regression-logs-cpu
           path: ${{ runner.temp }}/logs/*_log.txt
@@ -78,7 +78,7 @@ jobs:
             --run-log "$RUNNER_TEMP/logs/regression_cuda_log.txt"
       - name: upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: regression-logs-cuda
           path: ${{ runner.temp }}/logs/*_log.txt
@@ -105,7 +105,7 @@ jobs:
             --run-log "$RUNNER_TEMP/logs/regression_hip_log.txt"
       - name: upload test logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: regression-logs-hip
           path: ${{ runner.temp }}/logs/*_log.txt
