@@ -8,7 +8,7 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/utils/caliper_scopes.h"
 #include "framework/utils/error.h"
 #include <memory>

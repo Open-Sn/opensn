@@ -6,7 +6,7 @@
 #include "framework/mesh/mesh_continuum/grid_face_histogram.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/mpi/mpi_comm_set.h"
 #include "framework/utils/timer.h"

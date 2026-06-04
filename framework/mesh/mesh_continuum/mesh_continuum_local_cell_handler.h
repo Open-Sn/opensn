@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include <cassert>
 
 namespace opensn
