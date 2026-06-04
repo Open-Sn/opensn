@@ -8,7 +8,6 @@
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/cell/cell.h"
-#include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
 #include <petscksp.h>
 #include <cassert>

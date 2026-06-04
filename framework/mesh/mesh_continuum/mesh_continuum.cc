@@ -3,7 +3,6 @@
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-#include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/grid_face_histogram.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
