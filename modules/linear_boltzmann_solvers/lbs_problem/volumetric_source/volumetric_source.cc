@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/math/functions/function.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/logging/log.h"
