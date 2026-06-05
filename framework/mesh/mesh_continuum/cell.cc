@@ -64,7 +64,7 @@ CellFace::IsNeighborLocal(const MeshContinuum* grid) const
   if (grid->GetNumPartitions() == 1)
     return true;
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   return (adj_cell.partition_id == opensn::mpi_comm.rank());
 }
@@ -77,7 +77,7 @@ CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
   if (grid->GetNumPartitions() == 1)
     return 0;
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   return adj_cell.partition_id;
 }
@@ -90,7 +90,7 @@ CellFace::GetNeighborLocalID(const MeshContinuum* grid) const
   if (grid->GetNumPartitions() == 1)
     return neighbor_id; // cause global_ids=local_ids
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   if (adj_cell.partition_id != opensn::mpi_comm.rank())
     throw std::logic_error("Cell local ID requested from a non-local cell.");
@@ -112,7 +112,7 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
     throw std::logic_error(outstr.str());
   }
 
-  const auto& adj_cell = grid->cells[cur_face.neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(cur_face.neighbor_id);
 
   int adj_face_idx = -1;
   std::set<uint64_t> cfvids(cur_face.vertex_ids.begin(),

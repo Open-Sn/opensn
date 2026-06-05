@@ -21,10 +21,6 @@ namespace opensn
 
 MeshContinuum::MeshContinuum()
   : local_cells(LocalCellHandler::Create(local_cells_)),
-    cells(local_cells_,
-          ghost_cells_,
-          global_cell_id_to_local_id_map_,
-          global_cell_id_to_nonlocal_id_map_),
     dim_(0),
     mesh_type_(UNSTRUCTURED),
     coord_sys_(CoordinateSystemType::UNDEFINED),
@@ -135,7 +131,7 @@ MeshContinuum::ComputeGeometricInfo()
     cell.ComputeGeometricInfo(this);
 
   for (const auto& ghost_id : GetGhostGlobalIDs())
-    cells[ghost_id].ComputeGeometricInfo(this);
+    GetGlobalCell(ghost_id).ComputeGeometricInfo(this);
 }
 
 void
@@ -252,6 +248,36 @@ MeshContinuum::AddGlobalCell(std::shared_ptr<Cell> new_cell)
     ghost_cells_.push_back(std::move(new_cell));
     global_cell_id_to_nonlocal_id_map_[ghost_cells_.back()->global_id] = ghost_cells_.size() - 1;
   }
+}
+
+Cell&
+MeshContinuum::GetGlobalCell(uint64_t cell_global_index)
+{
+  auto local_it = global_cell_id_to_local_id_map_.find(cell_global_index);
+  if (local_it != global_cell_id_to_local_id_map_.end())
+    return *local_cells_[local_it->second];
+
+  auto ghost_it = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
+  if (ghost_it != global_cell_id_to_nonlocal_id_map_.end())
+    return *ghost_cells_[ghost_it->second];
+
+  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
+                          " not found.");
+}
+
+const Cell&
+MeshContinuum::GetGlobalCell(uint64_t cell_global_index) const
+{
+  auto local_it = global_cell_id_to_local_id_map_.find(cell_global_index);
+  if (local_it != global_cell_id_to_local_id_map_.end())
+    return *local_cells_[local_it->second];
+
+  auto ghost_it = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
+  if (ghost_it != global_cell_id_to_nonlocal_id_map_.end())
+    return *ghost_cells_[ghost_it->second];
+
+  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
+                          " not found.");
 }
 
 std::vector<uint64_t>
@@ -371,7 +397,7 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
                        "MeshContinuum::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  const auto& adj_cell = cells[cur_face.neighbor_id];
+  const auto& adj_cell = GetGlobalCell(cur_face.neighbor_id);
 
   dof_mapping.reserve(cur_face.vertex_ids.size());
 
@@ -410,7 +436,7 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
                        "MeshContinuum::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  const auto& adj_cell = cells[cur_face.neighbor_id];
+  const auto& adj_cell = GetGlobalCell(cur_face.neighbor_id);
 
   dof_mapping.reserve(cur_face.vertex_ids.size());
 
@@ -669,7 +695,7 @@ MeshContinuum::SetUniformBlockID(const unsigned int blk_id)
 
   const auto& ghost_ids = GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
-    cells[ghost_id].block_id = blk_id;
+    GetGlobalCell(ghost_id).block_id = blk_id;
 
   mpi_comm.barrier();
   log.Log() << program_timer.GetTimeString() << " Done setting block id " << blk_id
@@ -694,7 +720,7 @@ MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol,
   const auto& ghost_ids = GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
-    auto& cell = cells[ghost_id];
+    auto& cell = GetGlobalCell(ghost_id);
     if (log_vol.Inside(cell.centroid) and sense)
       cell.block_id = blk_id;
   }

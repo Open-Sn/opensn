@@ -128,7 +128,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
 
       if (face.has_neighbor)
       {
-        const auto& adj_cell = grid->cells[face.neighbor_id];
+        const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
         const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);

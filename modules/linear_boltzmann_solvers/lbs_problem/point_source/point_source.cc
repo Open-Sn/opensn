@@ -139,7 +139,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   auto ghost_global_ids = grid->GetGhostGlobalIDs();
   for (uint64_t global_id : ghost_global_ids)
   {
-    const auto& nbr_cell = grid->cells[global_id];
+    const auto& nbr_cell = grid->GetGlobalCell(global_id);
     if (PointIsInCellOrOnBoundary(nbr_cell, location_))
     {
       const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id);

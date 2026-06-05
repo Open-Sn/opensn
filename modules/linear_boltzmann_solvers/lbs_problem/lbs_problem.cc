@@ -928,7 +928,7 @@ LBSProblem::InitializeMaterials()
   const auto& ghost_cell_ids = grid_->GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
-    const auto& cell = grid_->cells[cell_id];
+    const auto& cell = grid_->GetGlobalCell(cell_id);
     unique_block_ids.insert(cell.block_id);
     if (cell.block_id == std::numeric_limits<unsigned int>::max() or
         (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
@@ -1043,7 +1043,7 @@ LBSProblem::ComputeUnitIntegrals()
   const auto ghost_ids = grid_->GetGhostGlobalIDs();
   for (auto ghost_id : ghost_ids)
     unit_ghost_cell_matrices_[ghost_id] =
-      ComputeUnitCellIntegrals(sdm, grid_->cells[ghost_id], grid_->GetCoordinateSystem());
+      ComputeUnitCellIntegrals(sdm, grid_->GetGlobalCell(ghost_id), grid_->GetCoordinateSystem());
 
   // Assessing global unit cell matrix storage
   std::array<size_t, 2> num_local_ucms = {unit_cell_matrices_.size(),
@@ -1130,7 +1130,7 @@ LBSProblem::InitializeParrays()
         const int neighbor_partition = face.GetNeighborPartitionID(grid_.get());
         face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
         face_locality[f] = neighbor_partition;
-        neighbor_cell_ptrs[f] = &grid_->cells[face.neighbor_id];
+        neighbor_cell_ptrs[f] = &grid_->GetGlobalCell(face.neighbor_id);
       }
 
       ++f;

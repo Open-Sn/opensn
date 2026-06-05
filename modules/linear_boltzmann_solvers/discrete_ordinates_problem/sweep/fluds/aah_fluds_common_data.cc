@@ -336,7 +336,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
         dof_mapping.second = cell_nodal_mapping[f].face_node_mapping_;
 
         // Find associated face counter for slot lookup
-        const auto& adj_cell = grid->cells[face.neighbor_id];
+        const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
         const auto adj_so_index = local_so_cell_mapping[adj_cell.local_id];
         const auto& face_oris = spds.GetCellFaceOrientations()[adj_cell.local_id];
         int adj_f_counter = -1;

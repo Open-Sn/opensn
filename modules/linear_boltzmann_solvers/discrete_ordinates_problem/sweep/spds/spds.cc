@@ -433,7 +433,7 @@ SPDS::PopulateCellRelationships(
       } // if face owned
       else if (finfo.has_neighbor and not finfo.neighbor_local)
       {
-        const auto& adj_cell = grid_->cells[face.neighbor_id];
+        const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
         const auto adj_face_idx = finfo.neighbor_adj_face;
         const auto& adj_face = adj_cell.faces[adj_face_idx];
 
@@ -526,7 +526,7 @@ SPDS::PrintGhostedGraph() const
             std::cout << "  " << face.neighbor_id
                       << " [shape=\"circle\", style=filled fillcolor=red "
                          "fontcolor=white] //proc="
-                      << grid_->cells[face.neighbor_id].partition_id << "\n";
+                      << grid_->GetGlobalCell(face.neighbor_id).partition_id << "\n";
         }
       }
 
@@ -549,7 +549,7 @@ SPDS::PrintGhostedGraph() const
       const auto ghost_ids = grid_->GetGhostGlobalIDs();
       for (const uint64_t global_id : ghost_ids)
       {
-        const auto& cell = grid_->cells[global_id];
+        const auto& cell = grid_->GetGlobalCell(global_id);
         for (const auto& face : cell.faces)
         {
           if (face.has_neighbor and (cell.global_id > face.neighbor_id) and

@@ -223,7 +223,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
     while (particle.alive)
     {
       // Get the current cell
-      const auto& cell = grid->cells[particle.cell_id];
+      const auto& cell = grid->GetGlobalCell(particle.cell_id);
 
       // Perform the trace to the next surface
       auto destination_info = ray_tracer.TraceRay(cell, particle.position, particle.direction);

@@ -90,7 +90,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
       else if (orientation == OUTGOING)
       {
         if (face.has_neighbor and grid->IsCellLocal(face.neighbor_id))
-          successors.push_back(grid->cells[face.neighbor_id].local_id);
+          successors.push_back(grid->GetGlobalCell(face.neighbor_id).local_id);
       }
     }
 

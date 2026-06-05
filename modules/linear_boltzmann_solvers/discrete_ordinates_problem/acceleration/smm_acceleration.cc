@@ -623,7 +623,7 @@ SMMAcceleration::ComputeSourceCorrection() const
       // Interior face terms
       if (face.has_neighbor)
       {
-        const auto& nbr_cell = grid->cells[face.neighbor_id];
+        const auto& nbr_cell = grid->GetGlobalCell(face.neighbor_id);
         const auto& nbr_cell_mapping = pwld.GetCellMapping(nbr_cell);
         const auto& nbr_nodes = nbr_cell_mapping.GetNodeLocations();
 
