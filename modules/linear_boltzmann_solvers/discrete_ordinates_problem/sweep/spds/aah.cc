@@ -211,7 +211,7 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
         const double mu = omega_.Dot(face.normal);
         if (mu > tolerance)
         {
-          const auto& adj_cell = grid_->cells[face.neighbor_id];
+          const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
           row[adj_cell.partition_id] += mu * mu * face.area;
         }
       }

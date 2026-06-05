@@ -169,7 +169,7 @@ WrapMesh(py::module& mesh)
       std::vector<std::uint64_t> ghost_ids = self.GetGhostGlobalIDs();
       for (std::uint64_t ghost_id : ghost_ids)
       {
-        Cell& cell = self.cells[ghost_id];
+        Cell& cell = self.GetGlobalCell(ghost_id);
         auto new_block_id = func(cell.centroid, cell.block_id);
         if (cell.block_id != new_block_id)
         {

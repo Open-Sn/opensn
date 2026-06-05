@@ -155,7 +155,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
     const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid->cells[cell_global_id];
+    const auto& cell = grid->GetGlobalCell(cell_global_id);
 
     if (not grid->IsCellLocal(cell_global_id))
       continue;
@@ -201,7 +201,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
     const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid->cells[cell_global_id];
+    const auto& cell = grid->GetGlobalCell(cell_global_id);
     for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
       for (unsigned int m = 0; m < num_moments; ++m)
         for (unsigned int g = 0; g < num_groups; ++g)

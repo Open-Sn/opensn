@@ -73,7 +73,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
 
   for (uint64_t global_id : grid_->GetGhostGlobalIDs())
   {
-    const auto& cell = grid_->cells[global_id];
+    const auto& cell = grid_->GetGlobalCell(global_id);
     const int locI = cell.partition_id;
 
     std::vector<uint64_t>& locI_cell_id_list = ghost_cell_ids_consolidated[locI];
@@ -93,7 +93,7 @@ PieceWiseLinearDiscontinuous::OrderNodes()
 
     for (uint64_t cell_global_id : cell_id_list)
     {
-      const auto& cell = grid_->cells[cell_global_id];
+      const auto& cell = grid_->GetGlobalCell(cell_global_id);
 
       const auto cell_block_address =
         local_block_address_ + cell_local_block_address_[cell.local_id];
@@ -156,7 +156,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     {
       if (face.has_neighbor and face.IsNeighborLocal(grid_.get()))
       {
-        const auto& adj_cell = grid_->cells[face.neighbor_id];
+        const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
         const auto& adj_cell_mapping = GetCellMapping(adj_cell);
 
         for (size_t i = 0; i < num_nodes; ++i)
@@ -180,7 +180,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     {
       if (face.has_neighbor and (not face.IsNeighborLocal(grid_.get())))
       {
-        const auto& adj_cell = grid_->cells[face.neighbor_id];
+        const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
         const auto& adj_cell_mapping = GetCellMapping(adj_cell);
 
         for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)

@@ -52,7 +52,7 @@ PieceWiseLinearContinuous::OrderNodes()
   const auto ghost_cell_ids = grid_->GetGhostGlobalIDs();
   for (const uint64_t ghost_id : ghost_cell_ids)
   {
-    const auto& ghost_cell = grid_->cells[ghost_id];
+    const auto& ghost_cell = grid_->GetGlobalCell(ghost_id);
     for (const uint64_t vid : ghost_cell.vertex_ids)
       ls_node_ids_psubs[vid].insert(ghost_cell.partition_id);
   } // for ghost_id

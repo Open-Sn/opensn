@@ -128,7 +128,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
         if (face.has_neighbor)
         {
-          const auto& adj_cell = grid_->cells[face.neighbor_id];
+          const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
           const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
@@ -659,7 +659,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
         if (face.has_neighbor)
         {
-          const auto& adj_cell = grid_->cells[face.neighbor_id];
+          const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
           const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);

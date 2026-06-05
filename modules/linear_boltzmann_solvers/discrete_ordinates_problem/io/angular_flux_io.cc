@@ -157,7 +157,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
     const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid->cells[cell_global_id];
+    const auto& cell = grid->GetGlobalCell(cell_global_id);
 
     if (not grid->IsCellLocal(cell_global_id))
       continue;
@@ -229,7 +229,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
     for (uint64_t c = 0; c < file_num_local_cells; ++c)
     {
       const auto cell_global_id = file_cell_ids[c];
-      const auto& cell = grid->cells[cell_global_id];
+      const auto& cell = grid->GetGlobalCell(cell_global_id);
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
