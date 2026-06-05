@@ -479,7 +479,7 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
 
         if (face.has_neighbor)
         {
-          const auto& adj_cell = grid_->cells[face.neighbor_id];
+          const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
           const auto adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_.get());
           auto& adj_face_ori = cell_face_orientations_[adj_cell.local_id][adj_face_idx];
 
@@ -914,7 +914,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
         OpenSnLogicalErrorIf(
           not grid_->IsCellLocal(dest_neighbor),
           GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = grid_->cells[dest_neighbor].local_id;
+        cell_id = grid_->GetGlobalCell(dest_neighbor).local_id;
       }
       line_point = exit_point;
     }

@@ -5,7 +5,6 @@
 
 #include "framework/data_types/ndarray.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h"
 #include "framework/math/geometry.h"
 #include <memory>
@@ -144,6 +143,12 @@ public:
    */
   void AddGlobalCell(std::shared_ptr<Cell> new_cell);
 
+  /// Returns a reference to a cell given its global cell index.
+  Cell& GetGlobalCell(uint64_t cell_global_index);
+
+  /// Returns a const reference to a cell given its global cell index.
+  const Cell& GetGlobalCell(uint64_t cell_global_index) const;
+
   /**
    * Returns the cell global ids of all ghost cells. These are cells that neighbors to this
    * partition's cells but are on a different partition.
@@ -247,7 +252,6 @@ public:
 
   VertexHandler vertices;
   LocalCellHandler local_cells;
-  GlobalCellHandler cells;
 
 private:
   /// Spatial dimension

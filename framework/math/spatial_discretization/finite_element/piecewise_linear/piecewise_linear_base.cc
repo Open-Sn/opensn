@@ -70,7 +70,7 @@ PieceWiseLinearBase::CreateCellMappings()
   const auto ghost_ids = grid_->GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
-    auto ghost_mapping = MakeCellMapping(grid_->cells[ghost_id]);
+    auto ghost_mapping = MakeCellMapping(grid_->GetGlobalCell(ghost_id));
     nb_cell_mappings_.insert(std::make_pair(ghost_id, std::move(ghost_mapping)));
   }
 }
