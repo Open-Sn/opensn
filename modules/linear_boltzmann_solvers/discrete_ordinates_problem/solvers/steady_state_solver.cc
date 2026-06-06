@@ -73,8 +73,14 @@ SteadyStateSourceSolver::Execute()
 
   const auto& options = do_problem_->GetOptions();
 
+  if (do_problem_->HasUncollidedFlux())
+    do_problem_->RemoveUncollidedFlux();
+
   auto& ags_solver = *do_problem_->GetAGSSolver();
   ags_solver.Solve();
+
+  if (do_problem_->HasUncollidedFlux())
+    do_problem_->ComputeFluxFromUncollided();
 
   if (options.use_precursors)
     ComputePrecursors(*do_problem_);

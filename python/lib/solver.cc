@@ -12,6 +12,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/uncollided_problem/uncollided_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/transient_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/steady_state_solver.h"
@@ -664,6 +665,99 @@ WrapLBS(py::module& slv)
     )"
   );
 
+  auto unc_problem =
+    py::class_<UncollidedProblem, std::shared_ptr<UncollidedProblem>, LBSProblem>(
+      slv,
+      "UncollidedProblem",
+      R"(
+    Generate uncollided flux moments for a first-collision calculation.
+
+    The calculation supports explicit point sources and isotropic volumetric
+    sources. Construction executes the serial uncollided calculation and writes
+    its flux moments and balance metadata to an HDF5 file. A subsequent
+    :class:`DiscreteOrdinatesProblem` consumes that file through its
+    ``uncollided_flux`` argument.
+
+    Wrapper of :cpp:class:`opensn::UncollidedProblem`.
+    )");
+  unc_problem.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return UncollidedProblem::Create(kwargs_to_param_block(params));
+      }),
+    R"(
+    Construct and execute an uncollided flux problem.
+
+    Parameters
+    ----------
+    mesh : MeshContinuum
+        Cartesian two- or three-dimensional spatial mesh. Uncollided generation
+        must run with one MPI rank.
+    file_name : str
+        Output HDF5 file containing uncollided flux moments, mesh and total
+        cross-section metadata, and production/removal/outflow balance terms.
+    num_groups : int
+        Number of energy groups.
+    groupsets : List[Dict], default=[]
+        Groupset definitions required by the common LBS problem interface. The
+        uncollided calculation itself does not use an angular quadrature.
+    xs_map : List[Dict], default=[]
+        Block-to-cross-section mappings. Total cross sections are used for
+        attenuation and are recorded in the output file for compatibility
+        checking by the collided problem.
+    boundary_conditions : List[Dict], default=[]
+        Vacuum or reflecting boundary conditions, using the same ``name`` and
+        ``type`` entries as ``DiscreteOrdinatesProblem``. Reflecting boundaries
+        are represented with image sources and must be planar, mutually
+        orthogonal symmetry planes without an opposing reflecting plane.
+    point_sources : List[pyopensn.source.PointSource], default=[]
+        Explicit point sources. Point and volumetric sources may be used
+        together.
+    volumetric_sources : List[pyopensn.source.VolumetricSource], default=[]
+        Isotropic volumetric sources. Each source is approximated by
+        cell-volume quadrature point sources with strengths
+        ``q(x_q) * JxW_q``. Spatial source functions are evaluated at time zero.
+    near_source : List[pyopensn.logvol.LogicalVolume], default=[]
+        Near-source ray-traced region for each explicit point source, in the
+        same order as ``point_sources``. The list length must equal the number
+        of explicit point sources, and every point source must lie in its
+        corresponding region.
+    volumetric_near_source : pyopensn.logvol.LogicalVolume, optional
+        Shared near-source ray-traced region for all generated volumetric
+        quadrature points. Every generated point must lie in the region. When
+        omitted, only each quadrature point's containing source cell is ray
+        traced and the remaining cells use the cheaper bulk sweep.
+    volumetric_source_quadrature_order : int, default=2
+        Spatial quadrature order used to approximate volumetric sources with
+        point sources. Order 1 uses one volume-weighted cell-centroid point and is
+        appropriate for cellwise-uniform sources. Order 2 uses multiple points
+        per cell and better represents spatially varying sources.
+    scattering_order : int, default=0
+        Maximum spherical-harmonic order written to the HDF5 file. It must be
+        at least the scattering order of the collided problem that consumes
+        the file.
+    progress_interval : int, default=5
+        Percentage interval for source-point progress reports. Reports include
+        completed source points, elapsed time, and estimated remaining time.
+        Set to zero to disable progress reporting.
+    project_reflected_image_sources : bool, default=False
+        Directly project each reflected image-source path at the volume
+        quadrature points in every cell. This avoids accumulated bulk-sweep
+        error for reflected paths but is substantially more expensive and is
+        primarily intended for accuracy studies.
+    reflected_image_projection_threads : int, default=1
+        Number of CPU threads used for direct reflected-image projection.
+        Uncollided generation still requires a single MPI rank.
+
+    Notes
+    -----
+    Construction runs the calculation immediately. The uncollided file is
+    partition-independent: it is generated serially and may be consumed by a
+    serial or parallel collided calculation on the same mesh. The collided
+    problem must use the same reflecting boundaries recorded in the file.
+    )");
+
   // discrete ordinate solver
   auto do_problem = py::class_<DiscreteOrdinatesProblem, std::shared_ptr<DiscreteOrdinatesProblem>,
                                LBSProblem>(
@@ -841,6 +935,15 @@ WrapLBS(py::module& slv)
         If true, the problem starts in time-dependent mode. Otherwise it starts in
         steady-state mode. Requires ``options.save_angular_flux=True``.
         Both ``AAH`` and ``CBC`` sweep types support time-dependent mode.
+    uncollided_flux : str, default=""
+        HDF5 file generated by :class:`UncollidedProblem`. For steady-state
+        forward calculations, OpenSn uses its moments to construct the
+        first-collision scattering and fission source, solves for the collided
+        component, and adds the uncollided moments back to the converged state.
+        The file must match the current group count, mesh cell IDs, cell-node
+        layout and coordinates, and total cross sections. Its maximum moment
+        order must be at least this problem's scattering order. The same serial
+        file may be read by any MPI partitioning of the matching mesh.
     use_gpus : bool, default=False
         A flag specifying whether GPU acceleration is used for the sweep. Both
         ```AAH``` and ```CBC``` sweep types support GPU acceleration.

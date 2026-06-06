@@ -1,0 +1,266 @@
+[
+  {
+    "file": "uncollided_parallel_rejected.py",
+    "comment": "Uncollided generation rejects multiple MPI ranks",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedParallelGenerationRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_2d_reflecting.py",
+    "comment": "2D reflected image-source attenuation and first-collision recombination",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReflecting2DMaxAnalyticError=",
+        "goldvalue": 0.0000951932,
+        "abs_tol": 0.00003
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReflecting2DProjectedMaxAnalyticError=",
+        "goldvalue": 0.00006470235,
+        "abs_tol": 0.00002
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReflecting2DRecombinationError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReflecting2DCombinedBalance=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.00002
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReflecting2DMismatchRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_2d_unstructured_analytic.py",
+    "comment": "2D unstructured homogeneous uncollided attenuation and P1 moments",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DMaxScalarRelativeError=",
+        "goldvalue": 0.000137893,
+        "abs_tol": 0.00005
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DMaxP1ScaledError=",
+        "goldvalue": 0.000340772,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DRecombinationError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DMinimumScalarFlux=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-14
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DOutflowRelativeError=",
+        "goldvalue": 0.000567,
+        "abs_tol": 0.0002
+      }
+    ]
+  },
+  {
+    "file": "uncollided_2d_unstructured_convergence.py",
+    "comment": "2D unstructured scalar-flux mesh convergence",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DFineError=",
+        "goldvalue": 0.00011147,
+        "abs_tol": 0.00003
+      }
+    ]
+  },
+  {
+    "file": "uncollided_2d_unstructured_heterogeneous.py",
+    "comment": "2D unstructured heterogeneous optical-path attenuation",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DHeterogeneousRelativeError=",
+        "goldvalue": 0.00690823,
+        "abs_tol": 0.002
+      }
+    ]
+  },
+  {
+    "file": "uncollided_2d_unstructured_oblique_layers.py",
+    "comment": "2D optical-path attenuation across oblique material interfaces",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DObliqueLayersError=",
+        "goldvalue": 0.000158609,
+        "abs_tol": 0.00005
+      }
+    ]
+  },
+  {
+    "file": "uncollided_3d_unstructured_analytic.py",
+    "comment": "3D tetrahedral scalar-flux mesh convergence",
+    "num_procs": 1,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DFineMaxError=",
+        "goldvalue": 0.00633644,
+        "abs_tol": 0.002
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DMinimumScalarFlux=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-14
+      }
+    ]
+  },
+  {
+    "file": "uncollided_collided_2d_unstructured.py",
+    "comment": "2D unstructured first-collision source and total balance",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UnstructuredCombinedBalance=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.00002
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UnstructuredCollidedFraction=",
+        "goldvalue": 0.325493,
+        "abs_tol": 0.01
+      }
+    ]
+  },
+  {
+    "file": "uncollided_parallel_generate.py",
+    "comment": "Generate serial uncollided data for MPI equivalence",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedParallelFileGenerated=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_volumetric_2d.py",
+    "comment": "2D volumetric-source quadrature, recombination, and first collision",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedVolumetric2DQuadratureError=",
+        "goldvalue": 0.000386218766,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedVolumetric2DRecombinationError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedVolumetric2DCombinedBalance=",
+        "goldvalue": 0.0,
+        "abs_tol": 2e-5
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedVolumetric2DCollidedFraction=",
+        "goldvalue": 0.299866702,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "uncollided_volumetric_3d.py",
+    "comment": "3D volumetric-source quadrature on polyhedral cells",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedVolumetric3DQuadratureError=",
+        "goldvalue": 0.00541923137,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "uncollided_parallel_1.py",
+    "comment": "Serial collided solve using serial uncollided data",
+    "num_procs": 1,
+    "dependency": "uncollided_parallel_generate.py",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ParallelEquivalentIntegral=",
+        "goldvalue": 1.093351864,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "uncollided_parallel_2.py",
+    "comment": "Two-rank collided solve using serial uncollided data",
+    "num_procs": 2,
+    "dependency": "uncollided_parallel_generate.py",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ParallelEquivalentIntegral=",
+        "goldvalue": 1.093351864,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "uncollided_parallel_4.py",
+    "comment": "Four-rank collided solve using serial uncollided data",
+    "num_procs": 4,
+    "dependency": "uncollided_parallel_generate.py",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ParallelEquivalentIntegral=",
+        "goldvalue": 1.093351864,
+        "abs_tol": 1e-8
+      }
+    ]
+  }
+]

@@ -311,6 +311,40 @@ Notes:
 #. The inversion of the :math:`L` operator in the uncollided problem can
    be done using ray tracing, thus mitigating ray effects.
 
+#. OpenSn projects the ray-traced scalar flux onto the local PWLD basis.
+   A constrained lumped-mass correction keeps every nodal scalar-flux
+   coefficient nonnegative while preserving the projected cell integral.
+   Cell removal is computed from this projected analytic field. The total
+   outgoing current is then obtained from cell balance and distributed among
+   outgoing faces in proportion to their ray-traced currents. This avoids
+   balancing independently integrated volume and face approximations.
+
+#. A volumetric source is approximated by point sources at the
+   volume-quadrature points of every subscribing cell. Each point-source group
+   strength is the source evaluated at that point times its physical
+   quadrature weight :math:`Jw`. Second-order quadrature is the default.
+   First-order quadrature uses one volume-weighted cell-centroid point and is
+   suitable for cellwise-uniform sources. The uncollided generation remains
+   serial, and the resulting HDF5 data can drive either a serial or parallel
+   collided calculation. Spatially varying sources are evaluated at
+   steady-state time zero. By default, only the containing source cell is ray
+   traced for each quadrature point. The optional
+   ``volumetric_near_source`` logical volume defines a shared larger
+   ray-traced region for all volumetric quadrature points. The cost scales
+   with the total number of source quadrature points and the number of cells
+   in that shared region.
+
+#. Planar, mutually orthogonal reflecting symmetry boundaries are represented
+   by image sources. Attenuation paths to an image source are folded through
+   the physical mesh so heterogeneous material crossings remain consistent
+   with the reflected geometry. Opposing and oblique reflecting planes are
+   excluded because their exact solution requires an unbounded image series.
+
+#. Higher flux moments are projected independently from the analytic
+   ray direction. In two-dimensional Cartesian problems, the
+   :math:`P_1` ordering is :math:`(1,-1),(1,1)`; the out-of-plane
+   :math:`(1,0)` moment is omitted.
+
 #. The collided problem is quite similar to a standard :math:`S_n` so
    the solution techniques described early apply straightforwardly. The
    first-collision scattering source plays the role of the external

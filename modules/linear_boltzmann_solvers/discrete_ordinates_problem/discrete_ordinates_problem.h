@@ -11,6 +11,7 @@
 #include "framework/parameters/parameter_block.h"
 #include <memory>
 #include <optional>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -164,6 +165,23 @@ public:
    */
   void TransferDeviceBoundaryData(int groupset_id, bool host_to_device, bool force = false);
 
+  bool HasUncollidedFlux() const { return not uncollided_flux_file_.empty(); }
+
+  const std::vector<double>& GetFirstCollisionSourceMoments() const
+  {
+    return first_collision_source_moments_local_;
+  }
+
+  double GetUncollidedSourceRate() const { return uncollided_source_rate_; }
+  double GetUncollidedOutflowRate() const { return uncollided_outflow_rate_; }
+
+  /// Removes a previously applied uncollided scalar flux from the iterative state.
+  /// Returns true when flux was removed.
+  bool RemoveUncollidedFlux();
+
+  /// Adds the uncollided scalar flux to the converged collided scalar flux.
+  void ComputeFluxFromUncollided();
+
 protected:
   /**
    * @name Construction and setup
@@ -283,10 +301,18 @@ protected:
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<std::vector<double>> psi_old_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
+  std::string uncollided_flux_file_;
+  std::vector<double> uncollided_flux_moments_local_;
+  std::vector<double> first_collision_source_moments_local_;
+  double uncollided_source_rate_ = 0.0;
+  double uncollided_outflow_rate_ = 0.0;
+  bool uncollided_flux_applied_ = false;
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   std::vector<std::shared_ptr<WGSContext>> wgs_contexts_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
   /** @} */
+
+  void InitializeFCS();
 
 private:
   /**

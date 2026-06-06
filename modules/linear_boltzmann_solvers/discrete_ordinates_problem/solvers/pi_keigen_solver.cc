@@ -78,6 +78,9 @@ PowerIterationKEigenSolver::Initialize()
   OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
                           GetName() + ": Problem is in time-dependent mode. Call problem."
                                       "SetSteadyStateMode() before initializing this solver.");
+  OpenSnInvalidArgumentIf(do_problem_->HasUncollidedFlux(),
+                          GetName() + ": uncollided flux is only supported by the steady-state "
+                                      "fixed-source solver.");
 
   const auto& options = do_problem_->GetOptions();
   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();

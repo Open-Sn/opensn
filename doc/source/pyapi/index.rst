@@ -345,6 +345,16 @@ Base class
    solver.Problem
    solver.LBSProblem
 
+Uncollided problem
+^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
+   solver.UncollidedProblem
+
 Discrete ordinates problem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
