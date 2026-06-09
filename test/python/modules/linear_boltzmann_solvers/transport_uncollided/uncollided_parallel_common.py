@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-def run(expected_size, api, size, rank):
+def run(api, rank):
     GLCProductQuadrature2DXY = api["GLCProductQuadrature2DXY"]
     FieldFunctionInterpolationVolume = api["FieldFunctionInterpolationVolume"]
     RPPLogicalVolume = api["RPPLogicalVolume"]
@@ -9,9 +9,6 @@ def run(expected_size, api, size, rank):
     SteadyStateSourceSolver = api["SteadyStateSourceSolver"]
     MultiGroupXS = api["MultiGroupXS"]
     from uncollided_unstructured_utils import mesh_path, volume_integral
-
-    if size != expected_size:
-        raise RuntimeError(f"Expected {expected_size} processes, got {size}.")
 
     grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
     grid.SetUniformBlockID(0)

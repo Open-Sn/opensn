@@ -13,6 +13,19 @@
     ]
   },
   {
+    "file": "uncollided_volumetric_rejected.py",
+    "comment": "Uncollided generation supports only explicit point sources",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedVolumetricSourceRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
     "file": "uncollided_2d_reflecting.py",
     "comment": "2D reflected image-source attenuation and first-collision recombination",
     "num_procs": 1,
@@ -20,14 +33,8 @@
       {
         "type": "KeyValuePair",
         "key": "UncollidedReflecting2DMaxAnalyticError=",
-        "goldvalue": 0.0000951932,
-        "abs_tol": 0.00003
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "UncollidedReflecting2DProjectedMaxAnalyticError=",
         "goldvalue": 0.00006470235,
-        "abs_tol": 0.00002
+        "abs_tol": 0.00003
       },
       {
         "type": "KeyValuePair",
@@ -178,53 +185,11 @@
     ]
   },
   {
-    "file": "uncollided_volumetric_2d.py",
-    "comment": "2D volumetric-source quadrature, recombination, and first collision",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "UncollidedVolumetric2DQuadratureError=",
-        "goldvalue": 0.000386218766,
-        "abs_tol": 1e-8
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "UncollidedVolumetric2DRecombinationError=",
-        "goldvalue": 0.0,
-        "abs_tol": 1e-12
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "UncollidedVolumetric2DCombinedBalance=",
-        "goldvalue": 0.0,
-        "abs_tol": 2e-5
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "UncollidedVolumetric2DCollidedFraction=",
-        "goldvalue": 0.299866702,
-        "abs_tol": 1e-8
-      }
-    ]
-  },
-  {
-    "file": "uncollided_volumetric_3d.py",
-    "comment": "3D volumetric-source quadrature on polyhedral cells",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "UncollidedVolumetric3DQuadratureError=",
-        "goldvalue": 0.00541923137,
-        "abs_tol": 1e-8
-      }
-    ]
-  },
-  {
-    "file": "uncollided_parallel_1.py",
+    "file": "uncollided_parallel.py",
     "comment": "Serial collided solve using serial uncollided data",
     "num_procs": 1,
+    "args": ["parallel_test_variant=\"serial\""],
+    "outfileprefix": "uncollided_parallel_1",
     "dependency": "uncollided_parallel_generate.py",
     "checks": [
       {
@@ -236,9 +201,11 @@
     ]
   },
   {
-    "file": "uncollided_parallel_2.py",
+    "file": "uncollided_parallel.py",
     "comment": "Two-rank collided solve using serial uncollided data",
     "num_procs": 2,
+    "args": ["parallel_test_variant=\"two_rank\""],
+    "outfileprefix": "uncollided_parallel_2",
     "dependency": "uncollided_parallel_generate.py",
     "checks": [
       {
@@ -250,9 +217,11 @@
     ]
   },
   {
-    "file": "uncollided_parallel_4.py",
+    "file": "uncollided_parallel.py",
     "comment": "Four-rank collided solve using serial uncollided data",
     "num_procs": 4,
+    "args": ["parallel_test_variant=\"four_rank\""],
+    "outfileprefix": "uncollided_parallel_4",
     "dependency": "uncollided_parallel_generate.py",
     "checks": [
       {

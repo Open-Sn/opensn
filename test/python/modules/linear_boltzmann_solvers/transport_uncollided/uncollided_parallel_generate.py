@@ -12,7 +12,7 @@ if "opensn_console" not in globals():
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.mesh import FromFileMeshGenerator
-    from pyopensn.solver import UncollidedProblem
+    from pyopensn.solver import UncollidedProblem, UncollidedSolver
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
@@ -36,15 +36,17 @@ if __name__ == "__main__":
     )
     file_name = "uncollided_parallel_equivalence.h5"
     remove_file(file_name)
-    UncollidedProblem(
+    problem = UncollidedProblem(
         mesh=grid,
         num_groups=1,
         groupsets=[{"groups_from_to": [0, 0]}],
         xs_map=[{"block_ids": [0], "xs": xs}],
         point_sources=[PointSource(location=[0.037, -0.041, 0.0], strength=[1.0])],
         near_source=[whole_domain],
-        file_name=file_name,
         scattering_order=1,
     )
+    solver = UncollidedSolver(problem=problem, file_name=file_name)
+    solver.Initialize()
+    solver.Execute()
     if rank == 0:
         print("UncollidedParallelFileGenerated=1")

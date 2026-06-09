@@ -20,6 +20,7 @@ if "opensn_console" not in globals():
         DiscreteOrdinatesProblem,
         SteadyStateSourceSolver,
         UncollidedProblem,
+        UncollidedSolver,
     )
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
@@ -76,9 +77,11 @@ if __name__ == "__main__":
         point_sources=[point_source],
         near_source=[whole_domain],
         boundary_conditions=boundary_conditions,
-        file_name=file_name,
         scattering_order=0,
     )
+    uncollided_solver = UncollidedSolver(problem=uncollided, file_name=file_name)
+    uncollided_solver.Initialize()
+    uncollided_solver.Execute()
 
     sample_points = [
         (-0.74, -0.68, 0.0),
@@ -96,35 +99,6 @@ if __name__ == "__main__":
         )
         reference = analytic_flux(source, images, point, sigma_t)
         max_analytic_error = max(max_analytic_error, relative_error(value, reference))
-
-    projected_file_name = "uncollided_2d_reflecting_projected.h5"
-    remove_file(projected_file_name)
-    projected_uncollided = UncollidedProblem(
-        mesh=grid,
-        num_groups=1,
-        groupsets=[{"groups_from_to": [0, 0]}],
-        xs_map=[{"block_ids": [0], "xs": xs}],
-        point_sources=[point_source],
-        near_source=[whole_domain],
-        boundary_conditions=boundary_conditions,
-        file_name=projected_file_name,
-        scattering_order=0,
-        project_reflected_image_sources=True,
-        reflected_image_projection_threads=2,
-    )
-    projected_scalar_flux = projected_uncollided.GetScalarFluxFieldFunction()[0]
-    max_projected_analytic_error = 0.0
-    for point in sample_points:
-        value = point_value(
-            projected_scalar_flux,
-            point,
-            FieldFunctionInterpolationPoint,
-            Vector3,
-        )
-        reference = analytic_flux(source, images, point, sigma_t)
-        max_projected_analytic_error = max(
-            max_projected_analytic_error, relative_error(value, reference)
-        )
 
     quadrature = GLCProductQuadrature2DXY(
         n_polar=2,
@@ -188,24 +162,14 @@ if __name__ == "__main__":
     balance = solver.ComputeBalanceTable()
     if rank == 0:
         print(f"UncollidedReflecting2DMaxAnalyticError={max_analytic_error:.8e}")
-        print(
-            "UncollidedReflecting2DProjectedMaxAnalyticError="
-            f"{max_projected_analytic_error:.8e}"
-        )
         print(f"UncollidedReflecting2DRecombinationError={max_recombination_error:.8e}")
         print(f"UncollidedReflecting2DCombinedBalance={balance['balance']:.8e}")
         print(f"UncollidedReflecting2DMismatchRejected={int(mismatch_rejected)}")
         sys.stdout.flush()
 
     remove_file(file_name)
-    remove_file(projected_file_name)
     if max_analytic_error > 2.0e-3:
         raise RuntimeError(f"Reflecting analytic error is too large: {max_analytic_error}")
-    if max_projected_analytic_error > 2.0e-3:
-        raise RuntimeError(
-            "Projected reflecting analytic error is too large: "
-            f"{max_projected_analytic_error}"
-        )
     if max_recombination_error > 1.0e-12:
         raise RuntimeError(
             f"Reflecting zero-scatter recombination changed the flux: {max_recombination_error}"

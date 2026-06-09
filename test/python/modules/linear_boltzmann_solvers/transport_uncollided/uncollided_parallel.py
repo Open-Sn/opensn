@@ -16,4 +16,4 @@ if "opensn_console" not in globals():
 
 from uncollided_parallel_common import run
 
-run(1, globals(), size, rank)
+run(globals(), rank)

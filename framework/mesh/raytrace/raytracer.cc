@@ -10,6 +10,44 @@
 
 namespace opensn
 {
+namespace
+{
+
+bool
+CheckIntersectionAtVertex(const std::shared_ptr<MeshContinuum>& grid,
+                          const std::vector<uint64_t>& vertex_ids,
+                          const Vector3& line_point0,
+                          const Vector3& line_point1,
+                          const double tolerance,
+                          const double nudge,
+                          Vector3& intersection_point,
+                          double& distance_to_intersection,
+                          uint64_t& neighbor_id)
+{
+  for (const uint64_t vertex_id : vertex_ids)
+  {
+    const Vector3& vertex = grid->vertices[vertex_id];
+    const double point0_to_vertex = (vertex - line_point0).Norm();
+    const double point1_to_vertex = (vertex - line_point1).Norm();
+    const double point0_to_point1 = (line_point1 - line_point0).Norm();
+
+    if (std::abs(point0_to_point1 - (point0_to_vertex + point1_to_vertex)) >= tolerance)
+      continue;
+
+    const Vector3 nudged_point = vertex + nudge * (line_point1 - vertex).Normalized();
+    for (const auto& cell : grid->local_cells)
+      if (grid->CheckPointInsideCell(cell, nudged_point))
+      {
+        intersection_point = vertex;
+        distance_to_intersection = point0_to_vertex;
+        neighbor_id = cell.global_id;
+        return true;
+      }
+  }
+  return false;
+}
+
+} // namespace
 
 std::shared_ptr<MeshContinuum>
 RayTracer::Grid() const
@@ -322,6 +360,7 @@ RayTracer::TracePolygon(const Cell& cell,
                                                          oi.pos_f,
                                                          oi.distance_to_surface,
                                                          oi.destination_face_neighbor);
+    intersection_found = intersect_at_vertex;
 
     if (not intersect_at_vertex)
     {
@@ -585,48 +624,6 @@ CheckPlaneTetIntersect(const Vector3& plane_normal,
       current_sense = new_sense;
     else if (new_sense != current_sense)
       return true;
-  }
-  return false;
-}
-
-bool
-CheckIntersectionAtVertex(std::shared_ptr<MeshContinuum> grid,
-                          const std::vector<uint64_t>& vertex_ids,
-                          const Vector3& line_point0,
-                          const Vector3& line_point1,
-                          const double tolerance,
-                          const double nudge,
-                          Vector3& intersection_point,
-                          double& distance_to_intersection,
-                          uint64_t& neighbor_id)
-{
-  for (uint64_t vertex_id : vertex_ids)
-  {
-    const Vector3& vertex = grid->vertices[vertex_id];
-
-    double point0_to_vertex = (vertex - line_point0).Norm();
-    double point1_to_vertex = (vertex - line_point1).Norm();
-    double point0_to_point1 = (line_point1 - line_point0).Norm();
-
-    double diff = std::abs(point0_to_point1 - (point0_to_vertex + point1_to_vertex));
-
-    if (diff < tolerance)
-    {
-      intersection_point = vertex;
-      distance_to_intersection = (vertex - line_point0).Norm();
-
-      Vector3 nudged_point = vertex + nudge * (line_point1 - vertex).Normalized();
-      for (const auto& cell : grid->local_cells)
-      {
-        if (grid->CheckPointInsideCell(cell, nudged_point))
-        {
-          neighbor_id = cell.global_id;
-          break;
-        }
-      }
-
-      return true;
-    }
   }
   return false;
 }

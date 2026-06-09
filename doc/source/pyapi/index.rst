@@ -354,6 +354,7 @@ Uncollided problem
    :template: python.rst
 
    solver.UncollidedProblem
+   solver.UncollidedSolver
 
 Discrete ordinates problem
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -23,6 +23,7 @@ if "opensn_console" not in globals():
         DiscreteOrdinatesProblem,
         SteadyStateSourceSolver,
         UncollidedProblem,
+        UncollidedSolver,
     )
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
@@ -70,9 +71,11 @@ if __name__ == "__main__":
         xs_map=[{"block_ids": [0], "xs": xs}],
         point_sources=[point_source],
         near_source=[whole_domain],
-        file_name=file_name,
         scattering_order=1,
     )
+    uncollided_solver = UncollidedSolver(problem=uncollided, file_name=file_name)
+    uncollided_solver.Initialize()
+    uncollided_solver.Execute()
 
     uncollided_scalar = uncollided.GetScalarFluxFieldFunction()[0]
     minimum_scalar = volume_minimum(

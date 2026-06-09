@@ -15,7 +15,7 @@ if "opensn_console" not in globals():
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.math import Vector3
     from pyopensn.mesh import FromFileMeshGenerator
-    from pyopensn.solver import UncollidedProblem
+    from pyopensn.solver import UncollidedProblem, UncollidedSolver
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
@@ -61,9 +61,11 @@ if __name__ == "__main__":
         ],
         point_sources=[point_source],
         near_source=[whole_domain],
-        file_name=file_name,
         scattering_order=0,
     )
+    solver = UncollidedSolver(problem=problem, file_name=file_name)
+    solver.Initialize()
+    solver.Execute()
 
     scalar_flux = problem.GetScalarFluxFieldFunction()[0]
     value = point_value(scalar_flux, point, FieldFunctionInterpolationPoint, Vector3)

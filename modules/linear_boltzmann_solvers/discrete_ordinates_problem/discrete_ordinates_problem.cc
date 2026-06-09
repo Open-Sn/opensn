@@ -38,7 +38,6 @@
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include "framework/utils/caliper_scopes.h"
-#include "framework/utils/hdf_utils.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
 #include "framework/runtime.h"
@@ -49,7 +48,6 @@
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
-#include <unordered_map>
 
 namespace opensn
 {
@@ -621,281 +619,64 @@ DiscreteOrdinatesProblem::InitializeFCS()
   log.Log0() << program_timer.GetTimeString() << " Reading uncollided flux from \"" << file_name
              << "\".";
 
-  const auto file_id = H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
-  OpenSnInvalidArgumentIf(
-    file_id < 0, GetName() + ": failed to open uncollided flux file \"" + file_name + "\".");
+  auto data = DiscreteOrdinatesProblemIO::ReadUncollidedFlux(*this, file_name);
+  uncollided_source_rate_ = data.source_rate;
+  uncollided_outflow_rate_ = data.outflow_rate;
+  uncollided_flux_moments_local_ = std::move(data.local_flux_moments);
 
-  try
+  const auto local_unknown_count = uncollided_flux_moments_local_.size();
+  options_.use_src_moments = true;
+  if (ext_src_moments_local_.size() != local_unknown_count)
+    ext_src_moments_local_.assign(local_unknown_count, 0.0);
+  first_collision_source_moments_local_.assign(local_unknown_count, 0.0);
+
+  const auto& moment_to_harmonics = groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap();
+  for (size_t m = 0; m < num_moments_; ++m)
   {
-    unsigned int format_version = 0;
-    unsigned int file_num_groups = 0;
-    unsigned int file_max_moment_order = 0;
-    uint64_t file_global_cell_count = 0;
-    OpenSnInvalidArgumentIf(
-      not H5ReadAttribute<unsigned int>(file_id, "format version", format_version) or
-        (format_version != 1 and format_version != 2),
-      GetName() + ": unsupported uncollided flux file format in \"" + file_name + "\".");
-    OpenSnInvalidArgumentIf(
-      not H5ReadAttribute<unsigned int>(file_id, "num groups", file_num_groups) or
-        file_num_groups != num_groups_,
-      GetName() + ": uncollided flux group count does not match the collided problem.");
-    OpenSnInvalidArgumentIf(
-      not H5ReadAttribute<unsigned int>(file_id, "max moment order", file_max_moment_order) or
-        file_max_moment_order < scattering_order_,
-      GetName() + ": uncollided flux moment order is lower than the collided scattering order.");
-    OpenSnInvalidArgumentIf(
-      not H5ReadAttribute<uint64_t>(file_id, "global cell count", file_global_cell_count) or
-        file_global_cell_count != grid_->GetGlobalNumberOfCells(),
-      GetName() + ": uncollided flux mesh cell count does not match the collided mesh.");
-    OpenSnInvalidArgumentIf(
-      not H5ReadAttribute<double>(file_id, "production", uncollided_source_rate_),
-      GetName() + ": failed to read the uncollided source rate from \"" + file_name + "\".");
-    OpenSnInvalidArgumentIf(
-      not H5ReadAttribute<double>(file_id, "out-flow", uncollided_outflow_rate_),
-      GetName() + ": failed to read the uncollided outflow rate from \"" + file_name + "\".");
-
-    std::set<uint64_t> collided_reflecting_boundary_ids;
-    for (const auto& [boundary_id, definition] : boundary_definitions_)
-    {
-      if (definition.type == LBSBoundaryType::REFLECTING)
-        collided_reflecting_boundary_ids.insert(boundary_id);
-    }
-
-    if (format_version == 1)
-    {
-      OpenSnInvalidArgumentIf(
-        not collided_reflecting_boundary_ids.empty(),
-        GetName() + ": uncollided flux file \"" + file_name +
-          "\" predates reflecting-boundary metadata and cannot be used with reflecting "
-          "boundaries. Regenerate the uncollided solution.");
-    }
-    else
-    {
-      uint64_t reflecting_boundary_count = 0;
-      OpenSnInvalidArgumentIf(not H5ReadAttribute<uint64_t>(
-                                file_id, "reflecting boundary count", reflecting_boundary_count),
-                              GetName() + ": failed to read reflecting boundary metadata from \"" +
-                                file_name + "\".");
-
-      std::vector<uint64_t> file_reflecting_boundary_ids;
-      if (reflecting_boundary_count > 0)
-        OpenSnInvalidArgumentIf(not H5ReadDataset1D<uint64_t>(
-                                  file_id, "reflecting boundary ids", file_reflecting_boundary_ids),
-                                GetName() + ": failed to read reflecting boundary ids from \"" +
-                                  file_name + "\".");
-      OpenSnInvalidArgumentIf(file_reflecting_boundary_ids.size() != reflecting_boundary_count,
-                              GetName() + ": invalid reflecting boundary metadata in \"" +
-                                file_name + "\".");
-
-      const std::set<uint64_t> file_reflecting_boundary_id_set(file_reflecting_boundary_ids.begin(),
-                                                               file_reflecting_boundary_ids.end());
-      OpenSnInvalidArgumentIf(file_reflecting_boundary_id_set != collided_reflecting_boundary_ids,
-                              GetName() +
-                                ": reflecting boundaries do not match the uncollided flux file.");
-    }
-
-    std::vector<uint64_t> file_cell_ids;
-    std::vector<uint64_t> file_cell_node_counts;
-    std::vector<double> file_nodes_x;
-    std::vector<double> file_nodes_y;
-    std::vector<double> file_nodes_z;
-    std::vector<double> file_cell_sigma_t;
-    OpenSnInvalidArgumentIf(not H5ReadDataset1D<uint64_t>(file_id, "cell ids", file_cell_ids),
-                            GetName() + ": failed to read cell ids from \"" + file_name + "\".");
-    OpenSnInvalidArgumentIf(
-      not H5ReadDataset1D<uint64_t>(file_id, "cell node counts", file_cell_node_counts),
-      GetName() + ": failed to read cell node counts from \"" + file_name + "\".");
-    OpenSnInvalidArgumentIf(not H5ReadDataset1D<double>(file_id, "nodes x", file_nodes_x) or
-                              not H5ReadDataset1D<double>(file_id, "nodes y", file_nodes_y) or
-                              not H5ReadDataset1D<double>(file_id, "nodes z", file_nodes_z),
-                            GetName() + ": failed to read mesh coordinates from \"" + file_name +
-                              "\".");
-    OpenSnInvalidArgumentIf(not H5ReadDataset1D<double>(file_id, "cell sigma_t", file_cell_sigma_t),
-                            GetName() + ": failed to read total cross sections from \"" +
-                              file_name + "\".");
-    OpenSnInvalidArgumentIf(file_cell_ids.size() != file_cell_node_counts.size(),
-                            GetName() + ": inconsistent cell metadata in \"" + file_name + "\".");
-
-    std::vector<double> phi_00;
-    OpenSnInvalidArgumentIf(not H5ReadDataset1D<double>(file_id, "0,0", phi_00),
-                            GetName() + ": failed to read scalar flux from \"" + file_name + "\".");
-    OpenSnInvalidArgumentIf(phi_00.size() % num_groups_ != 0,
-                            GetName() + ": dataset \"0,0\" in \"" + file_name +
-                              "\" has invalid size for num_groups=" + std::to_string(num_groups_) +
-                              ".");
-
-    std::unordered_map<uint64_t, std::tuple<size_t, size_t, size_t>> cell_id_to_file_layout;
-    cell_id_to_file_layout.reserve(file_cell_ids.size());
-    size_t file_node_offset = 0;
-    for (size_t c = 0; c < file_cell_ids.size(); ++c)
-    {
-      const auto cell_id = file_cell_ids[c];
-      const auto node_count = file_cell_node_counts[c];
-      OpenSnInvalidArgumentIf(
-        not cell_id_to_file_layout
-              .emplace(cell_id, std::make_tuple(file_node_offset, node_count, c))
-              .second,
-        GetName() + ": duplicate cell id " + std::to_string(cell_id) + " in \"" + file_name +
-          "\".");
-      file_node_offset += node_count;
-    }
-    OpenSnInvalidArgumentIf(file_node_offset * num_groups_ != phi_00.size(),
-                            GetName() + ": dataset \"0,0\" in \"" + file_name + "\" has size " +
-                              std::to_string(phi_00.size()) + " but expected " +
-                              std::to_string(file_node_offset * num_groups_) +
-                              " from the file cell ids.");
-    OpenSnInvalidArgumentIf(file_nodes_x.size() != file_node_offset or
-                              file_nodes_y.size() != file_node_offset or
-                              file_nodes_z.size() != file_node_offset,
-                            GetName() + ": coordinate data size does not match the file cells.");
-    OpenSnInvalidArgumentIf(file_cell_sigma_t.size() != file_cell_ids.size() * num_groups_,
-                            GetName() + ": total cross-section data size is invalid.");
-
-    // Build the local uncollided flux-moment vector once. Each MPI rank reads
-    // the same serial file and extracts only its owned cells.
-    const auto local_unknown_count = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
-    uncollided_flux_moments_local_.assign(local_unknown_count, 0.0);
+    const auto ell = moment_to_harmonics[m].ell;
     for (const auto& cell : grid_->local_cells)
     {
-      const auto file_cell_it = cell_id_to_file_layout.find(cell.global_id);
-      OpenSnInvalidArgumentIf(file_cell_it == cell_id_to_file_layout.end(),
-                              GetName() + ": local cell " + std::to_string(cell.global_id) +
-                                " was not found in \"" + file_name + "\".");
-
       const auto num_nodes = discretization_->GetCellNumNodes(cell);
-      const auto [file_cell_offset, file_num_nodes, file_cell_ordinal] = file_cell_it->second;
-      OpenSnInvalidArgumentIf(file_num_nodes != num_nodes,
-                              GetName() + ": node count mismatch for cell " +
-                                std::to_string(cell.global_id) + ".");
       const auto& transport_view = cell_transport_views_[cell.local_id];
-      const auto& sigma_t = transport_view.GetXS().GetSigmaTotal();
+      const auto& xs = transport_view.GetXS();
+      const auto& transfer_matrices = xs.GetTransferMatrices();
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto& vertex = grid_->vertices[cell.vertex_ids[i]];
-        constexpr double coordinate_tolerance = 1.0e-12;
-        OpenSnInvalidArgumentIf(
-          std::abs(file_nodes_x[file_cell_offset + i] - vertex.x) > coordinate_tolerance or
-            std::abs(file_nodes_y[file_cell_offset + i] - vertex.y) > coordinate_tolerance or
-            std::abs(file_nodes_z[file_cell_offset + i] - vertex.z) > coordinate_tolerance,
-          GetName() + ": mesh coordinate mismatch for cell " + std::to_string(cell.global_id) +
-            ".");
-
-        const auto file_uk_map = (file_cell_offset + i) * num_groups_;
-        const auto local_uk_map = transport_view.MapDOF(i, 0, 0);
+        const auto lhs_uk_map = transport_view.MapDOF(i, m, 0);
         for (size_t g = 0; g < num_groups_; ++g)
-          uncollided_flux_moments_local_[local_uk_map + g] = phi_00[file_uk_map + g];
-      }
-      for (size_t g = 0; g < num_groups_; ++g)
-      {
-        const auto file_sigma_t = file_cell_sigma_t[file_cell_ordinal * num_groups_ + g];
-        const auto scale = std::max({1.0, std::abs(file_sigma_t), std::abs(sigma_t[g])});
-        OpenSnInvalidArgumentIf(std::abs(file_sigma_t - sigma_t[g]) > 1.0e-12 * scale,
-                                GetName() + ": total cross-section mismatch for cell " +
-                                  std::to_string(cell.global_id) + ", group " + std::to_string(g) +
-                                  ".");
-      }
-    }
-
-    // Ensure fixed source moments exist and are active.  The first-collision
-    // source is an additional fixed source generated by scattering the
-    // precomputed uncollided flux moments.  It must be accumulated into the
-    // same ext_src_moments_local_ storage used by ordinary fixed source
-    // moments before the collided solve starts.
-    options_.use_src_moments = true;
-    if (ext_src_moments_local_.size() != local_unknown_count)
-      ext_src_moments_local_.assign(local_unknown_count, 0.0);
-    first_collision_source_moments_local_.assign(local_unknown_count, 0.0);
-
-    OpenSnLogicalErrorIf(groupsets_.empty(), GetName() + ": no groupsets were configured.");
-    const auto& moment_to_harmonics = groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap();
-    OpenSnLogicalErrorIf(moment_to_harmonics.size() != num_moments_,
-                         GetName() + ": moments/harmonics map size mismatch.");
-
-    std::vector<double> uncollided_moment;
-    for (size_t m = 0; m < num_moments_; ++m)
-    {
-      const auto ell = moment_to_harmonics[m].ell;
-      const auto em = moment_to_harmonics[m].m;
-      const std::string dataset_name = std::to_string(ell) + "," + std::to_string(em);
-
-      std::string read_error = GetName() + ": failed to read moment \"";
-      read_error.append(dataset_name).append("\" from \"").append(file_name).append("\".");
-      OpenSnInvalidArgumentIf(not H5ReadDataset1D<double>(file_id, dataset_name, uncollided_moment),
-                              read_error);
-      std::string size_error = GetName() + ": dataset \"";
-      size_error.append(dataset_name)
-        .append("\" in \"")
-        .append(file_name)
-        .append("\" has size ")
-        .append(std::to_string(uncollided_moment.size()))
-        .append(" but expected ")
-        .append(std::to_string(phi_00.size()))
-        .append(".");
-      OpenSnInvalidArgumentIf(uncollided_moment.size() != phi_00.size(), size_error);
-
-      // For each requested scattering moment, read the matching uncollided
-      // moment from file and scatter it into the collided fixed source.  The
-      // file index uses the file-side offset computed above. The destination
-      // index uses the current problem's transport view.
-      for (const auto& cell : grid_->local_cells)
-      {
-        const auto file_cell_it = cell_id_to_file_layout.find(cell.global_id);
-        OpenSnInvalidArgumentIf(file_cell_it == cell_id_to_file_layout.end(),
-                                GetName() + ": local cell " + std::to_string(cell.global_id) +
-                                  " was not found in \"" + file_name + "\".");
-
-        const auto num_nodes = discretization_->GetCellNumNodes(cell);
-        const auto file_cell_offset = std::get<0>(file_cell_it->second);
-        const auto& transport_view = cell_transport_views_[cell.local_id];
-        const auto& xs = transport_view.GetXS();
-        const auto& transfer_matrices = xs.GetTransferMatrices();
-        for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto file_uk_map = (file_cell_offset + i) * num_groups_;
-          const auto lhs_uk_map = transport_view.MapDOF(i, m, 0);
-          for (size_t g = 0; g < num_groups_; ++g)
+          double rhs = 0.0;
+          if (ell < transfer_matrices.size())
+            for (const auto& [_, gp, sigma_sm] : transfer_matrices[ell].Row(g))
+              rhs += sigma_sm * uncollided_flux_moments_local_[lhs_uk_map + gp];
+
+          if (ell == 0 and xs.IsFissionable())
           {
-            uncollided_flux_moments_local_[lhs_uk_map + g] = uncollided_moment[file_uk_map + g];
+            const auto& production = xs.GetProductionMatrix()[g];
+            for (size_t gp = 0; gp < num_groups_; ++gp)
+              rhs += production[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
 
-            double rhs = 0.0;
-            if (ell < transfer_matrices.size())
-              for (const auto& [_, gp, sigma_sm] : transfer_matrices[ell].Row(g))
-                rhs += sigma_sm * uncollided_moment[file_uk_map + gp];
-
-            if (ell == 0 and xs.IsFissionable())
+            if (options_.use_precursors and xs.GetNumPrecursors() > 0)
             {
-              const auto& production = xs.GetProductionMatrix()[g];
+              const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
               for (size_t gp = 0; gp < num_groups_; ++gp)
-                rhs += production[gp] * uncollided_moment[file_uk_map + gp];
-
-              if (options_.use_precursors and xs.GetNumPrecursors() > 0)
-              {
-                const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
-                for (size_t gp = 0; gp < num_groups_; ++gp)
-                  for (const auto& precursor : xs.GetPrecursors())
-                    rhs += precursor.emission_spectrum[g] * precursor.fractional_yield *
-                           nu_delayed_sigma_f[gp] * uncollided_moment[file_uk_map + gp];
-              }
+                for (const auto& precursor : xs.GetPrecursors())
+                  rhs += precursor.emission_spectrum[g] * precursor.fractional_yield *
+                         nu_delayed_sigma_f[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
             }
-
-            first_collision_source_moments_local_[lhs_uk_map + g] += rhs;
-            ext_src_moments_local_[lhs_uk_map + g] += rhs;
           }
+
+          first_collision_source_moments_local_[lhs_uk_map + g] += rhs;
+          ext_src_moments_local_[lhs_uk_map + g] += rhs;
         }
       }
     }
+  }
 
-    H5Fclose(file_id);
-    log.Log0() << program_timer.GetTimeString() << " Successfully loaded uncollided flux from \""
-               << file_name << "\" and constructed the first-collision source"
-               << " (groups=" << file_num_groups << ", max moment order=" << file_max_moment_order
-               << ", global cells=" << file_global_cell_count << ").";
-  }
-  catch (...)
-  {
-    H5Fclose(file_id);
-    throw;
-  }
+  log.Log0() << program_timer.GetTimeString() << " Successfully loaded uncollided flux from \""
+             << file_name << "\" and constructed the first-collision source"
+             << " (groups=" << data.num_groups << ", max moment order=" << data.max_moment_order
+             << ", global cells=" << data.global_cell_count << ").";
 }
 
 bool

@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/uncollided_problem/uncollided_problem.h"
+#include "modules/linear_boltzmann_solvers/uncollided_problem/uncollided_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/transient_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/steady_state_solver.h"
@@ -670,13 +671,10 @@ WrapLBS(py::module& slv)
       slv,
       "UncollidedProblem",
       R"(
-    Generate uncollided flux moments for a first-collision calculation.
+    Define an uncollided transport problem for a first-collision calculation.
 
-    The calculation supports explicit point sources and isotropic volumetric
-    sources. Construction executes the serial uncollided calculation and writes
-    its flux moments and balance metadata to an HDF5 file. A subsequent
-    :class:`DiscreteOrdinatesProblem` consumes that file through its
-    ``uncollided_flux`` argument.
+    The problem stores the mesh, materials, point sources, boundaries, and
+    near-source regions used by :class:`UncollidedSolver`.
 
     Wrapper of :cpp:class:`opensn::UncollidedProblem`.
     )");
@@ -687,16 +685,12 @@ WrapLBS(py::module& slv)
         return UncollidedProblem::Create(kwargs_to_param_block(params));
       }),
     R"(
-    Construct and execute an uncollided flux problem.
+    Construct an uncollided transport problem.
 
     Parameters
     ----------
     mesh : MeshContinuum
-        Cartesian two- or three-dimensional spatial mesh. Uncollided generation
-        must run with one MPI rank.
-    file_name : str
-        Output HDF5 file containing uncollided flux moments, mesh and total
-        cross-section metadata, and production/removal/outflow balance terms.
+        Cartesian two- or three-dimensional spatial mesh.
     num_groups : int
         Number of energy groups.
     groupsets : List[Dict], default=[]
@@ -709,53 +703,32 @@ WrapLBS(py::module& slv)
     boundary_conditions : List[Dict], default=[]
         Vacuum or reflecting boundary conditions, using the same ``name`` and
         ``type`` entries as ``DiscreteOrdinatesProblem``. Reflecting boundaries
-        are represented with image sources and must be planar, mutually
-        orthogonal symmetry planes without an opposing reflecting plane.
+        are represented with directly projected image sources and must be
+        planar, mutually orthogonal symmetry planes without an opposing
+        reflecting plane.
     point_sources : List[pyopensn.source.PointSource], default=[]
-        Explicit point sources. Point and volumetric sources may be used
-        together.
-    volumetric_sources : List[pyopensn.source.VolumetricSource], default=[]
-        Isotropic volumetric sources. Each source is approximated by
-        cell-volume quadrature point sources with strengths
-        ``q(x_q) * JxW_q``. Spatial source functions are evaluated at time zero.
+        Explicit point sources. At least one point source is required.
     near_source : List[pyopensn.logvol.LogicalVolume], default=[]
-        Near-source ray-traced region for each explicit point source, in the
+        Near-source ray-traced region for each point source, in the
         same order as ``point_sources``. The list length must equal the number
-        of explicit point sources, and every point source must lie in its
+        of point sources, and every point source must lie in its
         corresponding region.
-    volumetric_near_source : pyopensn.logvol.LogicalVolume, optional
-        Shared near-source ray-traced region for all generated volumetric
-        quadrature points. Every generated point must lie in the region. When
-        omitted, only each quadrature point's containing source cell is ray
-        traced and the remaining cells use the cheaper bulk sweep.
-    volumetric_source_quadrature_order : int, default=2
-        Spatial quadrature order used to approximate volumetric sources with
-        point sources. Order 1 uses one volume-weighted cell-centroid point and is
-        appropriate for cellwise-uniform sources. Order 2 uses multiple points
-        per cell and better represents spatially varying sources.
     scattering_order : int, default=0
         Maximum spherical-harmonic order written to the HDF5 file. It must be
         at least the scattering order of the collided problem that consumes
         the file.
-    progress_interval : int, default=5
-        Percentage interval for source-point progress reports. Reports include
-        completed source points, elapsed time, and estimated remaining time.
-        Set to zero to disable progress reporting.
-    project_reflected_image_sources : bool, default=False
-        Directly project each reflected image-source path at the volume
-        quadrature points in every cell. This avoids accumulated bulk-sweep
-        error for reflected paths but is substantially more expensive and is
-        primarily intended for accuracy studies.
-    reflected_image_projection_threads : int, default=1
-        Number of CPU threads used for direct reflected-image projection.
-        Uncollided generation still requires a single MPI rank.
-
     Notes
     -----
-    Construction runs the calculation immediately. The uncollided file is
-    partition-independent: it is generated serially and may be consumed by a
-    serial or parallel collided calculation on the same mesh. The collided
-    problem must use the same reflecting boundaries recorded in the file.
+    Only explicit point sources are supported by the uncollided generator.
+    A volumetric source may be approximated externally by multiple weighted
+    point sources, as in the Kobayashi benchmark example.
+
+    The uncollided file generated by :class:`UncollidedSolver` is
+    partition-independent and may be consumed by a serial or parallel collided
+    calculation on the same mesh. The collided problem must use the same
+    reflecting boundaries recorded in the file.
+    Each reflected image source is ray traced to every finite-element volume
+    quadrature point and projected directly into the spatial discretization.
     )");
 
   // discrete ordinate solver
@@ -936,7 +909,7 @@ WrapLBS(py::module& slv)
         steady-state mode. Requires ``options.save_angular_flux=True``.
         Both ``AAH`` and ``CBC`` sweep types support time-dependent mode.
     uncollided_flux : str, default=""
-        HDF5 file generated by :class:`UncollidedProblem`. For steady-state
+        HDF5 file generated by :class:`UncollidedSolver`. For steady-state
         forward calculations, OpenSn uses its moments to construct the
         first-collision scattering and fission source, solves for the collided
         component, and adds the uncollided moments back to the converged state.
@@ -1438,6 +1411,57 @@ WrapLBS(py::module& slv)
         If ``time_dependent=True``, ``options.save_angular_flux=True`` is required.
     )"
   );
+}
+
+// Wrap uncollided solver
+void
+WrapUncollidedSolver(py::module& slv)
+{
+  // clang-format off
+  auto uncollided_solver =
+    py::class_<UncollidedSolver, std::shared_ptr<UncollidedSolver>, Solver>(
+      slv,
+      "UncollidedSolver",
+      R"(
+    Generate and write uncollided flux moments for first-collision transport.
+
+    Wrapper of :cpp:class:`opensn::UncollidedSolver`.
+    )"
+  );
+  uncollided_solver.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return UncollidedSolver::Create(kwargs_to_param_block(params));
+      }
+    ),
+    R"(
+    Construct an uncollided transport solver.
+
+    Parameters
+    ----------
+    problem : pyopensn.solver.UncollidedProblem
+        Existing uncollided problem instance.
+    file_name : str
+        Output HDF5 file containing uncollided flux moments, mesh and total
+        cross-section metadata, and production/removal/outflow balance terms.
+    progress_interval : int, default=5
+        Percentage interval for source-point progress reports. Reports include
+        completed source points, elapsed time, and estimated remaining time.
+        Set to zero to disable progress reporting.
+
+    Notes
+    -----
+    :meth:`Initialize` requires exactly one MPI rank. The generated HDF5 file
+    may then be reused by a serial or parallel collided calculation on the
+    same mesh.
+
+    Internal threading in the current uncollided implementation is capped by
+    the ``OPENSN_NUM_THREADS`` environment variable and defaults to ``1`` when
+    the variable is unset or invalid.
+    )"
+  );
+  // clang-format on
 }
 
 // Wrap steady-state solver
@@ -2302,6 +2326,7 @@ py_solver(py::module& pyopensn)
   WrapProblem(slv);
   WrapSolver(slv);
   WrapLBS(slv);
+  WrapUncollidedSolver(slv);
   WrapSteadyState(slv);
   WrapTransient(slv);
   WrapNLKEigen(slv);

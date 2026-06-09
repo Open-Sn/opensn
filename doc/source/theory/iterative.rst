@@ -319,20 +319,10 @@ Notes:
    outgoing faces in proportion to their ray-traced currents. This avoids
    balancing independently integrated volume and face approximations.
 
-#. A volumetric source is approximated by point sources at the
-   volume-quadrature points of every subscribing cell. Each point-source group
-   strength is the source evaluated at that point times its physical
-   quadrature weight :math:`Jw`. Second-order quadrature is the default.
-   First-order quadrature uses one volume-weighted cell-centroid point and is
-   suitable for cellwise-uniform sources. The uncollided generation remains
-   serial, and the resulting HDF5 data can drive either a serial or parallel
-   collided calculation. Spatially varying sources are evaluated at
-   steady-state time zero. By default, only the containing source cell is ray
-   traced for each quadrature point. The optional
-   ``volumetric_near_source`` logical volume defines a shared larger
-   ray-traced region for all volumetric quadrature points. The cost scales
-   with the total number of source quadrature points and the number of cells
-   in that shared region.
+#. Finite-volume sources can be approximated externally by weighted point
+   sources, for example at volume-quadrature points. The uncollided generation
+   itself consumes explicit point sources, remains serial in MPI, and produces
+   HDF5 data that can drive either a serial or parallel collided calculation.
 
 #. Planar, mutually orthogonal reflecting symmetry boundaries are represented
    by image sources. Attenuation paths to an image source are folded through

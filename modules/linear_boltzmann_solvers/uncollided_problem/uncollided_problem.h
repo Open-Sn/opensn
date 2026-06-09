@@ -15,12 +15,13 @@
 #include "hdf5.h"
 #include <atomic>
 #include <mutex>
-#include <set>
 #include <string>
 #include <thread>
 
 namespace opensn
 {
+
+class UncollidedSolver;
 
 struct UncollidedMatrices
 {
@@ -36,6 +37,8 @@ public:
   ~UncollidedProblem() override;
 
 protected:
+  friend class UncollidedSolver;
+
   struct ReflectionPlane
   {
     std::uint64_t boundary_id = 0;
@@ -55,9 +58,19 @@ protected:
     std::vector<double> strength;
     std::vector<Subscriber> subscribers;
     std::shared_ptr<LogicalVolume> near_source_logvol;
-    bool report_diagnostics = true;
-    bool reflected_image = false;
     std::vector<ReflectionPlane> reflection_planes;
+  };
+
+  enum class CellRegion
+  {
+    NEAR_SOURCE,
+    BULK
+  };
+
+  struct Moment
+  {
+    unsigned int ell;
+    int m;
   };
 
   void PrintSimHeader() override;
@@ -72,17 +85,7 @@ protected:
     return norm == 0. ? Vector3(0., 0., 0.) : (point1 - point0).Normalized();
   }
 
-  /**
-   * Populates cell relationships and face orientations for point source calculation.
-   *
-   * \param point_source The point source position vector.
-   * \param cell_successors Cell successors.
-   */
-  void PopulateCellRelationships(const Vector3& point_source,
-                                 std::vector<std::set<std::pair<size_t, double>>>& cell_successors);
-
-  void ConstructSPLS(const std::vector<std::set<std::pair<size_t, double>>>& cell_successors,
-                     const SourcePoint& source_point);
+  void BuildSweepOrdering(const SourcePoint& source_point);
 
   void InitializeNearSourceRegions(const InputParameters& params);
 
@@ -94,7 +97,7 @@ protected:
 
   void RaytraceNearSourceRegion(const SourcePoint& source_point);
 
-  void ProjectReflectedImageSource(const SourcePoint& source_point);
+  void ProjectReflectedImageSources(unsigned int progress_interval);
 
   std::vector<double> RaytraceLine(RayTracer& ray_tracer,
                                    const Cell& cell,
@@ -106,15 +109,13 @@ protected:
 
   UncollidedMatrices ComputeUncollidedIntegrals(const Cell& cell, const Vector3& pt_loc);
 
-  void Execute();
+  void Execute(const std::string& file_name, unsigned int progress_interval);
 
   void UpdateBalance(const SourcePoint& source_point);
 
   void AccumulateMoments(const Vector3& pt_loc);
 
   void WriteFluxMoments(hid_t file);
-
-  void ComputeMoment(unsigned int ell, int m, const Vector3& pt_loc);
 
   void FinalizeBalance(hid_t file);
 
@@ -125,39 +126,28 @@ protected:
 
   /// Near source region logical volumes.
   std::vector<std::shared_ptr<LogicalVolume>> near_source_logvols_;
-  std::shared_ptr<LogicalVolume> volumetric_near_source_logvol_;
   std::vector<SourcePoint> source_points_;
+  std::vector<SourcePoint> reflected_source_points_;
   std::vector<ReflectionPlane> reflection_planes_;
   std::set<std::uint64_t> reflecting_boundary_ids_;
   /// Cell face orientations for the cells in the local cell graph.
   std::vector<std::vector<FaceOrientation>> cell_face_orientations_;
-  /// Uncollided sweep-plane local subgrid.
-  std::vector<size_t> spls_;
   /// Near source uncollided sweep-plane local subgrid.
   std::vector<size_t> near_spls_;
   /// Bulk region uncollided sweep-plane local subgrid.
   std::vector<size_t> bulk_spls_;
-
-  DenseMatrix<double> G_, M_surf_, M_;
-  std::vector<Vector<double>> Phi_;
+  std::vector<CellRegion> cell_regions_;
 
   std::vector<double> destination_phi_;
 
-  std::string uncollided_flux_file_;
-  unsigned int progress_interval_ = 5;
-  unsigned int volumetric_source_quadrature_order_ = 2;
-  bool project_reflected_image_sources_ = false;
-  unsigned int reflected_image_projection_threads_ = 1;
-
   unsigned int ell_max_ = 0;
-  std::vector<double> flux_moment_;
+  std::vector<Moment> moments_;
   std::vector<std::string> moment_names_;
   std::vector<std::vector<double>> accumulated_moments_;
 
   double production_ = 0.;
   double removal_ = 0.;
   double out_flow_ = 0.;
-  bool out_flow_is_partial_ = false;
 
 public:
   static InputParameters GetInputParameters();
