@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Verify that the uncollided generator accepts only point sources."""
 
+import importlib
 import os
 import sys
 
@@ -15,7 +16,8 @@ if "opensn_console" not in globals():
     from pyopensn.source import VolumetricSource
     from pyopensn.xs import MultiGroupXS
 
-from uncollided_unstructured_utils import mesh_path
+sys.path.append(os.path.dirname(__file__))
+mesh_path = importlib.import_module("uncollided_unstructured_utils").mesh_path
 
 
 if __name__ == "__main__":

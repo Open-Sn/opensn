@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Homogeneous 2D unstructured-mesh uncollided flux and P1 moment test."""
 
+import importlib
 import math
 import os
 import sys
@@ -28,16 +29,16 @@ if "opensn_console" not in globals():
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
-from uncollided_unstructured_utils import (
-    mesh_path,
-    point_value,
-    relative_error,
-    remove_file,
-    uncollided_2d,
-    uncollided_escape_2d_rectangle,
-    volume_integral,
-    volume_minimum,
-)
+sys.path.append(os.path.dirname(__file__))
+uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
+mesh_path = uncollided_utils.mesh_path
+point_value = uncollided_utils.point_value
+relative_error = uncollided_utils.relative_error
+remove_file = uncollided_utils.remove_file
+uncollided_2d = uncollided_utils.uncollided_2d
+uncollided_escape_2d_rectangle = uncollided_utils.uncollided_escape_2d_rectangle
+volume_integral = uncollided_utils.volume_integral
+volume_minimum = uncollided_utils.volume_minimum
 
 
 if __name__ == "__main__":

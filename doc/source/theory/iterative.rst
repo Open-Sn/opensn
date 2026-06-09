@@ -327,13 +327,10 @@ Notes:
 #. Planar, mutually orthogonal reflecting symmetry boundaries are represented
    by image sources. Attenuation paths to an image source are folded through
    the physical mesh so heterogeneous material crossings remain consistent
-   with the reflected geometry. Opposing and oblique reflecting planes are
-   excluded because their exact solution requires an unbounded image series.
+   with the reflected geometry.
 
-#. Higher flux moments are projected independently from the analytic
-   ray direction. In two-dimensional Cartesian problems, the
-   :math:`P_1` ordering is :math:`(1,-1),(1,1)`; the out-of-plane
-   :math:`(1,0)` moment is omitted.
+#. If ``scattering_order`` is greater than zero, OpenSn also writes the
+   corresponding uncollided flux moments needed by the collided solve.
 
 #. The collided problem is quite similar to a standard :math:`S_n` so
    the solution techniques described early apply straightforwardly. The

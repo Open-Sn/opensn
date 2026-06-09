@@ -47,11 +47,12 @@ ApplyConservativePositiveCorrection(Vector<double>& coefficients,
                                     const double balance_scale)
 {
   OpenSnLogicalErrorIf(coefficients.size() != weights.size(),
-                       "Conservative projection correction size mismatch.");
+                       "UncollidedProblem: conservative projection correction size mismatch.");
 
   const double tolerance = 1.0e-12 * std::max(1.0, balance_scale);
   OpenSnLogicalErrorIf(target_integral < -tolerance,
-                       "Ray-traced face currents imply a negative cell-integrated flux of " +
+                       "UncollidedProblem: ray-traced face currents imply a negative "
+                       "cell-integrated flux of " +
                          std::to_string(target_integral) + " with balance scale " +
                          std::to_string(balance_scale) + ".");
 
@@ -70,7 +71,8 @@ ApplyConservativePositiveCorrection(Vector<double>& coefficients,
       }
 
     OpenSnLogicalErrorIf(free_weight <= 0.0 and nonnegative_target > tolerance,
-                         "Unable to construct a nonnegative conservative projection.");
+                         "UncollidedProblem: unable to construct a nonnegative conservative "
+                         "projection.");
 
     if (free_weight <= 0.0)
       return;
@@ -135,6 +137,9 @@ UncollidedProblem::Create(const ParameterBlock& params)
   auto problem = std::make_shared<UncollidedProblem>(input_params);
   problem->BuildRuntime();
 
+  OpenSnInvalidArgumentIf(opensn::mpi_comm.size() != 1,
+                          problem->GetName() +
+                            ": uncollided flux generation must run with exactly one MPI rank.");
   OpenSnInvalidArgumentIf(problem->grid_->GetDimension() < 2 or problem->grid_->GetDimension() > 3,
                           problem->GetName() +
                             ": only two- and three-dimensional meshes are supported.");
@@ -144,6 +149,12 @@ UncollidedProblem::Create(const ParameterBlock& params)
                           problem->GetName() + ": only point sources are supported.");
   OpenSnInvalidArgumentIf(problem->GetPointSources().empty(),
                           problem->GetName() + ": at least one point source is required.");
+  for (const auto& point_source : problem->GetPointSources())
+    OpenSnInvalidArgumentIf(
+      point_source->GetNumGlobalSubscribers() != 1,
+      problem->GetName() +
+        ": point sources on faces, edges, or vertices are not currently supported for "
+        "uncollided generation.");
 
   problem->InitializeNearSourceRegions(input_params);
   problem->InitializeReflectingBoundaries(input_params);
@@ -539,8 +550,6 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
                        GetName() + ": failed to write node z coordinates.");
   OpenSnLogicalErrorIf(not H5WriteDataset1D<double>(file, "cell sigma_t", cell_sigma_t),
                        GetName() + ": failed to write total cross sections.");
-  OpenSnLogicalErrorIf(not H5CreateAttribute<unsigned int>(file, "format version", 2),
-                       GetName() + ": failed to write format version.");
   OpenSnLogicalErrorIf(not H5CreateAttribute<unsigned int>(file, "num groups", num_groups_),
                        GetName() + ": failed to write group count.");
   OpenSnLogicalErrorIf(not H5CreateAttribute<unsigned int>(file, "max moment order", ell_max_),
@@ -577,7 +586,8 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 
     const auto& pt_loc = source_point.location;
     if (source_point.near_source_logvol and not source_point.near_source_logvol->Inside(pt_loc))
-      throw std::runtime_error("One or more source points lies outside its near-source region.");
+      throw std::runtime_error(GetName() +
+                               ": one or more source points lies outside its near-source region.");
 
     // Initialize uncollided flux and moment vector
     destination_phi_.assign(num_loc_unknowns, 0.);
@@ -660,7 +670,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
             << " reflected image sources over " << num_cells << " cells with " << num_threads
             << " threads.";
 
-  auto project_cells = [&](const size_t thread_id)
+  auto ProjectCells = [&](const size_t thread_id)
   {
     try
     {
@@ -826,8 +836,8 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
   std::vector<std::thread> workers;
   workers.reserve(num_threads > 0 ? num_threads - 1 : 0);
   for (size_t thread_id = 1; thread_id < num_threads; ++thread_id)
-    workers.emplace_back(project_cells, thread_id);
-  project_cells(0);
+    workers.emplace_back(ProjectCells, thread_id);
+  ProjectCells(0);
   for (auto& worker : workers)
     worker.join();
   if (worker_exception)
@@ -1168,7 +1178,7 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
   const auto& pt_loc = source_point.location;
   const auto& strength = source_point.strength;
   // Uncollided flux analytical value
-  auto phi_ex = [this](double q0, double d, double mfp)
+  auto PhiEx = [this](double q0, double d, double mfp)
   {
     if (grid_->GetDimension() == 2)
       return q0 / (2. * M_PI * d) * std::exp(-mfp);
@@ -1182,13 +1192,13 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
   // Direction vector
   Vector3 omega = ComputeOmega(qp_xyz, pt_loc);
   if (omega.Norm() == 0.)
-    throw std::runtime_error("Point source lies at cell quadrature point.");
+    throw std::runtime_error(GetName() + ": point source lies at cell quadrature point.");
 
   // Distance to point source
   double total_length = (pt_loc - qp_xyz).Norm();
   std::vector<std::pair<size_t, double>> segment_lengths;
 
-  auto reflect_point = [](const Vector3& point, const ReflectionPlane& plane)
+  auto ReflectPoint = [](const Vector3& point, const ReflectionPlane& plane)
   { return point - 2.0 * (plane.normal.Dot(point) - plane.offset) * plane.normal; };
 
   std::vector<double> breakpoints = {0.0, 1.0};
@@ -1215,8 +1225,8 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
     for (const auto& plane : source_point.reflection_planes)
       if (plane.normal.Dot(midpoint) > plane.offset)
       {
-        segment_start = reflect_point(segment_start, plane);
-        segment_end = reflect_point(segment_end, plane);
+        segment_start = ReflectPoint(segment_start, plane);
+        segment_end = ReflectPoint(segment_end, plane);
       }
 
     double remaining_distance = (segment_end - segment_start).Norm();
@@ -1261,7 +1271,7 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
   }
 
   for (size_t g = 0; g < num_groups_; ++g)
-    phi[g] = phi_ex(strength[g], total_length, mfp[g]);
+    phi[g] = PhiEx(strength[g], total_length, mfp[g]);
 
   return phi;
 }
@@ -1280,7 +1290,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
     log.Log() << "Bulk sweep will process " << num_groups_ << " groups over " << num_group_threads
               << " threads.";
 
-  auto sweep_groups = [&](const size_t thread_id)
+  auto SweepGroups = [&](const size_t thread_id)
   {
     // Sweep bulk region cells
     for (size_t c : bulk_spls_)
@@ -1430,9 +1440,9 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
   std::vector<std::thread> workers;
   workers.reserve(num_group_threads > 0 ? num_group_threads - 1 : 0);
   for (size_t thread_id = 1; thread_id < num_group_threads; ++thread_id)
-    workers.emplace_back(sweep_groups, thread_id);
+    workers.emplace_back(SweepGroups, thread_id);
 
-  sweep_groups(0);
+  SweepGroups(0);
 
   for (auto& worker : workers)
     worker.join();

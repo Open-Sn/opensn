@@ -707,7 +707,9 @@ WrapLBS(py::module& slv)
         planar, mutually orthogonal symmetry planes without an opposing
         reflecting plane.
     point_sources : List[pyopensn.source.PointSource], default=[]
-        Explicit point sources. At least one point source is required.
+        Explicit point sources. At least one point source is required. For now,
+        each source must lie strictly inside a single cell; sources exactly on
+        faces, edges, or vertices are rejected.
     near_source : List[pyopensn.logvol.LogicalVolume], default=[]
         Near-source ray-traced region for each point source, in the
         same order as ``point_sources``. The list length must equal the number
@@ -720,6 +722,7 @@ WrapLBS(py::module& slv)
     Notes
     -----
     Only explicit point sources are supported by the uncollided generator.
+    Each point source must lie strictly inside a single cell.
     A volumetric source may be approximated externally by multiple weighted
     point sources, as in the Kobayashi benchmark example.
 

@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+import importlib
+import os
+import sys
+
+sys.path.append(os.path.dirname(__file__))
+
+
 def run(api, rank):
     GLCProductQuadrature2DXY = api["GLCProductQuadrature2DXY"]
     FieldFunctionInterpolationVolume = api["FieldFunctionInterpolationVolume"]
@@ -8,7 +15,9 @@ def run(api, rank):
     DiscreteOrdinatesProblem = api["DiscreteOrdinatesProblem"]
     SteadyStateSourceSolver = api["SteadyStateSourceSolver"]
     MultiGroupXS = api["MultiGroupXS"]
-    from uncollided_unstructured_utils import mesh_path, volume_integral
+    uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
+    mesh_path = uncollided_utils.mesh_path
+    volume_integral = uncollided_utils.volume_integral
 
     grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
     grid.SetUniformBlockID(0)

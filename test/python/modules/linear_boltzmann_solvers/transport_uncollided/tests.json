@@ -1,5 +1,30 @@
 [
   {
+    "file": "uncollided_input_rejections.py",
+    "comment": "Uncollided generation rejects missing point sources, near-source mismatches, and boundary-aligned point sources",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedMissingPointSourceRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedNearSourceMismatchRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedFaceOrVertexSourceRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
     "file": "uncollided_parallel_rejected.py",
     "comment": "Uncollided generation rejects multiple MPI ranks",
     "num_procs": 2,
@@ -7,6 +32,19 @@
       {
         "type": "KeyValuePair",
         "key": "UncollidedParallelGenerationRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_reflecting_source_rejected.py",
+    "comment": "Reflecting uncollided generation rejects boundary-aligned point sources",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReflectingFaceOrVertexSourceRejected=",
         "goldvalue": 1.0,
         "abs_tol": 0.0
       }
@@ -53,6 +91,25 @@
         "key": "UncollidedReflecting2DMismatchRejected=",
         "goldvalue": 1.0,
         "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_2d_structured_analytic.py",
+    "comment": "2D structured-mesh uncollided flux remains positive and preserves global outflow",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DStructuredMinimumScalarFlux=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-14
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DStructuredOutflowRelativeError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.02
       }
     ]
   },
@@ -133,6 +190,32 @@
     ]
   },
   {
+    "file": "uncollided_2d_source_superposition.py",
+    "comment": "Multiple 2D point sources preserve linear superposition",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DSuperpositionRelativeDifference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "uncollided_2d_multigroup_analytic.py",
+    "comment": "2D multigroup uncollided attenuation matches groupwise analytic values",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DMultigroupMaxError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.001
+      }
+    ]
+  },
+  {
     "file": "uncollided_3d_unstructured_analytic.py",
     "comment": "3D tetrahedral scalar-flux mesh convergence",
     "num_procs": 1,
@@ -168,6 +251,137 @@
         "key": "UnstructuredCollidedFraction=",
         "goldvalue": 0.325493,
         "abs_tol": 0.01
+      }
+    ]
+  },
+  {
+    "file": "uncollided_file_rejections.py",
+    "comment": "Uncollided file compatibility rejects insufficient moments and cross-section mismatches",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedMomentOrderRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedXSMismatchRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_kobayashi_coarse_generate.py",
+    "comment": "Long coarse Kobayashi Problem 3 uncollided generation reused by case-i and case-ii solves",
+    "num_procs": 1,
+    "weight_class": "long",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarseUncollidedGenerated=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_kobayashi_case_i_coarse.py",
+    "comment": "Long Kobayashi case-i full uncollided plus collided solve on the coarse tetrahedral mesh",
+    "num_procs": 1,
+    "weight_class": "long",
+    "dependency": "uncollided_kobayashi_coarse_generate.py",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarseMeanRatio=",
+        "goldvalue": 0.96855037,
+        "abs_tol": 0.05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarseMinRatio=",
+        "goldvalue": 0.53637647,
+        "abs_tol": 0.12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarseMaxRatio=",
+        "goldvalue": 1.28325735,
+        "abs_tol": 0.12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarse3CMeanRatio=",
+        "goldvalue": 0.93444308,
+        "abs_tol": 0.10
+      }
+    ]
+  },
+  {
+    "file": "uncollided_kobayashi_case_ii_coarse.py",
+    "comment": "Long Kobayashi case-ii full uncollided plus collided solve on the coarse tetrahedral mesh",
+    "num_procs": 1,
+    "weight_class": "long",
+    "dependency": "uncollided_kobayashi_coarse_generate.py",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarseCaseIIMeanRatio=",
+        "goldvalue": 0.96075214,
+        "abs_tol": 0.06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarseCaseIIMinRatio=",
+        "goldvalue": 0.66615150,
+        "abs_tol": 0.12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarseCaseIIMaxRatio=",
+        "goldvalue": 1.04569897,
+        "abs_tol": 0.10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiCoarseCaseII3CMeanRatio=",
+        "goldvalue": 0.97316227,
+        "abs_tol": 0.10
+      }
+    ]
+  },
+  {
+    "file": "uncollided_kobayashi_case_i_fine.py",
+    "comment": "Long Kobayashi case-i suite on the fine tetrahedral mesh",
+    "num_procs": 1,
+    "weight_class": "long",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiFineMeanRatio=",
+        "goldvalue": 0.97926496,
+        "abs_tol": 0.05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiFineMinRatio=",
+        "goldvalue": 0.60008257,
+        "abs_tol": 0.15
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiFineMaxRatio=",
+        "goldvalue": 1.04797076,
+        "abs_tol": 0.08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiFine3CMeanRatio=",
+        "goldvalue": 0.99817784,
+        "abs_tol": 0.10
       }
     ]
   },

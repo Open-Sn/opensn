@@ -74,7 +74,15 @@ SteadyStateSourceSolver::Execute()
   const auto& options = do_problem_->GetOptions();
 
   if (do_problem_->HasUncollidedFlux())
+  {
+    // `phi_new_local_` is kept as the reported total flux between solves so field
+    // functions and downstream consumers see the physical solution. The AGS solve,
+    // however, must iterate on the collided component only because the uncollided
+    // moments have already been folded into the first-collision source.
+    // TODO: Keep the iterative state collided-only and form total flux only for
+    // output/postprocessing so this subtract/re-add bookkeeping goes away.
     do_problem_->RemoveUncollidedFlux();
+  }
 
   auto& ags_solver = *do_problem_->GetAGSSolver();
   ags_solver.Solve();

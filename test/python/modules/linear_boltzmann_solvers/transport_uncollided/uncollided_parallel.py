@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import importlib
 import os
 import sys
 
@@ -14,6 +15,7 @@ if "opensn_console" not in globals():
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.xs import MultiGroupXS
 
-from uncollided_parallel_common import run
+sys.path.append(os.path.dirname(__file__))
+run = importlib.import_module("uncollided_parallel_common").run
 
 run(globals(), rank)

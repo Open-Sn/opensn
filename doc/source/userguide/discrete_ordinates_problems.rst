@@ -493,6 +493,15 @@ The uncollided generator supports:
 Every point source requires a corresponding entry in ``near_source``. The two
 lists are matched by position.
 
+For now, uncollided generation requires each point source to lie strictly
+inside a single cell. A source located exactly on a face, edge, or vertex is
+rejected as unsupported.
+
+In two-dimensional problems, a point source represents the two-dimensional
+transport Green's function, equivalently a line source per unit
+out-of-plane depth. Its free-space uncollided scalar flux scales as
+:math:`1/(2 \pi r)`, not as the three-dimensional :math:`1/(4 \pi r^2)` point-source field.
+
 Finite-volume sources can be approximated by the input author with weighted
 point sources. For example, a quadrature approximation uses
 
@@ -543,10 +552,8 @@ planes, such as ``xmin``, ``ymin``, and ``zmin``:
    uncollided_solver.Initialize()
    uncollided_solver.Execute()
 
-Opposing or oblique reflecting planes are rejected because they require an
-unbounded image-source series. The HDF5 file records the reflecting boundary
-IDs, and the collided problem rejects files generated with a different
-reflector set.
+The HDF5 file records the reflecting boundary IDs, and the collided problem
+rejects files generated with a different reflector set.
 
 The near-source calculation independently projects the ray-traced volume flux
 and integrates ray-traced face currents. These two quadratures generally do

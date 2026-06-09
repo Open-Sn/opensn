@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Analytic uncollided point-source test with two reflecting symmetry planes."""
 
+import importlib
 import math
 import os
 import sys
@@ -25,7 +26,12 @@ if "opensn_console" not in globals():
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
-from uncollided_unstructured_utils import mesh_path, point_value, relative_error, remove_file
+sys.path.append(os.path.dirname(__file__))
+uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
+mesh_path = uncollided_utils.mesh_path
+point_value = uncollided_utils.point_value
+relative_error = uncollided_utils.relative_error
+remove_file = uncollided_utils.remove_file
 
 
 def analytic_flux(source, images, point, sigma_t):
@@ -48,11 +54,11 @@ if __name__ == "__main__":
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=sigma_t, c=0.0)
 
-    source = (-0.37, -0.41, 0.0)
+    source = (-0.371, -0.409, 0.0)
     images = [
-        (-1.63, -0.41, 0.0),
-        (-0.37, -1.59, 0.0),
-        (-1.63, -1.59, 0.0),
+        (-1.629, -0.409, 0.0),
+        (-0.371, -1.591, 0.0),
+        (-1.629, -1.591, 0.0),
     ]
     point_source = PointSource(location=list(source), strength=[1.0])
     whole_domain = RPPLogicalVolume(

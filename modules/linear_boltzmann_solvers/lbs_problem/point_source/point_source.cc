@@ -98,7 +98,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   // An explicit face check makes the subscriber set work for sources on faces and
   // vertices, and keeps the uncollided treatment consistent with the collided
   // point-source treatment.
-  auto point_is_in_cell_or_on_boundary = [&grid](const Cell& cell, const Vector3& point)
+  auto PointIsInCellOrOnBoundary = [&grid](const Cell& cell, const Vector3& point)
   {
     if (grid->CheckPointInsideCell(cell, point))
       return true;
@@ -115,7 +115,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   std::vector<Subscriber> subscribers;
   for (const auto& cell : grid->local_cells)
   {
-    if (point_is_in_cell_or_on_boundary(cell, location_))
+    if (PointIsInCellOrOnBoundary(cell, location_))
     {
       const auto& cell_mapping = discretization.GetCellMapping(cell);
       const auto& fe_values = unit_cell_matrices[cell.local_id];
@@ -140,7 +140,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   for (uint64_t global_id : ghost_global_ids)
   {
     const auto& nbr_cell = grid->cells[global_id];
-    if (point_is_in_cell_or_on_boundary(nbr_cell, location_))
+    if (PointIsInCellOrOnBoundary(nbr_cell, location_))
     {
       const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id);
       total_volume +=

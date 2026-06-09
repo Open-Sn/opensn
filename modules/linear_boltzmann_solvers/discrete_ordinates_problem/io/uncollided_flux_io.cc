@@ -32,12 +32,7 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& transport_views = do_problem.GetCellTransportViews();
 
-  unsigned int format_version = 0;
   UncollidedFluxData data;
-  OpenSnInvalidArgumentIf(
-    not H5ReadAttribute<unsigned int>(file.Id(), "format version", format_version) or
-      format_version != 2,
-    problem_name + ": unsupported uncollided flux file format in \"" + file_name + "\".");
   OpenSnInvalidArgumentIf(
     not H5ReadAttribute<unsigned int>(file.Id(), "num groups", data.num_groups) or
       data.num_groups != num_groups,

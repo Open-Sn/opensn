@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Homogeneous 3D tetrahedral-mesh convergence test."""
 
+import importlib
 import os
 import sys
 
@@ -21,14 +22,14 @@ if "opensn_console" not in globals():
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
-from uncollided_unstructured_utils import (
-    mesh_path,
-    point_value,
-    relative_error,
-    remove_file,
-    uncollided_3d,
-    volume_minimum,
-)
+sys.path.append(os.path.dirname(__file__))
+uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
+mesh_path = uncollided_utils.mesh_path
+point_value = uncollided_utils.point_value
+relative_error = uncollided_utils.relative_error
+remove_file = uncollided_utils.remove_file
+uncollided_3d = uncollided_utils.uncollided_3d
+volume_minimum = uncollided_utils.volume_minimum
 
 
 def compute_error(mesh_name, file_name):

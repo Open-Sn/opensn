@@ -13,6 +13,31 @@ namespace opensn
 namespace
 {
 
+double
+EstimateCellSize(const MeshContinuum& grid, const Cell& cell)
+{
+  const auto& v0 = grid.vertices[cell.vertex_ids.front()];
+  double xmin = v0.x;
+  double xmax = v0.x;
+  double ymin = v0.y;
+  double ymax = v0.y;
+  double zmin = v0.z;
+  double zmax = v0.z;
+
+  for (const auto vertex_id : cell.vertex_ids)
+  {
+    const auto& vertex = grid.vertices[vertex_id];
+    xmin = std::min(xmin, vertex.x);
+    xmax = std::max(xmax, vertex.x);
+    ymin = std::min(ymin, vertex.y);
+    ymax = std::max(ymax, vertex.y);
+    zmin = std::min(zmin, vertex.z);
+    zmax = std::max(zmax, vertex.z);
+  }
+
+  return std::max((Vector3(xmax, ymax, zmax) - Vector3(xmin, ymin, zmin)).Norm(), 1.0);
+}
+
 bool
 CheckIntersectionAtVertex(const std::shared_ptr<MeshContinuum>& grid,
                           const std::vector<uint64_t>& vertex_ids,
@@ -58,8 +83,23 @@ RayTracer::Grid() const
 RayTracerOutputInformation
 RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth)
 {
-  if (not cell_sizes_.empty())
-    SetTolerancesFromCellSize(cell_sizes_[cell.local_id]);
+  const auto& grid = Grid();
+  const double cell_size =
+    not cell_sizes_.empty() ? cell_sizes_[cell.local_id] : EstimateCellSize(*grid, cell);
+  SetTolerancesFromCellSize(cell_size);
+
+  // If the caller supplies an endpoint that lies exactly on a face, edge, or vertex, advance a
+  // tiny distance along the ray so the intersection search starts inside the current cell
+  // instead of re-hitting the same topological feature.
+  const double boundary_start_nudge = std::max(100.0 * backward_tolerance_, 1.0e-8 * cell_size);
+  for (size_t f = 0; f < cell.faces.size(); ++f)
+    if (grid->CheckPointInsideCellFace(cell, f, pos_i))
+    {
+      const auto nudged_pos_i = pos_i + boundary_start_nudge * omega_i;
+      if (grid->CheckPointInsideCell(cell, nudged_pos_i))
+        pos_i = nudged_pos_i;
+      break;
+    }
 
   RayTracerOutputInformation oi;
 
@@ -107,8 +147,6 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
            << "For particle xyz=" << pos_i.PrintStr() << " uvw=" << omega_i.PrintStr() << " "
            << (pos_i + extension_distance_ * omega_i).PrintStr() << " " << extension_distance_
            << " in cell " << cell.global_id << " with vertices: \n";
-
-    const auto& grid = Grid();
 
     for (auto vi : cell.vertex_ids)
       outstr << grid->vertices[vi].PrintStr() << "\n";

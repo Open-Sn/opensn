@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """First-collision source and total-flux test on an unstructured mesh."""
 
+import importlib
 import os
 import sys
 
@@ -23,7 +24,11 @@ if "opensn_console" not in globals():
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
-from uncollided_unstructured_utils import mesh_path, remove_file, volume_integral
+sys.path.append(os.path.dirname(__file__))
+uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
+mesh_path = uncollided_utils.mesh_path
+remove_file = uncollided_utils.remove_file
+volume_integral = uncollided_utils.volume_integral
 
 
 if __name__ == "__main__":
