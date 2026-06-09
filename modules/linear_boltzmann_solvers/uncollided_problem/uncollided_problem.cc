@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "modules/linear_boltzmann_solvers/uncollided_problem/uncollided_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
@@ -176,6 +179,113 @@ UncollidedProblem::InitializeSpatialDiscretization()
   discretization_ = PieceWiseLinearDiscontinuous::New(grid_, QuadratureOrder::FOURTH);
 
   ComputeUnitIntegrals();
+
+  // Pre-compute per-cell bounding-box diagonals for RayTracer tolerance scaling.
+  // Without this, RayTracer::TraceRay() recomputes it on every call by iterating
+  // over all cell vertices.
+  cell_sizes_.resize(grid_->local_cells.size());
+  for (const auto& cell : grid_->local_cells)
+  {
+    const auto& v0 = grid_->vertices[cell.vertex_ids.front()];
+    double xmin = v0.x, xmax = v0.x;
+    double ymin = v0.y, ymax = v0.y;
+    double zmin = v0.z, zmax = v0.z;
+    for (const auto vid : cell.vertex_ids)
+    {
+      const auto& v = grid_->vertices[vid];
+      xmin = std::min(xmin, v.x);
+      xmax = std::max(xmax, v.x);
+      ymin = std::min(ymin, v.y);
+      ymax = std::max(ymax, v.y);
+      zmin = std::min(zmin, v.z);
+      zmax = std::max(zmax, v.z);
+    }
+    cell_sizes_[cell.local_id] =
+      std::max((Vector3(xmax, ymax, zmax) - Vector3(xmin, ymin, zmin)).Norm(), 1.0);
+  }
+
+  // Detect non-convex cells so the correct TraceRay path is selected.
+  // For each face (outward normal n), every off-face vertex v of a convex cell satisfies
+  // dot(n, v - v0) <= 0. Standard hex/tet meshes are fully convex.
+  all_cells_convex_ = [&]() -> bool
+  {
+    for (const auto& cell : grid_->local_cells)
+    {
+      const double tol = cell_sizes_[cell.local_id] * 1.0e-8;
+      for (const auto& face : cell.faces)
+      {
+        const auto& v0 = grid_->vertices[face.vertex_ids.front()];
+        const auto& n = face.normal;
+        for (const auto vid : cell.vertex_ids)
+        {
+          bool on_face = false;
+          for (const auto fvid : face.vertex_ids)
+            if (fvid == vid)
+            {
+              on_face = true;
+              break;
+            }
+          if (on_face)
+            continue;
+          if (n.Dot(grid_->vertices[vid] - v0) > tol)
+            return false;
+        }
+      }
+    }
+    return true;
+  }();
+  if (not all_cells_convex_)
+    log.Log() << "Non-convex cells detected; concavity checks enabled globally.";
+
+  // Precompute flat face vertex data when all cells are convex and all faces fit in FaceVertData.
+  // This bypasses the std::map-backed VertexHandler and the two O(log N) GlobalCellHandler lookups
+  // per while-loop iteration in RaytraceLineInto, replacing them with flat-array and unordered_map
+  // accesses that hit the L2 cache instead of chasing red-black tree nodes.
+  if (all_cells_convex_)
+  {
+    size_t total_faces = 0;
+    bool can_fast = true;
+    for (const auto& cell : grid_->local_cells)
+    {
+      for (const auto& face : cell.faces)
+      {
+        if (face.vertex_ids.size() > FaceVertData::max_sides)
+        {
+          can_fast = false;
+          break;
+        }
+      }
+      if (not can_fast)
+        break;
+      total_faces += cell.faces.size();
+    }
+
+    if (can_fast)
+    {
+      all_face_verts_.resize(total_faces);
+      cell_face_offsets_.resize(grid_->local_cells.size());
+      cell_num_faces_.resize(grid_->local_cells.size());
+      global_to_local_id_.reserve(grid_->local_cells.size());
+      size_t offset = 0;
+      for (const auto& cell : grid_->local_cells)
+      {
+        cell_face_offsets_[cell.local_id] = static_cast<uint32_t>(offset);
+        cell_num_faces_[cell.local_id] = static_cast<uint32_t>(cell.faces.size());
+        global_to_local_id_[cell.global_id] = static_cast<uint32_t>(cell.local_id);
+        for (const auto& face : cell.faces)
+        {
+          auto& fv = all_face_verts_[offset++];
+          fv.num_sides = static_cast<uint32_t>(face.vertex_ids.size());
+          for (size_t s = 0; s < fv.num_sides; ++s)
+            fv.verts[s] = grid_->vertices[face.vertex_ids[s]];
+          fv.centroid = face.centroid;
+          fv.neighbor_id = face.neighbor_id;
+          fv.pad = 0;
+        }
+      }
+      use_fast_trace_ = true;
+    }
+  }
 }
 
 void
@@ -402,7 +512,7 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
   }
 
   std::vector<size_t> sweep_order;
-  boost::topological_sort(local_cell_graph, std::back_inserter(sweep_order)); // NOLINT
+  boost::topological_sort(local_cell_graph, std::back_inserter(sweep_order));
   std::reverse(sweep_order.begin(), sweep_order.end());
   if (sweep_order.empty())
   {
@@ -474,6 +584,12 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
   }
 }
 
+// NOLINTBEGIN(clang-analyzer-security.ArrayBound)
+// False positive: the analyzer traces Execute() -> BuildSweepOrdering() ->
+// boost::topological_sort() into Boost's shared_array_property_map DFS color
+// map and cannot prove the vertex index is non-negative through the BGL visitor
+// chain. The suppression must cover Execute() because the analyzer anchors the
+// diagnostic to the first note it emits in user code, which is here.
 void
 UncollidedProblem::Execute(const std::string& file_name, const unsigned int progress_interval)
 {
@@ -493,9 +609,12 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 
   const auto& sdm = *discretization_;
 
-  size_t num_loc_cells = grid_->local_cells.size();
-  size_t num_loc_nodes = sdm.GetNumLocalNodes();
-  size_t num_loc_unknowns = num_loc_nodes * num_groups_;
+  const size_t num_loc_cells = grid_->local_cells.size();
+  const size_t num_loc_nodes = sdm.GetNumLocalNodes();
+  OpenSnLogicalErrorIf(
+    num_loc_cells == 0 or num_loc_nodes == 0,
+    GetName() + ": uncollided flux generation requires a nonempty local mesh on the serial rank.");
+  const size_t num_loc_unknowns = num_loc_nodes * num_groups_;
   moments_.clear();
   moment_names_.clear();
   accumulated_moments_.clear();
@@ -581,7 +700,7 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
   for (size_t source_index = 0; source_index < num_source_points; ++source_index)
   {
     const auto& source_point = source_points_[source_index];
-    if (progress_interval > 0 and source_index == 0)
+    if (progress_interval > 0 and source_index == 0 and num_source_points > 1)
       log.Log() << "Uncollided progress: processing source point 1 / " << num_source_points << ".";
 
     const auto& pt_loc = source_point.location;
@@ -647,6 +766,178 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
   // Finalize balance calculation
   FinalizeBalance(file);
 }
+// NOLINTEND(clang-analyzer-security.ArrayBound)
+
+void
+UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
+                                    const Cell& cell,
+                                    const Vector3& qp_xyz,
+                                    const SourcePoint& source_point,
+                                    std::vector<double>& phi_out,
+                                    std::vector<std::pair<size_t, double>>& scratch_segs,
+                                    std::vector<double>& scratch_bp,
+                                    std::vector<double>& scratch_mfp,
+                                    const double tolerance)
+{
+  const auto& pt_loc = source_point.location;
+  const auto& strength = source_point.strength;
+
+  const double total_length = (pt_loc - qp_xyz).Norm();
+  OpenSnLogicalErrorIf(total_length < 1.0e-15,
+                       GetName() + ": point source lies at cell quadrature point.");
+
+  auto ReflectPoint = [](const Vector3& point, const ReflectionPlane& plane)
+  { return point - 2.0 * (plane.normal.Dot(point) - plane.offset) * plane.normal; };
+
+  scratch_bp.clear();
+  scratch_bp.push_back(0.0);
+  scratch_bp.push_back(1.0);
+  const auto unfolded_direction = pt_loc - qp_xyz;
+  for (const auto& plane : source_point.reflection_planes)
+  {
+    const double denominator = plane.normal.Dot(unfolded_direction);
+    OpenSnLogicalErrorIf(std::abs(denominator) <= tolerance,
+                         GetName() + ": image-source ray is parallel to its reflecting plane.");
+    const double t = (plane.offset - plane.normal.Dot(qp_xyz)) / denominator;
+    OpenSnLogicalErrorIf(t < -tolerance or t > 1.0 + tolerance,
+                         GetName() + ": image-source ray does not intersect its reflecting plane.");
+    if (t > tolerance and t < 1.0 - tolerance)
+      scratch_bp.push_back(t);
+  }
+  std::sort(scratch_bp.begin(), scratch_bp.end());
+
+  scratch_segs.clear();
+  size_t cell_id = cell.local_id;
+  for (size_t interval = 0; interval + 1 < scratch_bp.size(); ++interval)
+  {
+    Vector3 segment_start = qp_xyz + scratch_bp[interval] * unfolded_direction;
+    Vector3 segment_end = qp_xyz + scratch_bp[interval + 1] * unfolded_direction;
+    const Vector3 midpoint = 0.5 * (segment_start + segment_end);
+    for (const auto& plane : source_point.reflection_planes)
+      if (plane.normal.Dot(midpoint) > plane.offset)
+      {
+        segment_start = ReflectPoint(segment_start, plane);
+        segment_end = ReflectPoint(segment_end, plane);
+      }
+
+    double remaining_distance = (segment_end - segment_start).Norm();
+    if (remaining_distance <= tolerance)
+      continue;
+
+    Vector3 segment_omega = (segment_end - segment_start).Normalized();
+    Vector3 line_point = segment_start;
+    while (remaining_distance > tolerance)
+    {
+      double dist_in_cell = NAN;
+      Vector3 exit_point;
+      uint64_t dest_neighbor = 0;
+
+      if (use_fast_trace_)
+      {
+        // Fast path: precomputed flat face vertex data -- no std::map traversal.
+        const double cell_size = cell_sizes_[cell_id];
+        const double back_tol = cell_size * 1.0e-10;
+        const uint32_t face_off = cell_face_offsets_[cell_id];
+        const uint32_t n_faces = cell_num_faces_[cell_id];
+
+        bool found = false;
+        for (uint32_t f = 0; f < n_faces and not found; ++f)
+        {
+          const auto& fv = all_face_verts_[face_off + f];
+          const auto& v2 = fv.centroid;
+          const uint32_t ns = fv.num_sides;
+          for (uint32_t s = 0; s < ns; ++s)
+          {
+            const auto& v0 = fv.verts[s];
+            const auto& v1 = fv.verts[s + 1 < ns ? s + 1 : 0];
+            if ((v1 - v0).Cross(v2 - v0).Dot(segment_omega) < 0.0)
+              continue;
+            Vector3 candidate;
+            if (CheckLineIntersectTriangle2(v0, v1, v2, line_point, segment_omega, candidate))
+            {
+              const double d = (candidate - line_point).Norm();
+              if (d > back_tol)
+              {
+                exit_point = candidate;
+                dist_in_cell = d;
+                dest_neighbor = fv.neighbor_id;
+                found = true;
+                break;
+              }
+            }
+          }
+        }
+
+        if (not found)
+        {
+          // Rare fallback for degenerate cases (point on a face/vertex): let TraceRay nudge.
+          const auto oi =
+            ray_tracer.TraceRay(grid_->local_cells[cell_id], line_point, segment_omega);
+          OpenSnLogicalErrorIf(oi.particle_lost,
+                               GetName() +
+                                 ": reflected image-source ray lost in fast-trace fallback.");
+          dist_in_cell = oi.distance_to_surface;
+          exit_point = oi.pos_f;
+          dest_neighbor = oi.destination_face_neighbor;
+        }
+      }
+      else
+      {
+        // Original path: used for non-convex meshes or faces with >max_sides vertices.
+        const auto oi = ray_tracer.TraceRay(grid_->local_cells[cell_id], line_point, segment_omega);
+        OpenSnLogicalErrorIf(oi.particle_lost,
+                             GetName() + ": ray lost in mesh during segment traversal.");
+        dist_in_cell = oi.distance_to_surface;
+        exit_point = oi.pos_f;
+        dest_neighbor = oi.destination_face_neighbor;
+      }
+
+      const double distance_in_cell = std::min(dist_in_cell, remaining_distance);
+      OpenSnLogicalErrorIf(distance_in_cell <= tolerance,
+                           GetName() + ": reflected image-source ray failed to advance.");
+      scratch_segs.emplace_back(cell_id, distance_in_cell);
+      remaining_distance -= distance_in_cell;
+      if (remaining_distance <= tolerance)
+        break;
+
+      if (use_fast_trace_)
+      {
+        // O(1) unordered_map lookup replaces two O(log N) std::map calls.
+        auto it = global_to_local_id_.find(dest_neighbor);
+        OpenSnLogicalErrorIf(
+          it == global_to_local_id_.end(),
+          GetName() + ": reflected image-source ray left the mesh before reaching the source.");
+        cell_id = it->second;
+      }
+      else
+      {
+        OpenSnLogicalErrorIf(
+          not grid_->IsCellLocal(dest_neighbor),
+          GetName() + ": reflected image-source ray left the mesh before reaching the source.");
+        cell_id = grid_->cells[dest_neighbor].local_id;
+      }
+      line_point = exit_point;
+    }
+  }
+
+  scratch_mfp.assign(num_groups_, 0.0);
+  for (const auto& segment : scratch_segs)
+  {
+    const auto& sigma_t = cell_transport_views_[segment.first].GetXS().GetSigmaTotal();
+    for (size_t g = 0; g < num_groups_; ++g)
+      scratch_mfp[g] += sigma_t[g] * segment.second;
+  }
+
+  const bool is_2d = (grid_->GetDimension() == 2);
+  for (size_t g = 0; g < num_groups_; ++g)
+  {
+    if (is_2d)
+      phi_out[g] = strength[g] / (2.0 * M_PI * total_length) * std::exp(-scratch_mfp[g]);
+    else
+      phi_out[g] =
+        strength[g] / (4.0 * M_PI * total_length * total_length) * std::exp(-scratch_mfp[g]);
+  }
+}
 
 void
 UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_interval)
@@ -674,9 +965,16 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
   {
     try
     {
-      RayTracer ray_tracer(grid_);
+      RayTracer ray_tracer(grid_, &cell_sizes_, not all_cells_convex_);
       double local_removal = 0.0;
       double local_outflow = 0.0;
+      // Pre-allocate scratch buffers once per thread to avoid heap allocation in the hot loop.
+      std::vector<double> phi_qp(num_groups_, 0.0);
+      std::vector<std::pair<size_t, double>> scratch_segs;
+      std::vector<double> scratch_bp;
+      std::vector<double> scratch_mfp(num_groups_, 0.0);
+      scratch_segs.reserve(64);
+      scratch_bp.reserve(8);
       for (size_t cell_index = thread_id; cell_index < num_cells; cell_index += num_threads)
       {
         const auto& cell = grid_->local_cells[cell_index];
@@ -697,7 +995,14 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
           for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
           {
             const auto& qp_xyz = fe_vol_data.QPointXYZ(qp);
-            const auto phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+            RaytraceLineInto(ray_tracer,
+                             cell,
+                             qp_xyz,
+                             source_point,
+                             phi_qp,
+                             scratch_segs,
+                             scratch_bp,
+                             scratch_mfp);
             for (size_t i = 0; i < cell_num_nodes; ++i)
             {
               const double integrand = fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
@@ -859,8 +1164,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
   const Vector3& pt_loc = source_point.location;
   const std::vector<double>& strength = source_point.strength;
 
-  // Create raytracer
-  RayTracer ray_tracer(grid_);
+  RayTracer ray_tracer(grid_, &cell_sizes_, not all_cells_convex_);
 
   // Face leakages
   std::unordered_map<size_t, std::vector<std::vector<double>>> leakages;
@@ -1145,17 +1449,23 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       : static_cast<double>(mismatched_cell_count) / static_cast<double>(near_spls_.size());
   const double aggregate_relative_change =
     original_outgoing_sum > 0.0 ? outgoing_change_sum / original_outgoing_sum : 0.0;
-  log.Log() << " Near-source current consistency diagnostic:\n"
-            << "  Mismatched cells            = " << mismatched_cell_count << " / "
-            << near_spls_.size() << "\n"
-            << "  Mismatched cell-group pairs = " << mismatched_cell_group_count << " / "
-            << near_source_pair_count << "\n"
-            << std::setprecision(6) << std::scientific
-            << "  Mismatched cell fraction     = " << mismatched_cell_fraction << "\n"
-            << "  Aggregate relative mismatch  = " << aggregate_relative_change << "\n"
-            << "  Maximum relative mismatch    = " << max_relative_outgoing_change << "\n"
-            << " NearSourceCurrentMismatchedCellFraction=" << mismatched_cell_fraction << "\n"
-            << " NearSourceCurrentAggregateRelativeMismatch=" << aggregate_relative_change << "\n";
+  log.Log() << std::setprecision(6) << std::scientific
+            << "Near-source consistency: " << mismatched_cell_count << " / " << near_spls_.size()
+            << " cells exceeded the current-mismatch tolerance"
+            << " (aggregate mismatch " << aggregate_relative_change << ").";
+  log.Log0Verbose1() << " Near-source current consistency diagnostic:\n"
+                     << "  Mismatched cells            = " << mismatched_cell_count << " / "
+                     << near_spls_.size() << "\n"
+                     << "  Mismatched cell-group pairs = " << mismatched_cell_group_count << " / "
+                     << near_source_pair_count << "\n"
+                     << std::setprecision(6) << std::scientific
+                     << "  Mismatched cell fraction     = " << mismatched_cell_fraction << "\n"
+                     << "  Aggregate relative mismatch  = " << aggregate_relative_change << "\n"
+                     << "  Maximum relative mismatch    = " << max_relative_outgoing_change << "\n"
+                     << " NearSourceCurrentMismatchedCellFraction=" << mismatched_cell_fraction
+                     << "\n"
+                     << " NearSourceCurrentAggregateRelativeMismatch=" << aggregate_relative_change
+                     << "\n";
 
   constexpr double aggregate_current_change_warning = 0.5;
   if (aggregate_relative_change > aggregate_current_change_warning)
@@ -1175,104 +1485,14 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
                                 const SourcePoint& source_point,
                                 const double tolerance)
 {
-  const auto& pt_loc = source_point.location;
-  const auto& strength = source_point.strength;
-  // Uncollided flux analytical value
-  auto PhiEx = [this](double q0, double d, double mfp)
-  {
-    if (grid_->GetDimension() == 2)
-      return q0 / (2. * M_PI * d) * std::exp(-mfp);
-
-    return q0 / (4. * M_PI * d * d) * std::exp(-mfp);
-  };
-
-  // Uncollided flux values at quadrature point
-  std::vector<double> phi(num_groups_, 0.);
-
-  // Direction vector
-  Vector3 omega = ComputeOmega(qp_xyz, pt_loc);
-  if (omega.Norm() == 0.)
-    throw std::runtime_error(GetName() + ": point source lies at cell quadrature point.");
-
-  // Distance to point source
-  double total_length = (pt_loc - qp_xyz).Norm();
-  std::vector<std::pair<size_t, double>> segment_lengths;
-
-  auto ReflectPoint = [](const Vector3& point, const ReflectionPlane& plane)
-  { return point - 2.0 * (plane.normal.Dot(point) - plane.offset) * plane.normal; };
-
-  std::vector<double> breakpoints = {0.0, 1.0};
-  const auto unfolded_direction = pt_loc - qp_xyz;
-  for (const auto& plane : source_point.reflection_planes)
-  {
-    const double denominator = plane.normal.Dot(unfolded_direction);
-    OpenSnLogicalErrorIf(std::abs(denominator) <= tolerance,
-                         GetName() + ": image-source ray is parallel to its reflecting plane.");
-    const double t = (plane.offset - plane.normal.Dot(qp_xyz)) / denominator;
-    OpenSnLogicalErrorIf(t < -tolerance or t > 1.0 + tolerance,
-                         GetName() + ": image-source ray does not intersect its reflecting plane.");
-    if (t > tolerance and t < 1.0 - tolerance)
-      breakpoints.push_back(t);
-  }
-  std::sort(breakpoints.begin(), breakpoints.end());
-
-  size_t cell_id = cell.local_id;
-  for (size_t interval = 0; interval + 1 < breakpoints.size(); ++interval)
-  {
-    Vector3 segment_start = qp_xyz + breakpoints[interval] * unfolded_direction;
-    Vector3 segment_end = qp_xyz + breakpoints[interval + 1] * unfolded_direction;
-    const Vector3 midpoint = 0.5 * (segment_start + segment_end);
-    for (const auto& plane : source_point.reflection_planes)
-      if (plane.normal.Dot(midpoint) > plane.offset)
-      {
-        segment_start = ReflectPoint(segment_start, plane);
-        segment_end = ReflectPoint(segment_end, plane);
-      }
-
-    double remaining_distance = (segment_end - segment_start).Norm();
-    if (remaining_distance <= tolerance)
-      continue;
-
-    Vector3 segment_omega = (segment_end - segment_start).Normalized();
-    Vector3 line_point = segment_start;
-    while (remaining_distance > tolerance)
-    {
-      const auto oi = ray_tracer.TraceRay(grid_->local_cells[cell_id], line_point, segment_omega);
-      const double distance_in_cell = std::min(oi.distance_to_surface, remaining_distance);
-      OpenSnLogicalErrorIf(distance_in_cell <= tolerance,
-                           GetName() + ": reflected image-source ray failed to advance.");
-
-      segment_lengths.emplace_back(cell_id, distance_in_cell);
-      remaining_distance -= distance_in_cell;
-      if (remaining_distance <= tolerance)
-        break;
-
-      OpenSnLogicalErrorIf(
-        not grid_->IsCellLocal(oi.destination_face_neighbor),
-        GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-      cell_id = grid_->cells[oi.destination_face_neighbor].local_id;
-      line_point = oi.pos_f;
-    }
-  }
-
-  // Compute group-wise uncollided flux values
-  std::vector<double> mfp(num_groups_, 0.);
-  for (const auto& segment : segment_lengths)
-  {
-    size_t cell_id = segment.first;
-    double length = segment.second;
-
-    const auto& transport_view = cell_transport_views_[cell_id];
-    const auto& xs = transport_view.GetXS();
-    const auto& sigma_t = xs.GetSigmaTotal();
-
-    for (size_t g = 0; g < num_groups_; ++g)
-      mfp[g] += sigma_t[g] * length;
-  }
-
-  for (size_t g = 0; g < num_groups_; ++g)
-    phi[g] = PhiEx(strength[g], total_length, mfp[g]);
-
+  std::vector<double> phi(num_groups_, 0.0);
+  std::vector<std::pair<size_t, double>> scratch_segs;
+  std::vector<double> scratch_bp;
+  std::vector<double> scratch_mfp(num_groups_, 0.0);
+  scratch_segs.reserve(16);
+  scratch_bp.reserve(8);
+  RaytraceLineInto(
+    ray_tracer, cell, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
   return phi;
 }
 
@@ -1663,14 +1883,18 @@ UncollidedProblem::FinalizeBalance(hid_t file)
                          ") exceeds the physical source rate (" + std::to_string(production_) +
                          ").");
 
-  log.Log() << " Global outflow consistency:\n"
-            << std::setprecision(6) << std::scientific
-            << "  Integrated vacuum outflow             = " << out_flow_ << "\n"
-            << "  Conservative outflow      = " << conservative_outflow << "\n"
-            << "  Relative difference       = " << outflow_difference / correction_scale << "\n";
+  log.Log() << std::setprecision(6) << std::scientific
+            << "Outflow consistency: relative difference " << outflow_difference / correction_scale
+            << ".";
+  log.Log0Verbose1() << " Global outflow consistency:\n"
+                     << std::setprecision(6) << std::scientific
+                     << "  Integrated vacuum outflow             = " << out_flow_ << "\n"
+                     << "  Conservative outflow                  = " << conservative_outflow << "\n"
+                     << "  Relative difference                   = "
+                     << outflow_difference / correction_scale << "\n";
   out_flow_ = conservative_outflow;
 
-  // Finalize balance calulation
+  // Finalize balance calculation
   double balance = production_ - (removal_ + out_flow_);
   const double conservation_error = (production_ == 0.0) ? 0.0 : (balance / production_);
 

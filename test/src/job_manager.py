@@ -130,13 +130,12 @@ class TestConfiguration:
         return output
 
     def CheckDependencies(self, tests):
-        """Loops through a test configuration and checks whether a dependency has executed"""
+        """Return true only when the named dependency has completed successfully."""
         if self.dependency is None:
             return True
         for test in tests:
             if test.filename == self.dependency:
-                if test.ran and test.passed:
-                    return True
+                return test.ran and test.passed
 
         return False
 

@@ -63,6 +63,7 @@ if __name__ == "__main__":
 
     scalar_flux = problem.GetScalarFluxFieldFunction()[0]
     minimum_scalar = volume_minimum(scalar_flux, whole_domain, FieldFunctionInterpolationVolume)
+    negative_scalar_violation = max(0.0, -minimum_scalar)
     scalar_integral = volume_integral(scalar_flux, whole_domain, FieldFunctionInterpolationVolume)
     computed_outflow = 1.0 - 0.8 * scalar_integral
     reference_outflow = uncollided_escape_2d_rectangle(0.8, source, (-1.0, 1.0, -1.0, 1.0))
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     remove_file(file_name)
 
     if rank == 0:
-        print(f"Uncollided2DStructuredMinimumScalarFlux={minimum_scalar:.8e}")
+        print(f"Uncollided2DStructuredNegativeScalarFluxViolation={negative_scalar_violation:.8e}")
         print(f"Uncollided2DStructuredOutflowRelativeError={outflow_error:.8e}")
         sys.stdout.flush()
 

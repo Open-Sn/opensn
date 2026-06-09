@@ -405,6 +405,9 @@ The uncollided calculation follows the same problem/solver lifecycle as other
 OpenSn transport calculations. Construct the problem and solver, then call
 ``Initialize`` and ``Execute``:
 
+Uncollided generation is restricted to Cartesian two- and three-dimensional
+meshes and must run with exactly one MPI rank.
+
 The solver reports source-point progress every 5 percent by default. Each
 update includes the number of completed source points, elapsed time, and
 estimated remaining time. Set ``progress_interval`` on
@@ -491,7 +494,8 @@ The uncollided generator supports:
 * explicit :py:class:`pyopensn.source.PointSource` objects.
 
 Every point source requires a corresponding entry in ``near_source``. The two
-lists are matched by position.
+lists are matched by position, so ``near_source`` is required whenever
+``point_sources`` is nonempty.
 
 For now, uncollided generation requires each point source to lie strictly
 inside a single cell. A source located exactly on a face, edge, or vertex is

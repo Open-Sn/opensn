@@ -1,0 +1,39 @@
+[
+  {
+    "file": "generate_uncollided.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "TutorialUncollidedFileGenerated=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "solve_collided.py",
+    "num_procs": 1,
+    "dependency": "generate_uncollided.py",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "TutorialTotalFluxAtPoint=",
+        "goldvalue": 2.735814472835e+02,
+        "rel_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TutorialTotalFluxIntegral=",
+        "goldvalue": 1.798893012550e-02,
+        "rel_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TutorialBalance=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      }
+    ]
+  }
+]

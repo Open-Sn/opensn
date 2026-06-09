@@ -24,7 +24,7 @@ FindCellByCentroid(const std::shared_ptr<MeshContinuum>& grid, const Vector3& ce
 
 } // namespace
 
-TEST(RayTracerTest, TraceRayAdvancesFromFaceAndVertexStarts)
+TEST(RayTracerTest, TraceRayHandlesFaceAndVertexStarts)
 {
   if (opensn::mpi_comm.size() != 1)
     GTEST_SKIP() << "Ray tracer endpoint test is serial only.";
@@ -40,8 +40,8 @@ TEST(RayTracerTest, TraceRayAdvancesFromFaceAndVertexStarts)
 
   EXPECT_FALSE(face_trace.particle_lost);
   EXPECT_GT(face_trace.distance_to_surface, 0.0);
-  EXPECT_LT(face_trace.distance_to_surface, 1.0);
-  EXPECT_GT(face_start.x, face_start_initial.x);
+  EXPECT_NEAR(face_trace.distance_to_surface, 1.0, 1.0e-10);
+  EXPECT_TRUE(face_start.AbsoluteEquals(face_start_initial, 1.0e-14));
   EXPECT_TRUE(face_trace.pos_f.AbsoluteEquals(Vector3(1.0, -0.5, 0.0), 1.0e-10));
   EXPECT_NEAR((face_trace.pos_f - face_start_initial).Norm(), 1.0, 1.0e-10);
 
@@ -53,14 +53,13 @@ TEST(RayTracerTest, TraceRayAdvancesFromFaceAndVertexStarts)
 
   EXPECT_FALSE(vertex_trace.particle_lost);
   EXPECT_GT(vertex_trace.distance_to_surface, 0.0);
-  EXPECT_LT(vertex_trace.distance_to_surface, std::sqrt(2.0));
-  EXPECT_GT(vertex_start.x, vertex_start_initial.x);
-  EXPECT_GT(vertex_start.y, vertex_start_initial.y);
+  EXPECT_NEAR(vertex_trace.distance_to_surface, std::sqrt(2.0), 1.0e-10);
+  EXPECT_TRUE(vertex_start.AbsoluteEquals(vertex_start_initial, 1.0e-14));
   EXPECT_TRUE(vertex_trace.pos_f.AbsoluteEquals(Vector3(1.0, 1.0, 0.0), 1.0e-10));
   EXPECT_NEAR((vertex_trace.pos_f - vertex_start_initial).Norm(), std::sqrt(2.0), 1.0e-10);
 }
 
-TEST(RayTracerTest, TraceRayAdvancesFromEdgeStart3D)
+TEST(RayTracerTest, TraceRayHandlesEdgeStart3D)
 {
   if (opensn::mpi_comm.size() != 1)
     GTEST_SKIP() << "Ray tracer endpoint test is serial only.";
@@ -76,10 +75,8 @@ TEST(RayTracerTest, TraceRayAdvancesFromEdgeStart3D)
 
   EXPECT_FALSE(edge_trace.particle_lost);
   EXPECT_GT(edge_trace.distance_to_surface, 0.0);
-  EXPECT_LT(edge_trace.distance_to_surface, std::sqrt(2.0));
-  EXPECT_GT(edge_start.x, edge_start_initial.x);
-  EXPECT_GT(edge_start.y, edge_start_initial.y);
-  EXPECT_NEAR(edge_start.z, edge_start_initial.z, 1.0e-14);
+  EXPECT_NEAR(edge_trace.distance_to_surface, std::sqrt(2.0), 1.0e-10);
+  EXPECT_TRUE(edge_start.AbsoluteEquals(edge_start_initial, 1.0e-14));
   EXPECT_TRUE(edge_trace.pos_f.AbsoluteEquals(Vector3(1.0, 1.0, 0.5), 1.0e-10));
   EXPECT_NEAR((edge_trace.pos_f - edge_start_initial).Norm(), std::sqrt(2.0), 1.0e-10);
 }

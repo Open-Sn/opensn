@@ -78,9 +78,9 @@ SteadyStateSourceSolver::Execute()
     // `phi_new_local_` is kept as the reported total flux between solves so field
     // functions and downstream consumers see the physical solution. The AGS solve,
     // however, must iterate on the collided component only because the uncollided
-    // moments have already been folded into the first-collision source.
-    // TODO: Keep the iterative state collided-only and form total flux only for
-    // output/postprocessing so this subtract/re-add bookkeeping goes away.
+    // moments have already been folded into the first-collision source. This
+    // bookkeeping could be cleaner if collided and total flux states were kept
+    // separate and combined only for output and postprocessing.
     do_problem_->RemoveUncollidedFlux();
   }
 

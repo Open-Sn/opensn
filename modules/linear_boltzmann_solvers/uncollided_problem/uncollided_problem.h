@@ -17,6 +17,7 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <unordered_map>
 
 namespace opensn
 {
@@ -103,7 +104,20 @@ protected:
                                    const Cell& cell,
                                    const Vector3& qp_xyz,
                                    const SourcePoint& source_point,
-                                   double tolerance = 1e-12);
+                                   double tolerance = 1.0e-12);
+
+  /// Zero-allocation variant: writes into pre-allocated @p phi_out and reuses the three
+  /// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call
+  /// (they are reset internally each call, so no manual clearing is needed between calls).
+  void RaytraceLineInto(RayTracer& ray_tracer,
+                        const Cell& cell,
+                        const Vector3& qp_xyz,
+                        const SourcePoint& source_point,
+                        std::vector<double>& phi_out,
+                        std::vector<std::pair<size_t, double>>& scratch_segs,
+                        std::vector<double>& scratch_bp,
+                        std::vector<double>& scratch_mfp,
+                        double tolerance = 1.0e-12);
 
   void SweepBulkRegion(const SourcePoint& source_point);
 
@@ -139,6 +153,31 @@ protected:
   std::vector<CellRegion> cell_regions_;
 
   std::vector<double> destination_phi_;
+  /// Bounding-box diagonal for each local cell, pre-computed once for RayTracer tolerance scaling.
+  std::vector<double> cell_sizes_;
+  /// False when the mesh contains any geometrically non-convex cell; true for standard hex/tet
+  /// meshes.
+  bool all_cells_convex_ = true;
+
+  /// Precomputed face vertex data -- bypasses the std::map-backed VertexHandler in the hot path.
+  /// Supports faces with up to kMaxFaceSides vertices (covers triangles and quads).
+  struct FaceVertData
+  {
+    static constexpr uint32_t max_sides = 4;
+    Vector3 verts[max_sides]; // inline vertex positions (no tree traversal)
+    Vector3 centroid;
+    uint64_t neighbor_id = 0;
+    uint32_t num_sides = 0;
+    uint32_t pad = 0;
+  };
+  std::vector<FaceVertData>
+    all_face_verts_; // flat: [cell_0_face_0, cell_0_face_1, ..., cell_1_face_0, ...]
+  std::vector<uint32_t> cell_face_offsets_; // [num_cells] first face index in all_face_verts_
+  std::vector<uint32_t> cell_num_faces_;    // [num_cells] number of faces per cell
+  /// O(1) global-to-local cell-ID lookup; replaces two O(log N) std::map calls per while-loop step.
+  std::unordered_map<uint64_t, uint32_t> global_to_local_id_;
+  /// True when all_cells_convex_ and all faces have <= kMaxFaceSides vertices.
+  bool use_fast_trace_ = false;
 
   unsigned int ell_max_ = 0;
   std::vector<Moment> moments_;

@@ -1,18 +1,63 @@
 #!/usr/bin/env python3
 
 import csv
-import importlib
+import builtins
+import importlib.util
 import os
 import sys
+import __main__
 from itertools import product
 from math import sqrt
 from pathlib import Path
 
-if "opensn_console" not in globals():
-    from mpi4py import MPI
+rank = 0
+size = 1
 
-    rank = MPI.COMM_WORLD.rank
-    size = MPI.COMM_WORLD.size
+
+def _get_preloaded_symbol(name):
+    if hasattr(__main__, name):
+        return getattr(__main__, name)
+    if hasattr(builtins, name):
+        return getattr(builtins, name)
+    return None
+
+
+preloaded_names = [
+    "GLCProductQuadrature3DXYZ",
+    "FieldFunctionInterpolationPoint",
+    "RPPLogicalVolume",
+    "Vector3",
+    "FromFileMeshGenerator",
+    "DiscreteOrdinatesProblem",
+    "SteadyStateSourceSolver",
+    "UncollidedProblem",
+    "UncollidedSolver",
+    "PointSource",
+    "MultiGroupXS",
+]
+preloaded_symbols = {name: _get_preloaded_symbol(name) for name in preloaded_names}
+
+if all(value is not None for value in preloaded_symbols.values()):
+    GLCProductQuadrature3DXYZ = preloaded_symbols["GLCProductQuadrature3DXYZ"]
+    FieldFunctionInterpolationPoint = preloaded_symbols["FieldFunctionInterpolationPoint"]
+    RPPLogicalVolume = preloaded_symbols["RPPLogicalVolume"]
+    Vector3 = preloaded_symbols["Vector3"]
+    FromFileMeshGenerator = preloaded_symbols["FromFileMeshGenerator"]
+    DiscreteOrdinatesProblem = preloaded_symbols["DiscreteOrdinatesProblem"]
+    SteadyStateSourceSolver = preloaded_symbols["SteadyStateSourceSolver"]
+    UncollidedProblem = preloaded_symbols["UncollidedProblem"]
+    UncollidedSolver = preloaded_symbols["UncollidedSolver"]
+    PointSource = preloaded_symbols["PointSource"]
+    MultiGroupXS = preloaded_symbols["MultiGroupXS"]
+else:
+    try:
+        from mpi4py import MPI
+
+        rank = MPI.COMM_WORLD.rank
+        size = MPI.COMM_WORLD.size
+    except ImportError:
+        pass
+
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.fieldfunc import FieldFunctionInterpolationPoint
@@ -29,12 +74,25 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
 
 
-EXAMPLE_DIR = (
-    Path(__file__).resolve().parents[5] / "OpenSnExamples" / "KOBAYASHI_DOG_LEG"
+LOCAL_DIR = Path(__file__).resolve().parent
+
+
+def _import_module_from_path(module_name, module_path):
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    if spec is None or spec.loader is None:
+        raise ModuleNotFoundError(
+            f"Unable to load module {module_name!r} from {module_path}"
+        )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+model = _import_module_from_path(
+    "kobayashi_dog_leg_model", LOCAL_DIR / "kobayashi_dog_leg_model.py"
 )
-sys.path.append(str(EXAMPLE_DIR))
-common = importlib.import_module("kobayashi_common")
-model = importlib.import_module("kobayashi_dog_leg_model")
+sys.modules["kobayashi_dog_leg_model"] = model
+common = _import_module_from_path("kobayashi_common", LOCAL_DIR / "kobayashi_common.py")
 
 
 def point_value(field_function, location):
@@ -72,13 +130,17 @@ def make_tensor_source():
 
 
 def make_near_source_region():
+    near_source_extent = float(os.environ.get("KOBAYASHI_NEAR_SOURCE_EXTENT", "10.0"))
+    if near_source_extent < 10.0:
+        raise ValueError("KOBAYASHI_NEAR_SOURCE_EXTENT must be at least 10 cm")
+
     return RPPLogicalVolume(
         xmin=0.0,
-        xmax=20.0,
+        xmax=near_source_extent,
         ymin=0.0,
-        ymax=20.0,
+        ymax=near_source_extent,
         zmin=0.0,
-        zmax=20.0,
+        zmax=near_source_extent,
     )
 
 
@@ -104,6 +166,14 @@ def compute_ratio_metrics(rows):
     }
 
 
+def print_point_values(prefix, rows):
+    counts = {}
+    for row in rows:
+        line = row["line"]
+        counts[line] = counts.get(line, 0) + 1
+        print(f"{prefix}_{line}_{counts[line]}={row['opensn_flux']:.16e}")
+
+
 def reference_flux(case, entry):
     if case == "i":
         return entry[1]
@@ -120,10 +190,7 @@ def remove_if_exists(path):
 
 
 def make_grid(mesh_filename):
-    if size != 1:
-        sys.exit(f"Expected one process, got {size}.")
-
-    mesh_path = EXAMPLE_DIR / mesh_filename
+    mesh_path = common.mesh_path(mesh_filename)
     if not mesh_path.exists():
         raise RuntimeError(f"Missing Kobayashi mesh {mesh_path}")
 
@@ -242,4 +309,4 @@ def run_kobayashi_case(
             writer.writerows(rows)
 
     metrics = compute_ratio_metrics(rows)
-    return metrics
+    return {"metrics": metrics, "rows": rows}
