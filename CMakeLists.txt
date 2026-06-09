@@ -139,7 +139,7 @@ endif()
 
 # dependencies
 find_package(MPI REQUIRED)
-find_package(mpicpp-lite 2.6 REQUIRED)
+find_package(mpicpp-lite 2.7.1 REQUIRED)
 
 find_package(HDF5 REQUIRED COMPONENTS C HL)
 find_package(Boost 1.86 CONFIG)
