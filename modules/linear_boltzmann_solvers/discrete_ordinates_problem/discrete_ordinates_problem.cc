@@ -290,6 +290,9 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
 
 DiscreteOrdinatesProblem::~DiscreteOrdinatesProblem()
 {
+  ags_solver_.reset();
+  wgs_solvers_.clear();
+  wgs_contexts_.clear();
 
   ResetBoundaryCarrier();
 
