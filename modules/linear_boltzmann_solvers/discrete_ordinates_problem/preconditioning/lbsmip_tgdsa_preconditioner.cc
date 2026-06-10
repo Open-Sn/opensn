@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "caliper/cali.h"
+#include <vector>
 
 namespace opensn
 {

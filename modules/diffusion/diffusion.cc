@@ -9,6 +9,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
+#include "framework/utils/error.h"
 #include <sstream>
 
 namespace opensn
@@ -84,6 +85,7 @@ DiffusionSolver::~DiffusionSolver()
 {
   OpenSnPETScCall(MatDestroy(&A_));
   OpenSnPETScCall(VecDestroy(&rhs_));
+  OpenSnPETScCall(VecDestroy(&x_));
   OpenSnPETScCall(KSPDestroy(&ksp_));
 }
 
@@ -187,10 +189,11 @@ DiffusionSolver::Initialize()
   log.Log() << "Done vector creation";
   opensn::mpi_comm.barrier();
 
+  OpenSnPETScCall(VecDuplicate(rhs_, &x_));
+
   // Create KSP
   OpenSnPETScCall(KSPCreate(opensn::mpi_comm, &ksp_));
   OpenSnPETScCall(KSPSetOptionsPrefix(ksp_, name_.c_str()));
-  OpenSnPETScCall(KSPSetType(ksp_, KSPCG));
 
   OpenSnPETScCall(
     KSPSetTolerances(ksp_, 1.0e-50, options.residual_tolerance, 1.0e50, options.max_iters));
@@ -198,25 +201,42 @@ DiffusionSolver::Initialize()
   // Set Pre-conditioner
   PC pc = nullptr;
   OpenSnPETScCall(KSPGetPC(ksp_, &pc));
-  //  PCSetType(pc, PCGAMG);
-  OpenSnPETScCall(PCSetType(pc, PCHYPRE));
+  const bool petsc_options_policy = options.solver_policy == "petsc_options";
+  const bool direct_policy = options.solver_policy == "direct" or
+                             (options.solver_policy == "auto" and opensn::mpi_comm.size() == 1 and
+                              num_global_dofs_ <= options.direct_solve_threshold);
+  OpenSnInvalidArgumentIf(options.solver_policy != "auto" and options.solver_policy != "direct" and
+                            options.solver_policy != "iterative" and not petsc_options_policy,
+                          "Unsupported diffusion solver policy \"" + options.solver_policy +
+                            "\". Valid values are auto, direct, iterative, and petsc_options.");
 
-  OpenSnPETScCall(PCHYPRESetType(pc, "boomeramg"));
-  std::vector<std::string> pc_options = {"pc_hypre_boomeramg_agg_nl 1",
-                                         "pc_hypre_boomeramg_P_max 4",
-                                         "pc_hypre_boomeramg_grid_sweeps_coarse 1",
-                                         "pc_hypre_boomeramg_max_levels 25",
-                                         "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
-                                         "pc_hypre_boomeramg_coarsen_type HMIS",
-                                         "pc_hypre_boomeramg_interp_type ext+i"};
+  if (not petsc_options_policy and direct_policy)
+  {
+    OpenSnPETScCall(KSPSetType(ksp_, KSPPREONLY));
+    OpenSnPETScCall(PCSetType(pc, PCLU));
+  }
+  else if (not petsc_options_policy)
+  {
+    OpenSnPETScCall(KSPSetType(ksp_, KSPCG));
+    OpenSnPETScCall(PCSetType(pc, PCHYPRE));
 
-  if (grid_->GetDimension() == 2)
-    pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
-  else if (grid_->GetDimension() == 3)
-    pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
+    OpenSnPETScCall(PCHYPRESetType(pc, "boomeramg"));
+    std::vector<std::string> pc_options = {"pc_hypre_boomeramg_agg_nl 1",
+                                           "pc_hypre_boomeramg_P_max 4",
+                                           "pc_hypre_boomeramg_grid_sweeps_coarse 1",
+                                           "pc_hypre_boomeramg_max_levels 25",
+                                           "pc_hypre_boomeramg_relax_type_all symmetric-SOR/Jacobi",
+                                           "pc_hypre_boomeramg_coarsen_type HMIS",
+                                           "pc_hypre_boomeramg_interp_type ext+i"};
 
-  for (const auto& option : pc_options)
-    OpenSnPETScCall(PetscOptionsInsertString(nullptr, ("-" + name_ + option).c_str()));
+    if (grid_->GetDimension() == 2)
+      pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.6");
+    else if (grid_->GetDimension() == 3)
+      pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
+
+    for (const auto& option : pc_options)
+      OpenSnPETScCall(PetscOptionsInsertString(nullptr, ("-" + name_ + option).c_str()));
+  }
 
   OpenSnPETScCall(PetscOptionsInsertString(nullptr, options.additional_options_string.c_str()));
 
@@ -228,9 +248,7 @@ void
 DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 {
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
-  Vec x = nullptr;
-  OpenSnPETScCall(VecDuplicate(rhs_, &x));
-  OpenSnPETScCall(VecSet(x, 0.0));
+  OpenSnPETScCall(VecSet(x_, 0.0));
 
   if (not use_initial_guess)
     OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
@@ -257,40 +275,35 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   if (use_initial_guess)
   {
     PetscScalar* x_raw = nullptr;
-    OpenSnPETScCall(VecGetArray(x, &x_raw));
+    OpenSnPETScCall(VecGetArray(x_, &x_raw));
     size_t k = 0;
     for (const auto& value : solution)
       x_raw[k++] = value;
-    OpenSnPETScCall(VecRestoreArray(x, &x_raw));
+    OpenSnPETScCall(VecRestoreArray(x_, &x_raw));
   }
 
   // Solve
-  OpenSnPETScCall(KSPSolve(ksp_, rhs_, x));
+  OpenSnPETScCall(KSPSolve(ksp_, rhs_, x_));
 
   // Print convergence info
   if (options.verbose)
-    LogDiffusionSolveFinal(name_, ksp_, x);
+    LogDiffusionSolveFinal(name_, ksp_, x_);
 
   // Transfer petsc solution to vector
   if (requires_ghosts_)
   {
-    CommunicateGhostEntries(x);
-    sdm_.LocalizePETScVectorWithGhosts(x, solution, uk_man_);
+    CommunicateGhostEntries(x_);
+    sdm_.LocalizePETScVectorWithGhosts(x_, solution, uk_man_);
   }
   else
-    sdm_.LocalizePETScVector(x, solution, uk_man_);
-
-  // Cleanup x
-  OpenSnPETScCall(VecDestroy(&x));
+    sdm_.LocalizePETScVector(x_, solution, uk_man_);
 }
 
 void
 DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 {
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
-  Vec x = nullptr;
-  OpenSnPETScCall(VecDuplicate(rhs_, &x));
-  OpenSnPETScCall(VecSet(x, 0.0));
+  OpenSnPETScCall(VecSet(x_, 0.0));
 
   if (not use_initial_guess)
     OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
@@ -316,21 +329,18 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 
   if (use_initial_guess)
   {
-    OpenSnPETScCall(VecCopy(petsc_solution, x));
+    OpenSnPETScCall(VecCopy(petsc_solution, x_));
   }
 
   // Solve
-  OpenSnPETScCall(KSPSolve(ksp_, rhs_, x));
+  OpenSnPETScCall(KSPSolve(ksp_, rhs_, x_));
 
   // Print convergence info
   if (options.verbose)
-    LogDiffusionSolveFinal(name_, ksp_, x);
+    LogDiffusionSolveFinal(name_, ksp_, x_);
 
   // Transfer petsc solution to vector
-  OpenSnPETScCall(VecCopy(x, petsc_solution));
-
-  // Cleanup x
-  OpenSnPETScCall(VecDestroy(&x));
+  OpenSnPETScCall(VecCopy(x_, petsc_solution));
 }
 
 } // namespace opensn

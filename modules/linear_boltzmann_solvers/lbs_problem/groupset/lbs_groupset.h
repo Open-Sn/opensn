@@ -83,6 +83,10 @@ public:
   unsigned int tgdsa_max_iters;
   double wgdsa_tol;
   double tgdsa_tol;
+  std::string wgdsa_solver_policy;
+  std::string tgdsa_solver_policy;
+  unsigned int wgdsa_direct_solve_threshold;
+  unsigned int tgdsa_direct_solve_threshold;
   bool wgdsa_verbose;
   bool tgdsa_verbose;
   std::string wgdsa_string;

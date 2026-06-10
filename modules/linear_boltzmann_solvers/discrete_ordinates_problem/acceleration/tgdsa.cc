@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "caliper/cali.h"
+#include <algorithm>
 
 namespace opensn
 {
@@ -62,6 +63,8 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 
     solver->options.residual_tolerance = groupset.tgdsa_tol;
     solver->options.max_iters = groupset.tgdsa_max_iters;
+    solver->options.solver_policy = groupset.tgdsa_solver_policy;
+    solver->options.direct_solve_threshold = groupset.tgdsa_direct_solve_threshold;
     solver->options.verbose = groupset.tgdsa_verbose;
     solver->options.additional_options_string = groupset.tgdsa_string;
 
@@ -91,8 +94,10 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto gss = groupset.GetNumGroups();
 
   auto local_node_count = do_problem.GetLocalNodeCount();
-  delta_phi_local.clear();
-  delta_phi_local.assign(local_node_count, 0.0);
+  if (delta_phi_local.size() != local_node_count)
+    delta_phi_local.assign(local_node_count, 0.0);
+  else
+    std::fill(delta_phi_local.begin(), delta_phi_local.end(), 0.0);
 
   for (const auto& cell : grid->local_cells)
   {

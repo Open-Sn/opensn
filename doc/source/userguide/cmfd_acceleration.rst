@@ -198,9 +198,9 @@ defaults.
   CMFD corrections can be noisy; if it is too tight, coarse-solve work can
   dominate runtime.
 
-``coarse_solver_policy`` and ``direct_coarse_solve_threshold``
+``coarse_solver_policy`` and ``coarse_direct_solve_threshold``
   PETSc coarse-solver selection controls. ``"auto"`` uses a direct PETSc LU
-  solve for coarse systems below ``direct_coarse_solve_threshold`` global
+  solve for coarse systems below ``coarse_direct_solve_threshold`` global
   unknowns and an iterative GMRES/Jacobi solve otherwise. The default threshold
   is ``20000`` global unknowns. Force ``"direct"`` only for small or moderate
   coarse systems that fit comfortably in host memory. Use ``"iterative"`` when

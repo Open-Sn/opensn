@@ -612,6 +612,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
+    std::vector<double> qg(num_nodes, 0.0);
     for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_A.Set(0.);
@@ -623,7 +624,6 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
       const double Dg = xs.Dg[g];
       const double sigr_g = xs.sigR[g];
 
-      std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
@@ -905,6 +905,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
+    std::vector<double> qg(num_nodes, 0.0);
     for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);
@@ -914,7 +915,6 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
 
-      std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 
@@ -1059,6 +1059,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
+    std::vector<double> qg(num_nodes, 0.0);
     for (unsigned int g = 0; g < num_groups; ++g)
     {
       cell_rhs.Set(0.);
@@ -1068,7 +1069,6 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
 
-      std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
         qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
 

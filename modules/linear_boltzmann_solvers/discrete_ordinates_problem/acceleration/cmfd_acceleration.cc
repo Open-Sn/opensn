@@ -196,10 +196,10 @@ CMFDAcceleration::GetInputParameters()
     "coarse_solver_policy",
     "auto",
     "[developer/debug] CMFD coarse solver policy. auto chooses direct PETSc LU below "
-    "direct_coarse_solve_threshold global unknowns and iterative GMRES/Jacobi otherwise. "
+    "coarse_direct_solve_threshold global unknowns and iterative GMRES/Jacobi otherwise. "
     "direct, iterative, and petsc_options force a specific path. CMFD corrections from "
     "unconverged coarse linear solves are always skipped.");
-  params.AddOptionalParameter("direct_coarse_solve_threshold",
+  params.AddOptionalParameter("coarse_direct_solve_threshold",
                               20000,
                               "[developer/debug] Maximum global CMFD unknown count for using the "
                               "direct PETSc LU path when coarse_solver_policy is auto. Larger "
@@ -223,7 +223,7 @@ CMFDAcceleration::GetInputParameters()
   params.ConstrainParameterRange("update_wgs_max_its", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("update_wgs_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("balance_residual_tolerance", AllowableRangeLowLimit::New(0.0));
-  params.ConstrainParameterRange("direct_coarse_solve_threshold", AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange("coarse_direct_solve_threshold", AllowableRangeLowLimit::New(1));
   params.ChangeExistingParamToOptional("name", "CMFDAcceleration");
   params.ChangeExistingParamToOptional(
     "l_abs_tol", 1.0e-7, "[developer/debug] Absolute residual tolerance for CMFD coarse solves.");
@@ -274,8 +274,8 @@ CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
     update_wgs_abs_tol_(params.GetParamValue<double>("update_wgs_abs_tol")),
     balance_residual_tolerance_(params.GetParamValue<double>("balance_residual_tolerance")),
     coarse_solver_policy_(params.GetParamValue<std::string>("coarse_solver_policy")),
-    direct_coarse_solve_threshold_(
-      static_cast<std::size_t>(params.GetParamValue<int>("direct_coarse_solve_threshold"))),
+    coarse_direct_solve_threshold_(
+      static_cast<std::size_t>(params.GetParamValue<int>("coarse_direct_solve_threshold"))),
     num_groups_(do_problem_.GetNumGroups()),
     num_coarse_groups_((num_groups_ + group_aggregation_size_ - 1) / group_aggregation_size_),
     current_closure_blend_(current_closure_ == "partial" ? 1.0 : 0.0)
@@ -672,7 +672,7 @@ CMFDAcceleration::PostPowerIteration()
     k_eff = transport_k_eff;
     const bool can_switch_to_direct = coarse_solver_policy_ == "auto" and
                                       not using_direct_coarse_solver_ and
-                                      GlobalUnknownCount() <= direct_coarse_solve_threshold_;
+                                      GlobalUnknownCount() <= coarse_direct_solve_threshold_;
     if (can_switch_to_direct)
     {
       ConfigureCoarseLinearSolver(true);
@@ -996,7 +996,7 @@ CMFDAcceleration::InitializeLinearSystem()
   const bool petsc_options_policy = coarse_solver_policy_ == "petsc_options";
   using_direct_coarse_solver_ =
     coarse_solver_policy_ == "direct" or
-    (coarse_solver_policy_ == "auto" and GlobalUnknownCount() <= direct_coarse_solve_threshold_);
+    (coarse_solver_policy_ == "auto" and GlobalUnknownCount() <= coarse_direct_solve_threshold_);
   if (not petsc_options_policy)
     ConfigureCoarseLinearSolver(using_direct_coarse_solver_);
   OpenSnPETScCall(KSPSetTolerances(ksp_, l_abs_tol_, PETSC_DEFAULT, PETSC_DEFAULT, max_iters_));

@@ -143,7 +143,7 @@ private:
   const double update_wgs_abs_tol_;
   const double balance_residual_tolerance_;
   const std::string coarse_solver_policy_;
-  const std::size_t direct_coarse_solve_threshold_;
+  const std::size_t coarse_direct_solve_threshold_;
   const unsigned int first_group_ = 0;
   const unsigned int num_groups_;
   const unsigned int num_coarse_groups_;

@@ -78,11 +78,15 @@ These are specified inside each entry of ``groupsets=[...]``:
 - ``wgdsa_l_max_its``
 - ``wgdsa_verbose``
 - ``wgdsa_petsc_options``
+- ``wgdsa_solver_policy``
+- ``wgdsa_direct_solve_threshold``
 - ``apply_tgdsa``
 - ``tgdsa_l_abs_tol``
 - ``tgdsa_l_max_its``
 - ``tgdsa_verbose``
 - ``tgdsa_petsc_options``
+- ``tgdsa_solver_policy``
+- ``tgdsa_direct_solve_threshold``
 
 These settings control the solve performed within a single groupset.
 
@@ -497,10 +501,14 @@ with associated controls:
 - ``wgdsa_l_max_its``
 - ``wgdsa_verbose``
 - ``wgdsa_petsc_options``
+- ``wgdsa_solver_policy``
+- ``wgdsa_direct_solve_threshold``
 - ``tgdsa_l_abs_tol``
 - ``tgdsa_l_max_its``
 - ``tgdsa_verbose``
 - ``tgdsa_petsc_options``
+- ``tgdsa_solver_policy``
+- ``tgdsa_direct_solve_threshold``
 
 WGDSA
 -----
@@ -520,6 +528,13 @@ WGDSA controls:
 
 - ``wgdsa_l_abs_tol``: stopping tolerance for the diffusion correction solve
 - ``wgdsa_l_max_its``: hard cap on WGDSA iterations
+- ``wgdsa_solver_policy``: PETSc solver setup policy for the WGDSA diffusion
+  solve. ``"auto"`` uses direct PETSc LU for systems at or below
+  ``wgdsa_direct_solve_threshold`` global unknowns and an iterative solve
+  otherwise. ``"direct"``, ``"iterative"``, and ``"petsc_options"`` force a
+  specific path.
+- ``wgdsa_direct_solve_threshold``: maximum global WGDSA diffusion unknown count
+  for the automatic direct solve. The default is ``20000``.
 
 Reasonable values:
 
@@ -541,6 +556,10 @@ TGDSA controls:
 
 - ``tgdsa_l_abs_tol``: stopping tolerance for the two-grid diffusion solve
 - ``tgdsa_l_max_its``: hard cap on TGDSA iterations
+- ``tgdsa_solver_policy``: PETSc solver setup policy for the TGDSA diffusion
+  solve, with the same choices and behavior as ``wgdsa_solver_policy``.
+- ``tgdsa_direct_solve_threshold``: maximum global TGDSA diffusion unknown count
+  for the automatic direct solve. The default is ``20000``.
 
 Reasonable values:
 

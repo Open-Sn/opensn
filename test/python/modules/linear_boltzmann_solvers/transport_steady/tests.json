@@ -1255,28 +1255,21 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] iteration = 22",
-        "wordnum": 18,
-        "gold": "converged"
+        "key": "AGS iteration = 52",
+        "wordnum": 16,
+        "gold": "converged;"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] iteration = 59",
-        "wordnum": 18,
+        "key": "AGS iteration = 52",
+        "wordnum": 20,
         "gold": "converged"
       },
       {
         "type": "FloatCompare",
-        "key": "WGS groups [0-62] iteration = 22",
-        "wordnum": 13,
-        "gold": 9.6079e-08,
-        "abs_tol": 1e-09
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [63-167] iteration = 59",
-        "wordnum": 13,
-        "gold": 4.73732e-07,
+        "key": "AGS iteration = 52",
+        "wordnum": 11,
+        "gold": 9.454622e-07,
         "abs_tol": 1e-09
       }
     ]
@@ -1554,6 +1547,38 @@
         "key": "BOUNDARY_MUTATION_MAX_DIFF=",
         "goldvalue": 0.0,
         "abs_tol": 5.0e-8
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_dsa_compare.py",
+    "comment": "Compare WGDSA/TGDSA accelerated fixed-source solutions against unaccelerated transport",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "WGDSA_DIFF_G39=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "WGDSA_DIFF_G120=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "WGDSA_TGDSA_DIFF_G39=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "WGDSA_TGDSA_DIFF_G120=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
       }
     ]
   }
