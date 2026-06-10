@@ -1,0 +1,644 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "673625d4-97ed-4ca4-8b97-91345f7fd02c",
+   "metadata": {},
+   "source": [
+    "# CMFD acceleration for k-eigenvalue problems\n",
+    "\n",
+    "This tutorial demonstrates how to add coarse-mesh finite-difference (CMFD) acceleration to a multigroup k-eigenvalue transport solve. The runnable problem is intentionally small so the notebook finishes quickly, but the CMFD setup mirrors the workflow used by larger production inputs.\n",
+    "\n",
+    "The focus is the CMFD accelerator object:\n",
+    "\n",
+    "- when to use CMFD,\n",
+    "- how to construct `CMFDAcceleration`,\n",
+    "- what the user-facing options mean,\n",
+    "- which options to tune first,\n",
+    "- how to interpret the CMFD status lines,\n",
+    "- what to do when CMFD skips a correction or converges slowly.\n",
+    "\n",
+    "The mesh, cross sections, quadrature, and partitioner are only setup details. They are included so the CMFD example is complete and executable."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7d799730-79a7-4485-871f-dc4a931de188",
+   "metadata": {},
+   "source": [
+    "## Using this notebook\n",
+    "\n",
+    "Before running this example, make sure that the Python module of OpenSn is installed.\n",
+    "\n",
+    "To run this notebook from the terminal, simply type:\n",
+    "\n",
+    "jupyter nbconvert --to python --execute <notebook_name>.ipynb.\n",
+    "\n",
+    "To run this notebook in parallel (for example, using 4 processes), simply type:\n",
+    "\n",
+    "mpiexec -n 4 jupyter nbconvert --to python --execute <notebook_name>.ipynb.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7d4a2f8a",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import math\n",
+    "import sys\n",
+    "from pathlib import Path\n",
+    "\n",
+    "import numpy as np\n",
+    "from mpi4py import MPI\n",
+    "\n",
+    "comm = MPI.COMM_WORLD\n",
+    "rank = comm.rank\n",
+    "size = comm.size\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"Running with {size} MPI processes.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1e10d85a",
+   "metadata": {},
+   "source": [
+    "## Import OpenSn\n",
+    "\n",
+    "When OpenSn is installed as a Python package, no path adjustment is needed. The small source-tree fallback below only helps when running the notebook directly from this documentation directory before installation. The mesh and cross-section files used by this tutorial are local files in this directory.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "974103f4",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "tutorial_dir = Path.cwd().resolve()\n",
+    "\n",
+    "# Prefer a source-tree build when this notebook is executed from the documentation tree.\n",
+    "# This avoids accidentally importing a stale installed wheel during development.\n",
+    "for candidate in [tutorial_dir, *tutorial_dir.parents]:\n",
+    "    if (candidate / \"build/pyopensn\").exists():\n",
+    "        sys.path.insert(0, str(candidate / \"build\"))\n",
+    "        break\n",
+    "\n",
+    "from pyopensn.mesh import FromFileMeshGenerator, KBAGraphPartitioner\n",
+    "from pyopensn.xs import MultiGroupXS\n",
+    "from pyopensn.aquad import GLCProductQuadrature2DXY\n",
+    "from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver, CMFDAcceleration\n",
+    "from pyopensn.context import UseColor, Finalize\n",
+    "\n",
+    "UseColor(False)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bdfd4712",
+   "metadata": {},
+   "source": [
+    "## Fast tutorial assets\n",
+    "\n",
+    "The example in this notebook is deliberately small. The tutorial case uses the `pincell.obj` mesh and `mgxs_2B_one_eighth_SHEM-361.h5` cross-section file located next to this notebook. Keeping these assets with the tutorial makes the example self-contained while reducing the problem size enough for an interactive demonstration.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8285d31c",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "mesh_filepath = tutorial_dir / \"pincell.obj\"\n",
+    "xs_filepath = tutorial_dir / \"mgxs_2B_one_eighth_SHEM-361.h5\"\n",
+    "\n",
+    "if not mesh_filepath.exists() or not xs_filepath.exists():\n",
+    "    raise RuntimeError(\n",
+    "        \"This tutorial expects pincell.obj and mgxs_2B_one_eighth_SHEM-361.h5 \"\n",
+    "        \"in the same directory as cmfd.ipynb. Run the notebook from \"\n",
+    "        \"doc/source/tutorials/lbs/keigen or copy both files alongside it.\"\n",
+    "    )\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"Mesh: {mesh_filepath}\")\n",
+    "    print(f\"Cross sections: {xs_filepath}\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fd6580a9",
+   "metadata": {},
+   "source": [
+    "## Mesh partitioning setup\n",
+    "\n",
+    "CMFD does not require a special partitioner. For this small structured lattice, we use a simple KBA-style geometric partitioner because it gives compact rank-local cell sets and predictable sweep behavior. That is enough for this tutorial.\n",
+    "\n",
+    "The important CMFD point is that the default coarse mesh used below is `coarse_mesh=\"local_aggregation\"`: each rank aggregates its own fine cells into local CMFD coarse cells. Therefore, partition quality can affect CMFD quality indirectly, because the rank-local fine-cell chunks are the raw material for the coarse mesh. For production runs, use a partitioner that keeps cells spatially compact.\n",
+    "\n",
+    "The next section explains what changes when the CMFD coarse cells are aggregated across MPI ranks instead of being kept rank-local."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "edb8ccf3",
+   "metadata": {},
+   "source": [
+    "## Global cell aggregation across MPI ranks\n",
+    "\n",
+    "The notebook uses rank-local spatial aggregation. That means each MPI rank builds CMFD coarse cells only from its own fine cells. This is simple, robust, and usually the right starting point, but it also means the coarse mesh can inherit the partition boundaries of the transport mesh.\n",
+    "\n",
+    "Global cell aggregation means the spatial CMFD coarse cells are formed from the full mesh geometry, not from rank-local chunks alone. In other words, a single coarse cell may span fine cells owned by multiple MPI ranks. Conceptually, this makes the CMFD coarse mesh look more like a geometry-driven coarsening and less like a partition-driven one.\n",
+    "\n",
+    "Why this matters:\n",
+    "\n",
+    "- **Less partition sensitivity.** With local aggregation, moving MPI cut lines can change the CMFD coarse mesh even when the physical problem is unchanged. Global aggregation reduces that effect.\n",
+    "- **Cleaner coarse cells.** If a physically coherent region is split across ranks, global aggregation can preserve it as one coarse region instead of forcing separate rank-local pieces.\n",
+    "- **Potentially stronger CMFD correction.** A coarse mesh that better follows the problem geometry can give a more consistent low-order problem, especially when local partitions are thin or fragmented.\n",
+    "\n",
+    "The tradeoff is implementation and communication cost. Once a coarse cell spans multiple ranks, the CMFD data structures, current restrictions, and coarse solves all need more off-rank bookkeeping. That is why local aggregation is the standard production default: it is easier to build, easier to reason about, and often good enough when the transport partition is already spatially compact.\n",
+    "\n",
+    "A practical rule of thumb is:\n",
+    "\n",
+    "- start with **local aggregation**,\n",
+    "- use a partitioner that keeps fine-cell ownership spatially compact,\n",
+    "- think about **global aggregation** only when partition boundaries are clearly degrading the CMFD coarse mesh or making performance/results overly partition-dependent.\n",
+    "\n",
+    "So the distinction is not mathematical CMFD versus a different acceleration method. The difference is how the **spatial coarse mesh** is constructed in parallel: purely from rank-local fine-cell chunks, or from the global geometry across rank boundaries."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "05500836",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "def make_spatial_partitioner(filename: Path) -> KBAGraphPartitioner:\n",
+    "    num_partitions = MPI.COMM_WORLD.size\n",
+    "    nx = math.isqrt(num_partitions)\n",
+    "    while num_partitions % nx != 0:\n",
+    "        nx -= 1\n",
+    "    ny = num_partitions // nx\n",
+    "    if nx < ny:\n",
+    "        nx, ny = ny, nx\n",
+    "\n",
+    "    xmin = ymin = float(\"inf\")\n",
+    "    xmax = ymax = -float(\"inf\")\n",
+    "    with open(filename, encoding=\"utf-8\") as mesh_file:\n",
+    "        for line in mesh_file:\n",
+    "            if not line.startswith(\"v \"):\n",
+    "                continue\n",
+    "            _, x, y, *_ = line.split()\n",
+    "            x = float(x)\n",
+    "            y = float(y)\n",
+    "            xmin = min(xmin, x)\n",
+    "            xmax = max(xmax, x)\n",
+    "            ymin = min(ymin, y)\n",
+    "            ymax = max(ymax, y)\n",
+    "\n",
+    "    xcuts = [xmin + (xmax - xmin) * i / nx for i in range(1, nx)]\n",
+    "    ycuts = [ymin + (ymax - ymin) * i / ny for i in range(1, ny)]\n",
+    "    return KBAGraphPartitioner(nx=nx, ny=ny, xcuts=xcuts, ycuts=ycuts)\n",
+    "\n",
+    "meshgen = FromFileMeshGenerator(\n",
+    "    filename=str(mesh_filepath),\n",
+    "    partitioner=make_spatial_partitioner(mesh_filepath),\n",
+    ")\n",
+    "\n",
+    "grid = meshgen.Execute()\n",
+    "grid.SetOrthogonalBoundaries()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4526e475",
+   "metadata": {},
+   "source": [
+    "## Cross sections and material map\n",
+    "\n",
+    "The small pin-lattice mesh has four material blocks. A large production problem will likely have more material regions, but the workflow is identical: load each material from the HDF5 cross-section file and map mesh block IDs to `MultiGroupXS` objects explicitly."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a986de14",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "h5_mat_names = [\n",
+    "    \"fuel\",\n",
+    "    \"fuel clad\",\n",
+    "    \"fuel gap\",\n",
+    "    \"moderator\",\n",
+    "]\n",
+    "\n",
+    "xs_dict = {}\n",
+    "xs_list = []\n",
+    "for name in h5_mat_names:\n",
+    "    xs = MultiGroupXS()\n",
+    "    xs.LoadFromOpenMC(str(xs_filepath), name, 294.0)\n",
+    "    xs_dict[name] = xs\n",
+    "    xs_list.append(xs)\n",
+    "\n",
+    "num_groups = xs_list[0].num_groups\n",
+    "scattering_order = 3\n",
+    "xs_mapping = [{\"block_ids\": [block_id], \"xs\": xs} for block_id, xs in enumerate(xs_list)]\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"Loaded {len(xs_list)} materials with {num_groups} energy groups.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5eac32d7",
+   "metadata": {},
+   "source": [
+    "## Angular quadrature and transport settings\n",
+    "\n",
+    "The notebook uses a light quadrature so that the example runs quickly:\n",
+    "\n",
+    "```python\n",
+    "n_polar = 2\n",
+    "n_azimuthal = 4\n",
+    "```\n",
+    "\n",
+    "For production calculations, use a more resolved product quadrature. The lower quadrature here is for workflow demonstration, not production-quality eigenvalues.\n",
+    "\n",
+    "The groupset uses PETSc GMRES for the WGS update solve. In the CMFD workflow, the number of WGS updates between CMFD corrections is controlled by `CMFDAcceleration(update_wgs_max_its=...)`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2f34455d",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "n_polar = 2\n",
+    "n_azimuthal = 4\n",
+    "\n",
+    "pquad = GLCProductQuadrature2DXY(\n",
+    "    n_polar=n_polar,\n",
+    "    n_azimuthal=n_azimuthal,\n",
+    "    scattering_order=scattering_order,\n",
+    ")\n",
+    "\n",
+    "group_sets = [\n",
+    "    {\n",
+    "        \"groups_from_to\": [0, num_groups - 1],\n",
+    "        \"angular_quadrature\": pquad,\n",
+    "        \"angle_aggregation_num_subsets\": 1,\n",
+    "        \"inner_linear_method\": \"petsc_gmres\",\n",
+    "        \"l_abs_tol\": 1.0e-7,\n",
+    "        \"l_max_its\": 300,\n",
+    "    }\n",
+    "]\n",
+    "\n",
+    "bound_conditions = [\n",
+    "    {\"name\": \"xmin\", \"type\": \"reflecting\"},\n",
+    "    {\"name\": \"xmax\", \"type\": \"reflecting\"},\n",
+    "    {\"name\": \"ymin\", \"type\": \"reflecting\"},\n",
+    "    {\"name\": \"ymax\", \"type\": \"reflecting\"},\n",
+    "]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7f08bb2a",
+   "metadata": {},
+   "source": [
+    "## Build the transport problem\n",
+    "\n",
+    "The transport problem is the high-order solve that CMFD accelerates. CMFD does not replace this solve; it applies a low-order scalar-flux correction after each transport update.\n",
+    "\n",
+    "For a CMFD run, the transport problem should normally be configured the same way you would configure the corresponding PI problem:\n",
+    "\n",
+    "- use the same mesh, materials, boundary conditions, scattering order, and quadrature,\n",
+    "- use a stable WGS method such as PETSc GMRES for difficult multigroup problems,\n",
+    "- set `save_angular_flux=False` unless another workflow needs angular fluxes,\n",
+    "- keep outer iteration logging enabled while tuning CMFD.\n",
+    "\n",
+    "In this notebook, `verbose_outer_iterations=True` is useful because it prints the PI status and the CMFD convergence check. `verbose_inner_iterations=False` keeps the tutorial output short."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "580c42c7",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "phys = DiscreteOrdinatesProblem(\n",
+    "    mesh=grid,\n",
+    "    num_groups=num_groups,\n",
+    "    groupsets=group_sets,\n",
+    "    xs_map=xs_mapping,\n",
+    "    boundary_conditions=bound_conditions,\n",
+    "    options={\n",
+    "        \"verbose_inner_iterations\": False,\n",
+    "        \"verbose_outer_iterations\": True,\n",
+    "        \"use_precursors\": False,\n",
+    "        \"power_default_kappa\": 1.0,\n",
+    "        \"save_angular_flux\": False,\n",
+    "    },\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bd1eae96",
+   "metadata": {},
+   "source": [
+    "## Create the CMFD accelerator\n",
+    "\n",
+    "The CMFD accelerator is created separately from the transport problem and then passed to `PowerIterationKEigenSolver` through the `acceleration` argument.\n",
+    "\n",
+    "Conceptually, each power iteration does this:\n",
+    "\n",
+    "1. perform a high-order transport update,\n",
+    "2. restrict the updated scalar flux and transport currents to a coarse mesh and coarse energy grid,\n",
+    "3. assemble and solve a low-order CMFD k-eigenvalue problem,\n",
+    "4. prolong a bounded scalar-flux correction back to the transport unknowns,\n",
+    "5. allow outer convergence only when both k change and the CMFD balance check are satisfied.\n",
+    "\n",
+    "The next cell is the part of the notebook to copy into production inputs.\n",
+    "\n",
+    "### Options most users should tune\n",
+    "\n",
+    "`current_closure=\"auto\"`\n",
+    ": CMFD needs a face-current closure for the low-order operator. `\"auto\"` starts from net current and probes whether net, partial current, or a blend is more appropriate. This is the recommended starting point. Fixed `\"net\"` and `\"partial\"` are useful for sensitivity studies or if auto is poor for a specific problem.\n",
+    "\n",
+    "`aggregation_size`\n",
+    ": Target fine cells per spatial CMFD coarse cell. Larger values make the CMFD solve cheaper but less detailed. Smaller values make the correction more detailed but increase coarse-solve cost. For small tutorial problems, use a small value such as 8. For larger problems, 16 to 64 is a reasonable first scan.\n",
+    "\n",
+    "`group_aggregation_size`\n",
+    ": Number of fine energy groups per CMFD coarse energy group. This is not the final number of coarse groups. To target `N` coarse groups, use `(num_groups + N - 1) // N`. The notebook targets 16 coarse groups for speed; production CASL runs often use 16 to 32 coarse groups.\n",
+    "\n",
+    "`relaxation`\n",
+    ": Requested strength of the scalar-flux correction. `0.5` is conservative. Larger values can reduce iterations but may trigger damping or skipped corrections. Smaller values are safer but weaker.\n",
+    "\n",
+    "`update_wgs_max_its`\n",
+    ": Number of high-order WGS update iterations before each CMFD correction. The production CMFD workflow normally starts with 1. Increasing this can stabilize hard cases, but each power iteration becomes more expensive.\n",
+    "\n",
+    "`balance_residual_tolerance`\n",
+    ": Additional CMFD convergence check based on restricted transport-current balance. This prevents convergence based only on a small k change when the low-order balance is still inconsistent with transport. The notebook uses a loose value so it runs quickly. Production comparisons should tighten it deliberately, often starting near `10*k_tol` for 2D problems and loosening only after verification.\n",
+    "\n",
+    "### Options usually left at defaults\n",
+    "\n",
+    "`coarse_mesh=\"local_aggregation\"`\n",
+    ": Rank-local spatial aggregation. This is the production mode.\n",
+    "\n",
+    "`coarse_solver_policy=\"direct\"`\n",
+    ": Direct coarse solve. This is robust for small or moderate coarse systems. For large 3D problems, `\"auto\"` or iterative PETSc options may be required to avoid excessive memory use.\n",
+    "\n",
+    "`update_wgs_abs_tol=1.0e-12`\n",
+    ": With `update_wgs_max_its=1`, this tolerance usually does not stop the WGS solve; the iteration limit does. It remains useful if you increase `update_wgs_max_its`."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e4cde3e6",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "k_tol = 1.0e-4\n",
+    "target_coarse_groups = 16\n",
+    "\n",
+    "cmfd = CMFDAcceleration(\n",
+    "    problem=phys,\n",
+    "    current_closure=\"auto\",\n",
+    "    coarse_mesh=\"local_aggregation\",\n",
+    "    aggregation_size=8,\n",
+    "    group_aggregation_size=(num_groups + target_coarse_groups - 1) // target_coarse_groups,\n",
+    "    relaxation=0.5,\n",
+    "    update_wgs_max_its=1,\n",
+    "    update_wgs_abs_tol=1.0e-12,\n",
+    "    balance_residual_tolerance=1.0e-1,\n",
+    "    coarse_solver_policy=\"direct\",\n",
+    ")\n",
+    "\n",
+    "k_solver = PowerIterationKEigenSolver(\n",
+    "    problem=phys,\n",
+    "    acceleration=cmfd,\n",
+    "    k_tol=k_tol,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1396217b",
+   "metadata": {},
+   "source": [
+    "## Execute the CMFD-accelerated solve\n",
+    "\n",
+    "The PI output contains two pieces of convergence information:\n",
+    "\n",
+    "```text\n",
+    "PI iteration = ..., k_eff = ..., k_eff_change = ...\n",
+    "CMFD convergence check = ..., transport-current balance residual = ...\n",
+    "```\n",
+    "\n",
+    "The solve is converged only when the outer k tolerance and the CMFD balance check are both satisfied.\n",
+    "\n",
+    "With `update_wgs_max_its=1`, `WGS = iteration_limit` is expected. It does not mean the calculation failed; it means the high-order update intentionally performed one WGS iteration before the CMFD correction."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "39024b61",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "k_solver.Initialize()\n",
+    "k_solver.Execute()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c220952f-ca5f-4ff4-94fb-0289cbf55278",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "keff = k_solver.GetEigenvalue()\n",
+    "if rank == 0:\n",
+    "    print(f\"CMFD k-eigenvalue = {keff:.8f}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "23b370a1",
+   "metadata": {},
+   "source": [
+    "## CMFD diagnostics and contingencies\n",
+    "\n",
+    "CMFD is designed to avoid applying corrections it does not trust. If a correction is skipped, the power iteration uses the unaccelerated transport update for that iteration and continues.\n",
+    "\n",
+    "### Coarse linear solve did not converge\n",
+    "\n",
+    "Message:\n",
+    "\n",
+    "```text\n",
+    "correction = skipped (coarse_linear_solve_not_converged)\n",
+    "```\n",
+    "\n",
+    "Meaning: an iterative low-order coarse solve failed to converge, so CMFD refused to use its correction.\n",
+    "\n",
+    "What to do:\n",
+    "\n",
+    "1. For modest coarse systems, use `coarse_solver_policy=\"direct\"`.\n",
+    "2. For large systems, increase `max_iters` or provide stronger `petsc_options`.\n",
+    "3. Reduce the coarse-system size by increasing `aggregation_size` or `group_aggregation_size`.\n",
+    "4. Watch whether skipped corrections persist. Occasional early skips are less concerning than repeated skips after the flux shape has stabilized.\n",
+    "\n",
+    "### Negative-flux guard rejected the correction\n",
+    "\n",
+    "Message:\n",
+    "\n",
+    "```text\n",
+    "correction = skipped (negative_flux_guard)\n",
+    "```\n",
+    "\n",
+    "Meaning: every damping attempt produced a scalar-flux update that violated the negative-flux guard.\n",
+    "\n",
+    "What to do:\n",
+    "\n",
+    "1. Reduce `relaxation`, for example from `0.5` to `0.25`.\n",
+    "2. Try `current_closure=\"net\"` if auto selected partial current too aggressively.\n",
+    "3. Increase `update_wgs_max_its` to make the transport update cleaner before CMFD is applied.\n",
+    "4. Consider a few `inactive_iterations` only as a diagnostic. Do not use inactive iterations to hide persistent instability.\n",
+    "\n",
+    "### k looks converged but CMFD keeps iterating\n",
+    "\n",
+    "Meaning: `k_eff_change` is below `k_tol`, but the restricted transport-current balance residual is still above `balance_residual_tolerance`.\n",
+    "\n",
+    "What to do:\n",
+    "\n",
+    "1. First check that the balance residual is decreasing. If it is, CMFD is doing the right thing.\n",
+    "2. For a tutorial or exploratory run, a looser `balance_residual_tolerance` is acceptable.\n",
+    "3. For production k comparisons, tighten it and verify against PI or a trusted reference.\n",
+    "4. In large 3D cases, `10*k_tol` may be too strict; choose a value that is verified for the application rather than blindly forcing the residual to a tiny number.\n",
+    "\n",
+    "### CMFD is slower than PI\n",
+    "\n",
+    "Check these in order:\n",
+    "\n",
+    "1. Is the coarse system too large? Increase `aggregation_size` or `group_aggregation_size`.\n",
+    "2. Are corrections being skipped? Fix the skip reason first.\n",
+    "3. Is `update_wgs_max_its` too large? Start with 1.\n",
+    "4. Is the closure poor? Compare `auto`, `net`, and `partial` on a short run.\n",
+    "5. Is the balance check much tighter than needed for the requested k accuracy?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6d268c0c",
+   "metadata": {},
+   "source": [
+    "## Applying the same CMFD setup to production problems\n",
+    "\n",
+    "For large production problems, the CMFD construction is the same. The main changes are the mesh, material list, and production quadrature. Treat `aggregation_size`, target coarse groups, `relaxation`, and `balance_residual_tolerance` as the first production tuning knobs. Leave developer/debug controls alone unless the log gives a concrete reason to change them."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bd66cbaa",
+   "metadata": {},
+   "source": [
+    "## Finalize Jupyter runs\n",
+    "\n",
+    "In script mode PyOpenSn finalizes automatically. In an interactive Jupyter kernel, explicit finalization is needed. The event hook below follows the convention used by the other OpenSn tutorial notebooks."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "94a0fa54",
+   "metadata": {
+    "vscode": {
+     "languageId": "plaintext"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "MPI.COMM_WORLD.Barrier()\n",
+    "\n",
+    "from IPython import get_ipython\n",
+    "\n",
+    "\n",
+    "def finalize_env():\n",
+    "    Finalize()\n",
+    "    MPI.Finalize()\n",
+    "\n",
+    "\n",
+    "ipython_instance = get_ipython()\n",
+    "if ipython_instance is not None:\n",
+    "    ipython_instance.events.register(\"post_execute\", finalize_env)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.13.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

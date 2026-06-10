@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.2.2. CMFD acceleration for k-eigenvalue problems &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="5.3. Source Driven" href="../src_driven/index.html" />
+    <link rel="prev" title="5.2.1. Reactor pin cell" href="pincell_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../aquad/index.html">3. Angular Quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">5. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../primer/index.html">5.1. Primer</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">5.2. KEigen</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pincell_example.html">5.2.1. Reactor pin cell</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.2.2. CMFD acceleration for k-eigenvalue problems</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../src_driven/index.html">5.3. Source Driven</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../transient/index.html">5.4. Transient</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.2. </span>KEigen</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.2.2. </span>CMFD acceleration for k-eigenvalue problems</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="CMFD-acceleration-for-k-eigenvalue-problems">
+<h1><span class="section-number">5.2.2. </span>CMFD acceleration for k-eigenvalue problems<a class="headerlink" href="#CMFD-acceleration-for-k-eigenvalue-problems" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates how to add coarse-mesh finite-difference (CMFD) acceleration to a multigroup k-eigenvalue transport solve. The runnable problem is intentionally small so the notebook finishes quickly, but the CMFD setup mirrors the workflow used by larger production inputs.</p>
+<p>The focus is the CMFD accelerator object:</p>
+<ul class="simple">
+<li><p>when to use CMFD,</p></li>
+<li><p>how to construct <code class="docutils literal notranslate"><span class="pre">CMFDAcceleration</span></code>,</p></li>
+<li><p>what the user-facing options mean,</p></li>
+<li><p>which options to tune first,</p></li>
+<li><p>how to interpret the CMFD status lines,</p></li>
+<li><p>what to do when CMFD skips a correction or converges slowly.</p></li>
+</ul>
+<p>The mesh, cross sections, quadrature, and partitioner are only setup details. They are included so the CMFD example is complete and executable.</p>
+<section id="Using-this-notebook">
+<h2><span class="section-number">5.2.2.1. </span>Using this notebook<a class="headerlink" href="#Using-this-notebook" title="Link to this heading"></a></h2>
+<p>Before running this example, make sure that the Python module of OpenSn is installed.</p>
+<p>To run this notebook from the terminal, simply type:</p>
+<p>jupyter nbconvert –to python –execute .ipynb.</p>
+<p>To run this notebook in parallel (for example, using 4 processes), simply type:</p>
+<p>mpiexec -n 4 jupyter nbconvert –to python –execute .ipynb.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">size</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running with </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> MPI processes.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Import-OpenSn">
+<h2><span class="section-number">5.2.2.2. </span>Import OpenSn<a class="headerlink" href="#Import-OpenSn" title="Link to this heading"></a></h2>
+<p>When OpenSn is installed as a Python package, no path adjustment is needed. The small source-tree fallback below only helps when running the notebook directly from this documentation directory before installation. The mesh and cross-section files used by this tutorial are local files in this directory.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tutorial_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+<span class="c1"># Prefer a source-tree build when this notebook is executed from the documentation tree.</span>
+<span class="c1"># This avoids accidentally importing a stale installed wheel during development.</span>
+<span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">[</span><span class="n">tutorial_dir</span><span class="p">,</span> <span class="o">*</span><span class="n">tutorial_dir</span><span class="o">.</span><span class="n">parents</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">candidate</span> <span class="o">/</span> <span class="s2">&quot;build/pyopensn&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">candidate</span> <span class="o">/</span> <span class="s2">&quot;build&quot;</span><span class="p">))</span>
+        <span class="k">break</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromFileMeshGenerator</span><span class="p">,</span> <span class="n">KBAGraphPartitioner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">,</span> <span class="n">CMFDAcceleration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">UseColor</span><span class="p">,</span> <span class="n">Finalize</span>
+
+<span class="n">UseColor</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Fast-tutorial-assets">
+<h2><span class="section-number">5.2.2.3. </span>Fast tutorial assets<a class="headerlink" href="#Fast-tutorial-assets" title="Link to this heading"></a></h2>
+<p>The example in this notebook is deliberately small. The tutorial case uses the <code class="docutils literal notranslate"><span class="pre">pincell.obj</span></code> mesh and <code class="docutils literal notranslate"><span class="pre">mgxs_2B_one_eighth_SHEM-361.h5</span></code> cross-section file located next to this notebook. Keeping these assets with the tutorial makes the example self-contained while reducing the problem size enough for an interactive demonstration.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mesh_filepath</span> <span class="o">=</span> <span class="n">tutorial_dir</span> <span class="o">/</span> <span class="s2">&quot;pincell.obj&quot;</span>
+<span class="n">xs_filepath</span> <span class="o">=</span> <span class="n">tutorial_dir</span> <span class="o">/</span> <span class="s2">&quot;mgxs_2B_one_eighth_SHEM-361.h5&quot;</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">mesh_filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">xs_filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+        <span class="s2">&quot;This tutorial expects pincell.obj and mgxs_2B_one_eighth_SHEM-361.h5 &quot;</span>
+        <span class="s2">&quot;in the same directory as cmfd.ipynb. Run the notebook from &quot;</span>
+        <span class="s2">&quot;doc/source/tutorials/lbs/keigen or copy both files alongside it.&quot;</span>
+    <span class="p">)</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mesh: </span><span class="si">{</span><span class="n">mesh_filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cross sections: </span><span class="si">{</span><span class="n">xs_filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Mesh-partitioning-setup">
+<h2><span class="section-number">5.2.2.4. </span>Mesh partitioning setup<a class="headerlink" href="#Mesh-partitioning-setup" title="Link to this heading"></a></h2>
+<p>CMFD does not require a special partitioner. For this small structured lattice, we use a simple KBA-style geometric partitioner because it gives compact rank-local cell sets and predictable sweep behavior. That is enough for this tutorial.</p>
+<p>The important CMFD point is that the default coarse mesh used below is <code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;local_aggregation&quot;</span></code>: each rank aggregates its own fine cells into local CMFD coarse cells. Therefore, partition quality can affect CMFD quality indirectly, because the rank-local fine-cell chunks are the raw material for the coarse mesh. For production runs, use a partitioner that keeps cells spatially compact.</p>
+<p>The next section explains what changes when the CMFD coarse cells are aggregated across MPI ranks instead of being kept rank-local.</p>
+</section>
+<section id="Global-cell-aggregation-across-MPI-ranks">
+<h2><span class="section-number">5.2.2.5. </span>Global cell aggregation across MPI ranks<a class="headerlink" href="#Global-cell-aggregation-across-MPI-ranks" title="Link to this heading"></a></h2>
+<p>The notebook uses rank-local spatial aggregation. That means each MPI rank builds CMFD coarse cells only from its own fine cells. This is simple, robust, and usually the right starting point, but it also means the coarse mesh can inherit the partition boundaries of the transport mesh.</p>
+<p>Global cell aggregation means the spatial CMFD coarse cells are formed from the full mesh geometry, not from rank-local chunks alone. In other words, a single coarse cell may span fine cells owned by multiple MPI ranks. Conceptually, this makes the CMFD coarse mesh look more like a geometry-driven coarsening and less like a partition-driven one.</p>
+<p>Why this matters:</p>
+<ul class="simple">
+<li><p><strong>Less partition sensitivity.</strong> With local aggregation, moving MPI cut lines can change the CMFD coarse mesh even when the physical problem is unchanged. Global aggregation reduces that effect.</p></li>
+<li><p><strong>Cleaner coarse cells.</strong> If a physically coherent region is split across ranks, global aggregation can preserve it as one coarse region instead of forcing separate rank-local pieces.</p></li>
+<li><p><strong>Potentially stronger CMFD correction.</strong> A coarse mesh that better follows the problem geometry can give a more consistent low-order problem, especially when local partitions are thin or fragmented.</p></li>
+</ul>
+<p>The tradeoff is implementation and communication cost. Once a coarse cell spans multiple ranks, the CMFD data structures, current restrictions, and coarse solves all need more off-rank bookkeeping. That is why local aggregation is the standard production default: it is easier to build, easier to reason about, and often good enough when the transport partition is already spatially compact.</p>
+<p>A practical rule of thumb is:</p>
+<ul class="simple">
+<li><p>start with <strong>local aggregation</strong>,</p></li>
+<li><p>use a partitioner that keeps fine-cell ownership spatially compact,</p></li>
+<li><p>think about <strong>global aggregation</strong> only when partition boundaries are clearly degrading the CMFD coarse mesh or making performance/results overly partition-dependent.</p></li>
+</ul>
+<p>So the distinction is not mathematical CMFD versus a different acceleration method. The difference is how the <strong>spatial coarse mesh</strong> is constructed in parallel: purely from rank-local fine-cell chunks, or from the global geometry across rank boundaries.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_spatial_partitioner</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KBAGraphPartitioner</span><span class="p">:</span>
+    <span class="n">num_partitions</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">isqrt</span><span class="p">(</span><span class="n">num_partitions</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">num_partitions</span> <span class="o">%</span> <span class="n">nx</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">nx</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="n">num_partitions</span> <span class="o">//</span> <span class="n">nx</span>
+    <span class="k">if</span> <span class="n">nx</span> <span class="o">&lt;</span> <span class="n">ny</span><span class="p">:</span>
+        <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span>
+
+    <span class="n">xmin</span> <span class="o">=</span> <span class="n">ymin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+    <span class="n">xmax</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mesh_file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">mesh_file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;v &quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">xmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">xmax</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">ymin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ymax</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="n">xcuts</span> <span class="o">=</span> <span class="p">[</span><span class="n">xmin</span> <span class="o">+</span> <span class="p">(</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">nx</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nx</span><span class="p">)]</span>
+    <span class="n">ycuts</span> <span class="o">=</span> <span class="p">[</span><span class="n">ymin</span> <span class="o">+</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">ny</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ny</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">KBAGraphPartitioner</span><span class="p">(</span><span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="n">ny</span><span class="p">,</span> <span class="n">xcuts</span><span class="o">=</span><span class="n">xcuts</span><span class="p">,</span> <span class="n">ycuts</span><span class="o">=</span><span class="n">ycuts</span><span class="p">)</span>
+
+<span class="n">meshgen</span> <span class="o">=</span> <span class="n">FromFileMeshGenerator</span><span class="p">(</span>
+    <span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">mesh_filepath</span><span class="p">),</span>
+    <span class="n">partitioner</span><span class="o">=</span><span class="n">make_spatial_partitioner</span><span class="p">(</span><span class="n">mesh_filepath</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">grid</span> <span class="o">=</span> <span class="n">meshgen</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetOrthogonalBoundaries</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Cross-sections-and-material-map">
+<h2><span class="section-number">5.2.2.6. </span>Cross sections and material map<a class="headerlink" href="#Cross-sections-and-material-map" title="Link to this heading"></a></h2>
+<p>The small pin-lattice mesh has four material blocks. A large production problem will likely have more material regions, but the workflow is identical: load each material from the HDF5 cross-section file and map mesh block IDs to <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects explicitly.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">h5_mat_names</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;fuel&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fuel clad&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fuel gap&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;moderator&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">xs_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">xs_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">h5_mat_names</span><span class="p">:</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+    <span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xs_filepath</span><span class="p">),</span> <span class="n">name</span><span class="p">,</span> <span class="mf">294.0</span><span class="p">)</span>
+    <span class="n">xs_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">xs</span>
+    <span class="n">xs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+
+<span class="n">num_groups</span> <span class="o">=</span> <span class="n">xs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">num_groups</span>
+<span class="n">scattering_order</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">xs_mapping</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">block_id</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}</span> <span class="k">for</span> <span class="n">block_id</span><span class="p">,</span> <span class="n">xs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xs_list</span><span class="p">)]</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">xs_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> materials with </span><span class="si">{</span><span class="n">num_groups</span><span class="si">}</span><span class="s2"> energy groups.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Angular-quadrature-and-transport-settings">
+<h2><span class="section-number">5.2.2.7. </span>Angular quadrature and transport settings<a class="headerlink" href="#Angular-quadrature-and-transport-settings" title="Link to this heading"></a></h2>
+<p>The notebook uses a light quadrature so that the example runs quickly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n_polar</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">n_azimuthal</span> <span class="o">=</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p>For production calculations, use a more resolved product quadrature. The lower quadrature here is for workflow demonstration, not production-quality eigenvalues.</p>
+<p>The groupset uses PETSc GMRES for the WGS update solve. In the CMFD workflow, the number of WGS updates between CMFD corrections is controlled by <code class="docutils literal notranslate"><span class="pre">CMFDAcceleration(update_wgs_max_its=...)</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_polar</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">n_azimuthal</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="n">pquad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="n">n_polar</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="n">n_azimuthal</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">group_sets</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">pquad</span><span class="p">,</span>
+        <span class="s2">&quot;angle_aggregation_num_subsets&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-7</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="n">bound_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Build-the-transport-problem">
+<h2><span class="section-number">5.2.2.8. </span>Build the transport problem<a class="headerlink" href="#Build-the-transport-problem" title="Link to this heading"></a></h2>
+<p>The transport problem is the high-order solve that CMFD accelerates. CMFD does not replace this solve; it applies a low-order scalar-flux correction after each transport update.</p>
+<p>For a CMFD run, the transport problem should normally be configured the same way you would configure the corresponding PI problem:</p>
+<ul class="simple">
+<li><p>use the same mesh, materials, boundary conditions, scattering order, and quadrature,</p></li>
+<li><p>use a stable WGS method such as PETSc GMRES for difficult multigroup problems,</p></li>
+<li><p>set <code class="docutils literal notranslate"><span class="pre">save_angular_flux=False</span></code> unless another workflow needs angular fluxes,</p></li>
+<li><p>keep outer iteration logging enabled while tuning CMFD.</p></li>
+</ul>
+<p>In this notebook, <code class="docutils literal notranslate"><span class="pre">verbose_outer_iterations=True</span></code> is useful because it prints the PI status and the CMFD convergence check. <code class="docutils literal notranslate"><span class="pre">verbose_inner_iterations=False</span></code> keeps the tutorial output short.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">group_sets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_mapping</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">bound_conditions</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_outer_iterations&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;use_precursors&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;power_default_kappa&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-the-CMFD-accelerator">
+<h2><span class="section-number">5.2.2.9. </span>Create the CMFD accelerator<a class="headerlink" href="#Create-the-CMFD-accelerator" title="Link to this heading"></a></h2>
+<p>The CMFD accelerator is created separately from the transport problem and then passed to <code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver</span></code> through the <code class="docutils literal notranslate"><span class="pre">acceleration</span></code> argument.</p>
+<p>Conceptually, each power iteration does this:</p>
+<ol class="arabic simple">
+<li><p>perform a high-order transport update,</p></li>
+<li><p>restrict the updated scalar flux and transport currents to a coarse mesh and coarse energy grid,</p></li>
+<li><p>assemble and solve a low-order CMFD k-eigenvalue problem,</p></li>
+<li><p>prolong a bounded scalar-flux correction back to the transport unknowns,</p></li>
+<li><p>allow outer convergence only when both k change and the CMFD balance check are satisfied.</p></li>
+</ol>
+<p>The next cell is the part of the notebook to copy into production inputs.</p>
+<section id="Options-most-users-should-tune">
+<h3><span class="section-number">5.2.2.9.1. </span>Options most users should tune<a class="headerlink" href="#Options-most-users-should-tune" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">current_closure=&quot;auto&quot;</span></code></dt><dd><p>CMFD needs a face-current closure for the low-order operator. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> starts from net current and probes whether net, partial current, or a blend is more appropriate. This is the recommended starting point. Fixed <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> are useful for sensitivity studies or if auto is poor for a specific problem.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code></dt><dd><p>Target fine cells per spatial CMFD coarse cell. Larger values make the CMFD solve cheaper but less detailed. Smaller values make the correction more detailed but increase coarse-solve cost. For small tutorial problems, use a small value such as 8. For larger problems, 16 to 64 is a reasonable first scan.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code></dt><dd><p>Number of fine energy groups per CMFD coarse energy group. This is not the final number of coarse groups. To target <code class="docutils literal notranslate"><span class="pre">N</span></code> coarse groups, use <code class="docutils literal notranslate"><span class="pre">(num_groups</span> <span class="pre">+</span> <span class="pre">N</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">//</span> <span class="pre">N</span></code>. The notebook targets 16 coarse groups for speed; production CASL runs often use 16 to 32 coarse groups.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">relaxation</span></code></dt><dd><p>Requested strength of the scalar-flux correction. <code class="docutils literal notranslate"><span class="pre">0.5</span></code> is conservative. Larger values can reduce iterations but may trigger damping or skipped corrections. Smaller values are safer but weaker.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code></dt><dd><p>Number of high-order WGS update iterations before each CMFD correction. The production CMFD workflow normally starts with 1. Increasing this can stabilize hard cases, but each power iteration becomes more expensive.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code></dt><dd><p>Additional CMFD convergence check based on restricted transport-current balance. This prevents convergence based only on a small k change when the low-order balance is still inconsistent with transport. The notebook uses a loose value so it runs quickly. Production comparisons should tighten it deliberately, often starting near <code class="docutils literal notranslate"><span class="pre">10*k_tol</span></code> for 2D problems and loosening only after verification.</p>
+</dd>
+</dl>
+</section>
+<section id="Options-usually-left-at-defaults">
+<h3><span class="section-number">5.2.2.9.2. </span>Options usually left at defaults<a class="headerlink" href="#Options-usually-left-at-defaults" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;local_aggregation&quot;</span></code></dt><dd><p>Rank-local spatial aggregation. This is the production mode.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;direct&quot;</span></code></dt><dd><p>Direct coarse solve. This is robust for small or moderate coarse systems. For large 3D problems, <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> or iterative PETSc options may be required to avoid excessive memory use.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol=1.0e-12</span></code></dt><dd><p>With <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its=1</span></code>, this tolerance usually does not stop the WGS solve; the iteration limit does. It remains useful if you increase <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code>.</p>
+</dd>
+</dl>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">k_tol</span> <span class="o">=</span> <span class="mf">1.0e-4</span>
+<span class="n">target_coarse_groups</span> <span class="o">=</span> <span class="mi">16</span>
+
+<span class="n">cmfd</span> <span class="o">=</span> <span class="n">CMFDAcceleration</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">current_closure</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">coarse_mesh</span><span class="o">=</span><span class="s2">&quot;local_aggregation&quot;</span><span class="p">,</span>
+    <span class="n">aggregation_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">group_aggregation_size</span><span class="o">=</span><span class="p">(</span><span class="n">num_groups</span> <span class="o">+</span> <span class="n">target_coarse_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">target_coarse_groups</span><span class="p">,</span>
+    <span class="n">relaxation</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">update_wgs_max_its</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">update_wgs_abs_tol</span><span class="o">=</span><span class="mf">1.0e-12</span><span class="p">,</span>
+    <span class="n">balance_residual_tolerance</span><span class="o">=</span><span class="mf">1.0e-1</span><span class="p">,</span>
+    <span class="n">coarse_solver_policy</span><span class="o">=</span><span class="s2">&quot;direct&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">k_solver</span> <span class="o">=</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">acceleration</span><span class="o">=</span><span class="n">cmfd</span><span class="p">,</span>
+    <span class="n">k_tol</span><span class="o">=</span><span class="n">k_tol</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="Execute-the-CMFD-accelerated-solve">
+<h2><span class="section-number">5.2.2.10. </span>Execute the CMFD-accelerated solve<a class="headerlink" href="#Execute-the-CMFD-accelerated-solve" title="Link to this heading"></a></h2>
+<p>The PI output contains two pieces of convergence information:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>PI iteration = ..., k_eff = ..., k_eff_change = ...
+CMFD convergence check = ..., transport-current balance residual = ...
+</pre></div>
+</div>
+<p>The solve is converged only when the outer k tolerance and the CMFD balance check are both satisfied.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its=1</span></code>, <code class="docutils literal notranslate"><span class="pre">WGS</span> <span class="pre">=</span> <span class="pre">iteration_limit</span></code> is expected. It does not mean the calculation failed; it means the high-order update intentionally performed one WGS iteration before the CMFD correction.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">k_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">k_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">keff</span> <span class="o">=</span> <span class="n">k_solver</span><span class="o">.</span><span class="n">GetEigenvalue</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CMFD k-eigenvalue = </span><span class="si">{</span><span class="n">keff</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="CMFD-diagnostics-and-contingencies">
+<h2><span class="section-number">5.2.2.11. </span>CMFD diagnostics and contingencies<a class="headerlink" href="#CMFD-diagnostics-and-contingencies" title="Link to this heading"></a></h2>
+<p>CMFD is designed to avoid applying corrections it does not trust. If a correction is skipped, the power iteration uses the unaccelerated transport update for that iteration and continues.</p>
+<section id="Coarse-linear-solve-did-not-converge">
+<h3><span class="section-number">5.2.2.11.1. </span>Coarse linear solve did not converge<a class="headerlink" href="#Coarse-linear-solve-did-not-converge" title="Link to this heading"></a></h3>
+<p>Message:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>correction = skipped (coarse_linear_solve_not_converged)
+</pre></div>
+</div>
+<p>Meaning: an iterative low-order coarse solve failed to converge, so CMFD refused to use its correction.</p>
+<p>What to do:</p>
+<ol class="arabic simple">
+<li><p>For modest coarse systems, use <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;direct&quot;</span></code>.</p></li>
+<li><p>For large systems, increase <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> or provide stronger <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code>.</p></li>
+<li><p>Reduce the coarse-system size by increasing <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> or <code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code>.</p></li>
+<li><p>Watch whether skipped corrections persist. Occasional early skips are less concerning than repeated skips after the flux shape has stabilized.</p></li>
+</ol>
+</section>
+<section id="Negative-flux-guard-rejected-the-correction">
+<h3><span class="section-number">5.2.2.11.2. </span>Negative-flux guard rejected the correction<a class="headerlink" href="#Negative-flux-guard-rejected-the-correction" title="Link to this heading"></a></h3>
+<p>Message:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>correction = skipped (negative_flux_guard)
+</pre></div>
+</div>
+<p>Meaning: every damping attempt produced a scalar-flux update that violated the negative-flux guard.</p>
+<p>What to do:</p>
+<ol class="arabic simple">
+<li><p>Reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>, for example from <code class="docutils literal notranslate"><span class="pre">0.5</span></code> to <code class="docutils literal notranslate"><span class="pre">0.25</span></code>.</p></li>
+<li><p>Try <code class="docutils literal notranslate"><span class="pre">current_closure=&quot;net&quot;</span></code> if auto selected partial current too aggressively.</p></li>
+<li><p>Increase <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> to make the transport update cleaner before CMFD is applied.</p></li>
+<li><p>Consider a few <code class="docutils literal notranslate"><span class="pre">inactive_iterations</span></code> only as a diagnostic. Do not use inactive iterations to hide persistent instability.</p></li>
+</ol>
+</section>
+<section id="k-looks-converged-but-CMFD-keeps-iterating">
+<h3><span class="section-number">5.2.2.11.3. </span>k looks converged but CMFD keeps iterating<a class="headerlink" href="#k-looks-converged-but-CMFD-keeps-iterating" title="Link to this heading"></a></h3>
+<p>Meaning: <code class="docutils literal notranslate"><span class="pre">k_eff_change</span></code> is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code>, but the restricted transport-current balance residual is still above <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>.</p>
+<p>What to do:</p>
+<ol class="arabic simple">
+<li><p>First check that the balance residual is decreasing. If it is, CMFD is doing the right thing.</p></li>
+<li><p>For a tutorial or exploratory run, a looser <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> is acceptable.</p></li>
+<li><p>For production k comparisons, tighten it and verify against PI or a trusted reference.</p></li>
+<li><p>In large 3D cases, <code class="docutils literal notranslate"><span class="pre">10*k_tol</span></code> may be too strict; choose a value that is verified for the application rather than blindly forcing the residual to a tiny number.</p></li>
+</ol>
+</section>
+<section id="CMFD-is-slower-than-PI">
+<h3><span class="section-number">5.2.2.11.4. </span>CMFD is slower than PI<a class="headerlink" href="#CMFD-is-slower-than-PI" title="Link to this heading"></a></h3>
+<p>Check these in order:</p>
+<ol class="arabic simple">
+<li><p>Is the coarse system too large? Increase <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> or <code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code>.</p></li>
+<li><p>Are corrections being skipped? Fix the skip reason first.</p></li>
+<li><p>Is <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> too large? Start with 1.</p></li>
+<li><p>Is the closure poor? Compare <code class="docutils literal notranslate"><span class="pre">auto</span></code>, <code class="docutils literal notranslate"><span class="pre">net</span></code>, and <code class="docutils literal notranslate"><span class="pre">partial</span></code> on a short run.</p></li>
+<li><p>Is the balance check much tighter than needed for the requested k accuracy?</p></li>
+</ol>
+</section>
+</section>
+<section id="Applying-the-same-CMFD-setup-to-production-problems">
+<h2><span class="section-number">5.2.2.12. </span>Applying the same CMFD setup to production problems<a class="headerlink" href="#Applying-the-same-CMFD-setup-to-production-problems" title="Link to this heading"></a></h2>
+<p>For large production problems, the CMFD construction is the same. The main changes are the mesh, material list, and production quadrature. Treat <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>, target coarse groups, <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>, and <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> as the first production tuning knobs. Leave developer/debug controls alone unless the log gives a concrete reason to change them.</p>
+</section>
+<section id="Finalize-Jupyter-runs">
+<h2><span class="section-number">5.2.2.13. </span>Finalize Jupyter runs<a class="headerlink" href="#Finalize-Jupyter-runs" title="Link to this heading"></a></h2>
+<p>In script mode PyOpenSn finalizes automatically. In an interactive Jupyter kernel, explicit finalization is needed. The event hook below follows the convention used by the other OpenSn tutorial notebooks.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">finalize_env</span><span class="p">():</span>
+    <span class="n">Finalize</span><span class="p">()</span>
+    <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+
+
+<span class="n">ipython_instance</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pincell_example.html" class="btn btn-neutral float-left" title="5.2.1. Reactor pin cell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../src_driven/index.html" class="btn btn-neutral float-right" title="5.3. Source Driven" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
