@@ -215,7 +215,7 @@ corrections. Transport update controls are still used during these
 iterations.</p></li>
 <li><p><strong>coarse_solver_policy</strong> (<em>str</em><em>, </em><em>default=&quot;auto&quot;</em>) – <dl class="simple">
 <dt>Developer/debug. Coarse solver policy. Valid choices are:</dt><dd><ul>
-<li><p>’auto’ : PETSc preonly+LU below <code class="docutils literal notranslate"><span class="pre">direct_coarse_solve_threshold</span></code>
+<li><p>’auto’ : PETSc preonly+LU below <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code>
 global unknowns, GMRES+Jacobi otherwise</p></li>
 <li><p>’direct’ : PETSc preonly+LU</p></li>
 <li><p>’iterative’ : GMRES+Jacobi</p></li>
@@ -228,7 +228,7 @@ The skipped correction uses the unaccelerated transport update for that power
 iteration; after repeated skipped corrections, CMFD returns the raw transport
 k update so that power iteration can continue to move.</p>
 </p></li>
-<li><p><strong>direct_coarse_solve_threshold</strong> (<em>int</em><em>, </em><em>default=20000</em>) – Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
+<li><p><strong>coarse_direct_solve_threshold</strong> (<em>int</em><em>, </em><em>default=20000</em>) – Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
 solves when <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;auto&quot;</span></code>. Larger values make <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> use
 direct solves for larger coarse systems; choose values based on available host
 memory and acceptable factorization cost.</p></li>

@@ -242,11 +242,15 @@ iteration k-eigen solve, or a nonlinear k-eigen solve?</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
 </ul>
 <p>These settings control the solve performed within a single groupset.</p>
 </section>
@@ -622,10 +626,14 @@ tighter inner solves</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
 </ul>
 <section id="wgdsa">
 <h3><span class="section-number">9.6.1. </span>WGDSA<a class="headerlink" href="#wgdsa" title="Link to this heading"></a></h3>
@@ -643,6 +651,13 @@ solve workflow</p></li>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code>: stopping tolerance for the diffusion correction solve</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code>: hard cap on WGDSA iterations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code>: PETSc solver setup policy for the WGDSA diffusion
+solve. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses direct PETSc LU for systems at or below
+<code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> global unknowns and an iterative solve
+otherwise. <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;iterative&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;petsc_options&quot;</span></code> force a
+specific path.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code>: maximum global WGDSA diffusion unknown count
+for the automatic direct solve. The default is <code class="docutils literal notranslate"><span class="pre">20000</span></code>.</p></li>
 </ul>
 <p>Reasonable values:</p>
 <ul class="simple">
@@ -663,6 +678,10 @@ correction back to the groupset spectrum.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code>: stopping tolerance for the two-grid diffusion solve</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code>: hard cap on TGDSA iterations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code>: PETSc solver setup policy for the TGDSA diffusion
+solve, with the same choices and behavior as <code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code>: maximum global TGDSA diffusion unknown count
+for the automatic direct solve. The default is <code class="docutils literal notranslate"><span class="pre">20000</span></code>.</p></li>
 </ul>
 <p>Reasonable values:</p>
 <ul class="simple">

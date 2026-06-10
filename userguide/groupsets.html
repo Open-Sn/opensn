@@ -180,11 +180,15 @@ is enough, and when a multi-groupset split makes sense.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
 </ul>
 <p>The simplest valid pattern is one groupset covering all groups:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
@@ -418,10 +422,14 @@ of the flux, not on the full angular flux.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
 </ul>
 <section id="apply-wgdsa">
 <h4><span class="section-number">8.5.4.1. </span><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code><a class="headerlink" href="#apply-wgdsa" title="Link to this heading"></a></h4>
@@ -442,7 +450,15 @@ option to think about.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
 </ul>
+<p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code> controls the PETSc solver setup for the WGDSA diffusion
+correction. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses a direct PETSc LU solve when the global WGDSA
+diffusion unknown count is at or below <code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> and an
+iterative solve otherwise. <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;iterative&quot;</span></code> force those paths,
+and <code class="docutils literal notranslate"><span class="pre">&quot;petsc_options&quot;</span></code> lets <code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code> define the KSP/PC setup.
+The default threshold is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns.</p>
 </section>
 <section id="apply-tgdsa">
 <h4><span class="section-number">8.5.4.2. </span><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code><a class="headerlink" href="#apply-tgdsa" title="Link to this heading"></a></h4>
@@ -460,7 +476,12 @@ story.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
 </ul>
+<p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code> and <code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code> have the same
+meaning for the TGDSA diffusion correction solve that the corresponding WGDSA
+options have for WGDSA. The default threshold is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns.</p>
 </section>
 <section id="when-to-think-about-dsa">
 <h4><span class="section-number">8.5.4.3. </span>When to think about DSA<a class="headerlink" href="#when-to-think-about-dsa" title="Link to this heading"></a></h4>

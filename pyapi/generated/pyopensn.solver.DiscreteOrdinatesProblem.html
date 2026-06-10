@@ -772,6 +772,19 @@ groupset. Each dictionary supports:</p>
 </dl>
 </li>
 <li><dl class="simple">
+<dt>wgdsa_solver_policy: {‘auto’, ‘direct’, ‘iterative’, ‘petsc_options’}, default=’auto’</dt><dd><p>WGDSA diffusion solver policy. <code class="docutils literal notranslate"><span class="pre">auto</span></code> uses a direct PETSc LU solve below
+<code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> global unknowns and an iterative solve
+otherwise. <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code> lets <code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code> control the
+PETSc KSP/PC setup.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>wgdsa_direct_solve_threshold: int, default=20000</dt><dd><p>Maximum global WGDSA diffusion unknown count for the automatic direct solve.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
 <dt>apply_tgdsa: bool, default=False</dt><dd><p>Enable two-grid DSA for this groupset.</p>
 </dd>
 </dl>
@@ -793,6 +806,19 @@ groupset. Each dictionary supports:</p>
 </li>
 <li><dl class="simple">
 <dt>tgdsa_petsc_options: str, default=’’</dt><dd><p>PETSc options string for the TGDSA solver.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tgdsa_solver_policy: {‘auto’, ‘direct’, ‘iterative’, ‘petsc_options’}, default=’auto’</dt><dd><p>TGDSA diffusion solver policy. <code class="docutils literal notranslate"><span class="pre">auto</span></code> uses a direct PETSc LU solve below
+<code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code> global unknowns and an iterative solve
+otherwise. <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code> lets <code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code> control the
+PETSc KSP/PC setup.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tgdsa_direct_solve_threshold: int, default=20000</dt><dd><p>Maximum global TGDSA diffusion unknown count for the automatic direct solve.</p>
 </dd>
 </dl>
 </li>

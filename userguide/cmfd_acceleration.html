@@ -302,8 +302,8 @@ factorization cost.</p>
 CMFD corrections can be noisy; if it is too tight, coarse-solve work can
 dominate runtime.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">coarse_solver_policy</span></code> and <code class="docutils literal notranslate"><span class="pre">direct_coarse_solve_threshold</span></code></dt><dd><p>PETSc coarse-solver selection controls. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses a direct PETSc LU
-solve for coarse systems below <code class="docutils literal notranslate"><span class="pre">direct_coarse_solve_threshold</span></code> global
+<dt><code class="docutils literal notranslate"><span class="pre">coarse_solver_policy</span></code> and <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code></dt><dd><p>PETSc coarse-solver selection controls. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses a direct PETSc LU
+solve for coarse systems below <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code> global
 unknowns and an iterative GMRES/Jacobi solve otherwise. The default threshold
 is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns. Force <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> only for small or moderate
 coarse systems that fit comfortably in host memory. Use <code class="docutils literal notranslate"><span class="pre">&quot;iterative&quot;</span></code> when
