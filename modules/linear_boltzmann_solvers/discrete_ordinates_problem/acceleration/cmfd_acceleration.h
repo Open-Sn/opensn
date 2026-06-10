@@ -168,7 +168,7 @@ private:
   std::vector<double> coarse_phi_old_;
   std::vector<double> coarse_phi_new_;
   std::map<std::tuple<uint64_t, unsigned int>, double> coarse_phi_cache_;
-  std::map<std::tuple<uint64_t, uint64_t, unsigned int>, double> face_current_cache_;
+  std::map<std::tuple<uint64_t, std::size_t, uint64_t, unsigned int>, double> face_current_cache_;
 
   Mat A_ = nullptr;
   Vec rhs_ = nullptr;
