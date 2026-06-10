@@ -82,11 +82,23 @@ Enum names should use `Pascal` style, enum values upper case.
 Static constants
 ~~~~~~~~~~~~~~~~
 
-Static constants should use upper case.
+Static constants in global scope should use upper case.
 
 .. code-block:: c++
 
    const int MY_CONSTANT = 10;
+   constexpr double MY_DOUBLE = 12.765;
+
+
+Static constants in local scope should use `snake` case.
+
+   .. code-block:: c++
+
+      {
+        const double local_tolerance = 1e-8;
+        constexpr double another_local_tolerance = 1e-12;
+        ...
+      }
 
 Classes and Structs
 ~~~~~~~~~~~~~~~~~~~
@@ -242,6 +254,16 @@ Example:
    #include "petsc.h"
    #include <string>
    #include <map>
+
+Lambdas
+~~~~~~~
+
+Named lambdas should use `Pascal` style.
+
+.. code-block:: c++
+
+   auto MyLambda = [](...) { ... };
+
 
 Command-line parameters
 -----------------------
