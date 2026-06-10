@@ -131,9 +131,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a82d9ea81b6e836be4901504d07e88ee0`
 
-- :ref:`exhale_function_namespaceopensn_1a9c06eab1eaeb4f37a44d6a2165710292`
-
 - :ref:`exhale_function_namespaceopensn_1ae7b499513b903d1588322ea3e6fbfcca`
+
+- :ref:`exhale_function_namespaceopensn_1a9c06eab1eaeb4f37a44d6a2165710292`
 
 - :ref:`exhale_function_namespaceopensn_1a1c36c8d4ab7c73dd14d760aa62e10594`
 

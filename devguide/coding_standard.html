@@ -73,6 +73,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#conditionals">Conditionals</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#comments">Comments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#include-directives">Include directives</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lambdas">Lambdas</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#command-line-parameters">Command-line parameters</a></li>
@@ -182,10 +183,21 @@ some_other_directory/another_file
 </section>
 <section id="static-constants">
 <h3>Static constants<a class="headerlink" href="#static-constants" title="Link to this heading"></a></h3>
-<p>Static constants should use upper case.</p>
+<p>Static constants in global scope should use upper case.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">MY_CONSTANT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">MY_DOUBLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">12.765</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>Static constants in local scope should use <cite>snake</cite> case.</p>
+<blockquote>
+<div><div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">local_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1e-8</span><span class="p">;</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">another_local_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1e-12</span><span class="p">;</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
 </section>
 <section id="classes-and-structs">
 <h3>Classes and Structs<a class="headerlink" href="#classes-and-structs" title="Link to this heading"></a></h3>
@@ -320,6 +332,13 @@ There is no space inside parentheses. The statement block should not be enclosed
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;petsc.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="lambdas">
+<h3>Lambdas<a class="headerlink" href="#lambdas" title="Link to this heading"></a></h3>
+<p>Named lambdas should use <cite>Pascal</cite> style.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">MyLambda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](...)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">};</span>
 </pre></div>
 </div>
 </section>
