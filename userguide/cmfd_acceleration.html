@@ -196,6 +196,38 @@ group aggregation size of 91 and therefore 4 CMFD energy groups.</p>
 <h2><span class="section-number">10.2. </span>Common User Options<a class="headerlink" href="#common-user-options" title="Link to this heading"></a></h2>
 <p>These are the options most users should tune.</p>
 <dl>
+<dt><code class="docutils literal notranslate"><span class="pre">coarse_mesh</span></code></dt><dd><p>Coarse-mesh construction method. The default is <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.
+<code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> builds connected same-block aggregates locally on
+each MPI rank. <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code> builds connected same-block
+aggregates that may span MPI ranks and can reduce the coarse problem size on
+larger distributed meshes. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code> creates one CMFD cell per transport
+cell and is mainly useful for debugging and method comparisons.</p>
+<p>Both aggregation modes are logical CMFD coarse-space constructions. They do
+not repartition the transport mesh, create a new mesh, or change
+the ownership of high-order transport cells. Transport sweeps, material
+lookup, and angular-flux communication continue to use the original fine-mesh
+partitioning.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code>, every CMFD coarse cell has a single owning MPI
+rank even when its member fine cells span multiple ranks. Ownership is chosen
+from the rank containing the largest number of member fine cells, with ties
+resolved by the lower rank. Only the owner stores the full coarse cell and
+owns the corresponding PETSc rows. Ranks that own member fine cells store
+local fine-cell membership records so scalar fluxes, currents, and CMFD
+corrections can be restricted to and prolonged from the coarse-cell owner.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code> currently has these restrictions:</p>
+<ul class="simple">
+<li><p>a coarse cell contains only connected fine cells from the same mesh block;</p></li>
+<li><p>connectivity is based on face-neighbor adjacency;</p></li>
+<li><p>disconnected regions with the same block id become separate coarse cells;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> is a target maximum, so boundary and disconnected
+aggregates may contain fewer fine cells;</p></li>
+<li><p>no material homogenization across different blocks is performed.</p></li>
+</ul>
+<p>The global mode gathers enough distributed cell and face metadata to build
+the logical coarse graph consistently on all ranks. This is usually worthwhile
+when rank-local aggregation creates too many small coarse cells, but it can
+increase setup memory and communication compared with <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.</p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">current_closure</span></code></dt><dd><p>Face-current closure used in the CMFD operator. Valid choices are <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>,
 <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>. The automatic mode
 probes the early coarse-balance behavior and may choose net-current closure,
@@ -210,12 +242,13 @@ recommended starting point, but a fixed value is useful when comparing
 methods, reproducing a benchmark setting, or diagnosing a case where auto
 selection is not robust.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code></dt><dd><p>Target number of fine cells per local aggregated CMFD coarse cell. The default
-is <code class="docutils literal notranslate"><span class="pre">32</span></code>. Larger values reduce the cost of the coarse solve but make the
-coarse correction less detailed. Smaller values increase coarse-system cost
-but can improve robustness. For lattice problems, values from roughly 8 to 64
-are typical exploration points. Use wall time and final k agreement, not only
-the number of power iterations, when comparing values.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code></dt><dd><p>Target number of fine cells per aggregated CMFD coarse cell for
+<code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">32</span></code>.
+Larger values reduce the cost of the coarse solve but make the coarse
+correction less detailed. Smaller values increase coarse-system cost but can
+improve robustness. For lattice problems, values from roughly 8 to 64 are
+typical exploration points. Use wall time and final k agreement, not only the
+number of power iterations, when comparing values.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code></dt><dd><p>Number of transport energy groups per CMFD coarse energy group. This is not
 the final number of CMFD energy groups. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>, which preserves
@@ -268,11 +301,6 @@ k-eigenvalue against a trusted PI or reference result.</p>
 method development. Production inputs should usually leave them at their
 defaults.</p>
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">coarse_mesh</span></code></dt><dd><p>Coarse-mesh construction method. The default is <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.
-<code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code> creates one CMFD cell per transport cell and is mainly useful
-for debugging and method comparisons. Production inputs should normally use
-<code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.</p>
-</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">inactive_iterations</span></code></dt><dd><p>Number of initial power iterations before applying CMFD corrections. The
 default is <code class="docutils literal notranslate"><span class="pre">0</span></code>. Transport update controls are still active during
 inactive iterations. Increase this only when debugging startup behavior where

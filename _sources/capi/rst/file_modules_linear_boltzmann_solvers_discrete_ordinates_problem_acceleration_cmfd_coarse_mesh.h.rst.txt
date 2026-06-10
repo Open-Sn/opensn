@@ -70,5 +70,7 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_c_m_f_d_fine_face`
 
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_local_fine_cell_membership`
+
 - :ref:`exhale_class_classopensn_1_1_c_m_f_d_coarse_mesh`
 

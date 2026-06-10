@@ -124,7 +124,7 @@ transport update iterations, then applies a bounded low-order scalar-flux correc
 The defaults use one WGS update iteration, automatic current closure, fixed
 correction relaxation, and a transport-current balance gate before outer power
 iteration is allowed to converge.</p>
-<p>Most users should tune only the common controls: <code class="docutils literal notranslate"><span class="pre">current_closure</span></code>,
+<p>Most users should tune only the common controls: <code class="docutils literal notranslate"><span class="pre">coarse_mesh</span></code>, <code class="docutils literal notranslate"><span class="pre">current_closure</span></code>,
 <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>, <code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code>, <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>,
 <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code>, <code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>. Parameters marked “developer/debug” are exposed for
@@ -133,6 +133,23 @@ investigations and regression testing, but normally should be left at their defa
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
+<li><p><strong>coarse_mesh</strong> (<em>str</em><em>, </em><em>default=&quot;local_aggregation&quot;</em>) – <dl class="simple">
+<dt>Common option. Coarse-mesh construction method. Valid choices are:</dt><dd><ul>
+<li><p>’identity’ : one CMFD coarse cell per transport cell</p></li>
+<li><p>’local_aggregation’ : connected same-block fine cells aggregated locally</p></li>
+<li><p>’global_aggregation’ : connected same-block fine cells aggregated across MPI ranks</p></li>
+</ul>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> is the conservative default. <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code> can
+reduce the coarse problem size on larger distributed meshes. Global aggregation is a
+logical CMFD coarse-space construction: it does not repartition the transport mesh or
+change fine-cell ownership. Each global coarse cell has one owning rank, while ranks
+owning member fine cells keep membership records for restriction and prolongation.
+Aggregates are connected by face adjacency, remain within one mesh block, and may be
+smaller than <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> near boundaries or disconnected regions. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code>
+is primarily for debugging and method comparisons.</p>
+</p></li>
 <li><p><strong>current_closure</strong> (<em>str</em><em>, </em><em>default=&quot;auto&quot;</em>) – <dl class="simple">
 <dt>Common option. CMFD face-current closure. Valid choices are:</dt><dd><ul>
 <li><p>’auto’ : choose net, partial, or a blend from early coarse-balance behavior</p></li>
@@ -146,7 +163,8 @@ comparing methods, reproducing a benchmark setting, or diagnosing a case where
 automatic selection is not robust.</p>
 </p></li>
 <li><p><strong>aggregation_size</strong> (<em>int</em><em>, </em><em>default=32</em>) – Common option. Target number of fine cells per aggregated coarse cell for
-<code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;local_aggregation&quot;</span></code>. Larger values reduce CMFD matrix size and
+<code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;local_aggregation&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;global_aggregation&quot;</span></code>.
+Larger values reduce CMFD matrix size and
 setup/solve cost, but make the spatial correction less detailed. Smaller values
 increase the coarse-system cost but may improve robustness.</p></li>
 <li><p><strong>group_aggregation_size</strong> (<em>int</em><em>, </em><em>default=1</em>) – Common option. Number of transport energy groups per CMFD coarse group, not the
@@ -188,16 +206,6 @@ Increase only if the coarse k solve is not converging enough to give useful
 corrections.</p></li>
 <li><p><strong>pi_k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-8</em>) – Developer/debug. k-eigenvalue tolerance for CMFD coarse power iterations. This
 is separate from the outer <code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver</span></code> k tolerance.</p></li>
-<li><p><strong>coarse_mesh</strong> (<em>str</em><em>, </em><em>default=&quot;local_aggregation&quot;</em>) – <dl class="simple">
-<dt>Developer/debug. Coarse-mesh construction method. Valid choices are:</dt><dd><ul>
-<li><p>’identity’ : one CMFD coarse cell per transport cell</p></li>
-<li><p>’local_aggregation’ : connected same-material fine cells aggregated locally</p></li>
-</ul>
-</dd>
-</dl>
-<p><code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> is the production path. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code> is primarily for
-debugging and method comparisons.</p>
-</p></li>
 <li><p><strong>correction_max_attempts</strong> (<em>int</em><em>, </em><em>default=10</em>) – Developer/debug. Maximum CMFD correction damping attempts before skipping the
 correction for the current transport update. Each failed attempt halves the
 damping. If the log reports <code class="docutils literal notranslate"><span class="pre">correction</span> <span class="pre">=</span> <span class="pre">skipped</span> <span class="pre">(negative_flux_guard)</span></code>,

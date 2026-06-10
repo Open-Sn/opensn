@@ -3100,6 +3100,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMeshE">opensn::CMFDCoarseMesh (C++ class)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh22BuildGlobalAggregationERK13MeshContinuumNSt6size_tE">opensn::CMFDCoarseMesh::BuildGlobalAggregation (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh13BuildIdentityERK13MeshContinuum">opensn::CMFDCoarseMesh::BuildIdentity (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh21BuildLocalAggregationERK13MeshContinuumNSt6size_tE">opensn::CMFDCoarseMesh::BuildLocalAggregation (C++ function)</a>
@@ -3116,6 +3118,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh10LocalCellsEv">opensn::CMFDCoarseMesh::LocalCells (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh24LocalFineCellMembershipsEv">opensn::CMFDCoarseMesh::LocalFineCellMemberships (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh11MapFineCellE8uint64_t">opensn::CMFDCoarseMesh::MapFineCell (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh14NumGlobalCellsEv">opensn::CMFDCoarseMesh::NumGlobalCells (C++ function)</a>
@@ -3126,9 +3130,21 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFace7cell_idE">opensn::CMFDFineFace::cell_id (C++ member)</a>
 </li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFace17cell_partition_idE">opensn::CMFDFineFace::cell_partition_id (C++ member)</a>
+</li>
       <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFace10face_indexE">opensn::CMFDFineFace::face_index (C++ member)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFace11neighbor_idE">opensn::CMFDFineFace::neighbor_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_fine_face.html#_CPPv4N6opensn12CMFDFineFace21neighbor_partition_idE">opensn::CMFDFineFace::neighbor_partition_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_local_fine_cell_membership.html#_CPPv4N6opensn27CMFDLocalFineCellMembershipE">opensn::CMFDLocalFineCellMembership (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_local_fine_cell_membership.html#_CPPv4N6opensn27CMFDLocalFineCellMembership14coarse_cell_idE">opensn::CMFDLocalFineCellMembership::coarse_cell_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_local_fine_cell_membership.html#_CPPv4N6opensn27CMFDLocalFineCellMembership24coarse_cell_partition_idE">opensn::CMFDLocalFineCellMembership::coarse_cell_partition_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_local_fine_cell_membership.html#_CPPv4N6opensn27CMFDLocalFineCellMembership12fine_cell_idE">opensn::CMFDLocalFineCellMembership::fine_cell_id (C++ member)</a>
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1a1908c2e0eac473c1ac1e53f3b62ffef3.html#_CPPv4N6opensn29CMFDProlongateScalarFluxRatioERK24DiscreteOrdinatesProblemjjjRK14CMFDCoarseMeshRKNSt6vectorIdEERKNSt6vectorIdEERNSt6vectorIdEE">opensn::CMFDProlongateScalarFluxRatio (C++ function)</a>
 </li>
@@ -5224,6 +5240,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_lebedev_orders.html#_CPPv4N6opensn13LebedevOrders15QuadraturePoint6weightE">opensn::LebedevOrders::QuadraturePoint::weight (C++ member)</a>, <a href="capi/rst/structopensn_1_1_lebedev_orders_1_1_quadrature_point.html#_CPPv4N6opensn13LebedevOrders15QuadraturePoint6weightE">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_lebedev_orders.html#_CPPv4N6opensn13LebedevOrders15QuadraturePoint1xE">opensn::LebedevOrders::QuadraturePoint::x (C++ member)</a>, <a href="capi/rst/structopensn_1_1_lebedev_orders_1_1_quadrature_point.html#_CPPv4N6opensn13LebedevOrders15QuadraturePoint1xE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_lebedev_orders.html#_CPPv4N6opensn13LebedevOrders15QuadraturePoint1yE">opensn::LebedevOrders::QuadraturePoint::y (C++ member)</a>, <a href="capi/rst/structopensn_1_1_lebedev_orders_1_1_quadrature_point.html#_CPPv4N6opensn13LebedevOrders15QuadraturePoint1yE">[1]</a>
@@ -5232,8 +5250,6 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_lebedev_quadrature2_d_x_y.html#_CPPv4N6opensn21LebedevQuadrature2DXYE">opensn::LebedevQuadrature2DXY (C++ class)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_lebedev_quadrature2_d_x_y.html#_CPPv4NK6opensn21LebedevQuadrature2DXY7GetNameEv">opensn::LebedevQuadrature2DXY::GetName (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_lebedev_quadrature2_d_x_y.html#_CPPv4NK6opensn21LebedevQuadrature2DXY18GetQuadratureOrderEv">opensn::LebedevQuadrature2DXY::GetQuadratureOrder (C++ function)</a>

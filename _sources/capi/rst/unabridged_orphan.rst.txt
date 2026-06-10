@@ -210,6 +210,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_c_m_f_d_local_fine_cell_membership.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_cylindrical_spatial_weight_function.rst
 
 .. toctree::
