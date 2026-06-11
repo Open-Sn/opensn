@@ -5,10 +5,10 @@
 
 #include "framework/data_types/ndarray.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h"
 #include "framework/math/geometry.h"
 #include <memory>
 #include <array>
+#include <map>
 #include <cstddef>
 
 namespace opensn
@@ -75,6 +75,8 @@ struct OrthoMeshAttributes
 /// Encapsulates all the necessary information required to fully define a computational domain.
 class MeshContinuum
 {
+  using GlobalVertexIDMap = std::map<uint64_t, Vector3>;
+
 public:
   MeshContinuum();
 
@@ -98,6 +100,22 @@ public:
 
   void SetGlobalVertexCount(const uint64_t count) { global_vertex_count_ = count; }
   uint64_t GetGlobalVertexCount() const { return global_vertex_count_; }
+
+  /// Get vertex using global vertex ID
+  Vector3& GlobalVertex(const uint64_t global_id) { return global_vertex_id_map_.at(global_id); }
+
+  /// Get vertex using global vertex ID
+  const Vector3& GlobalVertex(const uint64_t global_id) const
+  {
+    return global_vertex_id_map_.at(global_id);
+  }
+
+  /// Add global vertex providing global ID and location in 3D space
+  void AddGlobalVertex(const uint64_t global_id, const Vector3& pos)
+  {
+    global_vertex_id_map_.insert(std::make_pair(global_id, pos));
+  }
+
   int GetNumPartitions() const { return num_partitions_; }
   size_t GetGlobalNumberOfCells() const;
 
@@ -243,7 +261,6 @@ public:
   /// Compute volume per block IDs
   std::map<unsigned int, double> ComputeVolumePerBlockID() const;
 
-  VertexHandler vertices;
   LocalCellHandler local_cells;
 
 private:
@@ -258,6 +275,8 @@ private:
   int num_partitions_;
   uint64_t global_vertex_count_;
 
+  ///
+  GlobalVertexIDMap global_vertex_id_map_;
   /// Locally owned cells
   std::vector<std::shared_ptr<Cell>> local_cells_;
   /// Locally stored ghost cells
