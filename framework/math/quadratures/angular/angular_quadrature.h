@@ -16,6 +16,7 @@ struct QuadraturePointPhiTheta;
 /// Angular quadrature type identifier.
 enum class AngularQuadratureType
 {
+  INVALID = 0,
   PRODUCT_QUADRATURE = 1,
   SLDFE_SQ = 2,
   LEBEDEV_QUADRATURE = 3,
