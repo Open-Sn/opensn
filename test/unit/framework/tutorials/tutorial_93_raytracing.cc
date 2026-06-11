@@ -181,14 +181,14 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
   auto GetCellApproximateSize = [&grid](const Cell& cell)
   {
-    const auto& v0 = grid->vertices[cell.vertex_ids[0]];
+    const auto& v0 = grid->GlobalVertex(cell.vertex_ids[0]);
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
     double zmin = v0.z, zmax = v0.z;
 
     for (uint64_t vid : cell.vertex_ids)
     {
-      const auto& v = grid->vertices[vid];
+      const auto& v = grid->GlobalVertex(vid);
 
       xmin = std::min(xmin, v.x);
       xmax = std::max(xmax, v.x);
