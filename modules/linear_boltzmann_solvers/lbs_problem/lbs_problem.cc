@@ -1054,7 +1054,9 @@ LBSProblem::ComputeUnitIntegrals()
 
   opensn::mpi_comm.barrier();
   log.Log() << program_timer.GetTimeString() << " Ghost cell unit cell-matrix ratio: "
-            << (double)num_global_ucms[1] * 100 / (double)num_global_ucms[0] << "%";
+            << static_cast<double>(num_global_ucms[1]) * 100 /
+                 static_cast<double>(num_global_ucms[0])
+            << "%";
   log.Log() << program_timer.GetTimeString() << " Cell matrices computed.";
 }
 

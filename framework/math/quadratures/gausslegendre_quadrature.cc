@@ -17,7 +17,7 @@ GaussLegendreQuadrature::GaussLegendreQuadrature(QuadratureOrder order,
                                                  double tol)
   : GaussQuadrature(order)
 {
-  const unsigned int N = std::ceil(((int)order_ + 1) / 2.0);
+  const unsigned int N = std::ceil((static_cast<int>(order_) + 1) / 2.0);
   Initialize(N, verbose, max_iters, tol);
 }
 
@@ -25,7 +25,7 @@ GaussLegendreQuadrature::GaussLegendreQuadrature(unsigned int N,
                                                  bool verbose,
                                                  unsigned int max_iters,
                                                  double tol)
-  : GaussQuadrature((QuadratureOrder)(2 * N - 1))
+  : GaussQuadrature(static_cast<QuadratureOrder>(2 * N - 1))
 {
   Initialize(N, verbose, max_iters, tol);
 }

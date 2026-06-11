@@ -109,7 +109,8 @@ template <typename T>
 void
 WriteBinaryValue(std::ofstream& output_file, const T& value)
 {
-  output_file.write((char*)&value, sizeof(T));
+  const void* address = &value;
+  output_file.write(static_cast<const char*>(address), sizeof(T));
 }
 
 template <>
@@ -125,7 +126,8 @@ T
 ReadBinaryValue(std::ifstream& input_file)
 {
   T value;
-  input_file.read((char*)&value, sizeof(T));
+  void* address = &value;
+  input_file.read(static_cast<char*>(address), sizeof(T));
 
   return value;
 }

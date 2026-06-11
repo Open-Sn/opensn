@@ -33,7 +33,7 @@ public:
    */
   CBCD_NodeIndex(std::uint64_t index, bool is_outgoing, bool is_local)
   {
-    if (index >= (std::uint64_t(1) << 61) - 1)
+    if (index >= (std::uint64_t{1} << 61) - 1)
       throw std::runtime_error("Cannot hold an index greater than 2^61.");
     SetInOut(is_outgoing);
     SetLocal(is_local);
@@ -48,7 +48,7 @@ public:
    */
   CBCD_NodeIndex(std::uint64_t index, bool is_outgoing)
   {
-    if (index >= (std::uint64_t(1) << 61) - 1)
+    if (index >= (std::uint64_t{1} << 61) - 1)
       throw std::runtime_error("Cannot hold an index greater than 2^61.");
     SetInOut(is_outgoing);
     SetLocal(true);
@@ -66,7 +66,7 @@ private:
   /// \name Local bit
   /// \{
   /// Third bit mask (``001`` followed by 61 zeros) - Bit 61.
-  static constexpr std::uint64_t local_bit_mask = std::uint64_t(1) << (64 - 3);
+  static constexpr std::uint64_t local_bit_mask = std::uint64_t{1} << (64 - 3);
   /// Encode the value as local.
   constexpr void SetLocal(bool is_local) noexcept
   {
@@ -80,7 +80,7 @@ private:
   /// \name Index bits
   /// \{
   /// Index bit mask (``1`` at the last 61 bits).
-  static constexpr std::uint64_t index_bit_mask = (std::uint64_t(1) << (64 - 3)) - 1;
+  static constexpr std::uint64_t index_bit_mask = (std::uint64_t{1} << (64 - 3)) - 1;
   /// Encode the index.
   constexpr void SetIndex(std::uint64_t index) noexcept
   {

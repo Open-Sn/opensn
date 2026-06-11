@@ -10,7 +10,7 @@ namespace opensn
 {
 
 GaussChebyshevQuadrature::GaussChebyshevQuadrature(unsigned int N, bool verbose)
-  : GaussQuadrature((QuadratureOrder)(2 * N - 1))
+  : GaussQuadrature(static_cast<QuadratureOrder>(2 * N - 1))
 {
   Initialize(N);
 }

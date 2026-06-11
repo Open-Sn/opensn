@@ -157,7 +157,7 @@ InvertMatrix(const std::vector<std::vector<double>>& matrix)
   char jobu = 'A';
   char jobvt = 'A';
   auto n_blas = static_cast<PetscBLASInt>(n);
-  PetscBLASInt lwork = std::max(PetscBLASInt(1), 5 * n_blas);
+  PetscBLASInt lwork = std::max(PetscBLASInt{1}, 5 * n_blas);
   std::vector<double> work(lwork);
   PetscBLASInt info_svd = 0;
 
@@ -254,7 +254,7 @@ InvertMatrix(const NDArray<double, 2>& matrix)
   char jobu = 'A';
   char jobvt = 'A';
   auto n_blas = static_cast<PetscBLASInt>(n);
-  PetscBLASInt lwork = std::max(PetscBLASInt(1), 5 * n_blas);
+  PetscBLASInt lwork = std::max(PetscBLASInt{1}, 5 * n_blas);
   std::vector<double> work(lwork);
   PetscBLASInt info_svd = 0;
 

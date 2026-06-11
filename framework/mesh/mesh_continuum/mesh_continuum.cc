@@ -254,7 +254,8 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   size_t smallest_face = face_size_histogram.front();
   size_t largest_face = face_size_histogram.back();
   size_t total_num_faces = face_size_histogram.size();
-  double average_dofs_per_face = (double)total_face_dofs_count / (double)total_num_faces;
+  double average_dofs_per_face =
+    static_cast<double>(total_face_dofs_count) / static_cast<double>(total_num_faces);
 
   std::stringstream outstr;
   outstr << "\nSmallest face = " << smallest_face;
@@ -262,12 +263,12 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
   outstr << "\nTotal face dofs = " << total_face_dofs_count;
   outstr << "\nTotal faces = " << face_size_histogram.size();
   outstr << "\nAverage dofs/face = " << average_dofs_per_face;
-  outstr << "\nMax to avg ratio = " << (double)largest_face / average_dofs_per_face;
+  outstr << "\nMax to avg ratio = " << static_cast<double>(largest_face) / average_dofs_per_face;
   log.LogAllVerbose2() << outstr.str();
 
   // Determine number of bins
   size_t last_bin_num_faces = total_num_faces;
-  if (((double)largest_face / average_dofs_per_face) > master_tolerance)
+  if ((static_cast<double>(largest_face) / average_dofs_per_face) > master_tolerance)
   {
     log.LogAllVerbose2() << "The ratio of max face dofs to average face dofs "
                          << "is larger than " << master_tolerance
@@ -283,7 +284,7 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
 
     for (size_t f = 0; f < total_num_faces; ++f)
     {
-      if (((double)face_size_histogram[f] / running_average) > slave_tolerance)
+      if ((static_cast<double>(face_size_histogram[f]) / running_average) > slave_tolerance)
       {
         face_categories_list.emplace_back(running_face_size, running_face_count);
         running_total_face_dofs = 0;
@@ -293,7 +294,8 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
       running_face_size = face_size_histogram[f];
       running_total_face_dofs += face_size_histogram[f];
       running_face_count++;
-      running_average = (double)running_total_face_dofs / double(running_face_count);
+      running_average =
+        static_cast<double>(running_total_face_dofs) / static_cast<double>(running_face_count);
       last_bin_num_faces = running_face_count;
     }
   }
@@ -725,7 +727,7 @@ MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list)
   for (auto node_id : list)
     centroid = centroid + vertices[node_id];
 
-  return centroid / double(list.size());
+  return centroid / static_cast<double>(list.size());
 }
 
 std::array<std::array<Vector3, 3>, 4>

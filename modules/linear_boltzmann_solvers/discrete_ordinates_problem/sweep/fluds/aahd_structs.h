@@ -47,7 +47,7 @@ public:
                  bool is_local_or_reflecting,
                  bool is_delayed_or_angle_dependent)
   {
-    if (index >= (std::uint64_t(1) << 60) - 1)
+    if (index >= (std::uint64_t{1} << 60) - 1)
       throw std::runtime_error("Cannot hold an index greater than 2^60.");
     SetInOut(is_outgoing);
     SetBoundary(is_boundary);
@@ -76,7 +76,7 @@ private:
   /// \name Delayed/angle-dependent bit
   /// \{
   /// Third bit mask (``001`` followed by 61 zeros) - Bit 61
-  static constexpr std::uint64_t delayed_or_angle_dependent_bit_mask = std::uint64_t(1) << (64 - 3);
+  static constexpr std::uint64_t delayed_or_angle_dependent_bit_mask = std::uint64_t{1} << (64 - 3);
   /// Encode the value as delayed or angle dependent boundary.
   constexpr void SetDelayedOrAngleDependent(bool is_delayed_or_angle_dependent) noexcept
   {
@@ -90,7 +90,7 @@ private:
   /// \name Local/reflecting bit
   /// \{
   /// Fourth bit mask (``0001`` followed by 60 zeros) - Bit 60
-  static constexpr std::uint64_t local_or_reflecting_bit_mask = std::uint64_t(1) << (64 - 4);
+  static constexpr std::uint64_t local_or_reflecting_bit_mask = std::uint64_t{1} << (64 - 4);
   /// Encode the value as local.
   constexpr void SetLocalOrReflecting(bool is_local_or_reflecting) noexcept
   {
@@ -104,7 +104,7 @@ private:
   /// \name Index bits
   /// \{
   /// Index bit mask (``1`` at the last 60 bits).
-  static constexpr std::uint64_t index_bit_mask = (std::uint64_t(1) << (64 - 4)) - 1;
+  static constexpr std::uint64_t index_bit_mask = (std::uint64_t{1} << (64 - 4)) - 1;
   /// Encode the index.
   constexpr void SetIndex(const std::uint64_t& index) noexcept
   {
@@ -146,22 +146,22 @@ public:
                         std::uint16_t neighbor_face_node_idx)
     : node(cell_local_idx, face_idx, face_node_idx)
   {
-    std::uint32_t packed_cell_idx = (std::uint32_t(face_idx) << 16) | face_node_idx;
+    std::uint32_t packed_cell_idx = (std::uint32_t{face_idx} << 16) | face_node_idx;
     std::uint32_t packed_neighbor_idx =
-      (std::uint32_t(neighbor_face_idx) << 16) | neighbor_face_node_idx;
+      (std::uint32_t{neighbor_face_idx} << 16) | neighbor_face_node_idx;
     if (cell_global_idx < neighbor_global_idx)
     {
       global_ordering_ =
         std::make_tuple(cell_global_idx,
                         neighbor_global_idx,
-                        (std::uint64_t(packed_cell_idx) << 32) | packed_neighbor_idx);
+                        (std::uint64_t{packed_cell_idx} << 32) | packed_neighbor_idx);
     }
     else if (neighbor_global_idx < cell_global_idx)
     {
       global_ordering_ =
         std::make_tuple(neighbor_global_idx,
                         cell_global_idx,
-                        (std::uint64_t(packed_neighbor_idx) << 32) | packed_cell_idx);
+                        (std::uint64_t{packed_neighbor_idx} << 32) | packed_cell_idx);
     }
     else
       throw std::runtime_error("Non local face node requires cell with different global index.\n");
