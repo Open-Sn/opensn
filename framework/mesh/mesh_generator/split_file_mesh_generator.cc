@@ -372,7 +372,7 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
   auto& vertices = mesh_info.vertices;
 
   for (const auto& [vid, vertex] : vertices)
-    grid_ptr->vertices.Insert(vid, vertex);
+    grid_ptr->AddGlobalVertex(vid, vertex);
 
   for (const auto& [pidgid, raw_cell] : cells)
   {

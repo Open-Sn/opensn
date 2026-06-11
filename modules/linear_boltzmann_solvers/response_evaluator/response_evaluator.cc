@@ -420,7 +420,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
-              const auto& node = grid->vertices[cell.vertex_ids[i]];
+              const auto& node = grid->GlobalVertex(cell.vertex_ids[i]);
               const auto& intF_shapeI = fe_values.intS_shapeI[f](i);
 
               const auto psi_bndry = EvaluateBoundaryCondition(bndry_id, node, groupset);

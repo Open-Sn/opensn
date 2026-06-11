@@ -32,9 +32,9 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
   {
     uint64_t vgi = cell.vertex_ids[v];
     std::vector<double> d_node(3);
-    d_node[0] = grid->vertices[vgi].x;
-    d_node[1] = grid->vertices[vgi].y;
-    d_node[2] = grid->vertices[vgi].z;
+    d_node[0] = grid->GlobalVertex(vgi).x;
+    d_node[1] = grid->GlobalVertex(vgi).y;
+    d_node[2] = grid->GlobalVertex(vgi).z;
 
     points->InsertPoint(node_counter, d_node.data());
     cell_vids[v] = node_counter++;
@@ -559,7 +559,7 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
     {
       for (uint64_t vid : cell.vertex_ids)
       {
-        const auto& vertex = grid->vertices[vid];
+        const auto& vertex = grid->GlobalVertex(vid);
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
         vertex_map[vid] = node_count;
         ++node_count;

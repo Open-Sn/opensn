@@ -141,7 +141,7 @@ MeshContinuum::ClearCellReferences()
   ghost_cells_.clear();
   global_cell_id_to_local_id_map_.clear();
   global_cell_id_to_nonlocal_id_map_.clear();
-  vertices.Clear();
+  global_vertex_id_map_.clear();
 }
 
 uint64_t
@@ -489,8 +489,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
   // edge will return a zero value, and a point outside the cell will return a positive value.
   if (cell.GetType() == CellType::SLAB)
   {
-    const auto& v0 = grid_ref.vertices[cell.vertex_ids[0]];
-    const auto& v1 = grid_ref.vertices[cell.vertex_ids[1]];
+    const auto& v0 = grid_ref.GlobalVertex(cell.vertex_ids[0]);
+    const auto& v1 = grid_ref.GlobalVertex(cell.vertex_ids[1]);
     return (v0.z - point.z) * (v1.z - point.z) <= 0.0;
   }
 
@@ -567,13 +567,13 @@ MeshContinuum::CheckPointInsideCellFace(const Cell& cell,
 
   // 1D, face is a point; simple equality check (could we just check z here?)
   if (face.vertex_ids.size() == 1)
-    return vertices[face.vertex_ids[0]].AbsoluteEquals(point, tol);
+    return GlobalVertex(face.vertex_ids[0]).AbsoluteEquals(point, tol);
 
   // 2D, face is a line; equal if len(ap) + len(bp) == len(ap) where a=v0, b=v1
   if (face.vertex_ids.size() == 2)
   {
-    const auto& a = vertices[face.vertex_ids[0]];
-    const auto& b = vertices[face.vertex_ids[1]];
+    const auto& a = GlobalVertex(face.vertex_ids[0]);
+    const auto& b = GlobalVertex(face.vertex_ids[1]);
     const auto ap = (a - point).Norm();
     const auto bp = (b - point).Norm();
     const auto ab = (a - b).Norm();
@@ -590,7 +590,7 @@ MeshContinuum::CheckPointInsideCellFace(const Cell& cell,
   const auto InsideEdge = [this, &point, &face](const auto vi1, const auto vi2)
   {
     const auto edge_centroid =
-      (vertices[face.vertex_ids[vi1]] + vertices[face.vertex_ids[vi2]]) / 2.0;
+      (GlobalVertex(face.vertex_ids[vi1]) + GlobalVertex(face.vertex_ids[vi2])) / 2.0;
     const auto normal = (edge_centroid - face.centroid).Normalized();
     return (point - edge_centroid).Dot(normal) <= 0.0;
   };
@@ -630,12 +630,12 @@ MeshContinuum::MakeCellOrthoSizes() const
   std::vector<Vector3> cell_ortho_sizes(local_cells.size());
   for (const auto& cell : local_cells)
   {
-    Vector3 vmin = vertices[cell.vertex_ids.front()];
+    Vector3 vmin = GlobalVertex(cell.vertex_ids.front());
     Vector3 vmax = vmin;
 
     for (const auto vid : cell.vertex_ids)
     {
-      const auto& vertex = vertices[vid];
+      const auto& vertex = GlobalVertex(vid);
       vmin.x = std::min(vertex.x, vmin.x);
       vmin.y = std::min(vertex.y, vmin.y);
       vmin.z = std::min(vertex.z, vmin.z);
@@ -673,7 +673,7 @@ MeshContinuum::GetLocalBoundingBox() const
   {
     for (const uint64_t vid : cell.vertex_ids)
     {
-      const auto& vertex = vertices[vid];
+      const auto& vertex = GlobalVertex(vid);
       if (not initialized)
       {
         xyz_min = vertex;
@@ -790,7 +790,7 @@ MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list)
 
   Vector3 centroid;
   for (auto node_id : list)
-    centroid = centroid + vertices[node_id];
+    centroid = centroid + GlobalVertex(node_id);
 
   return centroid / double(list.size());
 }
@@ -804,9 +804,9 @@ MeshContinuum::GetTetrahedralFaceVertices(const Cell& cell,
   const auto num_sides = face.vertex_ids.size();
   assert(side < num_sides);
   const size_t sp1 = (side < (num_sides - 1)) ? side + 1 : 0;
-  const auto& v0 = vertices[face.vertex_ids[side]];
+  const auto& v0 = GlobalVertex(face.vertex_ids[side]);
   const auto& v1 = face.centroid;
-  const auto& v2 = vertices[face.vertex_ids[sp1]];
+  const auto& v2 = GlobalVertex(face.vertex_ids[sp1]);
   const auto& v3 = cell.centroid;
   return {{{{v0, v1, v2}}, {{v0, v2, v3}}, {{v1, v3, v2}}, {{v0, v3, v1}}}};
 }
