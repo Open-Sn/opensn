@@ -28,6 +28,27 @@ if sys.version_info.major < 3:
     raise Exception("Found Python version " + str(sys.version_info.major) + "."
                     + str(sys.version_info.minor) + " but version >=3 required.")
 
+
+def ParseVerbosity(value):
+    """Parse optional -v/--verbose values while preserving legacy -v 1 usage."""
+    if value is None:
+        return True
+    if isinstance(value, bool):
+        return value
+
+    normalized = str(value).strip().lower()
+    if normalized in ("", "true", "yes", "on"):
+        return True
+    if normalized in ("false", "no", "off"):
+        return False
+
+    try:
+        return int(normalized) != 0
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(
+            "--verbose expects an optional integer or boolean value"
+        ) from exc
+
 # Process commandline arguments
 arguments_help = textwrap.dedent('''\
 Run the test suite or, optionally, a series of individual tests or a range of tests.
@@ -65,8 +86,11 @@ parser.add_argument(
 
 parser.add_argument(
     "-v", "--verbose",
-    type=bool, required=False, default=False,
-    help="Controls verbose failure"
+    nargs="?",
+    const=True,
+    default=False,
+    type=ParseVerbosity,
+    help="Print verbose check failure details. Accepts legacy forms such as -v 1 or -v 0."
 )
 
 parser.add_argument(
@@ -106,6 +130,19 @@ parser.add_argument(
     default=None,
     help="Write concatenated per-test output to file. "
          "Default: run_tests_YYYYmmdd_HHMMSS.log"
+)
+
+parser.add_argument(
+    "--show-filtered",
+    action="store_true",
+    help="Print tests filtered out by -t/--test selection."
+)
+
+parser.add_argument(
+    "--slowest",
+    type=int,
+    default=10,
+    help="Print the N slowest tests in the final summary. Use 0 to suppress."
 )
 
 argv = parser.parse_args()
@@ -224,32 +261,23 @@ if len(warning_manager1) > 0:
 print("""
 ********************************** OpenSn Test system **********************************
 
-Use -h to print argument options.
+Use -h to print argument options.""")
 
-Test directories found:""")
-for test_dir in test_hierarchy:
-    print("  " + test_dir)
+if argv.verbose:
+    print()
+    print("Test directories found:")
+    for test_dir in test_hierarchy:
+        print("  " + test_dir)
 
 print()
-print("Output description:")
-print("\033[33m[XX]\033[0m <test directory>/<input filename> (test args).......", end="")
-print("\033[36m[Annotations]\033[0m", end="")
-print("\033[32mPassed\033[0m/\033[31mFailed\033[0m")
-print("\033[33m[XX]\033[0m : Number of MPI processes")
-print("\033[36m[Annotations]\033[0m : Error messages preventing a test from running\n")
-print("\t\033[36m[Skipped]\033[0m")
-print("\tTest was intentionally skipped. A reason for skipping this test should be")
-print("\tprovided by the responsible developer.\n")
-print("\t\033[36m[Input file missing]\033[0m")
-print("\tA test pointing to an input file was found in a .json file but the input file")
-print("\tis missing.\n")
-print("\t\033[36m[Gold file missing]\033[0m")
-print("\tTest with a gold file check has no .gold file in the gold/ directory. If the")
-print("\tinput is input.ext then there needs to be an input.ext.gold file in the gold")
-print("\tdirectory. If this was the first run then copy input.ext.out from the out/")
-print("\tdirectory and use that as the gold file.\n")
-print("\t\033[36m[Python error]\033[0m")
-print("\tA python error occurred. Run with -v 1 to see the error.")
+print("Output format:")
+print("  \033[33m[NP]\033[0m <relative test path> "
+      "\033[32mPassed\033[0m/\033[31mFailed\033[0m "
+      "<elapsed time> [annotations]")
+print("  \033[33m[NP]\033[0m is the number of MPI processes requested by the test.")
+print("  Annotations identify skip reasons, missing files, and check failures.")
+print("  Elapsed time is OpenSn-reported runtime when available, otherwise wall time.")
+print("  Use -v for detailed check diagnostics.")
 
 print()
 

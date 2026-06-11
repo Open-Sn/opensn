@@ -5,6 +5,51 @@ import warnings
 import re
 import pathlib
 import difflib
+import numbers
+
+
+def CheckUnknownFields(params: dict, allowed_fields: set, message_prefix: str):
+    """Raises when a check definition contains unsupported fields."""
+    unknown_fields = set(params.keys()) - allowed_fields
+    if len(unknown_fields) > 0:
+        warnings.warn(message_prefix + 'Unsupported field(s): '
+                      + ', '.join(sorted(unknown_fields)))
+        raise ValueError
+
+
+def IsRealNumber(value) -> bool:
+    """Returns true for JSON integer/float values, but not booleans."""
+    return isinstance(value, numbers.Real) and not isinstance(value, bool)
+
+
+def RequireRealNumber(params: dict, field: str, message_prefix: str):
+    """Validates that a required field is a real number."""
+    if field not in params:
+        warnings.warn(message_prefix + f'Missing "{field}" field')
+        raise ValueError
+    if not IsRealNumber(params[field]):
+        warnings.warn(message_prefix + f'"{field}" field must be numeric')
+        raise ValueError
+
+
+def RequireInteger(params: dict, field: str, message_prefix: str):
+    """Validates that a required field is an integer."""
+    if field not in params:
+        warnings.warn(message_prefix + f'Missing "{field}" field')
+        raise ValueError
+    if not isinstance(params[field], int) or isinstance(params[field], bool):
+        warnings.warn(message_prefix + f'"{field}" field must be an integer')
+        raise ValueError
+
+
+def SplitOutputWords(text: str) -> list:
+    """Splits output text on whitespace, commas, and equals signs."""
+    return re.split(r'\s+|,+|=+', text.rstrip())
+
+
+def SplitPostKeyWords(text: str) -> list:
+    """Splits text after a key and removes separator-created empty fields."""
+    return [word for word in SplitOutputWords(text.strip()) if word != ""]
 
 
 class Check:
@@ -43,12 +88,17 @@ class KeyValuePairCheck(Check):
         self.abs_tol: float = 0.
         self.skip_lines_until: str = ""
 
+        CheckUnknownFields(params,
+                           {"type", "key", "goldvalue", "rel_tol",
+                            "abs_tol", "skip_lines_until"},
+                           message_prefix)
         if "key" not in params:
             warnings.warn(message_prefix + 'Missing "key" field')
             raise ValueError
-        if "goldvalue" not in params:
-            warnings.warn(message_prefix + 'Missing "goldvalue" field')
+        if not isinstance(params["key"], str):
+            warnings.warn(message_prefix + '"key" field must be a string')
             raise ValueError
+        RequireRealNumber(params, "goldvalue", message_prefix)
         if "rel_tol" not in params and "abs_tol" not in params:
             warnings.warn(message_prefix + 'Must specify "rel_tol" and/or "abs_tol" field')
             raise ValueError
@@ -56,10 +106,16 @@ class KeyValuePairCheck(Check):
         self.key = params["key"]
         self.goldvalue = params["goldvalue"]
         if "abs_tol" in params:
+            if not IsRealNumber(params["abs_tol"]):
+                warnings.warn(message_prefix + '"abs_tol" field must be numeric')
+                raise ValueError
             self.abs_tol = params["abs_tol"]
         else:
             self.abs_tol = 0.
         if "rel_tol" in params:
+            if not IsRealNumber(params["rel_tol"]):
+                warnings.warn(message_prefix + '"rel_tol" field must be numeric')
+                raise ValueError
             self.rel_tol = params["rel_tol"]
         else:
             self.rel_tol = 0.
@@ -84,6 +140,9 @@ class KeyValuePairCheck(Check):
                 if perform_skip_check:
                     skip_lines = True
 
+                found_key = False
+                last_value = None
+                last_line = ""
                 lines = file.readlines()
                 for line in lines:
                     if perform_skip_check:
@@ -95,9 +154,10 @@ class KeyValuePairCheck(Check):
 
                     key_pos = line.find(self.key)
                     if key_pos >= 0:
+                        found_key = True
                         postkey = line[(key_pos + len(self.key)):].strip()
 
-                        words = re.split(r'\s+|,+]', postkey)
+                        words = SplitPostKeyWords(postkey)
                         if len(words) == 0:
                             raise ValueError("word split failure: " + line)
 
@@ -115,24 +175,32 @@ class KeyValuePairCheck(Check):
 
                             return False
 
+                        last_value = value
+                        last_line = line
                         if abs(value - self.goldvalue) <= self.abs_tol + self.rel_tol * \
-                           self.goldvalue:
+                           abs(self.goldvalue):
                             self.SetLastResultSummary(
                                 f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
                                 f'actual={value:.9g} result=PASSED')
                             return True
-                        elif verbose:
-                            print("Check failed : " + self.__str__() + "\n" + line)
                         self.SetLastResultSummary(
                             f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
                             f'actual={value:.9g} abs_tol={self.abs_tol:.3g} '
                             f'rel_tol={self.rel_tol:.3g} result=FAILED')
 
-                if verbose:
+                if verbose and found_key:
+                    print("Check failed : " + self.__str__() + "\n" + last_line)
+                elif verbose:
                     print('Check failed : key, "' + self.key + '", not found ')
-                self.SetLastResultSummary(
-                    f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
-                    f'result=FAILED reason=key_not_found')
+                if not found_key:
+                    self.SetLastResultSummary(
+                        f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
+                        f'result=FAILED reason=key_not_found')
+                elif last_value is not None:
+                    self.SetLastResultSummary(
+                        f'KeyValuePair key="{self.key}" expected={self.goldvalue:.9g} '
+                        f'actual={last_value:.9g} abs_tol={self.abs_tol:.3g} '
+                        f'rel_tol={self.rel_tol:.3g} result=FAILED')
         except FileNotFoundError as e:
             warnings.warn(str(e))
             self.SetLastResultSummary(
@@ -160,13 +228,22 @@ class StrCompareCheck(Check):
         self.gold: str = ""
         self.skip_lines_until: str = ""
 
+        CheckUnknownFields(params, {"type", "key", "wordnum", "gold", "skip_lines_until"},
+                           message_prefix)
         if "key" not in params:
             warnings.warn(message_prefix + 'Missing "key" field')
             raise ValueError
+        if not isinstance(params["key"], str):
+            warnings.warn(message_prefix + '"key" field must be a string')
+            raise ValueError
 
         if "wordnum" in params:
+            RequireInteger(params, "wordnum", message_prefix)
             if "gold" not in params:
                 warnings.warn(message_prefix + 'Missing "gold" field')
+                raise ValueError
+            if not isinstance(params["gold"], str):
+                warnings.warn(message_prefix + '"gold" field must be a string')
                 raise ValueError
 
         self.key = params["key"]
@@ -209,7 +286,7 @@ class StrCompareCheck(Check):
                             self.SetLastResultSummary(
                                 f'StrCompare key="{self.key}" result=PASSED found=true')
                             return True
-                        words = re.split(r'\s+|,+|=+', line.rstrip())
+                        words = SplitOutputWords(line)
 
                         if len(words) <= self.wordnum:
                             warnings.warn("word count: " + str(len(words)) + "\n"
@@ -267,15 +344,18 @@ class FloatCompareCheck(Check):
         self.rel_tol: float = 0.
         self.skip_lines_until: str = ""
 
+        CheckUnknownFields(params,
+                           {"type", "key", "wordnum", "gold", "rel_tol",
+                            "abs_tol", "skip_lines_until"},
+                           message_prefix)
         if "key" not in params:
             warnings.warn(message_prefix + 'Missing "key" field')
             raise ValueError
-        if "wordnum" not in params:
-            warnings.warn(message_prefix + 'Missing "wordnum" field')
+        if not isinstance(params["key"], str):
+            warnings.warn(message_prefix + '"key" field must be a string')
             raise ValueError
-        if "gold" not in params:
-            warnings.warn(message_prefix + 'Missing "gold" field')
-            raise ValueError
+        RequireInteger(params, "wordnum", message_prefix)
+        RequireRealNumber(params, "gold", message_prefix)
         if "rel_tol" not in params and "abs_tol" not in params:
             warnings.warn(message_prefix + 'Must specify "rel_tol" and/or "abs_tol" field')
             raise ValueError
@@ -284,10 +364,16 @@ class FloatCompareCheck(Check):
         self.wordnum = params["wordnum"]
         self.gold = params["gold"]
         if "abs_tol" in params:
+            if not IsRealNumber(params["abs_tol"]):
+                warnings.warn(message_prefix + '"abs_tol" field must be numeric')
+                raise ValueError
             self.abs_tol = params["abs_tol"]
         else:
             self.abs_tol = 0.
         if "rel_tol" in params:
+            if not IsRealNumber(params["rel_tol"]):
+                warnings.warn(message_prefix + '"rel_tol" field must be numeric')
+                raise ValueError
             self.rel_tol = params["rel_tol"]
         else:
             self.rel_tol = 0.
@@ -313,11 +399,6 @@ class FloatCompareCheck(Check):
                 if perform_skip_check:
                     skip_lines = True
 
-                skip_lines = False
-                perform_skip_check = bool(self.skip_lines_until != "")
-                if perform_skip_check:
-                    skip_lines = True
-
                 lines = file.readlines()
                 for line in lines:
                     if perform_skip_check:
@@ -329,7 +410,7 @@ class FloatCompareCheck(Check):
 
                     key_pos = line.find(self.key)
                     if key_pos >= 0:
-                        words = re.split(r'\s+|,+|=+', line.rstrip())
+                        words = SplitOutputWords(line)
 
                         if len(words) <= self.wordnum:
                             warnings.warn("word count: " + str(len(words)) + "\n"
@@ -346,15 +427,16 @@ class FloatCompareCheck(Check):
                             self.SetLastResultSummary(
                                 f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
                                 f'result=FAILED reason=parse_error')
-                            warnings.warn("    Check failed :\n"
-                                          + "    Check = " + self.__str__() + "\n"
-                                          + "    line = " + line
-                                          + "    words = " + str(words) + "\n"
-                                          + "    info = Failed to convert word "
-                                          + str(self.wordnum) + " to float.")
+                            if verbose:
+                                warnings.warn("    Check failed :\n"
+                                              + "    Check = " + self.__str__() + "\n"
+                                              + "    line = " + line
+                                              + "    words = " + str(words) + "\n"
+                                              + "    info = Failed to convert word "
+                                              + str(self.wordnum) + " to float.")
                             return False
 
-                        if abs(value - self.gold) <= self.abs_tol + self.rel_tol * self.gold:
+                        if abs(value - self.gold) <= self.abs_tol + self.rel_tol * abs(self.gold):
                             self.SetLastResultSummary(
                                 f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
                                 f'actual={value:.9g} result=PASSED')
@@ -401,15 +483,16 @@ class IntCompareCheck(Check):
         self.gold: int = 0
         self.skip_lines_until: str = ""
 
+        CheckUnknownFields(params, {"type", "key", "wordnum", "gold", "skip_lines_until"},
+                           message_prefix)
         if "key" not in params:
             warnings.warn(message_prefix + 'Missing "key" field')
             raise ValueError
-        if "wordnum" not in params:
-            warnings.warn(message_prefix + 'Missing "wordnum" field')
+        if not isinstance(params["key"], str):
+            warnings.warn(message_prefix + '"key" field must be a string')
             raise ValueError
-        if "gold" not in params:
-            warnings.warn(message_prefix + 'Missing "gold" field')
-            raise ValueError
+        RequireInteger(params, "wordnum", message_prefix)
+        RequireInteger(params, "gold", message_prefix)
 
         self.key = params["key"]
         self.wordnum = params["wordnum"]
@@ -446,7 +529,7 @@ class IntCompareCheck(Check):
 
                     key_pos = line.find(self.key)
                     if key_pos >= 0:
-                        words = re.split(r'\s+|,+|=+', line.rstrip())
+                        words = SplitOutputWords(line)
 
                         if len(words) <= self.wordnum:
                             warnings.warn("word count: " + str(len(words)) + "\n"
@@ -463,12 +546,13 @@ class IntCompareCheck(Check):
                             self.SetLastResultSummary(
                                 f'IntCompare key="{self.key}" expected={self.gold} '
                                 f'result=FAILED reason=parse_error')
-                            warnings.warn("    Check failed :\n"
-                                          + "    Check = " + self.__str__() + "\n"
-                                          + "    line = " + line
-                                          + "    words = " + str(words) + "\n"
-                                          + "    info = Failed to convert word "
-                                          + str(self.wordnum) + " to int.")
+                            if verbose:
+                                warnings.warn("    Check failed :\n"
+                                              + "    Check = " + self.__str__() + "\n"
+                                              + "    line = " + line
+                                              + "    words = " + str(words) + "\n"
+                                              + "    info = Failed to convert word "
+                                              + str(self.wordnum) + " to int.")
                             return False
 
                         if value == self.gold:
@@ -516,9 +600,8 @@ class ErrorCodeCheck(Check):
         super().__init__()
         self.error_code: int = 0
 
-        if "error_code" not in params:
-            warnings.warn(message_prefix + 'Missing "error_code" field')
-            raise ValueError
+        CheckUnknownFields(params, {"type", "error_code"}, message_prefix)
+        RequireInteger(params, "error_code", message_prefix)
 
         self.error_code = params["error_code"]
 
@@ -559,13 +642,25 @@ class GoldFileCheck(Check):
         self.skiplines_top: int = 0
         self.check_numlines: int = 0
 
+        CheckUnknownFields(params,
+                           {"type", "scope_keyword", "candidate_filename",
+                            "skiplines_top", "check_numlines"},
+                           message_prefix)
         if "scope_keyword" in params:
+            if not isinstance(params["scope_keyword"], str):
+                warnings.warn(message_prefix + '"scope_keyword" field must be a string')
+                raise ValueError
             self.scope_keyword = params["scope_keyword"]
         if "candidate_filename" in params:
+            if not isinstance(params["candidate_filename"], str):
+                warnings.warn(message_prefix + '"candidate_filename" field must be a string')
+                raise ValueError
             self.candidate_filename = params["candidate_filename"]
         if "skiplines_top" in params:
+            RequireInteger(params, "skiplines_top", message_prefix)
             self.skiplines_top = params["skiplines_top"]
         if "check_numlines" in params:
+            RequireInteger(params, "check_numlines", message_prefix)
             self.check_numlines = params["check_numlines"]
 
     def __str__(self):
