@@ -16,7 +16,7 @@ namespace
 double
 EstimateCellSize(const MeshContinuum& grid, const Cell& cell)
 {
-  const auto& v0 = grid.vertices[cell.vertex_ids.front()];
+  const auto& v0 = grid.GlobalVertex(cell.vertex_ids.front());
   double xmin = v0.x;
   double xmax = v0.x;
   double ymin = v0.y;
@@ -26,7 +26,7 @@ EstimateCellSize(const MeshContinuum& grid, const Cell& cell)
 
   for (const auto vertex_id : cell.vertex_ids)
   {
-    const auto& vertex = grid.vertices[vertex_id];
+    const auto& vertex = grid.GlobalVertex(vertex_id);
     xmin = std::min(xmin, vertex.x);
     xmax = std::max(xmax, vertex.x);
     ymin = std::min(ymin, vertex.y);
@@ -51,7 +51,7 @@ CheckIntersectionAtVertex(const std::shared_ptr<MeshContinuum>& grid,
 {
   for (const uint64_t vertex_id : vertex_ids)
   {
-    const Vector3& vertex = grid->vertices[vertex_id];
+    const Vector3& vertex = grid->GlobalVertex(vertex_id);
     const double point0_to_vertex = (vertex - line_point0).Norm();
     const double point1_to_vertex = (vertex - line_point1).Norm();
     const double point0_to_point1 = (line_point1 - line_point0).Norm();
@@ -136,20 +136,20 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
            << " in cell " << cell.global_id << " with vertices: \n";
 
     for (auto vi : cell.vertex_ids)
-      outstr << grid->vertices[vi].PrintStr() << "\n";
+      outstr << grid->GlobalVertex(vi).PrintStr() << "\n";
 
     for (const auto& face : cell.faces)
     {
       outstr << "Face with centroid: " << face.centroid.PrintStr() << " ";
       outstr << "n=" << face.normal.PrintStr() << "\n";
       for (auto vi : face.vertex_ids)
-        outstr << grid->vertices[vi].PrintStr() << "\n";
+        outstr << grid->GlobalVertex(vi).PrintStr() << "\n";
     }
 
     outstr << "o Cell\n";
     for (const auto& vid : cell.vertex_ids)
     {
-      auto& v = grid->vertices[vid];
+      auto& v = grid->GlobalVertex(vid);
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
     }
 
@@ -201,7 +201,7 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
       continue /*the loop*/;
     }
 
-    const auto& p0 = grid->vertices[face.vertex_ids[0]];
+    const auto& p0 = grid->GlobalVertex(face.vertex_ids[0]);
     const auto& n = face.normal;
 
     const auto ppos_i = p0 - pos_i;
@@ -215,7 +215,7 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
     } // SLAB
     else if (cell_type == CellType::POLYGON)
     {
-      const auto& p1 = grid->vertices[face.vertex_ids[1]];
+      const auto& p1 = grid->GlobalVertex(face.vertex_ids[1]);
       intersects_cell = CheckLineIntersectStrip(p0, p1, n, pos_i, pos_ext, I);
     } // POLYGON
     else if (cell_type == CellType::POLYHEDRON)
@@ -227,8 +227,8 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
         uint64_t v0i = vids[s];
         uint64_t v1i = (s < (num_sides - 1)) ? vids[s + 1] : vids[0];
 
-        const auto& v0 = grid->vertices[v0i];
-        const auto& v1 = grid->vertices[v1i];
+        const auto& v0 = grid->GlobalVertex(v0i);
+        const auto& v1 = grid->GlobalVertex(v1i);
         const auto& v2 = face.centroid;
 
         const auto v01 = v1 - v0;
@@ -286,7 +286,7 @@ RayTracer::TraceSlab(const Cell& cell,
   for (int f = 0; f < num_faces; ++f)
   {
     auto fpi = cell.vertex_ids[f]; // face point index
-    Vector3 face_point = grid->vertices[fpi];
+    Vector3 face_point = grid->GlobalVertex(fpi);
 
     bool intersects = CheckPlaneLineIntersect(
       cell.faces[f].normal, face_point, pos_i, pos_f_line, intersection_point, &weights);
@@ -338,8 +338,8 @@ RayTracer::TracePolygon(const Cell& cell,
 
     auto fpi = cell.faces[f].vertex_ids[0]; // face point index 0
     auto fpf = cell.faces[f].vertex_ids[1]; // face point index 1
-    const Vector3& face_point_i = grid->vertices[fpi];
-    const Vector3& face_point_f = grid->vertices[fpf];
+    const Vector3& face_point_i = grid->GlobalVertex(fpi);
+    const Vector3& face_point_f = grid->GlobalVertex(fpf);
 
     bool intersects = CheckLineIntersectStrip(
       face_point_i, face_point_f, cell.faces[f].normal, pos_i, pos_f_line, ip);
@@ -418,9 +418,9 @@ RayTracer::TracePolyhedron(const Cell& cell,
       const auto& v2 = face.centroid;
       for (size_t s = 0; s < num_sides; ++s)
       {
-        const auto& v0 = grid->vertices[face.vertex_ids[s]];
+        const auto& v0 = grid->GlobalVertex(face.vertex_ids[s]);
         const auto& v1 =
-          grid->vertices[(s + 1 < num_sides) ? face.vertex_ids[s + 1] : face.vertex_ids[0]];
+          grid->GlobalVertex((s + 1 < num_sides) ? face.vertex_ids[s + 1] : face.vertex_ids[0]);
         if ((v1 - v0).Cross(v2 - v0).Dot(omega_i) < 0.0)
           continue;
         if (CheckLineIntersectTriangle2(v0, v1, v2, pos_i, omega_i, ip))
@@ -450,9 +450,9 @@ RayTracer::TracePolyhedron(const Cell& cell,
     const size_t num_sides = face.vertex_ids.size();
     if (num_sides == 3)
     {
-      const auto& v0 = grid->vertices[face.vertex_ids[0]];
-      const auto& v1 = grid->vertices[face.vertex_ids[1]];
-      const auto& v2 = grid->vertices[face.vertex_ids[2]];
+      const auto& v0 = grid->GlobalVertex(face.vertex_ids[0]);
+      const auto& v1 = grid->GlobalVertex(face.vertex_ids[1]);
+      const auto& v2 = grid->GlobalVertex(face.vertex_ids[2]);
       if ((v1 - v0).Cross(v2 - v0).Dot(omega_i) < 0.0)
         continue;
       RayTracerOutputInformation tri_oi;
@@ -471,9 +471,9 @@ RayTracer::TracePolyhedron(const Cell& cell,
       const auto& v2 = face.centroid;
       for (size_t s = 0; s < num_sides; ++s)
       {
-        const auto& v0 = grid->vertices[face.vertex_ids[s]];
+        const auto& v0 = grid->GlobalVertex(face.vertex_ids[s]);
         const auto& v1 =
-          grid->vertices[(s + 1 < num_sides) ? face.vertex_ids[s + 1] : face.vertex_ids[0]];
+          grid->GlobalVertex((s + 1 < num_sides) ? face.vertex_ids[s + 1] : face.vertex_ids[0]);
         if ((v1 - v0).Cross(v2 - v0).Dot(omega_i) < 0.0)
           continue;
         RayTracerOutputInformation tri_oi;
@@ -720,7 +720,7 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
   {
     for (const auto& face : cell.faces) // edges
     {
-      const auto& v0 = grid->vertices[face.vertex_ids[0]];
+      const auto& v0 = grid->GlobalVertex(face.vertex_ids[0]);
       const auto& vc = cell.centroid;
 
       auto n0 = (vc - v0).Cross(khat).Normalized();
@@ -749,7 +749,7 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
       // Face center to vertex segments
       for (auto vi : face.vertex_ids)
       {
-        auto& vert = grid->vertices[vi];
+        auto& vert = grid->GlobalVertex(vi);
 
         Vector3 intersection_point;
 
@@ -773,8 +773,8 @@ PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
         auto vid_1 =
           (v < (face.vertex_ids.size() - 1)) ? face.vertex_ids[v + 1] : face.vertex_ids[0];
 
-        auto& v0 = grid->vertices[vid_0];
-        auto& v1 = grid->vertices[vid_1];
+        auto& v0 = grid->GlobalVertex(vid_0);
+        auto& v1 = grid->GlobalVertex(vid_1);
         const auto& v2 = vcc;
 
         Vector3 intersection_point;

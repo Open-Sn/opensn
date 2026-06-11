@@ -887,7 +887,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       auto node_g_index = node;
       node_mapping[node_g_index] = node_counter;
 
-      Vector3 cur_v = grid->vertices[node_g_index];
+      Vector3 cur_v = grid->GlobalVertex(node_g_index);
 
       // clang-format off
       of << "v "
@@ -983,7 +983,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     for (size_t v = 0; v < num_verts; ++v)
     {
       vertex_map[v] = v;
-      const auto& vertex = grid->vertices[v];
+      const auto& vertex = grid->GlobalVertex(v);
       points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
@@ -1095,7 +1095,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       // Load vertices
       for (uint64_t vid : vid_set)
       {
-        const auto& vertex = grid->vertices[vid];
+        const auto& vertex = grid->GlobalVertex(vid);
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
 
         // Exodus node- and cell indices are 1-based therefore we add a 1 here.
@@ -1151,7 +1151,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       // Load vertices
       for (uint64_t vid : vid_set)
       {
-        const auto& vertex = grid->vertices[vid];
+        const auto& vertex = grid->GlobalVertex(vid);
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
       }
 

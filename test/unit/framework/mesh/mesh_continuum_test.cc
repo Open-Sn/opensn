@@ -26,7 +26,7 @@ TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
         const auto has_vertex =
           std::find(other_cell.vertex_ids.begin(), other_cell.vertex_ids.end(), vi) !=
           other_cell.vertex_ids.end();
-        const auto within = grid->CheckPointInsideCell(other_cell, grid->vertices[vi]);
+        const auto within = grid->CheckPointInsideCell(other_cell, grid->GlobalVertex(vi));
         EXPECT_EQ(has_vertex, within);
       }
 
@@ -50,8 +50,8 @@ TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
         for (size_t side = 0; side < face.vertex_ids.size(); ++side)
         {
           const size_t sp1 = (side < (face.vertex_ids.size() - 1)) ? side + 1 : 0;
-          const auto& v0 = grid->vertices[face.vertex_ids[side]];
-          const auto& v1 = grid->vertices[face.vertex_ids[sp1]];
+          const auto& v0 = grid->GlobalVertex(face.vertex_ids[side]);
+          const auto& v1 = grid->GlobalVertex(face.vertex_ids[sp1]);
           const auto c = (v0 + v1) / 2.0;
           EXPECT_TRUE(grid->CheckPointInsideCell(cell, c));
         }
@@ -65,9 +65,9 @@ TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
         for (size_t side = 0; side < face.vertex_ids.size(); ++side)
         {
           const size_t sp1 = (side < (face.vertex_ids.size() - 1)) ? side + 1 : 0;
-          const auto& v0 = grid->vertices[face.vertex_ids[side]];
+          const auto& v0 = grid->GlobalVertex(face.vertex_ids[side]);
           const auto& v1 = face.centroid;
-          const auto& v2 = grid->vertices[face.vertex_ids[sp1]];
+          const auto& v2 = grid->GlobalVertex(face.vertex_ids[sp1]);
           const auto& v3 = cell.centroid;
           const auto c = (v0 + v1 + v2 + v3) / 4.0;
           for (const auto& other_cell : grid->local_cells)
@@ -127,7 +127,7 @@ TestPointInsideCellFace(const std::shared_ptr<MeshContinuum> grid)
         const auto& face = cell.faces[face_i];
         const auto has_vertex =
           std::find(face.vertex_ids.begin(), face.vertex_ids.end(), vi) != face.vertex_ids.end();
-        const auto within = grid->CheckPointInsideCellFace(cell, face_i, grid->vertices[vi]);
+        const auto within = grid->CheckPointInsideCellFace(cell, face_i, grid->GlobalVertex(vi));
         EXPECT_EQ(has_vertex, within);
       }
 
@@ -163,7 +163,7 @@ TestPointInsideCellFace(const std::shared_ptr<MeshContinuum> grid)
           const auto vi1 = face.vertex_ids[i];
           const auto vi2 =
             (i == face.vertex_ids.size() - 1) ? face.vertex_ids[0] : face.vertex_ids[i + 1];
-          const auto edge_centroid = (grid->vertices[vi1] + grid->vertices[vi2]) / 2;
+          const auto edge_centroid = (grid->GlobalVertex(vi1) + grid->GlobalVertex(vi2)) / 2;
           for (const auto& other_cell : grid->local_cells)
             for (std::size_t other_face_i = 0; other_face_i < other_cell.faces.size();
                  ++other_face_i)

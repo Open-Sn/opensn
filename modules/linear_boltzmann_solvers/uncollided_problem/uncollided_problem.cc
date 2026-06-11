@@ -186,13 +186,13 @@ UncollidedProblem::InitializeSpatialDiscretization()
   cell_sizes_.resize(grid_->local_cells.size());
   for (const auto& cell : grid_->local_cells)
   {
-    const auto& v0 = grid_->vertices[cell.vertex_ids.front()];
+    const auto& v0 = grid_->GlobalVertex(cell->vertex_ids.front());
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
     double zmin = v0.z, zmax = v0.z;
     for (const auto vid : cell.vertex_ids)
     {
-      const auto& v = grid_->vertices[vid];
+      const auto& v = grid_->GlobalVertex(vid);
       xmin = std::min(xmin, v.x);
       xmax = std::max(xmax, v.x);
       ymin = std::min(ymin, v.y);
@@ -214,7 +214,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
       const double tol = cell_sizes_[cell.local_id] * 1.0e-8;
       for (const auto& face : cell.faces)
       {
-        const auto& v0 = grid_->vertices[face.vertex_ids.front()];
+        const auto& v0 = grid_->GlobalVertex(face.vertex_ids.front());
         const auto& n = face.normal;
         for (const auto vid : cell.vertex_ids)
         {
@@ -227,7 +227,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
             }
           if (on_face)
             continue;
-          if (n.Dot(grid_->vertices[vid] - v0) > tol)
+          if (n.Dot(grid_->GlobalVertex(vid) - v0) > tol)
             return false;
         }
       }
@@ -277,7 +277,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
           auto& fv = all_face_verts_[offset++];
           fv.num_sides = static_cast<uint32_t>(face.vertex_ids.size());
           for (size_t s = 0; s < fv.num_sides; ++s)
-            fv.verts[s] = grid_->vertices[face.vertex_ids[s]];
+            fv.verts[s] = grid_->GlobalVertex(face.vertex_ids[s]);
           fv.centroid = face.centroid;
           fv.neighbor_id = face.neighbor_id;
           fv.pad = 0;
@@ -647,7 +647,7 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
     cell_node_counts[cell.local_id] = sdm.GetCellNumNodes(cell);
     for (const auto vertex_id : cell.vertex_ids)
     {
-      const auto& vertex = grid_->vertices[vertex_id];
+      const auto& vertex = grid_->GlobalVertex(vertex_id);
       nodes_x.push_back(vertex.x);
       nodes_y.push_back(vertex.y);
       nodes_z.push_back(vertex.z);

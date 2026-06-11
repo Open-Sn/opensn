@@ -657,7 +657,7 @@ OrthogonalMeshGenerator::Execute()
       return std::array<size_t, 3>{xy % nx, xy / nx, static_cast<size_t>(vid % nz)};
     }();
 
-    grid_ptr->vertices.Insert(vid, Vertex(node_sets_, info.dimension, i, j, k));
+    grid_ptr->AddGlobalVertex(vid, Vertex(node_sets_, info.dimension, i, j, k));
   }
 
   grid_ptr->SetDimension(info.dimension);
