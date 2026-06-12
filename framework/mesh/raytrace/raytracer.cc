@@ -130,7 +130,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
     std::stringstream outstr;
 
     outstr << "Intersection not found at function level " << function_depth << "."
-           << ((backward_tolerance_hit) ? " Backward tolerance hit. " : "")
+           << (backward_tolerance_hit ? " Backward tolerance hit. " : "")
            << "For particle xyz=" << pos_i.PrintStr() << " uvw=" << omega_i.PrintStr() << " "
            << (pos_i + extension_distance_ * omega_i).PrintStr() << " " << extension_distance_
            << " in cell " << cell.global_id << " with vertices: \n";

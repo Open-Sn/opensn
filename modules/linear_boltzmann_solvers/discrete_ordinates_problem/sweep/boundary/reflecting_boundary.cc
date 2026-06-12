@@ -25,7 +25,7 @@ ReflectingBoundary::TransformGroupset(int groupset_id, Fn&& fn)
   auto&& f = std::forward<Fn>(fn);
   const auto& extra_data = extra_data_[groupset_id];
   const auto old_stride = extra_data.old_stride;
-  double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
+  double* flux = GetBoundaryFlux(groupset_id, ApplyOnOldFlux ? old_stride : 0);
   std::size_t size = old_stride * bank_[groupset_id].groupset_size;
   std::span<double> flux_view(flux, size);
   f(flux_view);
@@ -40,7 +40,7 @@ ReflectingBoundary::TransformGroupset(int groupset_id, Fn&& fn) const
   auto&& f = std::forward<Fn>(fn);
   const auto& extra_data = extra_data_[groupset_id];
   const auto old_stride = extra_data.old_stride;
-  const double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
+  const double* flux = GetBoundaryFlux(groupset_id, ApplyOnOldFlux ? old_stride : 0);
   std::size_t size = old_stride * bank_[groupset_id].groupset_size;
   std::span<const double> flux_view(flux, size);
   f(flux_view);
@@ -55,7 +55,7 @@ ReflectingBoundary::ForEachDelayedAngularFlux(int groupset_id, Fn&& fn)
   auto&& f = std::forward<Fn>(fn);
   const auto& extra_data = extra_data_[groupset_id];
   const auto old_stride = extra_data.old_stride;
-  double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
+  double* flux = GetBoundaryFlux(groupset_id, ApplyOnOldFlux ? old_stride : 0);
   std::size_t size = old_stride * bank_[groupset_id].groupset_size;
   std::for_each_n(flux, size, f);
 }
@@ -69,7 +69,7 @@ ReflectingBoundary::ForEachDelayedAngularFlux(int groupset_id, Fn&& fn) const
   auto&& f = std::forward<Fn>(fn);
   const auto& extra_data = extra_data_[groupset_id];
   const auto old_stride = extra_data.old_stride;
-  const double* flux = GetBoundaryFlux(groupset_id, (ApplyOnOldFlux) ? old_stride : 0);
+  const double* flux = GetBoundaryFlux(groupset_id, ApplyOnOldFlux ? old_stride : 0);
   std::size_t size = old_stride * bank_[groupset_id].groupset_size;
   std::for_each_n(flux, size, f);
 }

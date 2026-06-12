@@ -348,7 +348,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   file.close();
 
   // create boundary names and IDs
-  unsigned int dimension = (mesh_is_2D) ? 2 : 3;
+  unsigned int dimension = mesh_is_2D ? 2 : 3;
   for (auto& [id, e] : physical_names)
   {
     if (std::get<0>(e) == dimension - 1)

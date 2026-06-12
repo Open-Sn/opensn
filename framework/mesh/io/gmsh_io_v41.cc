@@ -570,7 +570,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   file.close();
 
   // create boundary names and IDs
-  unsigned int dimension = (mesh_is_2D) ? 2 : 3;
+  unsigned int dimension = mesh_is_2D ? 2 : 3;
   mesh->SetDimension(dimension);
   for (auto& [id, e] : physical_names)
   {
@@ -1045,7 +1045,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   }
 
   // create boundary names and IDs
-  const unsigned int dimension = (mesh_is_2D) ? 2 : 3;
+  const unsigned int dimension = mesh_is_2D ? 2 : 3;
   mesh->SetDimension(dimension);
   for (const auto& [id, data] : physical_names)
   {
