@@ -156,7 +156,9 @@ VolumetricSource::Evaluate(const Cell& cell,
                            const double time) const
 {
   if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id) == 0)
+  {
     return std::vector<double>(num_groups, 0.0); // NOLINT
+  }
   else if (not function_)
   {
     if (strength_function_)
@@ -169,7 +171,9 @@ VolumetricSource::Evaluate(const Cell& cell,
     return strength_;
   }
   else
+  {
     return (*function_)(xyz, num_groups);
+  }
 }
 
 bool

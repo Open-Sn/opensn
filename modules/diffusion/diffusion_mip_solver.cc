@@ -427,6 +427,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
       {
         double entry_rhs_i = 0.0; // entry may accumulate over j
         if (not source_function_)
+        {
           for (size_t j = 0; j < num_nodes; ++j)
           {
             for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
@@ -435,6 +436,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
                              fe_vol_data.JxW(qp) * qg[j];
             } // for qp
           } // for j
+        }
         else
         {
           for (size_t qp : fe_vol_data.GetQuadraturePointIndices())
@@ -1212,15 +1214,21 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   else if (cell.GetType() == CellType::POLYGON)
   {
     if (num_faces == 3)
+    {
       hp = 2.0 * volume / face_area;
+    }
     else if (num_faces == 4)
+    {
       hp = volume / face_area;
+    }
     else // Nv > 4
     {
       const auto surface_area = ComputeSurfaceArea();
 
       if (num_faces % 2 == 0)
+      {
         hp = 4.0 * volume / surface_area;
+      }
       else
       {
         hp = 2.0 * volume / surface_area;
@@ -1242,8 +1250,10 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
       hp = 6 * volume / surface_area;
   } // Polyhedron
   else
+  {
     throw std::logic_error("acceleration::DiffusionMIPSolver::HPerpendicular: "
                            "Unsupported cell type in call to HPerpendicular");
+  }
 
   return hp;
 }

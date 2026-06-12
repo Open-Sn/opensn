@@ -309,7 +309,9 @@ public:
       type_ = VaryingDataType::INTEGER;
     }
     else
+    {
       type_ = VaryingDataType::USER_DATA;
+    }
 
     data_ = Helper(CastValue(value));
   }

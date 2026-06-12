@@ -259,7 +259,9 @@ RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector
     oi.particle_lost = false;
   }
   else
+  {
     oi.particle_lost = true;
+  }
 
   return oi;
 }
@@ -364,7 +366,9 @@ RayTracer::TracePolygon(const Cell& cell,
 
   // Determine closest intersection
   if (not perform_concavity_checks_ and not face_intersections.empty())
+  {
     oi = face_intersections.back();
+  }
   else if (perform_concavity_checks_ and not face_intersections.empty())
   {
     auto* closest_intersection = &face_intersections.back();

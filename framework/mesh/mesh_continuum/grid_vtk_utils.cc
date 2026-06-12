@@ -554,7 +554,9 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
   for (const auto& cell : grid->local_cells)
   {
     if (discontinuous)
+    {
       UploadCellGeometryDiscontinuous(grid, cell, node_count, points, ugrid);
+    }
     else
     {
       for (uint64_t vid : cell.vertex_ids)

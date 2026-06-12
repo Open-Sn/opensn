@@ -563,8 +563,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
         cell.faces.push_back(lw_face);
     }
     else
+    {
       throw std::runtime_error(fname + ": Unsupported cell type.");
-
+    }
   } // for elements
 
   file.close();

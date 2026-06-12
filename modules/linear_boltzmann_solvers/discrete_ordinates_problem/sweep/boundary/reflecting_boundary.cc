@@ -136,7 +136,9 @@ ReflectingBoundary::InitializeReflectingMap(const std::vector<LBSGroupset>& grou
         {
           // left, top and bottom are regular reflecting
           if (std::fabs(normal_.Dot(jhat)) > 0.999999 or normal_.Dot(ihat) < -0.999999)
+          {
             omega_reflected = omega_n - 2.0 * normal_ * omega_n.Dot(normal_);
+          }
           // right derives normal from omega_n
           else if (normal_.Dot(ihat) > 0.999999)
           {

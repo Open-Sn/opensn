@@ -467,7 +467,9 @@ WrapLBS(py::module& slv)
       {
         auto c_key = key.cast<std::string>();
         if (c_key == "clear_point_sources")
+        {
           self.ClearPointSources();
+        }
         else if (c_key == "point_sources")
         {
           auto sources = value.cast<py::list>();
@@ -477,7 +479,9 @@ WrapLBS(py::module& slv)
           }
         }
         else
+        {
           throw std::runtime_error("Invalid argument provided to SetPointSources.\n");
+        }
       }
     },
     R"(
@@ -499,7 +503,9 @@ WrapLBS(py::module& slv)
       {
         auto c_key = key.cast<std::string>();
         if (c_key == "clear_volumetric_sources")
+        {
           self.ClearVolumetricSources();
+        }
         else if (c_key == "volumetric_sources")
         {
           auto sources = value.cast<py::list>();
@@ -509,7 +515,9 @@ WrapLBS(py::module& slv)
           }
         }
         else
+        {
           throw std::runtime_error("Invalid argument provided to SetVolumetricSources.\n");
+        }
       }
     },
     R"(
@@ -546,7 +554,9 @@ WrapLBS(py::module& slv)
           }
         }
         else
+        {
           throw std::runtime_error("Invalid argument provided to SetXSMap.\n");
+        }
       }
       self.SetBlockID2XSMap(xs_map);
     },
@@ -977,7 +987,9 @@ WrapLBS(py::module& slv)
       {
         auto c_key = key.cast<std::string>();
         if (c_key == "clear_boundary_conditions")
+        {
           clear_boundary_conditions = value.cast<bool>();
+        }
         else if (c_key == "boundary_conditions")
         {
           auto boundaries = value.cast<py::list>();
@@ -989,7 +1001,9 @@ WrapLBS(py::module& slv)
           }
         }
         else
+        {
           throw std::runtime_error("Invalid argument provided to SetBoundaryOptions.\n");
+        }
       }
       if (clear_boundary_conditions or not boundary_params.empty())
         self.SetBoundaryOptions(boundary_params, clear_boundary_conditions);

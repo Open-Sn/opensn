@@ -327,7 +327,9 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
     precursor_new_local_ = std::move(remapped_precursors);
   }
   else
+  {
     precursor_new_local_.clear();
+  }
 
   ResetGPUCarriers();
   InitializeGPUExtras();
@@ -709,9 +711,11 @@ LBSProblem::ParseOptions(const InputParameters& input)
                              GetName() + ": Failed to create restart directory " + dir.string());
       }
       else
+      {
         OpenSnLogicalErrorIf(not std::filesystem::is_directory(dir),
                              GetName() + ": Restart path exists but is not a directory " +
                                dir.string());
+      }
     }
     opensn::mpi_comm.barrier();
     options_.restart.MarkWriteComplete();

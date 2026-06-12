@@ -33,7 +33,9 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
     double h = 0.0;
     const auto n = valid_params.GetParamValue<uint32_t>("n");
     if (layer_block.Has("h"))
+    {
       h = valid_params.GetParamValue<double>("h");
+    }
     else
     {
       const auto z = valid_params.GetParamValue<double>("z");

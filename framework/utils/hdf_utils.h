@@ -197,7 +197,9 @@ H5WriteDataset1D(hid_t id, const std::string& name, const std::vector<T>& data)
     if (dataset != H5I_INVALID_HID)
     {
       if (data.empty())
+      {
         success = true;
+      }
       else
       {
         if (H5Dwrite(dataset, get_datatype<T>(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data.data()) >= 0)

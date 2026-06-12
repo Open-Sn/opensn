@@ -272,9 +272,11 @@ CopyVecToSTLvector(Vec x, std::vector<double>& data, size_t N, bool resize_STL)
     data.assign(N, 0.0);
   }
   else
+  {
     OpenSnLogicalErrorIf(data.size() < N,
                          "data.size() < N, " + std::to_string(data.size()) + " < " +
                            std::to_string(N));
+  }
 
   const PetscScalar* x_ref = nullptr;
   OpenSnPETScCall(VecGetArrayRead(x, &x_ref));
@@ -293,9 +295,11 @@ CopyVecToSTLvectorWithGhosts(Vec x, std::vector<double>& data, size_t N, bool re
     data.assign(N, 0.0);
   }
   else
+  {
     OpenSnLogicalErrorIf(data.size() != N,
                          "data.size() != N, " + std::to_string(data.size()) + " < " +
                            std::to_string(N));
+  }
 
   auto info = GetGhostVectorLocalViewRead(x);
   const PetscScalar* x_ref = info.x_localized_raw;

@@ -580,7 +580,9 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
       cell_regions_[cell_id] = CellRegion::NEAR_SOURCE;
     }
     else
+    {
       bulk_spls_.push_back(cell_id);
+    }
   }
 }
 

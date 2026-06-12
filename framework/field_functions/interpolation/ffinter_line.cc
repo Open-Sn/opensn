@@ -137,7 +137,9 @@ FieldFunctionInterpolationLine::Execute()
   }
 
   if (op_type_ == FieldFunctionInterpolationOperation::OP_SUM)
+  {
     mpi_comm.all_reduce(local_sum, op_value_, mpi::op::sum<double>());
+  }
   else if (op_type_ == FieldFunctionInterpolationOperation::OP_AVG)
   {
     size_t global_size = 0;

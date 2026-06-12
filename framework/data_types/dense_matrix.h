@@ -356,7 +356,9 @@ Determinant(const DenseMatrix<TYPE>& A)
   auto rows = A.Rows();
 
   if (rows == 1)
+  {
     return A(0, 0);
+  }
   else if (rows == 2)
   {
     return A(0, 0) * A(1, 1) - A(0, 1) * A(1, 0);
@@ -506,7 +508,9 @@ Inverse(const DenseMatrix<TYPE>& A)
   }
 
   if (rows == 1)
+  {
     M(0, 0) = f;
+  }
   else if (rows == 2)
   {
     M(0, 0) = A(1, 1);
@@ -585,7 +589,9 @@ Inverse(const DenseMatrix<TYPE>& A)
     Scale(M, f);
   }
   else
+  {
     M = InverseGEPivoting(A);
+  }
 
   return M;
 }

@@ -144,7 +144,9 @@ VectorGhostCommunicator::MapGhostToLocal(const uint64_t ghost_id) const
     return local_size_ + k;
   }
   else
+  {
     return std::nullopt;
+  }
 }
 
 void

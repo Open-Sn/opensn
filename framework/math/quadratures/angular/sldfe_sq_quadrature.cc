@@ -330,9 +330,13 @@ SLDFEsqQuadrature::DevelopSQLDFEValues(SphericalQuadrilateral& sq,
     }
   }
   else if (qp_optimization_type == QuadraturePointOptimization::EMPIRICAL)
+  {
     EmpiricalQPOptimization(sq, legendre, sq_tilde_center, vctoi, SA_i);
+  }
   else if (qp_optimization_type == QuadraturePointOptimization::ISOLATED)
+  {
     IsolatedQPOptimization(sq, legendre, sq_tilde_center, vctoi, SA_i);
+  }
 }
 
 double
@@ -806,7 +810,9 @@ SLDFEsqQuadrature::LocallyRefine(const Vector3& ref_dir,
       sq_to_be_split = std::fabs(sq.centroid_xyz.Dot(ref_dir_n)) < (sin(cone_size));
 
     if (not sq_to_be_split)
+    {
       new_deployment.push_back(sq);
+    }
     else
     {
       auto new_sqs = SplitSQ(sq, legendre);

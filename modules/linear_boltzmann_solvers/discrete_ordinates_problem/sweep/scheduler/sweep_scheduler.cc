@@ -157,7 +157,9 @@ SweepScheduler::InitializeAlgoDOG()
       rule_values_.push_back(new_rule_vals);
     }
     else
+    {
       throw std::runtime_error("InitializeAlgoDOG: Failed to find location depth");
+    }
   } // for anglesets
 
   std::stable_sort(

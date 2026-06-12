@@ -53,7 +53,9 @@ ObjectFactory::DumpRegister() const
     log.Log() << "OBJECT_BEGIN " << key;
 
     if (entry.get_in_params_func == nullptr)
+    {
       log.Log() << "NOT_CONSTRUCTIBLE";
+    }
     else
     {
       const auto in_params = entry.get_in_params_func();

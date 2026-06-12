@@ -465,12 +465,14 @@ CMFDAcceleration::ProbeAutomaticClosure(const double k_eff,
                << ", partial coarse k = " << partial_coarse_k_eff << ".";
   }
   else if (verbose_ and (outer_iteration_ < 5 or outer_iteration_ % 25 == 0))
+  {
     log.Log() << no_wrap << program_timer.GetTimeString() << " CMFD auto closure probe kept net"
               << ": net residual = " << net_l2 << ", partial residual = " << partial_l2
               << ", net coarse k = " << net_coarse_k_eff
               << ", partial coarse k = " << partial_coarse_k_eff
               << ", selected blend = " << selected_blend
               << ", probe = " << automatic_closure_probe_iterations_ << ".";
+  }
 }
 
 void
@@ -694,6 +696,7 @@ CMFDAcceleration::PostPowerIteration()
     }
   }
   else
+  {
     k_eff = ApplyFluxCorrectionWithDamping(phi_new_local_,
                                            coarse_phi,
                                            cmfd_reference_fission_production,
@@ -703,6 +706,7 @@ CMFDAcceleration::PostPowerIteration()
                                            correction_diagnostics,
                                            skipped_correction,
                                            correction_skip_reason);
+  }
   if (skipped_correction)
   {
     ++consecutive_skipped_corrections_;
@@ -710,7 +714,9 @@ CMFDAcceleration::PostPowerIteration()
       k_eff = raw_transport_k_eff;
   }
   else
+  {
     consecutive_skipped_corrections_ = 0;
+  }
   last_correction_skipped_ = skipped_correction;
   last_correction_skip_reason_ = skipped_correction ? correction_skip_reason : std::string();
   last_update_allows_convergence_ = transport_balance_allows_convergence and not skipped_correction;
@@ -1665,7 +1671,9 @@ CMFDAcceleration::ComputeTransportCurrentBalanceResidual(
       {
         const auto& face = coarse_cell.faces[f];
         if (face.has_neighbor)
+        {
           lhs += ComputeOutwardCurrent(coarse_cell, f, cg);
+        }
         else
         {
           const auto bc_it = do_problem_.GetBoundaryDefinitions().find(face.neighbor_id);

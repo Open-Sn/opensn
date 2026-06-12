@@ -118,7 +118,9 @@ ClassicRichardson::Solve()
       converged = true;
     }
     else
+    {
       SyncLaggedStateToLatestIterate(*gs_context_ptr);
+    }
 
     if (verbose_)
     {

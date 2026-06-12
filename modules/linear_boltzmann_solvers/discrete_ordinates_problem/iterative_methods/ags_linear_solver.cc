@@ -108,9 +108,13 @@ AGSLinearSolver::Solve()
       break;
     }
     else if (converged)
+    {
       break;
+    }
     else
+    {
       phi_old_ = lbs_problem_.GetPhiNewLocal();
+    }
   }
   CALI_CXX_MARK_LOOP_END(ags_iteration);
 

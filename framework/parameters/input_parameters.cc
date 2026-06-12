@@ -260,7 +260,9 @@ InputParameters::AssignParameters(const ParameterBlock& params)
       if (IsParameterIgnored(param_name))
         continue;
       if (not this->Has(param_name))
+      {
         err_stream << "Invalid param \"" << param_name << "\" supplied.\n";
+      }
       else if (renamed_error_tags_.count(param_name) > 0)
       {
         err_stream << "Invalid param \"" << param_name << "\" supplied. ";
@@ -405,7 +407,9 @@ InputParameters::ConstrainParameterRange(const std::string& param_name,
     constraint_tags_[param_name] = allowable_range;
   }
   else
+  {
     throw std::logic_error(ParamNotPresentErrorStr(__PRETTY_FUNCTION__, param_name));
+  }
 }
 
 void
@@ -441,7 +445,9 @@ InputParameters::DumpParameters() const
     {
       log.Log() << sp4 << "TAG OPTIONAL";
       if (type != ParameterBlockType::BLOCK and type != ParameterBlockType::ARRAY)
+      {
         log.Log() << sp4 << "DEFAULT_VALUE " << param.GetValue().PrintStr();
+      }
       else if (type == ParameterBlockType::ARRAY)
       {
         std::stringstream outstr;
@@ -455,7 +461,9 @@ InputParameters::DumpParameters() const
       }
     }
     else
+    {
       log.Log() << sp4 << "TAG REQUIRED";
+    }
 
     if (constraint_tags_.count(param_name) != 0)
       log.Log() << sp4 << "CONSTRAINTS " << constraint_tags_.at(param_name)->PrintRange();

@@ -24,7 +24,9 @@ MeshGenerator::MeshGenerator(const InputParameters& params)
 
   // Set partitioner
   if (params.IsParameterValid("partitioner"))
+  {
     partitioner_ = params.GetSharedPtrParam<GraphPartitioner>("partitioner");
+  }
   else
   {
     const auto& factory = ObjectFactory::GetInstance();

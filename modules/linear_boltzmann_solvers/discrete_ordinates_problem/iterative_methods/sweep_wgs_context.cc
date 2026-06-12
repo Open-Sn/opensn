@@ -40,7 +40,9 @@ GetSchedulingAlgorithm(const std::string& sweep_type, bool use_gpu)
       return SchedulingAlgorithm::FIRST_IN_FIRST_OUT;
   }
   else
+  {
     throw std::runtime_error("Unsupported sweep scheduling algorithm: " + sweep_type + "\n");
+  }
 }
 
 } // namespace

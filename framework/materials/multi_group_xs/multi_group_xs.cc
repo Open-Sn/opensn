@@ -436,7 +436,9 @@ MultiGroupXS::ComputeDiffusionParameters()
       diffusion_coeff_[g] = diffusion_coeff_max;
     }
     else
+    {
       diffusion_coeff_[g] = 1.0 / 3.0 / sigma_tr_[g];
+    }
 
     // Determine within group scattering
     if (not S.empty())

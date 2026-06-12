@@ -310,7 +310,9 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
     boundary_sources_[bid] = {LBSBoundaryType::ISOTROPIC, values};
   }
   else
+  {
     log.Log0Warning() << "Unsupported boundary type. Skipping the entry.";
+  }
 }
 
 void

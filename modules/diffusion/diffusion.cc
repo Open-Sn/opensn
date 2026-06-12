@@ -174,7 +174,9 @@ DiffusionSolver::Initialize()
 
   // Create RHS
   if (not requires_ghosts_)
+  {
     rhs_ = CreateVector(num_local_dofs_, num_global_dofs_);
+  }
   else
   {
     auto ghost_ids = sdm_.GetGhostDOFIndices(uk_man_);
@@ -296,7 +298,9 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
     sdm_.LocalizePETScVectorWithGhosts(x_, solution, uk_man_);
   }
   else
+  {
     sdm_.LocalizePETScVector(x_, solution, uk_man_);
+  }
 }
 
 void

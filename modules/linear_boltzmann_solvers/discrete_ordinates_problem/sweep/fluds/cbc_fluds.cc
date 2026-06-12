@@ -108,7 +108,9 @@ CBC_FLUDS::ClearLocalAndReceivePsi()
     current_psi_epoch_ = 1;
   }
   else
+  {
     ++current_psi_epoch_;
+  }
 }
 
 CBC_FLUDS::IncomingNonlocalPsi

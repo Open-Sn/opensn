@@ -321,7 +321,9 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
             psi_new[imap + gsg] = inv_theta * (psi_sol + (theta - 1.0) * psi_old_val);
           }
           else
+          {
             psi_new[imap + gsg] = psi_sol;
+          }
         }
       }
     }
