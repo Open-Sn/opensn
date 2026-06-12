@@ -14,13 +14,20 @@ Uses one boundary of each type on a small orthogonal mesh:
 import os
 import sys
 
-from mpi4py import MPI
-
-comm = MPI.COMM_WORLD
-rank = comm.rank
-size = comm.size
-
 if "opensn_console" not in globals():
+    from mpi4py import MPI
+
+    comm = MPI.COMM_WORLD
+    rank = comm.rank
+    size = comm.size
+
+    _mpi_ops = {"sum": MPI.SUM, "max": MPI.MAX, "min": MPI.MIN, "bor": MPI.BOR}
+
+    def MPIAllReduce(value, op="sum"):
+        return comm.allreduce(value, op=_mpi_ops[op])
+
+    def MPIBarrier():
+        comm.Barrier()
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
@@ -92,7 +99,7 @@ if __name__ == "__main__":
     solver.Advance()
 
     phi = list(problem.GetPhiNewLocal())
-    max_phi = comm.allreduce(max([abs(v) for v in phi] + [0.0]), op=MPI.MAX)
+    max_phi = MPIAllReduce(max([abs(v) for v in phi] + [0.0]), "max")
 
     if rank == 0:
         print(f"TD_MIXED_2D_MAX_PHI {max_phi:.12e}")
