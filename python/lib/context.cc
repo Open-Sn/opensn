@@ -168,8 +168,13 @@ WrapSysArgv(py::module& context)
         if (arg == "-v" || arg == "--verbose")
         {
           auto next_arg = sys_argv[++i_arg].cast<std::string>();
-          log.SetVerbosity(std::atoi(next_arg.c_str()));
-          continue;
+          char* endptr = nullptr;
+          const char* str_ptr = next_arg.c_str();
+          auto parsed_val = std::strtol(str_ptr, &endptr, 10);
+          if (endptr != str_ptr && *endptr == '\0') {
+            log.SetVerbosity(static_cast<int>(parsed_val));
+            continue;
+          }
         }
         // caliper
         if (arg == "--caliper")
