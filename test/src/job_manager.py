@@ -23,7 +23,8 @@ class TestConfiguration:
                  args: list,
                  weight_class: str,
                  skip: str,
-                 requires_gpu: bool):
+                 requires_gpu: bool,
+                 env: dict):
         """Constructor. Load checks into the data structure"""
         self.file_dir = file_dir
         self.filename = filename
@@ -33,11 +34,14 @@ class TestConfiguration:
         self.checks = []
         self.ran = False
         self.submitted = False
+        self.passed = False
         self.annotations = []
         self.dependency = dependency
         self.args = args
         self.skip = skip
         self.requires_gpu = requires_gpu
+        self.env = env
+        self.skip_reason_override = None
 
         check_num = 0
         for check_params in checks_params:
@@ -131,10 +135,15 @@ class TestConfiguration:
             return True
         for test in tests:
             if test.filename == self.dependency:
-                if test.ran:
+                if test.ran and test.passed:
                     return True
 
         return False
+
+
+def ResolveDependencyMatches(test_objects: dict, dependency: str) -> list:
+    """Returns configured tests whose filename matches the dependency string."""
+    return [test for test in test_objects.values() if test.filename == dependency]
 
 
 # Parse JSON configs
@@ -149,7 +158,7 @@ def ParseTestConfiguration(file_path: str):
 
     if not isinstance(data, list):
         warnings.warn(err_read + "Main block is not a list")
-        return []
+        return {}
 
     test_num = 0
     for test_block in data:
@@ -177,6 +186,13 @@ def ParseTestConfiguration(file_path: str):
             warnings.warn(message_prefix + '"checks" field must be a list')
             continue
 
+        if not isinstance(test_block["num_procs"], int):
+            warnings.warn(message_prefix + '"num_procs" field must be an integer')
+            continue
+        if test_block["num_procs"] <= 0:
+            warnings.warn(message_prefix + '"num_procs" field must be positive')
+            continue
+
         args = []
         if "args" in test_block and not isinstance(test_block["args"], list):
             warnings.warn(message_prefix + '"args" field must be a list')
@@ -184,9 +200,37 @@ def ParseTestConfiguration(file_path: str):
         if "args" in test_block:
             args = test_block["args"]
 
+        env = {}
+        if "env" in test_block:
+            if not isinstance(test_block["env"], dict):
+                warnings.warn(message_prefix + '"env" field must be a dictionary')
+                continue
+
+            normalized_env = {}
+            for key, value in test_block["env"].items():
+                if not isinstance(key, str):
+                    warnings.warn(message_prefix + '"env" keys must be strings')
+                    normalized_env = None
+                    break
+                if not isinstance(value, (str, int, float, bool)):
+                    warnings.warn(
+                        message_prefix + f'"env" value for "{key}" must be string-, int-, '
+                        + 'float-, or bool-like')
+                    normalized_env = None
+                    break
+                normalized_env[key] = str(value)
+
+            if normalized_env is None:
+                continue
+            env = normalized_env
+
         dependency = None
         if "dependency" in test_block:
-            dependency = test_block["dependency"]
+            if isinstance(test_block["dependency"], str):
+                dependency = test_block["dependency"]
+            else:
+                warnings.warn(message_prefix + '"dependency" field must be a string')
+                continue
 
         weight_class = "short"
         if "weight_class" in test_block:
@@ -254,11 +298,39 @@ def ParseTestConfiguration(file_path: str):
                                          args=args,
                                          weight_class=weight_class,
                                          skip=skip_reason,
-                                         requires_gpu=requires_gpu)
-            args_str = ''.join(map(str, new_test.args))
-            test_objects[hash(new_test.filename + args_str)] = new_test
+                                         requires_gpu=requires_gpu,
+                                         env=env)
+            test_key = (
+                new_test.filename,
+                tuple(map(str, new_test.args)),
+                tuple(sorted(new_test.env.items())),
+            )
+            if test_key in test_objects:
+                warnings.warn(message_prefix + "duplicates an existing file/args test entry")
+                continue
+            test_objects[test_key] = new_test
         except ValueError:
             continue
+
+    invalid_test_keys = []
+    for test_key, test in test_objects.items():
+        if test.dependency is None:
+            continue
+
+        dependency_matches = ResolveDependencyMatches(test_objects, test.dependency)
+        if len(dependency_matches) == 0:
+            warnings.warn(err_read + f'test "{test.filename}" depends on missing test '
+                          + f'"{test.dependency}"')
+            invalid_test_keys.append(test_key)
+            continue
+        if len(dependency_matches) > 1:
+            warnings.warn(err_read + f'test "{test.filename}" has ambiguous dependency '
+                          + f'"{test.dependency}". Dependencies must identify exactly one test '
+                          + 'entry within the same tests.json file.')
+            invalid_test_keys.append(test_key)
+
+    for test_key in invalid_test_keys:
+        test_objects.pop(test_key, None)
 
     return test_objects
 
@@ -268,14 +340,15 @@ def ListFilesInDir(folder: str, ext=None):
     files = []
     dirs_and_files = os.listdir(folder)
     for item in dirs_and_files:
-        if not os.path.isdir(item):
+        item_path = os.path.join(folder, item)
+        if not os.path.isdir(item_path):
             if ext is None:
                 files.append(item)
             else:
                 base_name, extension = os.path.splitext(item)
                 if extension == ext:
                     files.append(item)
-    return files
+    return sorted(files)
 
 
 def ConvertNbToScript(notebook_path: str) -> str:
@@ -328,6 +401,8 @@ def BuildSearchHierarchyForTests(argv):
 
     test_hierarchy = {}  # Map of directories to input files
     for dir_path, sub_dirs, files in os.walk(test_dir):
+        sub_dirs.sort()
+        files.sort()
         for file_name in files:
             if argv.engine == "jupyter":
                 file_name = ConvertNbToScript(os.path.join(dir_path, file_name))
@@ -358,7 +433,7 @@ def ConfigureTests(test_hierarchy: dict, argv):
 
     specific_tests = argv.test
     if specific_tests is not None:
-        print("specific_tests=" + ", ".join(specific_tests))
+        print("Selected tests: " + ", ".join(specific_tests))
 
     test_objects = []
     for testdir in test_hierarchy:
@@ -378,24 +453,27 @@ def ConfigureTests(test_hierarchy: dict, argv):
                     test_objects.append(obj)
                     if specific_tests is not None and obj.dependency is not None:
                         specific_test_dependencies.append(obj.dependency)
-                else:
+                elif argv.show_filtered:
                     print("skipping " + obj.filename)
 
             # If a specific test has dependencies, also add them to the list of executed tests
             for dependency in specific_test_dependencies:
-                dependency_obj = next(
-                    (obj for obj in sub_test_objs.values() if obj.filename == dependency), None
-                )
-                if dependency_obj is not None:
-                    include_dependency = (
-                        dependency_obj.requires_gpu if argv.gpu else not dependency_obj.requires_gpu
-                    )
-                    if include_dependency and dependency_obj not in test_objects:
-                        test_objects.append(dependency_obj)
-                    elif not include_dependency:
-                        warnings.warn("Dependency '" + dependency + "' filtered by GPU mode.")
-                else:
+                dependency_matches = ResolveDependencyMatches(sub_test_objs, dependency)
+                if len(dependency_matches) == 0:
                     warnings.warn("Specified dependency '" + dependency + "' does not exist.")
+                    continue
+                if len(dependency_matches) > 1:
+                    warnings.warn("Specified dependency '" + dependency + "' is ambiguous.")
+                    continue
+
+                dependency_obj = dependency_matches[0]
+                include_dependency = (
+                    dependency_obj.requires_gpu if argv.gpu else not dependency_obj.requires_gpu
+                )
+                if include_dependency and dependency_obj not in test_objects:
+                    test_objects.append(dependency_obj)
+                elif not include_dependency:
+                    warnings.warn("Dependency '" + dependency + "' filtered by GPU mode.")
 
         # If the out directory exists then we clear it
         if os.path.isdir(testdir + "out/"):
@@ -427,8 +505,10 @@ def RunTests(tests: list, argv):
     capacity = os.cpu_count()
     if argv.jobs > 0:
         capacity = argv.jobs
+    capacity = max(1, capacity)
     system_load = 0
     test_slots = []
+    scheduler_blocked = False
 
     weight_class_map = ["long", "intermediate", "short"]
     weight_classes_allowed = []
@@ -441,37 +521,81 @@ def RunTests(tests: list, argv):
         warnings.warn('Illegal value "' + str(argv.weights) + '" supplied '
                       + 'for argument -w, --weights')
 
-    print("Executing tests with weights in: " + str(weight_classes_allowed))
+    runnable_tests = [
+        test for test in tests
+        if test.weight_class in weight_classes_allowed
+        and ((test.requires_gpu and argv.gpu) or (not test.requires_gpu and not argv.gpu))
+    ]
+    max_test_procs = max((test.num_procs for test in runnable_tests), default=1)
+    if max_test_procs > capacity:
+        print(
+            "\033[93mNote:\033[0m requested job capacity "
+            f"({capacity}) is smaller than the largest selected test "
+            f"({max_test_procs} MPI processes). Raising capacity to {max_test_procs}."
+        )
+        capacity = max_test_procs
+
+    print("Executing tests")
+    print("  weights  : " + ", ".join(weight_classes_allowed))
+    print(f"  selected : {len(runnable_tests)}")
+    print(f"  capacity : {capacity} MPI processes")
+    print()
 
     while True:
-        done = True
-        # Check for tests to run
-        for test in tests:
-            if test.ran or (test.weight_class not in weight_classes_allowed):
-                continue
-            if (test.requires_gpu and not argv.gpu) or (argv.gpu and not test.requires_gpu):
-                test.ran = True
-                continue
-            done = False
-
-            if not test.submitted and test.CheckDependencies(tests):
-                if test.num_procs <= (capacity - system_load):
-                    system_load += test.num_procs
-
-                    new_slot = test_slot.TestSlot(test, argv)
-
-                    test_slots.append(new_slot)
-
         # Check test progress
         system_load = 0
         for slot in test_slots:
             if slot.Probe():
                 system_load += slot.test.num_procs
 
-        time.sleep(1.0)
+        remaining_tests = [
+            test for test in tests
+            if not test.ran
+            and test.weight_class in weight_classes_allowed
+            and ((test.requires_gpu and argv.gpu) or (not test.requires_gpu and not argv.gpu))
+        ]
 
-        if done:
+        if len(remaining_tests) == 0:
             break
+
+        launched_test = False
+        blocked_reasons = {}
+        for test in remaining_tests:
+            if test.submitted:
+                blocked_reasons[test] = "scheduler bookkeeping error after test submission"
+                continue
+
+            if not test.CheckDependencies(tests):
+                blocked_reasons[test] = f'dependency "{test.dependency}" did not pass'
+                continue
+
+            if test.num_procs > (capacity - system_load):
+                blocked_reasons[test] = (
+                    f"waiting for {test.num_procs} MPI processes; "
+                    f"{capacity - system_load} currently available"
+                )
+                continue
+
+            system_load += test.num_procs
+            new_slot = test_slot.TestSlot(test, argv)
+            test_slots.append(new_slot)
+            launched_test = True
+
+        if system_load == 0 and not launched_test:
+            scheduler_blocked = True
+            warnings.warn(
+                "Stopping test scheduler because remaining tests cannot be launched. "
+                "This indicates either an unsatisfied dependency or an internal scheduler error."
+            )
+            for test in remaining_tests:
+                reason = blocked_reasons.get(
+                    test, "scheduler could not determine the blocking reason"
+                )
+                test.skip_reason_override = reason
+                warnings.warn("Blocked test: " + GetDisplayName(test))
+                warnings.warn("  Reason: " + reason)
+            break
+        time.sleep(0.1)
 
     num_tests_failed = 0
     for slot in test_slots:
@@ -481,32 +605,120 @@ def RunTests(tests: list, argv):
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
 
-    print("Done executing tests with weights in: " + str(weight_classes_allowed))
+    print()
+    print("Done executing tests")
 
-    num_skipped_tests = 0
-    for test in tests:
-        if not test.ran:
-            num_skipped_tests += 1
-
-    if num_skipped_tests > 0:
-        print()
-        print(f"\033[93mNumber of skipped tests : {num_skipped_tests}\033[0m")
-
-        if num_skipped_tests > 0:
-            print("\033[93mSkipped tests:")
-            for test in tests:
-                if not test.ran:
-                    print(test.filename + f' class="{test.weight_class}"')
-            print("\033[0m", end='')
+    PrintSkippedSummary(tests, weight_classes_allowed, argv)
 
     print()
-    print("Elapsed time            : {:.2f} seconds".format(elapsed_time))
-    print(f"Number of tests run     : {len(test_slots)}")
-    print(f"Number of failed tests  : {num_tests_failed}")
+    print("Summary")
+    print("  elapsed time       : {:.2f} seconds".format(elapsed_time))
+    print(f"  tests run          : {len(test_slots)}")
+    print(f"  tests failed       : {num_tests_failed}")
 
-    if num_tests_failed > 0:
+    PrintFailureSummary(test_slots)
+    PrintSlowestTests(test_slots, argv.slowest)
+
+    if num_tests_failed > 0 or scheduler_blocked:
         return 1
     return 0
+
+
+def FormatElapsedTime(seconds: float) -> str:
+    """Formats elapsed seconds for compact terminal summaries."""
+    if seconds < 60.0:
+        return f"{seconds:.1f}s"
+    if seconds < 3600.0:
+        return f"{seconds / 60.0:.1f}m"
+    return f"{seconds / 3600.0:.1f}h"
+
+
+def GetDisplayName(test) -> str:
+    """Returns a compact display name for summaries."""
+    if hasattr(test, "display_name"):
+        return test.display_name
+    return test_slot.FormatDisplayName(test)
+
+
+def GetSkippedReason(test, weight_classes_allowed: list, argv) -> str:
+    """Returns why a configured test did not run."""
+    if test.skip_reason_override is not None:
+        return test.skip_reason_override
+    if test.weight_class not in weight_classes_allowed:
+        return f'weight "{test.weight_class}" not enabled'
+    if test.requires_gpu and not argv.gpu:
+        return "requires GPU"
+    if argv.gpu and not test.requires_gpu:
+        return "non-GPU test filtered by --gpu"
+    if test.dependency is not None:
+        return f'dependency "{test.dependency}" was not run'
+    return "not scheduled"
+
+
+def PrintSkippedSummary(tests: list, weight_classes_allowed: list, argv):
+    """Prints skipped tests grouped by reason."""
+    skipped_tests = [test for test in tests if not test.ran]
+    if len(skipped_tests) == 0:
+        return
+
+    grouped_skips = {}
+    for test in skipped_tests:
+        reason = GetSkippedReason(test, weight_classes_allowed, argv)
+        grouped_skips.setdefault(reason, []).append(test)
+
+    print()
+    print(f"\033[93mSkipped tests: {len(skipped_tests)}\033[0m")
+    for reason, reason_tests in sorted(grouped_skips.items()):
+        print(f"  {len(reason_tests):4d}  {reason}")
+        if argv.verbose:
+            for test in reason_tests:
+                print(f"        {GetDisplayName(test)}")
+
+
+def PrintFailureSummary(test_slots: list):
+    """Prints failed tests and failed check summaries."""
+    failed_slots = [slot for slot in test_slots if not slot.passed]
+    if len(failed_slots) == 0:
+        return
+
+    print()
+    print("\033[31mFailed tests:\033[0m")
+    for slot in failed_slots:
+        test = slot.test
+        output_filename = os.path.join(test.file_dir, "out", f"{test.GetOutFilenamePrefix()}.out")
+        print(f"  {GetDisplayName(test)}")
+        print(f"    output: {output_filename}")
+
+        check_results = getattr(test, "check_results", [])
+        failed_checks = [result for result in check_results if not result["passed"]]
+        for result in failed_checks:
+            summary = result["summary"] if result["summary"] else "<no summary>"
+            print(f"    check : {summary}")
+
+        if len(failed_checks) == 0 and test.annotations:
+            print("    annotations: " + ", ".join(test.annotations))
+
+
+def PrintSlowestTests(test_slots: list, max_tests: int = 10):
+    """Prints the slowest completed tests."""
+    if max_tests <= 0:
+        return
+
+    timed_slots = [
+        slot for slot in test_slots
+        if hasattr(slot.test, "elapsed_time_sec") and slot.test.elapsed_time_sec is not None
+    ]
+    if len(timed_slots) == 0:
+        return
+
+    timed_slots.sort(key=lambda slot: slot.test.elapsed_time_sec, reverse=True)
+    timed_slots = timed_slots[:max_tests]
+
+    print()
+    print(f"Slowest tests ({len(timed_slots)}):")
+    for slot in timed_slots:
+        elapsed = FormatElapsedTime(slot.test.elapsed_time_sec)
+        print(f"  {elapsed:>8}  {GetDisplayName(slot.test)}")
 
 
 def PrintCaughtWarnings(warning_manager, name: str):

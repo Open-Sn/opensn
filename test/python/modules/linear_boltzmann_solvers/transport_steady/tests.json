@@ -973,14 +973,12 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value-0=",
-        "wordnum": 4,
         "goldvalue": 5.15248e-01,
         "abs_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value-19=",
-        "wordnum": 4,
         "goldvalue": 1.45034e-03,
         "abs_tol": 1e-08
       },
@@ -1013,14 +1011,12 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value-0=",
-        "wordnum": 4,
         "goldvalue": 5.15248e-01,
         "abs_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value-19=",
-        "wordnum": 4,
         "goldvalue": 1.45034e-03,
         "abs_tol": 1e-08
       },
@@ -1053,14 +1049,12 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value-0=",
-        "wordnum": 4,
         "goldvalue": 5.15248e-01,
         "abs_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value-19=",
-        "wordnum": 4,
         "goldvalue": 1.45034e-03,
         "abs_tol": 1e-08
       },
@@ -1093,14 +1087,12 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value-0=",
-        "wordnum": 4,
         "goldvalue": 5.15248e-01,
         "abs_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value-19=",
-        "wordnum": 4,
         "goldvalue": 1.45034e-03,
         "abs_tol": 1e-08
       },

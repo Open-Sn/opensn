@@ -75,5 +75,73 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "env_injection.py",
+    "comment": "test harness injects per-test environment variables",
+    "outfileprefix": "env_injection_alpha",
+    "num_procs": 1,
+    "env": {
+      "OPENSN_TEST_ENV_VALUE": "alpha",
+      "OPENSN_TEST_ENV_NUMBER": 3
+    },
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "ENV_VALUE",
+        "wordnum": 1,
+        "gold": "alpha"
+      },
+      {
+        "type": "StrCompare",
+        "key": "ENV_NUMBER",
+        "wordnum": 1,
+        "gold": "3"
+      }
+    ]
+  },
+  {
+    "file": "env_injection.py",
+    "comment": "test harness keeps distinct env-tagged entries separate",
+    "outfileprefix": "env_injection_beta",
+    "num_procs": 1,
+    "env": {
+      "OPENSN_TEST_ENV_VALUE": "beta",
+      "OPENSN_TEST_ENV_NUMBER": 7
+    },
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "ENV_VALUE",
+        "wordnum": 1,
+        "gold": "beta"
+      },
+      {
+        "type": "StrCompare",
+        "key": "ENV_NUMBER",
+        "wordnum": 1,
+        "gold": "7"
+      }
+    ]
+  },
+  {
+    "file": "env_injection.py",
+    "comment": "per-test environment variables do not bleed into later tests",
+    "outfileprefix": "env_injection_unset",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "ENV_VALUE",
+        "wordnum": 1,
+        "gold": "<unset>"
+      },
+      {
+        "type": "StrCompare",
+        "key": "ENV_NUMBER",
+        "wordnum": 1,
+        "gold": "<unset>"
+      }
+    ]
   }
 ]

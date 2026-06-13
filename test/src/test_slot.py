@@ -4,7 +4,46 @@ import os
 import subprocess
 import shutil
 import re
+import shlex
 import sys
+import time
+
+
+ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def VisibleLength(text: str) -> int:
+    """Returns string length without ANSI color escape sequences."""
+    return len(ANSI_RE.sub("", text))
+
+
+def ShortenMiddle(text: str, max_length: int) -> str:
+    """Shortens text to max_length by replacing the middle with an ellipsis."""
+    if max_length <= 0 or len(text) <= max_length:
+        return text
+    if max_length <= 3:
+        return text[:max_length]
+
+    keep_left = max(1, (max_length - 3) // 3)
+    keep_right = max_length - 3 - keep_left
+    return text[:keep_left] + "..." + text[-keep_right:]
+
+
+def FormatDisplayName(test) -> str:
+    """Returns the compact test name used in terminal output."""
+    test_path = os.path.join(test.file_dir, test.filename)
+    parent_dir = os.path.basename(os.path.dirname(test_path))
+    display_name = os.path.join(parent_dir, os.path.basename(test.filename))
+
+    args_str = ', '.join(map(str, test.args))
+    if len(args_str) != 0:
+        display_name += " (" + args_str + ")"
+
+    if getattr(test, "env", {}):
+        env_str = ", ".join(f"{key}={value}" for key, value in sorted(test.env.items()))
+        display_name += " {" + env_str + "}"
+
+    return display_name
 
 
 class TestSlot:
@@ -18,6 +57,8 @@ class TestSlot:
         self.passed = False
         self.argv = argv
         self.command: str = ""
+        self.start_time = None
+        self.end_time = None
 
         self._Run()
 
@@ -36,6 +77,9 @@ class TestSlot:
         else:
             cmd_exe = f"{self.argv.exe} -i"
 
+        process_env = os.environ.copy()
+        process_env.update(test.env)
+
         base_name, extension = os.path.splitext(test.filename)
         cmd = self.argv.mpi_cmd + " " + str(test.num_procs) + " "
         cmd += cmd_exe + " "
@@ -52,14 +96,21 @@ class TestSlot:
                         cmd += "--py " + qarg + " "
                 else:
                     cmd += arg + " "
-        self.command = cmd
+        env_prefix = ""
+        if test.env:
+            env_prefix = " ".join(
+                f"{key}={shlex.quote(value)}" for key, value in sorted(test.env.items())
+            ) + " "
+        self.command = env_prefix + cmd
 
         # Write command to output file
         self.stdout_file = open(stdout_filename, "w", encoding="utf-8")
         self.stderr_file = open(stderr_filename, "w", encoding="utf-8")
 
+        self.start_time = time.perf_counter()
         self.process = subprocess.Popen(cmd,
                                         cwd=test.file_dir,
+                                        env=process_env,
                                         shell=True,
                                         stdout=self.stdout_file,
                                         stderr=self.stderr_file,
@@ -81,6 +132,7 @@ class TestSlot:
             return running
 
         if self.process.poll() is not None:
+            self.end_time = time.perf_counter()
             self.CreateUnifiedOutput()
             self.PerformChecks()
             test.ran = True
@@ -118,6 +170,7 @@ class TestSlot:
         test = self.test
         passed = True
         output_filename = f"{test.file_dir}out/{test.GetOutFilenamePrefix()}.out"
+        test.check_results = []
 
         if test.skip == "":
             error_code = self.process.returncode
@@ -137,37 +190,32 @@ class TestSlot:
             test.annotations.append("Skipped")
 
         test_path = os.path.join(test.file_dir, test.filename)
-        test_file_name = os.path.relpath(test_path, self.argv.directory)
+        test_file_name = FormatDisplayName(test)
+        test.display_name = test_file_name
 
         if not os.path.isfile(test_path):
             test.annotations.append("Input file missing")
 
-        args_str = ', '.join(map(str, test.args))
-        if len(args_str) != 0:
-            args_str = " (" + args_str + ")"
-        test_file_name += args_str
-
-        pad = 0
         if passed:
             self.passed = True
-            message = "\033[32mPassed\033[0m"
-            pad += 5 + 4
+            status = "\033[32mPassed\033[0m"
         else:
             self.passed = False
-            message = "\033[31mFailed\033[0m"
-            pad += 5 + 4
+            status = "\033[31mFailed\033[0m"
+
+        if test.skip != "":
+            status = "\033[36mSkipped\033[0m"
+
+        test.passed = self.passed
 
         prefix = "\033[33m[{:2d}]\033[0m".format(test.num_procs)
-        pad += 5 + 4
 
-        for annotation in test.annotations:
-            message = f"\033[36m[{annotation}]\033[0m" + " " + message
-            pad += 5 + 4
+        wall_time_sec = 0.0
+        if self.start_time is not None:
+            end_time = self.end_time if self.end_time is not None else time.perf_counter()
+            wall_time_sec = end_time - self.start_time
 
-        width = 120 - len(prefix + test_file_name) + pad
-        message = message.rjust(width, ".")
-
-        opensn_elapsed_time_sec = 0.0
+        opensn_elapsed_time_sec = None
         if os.path.exists(output_filename):
             with open(output_filename, 'r', encoding='utf-8') as file:
                 for line in file:
@@ -179,9 +227,27 @@ class TestSlot:
                                                    + float(values_slice[3]))
                         break
 
-        time_message = " {:.1f}s".format(opensn_elapsed_time_sec)
+        elapsed_time_sec = opensn_elapsed_time_sec
+        if elapsed_time_sec is None:
+            elapsed_time_sec = wall_time_sec
+        test.elapsed_time_sec = elapsed_time_sec
+        time_message = "{:.1f}s".format(elapsed_time_sec)
 
-        print(prefix + " " + test_file_name + message + time_message)
+        annotations = " ".join(f"\033[36m[{annotation}]\033[0m"
+                               for annotation in test.annotations)
+
+        terminal_width = min(shutil.get_terminal_size(fallback=(120, 24)).columns, 120)
+        status_column = max(40, terminal_width - 26)
+        max_name_length = max(10, status_column - VisibleLength(prefix) - 2)
+        test_file_name = ShortenMiddle(test_file_name, max_name_length)
+        left = prefix + " " + test_file_name
+        separator_width = max(1, status_column - VisibleLength(left))
+        separator = " " * separator_width
+        message = left + separator + status + " " + time_message
+        if annotations:
+            message += " " + annotations
+
+        print(message)
 
         if test.skip != "":
             print("\tSkip reason: " + test.skip)
