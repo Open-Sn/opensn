@@ -92,9 +92,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a8d036a041ad41ba72c34a1f49b9d02be`
 
-- :ref:`exhale_function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868`
-
 - :ref:`exhale_function_namespaceopensn_1a2bdc26e2893394e99294a66ae0d46af5`
+
+- :ref:`exhale_function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868`
 
 - :ref:`exhale_function_namespaceopensn_1aa23a89f962cc2d2ad9cc7d31bdc2b47b`
 
