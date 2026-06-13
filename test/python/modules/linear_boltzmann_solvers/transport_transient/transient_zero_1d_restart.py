@@ -4,14 +4,21 @@ import os
 import shutil
 import sys
 
-from mpi4py import MPI
-
-comm = MPI.COMM_WORLD
-rank = comm.rank
-size = comm.size
-
 if "opensn_console" not in globals():
-    sys.path.append("/Users/dhawkins/opensn_dev/opensn")
+    from mpi4py import MPI
+
+    comm = MPI.COMM_WORLD
+    rank = comm.rank
+    size = comm.size
+
+    _mpi_ops = {"sum": MPI.SUM, "max": MPI.MAX, "min": MPI.MIN, "bor": MPI.BOR}
+
+    def MPIAllReduce(value, op="sum"):
+        return comm.allreduce(value, op=_mpi_ops[op])
+
+    def MPIBarrier():
+        comm.Barrier()
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
@@ -49,7 +56,7 @@ M_GFROM_GTO_VAL 0 1 1 0.35
 TRANSFER_MOMENTS_END
 """
             )
-    comm.Barrier()
+    MPIBarrier()
 
 
 def make_problem(xs_path, restart_read="", restart_write=""):
@@ -120,7 +127,7 @@ if __name__ == "__main__":
         shutil.rmtree(restart_dir)
     if rank == 0:
         os.makedirs(restart_dir, exist_ok=True)
-    comm.Barrier()
+    MPIBarrier()
     write_xs_file(xs_path)
 
     dt = 0.05
@@ -174,6 +181,6 @@ if __name__ == "__main__":
         print(f"TRANSIENT_RESTART_MAX_ABS_DIFF {phi_diff:.16e}")
         print(f"TRANSIENT_RESTART_PASS {pass_flag}")
 
-    comm.Barrier()
+    MPIBarrier()
     if rank == 0 and os.path.isdir(restart_dir):
         shutil.rmtree(restart_dir)

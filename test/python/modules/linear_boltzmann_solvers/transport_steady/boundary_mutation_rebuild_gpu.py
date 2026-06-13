@@ -19,6 +19,14 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     comm = MPI.COMM_WORLD
+
+    _mpi_ops = {"sum": MPI.SUM, "max": MPI.MAX, "min": MPI.MIN, "bor": MPI.BOR}
+
+    def MPIAllReduce(value, op="sum"):
+        return comm.allreduce(value, op=_mpi_ops[op])
+
+    def MPIBarrier():
+        comm.Barrier()
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
@@ -27,10 +35,6 @@ if "opensn_console" not in globals():
     from pyopensn.math import AngularFluxFunction
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.logvol import RPPLogicalVolume
-else:
-    from mpi4py import MPI
-
-    comm = MPI.COMM_WORLD
 
 
 def require_procs(expected):
@@ -242,7 +246,7 @@ def compare_results(ref, got):
             leakage_diff = max(leakage_diff, abs(a - b))
 
     local = (phi_diff, leakage_diff)
-    return tuple(comm.allreduce(value, op=MPI.MAX) for value in local)
+    return tuple(MPIAllReduce(value, "max") for value in local)
 
 
 if __name__ == "__main__":

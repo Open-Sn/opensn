@@ -13,13 +13,20 @@ import math
 import os
 import sys
 
-from mpi4py import MPI
-
-comm = MPI.COMM_WORLD
-size = comm.size
-rank = comm.rank
-
 if "opensn_console" not in globals():
+    from mpi4py import MPI
+
+    comm = MPI.COMM_WORLD
+    size = comm.size
+    rank = comm.rank
+
+    _mpi_ops = {"sum": MPI.SUM, "max": MPI.MAX, "min": MPI.MIN, "bor": MPI.BOR}
+
+    def MPIAllReduce(value, op="sum"):
+        return comm.allreduce(value, op=_mpi_ops[op])
+
+    def MPIBarrier():
+        comm.Barrier()
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
@@ -59,7 +66,7 @@ TRANSFER_MOMENTS_BEGIN
 TRANSFER_MOMENTS_END
 """
             )
-    comm.Barrier()
+    MPIBarrier()
 
 
 def make_1d_problem(boundary_conditions, num_groups=1, n_polar=4):
@@ -118,7 +125,7 @@ def max_abs_diff(v1, v2):
 
 
 def global_max(value):
-    return comm.allreduce(value, op=MPI.MAX)
+    return MPIAllReduce(value, "max")
 
 
 def compare_problem_pair(problem_a, problem_b, steps):
@@ -236,7 +243,7 @@ def run_case_06():
     for i, t in enumerate([0.0, DT, 2.0 * DT]):
         if round(t, 12) in observed:
             local_mask |= 1 << i
-    global_mask = comm.allreduce(local_mask, op=MPI.BOR)
+    global_mask = MPIAllReduce(local_mask, "bor")
     missing = 0 if global_mask == 0b111 else 1
     report("TD_BOUNDARY_CASE06_ARBITRARY_CALLED_EACH_STEP", missing == 0, float(missing))
 
@@ -368,6 +375,6 @@ if __name__ == "__main__":
     run_case_11()
     run_case_12()
 
-    comm.Barrier()
+    MPIBarrier()
     if rank == 0 and os.path.exists(XS2_PATH):
         os.remove(XS2_PATH)
