@@ -70,8 +70,16 @@
 <li class="toctree-l3"><a class="reference internal" href="#thermal-upscattering-acceleration">5.4. Thermal Upscattering Acceleration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#power-iterations">5.5. Power Iterations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#acceleration-of-power-iterations">5.6. Acceleration of Power Iterations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#uncollided-flux-treatment">5.7. Uncollided-flux Treatment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#references">5.8. References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coarse-mesh-finite-difference-acceleration">5.7. Coarse-Mesh Finite Difference Acceleration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#restriction-and-energy-collapse">5.7.1. Restriction and energy collapse</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#coarse-diffusion-balance">5.7.2. Coarse diffusion balance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matrix-form-and-coarse-solve">5.7.3. Matrix form and coarse solve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#prolongation-and-damping">5.7.4. Prolongation and damping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cmfd-iteration-outline">5.7.5. CMFD Iteration Outline</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#uncollided-flux-treatment">5.8. Uncollided-flux Treatment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">5.9. References</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
@@ -114,7 +122,7 @@
 <h1><span class="section-number">5. </span>Iterative Solution Algorithms<a class="headerlink" href="#iterative-solution-algorithms" title="Link to this heading"></a></h1>
 <p>The Adams-Larsen review paper is a good reference for fast iterative
 schemes for discrete-ordinates particle transport calculations
-<span id="id1">Adams and Larsen [<a class="reference internal" href="#id50" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>.</p>
+<span id="id1">Adams and Larsen [<a class="reference internal" href="#id51" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>.</p>
 <section id="multigroup-solution-process-background">
 <h2><span class="section-number">5.1. </span>Multigroup Solution Process: Background<a class="headerlink" href="#multigroup-solution-process-background" title="Link to this heading"></a></h2>
 <p>The transport equation needs to be solved for each group <span class="math notranslate nohighlight">\(g\)</span>
@@ -164,7 +172,7 @@ contributions).</p>
 <section id="source-iteration">
 <h3><span class="section-number">5.2.1. </span>Source Iteration:<a class="headerlink" href="#source-iteration" title="Link to this heading"></a></h3>
 <p>In the Source Iteration (SI) method
-<span id="id2">Adams and Larsen [<a class="reference internal" href="#id50" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, the flux moments are
+<span id="id2">Adams and Larsen [<a class="reference internal" href="#id51" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, the flux moments are
 lagged at iteration <span class="math notranslate nohighlight">\(i\)</span> to yield the following iterative strategy</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{cases}
@@ -202,7 +210,7 @@ only its action is required. Each action of <span class="math notranslate nohigh
 transport sweep to evaluate the action of <span class="math notranslate nohighlight">\(L^{-1}\)</span>. Krylov
 subspace methods, such as GMRes, can be employed in a matrix-free
 fashion to solve such a system
-<span id="id3">Saad and Schultz [<a class="reference internal" href="#id248" title="Youcef Saad and Martin H Schultz. Gmres: a generalized minimal residual algorithm for solving nonsymmetric linear systems. SIAM Journal on scientific and statistical computing, 7(3):856–869, 1986.">SS86</a>]</span>, <span id="id4">Saad [<a class="reference internal" href="#id247" title="Yousef Saad. Iterative methods for sparse linear systems. Siam, 2003.">Saa03</a>]</span>, <span id="id5">Patton and Holloway [<a class="reference internal" href="#id70" title="BW Patton and JP Holloway. Application of krylov subspace methods to the slab geometry transport equation. In ANS Topical Meeting on Radiation Protection and Shielding, volume 1, 384. 1996.">PH96</a>]</span>, <span id="id6">Guthrie <em>et al.</em> [<a class="reference internal" href="#id71" title="Brian Guthrie, James P Holloway, and Bruce W Patton. Gmres as a multi-step transport sweep accelerator. Transport Theory and Statistical Physics, 28(1):83–102, 1999.">GHP99</a>]</span>, <span id="id7">Oliveira and Deng [<a class="reference internal" href="#id72" title="Suely Oliveira and Yuanhua Deng. Preconditioned krylov subspace methods for transport equations. Progress in Nuclear Energy, 33(1):155–174, 1998.">OD98</a>]</span>, <span id="id8">Warsa <em>et al.</em> [<a class="reference internal" href="#id169" title="James S Warsa, Todd A Wareing, and Jim E Morel. Krylov iterative methods and the degraded effectiveness of diffusion synthetic acceleration for multidimensional $s_n$ calculations in problems with material discontinuities. Nuclear Science and Engineering, 147(3):218–248, 2004.">WWM04</a>]</span>, <span id="id9">Fichtl <em>et al.</em> [<a class="reference internal" href="#id74" title="Erin D Fichtl, James S Warsa, and Anil K Prinja. Krylov iterative methods and synthetic acceleration for transport in binary statistical media. Journal of Computational Physics, 228(22):8413–8426, 2009.">FWP09</a>]</span>.</p>
+<span id="id3">Saad and Schultz [<a class="reference internal" href="#id249" title="Youcef Saad and Martin H Schultz. Gmres: a generalized minimal residual algorithm for solving nonsymmetric linear systems. SIAM Journal on scientific and statistical computing, 7(3):856–869, 1986.">SS86</a>]</span>, <span id="id4">Saad [<a class="reference internal" href="#id248" title="Yousef Saad. Iterative methods for sparse linear systems. Siam, 2003.">Saa03</a>]</span>, <span id="id5">Patton and Holloway [<a class="reference internal" href="#id71" title="BW Patton and JP Holloway. Application of krylov subspace methods to the slab geometry transport equation. In ANS Topical Meeting on Radiation Protection and Shielding, volume 1, 384. 1996.">PH96</a>]</span>, <span id="id6">Guthrie <em>et al.</em> [<a class="reference internal" href="#id72" title="Brian Guthrie, James P Holloway, and Bruce W Patton. Gmres as a multi-step transport sweep accelerator. Transport Theory and Statistical Physics, 28(1):83–102, 1999.">GHP99</a>]</span>, <span id="id7">Oliveira and Deng [<a class="reference internal" href="#id73" title="Suely Oliveira and Yuanhua Deng. Preconditioned krylov subspace methods for transport equations. Progress in Nuclear Energy, 33(1):155–174, 1998.">OD98</a>]</span>, <span id="id8">Warsa <em>et al.</em> [<a class="reference internal" href="#id170" title="James S Warsa, Todd A Wareing, and Jim E Morel. Krylov iterative methods and the degraded effectiveness of diffusion synthetic acceleration for multidimensional $s_n$ calculations in problems with material discontinuities. Nuclear Science and Engineering, 147(3):218–248, 2004.">WWM04</a>]</span>, <span id="id9">Fichtl <em>et al.</em> [<a class="reference internal" href="#id75" title="Erin D Fichtl, James S Warsa, and Anil K Prinja. Krylov iterative methods and synthetic acceleration for transport in binary statistical media. Journal of Computational Physics, 228(22):8413–8426, 2009.">FWP09</a>]</span>.</p>
 </section>
 </section>
 <section id="within-group-acceleration">
@@ -211,7 +219,7 @@ fashion to solve such a system
 Source Iteration process can be slow. From spectral error analyses, the
 slowest-decaying error modes are diffusive modes. Hence, the idea to
 accelerate the SI procedure with a low-order synthetic accelerator
-<span id="id10">Adams and Larsen [<a class="reference internal" href="#id50" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, <span id="id11">Morel [<a class="reference internal" href="#id153" title="JE Morel. A synthetic acceleration method for discrete ordinates calculations with highly anisotropic scattering. Nuclear Science and Engineering, 82:34–46, 1982.">Mor82</a>]</span>, <span id="id12">Larsen [<a class="reference internal" href="#id160" title="Edward W. Larsen. Diffusion-synthetic acceleration methods for discrete-ordinates problems. Transport Theory and Statistical Physics, 13(1-2):107–126, 1984. URL: https://doi.org/10.1080/00411458408211656, doi:10.1080/00411458408211656.">Lar84</a>]</span>.</p>
+<span id="id10">Adams and Larsen [<a class="reference internal" href="#id51" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, <span id="id11">Morel [<a class="reference internal" href="#id154" title="JE Morel. A synthetic acceleration method for discrete ordinates calculations with highly anisotropic scattering. Nuclear Science and Engineering, 82:34–46, 1982.">Mor82</a>]</span>, <span id="id12">Larsen [<a class="reference internal" href="#id161" title="Edward W. Larsen. Diffusion-synthetic acceleration methods for discrete-ordinates problems. Transport Theory and Statistical Physics, 13(1-2):107–126, 1984. URL: https://doi.org/10.1080/00411458408211656, doi:10.1080/00411458408211656.">Lar84</a>]</span>.</p>
 <p>We proceed by presenting an iteration of SI, solved using a transport
 sweep:</p>
 <div class="math notranslate nohighlight">
@@ -241,7 +249,7 @@ discretization with the original transport problem. In OpenSn, the
 operator <span class="math notranslate nohighlight">\(A\)</span> is a diffusion operator. The resulting Diffusion
 Synthetic Acceleration (DSA) equations are discretized with DGFEM as
 well, using the Modified Interior Penalty (MIP) formalism
-<span id="id13">Wang and Ragusa [<a class="reference internal" href="#id159" title="Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. Nuclear Science and Engineering, 166:145-166, 2010.">WR10</a>]</span>, <span id="id14">Turcksin and Ragusa [<a class="reference internal" href="#id130" title="Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. Journal of Computational Physics, 274:356-369, 2014. URL: https://www.sciencedirect.com/science/article/pii/S0021999114004100, doi:https://doi.org/10.1016/j.jcp.2014.05.044.">TR14</a>]</span>.</p>
+<span id="id13">Wang and Ragusa [<a class="reference internal" href="#id160" title="Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. Nuclear Science and Engineering, 166:145-166, 2010.">WR10</a>]</span>, <span id="id14">Turcksin and Ragusa [<a class="reference internal" href="#id131" title="Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. Journal of Computational Physics, 274:356-369, 2014. URL: https://www.sciencedirect.com/science/article/pii/S0021999114004100, doi:https://doi.org/10.1016/j.jcp.2014.05.044.">TR14</a>]</span>.</p>
 </section>
 <section id="thermal-upscattering-acceleration">
 <h2><span class="section-number">5.4. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
@@ -250,7 +258,7 @@ absorption (e.g., graphite or heavy water), the thermal iterations can
 converge very slowly, and acceleration is required. This acceleration
 process will be applied over all thermal groups at once and is based on
 the two-grid (TG) methods by Adams and Morel
-<span id="id15">Adams and Morel [<a class="reference internal" href="#id162" title="BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. Nuclear Science and Engineering, 115(3):253–264, 1993.">AM93</a>]</span>, <span id="id16">Hanus and Ragusa [<a class="reference internal" href="#id163" title="Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. Nuclear Science and Engineering, 194(10):873–893, 2020. URL: https://doi.org/10.1080/00295639.2020.1767436, doi:10.1080/00295639.2020.1767436.">HR20</a>]</span>. Akin to the
+<span id="id15">Adams and Morel [<a class="reference internal" href="#id163" title="BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. Nuclear Science and Engineering, 115(3):253–264, 1993.">AM93</a>]</span>, <span id="id16">Hanus and Ragusa [<a class="reference internal" href="#id164" title="Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. Nuclear Science and Engineering, 194(10):873–893, 2020. URL: https://doi.org/10.1080/00295639.2020.1767436, doi:10.1080/00295639.2020.1767436.">HR20</a>]</span>. Akin to the
 spatial multigrid techniques, the TG method consists of two energy
 grids: a fine grid (corresponding to the thermal group structure) and a
 coarse grid (a single macro-group over the entire thermal range). Adams
@@ -308,7 +316,7 @@ for each of these iterative schemes):</p>
 <div class="line-block">
 <div class="line">Power Iterations can be slow to converge when the dominance ratio
 (ratio of the largest eigenvalue to the second largest eigenvalue) is
-close to 1 <span id="id17">Reed [<a class="reference internal" href="#id145" title="Wm H Reed. The effectiveness of acceleration techniques for iterative methods in transport theory. Nuclear Science and Engineering, 45(3):245, 1971.">Ree71</a>]</span>. To remedy this,
+close to 1 <span id="id17">Reed [<a class="reference internal" href="#id146" title="Wm H Reed. The effectiveness of acceleration techniques for iterative methods in transport theory. Nuclear Science and Engineering, 45(3):245, 1971.">Ree71</a>]</span>. To remedy this,
 acceleration of Power Iterations is necessary. To do so, the
 second-moment method, a linearization of the variable Eddington-tensor
 method, is employed in OpenSn. For efficiency’s sake, a smaller number
@@ -325,7 +333,7 @@ However, a low-order approximation to the transport equation is
 employed to solve for the approximation of the scalar error
 <span class="math notranslate nohighlight">\(\delta \Phi = \Phi - \Phi^{\text{(o+1/2)}}\)</span>. At this stage,
 this description gives rise to the Adams-Barbu method
-<span id="id18">Barbu and Adams [<a class="reference internal" href="#id165" title="Anthony P. Barbu and Marvin L. Adams. Convergence properties of a linear diffusion-acceleration method for k-eigenvalue transport problems. Nuclear Science and Engineering, 197(4):517–533, 2023. URL: https://doi.org/10.1080/00295639.2022.2123205, doi:10.1080/00295639.2022.2123205.">BA23</a>]</span> if the diffusion is chosen as
+<span id="id18">Barbu and Adams [<a class="reference internal" href="#id166" title="Anthony P. Barbu and Marvin L. Adams. Convergence properties of a linear diffusion-acceleration method for k-eigenvalue transport problems. Nuclear Science and Engineering, 197(4):517–533, 2023. URL: https://doi.org/10.1080/00295639.2022.2123205, doi:10.1080/00295639.2022.2123205.">BA23</a>]</span> if the diffusion is chosen as
 the low-order operator. Note that an eigenvalue problem that contains
 an inhomogeneous source term needs to be solved. Then, the flux update
 would be given by
@@ -337,7 +345,7 @@ would be given by
 terms of the flux update <span class="math notranslate nohighlight">\(\Phi^{\text{(o+1)}}\)</span>. When the
 low-order operator is chosen to be the second-moment method, a
 linearization of the variable Eddington-tensor method
-<span id="id19">Connor Woodsford and Morel [<a class="reference internal" href="#id166" title="James Tutt Connor Woodsford and Jim E. Morel. A variant of the second-moment method for k-eigenvalue calculations. Nuclear Science and Engineering, 0(0):1–9, 2024. URL: https://doi.org/10.1080/00295639.2024.2303107, doi:10.1080/00295639.2024.2303107.">CWM24</a>]</span>, the scheme implemented in OpenSn
+<span id="id19">Connor Woodsford and Morel [<a class="reference internal" href="#id167" title="James Tutt Connor Woodsford and Jim E. Morel. A variant of the second-moment method for k-eigenvalue calculations. Nuclear Science and Engineering, 0(0):1–9, 2024. URL: https://doi.org/10.1080/00295639.2024.2303107, doi:10.1080/00295639.2024.2303107.">CWM24</a>]</span>, the scheme implemented in OpenSn
 is obtained:</div>
 </div>
 <blockquote>
@@ -361,13 +369,489 @@ k^{\text{(o+1)}}      &amp; \leftarrow \lambda \\
 convergence of the transport problem.</p>
 </div></blockquote>
 </section>
+<section id="coarse-mesh-finite-difference-acceleration">
+<h2><span class="section-number">5.7. </span>Coarse-Mesh Finite Difference Acceleration<a class="headerlink" href="#coarse-mesh-finite-difference-acceleration" title="Link to this heading"></a></h2>
+<p>OpenSn provides Coarse-Mesh Finite Difference (CMFD) acceleration for
+discrete-ordinates power iteration. The implementation is a nonlinear
+low-order acceleration scheme. During each outer power iteration OpenSn
+performs a transport update, restricts the scalar flux and angular
+outflow currents to a coarse mesh, assembles a coarse diffusion-like
+k-eigenvalue problem that is consistent with the latest transport
+currents, solves that low-order problem, and prolongs the resulting
+coarse scalar-flux change back to the transport mesh as a multiplicative
+correction.</p>
+<p>The basic idea is that the transport sweep is accurate but expensive,
+whereas the low-order CMFD problem is much cheaper and captures the
+slowly converging error mode in the scalar flux. CMFD does not replace
+the transport solve. Instead, it builds a coarse balance equation based
+on the current transport iterate and uses that equation to predict how
+the scalar flux should be corrected before the next transport iteration.
+This makes CMFD nonlinear: the low-order operator, the condensed cross
+sections, and the current closure all depend on the latest high-order
+transport solution.</p>
+<p>For a k-eigenvalue problem, the high-order transport iteration can be
+written as</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{L}\psi
+=
+\mathcal{S}\phi
++
+\frac{1}{k}\mathcal{F}\phi ,
+\qquad
+\phi = \mathcal{M}\psi ,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\psi\)</span> is angular flux, <span class="math notranslate nohighlight">\(\phi\)</span> is scalar flux,
+<span class="math notranslate nohighlight">\(\mathcal{L}\)</span> is the streaming-plus-collision operator,
+<span class="math notranslate nohighlight">\(\mathcal{S}\)</span> is scattering, <span class="math notranslate nohighlight">\(\mathcal{F}\)</span> is fission
+production, and <span class="math notranslate nohighlight">\(\mathcal{M}\)</span> denotes angular integration. Power
+iteration repeatedly lags the fission source, performs transport sweeps,
+and updates <span class="math notranslate nohighlight">\(k\)</span> from the change in fission production. CMFD inserts
+an additional low-order step after the transport update. The low-order
+step uses only scalar unknowns, so it cannot reproduce the angular
+transport solution, but it can enforce a coarse neutron balance and
+remove much of the slowly converging scalar-flux error.</p>
+<p>The implementation is intentionally tied to the discrete-ordinates
+transport data structures. The coarse mesh is built directly from the
+transport mesh. A CMFD coarse cell <span class="math notranslate nohighlight">\(I\)</span> is either a single
+transport cell or a rank-local aggregate of fine transport cells with
+the same material block id. Aggregation does not cross MPI rank
+boundaries. A coarse face <span class="math notranslate nohighlight">\(f\)</span> is formed by merging all fine faces
+between the same pair of coarse cells, or between a coarse cell and the
+same boundary id. The coarse-face area, centroid, normal, neighbor id,
+and neighbor material data are computed from the underlying fine faces.
+The coarse grid therefore inherits the geometry of the transport mesh;
+it is not a separate Cartesian overlay.</p>
+<p>This section describes the method at the level used by OpenSn rather
+than as pseudocode for the implementation. The important implementation
+choices are the mathematical ones: how the fine transport solution is
+restricted, how cross sections are collapsed, how coarse face currents
+are made consistent with the latest transport sweep, how the coarse
+k-eigenvalue problem is solved, and how the coarse solution is prolonged
+back to the fine transport unknowns.</p>
+<section id="restriction-and-energy-collapse">
+<h3><span class="section-number">5.7.1. </span>Restriction and energy collapse<a class="headerlink" href="#restriction-and-energy-collapse" title="Link to this heading"></a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\phi_{i,n,g_f}\)</span> denote the transport scalar flux in fine cell
+<span class="math notranslate nohighlight">\(i\)</span>, node <span class="math notranslate nohighlight">\(n\)</span>, and transport group <span class="math notranslate nohighlight">\(g_f\)</span>, and let
+<span class="math notranslate nohighlight">\(V_{i,n}\)</span> denote the nodal volume contribution from the transport
+spatial discretization. For a CMFD coarse cell <span class="math notranslate nohighlight">\(I\)</span>, the restricted
+coarse scalar flux for a coarse energy group <span class="math notranslate nohighlight">\(g_c\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[\Phi_{I,g_c}
+=
+\frac{1}{V_I}
+\sum_{i \in I} \sum_n \sum_{g_f \in g_c}
+V_{i,n} \phi_{i,n,g_f},
+\qquad
+V_I = \sum_{i \in I} V_i .\]</div>
+<p>The coarse energy groups are contiguous blocks of transport groups. If
+the block size is one, every transport group is retained in the CMFD
+system. With larger block sizes, several adjacent transport groups are
+collapsed into one CMFD group. The number of CMFD energy groups is the
+ceiling of the number of transport groups divided by this block size.</p>
+<p>OpenSn condenses the material data used by the low-order system using
+the most recent restricted fine-group flux for the cell-local balance
+terms. This is the standard flux-volume weighting used in CMFD energy
+condensation. For coarse group <span class="math notranslate nohighlight">\(g_c\)</span>, the removal cross section in
+coarse cell <span class="math notranslate nohighlight">\(I\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[\Sigma^r_{I,g_c}
+=
+\frac{
+\displaystyle \sum_{g_f \in g_c} \Sigma^t_{I,g_f}\Phi_{I,g_f}
+-
+\displaystyle \sum_{g_f \in g_c}\sum_{g_f^{\prime} \in g_c}
+\Sigma^{s,0}_{I,g_f^{\prime} \rightarrow g_f}\Phi_{I,g_f^{\prime}}
+}{
+\displaystyle \sum_{g_f \in g_c}\Phi_{I,g_f}
+} .\]</div>
+<p>Here <span class="math notranslate nohighlight">\(\Phi_{I,g_f}\)</span> is the restricted scalar flux for the fine
+transport group <span class="math notranslate nohighlight">\(g_f\)</span> in coarse cell <span class="math notranslate nohighlight">\(I\)</span>. The diffusion
+coefficient is collapsed as</p>
+<div class="math notranslate nohighlight">
+\[D_{I,g_c}
+=
+\frac{
+\displaystyle \sum_{g_f \in g_c} D_{I,g_f}\Phi_{I,g_f}
+}{
+\displaystyle \sum_{g_f \in g_c}\Phi_{I,g_f}
+} .\]</div>
+<p>For source coarse group <span class="math notranslate nohighlight">\(g_c^{\prime}\)</span> and destination coarse
+group <span class="math notranslate nohighlight">\(g_c\)</span>, the P0 scattering transfer and fission production
+terms are</p>
+<div class="math notranslate nohighlight">
+\[\Sigma^{s,0}_{I,g_c^{\prime} \rightarrow g_c}
+=
+\frac{
+\displaystyle \sum_{g_f \in g_c}\sum_{g_f^{\prime} \in g_c^{\prime}}
+\Sigma^{s,0}_{I,g_f^{\prime} \rightarrow g_f}\Phi_{I,g_f^{\prime}}
+}{
+\displaystyle \sum_{g_f^{\prime} \in g_c^{\prime}}\Phi_{I,g_f^{\prime}}
+},
+\qquad
+F_{I,g_c^{\prime} \rightarrow g_c}
+=
+\frac{
+\displaystyle \sum_{g_f \in g_c}\sum_{g_f^{\prime} \in g_c^{\prime}}
+F_{I,g_f^{\prime} \rightarrow g_f}\Phi_{I,g_f^{\prime}}
+}{
+\displaystyle \sum_{g_f^{\prime} \in g_c^{\prime}}\Phi_{I,g_f^{\prime}}
+} .\]</div>
+<p>If a condensation denominator is numerically zero, the implementation
+falls back to an unweighted average over the same fine groups. The CMFD
+operator uses only the zeroth scattering moment. Higher scattering
+moments may be present in the high-order transport solve, but the CMFD
+correction accelerates only the scalar balance.</p>
+<p>The cell-local terms in the CMFD matrix use the latest fine-group flux
+restricted to the owner coarse cell. For a diffusion coefficient on the
+neighbor side of an interface, OpenSn uses the neighbor material data
+with an unweighted collapse over the fine groups in the coarse group.
+This avoids exchanging neighbor fine-group spectra when assembling each
+face coupling. The nonlinear current correction described below is then
+responsible for making the assembled face current match the latest
+transport current at the current iterate.</p>
+</section>
+<section id="coarse-diffusion-balance">
+<h3><span class="section-number">5.7.2. </span>Coarse diffusion balance<a class="headerlink" href="#coarse-diffusion-balance" title="Link to this heading"></a></h3>
+<p>For each coarse cell <span class="math notranslate nohighlight">\(I\)</span> and coarse group <span class="math notranslate nohighlight">\(g_c\)</span>, OpenSn
+assembles a balance equation of the form</p>
+<div class="math notranslate nohighlight">
+\[\sum_{f \in \partial I} J_{I,f,g_c}
++ V_I \Sigma^r_{I,g_c}\Phi_{I,g_c}
+-
+V_I \sum_{g_c^{\prime} \ne g_c}
+\Sigma^{s,0}_{I,g_c^{\prime} \rightarrow g_c}\Phi_{I,g_c^{\prime}}
+=
+\frac{V_I}{k}
+\sum_{g_c^{\prime}} F_{I,g_c^{\prime} \rightarrow g_c}
+\Phi_{I,g_c^{\prime}} .\]</div>
+<p>For an interior coarse face shared by owner cell <span class="math notranslate nohighlight">\(I\)</span> and neighbor
+cell <span class="math notranslate nohighlight">\(J\)</span>, the diffusion part of the face coupling can be derived
+by introducing a face value <span class="math notranslate nohighlight">\(\Phi_{f,g_c}\)</span> and requiring the same
+normal current on each side of the face. Here <span class="math notranslate nohighlight">\(J_{I,f,g_c}\)</span> is
+taken as positive outward from cell <span class="math notranslate nohighlight">\(I\)</span> toward cell <span class="math notranslate nohighlight">\(J\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[J_{I,f,g_c}
+=
+\frac{D_{I,g_c} A_f}{d_{I,f}}
+\left(\Phi_{I,g_c}-\Phi_{f,g_c}\right),
+\qquad
+J_{I,f,g_c}
+=
+\frac{D_{J,g_c} A_f}{d_{J,f}}
+\left(\Phi_{f,g_c}-\Phi_{J,g_c}\right).\]</div>
+<p>Eliminating the face value gives a two-point coupling</p>
+<div class="math notranslate nohighlight">
+\[J^{\text{diff}}_{I,J,g_c}
+=
+D^f_{I,J,g_c}\left(\Phi_{I,g_c}-\Phi_{J,g_c}\right),\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[D^f_{I,J,g_c}
+=
+\frac{D_{I,g_c}D_{J,g_c}A_f}
+     {D_{I,g_c}d_{J,f} + D_{J,g_c}d_{I,f}},\]</div>
+<p>with <span class="math notranslate nohighlight">\(A_f\)</span> the coarse-face area and <span class="math notranslate nohighlight">\(d_{I,f}\)</span> and
+<span class="math notranslate nohighlight">\(d_{J,f}\)</span> the projected centroid-to-face distances. This is the
+same harmonic interface form obtained by eliminating the face flux in a
+two-cell finite-difference stencil, generalized to OpenSn’s arbitrary
+mesh faces.</p>
+<p>The projected distances are computed with the actual coarse-face normal,
+not by assuming that the face normal is the same as the unit vector
+between the two coarse-cell centroids. Conceptually,</p>
+<div class="math notranslate nohighlight">
+\[d_{I,f} =
+\left|\left(\mathbf{x}_f-\mathbf{x}_I\right)\cdot\mathbf{n}_{I,f}\right|,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{x}_I\)</span> is the owner coarse-cell centroid,
+<span class="math notranslate nohighlight">\(\mathbf{x}_f\)</span> is the coarse-face centroid, and
+<span class="math notranslate nohighlight">\(\mathbf{n}_{I,f}\)</span> is the outward face normal for the owner cell.
+For an aggregated coarse face, OpenSn obtains the coarse-face geometry
+from the contributing fine faces. This distinction matters on
+unstructured meshes: the implementation uses physical face normals and
+projected normal distances rather than imposing an orthogonal-grid normal
+direction.</p>
+<p>The dot product in <span class="math notranslate nohighlight">\(d_{I,f}\)</span> is where the usual skewness factor
+appears. If <span class="math notranslate nohighlight">\(\theta_I\)</span> is the angle between
+<span class="math notranslate nohighlight">\(\mathbf{x}_f-\mathbf{x}_I\)</span> and <span class="math notranslate nohighlight">\(\mathbf{n}_{I,f}\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[d_{I,f}
+=
+\|\mathbf{x}_f-\mathbf{x}_I\|\,|\cos\theta_I| .\]</div>
+<p>Thus, skewness affects the denominator of the coupling through the
+projected normal distances. The face area <span class="math notranslate nohighlight">\(A_f\)</span>, however, is the
+physical face area. OpenSn does not replace it by a projected area such
+as <span class="math notranslate nohighlight">\(A_f\cos\theta\)</span>. For equal diffusion coefficients this reduces
+to the intuitive form</p>
+<div class="math notranslate nohighlight">
+\[D^f_{I,J,g_c}
+=
+\frac{D_{g_c} A_f}{d_{I,f}+d_{J,f}},\]</div>
+<p>with true area in the numerator and projected normal distance in the
+denominator.</p>
+<p>The resulting spatial stencil is still a two-point flux approximation
+(TPFA). A TPFA diffusion face flux uses only the two cell-centered
+unknowns adjacent to the face. This is compact and inexpensive, and it is
+the natural form for traditional CMFD. However, it is not a full
+multi-point flux approximation (MPFA). An MPFA scheme would use a larger
+local stencil to reconstruct face-normal gradients more accurately on
+highly non-orthogonal meshes. OpenSn’s CMFD face coupling is
+geometry-aware, but it remains a two-cell diffusion-like closure plus a
+nonlinear current correction from transport.</p>
+<p>This uncorrected diffusion current is cheap and compact, but, by itself,
+is not guaranteed to equal the net current produced by the high-order
+transport sweep.
+Traditional CMFD fixes this by adding a nonlinear current correction
+<span id="id20">OpenMOC Documentation [<a class="reference internal" href="#id323" title="OpenMOC Documentation. Coarse mesh finite difference acceleration. 2019. Accessed: 2026-05-18. URL: https://mit-crpg.github.io/OpenMOC/methods/cmfd.html.">OpenMOCDocumentation19</a>]</span>.
+OpenSn writes the corrected current in the form</p>
+<div class="math notranslate nohighlight">
+\[J_{I,J,g_c}
+=
+D^f_{I,J,g_c}\left(\Phi_{I,g_c}-\Phi_{J,g_c}\right)
++
+\widetilde{D}_{I,J,g_c}\left(\Phi_{I,g_c}+\Phi_{J,g_c}\right).\]</div>
+<p>The coefficient <span class="math notranslate nohighlight">\(\widetilde{D}_{I,J,g_c}\)</span> is chosen so that this
+expression exactly reproduces the latest restricted transport net
+current <span class="math notranslate nohighlight">\(\widetilde{J}_{I,J,g_c}\)</span> when evaluated with the latest
+restricted transport scalar fluxes. Solving the preceding equation for
+<span class="math notranslate nohighlight">\(\widetilde{D}_{I,J,g_c}\)</span> gives</p>
+<div class="math notranslate nohighlight">
+\[\widetilde{D}_{I,J,g_c}
+=
+\frac{
+\widetilde{J}_{I,J,g_c}
+-
+D^f_{I,J,g_c}\left(\Phi_{I,g_c}-\Phi_{J,g_c}\right)}
+{\Phi_{I,g_c}+\Phi_{J,g_c}} .\]</div>
+<p>This is the fixed-point-preserving part of CMFD. If the high-order
+transport iterate already satisfies the coarse balance, the low-order
+operator evaluates to the same coarse currents and does not introduce an
+artificial correction. In matrix form, the outward current contribution
+from cell <span class="math notranslate nohighlight">\(I\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[J_{I,J,g_c}
+=
+\left(D^f_{I,J,g_c}+\widetilde{D}_{I,J,g_c}\right)\Phi_{I,g_c}
++
+\left(-D^f_{I,J,g_c}+\widetilde{D}_{I,J,g_c}\right)\Phi_{J,g_c}.\]</div>
+<p>The transport net current <span class="math notranslate nohighlight">\(\widetilde{J}_{I,J,g_c}\)</span> is obtained from
+the discrete ordinates sweep outflow. For each fine face in a coarse
+face, OpenSn adds the owner’s outward angular outflow and subtracts the
+neighbor’s opposing outflow. If the neighbor cell is on another MPI rank,
+the needed neighbor outflow is exchanged before the CMFD operator is
+assembled.</p>
+<p>OpenSn also implements a partial-current closure. Let
+<span class="math notranslate nohighlight">\(P_{I\rightarrow J,g_c}\)</span> be the restricted outgoing partial
+current from coarse cell <span class="math notranslate nohighlight">\(I\)</span> through the face shared with
+<span class="math notranslate nohighlight">\(J\)</span>, and let <span class="math notranslate nohighlight">\(P_{J\rightarrow I,g_c}\)</span> be the opposing
+outgoing partial current from <span class="math notranslate nohighlight">\(J\)</span>. The net current is their
+difference, but the partial-current closure inserts the two one-sided
+current coefficients directly:</p>
+<div class="math notranslate nohighlight">
+\[J^{\text{pc}}_{I,J,g_c}
+=
+\frac{P_{I\rightarrow J,g_c}}{\Phi_{I,g_c}}\Phi_{I,g_c}
+-
+\frac{P_{J\rightarrow I,g_c}}{\Phi_{J,g_c}}\Phi_{J,g_c}.\]</div>
+<p>Equivalently, the diagonal face coefficient for cell <span class="math notranslate nohighlight">\(I\)</span> is
+<span class="math notranslate nohighlight">\(P_{I\rightarrow J,g_c}/\Phi_{I,g_c}\)</span> and the off-diagonal
+coefficient multiplying <span class="math notranslate nohighlight">\(\Phi_{J,g_c}\)</span> is
+<span class="math notranslate nohighlight">\(-P_{J\rightarrow I,g_c}/\Phi_{J,g_c}\)</span>. This form preserves the
+latest partial currents when evaluated at the current restricted
+transport flux. If either one-sided scalar flux is too small, or if the
+resulting coefficients are not finite, the partial-current closure is
+not used on that face.</p>
+<p>The implementation can also blend the net-current and partial-current
+closures. With a partial-current fraction <span class="math notranslate nohighlight">\(\eta \in [0,1]\)</span>, the
+face contribution is</p>
+<div class="math notranslate nohighlight">
+\[J_{I,J,g_c}
+=
+(1-\eta)J^{\text{net}}_{I,J,g_c}
++
+\eta J^{\text{pc}}_{I,J,g_c}.\]</div>
+<p>Here <span class="math notranslate nohighlight">\(J^{\text{net}}\)</span> is the diffusion plus nonlinear net-current
+closure and <span class="math notranslate nohighlight">\(J^{\text{pc}}\)</span> is the partial-current closure. The
+automatic closure logic begins with the net-current closure, probes the
+early low-order behavior with both net and partial closures, and may
+select a blend or the pure partial-current closure when the partial
+closure gives a materially better low-order residual or coarse
+eigenvalue prediction. If the automatic path continues with the
+net-current closure but early iterations show a large mismatch between
+the assembled-operator residual and the transport-current residual, or a
+large coarse eigenvalue jump together with a rejected or strongly damped
+correction, it can switch from net to partial. These rules affect only
+the current closure in the CMFD operator; they do not alter the
+high-order transport equation.</p>
+<p>This current matching is what distinguishes CMFD from simply solving an
+ordinary coarse diffusion problem. The diffusion coefficient supplies a
+reasonable low-order stencil, but the nonlinear correction supplies
+consistency with the transport solution that generated the current
+iterate. Consequently, at convergence of the high-order transport
+iteration, the CMFD correction tends to the identity correction instead
+of pushing the solution toward the solution of an unrelated diffusion
+problem.</p>
+<p>For a non-reflecting boundary face, OpenSn uses a one-sided boundary
+leakage coefficient. Before transport currents are available this
+coefficient is <span class="math notranslate nohighlight">\(A_f/2\)</span>; after a transport update it is replaced by
+the measured outward current divided by the owner coarse scalar flux.
+Reflecting boundaries do not contribute net leakage to the CMFD balance.</p>
+<p>The first CMFD operator assembled during initialization has no transport
+current data yet, so it uses the diffusion face coefficients and the
+initial boundary leakage approximation. After each transport update, the
+neighboring coarse scalar fluxes and face outflows needed on processor
+boundaries are exchanged, the transport net currents are reconstructed,
+and the nonlinear CMFD operator is reassembled before solving the coarse
+problem.</p>
+<p>Two residuals are used to characterize the coarse balance. The
+assembled-operator residual is</p>
+<div class="math notranslate nohighlight">
+\[r_A = A(\Phi^{\text{HO}})\Phi^{\text{HO}}
+      - \frac{1}{k}F(\Phi^{\text{HO}})\Phi^{\text{old}},\]</div>
+<p>where <span class="math notranslate nohighlight">\(A\)</span> includes the selected current closure. The
+transport-current residual has the same removal, scattering, and fission
+terms, but replaces the matrix face currents by the directly restricted
+transport currents. OpenSn normalizes the Euclidean norm of each residual
+by the Euclidean norm of the corresponding fission right-hand side. The
+transport-current residual is the consistency gate used by the
+accelerated power iteration: the outer iteration is not allowed to
+declare convergence until this restricted transport-current balance is
+sufficiently small and the current CMFD correction has not been skipped.</p>
+</section>
+<section id="matrix-form-and-coarse-solve">
+<h3><span class="section-number">5.7.3. </span>Matrix form and coarse solve<a class="headerlink" href="#matrix-form-and-coarse-solve" title="Link to this heading"></a></h3>
+<p>The assembled system may be written as</p>
+<div class="math notranslate nohighlight">
+\[A(\Phi^{\text{HO}})\Phi
+=
+\frac{1}{k}F(\Phi^{\text{HO}})\Phi ,\]</div>
+<p>where the operator and cross sections are built from the latest
+high-order transport iterate <span class="math notranslate nohighlight">\(\Phi^{\text{HO}}\)</span>. The unknown
+ordering is cell-major, with all CMFD energy groups for a coarse cell
+stored contiguously. The spatial off-diagonal entries couple neighboring
+coarse cells in the same coarse group; the cell-local block couples
+coarse groups through scattering and fission production.</p>
+<p>OpenSn solves the coarse k-eigenvalue problem with a small number of
+coarse power iterations. The coarse operator is fixed during these
+iterations; it is assembled from the latest high-order transport
+iterate. Each coarse power iteration solves</p>
+<div class="math notranslate nohighlight">
+\[A\Phi^{(m+1)}
+=
+\frac{1}{k^{(m)}}F\Phi^{(m)}\]</div>
+<p>with a PETSc linear solver. Small coarse systems use a direct LU solve
+when the automatic coarse-solver policy selects the direct path. Larger
+coarse systems use GMRES with Jacobi preconditioning unless another
+PETSc configuration is supplied. Iterative coarse solves are initialized
+with the latest restricted transport scalar flux. If any coarse linear
+solve fails to converge, the low-order correction from that outer
+iteration is not applied. In the automatic coarse-solver policy, an
+unconverged iterative coarse solve on a small enough system switches
+subsequent coarse solves to the direct path.</p>
+<p>The updated coarse eigenvalue is computed from the ratio of coarse
+fission production rates. Define</p>
+<div class="math notranslate nohighlight">
+\[P(\Phi)
+=
+\sum_{I,g_c,g_c^{\prime}}
+V_I F_{I,g_c^{\prime}\rightarrow g_c}\Phi_{I,g_c^{\prime}} .\]</div>
+<p>Then</p>
+<div class="math notranslate nohighlight">
+\[k^{(m+1)}
+=
+k^{(m)}
+\frac{P(\Phi^{(m+1)})}
+     {P(\Phi^{(m)})}.\]</div>
+<p>The production sum is reduced globally over all MPI ranks.</p>
+</section>
+<section id="prolongation-and-damping">
+<h3><span class="section-number">5.7.4. </span>Prolongation and damping<a class="headerlink" href="#prolongation-and-damping" title="Link to this heading"></a></h3>
+<p>After the coarse solve, OpenSn applies a multiplicative scalar-flux
+correction to the high-order transport iterate. First, the coarse
+solution is relaxed toward the restricted post-transport coarse flux.
+If <span class="math notranslate nohighlight">\(\Phi^{\text{HO}}_{I,g_c}\)</span> is the restricted scalar flux after
+the transport update and <span class="math notranslate nohighlight">\(\Phi^{\text{CMFD}}_{I,g_c}\)</span> is the
+coarse solution, the candidate corrected coarse flux is</p>
+<div class="math notranslate nohighlight">
+\[\Phi^{\text{corr}}_{I,g_c}
+=
+\Phi^{\text{HO}}_{I,g_c}
++
+\omega
+\left(\Phi^{\text{CMFD}}_{I,g_c}-\Phi^{\text{HO}}_{I,g_c}\right),\]</div>
+<p>where <span class="math notranslate nohighlight">\(\omega\)</span> is the current damping factor. The starting damping
+factor is the configured relaxation factor. If a candidate correction is
+not admissible, the damping factor is halved and the correction is
+retried until either an admissible correction is found or the damping
+attempts are exhausted.</p>
+<p>For every fine cell and node inside coarse cell <span class="math notranslate nohighlight">\(I\)</span>, and for every
+fine transport group <span class="math notranslate nohighlight">\(g_f\)</span> belonging to coarse group <span class="math notranslate nohighlight">\(g_c\)</span>,
+the accepted candidate is prolonged as a ratio:</p>
+<div class="math notranslate nohighlight">
+\[\phi^{\text{new}}_{i,n,g_f}
+=
+\phi^{\text{HO}}_{i,n,g_f}
+\frac{\Phi^{\text{corr}}_{I,g_c}}
+     {\Phi^{\text{HO}}_{I,g_c}} .\]</div>
+<p>If <span class="math notranslate nohighlight">\(\Phi^{\text{HO}}_{I,g_c}\)</span> is too small, the ratio is taken to
+be one. A candidate correction is rejected if it produces non-finite
+scalar fluxes, a non-finite or non-positive k-eigenvalue, or scalar-flux
+undershoots beyond the allowed tolerance. If no acceptable correction is
+found, OpenSn keeps the unaccelerated transport update for that outer
+iteration. The starting damping factor is fixed from one outer iteration
+to the next; there is no adaptive relaxation history in the current
+implementation.</p>
+<p>The eigenvalue returned to the outer power iteration is consistent with
+the accepted fine-mesh scalar flux. OpenSn computes the old fine-mesh
+fission production before the transport update. For a candidate corrected
+flux, it recomputes the fine-mesh fission production and updates
+<span class="math notranslate nohighlight">\(k\)</span> by the production ratio. If the CMFD correction is skipped, the
+unaccelerated transport update is retained. After repeated skipped
+corrections, the returned eigenvalue is the raw production-ratio
+transport eigenvalue so that the outer iteration continues to advance
+with the high-order transport state rather than stagnating on a stale
+accelerated value.</p>
+</section>
+<section id="cmfd-iteration-outline">
+<h3><span class="section-number">5.7.5. </span>CMFD Iteration Outline<a class="headerlink" href="#cmfd-iteration-outline" title="Link to this heading"></a></h3>
+<p>CMFD is a power-iteration accelerator in OpenSn. For each outer power
+iteration:</p>
+<ol class="arabic simple">
+<li><p>The previous fine-mesh scalar flux is restricted to the CMFD mesh.
+This gives the coarse reference state for the new outer iteration.</p></li>
+<li><p>The transport solver advances the high-order problem through the
+normal across-groupset process. The CMFD accelerator sets the
+within-groupset iteration controls used for this transport update, so
+the transport step can be a deliberately loose update rather than a
+fully converged inner solve.</p></li>
+<li><p>The new all-groups scalar flux is restricted to the CMFD mesh. The
+fine-group restricted flux is used for cross-section condensation, and
+the coarse-group restricted flux defines the current CMFD iterate.</p></li>
+<li><p>Coarse-face net currents are reconstructed from the latest transport
+sweep. These currents define the nonlinear correction that makes the
+low-order current agree with the high-order current at the current
+iterate.</p></li>
+<li><p>The nonlinear CMFD operator is assembled from the condensed material
+data, TPFA diffusion coupling, boundary leakage treatment, and
+selected transport-current closure.</p></li>
+<li><p>A small number of coarse power iterations solves the low-order
+k-eigenvalue problem.</p></li>
+<li><p>The coarse solution is damped if needed, prolonged as a multiplicative
+ratio to the fine-mesh scalar flux, and checked for admissibility.</p></li>
+<li><p>The accepted fine-mesh scalar flux and corresponding fission-production
+ratio define the next power-iteration state. The restricted
+transport-current balance residual determines whether CMFD permits the
+outer power iteration to declare convergence.</p></li>
+</ol>
+<p>Thus, the current implementation is not one accelerator per groupset. It
+operates after the AGS transport update for the current outer iteration
+and accelerates the all-groups scalar-flux balance.</p>
+</section>
+</section>
 <section id="uncollided-flux-treatment">
-<h2><span class="section-number">5.7. </span>Uncollided-flux Treatment<a class="headerlink" href="#uncollided-flux-treatment" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.8. </span>Uncollided-flux Treatment<a class="headerlink" href="#uncollided-flux-treatment" title="Link to this heading"></a></h2>
 <p>In streaming regions (low-density material), in regions with low amount
 of scattering, and with localized small sources, the <span class="math notranslate nohighlight">\(S_n\)</span> method
 will exhibit ray effects (angular discretization error). These ray
 effects can be mitigated by splitting the angular flux into uncollided
-and collided components <span id="id20">Hanus <em>et al.</em> [<a class="reference internal" href="#id167" title="Milan Hanus, Logan H Harbour, Jean C Ragusa, Michael P Adams, and Marvin L Adams. Uncollided flux techniques for arbitrary finite element meshes. Journal of Computational Physics, 398:108848, 2019.">HHR+19</a>]</span>:</p>
+and collided components <span id="id21">Hanus <em>et al.</em> [<a class="reference internal" href="#id168" title="Milan Hanus, Logan H Harbour, Jean C Ragusa, Michael P Adams, and Marvin L Adams. Uncollided flux techniques for arbitrary finite element meshes. Journal of Computational Physics, 398:108848, 2019.">HHR+19</a>]</span>:</p>
 <div class="math notranslate nohighlight">
 \[\Psi = \Psi^u + \Psi^c \,.\]</div>
 <p>Then, the original transport problem
@@ -401,80 +885,84 @@ source in this problem.</p></li>
 </ol>
 </section>
 <section id="references">
-<h2><span class="section-number">5.8. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
-<div class="docutils container" id="id21">
+<h2><span class="section-number">5.9. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<div class="docutils container" id="id22">
 <div role="list" class="citation-list">
-<div class="citation" id="id50" role="doc-biblioentry">
+<div class="citation" id="id51" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>AL02<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id10">3</a>)</span>
 <p>ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. <em>Progress in Nuclear Energy</em>, 40(1):3–159, 2002.</p>
 </div>
-<div class="citation" id="id248" role="doc-biblioentry">
+<div class="citation" id="id249" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">SS86</a><span class="fn-bracket">]</span></span>
 <p>Youcef Saad and Martin H Schultz. Gmres: a generalized minimal residual algorithm for solving nonsymmetric linear systems. <em>SIAM Journal on scientific and statistical computing</em>, 7(3):856–869, 1986.</p>
 </div>
-<div class="citation" id="id247" role="doc-biblioentry">
+<div class="citation" id="id248" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Saa03</a><span class="fn-bracket">]</span></span>
 <p>Yousef Saad. <em>Iterative methods for sparse linear systems</em>. Siam, 2003.</p>
 </div>
-<div class="citation" id="id70" role="doc-biblioentry">
+<div class="citation" id="id71" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">PH96</a><span class="fn-bracket">]</span></span>
 <p>BW Patton and JP Holloway. Application of krylov subspace methods to the slab geometry transport equation. In <em>ANS Topical Meeting on Radiation Protection and Shielding</em>, volume 1, 384. 1996.</p>
 </div>
-<div class="citation" id="id71" role="doc-biblioentry">
+<div class="citation" id="id72" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">GHP99</a><span class="fn-bracket">]</span></span>
 <p>Brian Guthrie, James P Holloway, and Bruce W Patton. Gmres as a multi-step transport sweep accelerator. <em>Transport Theory and Statistical Physics</em>, 28(1):83–102, 1999.</p>
 </div>
-<div class="citation" id="id72" role="doc-biblioentry">
+<div class="citation" id="id73" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">OD98</a><span class="fn-bracket">]</span></span>
 <p>Suely Oliveira and Yuanhua Deng. Preconditioned krylov subspace methods for transport equations. <em>Progress in Nuclear Energy</em>, 33(1):155–174, 1998.</p>
 </div>
-<div class="citation" id="id169" role="doc-biblioentry">
+<div class="citation" id="id170" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">WWM04</a><span class="fn-bracket">]</span></span>
 <p>James S Warsa, Todd A Wareing, and Jim E Morel. Krylov iterative methods and the degraded effectiveness of diffusion synthetic acceleration for multidimensional $s_n$ calculations in problems with material discontinuities. <em>Nuclear Science and Engineering</em>, 147(3):218–248, 2004.</p>
 </div>
-<div class="citation" id="id74" role="doc-biblioentry">
+<div class="citation" id="id75" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">FWP09</a><span class="fn-bracket">]</span></span>
 <p>Erin D Fichtl, James S Warsa, and Anil K Prinja. Krylov iterative methods and synthetic acceleration for transport in binary statistical media. <em>Journal of Computational Physics</em>, 228(22):8413–8426, 2009.</p>
 </div>
-<div class="citation" id="id153" role="doc-biblioentry">
+<div class="citation" id="id154" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">Mor82</a><span class="fn-bracket">]</span></span>
 <p>JE Morel. A synthetic acceleration method for discrete ordinates calculations with highly anisotropic scattering. <em>Nuclear Science and Engineering</em>, 82:34–46, 1982.</p>
 </div>
-<div class="citation" id="id160" role="doc-biblioentry">
+<div class="citation" id="id161" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">Lar84</a><span class="fn-bracket">]</span></span>
 <p>Edward W. Larsen. Diffusion-synthetic acceleration methods for discrete-ordinates problems. <em>Transport Theory and Statistical Physics</em>, 13(1-2):107–126, 1984. URL: <a class="reference external" href="https://doi.org/10.1080/00411458408211656">https://doi.org/10.1080/00411458408211656</a>, <a class="reference external" href="https://doi.org/10.1080/00411458408211656">doi:10.1080/00411458408211656</a>.</p>
 </div>
-<div class="citation" id="id159" role="doc-biblioentry">
+<div class="citation" id="id160" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">WR10</a><span class="fn-bracket">]</span></span>
 <p>Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. <em>Nuclear Science and Engineering</em>, 166:145–166, 2010.</p>
 </div>
-<div class="citation" id="id130" role="doc-biblioentry">
+<div class="citation" id="id131" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">TR14</a><span class="fn-bracket">]</span></span>
 <p>Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. <em>Journal of Computational Physics</em>, 274:356–369, 2014. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0021999114004100">https://www.sciencedirect.com/science/article/pii/S0021999114004100</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.jcp.2014.05.044">doi:https://doi.org/10.1016/j.jcp.2014.05.044</a>.</p>
 </div>
-<div class="citation" id="id162" role="doc-biblioentry">
+<div class="citation" id="id163" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">AM93</a><span class="fn-bracket">]</span></span>
 <p>BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. <em>Nuclear Science and Engineering</em>, 115(3):253–264, 1993.</p>
 </div>
-<div class="citation" id="id163" role="doc-biblioentry">
+<div class="citation" id="id164" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">HR20</a><span class="fn-bracket">]</span></span>
 <p>Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. <em>Nuclear Science and Engineering</em>, 194(10):873–893, 2020. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2020.1767436">https://doi.org/10.1080/00295639.2020.1767436</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2020.1767436">doi:10.1080/00295639.2020.1767436</a>.</p>
 </div>
-<div class="citation" id="id145" role="doc-biblioentry">
+<div class="citation" id="id146" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id17">Ree71</a><span class="fn-bracket">]</span></span>
 <p>Wm H Reed. The effectiveness of acceleration techniques for iterative methods in transport theory. <em>Nuclear Science and Engineering</em>, 45(3):245, 1971.</p>
 </div>
-<div class="citation" id="id165" role="doc-biblioentry">
+<div class="citation" id="id166" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">BA23</a><span class="fn-bracket">]</span></span>
 <p>Anthony P. Barbu and Marvin L. Adams. Convergence properties of a linear diffusion-acceleration method for k-eigenvalue transport problems. <em>Nuclear Science and Engineering</em>, 197(4):517–533, 2023. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2022.2123205">https://doi.org/10.1080/00295639.2022.2123205</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2022.2123205">doi:10.1080/00295639.2022.2123205</a>.</p>
 </div>
-<div class="citation" id="id166" role="doc-biblioentry">
+<div class="citation" id="id167" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">CWM24</a><span class="fn-bracket">]</span></span>
 <p>James Tutt Connor Woodsford and Jim E. Morel. A variant of the second-moment method for k-eigenvalue calculations. <em>Nuclear Science and Engineering</em>, 0(0):1–9, 2024. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2024.2303107">https://doi.org/10.1080/00295639.2024.2303107</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2024.2303107">doi:10.1080/00295639.2024.2303107</a>.</p>
 </div>
-<div class="citation" id="id167" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">HHR+19</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id323" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">OpenMOCDocumentation19</a><span class="fn-bracket">]</span></span>
+<p>OpenMOC Documentation. Coarse mesh finite difference acceleration. 2019. Accessed: 2026-05-18. URL: <a class="reference external" href="https://mit-crpg.github.io/OpenMOC/methods/cmfd.html">https://mit-crpg.github.io/OpenMOC/methods/cmfd.html</a>.</p>
+</div>
+<div class="citation" id="id168" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">HHR+19</a><span class="fn-bracket">]</span></span>
 <p>Milan Hanus, Logan H Harbour, Jean C Ragusa, Michael P Adams, and Marvin L Adams. Uncollided flux techniques for arbitrary finite element meshes. <em>Journal of Computational Physics</em>, 398:108848, 2019.</p>
 </div>
 </div>
