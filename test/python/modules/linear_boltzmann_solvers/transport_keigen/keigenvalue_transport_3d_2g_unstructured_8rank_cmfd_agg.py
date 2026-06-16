@@ -89,7 +89,6 @@ if __name__ == "__main__":
                     n_polar=n_polar, n_azimuthal=n_azimuthal, scattering_order=1
                 ),
                 "angle_aggregation_type": "single",
-                "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": wgs_atol,
                 "l_max_its": wgs_maxits,

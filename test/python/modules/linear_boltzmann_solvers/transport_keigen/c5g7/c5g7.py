@@ -53,7 +53,6 @@ def make_groupsets(num_groups, pquad, inner_linear_method, l_max_its):
                 "l_max_its": l_max_its,
                 "l_abs_tol": 1.0e-10,
                 "angle_aggregation_type": "polar",
-                "angle_aggregation_num_subsets": 1,
             }
         )
     return groupsets

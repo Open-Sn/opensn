@@ -197,7 +197,6 @@ def build_problem(grid, xs, source, pquad, boundaries, sweep_type):
             {
                 "groups_from_to": [0, num_groups - 1],
                 "angular_quadrature": pquad,
-                "angle_aggregation_num_subsets": 2,
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-9,
                 "l_max_its": 300,
