@@ -63,6 +63,13 @@ public:
     }
   };
 
+  /// Quadrature-specific order parameter used by harmonic-selection rules.
+  virtual unsigned int GetQuadratureOrder() const { return 0; }
+  /// Number of polar angles used by harmonic-selection rules.
+  virtual unsigned int GetNumPolarAngles() const { return 0; }
+  /// Number of azimuthal angles used by harmonic-selection rules.
+  virtual unsigned int GetNumAzimuthalAngles() const { return 0; }
+
 protected:
   explicit AngularQuadrature(
     AngularQuadratureType type,
@@ -84,12 +91,6 @@ protected:
 
   /// Populate the map of moment index to spherical harmonic indices.
   void MakeHarmonicIndices();
-  /// Quadrature-specific order parameter used by harmonic-selection rules.
-  virtual unsigned int GetQuadratureOrder() const { return 0; }
-  /// Number of polar angles used by harmonic-selection rules.
-  virtual unsigned int GetNumPolarAngles() const { return 0; }
-  /// Number of azimuthal angles used by harmonic-selection rules.
-  virtual unsigned int GetNumAzimuthalAngles() const { return 0; }
 
   /// Discrete-to-moment operator matrix.
   /// OpenSn storage is indexed [angle][moment].

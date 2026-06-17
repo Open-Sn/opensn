@@ -21,10 +21,10 @@ class ExtruderMeshGenerator : public MeshGenerator
 public:
   explicit ExtruderMeshGenerator(const InputParameters& params);
 
-protected:
   std::shared_ptr<UnpartitionedMesh>
   GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh) override;
 
+protected:
   const std::string top_boundary_name_;
   const std::string bottom_boundary_name_;
 

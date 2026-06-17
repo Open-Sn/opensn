@@ -25,10 +25,9 @@ protected:
   void PerformInputChecks();
   void InitializeSpatialDiscretization() override;
   void ComputeSecondaryUnitIntegrals();
-
-private:
   std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset) override;
 
+private:
   /**
    * Discretization pointer to matrices of the secondary cell view (matrices of the primary cell
    * view forwarded to the base class).

@@ -13,10 +13,10 @@ class OrthogonalMeshGenerator : public MeshGenerator
 public:
   explicit OrthogonalMeshGenerator(const InputParameters& params);
 
-protected:
   std::shared_ptr<UnpartitionedMesh>
   GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh) override;
 
+protected:
   const CoordinateSystemType coord_sys_;
   std::vector<std::vector<double>> node_sets_;
 

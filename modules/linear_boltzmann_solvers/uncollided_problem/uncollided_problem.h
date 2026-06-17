@@ -37,6 +37,8 @@ public:
 
   ~UncollidedProblem() override;
 
+  void ClearBoundaries() override {}
+
 protected:
   friend class UncollidedSolver;
 
@@ -77,8 +79,6 @@ protected:
   void PrintSimHeader() override;
 
   void InitializeSpatialDiscretization() override;
-
-  void ClearBoundaries() override {}
 
   static Vector3 ComputeOmega(const Vector3& point0, const Vector3& point1)
   {
