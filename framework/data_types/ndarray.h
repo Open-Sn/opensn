@@ -31,7 +31,7 @@ private:
   using conjunction = std::is_same<bool_pack<true, U::value...>, bool_pack<U::value..., true>>;
 
   template <typename... U>
-  using AllIntegral = typename conjunction<std::is_integral<U>...>::type;
+  using AllIntegral = conjunction<std::is_integral<U>...>::type;
 
 public:
   /**
