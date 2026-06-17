@@ -12,10 +12,11 @@ namespace opensn
 class RandomNumberGenerator
 {
 public:
-  /// Default constructor. Seeds the generator with a zero.
+  /// Default constructor. Use this to get truly random behavior.
   RandomNumberGenerator();
 
-  /// Constructor where a seed is supplied.
+  /// Constructor where a seed is supplied. Use this here you need to replicate results, as in
+  /// tests.
   RandomNumberGenerator(int seed);
 
   /// Generates a random number with the default distribution.
