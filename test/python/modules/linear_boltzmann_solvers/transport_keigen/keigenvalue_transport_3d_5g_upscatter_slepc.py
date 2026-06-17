@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-3D 5G infinite-medium k-eigenvalue test with five groupsets and upscatter.
+3D 5G k-eigenvalue test with five groupsets and upscatter.
 
 The homogeneous fully reflecting problem has a spatially constant solution.
 The reference k is the dominant eigenvalue of inv(T - S) F for the XS data in
@@ -21,10 +21,9 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import (
-        CMFDAcceleration,
         DiscreteOrdinatesProblem,
-        NonLinearKEigenSolver,
         PowerIterationKEigenSolver,
+        SLEPcKEigenSolver,
     )
 
 
@@ -105,11 +104,12 @@ def make_problem():
     xs.LoadFromOpenSn("../../../../assets/xs/simple_5g_upscatter_fissile.xs")
 
     quad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)
-    groupsets = []
-    for group in range(5):
-        groupsets.append(
+    return DiscreteOrdinatesProblem(
+        mesh=grid,
+        num_groups=5,
+        groupsets=[
             {
-                "groups_from_to": [group, group],
+                "groups_from_to": [0, 0],
                 "angular_quadrature": quad,
                 "angle_aggregation_type": "single",
                 "angle_aggregation_num_subsets": 1,
@@ -117,13 +117,48 @@ def make_problem():
                 "l_abs_tol": 1.0e-10,
                 "l_max_its": 200,
                 "gmres_restart_interval": 30,
-            }
-        )
-
-    return DiscreteOrdinatesProblem(
-        mesh=grid,
-        num_groups=5,
-        groupsets=groupsets,
+            },
+            {
+                "groups_from_to": [1, 1],
+                "angular_quadrature": quad,
+                "angle_aggregation_type": "single",
+                "angle_aggregation_num_subsets": 1,
+                "inner_linear_method": "petsc_gmres",
+                "l_abs_tol": 1.0e-10,
+                "l_max_its": 200,
+                "gmres_restart_interval": 30,
+            },
+            {
+                "groups_from_to": [2, 2],
+                "angular_quadrature": quad,
+                "angle_aggregation_type": "single",
+                "angle_aggregation_num_subsets": 1,
+                "inner_linear_method": "petsc_gmres",
+                "l_abs_tol": 1.0e-10,
+                "l_max_its": 200,
+                "gmres_restart_interval": 30,
+            },
+            {
+                "groups_from_to": [3, 3],
+                "angular_quadrature": quad,
+                "angle_aggregation_type": "single",
+                "angle_aggregation_num_subsets": 1,
+                "inner_linear_method": "petsc_gmres",
+                "l_abs_tol": 1.0e-10,
+                "l_max_its": 200,
+                "gmres_restart_interval": 30,
+            },
+            {
+                "groups_from_to": [4, 4],
+                "angular_quadrature": quad,
+                "angle_aggregation_type": "single",
+                "angle_aggregation_num_subsets": 1,
+                "inner_linear_method": "petsc_gmres",
+                "l_abs_tol": 1.0e-10,
+                "l_max_its": 200,
+                "gmres_restart_interval": 30,
+            },
+        ],
         xs_map=[
             {"block_ids": [0], "xs": xs},
         ],
@@ -142,40 +177,26 @@ def make_problem():
             "max_ags_iterations": 200,
             "ags_tolerance": 1.0e-10,
         },
-        sweep_type=globals().get("sweep_type", "AAH"),
     )
 
 
 def run_solver(name):
     problem = make_problem()
-    k_tolerance = 1.0e-9
     if name == "PowerIteration":
-        solver = PowerIterationKEigenSolver(problem=problem, max_iters=200, k_tol=k_tolerance)
-    elif name == "PowerIterationCMFD":
-        cmfd = CMFDAcceleration(
-            problem=problem,
-            coarse_mesh="local_aggregation",
-            aggregation_size=2,
-            relaxation=0.4,
-            update_wgs_max_its=3,
-            update_wgs_abs_tol=1.0e-6,
-            l_abs_tol=1.0e-10,
+        solver = PowerIterationKEigenSolver(problem=problem, max_iters=200, k_tol=1.0e-9)
+    elif name == "SLEPcKrylovSchur":
+        solver = SLEPcKEigenSolver(
+            lbs_problem=problem,
             max_iters=100,
-            pi_max_its=20,
-            pi_k_tol=1.0e-10,
-            balance_residual_tolerance=10.0 * k_tolerance,
+            eigen_tol=1.0e-9,
+            eps_type="krylovschur",
         )
-        solver = PowerIterationKEigenSolver(
-            problem=problem, acceleration=cmfd, max_iters=200, k_tol=k_tolerance
-        )
-    elif name == "NonLinearKEigen":
-        solver = NonLinearKEigenSolver(
-            problem=problem,
-            nl_max_its=100,
-            nl_abs_tol=1.0e-10,
-            l_abs_tol=1.0e-10,
-            l_max_its=200,
-            num_initial_power_iterations=10,
+    elif name == "SLEPcPower":
+        solver = SLEPcKEigenSolver(
+            lbs_problem=problem,
+            max_iters=200,
+            eigen_tol=1.0e-9,
+            eps_type="power",
         )
     else:
         raise ValueError(f"Unknown solver {name}.")
@@ -205,7 +226,7 @@ if __name__ == "__main__":
         print(f"Expected k-eigenvalue: {EXPECTED_K:.12f}")
 
     failures = []
-    for solver_name in ("PowerIteration", "PowerIterationCMFD", "NonLinearKEigen"):
+    for solver_name in ("PowerIteration", "SLEPcKrylovSchur", "SLEPcPower"):
         name, k, error = run_solver(solver_name)
         if error > 5.0e-6:
             failures.append(f"{name} k={k:.12f} differs from expected {EXPECTED_K:.12f}.")
