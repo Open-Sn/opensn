@@ -23,31 +23,47 @@ class Opensn(CMakePackage):
         description="Build with OpenSn's native optimized CMake configuration",
     )
     variant(
+        "sycl_compiler",
+        default="icpx",
+        values=("icpx", "acpp"),
+        multi=False,
+        description="SYCL compiler",
+    )
+    variant(
         "sycl_arch",
         default="spir64_gen",
-        values=("spir64", "spir64_gen", "spir64_x86_64"),
+        values=str,
         multi=False,
         description="SYCL target architecture passed to OpenSn CMake",
     )
     variant(
-        "sycl_target_backend",
+        "icpx_target_backend",
         default="none",
         values=str,
         multi=False,
-        description="SYCL target backend option, or 'none' to leave unset",
+        description="ICPX target backend option for AoT compilation, or 'none' to leave unset",
     )
     variant(
-        "sycl_register_alloc_mode",
+        "icpx_register_alloc_mode",
         default="none",
         values=str,
         multi=False,
-        description="SYCL register allocation mode, or 'none' to leave unset",
+        description="ICPX register allocation mode, or 'none' to leave unset",
+    )
+    variant(
+        "acpp_platform",
+        default="none",
+        values=("none", "cuda", "rocm", "cpu"),
+        multi=False,
+        description="ACPP platform",
     )
 
     conflicts("+python_module", when="~python", msg="The pyopensn module requires +python")
     conflicts("+cuda", when="+hip", msg="CUDA, HIP, and SYCL support are mutually exclusive")
     conflicts("+cuda", when="+sycl", msg="CUDA, HIP, and SYCL support are mutually exclusive")
     conflicts("+hip", when="+sycl", msg="CUDA, HIP, and SYCL support are mutually exclusive")
+    conflicts("+icpx_target_backend", when="+acpp_platform", msg="ICPX and ACPP are mutually exclusive")
+    conflicts("+icpx_register_alloc_mode", when="+acpp_platform", msg="ICPX and ACPP are mutually exclusive")
     conflicts("+native", when="build_type=Debug", msg="+native sets CMAKE_BUILD_TYPE=Native")
     conflicts("+native", when="build_type=RelWithDebInfo", msg="+native sets CMAKE_BUILD_TYPE=Native")
     conflicts("+native", when="build_type=MinSizeRel", msg="+native sets CMAKE_BUILD_TYPE=Native")
@@ -67,6 +83,8 @@ class Opensn(CMakePackage):
 
     depends_on("cuda@12:", when="+cuda")
     depends_on("hip", when="+hip")
+    depends_on("intel-oneapi-compilers", when="+sycl sycl_compiler=icpx", type="build")
+    depends_on("adaptivecpp", when="+sycl sycl_compiler=acpp")
 
     depends_on("python@3.9:", when="+python")
     depends_on("py-pybind11", when="+python")
@@ -97,15 +115,21 @@ class Opensn(CMakePackage):
             args.append(self.define("CMAKE_BUILD_TYPE", "Native"))
 
         if "+sycl" in spec:
+            sycl_compiler = spec.variants["sycl_compiler"].value
+            args.append(self.define("SYCL_COMPILER", sycl_compiler))
             args.append(self.define("SYCL_ARCHITECTURE", spec.variants["sycl_arch"].value))
 
-            sycl_target_backend = spec.variants["sycl_target_backend"].value
-            if sycl_target_backend != "none":
-                args.append(self.define("SYCL_TARGET_BACKEND", sycl_target_backend))
-
-            sycl_register_alloc_mode = spec.variants["sycl_register_alloc_mode"].value
-            if sycl_register_alloc_mode != "none":
-                args.append(self.define("SYCL_REGISTER_ALLOC_MODE", sycl_register_alloc_mode))
+            if sycl_compiler == "icpx":
+                icpx_target_backend = spec.variants["icpx_target_backend"].value
+                if icpx_target_backend != "none":
+                    args.append(self.define("ICPX_TARGET_BACKEND", icpx_target_backend))
+                icpx_register_alloc_mode = spec.variants["icpx_register_alloc_mode"].value
+                if icpx_register_alloc_mode != "none":
+                    args.append(self.define("ICPX_REGISTER_ALLOC_MODE", icpx_register_alloc_mode))
+            elif sycl_compiler == "acpp":
+                acpp_platform = spec.variants["acpp_platform"].value
+                if acpp_platform != "none":
+                    args.append(self.define("ACPP_PLATFORM", acpp_platform))
 
         return args
 

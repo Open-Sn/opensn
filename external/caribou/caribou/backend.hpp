@@ -12,7 +12,7 @@
     #include <cuda_runtime.h>
 #elif defined(__HIPCC__)
     #include <hip/hip_runtime.h>
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+#elif defined(SYCL_LANGUAGE_VERSION) || defined(__ACPP__)
     #include <sycl/sycl.hpp>
 #else
     #error "Unsupported GPU backend"
@@ -23,7 +23,7 @@
 // clang-format off
 #if defined(__NVCC__) || defined(__HIPCC__)
     #define BACKEND(header) BACKEND_STRINGIFY(caribou/cuhip/header)
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+#elif defined(SYCL_LANGUAGE_VERSION) || defined(__ACPP__)
     #define BACKEND(header) BACKEND_STRINGIFY(caribou/sycl/header)
 #endif
 // clang-format on

@@ -46,7 +46,7 @@ struct Dim3 {
      * @return A `::dim3` initialized as `{x, y, z}`.
      */
     inline operator ::dim3(void) { return ::dim3(x, y, z); }
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+#elif defined(SYCL_LANGUAGE_VERSION) || defined(__ACPP__)
     /**
      * @brief Convert to a SYCL 3D range.
      * @details SYCL uses row-major indexing order for `sycl::range<3>`, so the dimensions are passed as `{z, y, x}`.
