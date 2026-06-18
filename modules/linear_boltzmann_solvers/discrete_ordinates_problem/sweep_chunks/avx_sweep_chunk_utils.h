@@ -168,9 +168,6 @@ struct GatherIndexBuilder<AVX2Ops, N>
 };
 #endif
 
-namespace
-{
-
 template <class Ops, int N>
 inline Ops::avx_index
 MakeGatherIndex(int row)
@@ -233,8 +230,6 @@ SimdBatchSolve(const double* Am, const double* Mm, const double* sigma_t, double
   for (int row = 0; row < N; ++row)
     Ops::Scatter(MakeGatherIndex<Ops, N>(row), b, rhs[row]);
 }
-
-} // namespace
 
 } // namespace detail
 
