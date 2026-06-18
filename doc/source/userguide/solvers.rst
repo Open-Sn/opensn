@@ -183,6 +183,11 @@ active for the problem. The default is ``True``. This should usually stay
 enabled for transient and k-eigen workflows unless you explicitly want a
 prompt-only model.
 
+OpenSn also reads the environment variable ``OPENSN_NUM_THREADS``. If it is
+unset or invalid, OpenSn uses ``1`` thread. In the current transport
+implementation, this cap is applied to the ``AAH`` GPU all-at-once sweep
+scheduler thread pool and to the threaded portions of the uncollided solver.
+
 ``read_restart_path`` reads a full restart for continuing a compatible solve.
 ``read_initial_condition_path`` reads restart data as an initial condition; this
 is the option to use when a :py:class:`pyopensn.solver.TransientSolver` should
