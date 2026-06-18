@@ -72,6 +72,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_kernels.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_problem.h`
+
 
 
 

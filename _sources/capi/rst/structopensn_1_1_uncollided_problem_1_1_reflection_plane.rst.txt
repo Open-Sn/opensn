@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_uncollided_problem_1_1_reflection_plane:
+
+Struct UncollidedProblem::ReflectionPlane
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_problem.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_uncollided_problem`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::UncollidedProblem::ReflectionPlane
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

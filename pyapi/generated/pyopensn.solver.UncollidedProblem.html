@@ -1,0 +1,589 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyopensn.solver.UncollidedProblem &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pyopensn.solver.UncollidedSolver" href="pyopensn.solver.UncollidedSolver.html" />
+    <link rel="prev" title="pyopensn.solver.LBSProblem" href="pyopensn.solver.LBSProblem.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#math">Math</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#angular-quadrature">Angular quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#field-functions">Field functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#mesh">Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#logical-volume">Logical volume</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#response-evaluator">Response evaluator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#source">Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#cross-section">Cross section</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#problem">Problem</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#id4">Base class</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#uncollided-problem">Uncollided problem</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.solver.UncollidedProblem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.solver.UncollidedSolver.html">pyopensn.solver.UncollidedSolver</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#discrete-ordinates-problem">Discrete ordinates problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#discrete-ordinates-curvilinear-problem">Discrete ordinates curvilinear problem</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#solvers">Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#acceleration-methods">Acceleration methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#settings">Settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Python API</a></li>
+      <li class="breadcrumb-item active">pyopensn.solver.UncollidedProblem</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyopensn-solver-uncollidedproblem">
+<h1>pyopensn.solver.UncollidedProblem<a class="headerlink" href="#pyopensn-solver-uncollidedproblem" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">UncollidedProblem</span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem" title="Link to this definition"></a></dt>
+<dd><p>Define an uncollided transport problem for a first-collision calculation.</p>
+<p>The problem stores the mesh, materials, point sources, boundaries, and
+near-source regions used by <a class="reference internal" href="pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncollidedSolver</span></code></a>.</p>
+<p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_uncollided_problem.html#_CPPv4N6opensn17UncollidedProblemE" title="opensn::UncollidedProblem"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::UncollidedProblem</span></code></a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.ComputeFissionProduction">
+<span class="sig-name descname"><span class="pre">ComputeFissionProduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalar_flux_iterate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.ComputeFissionProduction" title="Link to this definition"></a></dt>
+<dd><p>Computes the total fission production (nu*fission).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar_flux_iterate</strong> (<em>{'old'</em><em>, </em><em>'new'}</em>) – <dl class="simple">
+<dt>Specifies which scalar flux vector to use in the calculation.</dt><dd><ul class="simple">
+<li><p>’old’: Use the previous scalar flux iterate.</p></li>
+<li><p>’new’: Use the current scalar flux iterate.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total fission production.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>scalar_flux_iterate</cite> is not ‘old’ or ‘new’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.ComputeFissionRate">
+<span class="sig-name descname"><span class="pre">ComputeFissionRate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalar_flux_iterate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.ComputeFissionRate" title="Link to this definition"></a></dt>
+<dd><p>Computes the total fission rate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scalar_flux_iterate</strong> (<em>{'old'</em><em>, </em><em>'new'}</em>) – <dl class="simple">
+<dt>Specifies which scalar flux vector to use in the calculation.</dt><dd><ul class="simple">
+<li><p>’old’: Use the previous scalar flux iterate.</p></li>
+<li><p>’new’: Use the current scalar flux iterate.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total fission rate.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>scalar_flux_iterate</cite> is not ‘old’ or ‘new’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.CreateAndWriteSourceMoments">
+<span class="sig-name descname"><span class="pre">CreateAndWriteSourceMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.CreateAndWriteSourceMoments" title="Link to this definition"></a></dt>
+<dd><p>Write source moments from latest flux iterate to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – File basename.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.CreateFieldFunction">
+<span class="sig-name descname"><span class="pre">CreateFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xs_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_normalization_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.CreateFieldFunction" title="Link to this definition"></a></dt>
+<dd><p>Create a named scalar field function derived from a 1D XS or <code class="docutils literal notranslate"><span class="pre">power</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name to assign to the returned field function.</p></li>
+<li><p><strong>xs_name</strong> (<em>str</em>) – Built-in 1D XS name, custom XS name, or the special value <code class="docutils literal notranslate"><span class="pre">power</span></code>.</p></li>
+<li><p><strong>power_normalization_target</strong> (<em>float</em><em>, </em><em>default=-1.0</em>) – If positive, scale the derived field function so that the raw power field would
+integrate to this total power.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The returned field function is created on demand from the current scalar-flux iterate.
+For ordinary XS names this computes <code class="docutils literal notranslate"><span class="pre">sum_g</span> <span class="pre">xs[g]</span> <span class="pre">*</span> <span class="pre">phi_g</span></code> at each node.</p>
+<p>The returned field function is a snapshot of the solver state at creation time; it is not
+refreshed automatically if the solver state changes. It supports <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Update()</span></code> while its owning problem is still alive. Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly
+recomputes the same field function from the solver’s latest state.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">xs_name</span> <span class="pre">==</span> <span class="pre">&quot;power&quot;</span></code>, the same power-generation formula used elsewhere by the solver
+is applied on demand.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the returned field function is scaled using the power
+implied by the current scalar flux. This scaling affects only the returned field function;
+it does not mutate the solver’s internal <code class="docutils literal notranslate"><span class="pre">phi</span></code> vectors.</p>
+<p>The returned field function is a fresh object created for this call. It is not
+automatically updated by later solves or timesteps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.GetPhiNewLocal">
+<span class="sig-name descname"><span class="pre">GetPhiNewLocal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">memoryview</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.GetPhiNewLocal" title="Link to this definition"></a></dt>
+<dd><p>Get the current scalar flux iterate (local vector).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Memory view of the local new scalar flux vector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>memoryview</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.GetPhiOldLocal">
+<span class="sig-name descname"><span class="pre">GetPhiOldLocal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">memoryview</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.GetPhiOldLocal" title="Link to this definition"></a></dt>
+<dd><p>Get the previous scalar flux iterate (local vector).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Memory view of the local old scalar flux vector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>memoryview</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.GetScalarFluxFieldFunction">
+<span class="sig-name descname"><span class="pre">GetScalarFluxFieldFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_scalar_flux</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.GetScalarFluxFieldFunction" title="Link to this definition"></a></dt>
+<dd><p>Return scalar-flux or flux-moment field functions grouped by energy group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>only_scalar_flux</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If True, returns only the zeroth moment (scalar flux) field function for each group.
+If False, returns all moment field functions for each group.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>If <code class="docutils literal notranslate"><span class="pre">only_scalar_flux=True</span></code>:
+<code class="docutils literal notranslate"><span class="pre">result[g]</span></code> is the scalar-flux field function for group <code class="docutils literal notranslate"><span class="pre">g</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>:
+<code class="docutils literal notranslate"><span class="pre">result[g][m]</span></code> is the field function for group <code class="docutils literal notranslate"><span class="pre">g</span></code> and moment <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>], List[List[<a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionGridBased.html#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased">pyopensn.fieldfunc.FieldFunctionGridBased</a>]]]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Field functions are created on demand from the current solver state.</p>
+<p>The returned field functions are snapshots of the solver state at creation time; they are not
+refreshed automatically if the solver state changes.</p>
+<p>They support <code class="docutils literal notranslate"><span class="pre">CanUpdate()</span></code> and <code class="docutils literal notranslate"><span class="pre">Update()</span></code> while their owning problem is still alive.
+Calling <code class="docutils literal notranslate"><span class="pre">Update()</span></code> explicitly refreshes the same field-function object from the solver’s
+latest state.</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction(only_scalar_flux=False)</span></code> creates all requested
+moments from the current <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterate at the time of the call.</p>
+<p>In the nested form (<code class="docutils literal notranslate"><span class="pre">only_scalar_flux=False</span></code>), the moment index varies fastest
+within each group (inner index = moment, outer index = group).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.GetTime">
+<span class="sig-name descname"><span class="pre">GetTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.GetTime" title="Link to this definition"></a></dt>
+<dd><p>Get the current simulation time in seconds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.GetTimeStep">
+<span class="sig-name descname"><span class="pre">GetTimeStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.GetTimeStep" title="Link to this definition"></a></dt>
+<dd><p>Get the current timestep size.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.IsAdjoint">
+<span class="sig-name descname"><span class="pre">IsAdjoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.IsAdjoint" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the problem is in adjoint mode, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.IsTimeDependent">
+<span class="sig-name descname"><span class="pre">IsTimeDependent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.IsTimeDependent" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the problem is in time-dependent mode, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.ReadAngularFluxes">
+<span class="sig-name descname"><span class="pre">ReadAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.ReadAngularFluxes" title="Link to this definition"></a></dt>
+<dd><p>Read angular fluxes from file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – File basename.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.ReadFluxMoments">
+<span class="sig-name descname"><span class="pre">ReadFluxMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_file_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.ReadFluxMoments" title="Link to this definition"></a></dt>
+<dd><p>Read flux moment data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_base</strong> (<em>str</em>) – File basename.</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True if all flux moments are in a single file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.ReadFluxMomentsAndMakeSourceMoments">
+<span class="sig-name descname"><span class="pre">ReadFluxMomentsAndMakeSourceMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_file_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.ReadFluxMomentsAndMakeSourceMoments" title="Link to this definition"></a></dt>
+<dd><p>Read flux moments and compute corresponding source moments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_base</strong> (<em>str</em>) – File basename.</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True if all flux moments are in a single file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.ReadSourceMoments">
+<span class="sig-name descname"><span class="pre">ReadSourceMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_file_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.ReadSourceMoments" title="Link to this definition"></a></dt>
+<dd><p>Read source moments from file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_base</strong> (<em>str</em>) – File basename.</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True if all source moments are in a single file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.SetAdjoint">
+<span class="sig-name descname"><span class="pre">SetAdjoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.SetAdjoint" title="Link to this definition"></a></dt>
+<dd><p>Set forward/adjoint transport mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=True</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> enables adjoint mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> enables forward mode.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>This is one of two supported mode-setting paths in Python:</dt><dd><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">options={'adjoint':</span> <span class="pre">...}</span></code> in the problem constructor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SetAdjoint(...)</span></code> (this method).</p></li>
+</ol>
+</dd>
+<dt>If this changes mode, OpenSn performs a full mode-transition reset:</dt><dd><ul class="simple">
+<li><p>Materials are reinitialized in the selected mode.</p></li>
+<li><p>Point and volumetric sources are cleared.</p></li>
+<li><p>Boundary conditions are cleared.</p></li>
+<li><p>Scalar and angular flux vectors are zeroed.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If this is called with the same mode as the current setting, no reset is performed.</p>
+<p>The block-id to cross-section map is preserved across the transition.
+However, the mode change is applied to the mapped <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves.
+If those objects are shared with other problems, they observe the same mode toggle.</p>
+<dl class="simple">
+<dt>After a mode change, reapply the desired driving terms before solving, typically:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetPointSources" title="pyopensn.solver.LBSProblem.SetPointSources"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetPointSources()</span></code></a></p></li>
+<li><p><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetVolumetricSources" title="pyopensn.solver.LBSProblem.SetVolumetricSources"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetVolumetricSources()</span></code></a></p></li>
+<li><p><a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.SetBoundaryOptions" title="pyopensn.solver.DiscreteOrdinatesProblem.SetBoundaryOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem.SetBoundaryOptions()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<p>This routine is intentionally destructive with respect to source/boundary/flux state
+to avoid hidden coupling between forward and adjoint setups.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.SetForward">
+<span class="sig-name descname"><span class="pre">SetForward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.SetForward" title="Link to this definition"></a></dt>
+<dd><p>Set forward transport mode.</p>
+<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">SetAdjoint(False)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.SetPointSources">
+<span class="sig-name descname"><span class="pre">SetPointSources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.SetPointSources" title="Link to this definition"></a></dt>
+<dd><p>Set or clear point sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clear_point_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, all current the point sources of the problem are deleted.</p></li>
+<li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em>) – List of new point sources to be added to the problem.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.SetVolumetricSources">
+<span class="sig-name descname"><span class="pre">SetVolumetricSources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.SetVolumetricSources" title="Link to this definition"></a></dt>
+<dd><p>Set or clear volumetric sources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clear_volumetric_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, all current the volumetric sources of the problem are deleted.</p></li>
+<li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em>) – List of new volumetric sources to be added to the problem.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.SetXSMap">
+<span class="sig-name descname"><span class="pre">SetXSMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.SetXSMap" title="Link to this definition"></a></dt>
+<dd><p>Replace the block-id to cross-section map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xs_map</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em>) – <dl class="simple">
+<dt>A list of block-id to cross-section mapping dictionaries. Each dictionary supports:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>block_ids: List[int] (required)</dt><dd><p>Mesh block ids to associate with the cross section.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>xs: pyopensn.xs.MultiGroupXS (required)</dt><dd><p>Cross section object.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The problem is refreshed immediately after replacing the map. Material metadata,
+precursor storage, GPU carriers, and derived solver state owned by the concrete
+problem are rebuilt for the new cross sections.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">options.use_precursors=True</span></code>, this flag remains active across XS-map
+changes even when the current map has no precursor-bearing material. In that
+case delayed-neutron source terms are simply inactive until a later map provides
+precursor data again.</p>
+<p>Existing precursor concentrations are remapped by local cell and precursor-family
+index. When the new material for a cell has fewer precursor families, extra old
+families are dropped. When it has more families, newly introduced families are
+initialized to zero. If a cell changes through a material with zero precursors,
+the precursor history for that cell is discarded and any later reintroduced
+precursor families start from zero.</p>
+<p>If any fissionable material in the new map contains delayed-neutron precursor
+data and <code class="docutils literal notranslate"><span class="pre">options.use_precursors=True</span></code>, all fissionable materials in the map
+must contain precursor data. Non-fissionable materials may have zero precursors.</p>
+<p>Forward/adjoint mode toggles via <a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code></a> do not change this map.
+The <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves are mutable and shared by pointer. If the same
+<code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> handle is shared across multiple problems, toggling adjoint mode in one
+problem also changes the transport mode seen by the others.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.WriteAngularFluxes">
+<span class="sig-name descname"><span class="pre">WriteAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.WriteAngularFluxes" title="Link to this definition"></a></dt>
+<dd><p>Write angular flux data to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – File basename.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.WriteFluxMoments">
+<span class="sig-name descname"><span class="pre">WriteFluxMoments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.WriteFluxMoments" title="Link to this definition"></a></dt>
+<dd><p>Write flux moments to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_base</strong> (<em>str</em>) – File basename.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.ZeroPhi">
+<span class="sig-name descname"><span class="pre">ZeroPhi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.ZeroPhi" title="Link to this definition"></a></dt>
+<dd><p>Zero the scalar-flux vectors (<code class="docutils literal notranslate"><span class="pre">phi_old</span></code> and <code class="docutils literal notranslate"><span class="pre">phi_new</span></code>) in-place.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><span class="pre">pyopensn.solver.UncollidedProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem.__init__" title="Link to this definition"></a></dt>
+<dd><p>Construct an uncollided transport problem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh</strong> (<a class="reference internal" href="pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><em>MeshContinuum</em></a>) – Cartesian two- or three-dimensional spatial mesh.</p></li>
+<li><p><strong>num_groups</strong> (<em>int</em>) – Number of energy groups.</p></li>
+<li><p><strong>groupsets</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Groupset definitions required by the common LBS problem interface. The
+uncollided calculation itself does not use an angular quadrature.</p></li>
+<li><p><strong>xs_map</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Block-to-cross-section mappings. Total cross sections are used for
+attenuation and are recorded in the output file for compatibility
+checking by the collided problem.</p></li>
+<li><p><strong>boundary_conditions</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Vacuum or reflecting boundary conditions, using the same <code class="docutils literal notranslate"><span class="pre">name</span></code> and
+<code class="docutils literal notranslate"><span class="pre">type</span></code> entries as <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code>. Reflecting boundaries
+are represented with directly projected image sources and must be
+planar, mutually orthogonal symmetry planes without an opposing
+reflecting plane.</p></li>
+<li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Explicit point sources. At least one point source is required. For now,
+each source must lie strictly inside a single cell; sources exactly on
+faces, edges, or vertices are rejected.</p></li>
+<li><p><strong>near_source</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><em>pyopensn.logvol.LogicalVolume</em></a><em>]</em>) – Near-source ray-traced region for each point source, in the same order
+as <code class="docutils literal notranslate"><span class="pre">point_sources</span></code>. This list is required whenever point sources are
+provided. Its length must equal the number of point sources, and every
+point source must lie in its corresponding region.</p></li>
+<li><p><strong>scattering_order</strong> (<em>int</em><em>, </em><em>default=0</em>) – Maximum spherical-harmonic order written to the HDF5 file. It must be
+at least the scattering order of the collided problem that consumes
+the file.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Only explicit point sources are supported by the uncollided generator.
+Each point source must lie strictly inside a single cell. Uncollided
+generation must run on a Cartesian two- or three-dimensional mesh with
+exactly one MPI rank.
+A volumetric source may be approximated externally by multiple weighted
+point sources, as in the Kobayashi benchmark example.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> and <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code> parameters are inherited from the base
+class interface but have no effect on uncollided generation and should be
+omitted.</p>
+<p>The uncollided file generated by <a class="reference internal" href="pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncollidedSolver</span></code></a> is
+partition-independent and may be consumed by a serial or parallel collided
+calculation on the same mesh. The collided problem must use the same
+reflecting boundaries recorded in the file.
+Each reflected image source is ray traced to every finite-element volume
+quadrature point and projected directly into the spatial discretization.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyopensn.solver.LBSProblem.html" class="btn btn-neutral float-left" title="pyopensn.solver.LBSProblem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyopensn.solver.UncollidedSolver.html" class="btn btn-neutral float-right" title="pyopensn.solver.UncollidedSolver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -114,12 +114,20 @@
 <span class="c1">/// Raytracer object.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RayTracer</span>
 <span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reference_grid_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">cell_sizes_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">epsilon_nudge_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-10</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">backward_tolerance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-10</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">extension_distance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e5</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">perform_concavity_checks_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">RayTracer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
-<span class="w">                     </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_sizes</span><span class="p">,</span>
+<span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">cell_sizes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span>
 <span class="w">                     </span><span class="kt">bool</span><span class="w"> </span><span class="n">perform_concavity_checks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">)</span>
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">reference_grid_</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span>
-<span class="w">      </span><span class="n">cell_sizes_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">cell_sizes</span><span class="p">)),</span>
+<span class="w">      </span><span class="n">cell_sizes_</span><span class="p">(</span><span class="n">cell_sizes</span><span class="p">),</span>
 <span class="w">      </span><span class="n">perform_concavity_checks_</span><span class="p">(</span><span class="n">perform_concavity_checks</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
@@ -168,13 +176,6 @@
 <span class="w">                       </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">intersection_found</span><span class="p">,</span>
 <span class="w">                       </span><span class="kt">bool</span><span class="o">&amp;</span><span class="w"> </span><span class="n">backward_tolerance_hit</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">RayTracerOutputInformation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">oi</span><span class="p">);</span>
-
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reference_grid_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_sizes_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">epsilon_nudge_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-8</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">backward_tolerance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-10</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">extension_distance_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e5</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">perform_concavity_checks_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="cm">/**</span>

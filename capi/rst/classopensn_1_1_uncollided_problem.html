@@ -1,0 +1,583 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class UncollidedProblem &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Class UncollidedProblem</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-uncollidedproblem">
+<span id="exhale-class-classopensn-1-1-uncollided-problem"></span><h1>Class UncollidedProblem<a class="headerlink" href="#class-uncollidedproblem" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_problem.h.html#file-modules-linear-boltzmann-solvers-uncollided-problem-uncollided-problem-h"><span class="std std-ref">File uncollided_problem.h</span></a></p></li>
+</ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_uncollided_problem_1_1_face_vert_data.html#exhale-struct-structopensn-1-1-uncollided-problem-1-1-face-vert-data"><span class="std std-ref">Struct UncollidedProblem::FaceVertData</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_uncollided_problem_1_1_moment.html#exhale-struct-structopensn-1-1-uncollided-problem-1-1-moment"><span class="std std-ref">Struct UncollidedProblem::Moment</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_uncollided_problem_1_1_reflection_plane.html#exhale-struct-structopensn-1-1-uncollided-problem-1-1-reflection-plane"><span class="std std-ref">Struct UncollidedProblem::ReflectionPlane</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_uncollided_problem_1_1_source_point.html#exhale-struct-structopensn-1-1-uncollided-problem-1-1-source-point"><span class="std std-ref">Struct UncollidedProblem::SourcePoint</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_uncollided_problem_1_1_source_point_1_1_subscriber.html#exhale-struct-structopensn-1-1-uncollided-problem-1-1-source-point-1-1-subscriber"><span class="std std-ref">Struct SourcePoint::Subscriber</span></a></p></li>
+</ul>
+</section>
+</section>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::LBSProblem</span></code> (<a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#exhale-class-classopensn-1-1-l-b-s-problem"><span class="std std-ref">Class LBSProblem</span></a>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblemE">
+<span class="target" id="classopensn_1_1_uncollided_problem"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UncollidedProblem</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblemE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem17UncollidedProblemERK15InputParameters">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ae52597ace9045fa8a86390ae8cd2c781"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UncollidedProblem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem17UncollidedProblemERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblemD0Ev">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a4c89bdb4fd1687ab7ed912b6a216b839"></span><span class="sig-name descname"><span class="n"><span class="pre">~UncollidedProblem</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblemD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem18GetInputParametersEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a536793acf1c297512f680c552fa20c30"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem6CreateERK14ParameterBlock">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a0c9b4a5d9236c7ca8a0209590112ae99"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblemE" title="opensn::UncollidedProblem"><span class="n"><span class="pre">UncollidedProblem</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_parameter_block.html#_CPPv4N6opensn14ParameterBlockE" title="opensn::ParameterBlock"><span class="n"><span class="pre">ParameterBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem6CreateERK14ParameterBlock" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-types">Protected Types</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem10CellRegionE">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a71814a76413c0ab5428c7c1c0f728b4f"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CellRegion</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem10CellRegionE" title="Link to this definition"></a><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem10CellRegion11NEAR_SOURCEE">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a71814a76413c0ab5428c7c1c0f728b4fa820487af6164e51f9dcc0790db4da80a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NEAR_SOURCE</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem10CellRegion11NEAR_SOURCEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem10CellRegion4BULKE">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a71814a76413c0ab5428c7c1c0f728b4fa6d5b457ed4205e7f1144ef21b944e552"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BULK</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem10CellRegion4BULKE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem14PrintSimHeaderEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a4e6ac689f787edee15c3f1d80531861d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintSimHeader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem14PrintSimHeaderEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem31InitializeSpatialDiscretizationEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1af61150855521503da508be0028a52d45"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeSpatialDiscretization</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem31InitializeSpatialDiscretizationEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15ClearBoundariesEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a7c3ba6ef2ec9e07064d9a01d3b15e317"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15ClearBoundariesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Clears all the boundary conditions from the solver. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem18BuildSweepOrderingERK11SourcePoint">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ac7ab92bc8e182be015a3c9cf51d20750"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildSweepOrdering</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">source_point</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem18BuildSweepOrderingERK11SourcePoint" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem27InitializeNearSourceRegionsERK15InputParameters">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a19a40da7022a464e1576eb069b5da5cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeNearSourceRegions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem27InitializeNearSourceRegionsERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem30InitializeReflectingBoundariesERK15InputParameters">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ad895addadebdcf61e290834082e04d63"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeReflectingBoundaries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem30InitializeReflectingBoundariesERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem17BuildSourcePointsEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a4d5e18772554384d3c87c1c5ea5309ba"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildSourcePoints</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem17BuildSourcePointsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem24AddReflectedSourcePointsEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a9c93257b384328f3cd91b48c45f2c8ce"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddReflectedSourcePoints</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem24AddReflectedSourcePointsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem24RaytraceNearSourceRegionERK11SourcePoint">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a56f1a0f61b502e5ad500491a08620371"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RaytraceNearSourceRegion</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">source_point</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem24RaytraceNearSourceRegionERK11SourcePoint" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem28ProjectReflectedImageSourcesEj">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a0f0198ff13000a8dbc8f64b80c30a733"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProjectReflectedImageSources</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">progress_interval</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem28ProjectReflectedImageSourcesEj" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12RaytraceLineER9RayTracerRK4CellRK7Vector3RK11SourcePointd">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a55f263afee1c060ff047f6e60ee0e32c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RaytraceLine</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_ray_tracer.html#_CPPv4N6opensn9RayTracerE" title="opensn::RayTracer"><span class="n"><span class="pre">RayTracer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ray_tracer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">qp_xyz</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">source_point</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tolerance</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-12</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12RaytraceLineER9RayTracerRK4CellRK7Vector3RK11SourcePointd" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem16RaytraceLineIntoER9RayTracerRK4CellRK7Vector3RK11SourcePointRNSt6vectorIdEERNSt6vectorINSt4pairI6size_tdEEEERNSt6vectorIdEERNSt6vectorIdEEd">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a8988d022474d195d5c6aa047251d06c4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RaytraceLineInto</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_ray_tracer.html#_CPPv4N6opensn9RayTracerE" title="opensn::RayTracer"><span class="n"><span class="pre">RayTracer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ray_tracer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">qp_xyz</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">source_point</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">phi_out</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">scratch_segs</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">scratch_bp</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">scratch_mfp</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tolerance</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-12</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem16RaytraceLineIntoER9RayTracerRK4CellRK7Vector3RK11SourcePointRNSt6vectorIdEERNSt6vectorINSt4pairI6size_tdEEEERNSt6vectorIdEERNSt6vectorIdEEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Zero-allocation variant: writes into pre-allocated <code class="docutils literal notranslate"><span class="pre">phi_out</span></code> and reuses the three scratch vectors. </p>
+<p>All four buffers must be sized to <code class="docutils literal notranslate"><span class="pre">num_groups_</span></code> before the first call (they are reset internally each call, so no manual clearing is needed between calls). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15SweepBulkRegionERK11SourcePoint">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a5a06ac9e00907bab668fc3a4e551ddd1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SweepBulkRegion</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">source_point</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15SweepBulkRegionERK11SourcePoint" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem26ComputeUncollidedIntegralsERK4CellRK7Vector3">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a707c8c677c9f36f99015e9b0229bfc3d"></span><a class="reference internal" href="structopensn_1_1_uncollided_matrices.html#_CPPv4N6opensn18UncollidedMatricesE" title="opensn::UncollidedMatrices"><span class="n"><span class="pre">UncollidedMatrices</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeUncollidedIntegrals</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pt_loc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem26ComputeUncollidedIntegralsERK4CellRK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem7ExecuteERKNSt6stringEj">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a62b46dc626b2bc881f28c68a2c761c89"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file_name</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">progress_interval</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem7ExecuteERKNSt6stringEj" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem13UpdateBalanceERK11SourcePoint">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a7b3bf99decdf012e9592f9f00b9dad77"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateBalance</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">source_point</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem13UpdateBalanceERK11SourcePoint" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem17AccumulateMomentsERK7Vector3">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a6ccbe7186b1efca5b85fa87e5967e475"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AccumulateMoments</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pt_loc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem17AccumulateMomentsERK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem16WriteFluxMomentsE5hid_t">
+<span class="target" id="classopensn_1_1_uncollided_problem_1aafbe24813fcfe30f94e6c5ed71749629"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteFluxMoments</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">hid_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">file</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem16WriteFluxMomentsE5hid_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15FinalizeBalanceE5hid_t">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a15d2d025a25e09ba85209db82738e914"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FinalizeBalance</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">hid_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">file</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15FinalizeBalanceE5hid_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UncollidedProblem20IsReflectingBoundaryENSt8uint64_tE">
+<span class="target" id="classopensn_1_1_uncollided_problem_1aecd53d9b6a5d460f37ddb025cb41ee29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsReflectingBoundary</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">boundary_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UncollidedProblem20IsReflectingBoundaryENSt8uint64_tE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem20near_source_logvols_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ae1fda21462296f84aac10367d685c6e0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_logical_volume.html#_CPPv4N6opensn13LogicalVolumeE" title="opensn::LogicalVolume"><span class="n"><span class="pre">LogicalVolume</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">near_source_logvols_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem20near_source_logvols_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Near source region logical volumes. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem14source_points_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a74db7312fedfdf8ec2f06d53adb0e554"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">source_points_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem14source_points_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem24reflected_source_points_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ac7300e0fe2c6e1118bdfb246fed05734"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reflected_source_points_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem24reflected_source_points_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem18reflection_planes_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a9ad8f88a32c3064819001be903ff5ba6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem15ReflectionPlaneE" title="opensn::UncollidedProblem::ReflectionPlane"><span class="n"><span class="pre">ReflectionPlane</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reflection_planes_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem18reflection_planes_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem24reflecting_boundary_ids_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ab33fbd9422a2d3ee5137f0fc9aa5c4fe"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">set</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reflecting_boundary_ids_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem24reflecting_boundary_ids_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem23cell_face_orientations_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a69c51c1538c51b0b05417fc2f2db3e8c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="enum_namespaceopensn_1a7f7469d315aed7045d14e59ab4443ead.html#_CPPv4N6opensn15FaceOrientationE" title="opensn::FaceOrientation"><span class="n"><span class="pre">FaceOrientation</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_face_orientations_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem23cell_face_orientations_E" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_cell.html#classopensn_1_1_cell"><span class="std std-ref">Cell</span></a> face orientations for the cells in the local cell graph. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem10near_spls_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a666d5a986be930147f636f52d6c5bb84"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">near_spls_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem10near_spls_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Near source uncollided sweep-plane local subgrid. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem10bulk_spls_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a3f8cdd0268a88ebbec0af67f497018cc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bulk_spls_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem10bulk_spls_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Bulk region uncollided sweep-plane local subgrid. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem13cell_regions_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1af0f94db1af9bf443e414116d36fe8d0a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem10CellRegionE" title="opensn::UncollidedProblem::CellRegion"><span class="n"><span class="pre">CellRegion</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_regions_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem13cell_regions_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem16destination_phi_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ac3411d0566a18b1bdcfd77440fabef04"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">destination_phi_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem16destination_phi_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11cell_sizes_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a6c3287d83f48cd497f1eac510b70a88b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_sizes_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11cell_sizes_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Bounding-box diagonal for each local cell, pre-computed once for <a class="reference internal" href="classopensn_1_1_ray_tracer.html#classopensn_1_1_ray_tracer"><span class="std std-ref">RayTracer</span></a> tolerance scaling. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem17all_cells_convex_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a7b7a5df31b2ee5d0f7229bae6974569d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">all_cells_convex_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem17all_cells_convex_E" title="Link to this definition"></a><br /></dt>
+<dd><p>False when the mesh contains any geometrically non-convex cell; true for standard hex/tet meshes. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15all_face_verts_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a36af3c6e5577483b984f465a26ba1f4e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertDataE" title="opensn::UncollidedProblem::FaceVertData"><span class="n"><span class="pre">FaceVertData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">all_face_verts_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15all_face_verts_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem18cell_face_offsets_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1afda02b9322d5309c03bb081e0226a1ec"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_face_offsets_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem18cell_face_offsets_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15cell_num_faces_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a120d888c1784661de624ee425b801c04"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_num_faces_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15cell_num_faces_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem19global_to_local_id_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ae3face1abbe87c953a509383dc5d21a8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unordered_map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">global_to_local_id_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem19global_to_local_id_E" title="Link to this definition"></a><br /></dt>
+<dd><p>O(1) global-to-local cell-ID lookup; replaces two O(log N) std::map calls per while-loop step. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15use_fast_trace_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a558e710fe6d93015c2f316401f226041"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_fast_trace_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15use_fast_trace_E" title="Link to this definition"></a><br /></dt>
+<dd><p>True when all_cells_convex_ and all faces have &lt;= kMaxFaceSides vertices. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem8ell_max_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ac60192d054443ccd2f98a859db92ced4"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ell_max_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem8ell_max_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem8moments_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a1ef24dec8ee10f7fc5d36d598b64ca75"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem6MomentE" title="opensn::UncollidedProblem::Moment"><span class="n"><span class="pre">Moment</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">moments_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem8moments_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem13moment_names_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a6da40811a668e6be4a4f5081f9ac456b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">moment_names_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem13moment_names_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem20accumulated_moments_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a0004b84df760173609fbf283175cc41a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">accumulated_moments_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem20accumulated_moments_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11production_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ae94139cca55c11c03ffd376b4a91bac1"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">production_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11production_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem8removal_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ab361f5846bdac887889de0bb4f9c595d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">removal_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem8removal_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem9out_flow_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a3310a335a69a182e47246d09b4e0e1d6"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">out_flow_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem9out_flow_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-static-functions">Protected Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12ComputeOmegaERK7Vector3RK7Vector3">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a410229792438cc3897ac8d3145f1b9e3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeOmega</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">point0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">point1</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12ComputeOmegaERK7Vector3RK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl>
+<dt class="sig sig-object cpp">
+<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">UncollidedSolver</span></dt>
+</dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertDataE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FaceVertData</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertDataE" title="Link to this definition"></a><br /></dt>
+<dd><p>Precomputed face vertex data &amp;#8212; bypasses the std::map-backed <a class="reference internal" href="classopensn_1_1_vertex_handler.html#classopensn_1_1_vertex_handler"><span class="std std-ref">VertexHandler</span></a> in the hot path. </p>
+<p>Supports faces with up to kMaxFaceSides vertices (covers triangles and quads). </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertData5vertsE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data_1af958ea4474eaae6c1453969b3e31f878"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">verts</span></span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertData9max_sidesE" title="opensn::UncollidedProblem::FaceVertData::max_sides"><span class="n"><span class="pre">max_sides</span></span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertData5vertsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertData8centroidE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data_1a33ee61eeea6838643587a5f226a3e75c"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">centroid</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertData8centroidE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertData11neighbor_idE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data_1ac3615ffcb84aff2d0b31ebae2d05ebf0"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">neighbor_id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertData11neighbor_idE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertData9num_sidesE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data_1a4f43d2bca65615001e949e995e8c16c7"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_sides</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertData9num_sidesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertData3padE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data_1a6d39507a66afa3dd3867ee313665a7b1"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pad</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertData3padE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertData9max_sidesE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data_1ac4f2fbf4ef5f3fef2c5f916f2896a3fc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_sides</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12FaceVertData9max_sidesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem6MomentE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_moment"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Moment</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem6MomentE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem6Moment3ellE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_moment_1abab2e3571e601e14a96d65253248b267"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ell</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem6Moment3ellE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem6Moment1mE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_moment_1aed4427b52be878695330f93bbbb79b54"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem6Moment1mE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15ReflectionPlaneE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_reflection_plane"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReflectionPlane</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15ReflectionPlaneE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15ReflectionPlane11boundary_idE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_reflection_plane_1ad606fbdcbf81433a58e9f6d057a54eb1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15ReflectionPlane11boundary_idE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15ReflectionPlane6normalE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_reflection_plane_1a2baf9034ca6408e2117c1225f0646571"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">normal</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15ReflectionPlane6normalE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem15ReflectionPlane6offsetE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_reflection_plane_1a85ca0201f8b032dd8c6c36b6ecc4cfbb"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">offset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15ReflectionPlane6offsetE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePointE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SourcePoint</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePoint8locationE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point_1a22dde565e72c677b9150250941bfb2dc"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">location</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint8locationE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePoint8strengthE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point_1a71d7f87a1ed50996ed2909c3f8f6bbc9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">strength</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint8strengthE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePoint11subscribersE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point_1a1a065cd7da454ae57aa610dd437cfcff"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint10SubscriberE" title="opensn::UncollidedProblem::SourcePoint::Subscriber"><span class="n"><span class="pre">Subscriber</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">subscribers</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint11subscribersE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePoint18near_source_logvolE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point_1a4484021a47ebc692e11befec75443cb0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_logical_volume.html#_CPPv4N6opensn13LogicalVolumeE" title="opensn::LogicalVolume"><span class="n"><span class="pre">LogicalVolume</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">near_source_logvol</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint18near_source_logvolE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePoint17reflection_planesE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point_1a93bac7c39d61e5661f81de3f823f6fca"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem15ReflectionPlaneE" title="opensn::UncollidedProblem::ReflectionPlane"><span class="n"><span class="pre">ReflectionPlane</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reflection_planes</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint17reflection_planesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePoint10SubscriberE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point_1_1_subscriber"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Subscriber</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint10SubscriberE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePoint10Subscriber13cell_local_idE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point_1_1_subscriber_1a971d05214c59775fb26cf952ee5103b4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_local_id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint10Subscriber13cell_local_idE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem11SourcePoint10Subscriber13volume_weightE">
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_source_point_1_1_subscriber_1a315bbd421fae53bd40f6c44d7eb1381b"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">volume_weight</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem11SourcePoint10Subscriber13volume_weightE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.3.5. Adjoint Method with Multiple Detector Responses &mdash; OpenSn 1.0.1 documentation</title>
+  <title>5.3.6. Adjoint Method with Multiple Detector Responses &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -30,7 +30,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="5.4. Transient" href="../../transient/index.html" />
-    <link rel="prev" title="5.3.4. A Multigroup Adjoint Response" href="../detector_adjoint/detector_adj.html" /> 
+    <link rel="prev" title="5.3.5. A Multigroup Adjoint Response" href="../detector_adjoint/detector_adj.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -66,10 +66,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../../keigen/index.html">5.2. KEigen</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">5.3. Source Driven</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../mg_src_driven/hdpe_example.html">5.3.1. Slowing-Down in High-Density Polyethylene</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../detector_forward/detector.html">5.3.2. A Multigroup 1D Detector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../glovebox_forward/glovebox.html">5.3.3. A Multigroup 2D Glovebox</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../detector_adjoint/detector_adj.html">5.3.4. A Multigroup Adjoint Response</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.5. Adjoint Method with Multiple Detector Responses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../uncollided/uncollided.html">5.3.2. 3D Uncollided+Collided Calculation on an Unstructured Mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../detector_forward/detector.html">5.3.3. A Multigroup 1D Detector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../glovebox_forward/glovebox.html">5.3.4. A Multigroup 2D Glovebox</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../detector_adjoint/detector_adj.html">5.3.5. A Multigroup Adjoint Response</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.6. Adjoint Method with Multiple Detector Responses</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../transient/index.html">5.4. Transient</a></li>
@@ -101,7 +102,7 @@
           <li class="breadcrumb-item"><a href="../../../index.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="../../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
           <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5.3. </span>Source Driven</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.3.5. </span>Adjoint Method with Multiple Detector Responses</li>
+      <li class="breadcrumb-item active"><span class="section-number">5.3.6. </span>Adjoint Method with Multiple Detector Responses</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -111,7 +112,7 @@
            <div itemprop="articleBody">
              
   <section id="Adjoint-Method-with-Multiple-Detector-Responses">
-<h1><span class="section-number">5.3.5. </span>Adjoint Method with Multiple Detector Responses<a class="headerlink" href="#Adjoint-Method-with-Multiple-Detector-Responses" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5.3.6. </span>Adjoint Method with Multiple Detector Responses<a class="headerlink" href="#Adjoint-Method-with-Multiple-Detector-Responses" title="Link to this heading"></a></h1>
 <p>In this example, we will explore leveraging OpenSn’s adjoint formulation of the linear Boltzmann solver to compute response functions in two Helium-3 detectors within a mockup 2D glovebox.</p>
 <p>The following is a complete transport simulation example. Each element of the simulation can be described in the sections below:</p>
 <ul class="simple">
@@ -140,10 +141,10 @@
 </ul>
 <hr class="docutils" />
 <section id="Prerequisites">
-<h2><span class="section-number">5.3.5.1. </span>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.1. </span>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading"></a></h2>
 <p>Before running this example, make sure that the <strong>Python module of OpenSn</strong> was installed.</p>
 <section id="Converting-and-Running-this-Notebook-from-the-Terminal">
-<h3><span class="section-number">5.3.5.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.1.1. </span>Converting and Running this Notebook from the Terminal<a class="headerlink" href="#Converting-and-Running-this-Notebook-from-the-Terminal" title="Link to this heading"></a></h3>
 <p>To run this notebook from the terminal, simply type:</p>
 <p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">glovebox_adj.ipynb</span></code>.</p>
 <p>To run this notebook in parallel (for example, using 4 processes), simply type:</p>
@@ -164,7 +165,7 @@
 </div>
 </section>
 <section id="Import-Requirements">
-<h3><span class="section-number">5.3.5.1.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.1.2. </span>Import Requirements<a class="headerlink" href="#Import-Requirements" title="Link to this heading"></a></h3>
 <p>Import required classes and functions from the Python interface of OpenSn. Make sure that the path to PyOpenSn is appended to Python’s PATH.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -196,13 +197,13 @@
 </section>
 </section>
 <section id="Geometry">
-<h2><span class="section-number">5.3.5.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="a3ab63304ac14b428e8bde70957a6410" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="2f25d64ab59f4766bf50c4568401559c" src="../../../../_images/glovebox_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
-<h2><span class="section-number">5.3.5.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
 <p>In this section, we import an unstructured mesh generated using the open-source meshing tool Gmsh.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -217,12 +218,12 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="1c1beb4f9d0c45719a5883e855cf7728" src="../../../../_images/glovebox_mesh.png" /></p>
-<p><img alt="fa9f172dda70420cbdac612dd1ad27e1" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
-<p><img alt="43e84df123df4efc89fcb9ae6675795e" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
+<p><img alt="24880d9a7638428da45af653602ec5e3" src="../../../../_images/glovebox_mesh.png" /></p>
+<p><img alt="81d3fbc05dc149c985ef6fbe0c6aaec0" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
+<p><img alt="9cdaaf4daeb74929b4aab7b44fdcf6d8" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
-<h3><span class="section-number">5.3.5.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
 <p>In this problem we are running a multigroup problem for the absoprtion reaction rate in a He-3 glovebox. This begins with importing our multigroup cross sections. In this case we will be using the WIMS69 group structure for 5 materials:</p>
 <ul class="simple">
 <li><p>Air</p></li>
@@ -264,9 +265,9 @@
 </section>
 </section>
 <section id="Solver">
-<h2><span class="section-number">5.3.5.4. </span><strong>Solver</strong><a class="headerlink" href="#Solver" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.4. </span><strong>Solver</strong><a class="headerlink" href="#Solver" title="Link to this heading"></a></h2>
 <section id="Angular-Quadrature">
-<h3><span class="section-number">5.3.5.4.1. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.4.1. </span>Angular Quadrature<a class="headerlink" href="#Angular-Quadrature" title="Link to this heading"></a></h3>
 <p>Since we are solving a 2D problem we will create Gauss-Legendre Product Quadrature in 2D. In this case we will use 2 polar angles and 128 azimuthal angles. With polar symmetry that leaves us with 128 angles.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -280,7 +281,7 @@
 </div>
 </section>
 <section id="Group-Structure">
-<h3><span class="section-number">5.3.5.4.2. </span>Group Structure<a class="headerlink" href="#Group-Structure" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.4.2. </span>Group Structure<a class="headerlink" href="#Group-Structure" title="Link to this heading"></a></h3>
 <p>Since we are using the WIMS69 group structure, we define a groupset block with 69 energy groups.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -302,7 +303,7 @@
 </div>
 </section>
 <section id="Adjoint-Source-Definition">
-<h3><span class="section-number">5.3.5.4.3. </span>Adjoint Source Definition<a class="headerlink" href="#Adjoint-Source-Definition" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.4.3. </span>Adjoint Source Definition<a class="headerlink" href="#Adjoint-Source-Definition" title="Link to this heading"></a></h3>
 <p>To solve the 2D transport problem using the adjoint operator, we first define the adjoint source <span class="math notranslate nohighlight">\(q^{\dagger}\)</span> over the detector volume, assigning a source strength equal to the absorption cross section of the detector, <span class="math notranslate nohighlight">\(\sigma_a^{\text{He3},g}\)</span>. By default, adjoint sources are distributed isotropically in angle across the source domain.</p>
 <p>To implement this, we define the group-wise source strength directly from the detector absorption cross section. To record the response for a specific detector, we set the <code class="docutils literal notranslate"><span class="pre">logical_volume</span></code> of the adjoint source to the detector of interest.</p>
 <div class="nbinput nblast docutils container">
@@ -336,7 +337,7 @@
 </div>
 </section>
 <section id="Discrete-Ordinates-Problem">
-<h3><span class="section-number">5.3.5.4.4. </span>Discrete Ordinates Problem<a class="headerlink" href="#Discrete-Ordinates-Problem" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.4.4. </span>Discrete Ordinates Problem<a class="headerlink" href="#Discrete-Ordinates-Problem" title="Link to this heading"></a></h3>
 <p>For the problem block, we provide</p>
 <ul class="simple">
 <li><p>mesh : The mesh</p></li>
@@ -371,7 +372,7 @@
 </div>
 </section>
 <section id="Execute">
-<h3><span class="section-number">5.3.5.4.5. </span>Execute<a class="headerlink" href="#Execute" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.4.5. </span>Execute<a class="headerlink" href="#Execute" title="Link to this heading"></a></h3>
 <p>We then create the physics solver, initialize it, and execute it.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -387,9 +388,9 @@
 </section>
 </section>
 <section id="Post-Processing">
-<h2><span class="section-number">5.3.5.5. </span>Post Processing<a class="headerlink" href="#Post-Processing" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.5. </span>Post Processing<a class="headerlink" href="#Post-Processing" title="Link to this heading"></a></h2>
 <section id="Write-Flux-Moments">
-<h3><span class="section-number">5.3.5.5.1. </span>Write Flux Moments<a class="headerlink" href="#Write-Flux-Moments" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.5.1. </span>Write Flux Moments<a class="headerlink" href="#Write-Flux-Moments" title="Link to this heading"></a></h3>
 <p>When evaluating response functions via the adjoint formalism its efficiency derives from having access to the adjoint solution <span class="math notranslate nohighlight">\(\phi^{\dagger,g}\)</span>. For this, we export the adjoint flux moments to a .h5 file using <code class="docutils literal notranslate"><span class="pre">WriteFluxMoments</span></code>. The adjoint data is then saved to a location of our choosing.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -404,7 +405,7 @@
 </div>
 </section>
 <section id="Detector-Response">
-<h3><span class="section-number">5.3.5.5.2. </span>Detector Response<a class="headerlink" href="#Detector-Response" title="Link to this heading"></a></h3>
+<h3><span class="section-number">5.3.6.5.2. </span>Detector Response<a class="headerlink" href="#Detector-Response" title="Link to this heading"></a></h3>
 <p>An adjoint formulation has no meaning without a corresponding forward response. For the volumetric source, we first define the forward source spectrum. In this case, we assign a uniform energy spectrum distributed throughout the source logical volume. Using <code class="docutils literal notranslate"><span class="pre">VolumetricSource</span></code>, this group-wise source is specified per unit length for material ID 5.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -486,18 +487,18 @@
 </div>
 <p>Detector 1:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="e39c96f156144bf18007b9daa851a4a0" src="../../../../_images/det1_g3.png" /></p>
+<p><img alt="00c77598502d41f38a6b3f534005f22c" src="../../../../_images/det1_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="c9a315ac719a455a9d94b387b04c68ce" src="../../../../_images/det1_g52.png" /></p>
+<p><img alt="0306e5026ebd4632a30ae400f3e0f6be" src="../../../../_images/det1_g52.png" /></p>
 <p>Detector 2:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="12dcfaec3ee1479582e47c66d27f578d" src="../../../../_images/det2_g3.png" /></p>
+<p><img alt="d548153950e741ebbaa78e5ca71dc3fd" src="../../../../_images/det2_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="5e62930555b142e7af8ce148e7d4ec16" src="../../../../_images/det2_g52.png" /></p>
+<p><img alt="1c70c4cd93a34da5938b49d0a1129d04" src="../../../../_images/det2_g52.png" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">5.3.5.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In Python script mode, PyOpenSn automatically handles environment termination. However, this automatic finalization does not occur when running in a Jupyter notebook, so explicit finalization of the environment at the end of the notebook is required. Do not call the finalization in Python script mode, or in console mode.</p>
 <p>Note that PyOpenSn’s finalization must be called before MPI’s finalization.</p>
 <div class="nbinput nblast docutils container">
@@ -525,7 +526,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../detector_adjoint/detector_adj.html" class="btn btn-neutral float-left" title="5.3.4. A Multigroup Adjoint Response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../detector_adjoint/detector_adj.html" class="btn btn-neutral float-left" title="5.3.5. A Multigroup Adjoint Response" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../../transient/index.html" class="btn btn-neutral float-right" title="5.4. Transient" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -16,10 +16,11 @@ Base Types
 - ``public std::enable_shared_from_this< LBSProblem >``
 
 
-Derived Type
-************
+Derived Types
+*************
 
 - ``public opensn::DiscreteOrdinatesProblem`` (:ref:`exhale_class_classopensn_1_1_discrete_ordinates_problem`)
+- ``public opensn::UncollidedProblem`` (:ref:`exhale_class_classopensn_1_1_uncollided_problem`)
 
 
 Class Documentation

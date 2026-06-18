@@ -1,0 +1,40 @@
+.. _exhale_class_classopensn_1_1_uncollided_problem:
+
+Class UncollidedProblem
+=======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_problem.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_face_vert_data`
+- :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_moment`
+- :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_reflection_plane`
+- :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_source_point`
+- :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_source_point_1_1_subscriber`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::LBSProblem`` (:ref:`exhale_class_classopensn_1_1_l_b_s_problem`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::UncollidedProblem
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

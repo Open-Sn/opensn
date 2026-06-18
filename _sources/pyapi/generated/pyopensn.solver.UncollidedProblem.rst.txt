@@ -1,0 +1,9 @@
+﻿pyopensn.solver.UncollidedProblem
+=================================
+
+.. currentmodule:: pyopensn.solver
+
+.. autoclass:: UncollidedProblem
+   :special-members: __init__
+   :members:
+   :inherited-members:

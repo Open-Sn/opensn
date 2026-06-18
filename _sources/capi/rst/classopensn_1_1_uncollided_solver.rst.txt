@@ -1,0 +1,26 @@
+.. _exhale_class_classopensn_1_1_uncollided_solver:
+
+Class UncollidedSolver
+======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_solver.h`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public opensn::Solver`` (:ref:`exhale_class_classopensn_1_1_solver`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::UncollidedSolver
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

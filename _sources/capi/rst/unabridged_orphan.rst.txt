@@ -640,6 +640,41 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_uncollided_flux_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_uncollided_matrices.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_uncollided_problem_1_1_face_vert_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_uncollided_problem_1_1_moment.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_uncollided_problem_1_1_reflection_plane.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_uncollided_problem_1_1_source_point.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_uncollided_problem_1_1_source_point_1_1_subscriber.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_unit_cell_matrices.rst
 
 .. toctree::
@@ -1745,6 +1780,16 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_uncollided_problem.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_uncollided_solver.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_unknown.rst
 
 .. toctree::
@@ -2414,6 +2459,11 @@ Directories
    :maxdepth: 1
 
    dir_modules_linear_boltzmann_solvers_response_evaluator.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   dir_modules_linear_boltzmann_solvers_uncollided_problem.rst
 
 Files
 *****
@@ -3543,6 +3593,16 @@ Files
    :maxdepth: 1
 
    file_framework_math_quadratures_angular_triangular_quadrature.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_problem.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_solver.h.rst
 
 .. toctree::
    :maxdepth: 1

@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1a2f4018d195e546615b2719088baacec1:
+
+Variable opensn::opensn_num_threads
+===================================
+
+- Defined in :ref:`file_framework_runtime.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::opensn_num_threads
+   :project: opensn

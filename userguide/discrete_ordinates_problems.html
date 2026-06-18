@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -73,10 +75,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#xs-map">12.3.4. <code class="docutils literal notranslate"><span class="pre">xs_map</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#boundary-conditions">12.3.5. <code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#point-sources-and-volumetric-sources">12.3.6. <code class="docutils literal notranslate"><span class="pre">point_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">volumetric_sources</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#options">12.3.7. <code class="docutils literal notranslate"><span class="pre">options</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sweep-type">12.3.8. <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#use-gpus">12.3.9. <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time-dependent">12.3.10. <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#uncollided-flux">12.3.7. <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#options">12.3.8. <code class="docutils literal notranslate"><span class="pre">options</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sweep-type">12.3.9. <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#use-gpus">12.3.10. <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-dependent">12.3.11. <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#shared-lbs-interface">12.4. Shared LBS Interface</a></li>
@@ -91,21 +94,32 @@
 <li class="toctree-l4"><a class="reference internal" href="#adjoint-mode">12.7.3. Adjoint Mode</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#field-function-interface">12.8. Field-Function Interface</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#angular-flux-access">12.9. Angular-Flux Access</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#balance-and-leakage">12.10. Balance and Leakage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#computebalance">12.10.1. <code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#computeleakage">12.10.2. <code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uncollided-and-first-collision-transport">12.8. Uncollided and First-Collision Transport</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#two-stage-workflow">12.8.1. Two-stage workflow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#source-support">12.8.2. Source support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reflecting-boundaries">12.8.3. Reflecting boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#moment-order">12.8.4. Moment order</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#serial-generation-and-parallel-reuse">12.8.5. Serial generation and parallel reuse</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#file-compatibility">12.8.6. File compatibility</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#supported-problem-mode">12.8.7. Supported problem mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flux-and-balance-interpretation">12.8.8. Flux and balance interpretation</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#writing-and-reading-transport-state">12.11. Writing and Reading Transport State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#updating-the-problem-in-place">12.12. Updating the Problem In Place</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#updating-a-problem-after-construction">12.12.1. Updating a Problem After Construction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#field-function-interface">12.9. Field-Function Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#angular-flux-access">12.10. Angular-Flux Access</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#balance-and-leakage">12.11. Balance and Leakage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#computebalance">12.11.1. <code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#computeleakage">12.11.2. <code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#discreteordinatescurvilinearproblem">12.13. DiscreteOrdinatesCurvilinearProblem</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#typical-construction-patterns">12.14. Typical Construction Patterns</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">12.15. Practical Guidance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing-and-reading-transport-state">12.12. Writing and Reading Transport State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-the-problem-in-place">12.13. Updating the Problem In Place</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#updating-a-problem-after-construction">12.13.1. Updating a Problem After Construction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#discreteordinatescurvilinearproblem">12.14. DiscreteOrdinatesCurvilinearProblem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#typical-construction-patterns">12.15. Typical Construction Patterns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">12.16. Practical Guidance</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="solvers.html">13. Solvers</a></li>
@@ -170,6 +184,11 @@ and transport state into one object that can then be driven by a solver.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a></p></li>
+</ul>
+<p>For first-collision calculations, OpenSn also provides:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedProblem</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedSolver</span></code></a></p></li>
 </ul>
 <section id="overview">
 <h2><span class="section-number">12.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
@@ -294,13 +313,20 @@ here must match the boundary ids on the mesh.</p>
 <h3><span class="section-number">12.3.6. </span><code class="docutils literal notranslate"><span class="pre">point_sources</span></code> and <code class="docutils literal notranslate"><span class="pre">volumetric_sources</span></code><a class="headerlink" href="#point-sources-and-volumetric-sources" title="Link to this heading"></a></h3>
 <p>These are optional source objects added at construction time.</p>
 </section>
+<section id="uncollided-flux">
+<h3><span class="section-number">12.3.7. </span><code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code><a class="headerlink" href="#uncollided-flux" title="Link to this heading"></a></h3>
+<p>This is an optional HDF5 file generated by
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedSolver</span></code></a>. Supplying it enables the
+first-collision workflow described in <a class="reference internal" href="#uncollided-and-first-collision-transport">Uncollided and First-Collision
+Transport</a> below.</p>
+</section>
 <section id="options">
-<h3><span class="section-number">12.3.7. </span><code class="docutils literal notranslate"><span class="pre">options</span></code><a class="headerlink" href="#options" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.8. </span><code class="docutils literal notranslate"><span class="pre">options</span></code><a class="headerlink" href="#options" title="Link to this heading"></a></h3>
 <p>This dictionary holds problem-level behavior that is not naturally part of the
 mesh, source, or groupset definitions.</p>
 </section>
 <section id="sweep-type">
-<h3><span class="section-number">12.3.8. </span><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code><a class="headerlink" href="#sweep-type" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.9. </span><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code><a class="headerlink" href="#sweep-type" title="Link to this heading"></a></h3>
 <p>This selects the sweep type:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;AAH&quot;</span></code>: the aggregated sweeper with cycle breaking</p></li>
@@ -308,11 +334,11 @@ mesh, source, or groupset definitions.</p>
 </ul>
 </section>
 <section id="use-gpus">
-<h3><span class="section-number">12.3.9. </span><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code><a class="headerlink" href="#use-gpus" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.10. </span><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code><a class="headerlink" href="#use-gpus" title="Link to this heading"></a></h3>
 <p>This requests GPU acceleration where supported.</p>
 </section>
 <section id="time-dependent">
-<h3><span class="section-number">12.3.10. </span><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code><a class="headerlink" href="#time-dependent" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.3.11. </span><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code><a class="headerlink" href="#time-dependent" title="Link to this heading"></a></h3>
 <p>This puts the problem into time-dependent mode at construction time.</p>
 </section>
 </section>
@@ -487,8 +513,246 @@ of the transport problem itself, not just the iterative algorithm.</p>
 deliberate about when they switch it on.</p>
 </section>
 </section>
+<section id="uncollided-and-first-collision-transport">
+<h2><span class="section-number">12.8. </span>Uncollided and First-Collision Transport<a class="headerlink" href="#uncollided-and-first-collision-transport" title="Link to this heading"></a></h2>
+<p>First-collision transport splits the total angular flux into uncollided and
+collided components:</p>
+<div class="math notranslate nohighlight">
+\[\Psi = \Psi^u + \Psi^c.\]</div>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedProblem</span></code></a> defines the uncollided transport
+configuration, and <a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedSolver</span></code></a> computes and
+stores its flux moments. A subsequent
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> reads those moments,
+constructs the first-collision scattering and fission source, solves for the
+collided component, and adds the uncollided component back to the converged
+transport state.</p>
+<p>This treatment is useful for localized sources in optically thin or weakly
+scattering regions where a conventional angular quadrature would otherwise
+produce strong ray effects.</p>
+<section id="two-stage-workflow">
+<h3><span class="section-number">12.8.1. </span>Two-stage workflow<a class="headerlink" href="#two-stage-workflow" title="Link to this heading"></a></h3>
+<p>The uncollided calculation follows the same problem/solver lifecycle as other
+OpenSn transport calculations. Construct the problem and solver, then call
+<code class="docutils literal notranslate"><span class="pre">Initialize</span></code> and <code class="docutils literal notranslate"><span class="pre">Execute</span></code>:</p>
+<p>Uncollided generation is restricted to Cartesian two- and three-dimensional
+meshes and must run with exactly one MPI rank.</p>
+<p>The solver reports source-point progress every 5 percent by default. Each
+update includes the number of completed source points, elapsed time, and
+estimated remaining time. Set <code class="docutils literal notranslate"><span class="pre">progress_interval</span></code> on
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedSolver</span></code></a> to another percentage, or to zero
+to disable progress reporting.</p>
+<p>Internal threading used by the uncollided solver is capped by the environment
+variable <code class="docutils literal notranslate"><span class="pre">OPENSN_NUM_THREADS</span></code>. If the variable is unset or invalid, OpenSn
+uses <code class="docutils literal notranslate"><span class="pre">1</span></code> thread. The current uncollided implementation applies this cap to
+reflected-image projection and to the bulk-sweep group solve.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span>
+    <span class="n">SteadyStateSourceSolver</span><span class="p">,</span>
+    <span class="n">UncollidedProblem</span><span class="p">,</span>
+    <span class="n">UncollidedSolver</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">PointSource</span>
+
+<span class="n">near_source</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span>
+    <span class="n">xmin</span><span class="o">=-</span><span class="mf">0.25</span><span class="p">,</span>
+    <span class="n">xmax</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+    <span class="n">ymin</span><span class="o">=-</span><span class="mf">0.25</span><span class="p">,</span>
+    <span class="n">ymax</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+    <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">point_source</span> <span class="o">=</span> <span class="n">PointSource</span><span class="p">(</span>
+    <span class="n">location</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="n">strength</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">uncollided_file</span> <span class="o">=</span> <span class="s2">&quot;uncollided_flux.h5&quot;</span>
+<span class="n">uncollided</span> <span class="o">=</span> <span class="n">UncollidedProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">point_sources</span><span class="o">=</span><span class="p">[</span><span class="n">point_source</span><span class="p">],</span>
+    <span class="n">near_source</span><span class="o">=</span><span class="p">[</span><span class="n">near_source</span><span class="p">],</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">uncollided_solver</span> <span class="o">=</span> <span class="n">UncollidedSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">uncollided</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="n">uncollided_file</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">uncollided_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">uncollided_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">uncollided_flux</span><span class="o">=</span><span class="n">uncollided_file</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">compute_balance</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Do not also attach <code class="docutils literal notranslate"><span class="pre">point_source</span></code> to the collided problem. Its contribution
+is already represented by the uncollided flux and the generated
+first-collision source. Independent sources that are not represented in the
+uncollided file may still be attached normally.</p>
+</section>
+<section id="source-support">
+<h3><span class="section-number">12.8.2. </span>Source support<a class="headerlink" href="#source-support" title="Link to this heading"></a></h3>
+<p>The uncollided generator supports:</p>
+<ul class="simple">
+<li><p>explicit <a class="reference internal" href="../pyapi/generated/pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.source.PointSource</span></code></a> objects.</p></li>
+</ul>
+<p>Every point source requires a corresponding entry in <code class="docutils literal notranslate"><span class="pre">near_source</span></code>. The two
+lists are matched by position, so <code class="docutils literal notranslate"><span class="pre">near_source</span></code> is required whenever
+<code class="docutils literal notranslate"><span class="pre">point_sources</span></code> is nonempty.</p>
+<p>For now, uncollided generation requires each point source to lie strictly
+inside a single cell. A source located exactly on a face, edge, or vertex is
+rejected as unsupported.</p>
+<p>In two-dimensional problems, a point source represents the two-dimensional
+transport Green’s function, equivalently a line source per unit
+out-of-plane depth. Its free-space uncollided scalar flux scales as
+<span class="math notranslate nohighlight">\(1/(2 \pi r)\)</span>, not as the three-dimensional <span class="math notranslate nohighlight">\(1/(4 \pi r^2)\)</span> point-source field.</p>
+<p>Finite-volume sources can be approximated by the input author with weighted
+point sources. For example, a quadrature approximation uses</p>
+<div class="math notranslate nohighlight">
+\[Q_{g,q} = q_g(\mathbf{x}_q) J_q w_q\]</div>
+<p>and passes the resulting weighted points through <code class="docutils literal notranslate"><span class="pre">point_sources</span></code>. The
+uncollided generator does not consume <a class="reference internal" href="../pyapi/generated/pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.source.VolumetricSource</span></code></a>
+objects directly.</p>
+</section>
+<section id="reflecting-boundaries">
+<h3><span class="section-number">12.8.3. </span>Reflecting boundaries<a class="headerlink" href="#reflecting-boundaries" title="Link to this heading"></a></h3>
+<p>The uncollided and collided stages must specify the same reflecting boundary
+conditions. The uncollided generator represents each reflection with image
+sources and folds attenuation paths back through the physical mesh. Each image
+source is ray traced to every finite-element volume quadrature point and
+projected directly into the spatial discretization. With <span class="math notranslate nohighlight">\(N\)</span> reflecting
+symmetry planes, each physical source point produces <span class="math notranslate nohighlight">\(2^N-1\)</span> image
+contributions.</p>
+<p>This construction supports up to three planar, mutually orthogonal symmetry
+planes, such as <code class="docutils literal notranslate"><span class="pre">xmin</span></code>, <code class="docutils literal notranslate"><span class="pre">ymin</span></code>, and <code class="docutils literal notranslate"><span class="pre">zmin</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="n">uncollided</span> <span class="o">=</span> <span class="n">UncollidedProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">point_sources</span><span class="o">=</span><span class="n">point_sources</span><span class="p">,</span>
+    <span class="n">near_source</span><span class="o">=</span><span class="n">near_source_regions</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="n">scattering_order</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">uncollided_solver</span> <span class="o">=</span> <span class="n">UncollidedSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">uncollided</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;uncollided_flux.h5&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">uncollided_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">uncollided_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The HDF5 file records the reflecting boundary IDs, and the collided problem
+rejects files generated with a different reflector set.</p>
+<p>The near-source calculation independently projects the ray-traced volume flux
+and integrates ray-traced face currents. These two quadratures generally do
+not satisfy exact cell balance at finite resolution. OpenSn reports their
+relative mismatch but preserves both projections; rescaling outgoing currents
+cell by cell can recursively amplify quadrature error along long streaming
+paths. The HDF5 balance metadata uses the projected removal and the
+conservative global outflow remainder. The directly integrated vacuum outflow
+is also printed as a consistency diagnostic.</p>
+</section>
+<section id="moment-order">
+<h3><span class="section-number">12.8.4. </span>Moment order<a class="headerlink" href="#moment-order" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> on <a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedProblem</span></code></a> is the
+maximum spherical-harmonic order written to the HDF5 file. It must be at least
+the scattering order used by the collided problem.</p>
+<p>The scalar moment is stored as <code class="docutils literal notranslate"><span class="pre">0,0</span></code>. Higher moments are stored by
+<code class="docutils literal notranslate"><span class="pre">ell,m</span></code> name and are accumulated over all explicit and generated source
+points.</p>
+</section>
+<section id="serial-generation-and-parallel-reuse">
+<h3><span class="section-number">12.8.5. </span>Serial generation and parallel reuse<a class="headerlink" href="#serial-generation-and-parallel-reuse" title="Link to this heading"></a></h3>
+<p>Uncollided generation must run with exactly one MPI rank. The resulting HDF5
+file is partition-independent: every rank in the collided calculation reads
+the same serial file and extracts the cells it owns. Consequently, the
+collided calculation may use one or multiple MPI ranks.</p>
+<p>For a parallel workflow, run the two stages separately:</p>
+<ol class="arabic simple">
+<li><p>Generate the HDF5 file with one rank.</p></li>
+<li><p>Run the collided input with the desired number of ranks.</p></li>
+</ol>
+<p>When generating the uncollided file, per-rank internal threading remains
+controlled by <code class="docutils literal notranslate"><span class="pre">OPENSN_NUM_THREADS</span></code> and defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>. This avoids
+oversubscribing MPI jobs unless the user explicitly opts in to additional
+threads.</p>
+</section>
+<section id="file-compatibility">
+<h3><span class="section-number">12.8.6. </span>File compatibility<a class="headerlink" href="#file-compatibility" title="Link to this heading"></a></h3>
+<p>The collided problem validates the HDF5 file before constructing the
+first-collision source. The generating and consuming problems must have:</p>
+<ul class="simple">
+<li><p>the same number of energy groups,</p></li>
+<li><p>the same global cell IDs and cell count,</p></li>
+<li><p>the same cell-node layout and node coordinates,</p></li>
+<li><p>matching total cross sections in every cell and group,</p></li>
+<li><p>the same reflecting boundary set,</p></li>
+<li><p>sufficient stored moment order for the collided scattering order.</p></li>
+</ul>
+<p>The mesh may be repartitioned for the collided calculation because matching is
+performed using global cell IDs. Cross sections cannot be replaced through
+<code class="docutils literal notranslate"><span class="pre">SetXSMap</span></code> after a problem has loaded an uncollided file.</p>
+</section>
+<section id="supported-problem-mode">
+<h3><span class="section-number">12.8.7. </span>Supported problem mode<a class="headerlink" href="#supported-problem-mode" title="Link to this heading"></a></h3>
+<p>The collided use of <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> is supported for steady-state forward
+fixed-source calculations. It is not supported for:</p>
+<ul class="simple">
+<li><p>time-dependent calculations,</p></li>
+<li><p>adjoint calculations,</p></li>
+<li><p>k-eigenvalue solvers.</p></li>
+</ul>
+</section>
+<section id="flux-and-balance-interpretation">
+<h3><span class="section-number">12.8.8. </span>Flux and balance interpretation<a class="headerlink" href="#flux-and-balance-interpretation" title="Link to this heading"></a></h3>
+<p>After <a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedSolver</span></code></a> executes, the field
+functions returned by <a class="reference internal" href="../pyapi/generated/pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.UncollidedProblem</span></code></a> contain
+the uncollided component <span class="math notranslate nohighlight">\(\Phi^u\)</span>.</p>
+<p>After the collided solver converges, the scalar flux state and field functions
+returned by <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> contain the
+recombined total:</p>
+<div class="math notranslate nohighlight">
+\[\Phi = \Phi^u + \Phi^c.\]</div>
+<p>The uncollided HDF5 file also stores its production, removal, and outflow
+rates. The steady-state solver incorporates the uncollided production and
+outflow when reporting the combined problem balance. Reflected image sources
+are projected directly from ray traces evaluated at every finite-element
+volume quadrature point. The generator reports the integrated and conservative
+effective outflows and stores the conservative value used for combined balance
+accounting; this correction does not rescale the uncollided flux moments.</p>
+</section>
+</section>
 <section id="field-function-interface">
-<h2><span class="section-number">12.8. </span>Field-Function Interface<a class="headerlink" href="#field-function-interface" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.9. </span>Field-Function Interface<a class="headerlink" href="#field-function-interface" title="Link to this heading"></a></h2>
 <p>The problem object is also where users access transport outputs.</p>
 <p>The main field-function accessors are:</p>
 <ul class="simple">
@@ -511,7 +775,7 @@ function from the current state.</p>
 </div>
 </section>
 <section id="angular-flux-access">
-<h2><span class="section-number">12.9. </span>Angular-Flux Access<a class="headerlink" href="#angular-flux-access" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.10. </span>Angular-Flux Access<a class="headerlink" href="#angular-flux-access" title="Link to this heading"></a></h2>
 <p>The discrete-ordinates problem also exposes angular-flux data directly through
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPsi()</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">GetPsi()</span></code> returns a list of NumPy arrays copied from the current angular-
@@ -530,14 +794,14 @@ Only enable and use it when the calculation actually requires it.</p>
 </div>
 </section>
 <section id="balance-and-leakage">
-<h2><span class="section-number">12.10. </span>Balance and Leakage<a class="headerlink" href="#balance-and-leakage" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.11. </span>Balance and Leakage<a class="headerlink" href="#balance-and-leakage" title="Link to this heading"></a></h2>
 <p>The Cartesian discrete-ordinates problem exposes two important diagnostics:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalance()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></p></li>
 </ul>
 <section id="computebalance">
-<h3><span class="section-number">12.10.1. </span><code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code><a class="headerlink" href="#computebalance" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.11.1. </span><code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code><a class="headerlink" href="#computebalance" title="Link to this heading"></a></h3>
 <p>This computes the particle balance for the problem and returns a dictionary of
 balance terms.</p>
 <p>It is useful for:</p>
@@ -548,7 +812,7 @@ balance terms.</p>
 </ul>
 </section>
 <section id="computeleakage">
-<h3><span class="section-number">12.10.2. </span><code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code><a class="headerlink" href="#computeleakage" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.11.2. </span><code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code><a class="headerlink" href="#computeleakage" title="Link to this heading"></a></h3>
 <p>This computes boundary leakage and returns a dictionary mapping boundary names
 to group-wise NumPy arrays.</p>
 <p>Example:</p>
@@ -564,7 +828,7 @@ flux.</p>
 </section>
 </section>
 <section id="writing-and-reading-transport-state">
-<h2><span class="section-number">12.11. </span>Writing and Reading Transport State<a class="headerlink" href="#writing-and-reading-transport-state" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.12. </span>Writing and Reading Transport State<a class="headerlink" href="#writing-and-reading-transport-state" title="Link to this heading"></a></h2>
 <p>The problem object also exposes file-based state helpers such as:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">WriteFluxMoments()</span></code></p></li>
@@ -587,7 +851,7 @@ workflow explicitly wants to manage angular fluxes, but restart dumps also carry
 flux moments, time metadata, precursor state, and solver-specific restart data.</p>
 </section>
 <section id="updating-the-problem-in-place">
-<h2><span class="section-number">12.12. </span>Updating the Problem In Place<a class="headerlink" href="#updating-the-problem-in-place" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.13. </span>Updating the Problem In Place<a class="headerlink" href="#updating-the-problem-in-place" title="Link to this heading"></a></h2>
 <p>Several parts of the problem can be updated after construction.</p>
 <p>The most important methods are:</p>
 <ul class="simple">
@@ -599,7 +863,7 @@ flux moments, time metadata, precursor state, and solver-specific restart data.<
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetTimeDependentMode()</span></code></p></li>
 </ul>
 <section id="updating-a-problem-after-construction">
-<h3><span class="section-number">12.12.1. </span>Updating a Problem After Construction<a class="headerlink" href="#updating-a-problem-after-construction" title="Link to this heading"></a></h3>
+<h3><span class="section-number">12.13.1. </span>Updating a Problem After Construction<a class="headerlink" href="#updating-a-problem-after-construction" title="Link to this heading"></a></h3>
 <p>One of the strengths of the problem API is that major parts of the model can be
 replaced without rebuilding the entire problem object.</p>
 <p>Examples:</p>
@@ -626,7 +890,7 @@ replaced without rebuilding the entire problem object.</p>
 </section>
 </section>
 <section id="discreteordinatescurvilinearproblem">
-<h2><span class="section-number">12.13. </span>DiscreteOrdinatesCurvilinearProblem<a class="headerlink" href="#discreteordinatescurvilinearproblem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.14. </span>DiscreteOrdinatesCurvilinearProblem<a class="headerlink" href="#discreteordinatescurvilinearproblem" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a> is the
 curvilinear companion to the Cartesian problem class.</p>
 <p>It uses the same general construction pattern, but currently requires:</p>
@@ -655,7 +919,7 @@ problem.</p></li>
 </div>
 </section>
 <section id="typical-construction-patterns">
-<h2><span class="section-number">12.14. </span>Typical Construction Patterns<a class="headerlink" href="#typical-construction-patterns" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.15. </span>Typical Construction Patterns<a class="headerlink" href="#typical-construction-patterns" title="Link to this heading"></a></h2>
 <p>A few patterns show up repeatedly:</p>
 <ul class="simple">
 <li><p>source-driven steady-state problem plus <code class="docutils literal notranslate"><span class="pre">SteadyStateSourceSolver</span></code></p></li>
@@ -665,7 +929,7 @@ problem.</p></li>
 </ul>
 </section>
 <section id="practical-guidance">
-<h2><span class="section-number">12.15. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.16. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
 <p>As a rule:</p>
 <ul class="simple">
 <li><p>use <code class="xref py py-class docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code> unless the curvilinear class is

@@ -16,6 +16,7 @@ Derived Types
 - ``public opensn::PowerIterationKEigenSolver`` (:ref:`exhale_class_classopensn_1_1_power_iteration_k_eigen_solver`)
 - ``public opensn::SteadyStateSourceSolver`` (:ref:`exhale_class_classopensn_1_1_steady_state_source_solver`)
 - ``public opensn::TransientSolver`` (:ref:`exhale_class_classopensn_1_1_transient_solver`)
+- ``public opensn::UncollidedSolver`` (:ref:`exhale_class_classopensn_1_1_uncollided_solver`)
 
 
 Class Documentation

@@ -1,0 +1,716 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.3.2. 3D Uncollided+Collided Calculation on an Unstructured Mesh &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="5.3.3. A Multigroup 1D Detector" href="../detector_forward/detector.html" />
+    <link rel="prev" title="5.3.1. Slowing-Down in High-Density Polyethylene" href="../mg_src_driven/hdpe_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../mesh/index.html">1. Meshing and Partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../xs/index.html">2. Cross Sections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../aquad/index.html">3. Angular Quadrature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../logvol/index.html">4. Logical Volumes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">5. Linear Boltzmann Solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../primer/index.html">5.1. Primer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../keigen/index.html">5.2. KEigen</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">5.3. Source Driven</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../mg_src_driven/hdpe_example.html">5.3.1. Slowing-Down in High-Density Polyethylene</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.2. 3D Uncollided+Collided Calculation on an Unstructured Mesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../detector_forward/detector.html">5.3.3. A Multigroup 1D Detector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../glovebox_forward/glovebox.html">5.3.4. A Multigroup 2D Glovebox</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../detector_adjoint/detector_adj.html">5.3.5. A Multigroup Adjoint Response</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../glovebox_adjoint/glovebox_adj.html">5.3.6. Adjoint Method with Multiple Detector Responses</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../transient/index.html">5.4. Transient</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html"><span class="section-number">5. </span>Linear Boltzmann Solver</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5.3. </span>Source Driven</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.3.2. </span>3D Uncollided+Collided Calculation on an Unstructured Mesh</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="3D-Uncollided+Collided-Calculation-on-an-Unstructured-Mesh">
+<h1><span class="section-number">5.3.2. </span>3D Uncollided+Collided Calculation on an Unstructured Mesh<a class="headerlink" href="#3D-Uncollided+Collided-Calculation-on-an-Unstructured-Mesh" title="Link to this heading"></a></h1>
+<p>This notebook demonstrates a complete uncollided-plus-collided fixed-source calculation on a small tetrahedral mesh. The problem is intentionally simple:</p>
+<ul class="simple">
+<li><p>single energy group,</p></li>
+<li><p>single material,</p></li>
+<li><p>single point source,</p></li>
+<li><p>serial uncollided generation followed by a collided solve.</p></li>
+</ul>
+<p>The mesh is a coarse tetrahedral cube (<code class="docutils literal notranslate"><span class="pre">test/assets/mesh/uncollided_cube_coarse.msh</span></code>).</p>
+<section id="Prerequisites">
+<h2><span class="section-number">5.3.2.1. </span>Prerequisites<a class="headerlink" href="#Prerequisites" title="Link to this heading"></a></h2>
+<p>Run this notebook with the OpenSn Python module available. Because the uncollided stage must run with exactly one MPI rank, this end-to-end notebook should be executed in serial:</p>
+<p><code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">notebook</span> <span class="pre">--execute</span> <span class="pre">uncollided.ipynb</span></code></p>
+<p>If you later want to run the collided stage in parallel, use the companion <code class="docutils literal notranslate"><span class="pre">solve_collided.py</span></code> script after generating the uncollided file.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">size</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">size</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+
+<span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;This notebook must be run with exactly one MPI rank.&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running with </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> MPI process.&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Running with 1 MPI process.
+</pre></div></div>
+</div>
+</section>
+<section id="Import-OpenSn">
+<h2><span class="section-number">5.3.2.2. </span>Import OpenSn<a class="headerlink" href="#Import-OpenSn" title="Link to this heading"></a></h2>
+<p>The notebook lives deep under <code class="docutils literal notranslate"><span class="pre">doc/source/tutorials</span></code>, so we append the repository root before importing <code class="docutils literal notranslate"><span class="pre">pyopensn</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">repo_root</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="p">(</span><span class="n">repo_root</span><span class="p">,</span> <span class="o">*</span><span class="n">repo_root</span><span class="o">.</span><span class="n">parents</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">candidate</span> <span class="o">/</span> <span class="s2">&quot;build/python&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">candidate</span> <span class="o">/</span> <span class="s2">&quot;test/assets/mesh&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">repo_root</span> <span class="o">=</span> <span class="n">candidate</span>
+        <span class="k">break</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Could not locate the OpenSn repository root.&quot;</span><span class="p">)</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">repo_root</span> <span class="o">/</span> <span class="s2">&quot;build&quot;</span><span class="p">))</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FieldFunctionInterpolationLine</span><span class="p">,</span>
+    <span class="n">FieldFunctionInterpolationPoint</span><span class="p">,</span>
+    <span class="n">FieldFunctionInterpolationVolume</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">FromFileMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span>
+    <span class="n">SteadyStateSourceSolver</span><span class="p">,</span>
+    <span class="n">UncollidedProblem</span><span class="p">,</span>
+    <span class="n">UncollidedSolver</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">PointSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Problem-Setup">
+<h2><span class="section-number">5.3.2.3. </span>Problem Setup<a class="headerlink" href="#Problem-Setup" title="Link to this heading"></a></h2>
+<p>We use a single-material cube, a one-group total cross section of <code class="docutils literal notranslate"><span class="pre">0.8</span></code>, and an isotropic scattering ratio of <code class="docutils literal notranslate"><span class="pre">0.45</span></code>. The point source is placed safely inside the domain so the uncollided algorithm can localize it to one cell.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mesh_file</span> <span class="o">=</span> <span class="n">repo_root</span> <span class="o">/</span> <span class="s2">&quot;test/assets/mesh/uncollided_cube_coarse.msh&quot;</span>
+<span class="n">uncollided_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;uncollided.h5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">source_location</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.010</span><span class="p">,</span> <span class="mf">0.012</span><span class="p">,</span> <span class="mf">0.014</span><span class="p">)</span>
+<span class="n">sample_point</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.024</span><span class="p">,</span> <span class="mf">0.016</span><span class="p">,</span> <span class="mf">0.008</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_mesh</span><span class="p">():</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">FromFileMeshGenerator</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">mesh_file</span><span class="p">))</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">grid</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">grid</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_xs</span><span class="p">():</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+    <span class="n">xs</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.45</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">xs</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_whole_domain</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span>
+        <span class="n">xmin</span><span class="o">=-</span><span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">xmax</span><span class="o">=</span><span class="mf">0.033</span><span class="p">,</span>
+        <span class="n">ymin</span><span class="o">=-</span><span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">ymax</span><span class="o">=</span><span class="mf">0.033</span><span class="p">,</span>
+        <span class="n">zmin</span><span class="o">=-</span><span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">zmax</span><span class="o">=</span><span class="mf">0.033</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">point_value</span><span class="p">(</span><span class="n">field_function</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+    <span class="n">interpolation</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationPoint</span><span class="p">()</span>
+    <span class="n">interpolation</span><span class="o">.</span><span class="n">SetPointOfInterest</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="o">*</span><span class="n">point</span><span class="p">))</span>
+    <span class="n">interpolation</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">field_function</span><span class="p">)</span>
+    <span class="n">interpolation</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">GetPointValue</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">volume_integral</span><span class="p">(</span><span class="n">field_function</span><span class="p">,</span> <span class="n">logical_volume</span><span class="p">):</span>
+    <span class="n">interpolation</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+    <span class="n">interpolation</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
+    <span class="n">interpolation</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">logical_volume</span><span class="p">)</span>
+    <span class="n">interpolation</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">field_function</span><span class="p">)</span>
+    <span class="n">interpolation</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+
+<span class="n">line_start</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">source_location</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source_location</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">line_end</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span><span class="mf">0.032</span><span class="p">,</span> <span class="n">source_location</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source_location</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">plot_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tutorial_output&quot;</span><span class="p">)</span>
+<span class="n">plot_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">csv_to_dict</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">export_line_data</span><span class="p">(</span><span class="n">field_function</span><span class="p">,</span> <span class="n">csv_stem</span><span class="p">,</span> <span class="n">start_point</span><span class="p">,</span> <span class="n">end_point</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">csv_file</span> <span class="ow">in</span> <span class="n">plot_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">csv_stem</span><span class="si">}</span><span class="s2">_*.csv&quot;</span><span class="p">):</span>
+        <span class="n">csv_file</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+    <span class="n">ffline</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationLine</span><span class="p">()</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetInitialPoint</span><span class="p">(</span><span class="n">start_point</span><span class="p">)</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetFinalPoint</span><span class="p">(</span><span class="n">end_point</span><span class="p">)</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">SetNumberOfPoints</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">field_function</span><span class="p">)</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">ffline</span><span class="o">.</span><span class="n">ExportToCSV</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">plot_dir</span> <span class="o">/</span> <span class="n">csv_stem</span><span class="p">))</span>
+    <span class="n">csv_file</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">plot_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">csv_stem</span><span class="si">}</span><span class="s2">_*.csv&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">csv_to_dict</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analytic_uncollided_scalar_flux</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="n">sigma_t</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">strength</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">sigma_t</span> <span class="o">*</span> <span class="n">distance</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">*</span> <span class="n">distance</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">relative_error</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="n">reference</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Step-1:-Generate-the-Uncollided-File">
+<h2><span class="section-number">5.3.2.4. </span>Step 1: Generate the Uncollided File<a class="headerlink" href="#Step-1:-Generate-the-Uncollided-File" title="Link to this heading"></a></h2>
+<p>The uncollided problem takes a list of point sources and writes the flux moments needed by the first-collision solve.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">uncollided_file</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="n">grid</span> <span class="o">=</span> <span class="n">make_mesh</span><span class="p">()</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">make_xs</span><span class="p">()</span>
+<span class="n">whole_domain</span> <span class="o">=</span> <span class="n">make_whole_domain</span><span class="p">()</span>
+
+<span class="n">uncollided_problem</span> <span class="o">=</span> <span class="n">UncollidedProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]}],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+    <span class="n">point_sources</span><span class="o">=</span><span class="p">[</span><span class="n">PointSource</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">source_location</span><span class="p">),</span> <span class="n">strength</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">])],</span>
+    <span class="n">near_source</span><span class="o">=</span><span class="p">[</span><span class="n">whole_domain</span><span class="p">],</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">uncollided_solver</span> <span class="o">=</span> <span class="n">UncollidedSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">uncollided_problem</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uncollided_file</span><span class="p">),</span>
+    <span class="n">progress_interval</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">uncollided_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">uncollided_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Uncollided file:&quot;</span><span class="p">,</span> <span class="n">uncollided_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+OpenSn version 1.0.1
+2026-06-09 18:03:54 Running OpenSn with 1 processes.
+
+[0]  FromFileMeshGenerator: Generating UnpartitionedMesh
+Uncollided file:[0]  Making unpartitioned mesh from Gmsh file /Users/dhawkins/opensn_dev/opensn/test/assets/mesh/uncollided_cube_coarse.msh (format v4.1 binary)
+[0]  Done checking cell-center-to-face orientations
+[0]  00:00:00.0 Establishing cell connectivity.
+[0]  00:00:00.0 Vertex cell subscriptions complete.
+[0]  00:00:00.0 Surpassing cell 74 of 735 (10%)
+[0]  00:00:00.0 Surpassing cell 147 of 735 (20%)
+[0]  00:00:00.0 Surpassing cell 221 of 735 (30%)
+[0]  00:00:00.0 Surpassing cell 294 of 735 (40%)
+[0]  00:00:00.0 Surpassing cell 368 of 735 (50%)
+[0]  00:00:00.0 Surpassing cell 442 of 735 (60%)
+[0]  00:00:00.0 Surpassing cell 515 of 735 (70%)
+[0]  00:00:00.0 Surpassing cell 588 of 735 (80%)
+[0]  00:00:00.0 Surpassing cell 662 of 735 (90%)
+[0]  00:00:00.0 Surpassing cell 735 of 735 (100%)
+[0]  00:00:00.0 Establishing cell boundary connectivity.
+[0]  00:00:00.0 Done establishing cell connectivity.
+[0]  Done processing /Users/dhawkins/opensn_dev/opensn/test/assets/mesh/uncollided_cube_coarse.msh.
+[0]  Number of nodes read: 237
+[0]  Number of cells read: 735
+[0]  Number of cells per partition (max,min,avg) = 735,735,735
+[0]
+[0]  Mesh statistics:
+[0]    Global cell count             : 735
+[0]    Local cell count (avg,max,min): 735,735,735
+[0]    Ghost-to-local ratio (avg)    : 0
+[0]
+[0]  00:00:00.0 Done setting block id 0 to all cells
+[0]
+[0]  Initializing UncollidedProblem
+[0]
+[0]  Initializing spatial discretization.
+[0]  00:00:00.0 Computing unit integrals.
+[0]  00:00:00.1 Ghost cell unit cell-matrix ratio: 0%
+[0]  00:00:00.1 Cell matrices computed.
+[0]  00:00:00.1 Initializing parallel arrays. G=1 M=1
+[0]  00:00:00.1 Done with parallel arrays.
+[0]  Point source at [0.01 0.012 0.014] assigned to cell 52 with shape values [ 0.189239 0.420696 0.327311 0.0627551 ] and volume weight 1
+[0]  Point source has 1 subscribing cells on processor 0
+[0]  Point source has 1 global subscribing cells.
+[0]  00:00:00.1 Initializing solver UncollidedSolver.
+[0]  00:00:00.1 Starting solver execution UncollidedSolver.
+[0]  Starting uncollided transport for 1 physical source points. Progress will be reported every 25%.
+[0]  Uncollided progress: processing source point 1 / 1.
+[0]
+[0]  Ray-tracing near-source region.
+[0]   Near-source current consistency diagnostic:
+[0]    Mismatched cells            = 11 / 735
+[0]    Mismatched cell-group pairs = 11 / 735
+[0]    Mismatched cell fraction     = 1.496599e-02
+[0]    Aggregate relative mismatch  = 1.927983e-01
+[0]    Maximum relative mismatch    = 5.058453e-01
+[0]   NearSourceCurrentMismatchedCellFraction=1.496599e-02
+[0]   NearSourceCurrentAggregateRelativeMismatch=1.927983e-01
+[0]  Uncollided progress: 1 / 1 source points (100.0%), elapsed 00:00:00, ETA 00:00:00.
+[0]   Global outflow consistency:
+[0]    Integrated vacuum outflow             = 9.852756e-01
+[0]    Conservative outflow      = 9.856949e-01
+[0]    Relative difference       = 4.192985e-04
+[0]
+[0]  Balance table:
+[0]   Removal rate                = 1.430510e-02
+[0]   Production rate             = 1.000000e+00
+[0]   Out-flow rate               = 9.856949e-01
+[0]   Balance (Production - Loss) = 0.000000e+00
+[0]   Conservation error          = 0.000000e+00
+[0]
+[0]  00:00:00.6 Finished solver execution UncollidedSolver.
+ /Users/dhawkins/opensn_dev/opensn/doc/source/tutorials/lbs/src_driven/uncollided/uncollided.h5
+</pre></div></div>
+</div>
+</section>
+<section id="Compare-Against-the-Analytic-Uncollided-Solution">
+<h2><span class="section-number">5.3.2.5. </span>Compare Against the Analytic Uncollided Solution<a class="headerlink" href="#Compare-Against-the-Analytic-Uncollided-Solution" title="Link to this heading"></a></h2>
+<p>For a unit isotropic point source in a homogeneous medium, the continuous uncollided scalar flux is <code class="docutils literal notranslate"><span class="pre">exp(-\sigma_t</span> <span class="pre">r)</span> <span class="pre">/</span> <span class="pre">(4</span> <span class="pre">\pi</span> <span class="pre">r^2)</span></code> away from the source. We sample the OpenSn uncollided solution along the source-centered line and compare it against that reference. Because the continuous solution is singular at the source and the PWLD field is represented on a coarse tetrahedral mesh, we exclude a small near-source neighborhood from the line-based error summary and report the tutorial sample
+point separately.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">uncollided_scalar_flux</span> <span class="o">=</span> <span class="n">uncollided_problem</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">uncollided_line</span> <span class="o">=</span> <span class="n">export_line_data</span><span class="p">(</span>
+    <span class="n">uncollided_scalar_flux</span><span class="p">,</span>
+    <span class="s2">&quot;uncollided_line&quot;</span><span class="p">,</span>
+    <span class="n">line_start</span><span class="p">,</span>
+    <span class="n">line_end</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">analytic_exclusion_radius</span> <span class="o">=</span> <span class="mf">8.0e-3</span>
+<span class="n">analytic_distances</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">analytic_values</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">open_sn_values</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">relative_errors</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">x_value</span><span class="p">,</span> <span class="n">phi_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">uncollided_line</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">uncollided_line</span><span class="p">[</span><span class="s2">&quot;phi_g000_m00&quot;</span><span class="p">]):</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x_value</span> <span class="o">-</span> <span class="n">source_location</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="n">analytic_exclusion_radius</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">analytic_value</span> <span class="o">=</span> <span class="n">analytic_uncollided_scalar_flux</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+    <span class="n">analytic_distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+    <span class="n">analytic_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">analytic_value</span><span class="p">)</span>
+    <span class="n">open_sn_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phi_value</span><span class="p">)</span>
+    <span class="n">relative_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relative_error</span><span class="p">(</span><span class="n">analytic_value</span><span class="p">,</span> <span class="n">phi_value</span><span class="p">))</span>
+
+<span class="n">sample_distance</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">dist</span><span class="p">(</span><span class="n">sample_point</span><span class="p">,</span> <span class="n">source_location</span><span class="p">)</span>
+<span class="n">analytic_sample_flux</span> <span class="o">=</span> <span class="n">analytic_uncollided_scalar_flux</span><span class="p">(</span><span class="n">sample_distance</span><span class="p">)</span>
+<span class="n">open_sn_sample_flux</span> <span class="o">=</span> <span class="n">point_value</span><span class="p">(</span><span class="n">uncollided_scalar_flux</span><span class="p">,</span> <span class="n">sample_point</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AnalyticExclusionRadius=</span><span class="si">{</span><span class="n">analytic_exclusion_radius</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AnalyticComparisonPoints=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">relative_errors</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UncollidedLineMeanRelativeError=</span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">relative_errors</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">relative_errors</span><span class="p">)</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UncollidedLineMaxRelativeError=</span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">relative_errors</span><span class="p">)</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UncollidedSampleDistance=</span><span class="si">{</span><span class="n">sample_distance</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UncollidedSampleOpenSn=</span><span class="si">{</span><span class="n">open_sn_sample_flux</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UncollidedSampleAnalytic=</span><span class="si">{</span><span class="n">analytic_sample_flux</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;UncollidedSampleRelativeError=&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">relative_error</span><span class="p">(</span><span class="n">analytic_sample_flux</span><span class="p">,</span><span class="w"> </span><span class="n">open_sn_sample_flux</span><span class="p">)</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  Exported CSV file for field func &#34;phi_g000_m00&#34; to &#34;tutorial_output/uncollided_line_phi_g000_m00.csv&#34;
+AnalyticExclusionRadius=8.000000000000e-03
+AnalyticComparisonPoints=101
+UncollidedLineMeanRelativeError=2.892774652525e-02
+UncollidedLineMaxRelativeError=1.231411685501e-01
+UncollidedSampleDistance=1.574801574802e-02
+UncollidedSampleOpenSn=2.708264556451e+02
+UncollidedSampleAnalytic=3.168597199861e+02
+UncollidedSampleRelativeError=1.452796346063e-01
+</pre></div></div>
+</div>
+</section>
+<section id="Optional:-Visualize-the-Uncollided-Flux">
+<h2><span class="section-number">5.3.2.6. </span>Optional: Visualize the Uncollided Flux<a class="headerlink" href="#Optional:-Visualize-the-Uncollided-Flux" title="Link to this heading"></a></h2>
+<p>The notebook does not require <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> to run. If you want a quick line plot of the uncollided scalar flux, uncomment the next cell and run it in an environment where <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> is available.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#import matplotlib.pyplot as plt</span>
+<span class="c1">#</span>
+<span class="c1"># uncollided_scalar_flux = uncollided_problem.GetScalarFluxFieldFunction()[0]</span>
+<span class="c1"># uncollided_line = export_line_data(</span>
+<span class="c1">#     uncollided_scalar_flux,</span>
+<span class="c1">#     &quot;uncollided_line&quot;,</span>
+<span class="c1">#     line_start,</span>
+<span class="c1">#     line_end,</span>
+<span class="c1"># )</span>
+<span class="c1">#</span>
+<span class="c1"># plt.figure()</span>
+<span class="c1"># plt.semilogy(uncollided_line[&quot;x&quot;], uncollided_line[&quot;phi_g000_m00&quot;])</span>
+<span class="c1"># plt.xlabel(&quot;x (m)&quot;)</span>
+<span class="c1"># plt.ylabel(r&quot;$\phi_u(x)$&quot;)</span>
+<span class="c1"># plt.title(&quot;Uncollided scalar flux along the source-centered line&quot;)</span>
+<span class="c1"># plt.grid()</span>
+<span class="c1"># plt.show()</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Step-2:-Solve-the-Collided-Problem">
+<h2><span class="section-number">5.3.2.7. </span>Step 2: Solve the Collided Problem<a class="headerlink" href="#Step-2:-Solve-the-Collided-Problem" title="Link to this heading"></a></h2>
+<p>The collided problem does <strong>not</strong> define the point source again. It reads the uncollided file through <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> and constructs the first-collision source internally.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">make_mesh</span><span class="p">()</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">make_xs</span><span class="p">()</span>
+<span class="n">whole_domain</span> <span class="o">=</span> <span class="n">make_whole_domain</span><span class="p">()</span>
+
+<span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+            <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;single&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;angle_aggregation_num_subsets&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+    <span class="n">uncollided_flux</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uncollided_file</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">compute_balance</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]  FromFileMeshGenerator: Generating UnpartitionedMesh
+[0]  Making unpartitioned mesh from Gmsh file /Users/dhawkins/opensn_dev/opensn/test/assets/mesh/uncollided_cube_coarse.msh (format v4.1 binary)
+[0]  Done checking cell-center-to-face orientations
+[0]  00:00:00.7 Establishing cell connectivity.
+[0]  00:00:00.7 Vertex cell subscriptions complete.
+[0]  00:00:00.7 Surpassing cell 74 of 735 (10%)
+[0]  00:00:00.7 Surpassing cell 147 of 735 (20%)
+[0]  00:00:00.7 Surpassing cell 221 of 735 (30%)
+[0]  00:00:00.7 Surpassing cell 294 of 735 (40%)
+[0]  00:00:00.7 Surpassing cell 368 of 735 (50%)
+[0]  00:00:00.7 Surpassing cell 442 of 735 (60%)
+[0]  00:00:00.7 Surpassing cell 515 of 735 (70%)
+[0]  00:00:00.7 Surpassing cell 588 of 735 (80%)
+[0]  00:00:00.7 Surpassing cell 662 of 735 (90%)
+[0]  00:00:00.7 Surpassing cell 735 of 735 (100%)
+[0]  00:00:00.7 Establishing cell boundary connectivity.
+[0]  00:00:00.7 Done establishing cell connectivity.
+[0]  Done processing /Users/dhawkins/opensn_dev/opensn/test/assets/mesh/uncollided_cube_coarse.msh.
+[0]  Number of nodes read: 237
+[0]  Number of cells read: 735
+[0]  Number of cells per partition (max,min,avg) = 735,735,735
+[0]
+[0]  Mesh statistics:
+[0]    Global cell count             : 735
+[0]    Local cell count (avg,max,min): 735,735,735
+[0]    Ghost-to-local ratio (avg)    : 0
+[0]
+[0]  00:00:00.7 Done setting block id 0 to all cells
+[0]
+[0]  Initializing DiscreteOrdinatesProblem
+[0]
+[0]  Scattering order    : 0
+[0]  Number of moments   : 1
+[0]  Number of groups    : 1
+[0]  Number of groupsets : 1
+[0]
+[0]  ***** Groupset 0 *****
+[0]  Quadrature type : 3D XYZ Gauss-Legendre/Chebyshev product
+[0]  Number of angles: 32
+[0]  Quadrature norm : 1.00
+[0]  Groups:
+[0]      0
+[0]
+[0]  00:00:00.7 Initializing spatial discretization metadata.
+[0]  00:00:00.7 Computing unit integrals.
+[0]  00:00:00.7 Ghost cell unit cell-matrix ratio: 0%
+[0]  00:00:00.7 Cell matrices computed.
+[0]  00:00:00.7 Initializing parallel arrays. G=1 M=1
+[0]  00:00:00.7 Done with parallel arrays.
+[0]  00:00:00.7 Reading uncollided flux from
+[0]      &#34;/Users/dhawkins/opensn_dev/opensn/doc/source/tutorials/lbs/src_driven/uncollided/uncollided.h5&#34;.
+[0]  00:00:00.7 Successfully loaded uncollided flux from
+[0]      &#34;/Users/dhawkins/opensn_dev/opensn/doc/source/tutorials/lbs/src_driven/uncollided/uncollided.h5&#34; and constructed the
+[0]      first-collision source (groups=1, max moment order=0, global cells=735).
+[0]  00:00:00.7 Initializing sweep datastructures.
+[0]  00:00:00.9 Done initializing sweep datastructures.
+[0]  00:00:00.9 Initialized angle aggregation.
+[0]  00:00:00.9 Initializing solver SteadyStateSourceSolver.
+[0]  00:00:00.9 Starting solver execution SteadyStateSourceSolver.
+[0]  00:00:00.9 WGS groups [0-0] iteration = 0, residual = 1.000000e+00
+[0]  00:00:00.9 WGS groups [0-0] iteration = 1, residual = 1.517591e-03
+[0]  00:00:00.9 WGS groups [0-0] iteration = 2, residual = 1.657536e-06
+[0]  00:00:00.9 WGS groups [0-0] iteration = 3, residual = 1.309965e-09, status = converged
+[0]  00:00:00.9 WGS groups [0-0] avg_sweep_time = 7.882083e-03 s, sweep_time_per_unknown = 8.378065e+01 ns
+[0]  00:00:00.9 WGS groups [0-0] unknowns = 94080, lagged_unknowns = 0, lagged_pct = 0.00
+[0]
+[0]  Balance table:
+[0]   Absorption rate             = 7.915129e-03
+[0]   Production rate             = 1.000000e+00
+[0]   In-flow rate                = 0.000000e+00
+[0]   Out-flow rate               = 9.920849e-01
+[0]   Balance                     = -2.220446e-15
+[0]
+[0]  00:00:00.9 Finished solver execution SteadyStateSourceSolver.
+</pre></div></div>
+</div>
+</section>
+<section id="Post-Process-the-Total-Flux">
+<h2><span class="section-number">5.3.2.8. </span>Post-Process the Total Flux<a class="headerlink" href="#Post-Process-the-Total-Flux" title="Link to this heading"></a></h2>
+<p>After the steady-state solve converges, the reported field functions contain the <strong>total</strong> scalar flux. We sample one point and compute the domain integral.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scalar_flux</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">point_flux</span> <span class="o">=</span> <span class="n">point_value</span><span class="p">(</span><span class="n">scalar_flux</span><span class="p">,</span> <span class="n">sample_point</span><span class="p">)</span>
+<span class="n">total_integral</span> <span class="o">=</span> <span class="n">volume_integral</span><span class="p">(</span><span class="n">scalar_flux</span><span class="p">,</span> <span class="n">whole_domain</span><span class="p">)</span>
+<span class="n">balance</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">ComputeBalanceTable</span><span class="p">()[</span><span class="s2">&quot;balance&quot;</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total scalar flux at </span><span class="si">{</span><span class="n">sample_point</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">point_flux</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total scalar-flux integral: </span><span class="si">{</span><span class="n">total_integral</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Balance residual: </span><span class="si">{</span><span class="n">balance</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Total scalar flux at (0.024, 0.016, 0.008): 2.735814472835e+02
+Total scalar-flux integral: 1.798893012550e-02
+Balance residual: -2.220446049250e-15
+</pre></div></div>
+</div>
+</section>
+<section id="Optional:-Visualize-the-Total-Flux">
+<h2><span class="section-number">5.3.2.9. </span>Optional: Visualize the Total Flux<a class="headerlink" href="#Optional:-Visualize-the-Total-Flux" title="Link to this heading"></a></h2>
+<p>The notebook does not require <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> to run. If you want a quick line plot of the total scalar flux, uncomment the next cell and run it in an environment where <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> is available.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="c1">#</span>
+<span class="c1"># total_line = export_line_data(</span>
+<span class="c1">#     scalar_flux,</span>
+<span class="c1">#     &quot;total_line&quot;,</span>
+<span class="c1">#     line_start,</span>
+<span class="c1">#     line_end,</span>
+<span class="c1"># )</span>
+<span class="c1">#</span>
+<span class="c1"># plt.figure()</span>
+<span class="c1"># plt.semilogy(total_line[&quot;x&quot;], total_line[&quot;phi_g000_m00&quot;])</span>
+<span class="c1"># plt.xlabel(&quot;x (m)&quot;)</span>
+<span class="c1"># plt.ylabel(r&quot;$\phi(x)$&quot;)</span>
+<span class="c1"># plt.title(&quot;Total scalar flux along the source-centered line&quot;)</span>
+<span class="c1"># plt.grid()</span>
+<span class="c1"># plt.show()</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../mg_src_driven/hdpe_example.html" class="btn btn-neutral float-left" title="5.3.1. Slowing-Down in High-Density Polyethylene" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../detector_forward/detector.html" class="btn btn-neutral float-right" title="5.3.3. A Multigroup 1D Detector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

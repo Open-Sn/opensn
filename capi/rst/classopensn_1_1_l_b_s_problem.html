@@ -96,10 +96,11 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">std::enable_shared_from_this&lt;</span> <span class="pre">LBSProblem</span> <span class="pre">&gt;</span></code></p></li>
 </ul>
 </section>
-<section id="derived-type">
-<h3>Derived Type<a class="headerlink" href="#derived-type" title="Link to this heading"></a></h3>
+<section id="derived-types">
+<h3>Derived Types<a class="headerlink" href="#derived-types" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></code> (<a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#exhale-class-classopensn-1-1-discrete-ordinates-problem"><span class="std std-ref">Class DiscreteOrdinatesProblem</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::UncollidedProblem</span></code> (<a class="reference internal" href="classopensn_1_1_uncollided_problem.html#exhale-class-classopensn-1-1-uncollided-problem"><span class="std std-ref">Class UncollidedProblem</span></a>)</p></li>
 </ul>
 </section>
 </section>
@@ -110,7 +111,7 @@
 <span class="target" id="classopensn_1_1_l_b_s_problem"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LBSProblem</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_problem.html#_CPPv4N6opensn7ProblemE" title="opensn::Problem"><span class="n"><span class="pre">Problem</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_shared_from_this</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblemE" title="Link to this definition"></a><br /></dt>
 <dd><p>Base class for all Linear Boltzmann Solvers. </p>
 <p>Problems are created through derived-class factory functions. The factory function performs all constructor-time parsing and calls BuildRuntime before returning the shared pointer, so public methods operate on a fully built problem. </p>
-<p>Subclassed by <a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#classopensn_1_1_discrete_ordinates_problem"><span class="std std-ref">opensn::DiscreteOrdinatesProblem</span></a></p>
+<p>Subclassed by <a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#classopensn_1_1_discrete_ordinates_problem"><span class="std std-ref">opensn::DiscreteOrdinatesProblem</span></a>, <a class="reference internal" href="classopensn_1_1_uncollided_problem.html#classopensn_1_1_uncollided_problem"><span class="std std-ref">opensn::UncollidedProblem</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">

@@ -1,0 +1,56 @@
+
+.. _file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_solver.h:
+
+File uncollided_solver.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_uncollided_problem>` (``modules/linear_boltzmann_solvers/uncollided_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/uncollided_problem/uncollided_solver.h``)
+----------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_solver.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``memory``
+
+- ``modules/solver.h`` (:ref:`file_modules_solver.h`)
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_uncollided_solver`
+

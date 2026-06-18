@@ -98,6 +98,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/parameter_block.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
@@ -251,6 +252,23 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TransferDeviceBoundaryData</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">host_to_device</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasUncollidedFlux</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">uncollided_flux_file_</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetFirstCollisionSourceMoments</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">first_collision_source_moments_local_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">GetUncollidedSourceRate</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">uncollided_source_rate_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">GetUncollidedOutflowRate</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">uncollided_outflow_rate_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Removes a previously applied uncollided scalar flux from the iterative state.</span>
+<span class="w">  </span><span class="c1">/// Returns true when flux was removed.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">RemoveUncollidedFlux</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Adds the uncollided scalar flux to the converged collided scalar flux.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeFluxFromUncollided</span><span class="p">();</span>
+
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * @name Construction and setup</span>
@@ -370,10 +388,18 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">psi_new_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">psi_old_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">SweepChunkMode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sweep_chunk_mode_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">uncollided_flux_file_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">uncollided_flux_moments_local_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_collision_source_moments_local_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">uncollided_source_rate_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">uncollided_outflow_rate_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">uncollided_flux_applied_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AGSLinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ags_solver_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">WGSContext</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_contexts_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_solvers_</span><span class="p">;</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeFCS</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>

@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_uncollided_flux_data:
+
+Struct UncollidedFluxData
+=========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_io_discrete_ordinates_problem_io.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::UncollidedFluxData
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_uncollided_matrices:
+
+Struct UncollidedMatrices
+=========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_problem.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::UncollidedMatrices
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:
