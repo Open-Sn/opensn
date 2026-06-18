@@ -7,6 +7,7 @@
 #include "framework/math/functions/function.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
+#include "framework/utils/error.h"
 #include "framework/runtime.h"
 #include <numeric>
 #include <limits>
@@ -90,12 +91,31 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& ghost_unit_cell_matrices = lbs_problem.GetUnitGhostCellMatrices();
 
+  // Point sources are allowed to be placed exactly on mesh faces/vertices. In that
+  // case every cell incident on the face/vertex must subscribe to the source so
+  // the source strength can be volume-weighted across the adjacent cells.
+  //
+  // An explicit face check makes the subscriber set work for sources on faces and
+  // vertices, and keeps the uncollided treatment consistent with the collided
+  // point-source treatment.
+  auto PointIsInCellOrOnBoundary = [&grid](const Cell& cell, const Vector3& point)
+  {
+    if (grid->CheckPointInsideCell(cell, point))
+      return true;
+
+    for (size_t f = 0; f < cell.faces.size(); ++f)
+      if (grid->CheckPointInsideCellFace(cell, f, point))
+        return true;
+
+    return false;
+  };
+
   // Find local subscribers
   double total_volume = 0.0;
   std::vector<Subscriber> subscribers;
   for (const auto& cell : grid->local_cells)
   {
-    if (grid->CheckPointInsideCell(cell, location_))
+    if (PointIsInCellOrOnBoundary(cell, location_))
     {
       const auto& cell_mapping = discretization.GetCellMapping(cell);
       const auto& fe_values = unit_cell_matrices[cell.local_id];
@@ -120,7 +140,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   for (uint64_t global_id : ghost_global_ids)
   {
     const auto& nbr_cell = grid->cells[global_id];
-    if (grid->CheckPointInsideCell(nbr_cell, location_))
+    if (PointIsInCellOrOnBoundary(nbr_cell, location_))
     {
       const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id);
       total_volume +=
@@ -146,6 +166,11 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
 
   size_t num_local_subs = subscribers_.size();
   mpi_comm.all_reduce(num_local_subs, num_global_subscribers_, mpi::op::sum<size_t>());
+
+  // Catch and gracefully exit if the source has no subscribing cells.
+  OpenSnInvalidArgumentIf(num_global_subscribers_ == 0,
+                          "Point source at " + location_.PrintStr() +
+                            " does not lie in any local or ghost cell.");
 
   log.LogAll() << "Point source has " << num_local_subs << " subscribing cells on processor "
                << mpi_comm.rank();

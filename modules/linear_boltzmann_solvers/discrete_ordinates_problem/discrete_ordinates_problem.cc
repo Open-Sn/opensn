@@ -142,6 +142,11 @@ DiscreteOrdinatesProblem::GetInputParameters()
                               "If true, initializes the problem in time-dependent mode. "
                               "Requires `options.save_angular_flux=true`.");
 
+  params.AddOptionalParameter(
+    "uncollided_flux",
+    "",
+    "Optional precomputed uncollided flux file used to construct a first collision source.");
+
   return params;
 }
 
@@ -230,6 +235,17 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     const auto& bcs = params.GetParam("boundary_conditions");
     bcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
     boundary_conditions_block_ = bcs;
+  }
+
+  uncollided_flux_file_ = params.GetParamValue<std::string>("uncollided_flux");
+  if (not uncollided_flux_file_.empty())
+  {
+    OpenSnInvalidArgumentIf(params.GetParamValue<bool>("time_dependent"),
+                            GetName() + ": uncollided flux is only supported for steady-state "
+                                        "fixed-source calculations.");
+    OpenSnInvalidArgumentIf(options_.adjoint,
+                            GetName() + ": uncollided flux is not supported for adjoint "
+                                        "calculations.");
   }
 
   // Check for consistency between quadrature sets
@@ -539,6 +555,7 @@ DiscreteOrdinatesProblem::BuildRuntime()
   }
 
   LBSProblem::BuildRuntime();
+  InitializeFCS();
 
   // Make face histogram
   grid_face_histogram_ = grid_->MakeGridFaceHistogram();
@@ -588,6 +605,105 @@ DiscreteOrdinatesProblem::BuildRuntime()
   RebuildBoundaryRuntimeData();
 
   InitializeSolverSchemes();
+}
+
+void
+DiscreteOrdinatesProblem::InitializeFCS()
+{
+  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeFCS");
+
+  if (uncollided_flux_file_.empty())
+    return;
+
+  const auto& file_name = uncollided_flux_file_;
+  log.Log0() << program_timer.GetTimeString() << " Reading uncollided flux from \"" << file_name
+             << "\".";
+
+  auto data = DiscreteOrdinatesProblemIO::ReadUncollidedFlux(*this, file_name);
+  uncollided_source_rate_ = data.source_rate;
+  uncollided_outflow_rate_ = data.outflow_rate;
+  uncollided_flux_moments_local_ = std::move(data.local_flux_moments);
+
+  const auto local_unknown_count = uncollided_flux_moments_local_.size();
+  options_.use_src_moments = true;
+  if (ext_src_moments_local_.size() != local_unknown_count)
+    ext_src_moments_local_.assign(local_unknown_count, 0.0);
+  first_collision_source_moments_local_.assign(local_unknown_count, 0.0);
+
+  const auto& moment_to_harmonics = groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap();
+  for (size_t m = 0; m < num_moments_; ++m)
+  {
+    const auto ell = moment_to_harmonics[m].ell;
+    for (const auto& cell : grid_->local_cells)
+    {
+      const auto num_nodes = discretization_->GetCellNumNodes(cell);
+      const auto& transport_view = cell_transport_views_[cell.local_id];
+      const auto& xs = transport_view.GetXS();
+      const auto& transfer_matrices = xs.GetTransferMatrices();
+      for (size_t i = 0; i < num_nodes; ++i)
+      {
+        const auto lhs_uk_map = transport_view.MapDOF(i, m, 0);
+        for (size_t g = 0; g < num_groups_; ++g)
+        {
+          double rhs = 0.0;
+          if (ell < transfer_matrices.size())
+            for (const auto& [_, gp, sigma_sm] : transfer_matrices[ell].Row(g))
+              rhs += sigma_sm * uncollided_flux_moments_local_[lhs_uk_map + gp];
+
+          if (ell == 0 and xs.IsFissionable())
+          {
+            const auto& production = xs.GetProductionMatrix()[g];
+            for (size_t gp = 0; gp < num_groups_; ++gp)
+              rhs += production[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
+
+            if (options_.use_precursors and xs.GetNumPrecursors() > 0)
+            {
+              const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
+              for (size_t gp = 0; gp < num_groups_; ++gp)
+                for (const auto& precursor : xs.GetPrecursors())
+                  rhs += precursor.emission_spectrum[g] * precursor.fractional_yield *
+                         nu_delayed_sigma_f[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
+            }
+          }
+
+          first_collision_source_moments_local_[lhs_uk_map + g] += rhs;
+          ext_src_moments_local_[lhs_uk_map + g] += rhs;
+        }
+      }
+    }
+  }
+
+  log.Log0() << program_timer.GetTimeString() << " Successfully loaded uncollided flux from \""
+             << file_name << "\" and constructed the first-collision source"
+             << " (groups=" << data.num_groups << ", max moment order=" << data.max_moment_order
+             << ", global cells=" << data.global_cell_count << ").";
+}
+
+bool
+DiscreteOrdinatesProblem::RemoveUncollidedFlux()
+{
+  if (not uncollided_flux_applied_)
+    return false;
+
+  OpenSnLogicalErrorIf(phi_new_local_.size() != uncollided_flux_moments_local_.size(),
+                       GetName() + ": uncollided flux-moment size mismatch.");
+  for (size_t i = 0; i < phi_new_local_.size(); ++i)
+    phi_new_local_[i] -= uncollided_flux_moments_local_[i];
+  uncollided_flux_applied_ = false;
+  return true;
+}
+
+void
+DiscreteOrdinatesProblem::ComputeFluxFromUncollided()
+{
+  if (uncollided_flux_applied_)
+    return;
+
+  OpenSnLogicalErrorIf(phi_new_local_.size() != uncollided_flux_moments_local_.size(),
+                       GetName() + ": uncollided flux-moment size mismatch.");
+  for (size_t i = 0; i < phi_new_local_.size(); ++i)
+    phi_new_local_[i] += uncollided_flux_moments_local_[i];
+  uncollided_flux_applied_ = true;
 }
 
 void
@@ -900,6 +1016,9 @@ DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
 void
 DiscreteOrdinatesProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 {
+  OpenSnInvalidArgumentIf(
+    HasUncollidedFlux(),
+    GetName() + ": cross sections cannot be replaced after loading an uncollided flux file.");
   LBSProblem::SetBlockID2XSMap(xs_map);
 
   for (auto& groupset : groupsets_)

@@ -206,7 +206,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
   for (const auto& cell : grid->local_cells)
     cell_sizes[cell.local_id] = GetCellApproximateSize(cell);
 
-  RayTracer ray_tracer(grid, cell_sizes);
+  RayTracer ray_tracer(grid, &cell_sizes);
 
   // Run rays
   const auto PWLD = SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS;

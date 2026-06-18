@@ -10,6 +10,69 @@
 
 namespace opensn
 {
+namespace
+{
+
+double
+EstimateCellSize(const MeshContinuum& grid, const Cell& cell)
+{
+  const auto& v0 = grid.vertices[cell.vertex_ids.front()];
+  double xmin = v0.x;
+  double xmax = v0.x;
+  double ymin = v0.y;
+  double ymax = v0.y;
+  double zmin = v0.z;
+  double zmax = v0.z;
+
+  for (const auto vertex_id : cell.vertex_ids)
+  {
+    const auto& vertex = grid.vertices[vertex_id];
+    xmin = std::min(xmin, vertex.x);
+    xmax = std::max(xmax, vertex.x);
+    ymin = std::min(ymin, vertex.y);
+    ymax = std::max(ymax, vertex.y);
+    zmin = std::min(zmin, vertex.z);
+    zmax = std::max(zmax, vertex.z);
+  }
+
+  return std::max((Vector3(xmax, ymax, zmax) - Vector3(xmin, ymin, zmin)).Norm(), 1.0);
+}
+
+bool
+CheckIntersectionAtVertex(const std::shared_ptr<MeshContinuum>& grid,
+                          const std::vector<uint64_t>& vertex_ids,
+                          const Vector3& line_point0,
+                          const Vector3& line_point1,
+                          const double tolerance,
+                          const double nudge,
+                          Vector3& intersection_point,
+                          double& distance_to_intersection,
+                          uint64_t& neighbor_id)
+{
+  for (const uint64_t vertex_id : vertex_ids)
+  {
+    const Vector3& vertex = grid->vertices[vertex_id];
+    const double point0_to_vertex = (vertex - line_point0).Norm();
+    const double point1_to_vertex = (vertex - line_point1).Norm();
+    const double point0_to_point1 = (line_point1 - line_point0).Norm();
+
+    if (std::abs(point0_to_point1 - (point0_to_vertex + point1_to_vertex)) >= tolerance)
+      continue;
+
+    const Vector3 nudged_point = vertex + nudge * (line_point1 - vertex).Normalized();
+    for (const auto& cell : grid->local_cells)
+      if (grid->CheckPointInsideCell(cell, nudged_point))
+      {
+        intersection_point = vertex;
+        distance_to_intersection = point0_to_vertex;
+        neighbor_id = cell.global_id;
+        return true;
+      }
+  }
+  return false;
+}
+
+} // namespace
 
 std::shared_ptr<MeshContinuum>
 RayTracer::Grid() const
@@ -20,8 +83,10 @@ RayTracer::Grid() const
 RayTracerOutputInformation
 RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth)
 {
-  if (not cell_sizes_.empty())
-    SetTolerancesFromCellSize(cell_sizes_[cell.local_id]);
+  const auto& grid = Grid();
+  const double cell_size =
+    cell_sizes_ ? (*cell_sizes_)[cell.local_id] : EstimateCellSize(*grid, cell);
+  SetTolerancesFromCellSize(cell_size);
 
   RayTracerOutputInformation oi;
 
@@ -70,8 +135,6 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
            << (pos_i + extension_distance_ * omega_i).PrintStr() << " " << extension_distance_
            << " in cell " << cell.global_id << " with vertices: \n";
 
-    const auto& grid = Grid();
-
     for (auto vi : cell.vertex_ids)
       outstr << grid->vertices[vi].PrintStr() << "\n";
 
@@ -103,7 +166,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
       for (auto vid : face.vertex_ids)
       {
         size_t ref_cell_id = 0;
-        for (size_t cid = 0; cid < cell.vertex_ids.size(); ++cid)
+        for (uint64_t cid = 0; cid < cell.vertex_ids.size(); ++cid)
           if (cell.vertex_ids[cid] == vid)
             ref_cell_id = cid + 1;
 
@@ -123,7 +186,7 @@ RayTracerOutputInformation
 RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector3& omega_i)
 {
   const auto cell_type = cell.GetType();
-  const double cell_char_length = cell_sizes_[cell.local_id];
+  const double cell_char_length = (*cell_sizes_)[cell.local_id];
   const auto& grid = reference_grid_;
 
   bool intersects_cell = false;
@@ -313,9 +376,23 @@ RayTracer::TracePolygon(const Cell& cell,
   }
   else
   {
-    RayTracerOutputInformation blank_oi;
-    blank_oi.distance_to_surface = 1.0e15;
-    oi = blank_oi;
+    bool intersect_at_vertex = CheckIntersectionAtVertex(grid,
+                                                         cell.vertex_ids,
+                                                         pos_i,
+                                                         pos_f_line,
+                                                         backward_tolerance_,
+                                                         epsilon_nudge_,
+                                                         oi.pos_f,
+                                                         oi.distance_to_surface,
+                                                         oi.destination_face_neighbor);
+    intersection_found = intersect_at_vertex;
+
+    if (not intersect_at_vertex)
+    {
+      RayTracerOutputInformation blank_oi;
+      blank_oi.distance_to_surface = 1.0e15;
+      oi = blank_oi;
+    }
   }
 }
 
@@ -328,68 +405,98 @@ RayTracer::TracePolyhedron(const Cell& cell,
                            RayTracerOutputInformation& oi)
 {
   const auto& grid = Grid();
-  Vector3 ip = pos_i; // Intersection point
+  const size_t num_faces = cell.faces.size();
 
+  if (not perform_concavity_checks_)
+  {
+    // Convex fast path: centroid-fan triangle loop with early exit, no heap allocation.
+    Vector3 ip = pos_i;
+    for (size_t f = 0; f < num_faces; ++f)
+    {
+      const auto& face = cell.faces[f];
+      const size_t num_sides = face.vertex_ids.size();
+      const auto& v2 = face.centroid;
+      for (size_t s = 0; s < num_sides; ++s)
+      {
+        const auto& v0 = grid->vertices[face.vertex_ids[s]];
+        const auto& v1 =
+          grid->vertices[(s + 1 < num_sides) ? face.vertex_ids[s + 1] : face.vertex_ids[0]];
+        if ((v1 - v0).Cross(v2 - v0).Dot(omega_i) < 0.0)
+          continue;
+        if (CheckLineIntersectTriangle2(v0, v1, v2, pos_i, omega_i, ip))
+        {
+          oi.distance_to_surface = (ip - pos_i).Norm();
+          oi.pos_f = ip;
+          oi.destination_face_index = f;
+          oi.destination_face_neighbor = face.neighbor_id;
+          intersection_found = true;
+          return;
+        }
+      }
+    }
+    oi.distance_to_surface = 1.0e15;
+    return;
+  }
+
+  // Non-convex path: collect all intersections and pick the closest.
+  Vector3 ip = pos_i;
   std::vector<RayTracerOutputInformation> triangle_intersections;
-
-  size_t num_faces = cell.faces.size();
-  triangle_intersections.reserve(num_faces * 4); // Guessing 4 tris per face
+  triangle_intersections.reserve(num_faces * 4);
   for (size_t f = 0; f < num_faces; ++f)
   {
     const auto& face = cell.faces[f];
-
-    size_t num_sides = face.vertex_ids.size();
-    for (size_t s = 0; s < num_sides; ++s)
+    if (face.normal.Dot(omega_i) < 0.0)
+      continue;
+    const size_t num_sides = face.vertex_ids.size();
+    if (num_sides == 3)
     {
-      auto v0_index = face.vertex_ids[s];
-      auto v1_index = (s < (num_sides - 1)) ? // if not last vertex
-                        face.vertex_ids[s + 1]
-                                            : face.vertex_ids[0]; // else
-      const auto& v0 = grid->vertices[v0_index];
-      const auto& v1 = grid->vertices[v1_index];
-      const auto& v2 = cell.faces[f].centroid;
-
-      auto v01 = v1 - v0;
-      auto v02 = v2 - v0;
-      auto n_est = v01.Cross(v02);
-
-      if (n_est.Dot(omega_i) < 0.0)
+      const auto& v0 = grid->vertices[face.vertex_ids[0]];
+      const auto& v1 = grid->vertices[face.vertex_ids[1]];
+      const auto& v2 = grid->vertices[face.vertex_ids[2]];
+      if ((v1 - v0).Cross(v2 - v0).Dot(omega_i) < 0.0)
         continue;
-
-      RayTracerOutputInformation triangle_oi;
-
-      bool intersects = CheckLineIntersectTriangle2(v0, v1, v2, pos_i, omega_i, ip);
-
-      if (intersects)
+      RayTracerOutputInformation tri_oi;
+      if (CheckLineIntersectTriangle2(v0, v1, v2, pos_i, omega_i, ip))
       {
-        triangle_oi.distance_to_surface = (ip - pos_i).Norm();
-        triangle_oi.pos_f = ip;
-
-        triangle_oi.destination_face_index = f;
-        triangle_oi.destination_face_neighbor = cell.faces[f].neighbor_id;
-
+        tri_oi.distance_to_surface = (ip - pos_i).Norm();
+        tri_oi.pos_f = ip;
+        tri_oi.destination_face_index = f;
+        tri_oi.destination_face_neighbor = face.neighbor_id;
         intersection_found = true;
-        triangle_intersections.emplace_back(std::move(triangle_oi));
-        if (not perform_concavity_checks_)
-          break;
-      } // if intersects
-    } // for side
+        triangle_intersections.emplace_back(std::move(tri_oi));
+      }
+    }
+    else
+    {
+      const auto& v2 = face.centroid;
+      for (size_t s = 0; s < num_sides; ++s)
+      {
+        const auto& v0 = grid->vertices[face.vertex_ids[s]];
+        const auto& v1 =
+          grid->vertices[(s + 1 < num_sides) ? face.vertex_ids[s + 1] : face.vertex_ids[0]];
+        if ((v1 - v0).Cross(v2 - v0).Dot(omega_i) < 0.0)
+          continue;
+        RayTracerOutputInformation tri_oi;
+        if (CheckLineIntersectTriangle2(v0, v1, v2, pos_i, omega_i, ip))
+        {
+          tri_oi.distance_to_surface = (ip - pos_i).Norm();
+          tri_oi.pos_f = ip;
+          tri_oi.destination_face_index = f;
+          tri_oi.destination_face_neighbor = face.neighbor_id;
+          intersection_found = true;
+          triangle_intersections.emplace_back(std::move(tri_oi));
+        }
+      }
+    }
+  }
 
-    if (intersection_found and (not perform_concavity_checks_))
-      break;
-  } // for faces
-
-  // Determine closest intersection
-  if (not perform_concavity_checks_ and not triangle_intersections.empty())
-    oi = triangle_intersections.back();
-  else if (perform_concavity_checks_ and not triangle_intersections.empty())
+  if (not triangle_intersections.empty())
   {
-    auto* closest_intersection = &triangle_intersections.back();
-    for (auto& intersection : triangle_intersections)
-      if (intersection.distance_to_surface < closest_intersection->distance_to_surface)
-        closest_intersection = &intersection;
-
-    oi = *closest_intersection;
+    auto* closest = &triangle_intersections.back();
+    for (auto& ti : triangle_intersections)
+      if (ti.distance_to_surface < closest->distance_to_surface)
+        closest = &ti;
+    oi = *closest;
   }
   else
   {

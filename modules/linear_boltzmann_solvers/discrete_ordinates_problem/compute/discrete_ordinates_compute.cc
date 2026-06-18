@@ -70,6 +70,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   auto& phi_new_local = do_problem.GetPhiNewLocal();
   const auto& groupsets = do_problem.GetGroupsets();
   auto& q_moments_local = do_problem.GetQMomentsLocal();
+  const auto saved_q_moments_local = q_moments_local;
   auto active_set_source_fn = do_problem.GetActiveSetSourceFunction();
   const auto& cell_transport_views = do_problem.GetCellTransportViews();
   const auto& cell_outflow_views = do_problem.GetCellOutflowViews();
@@ -80,6 +81,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   const auto dt = time_dependent ? do_problem.GetTimeStep() : 0.0;
   const auto& psi_new_local = do_problem.GetPsiNewLocal();
   const auto& psi_old_local = do_problem.GetPsiOldLocal();
+  const auto& first_collision_source = do_problem.GetFirstCollisionSourceMoments();
 
   // Get material source
   // This is done using the SetSource routine because it allows a lot of flexibility.
@@ -181,6 +183,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
         auto imap = transport_view.MapDOF(i, 0, g);
         double phi_0g = phi_new_local[imap];
         double q_0g = mat_src[imap];
+        if (do_problem.HasUncollidedFlux())
+          q_0g -= first_collision_source[imap];
 
         local_absorption += sigma_a[g] * phi_0g * IntV_shapeI(i);
         local_production += q_0g * IntV_shapeI(i);
@@ -245,6 +249,12 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   double global_in_flow = global_balance_table.at(2);
   double global_out_flow = global_balance_table.at(3);
   double global_balance = global_balance_table.at(4);
+  if (do_problem.HasUncollidedFlux())
+  {
+    global_production += do_problem.GetUncollidedSourceRate();
+    global_out_flow += do_problem.GetUncollidedOutflowRate();
+    global_balance = global_production + global_in_flow - (global_absorption + global_out_flow);
+  }
   double global_initial = 0.0;
   double global_final = 0.0;
   if (scaling_factor != 1.0)
@@ -258,6 +268,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     global_initial = global_balance_table.at(5);
     global_final = global_balance_table.at(6);
   }
+
+  do_problem.SetQMomentsFrom(saved_q_moments_local);
 
   if (time_dependent)
   {

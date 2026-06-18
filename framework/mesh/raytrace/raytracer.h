@@ -27,12 +27,20 @@ struct RayTracerOutputInformation
 /// Raytracer object.
 class RayTracer
 {
+private:
+  const std::shared_ptr<MeshContinuum> reference_grid_;
+  const std::vector<double>* cell_sizes_ = nullptr;
+  double epsilon_nudge_ = 1.0e-10;
+  double backward_tolerance_ = 1.0e-10;
+  double extension_distance_ = 1.0e5;
+  bool perform_concavity_checks_ = true;
+
 public:
   explicit RayTracer(const std::shared_ptr<MeshContinuum> grid,
-                     std::vector<double> cell_sizes,
+                     const std::vector<double>* cell_sizes = nullptr,
                      bool perform_concavity_checks = true)
     : reference_grid_(grid),
-      cell_sizes_(std::move(cell_sizes)),
+      cell_sizes_(cell_sizes),
       perform_concavity_checks_(perform_concavity_checks)
   {
   }
@@ -81,13 +89,6 @@ private:
                        bool& intersection_found,
                        bool& backward_tolerance_hit,
                        RayTracerOutputInformation& oi);
-
-  const std::shared_ptr<MeshContinuum> reference_grid_;
-  std::vector<double> cell_sizes_;
-  double epsilon_nudge_ = 1.0e-8;
-  double backward_tolerance_ = 1.0e-10;
-  double extension_distance_ = 1.0e5;
-  bool perform_concavity_checks_ = true;
 };
 
 /**

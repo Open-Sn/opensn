@@ -27,6 +27,7 @@ extern bool use_caliper;
 extern std::string cali_config;
 extern cali::ConfigManager cali_mgr;
 extern std::filesystem::path input_path;
+extern unsigned int opensn_num_threads;
 
 /// Initializes all necessary items
 int Initialize();

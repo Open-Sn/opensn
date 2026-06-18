@@ -885,6 +885,27 @@ Notes:
 #. The inversion of the :math:`L` operator in the uncollided problem can
    be done using ray tracing, thus mitigating ray effects.
 
+#. OpenSn projects the ray-traced scalar flux onto the local PWLD basis.
+   A constrained lumped-mass correction keeps every nodal scalar-flux
+   coefficient nonnegative while preserving the projected cell integral.
+   Cell removal is computed from this projected analytic field. The total
+   outgoing current is then obtained from cell balance and distributed among
+   outgoing faces in proportion to their ray-traced currents. This avoids
+   balancing independently integrated volume and face approximations.
+
+#. Finite-volume sources can be approximated externally by weighted point
+   sources, for example at volume-quadrature points. The uncollided generation
+   itself consumes explicit point sources, remains serial in MPI, and produces
+   HDF5 data that can drive either a serial or parallel collided calculation.
+
+#. Planar, mutually orthogonal reflecting symmetry boundaries are represented
+   by image sources. Attenuation paths to an image source are folded through
+   the physical mesh so heterogeneous material crossings remain consistent
+   with the reflected geometry.
+
+#. If ``scattering_order`` is greater than zero, OpenSn also writes the
+   corresponding uncollided flux moments needed by the collided solve.
+
 #. The collided problem is quite similar to a standard :math:`S_n` so
    the solution techniques described early apply straightforwardly. The
    first-collision scattering source plays the role of the external

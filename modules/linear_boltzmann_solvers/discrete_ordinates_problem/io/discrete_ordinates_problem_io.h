@@ -14,9 +14,22 @@ namespace opensn
 
 class DiscreteOrdinatesProblem;
 
+struct UncollidedFluxData
+{
+  unsigned int num_groups = 0;
+  unsigned int max_moment_order = 0;
+  std::uint64_t global_cell_count = 0;
+  double source_rate = 0.0;
+  double outflow_rate = 0.0;
+  std::vector<double> local_flux_moments;
+};
+
 class DiscreteOrdinatesProblemIO
 {
 public:
+  static UncollidedFluxData ReadUncollidedFlux(const DiscreteOrdinatesProblem& do_problem,
+                                               const std::string& file_name);
+
   static bool ReadRestartData(DiscreteOrdinatesProblem& do_problem,
                               hid_t file_id,
                               bool allow_transient_initialization_from_steady);
