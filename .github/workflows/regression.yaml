@@ -26,7 +26,7 @@ jobs:
         run: |
           module load python3/3.12.3 opensn/gcc/14
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests -d test/python -j 32 -v 1 -w 3 \
+          test/run_tests -d test/python -j 2 -v 1 -w 3 \
             --run-log "$RUNNER_TEMP/logs/regression_test_log.txt"
       - name: test tutorials
         shell: bash
@@ -34,7 +34,7 @@ jobs:
           module load python3/3.12.3 opensn/gcc/14
           export PYTHONPATH=$PWD/build
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests -d doc/source/tutorials -j 32 -v 1 -w 3 --engine=jupyter \
+          test/run_tests -d doc/source/tutorials -j 2 -v 1 -w 3 --engine=jupyter \
             --run-log "$RUNNER_TEMP/logs/regression_tutorials_log.txt"
       - name: test unit (MPI=1)
         shell: bash
@@ -74,7 +74,7 @@ jobs:
         run: |
           module load cuda/12.9 python3/3.12.3 opensn/gcc/14
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests --gpu -d test/python -j 32 -v 1 \
+          test/run_tests --gpu -d test/python -j 2 -v 1 \
             --run-log "$RUNNER_TEMP/logs/regression_cuda_log.txt"
       - name: upload test logs
         if: always()
@@ -102,7 +102,7 @@ jobs:
         run: |
           module load cuda/12.9 python3/3.12.3 rocm/7.1.1 opensn/clang/19
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests --gpu -d test/python -j 32 -v 1 \
+          test/run_tests --gpu -d test/python -j 2 -v 1 \
             --run-log "$RUNNER_TEMP/logs/regression_hip_log.txt"
       - name: upload test logs
         if: false
