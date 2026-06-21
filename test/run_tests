@@ -81,7 +81,8 @@ parser.add_argument(
 parser.add_argument(
     "-j", "--jobs",
     type=int, required=False, default=0,
-    help="Allow N jobs at once"
+    help="Allow up to N CPU slots at once. CPU slots account for MPI ranks multiplied by "
+         "OPENSN_NUM_THREADS."
 )
 
 parser.add_argument(
@@ -111,6 +112,14 @@ parser.add_argument(
     "--gpu",
     action="store_true",
     help="Run tests that require a GPU."
+)
+
+parser.add_argument(
+    "--gpu-jobs",
+    type=int,
+    required=False,
+    default=0,
+    help="Allow up to N concurrent GPU tests. Defaults to auto-detection and falls back to 1."
 )
 
 parser.add_argument(

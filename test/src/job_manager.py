@@ -145,6 +145,85 @@ def ResolveDependencyMatches(test_objects: dict, dependency: str) -> list:
     return [test for test in test_objects.values() if test.filename == dependency]
 
 
+def ParsePositiveInt(value, default=0):
+    """Parse an integer-like string and return default when unavailable/invalid."""
+    try:
+        parsed = int(str(value).strip())
+    except (TypeError, ValueError, AttributeError):
+        return default
+    return parsed if parsed > 0 else default
+
+
+def GetThreadCountForTest(test) -> int:
+    """Returns the effective threads-per-rank for a test."""
+    env = getattr(test, "env", {})
+    threads = ParsePositiveInt(env.get("OPENSN_NUM_THREADS"), default=0)
+    if threads > 0:
+        return threads
+
+    threads = ParsePositiveInt(os.environ.get("OPENSN_NUM_THREADS"), default=0)
+    if threads > 0:
+        return threads
+
+    return 1
+
+
+def GetCpuSlotsForTest(test) -> int:
+    """Returns the scheduler CPU-slot cost for a test."""
+    return max(1, test.num_procs * GetThreadCountForTest(test))
+
+
+def GetAllocatedCpuCapacity() -> int:
+    """Best-effort detection of CPU capacity available to this process."""
+    try:
+        return max(1, len(os.sched_getaffinity(0)))
+    except (AttributeError, OSError):
+        pass
+
+    for key in (
+        "SLURM_CPUS_ON_NODE",
+        "SLURM_CPUS_PER_TASK",
+        "PBS_NP",
+        "LSB_DJOB_NUMPROC",
+    ):
+        value = ParsePositiveInt(os.environ.get(key), default=0)
+        if value > 0:
+            return value
+
+    cpu_count = os.cpu_count()
+    return max(1, cpu_count if cpu_count is not None else 1)
+
+
+def _CountVisibleDevices(value: str) -> int:
+    """Counts visible device identifiers from an environment variable."""
+    stripped = value.strip()
+    if stripped == "" or stripped.lower() in ("none", "void", "no"):
+        return 0
+    return len([item for item in stripped.split(",") if item.strip() != ""])
+
+
+def GetGPUCapacity(argv) -> int:
+    """Best-effort detection of available GPU slots for GPU regression runs."""
+    if not argv.gpu:
+        return 0
+    if argv.gpu_jobs > 0:
+        return argv.gpu_jobs
+
+    for key in ("CUDA_VISIBLE_DEVICES", "HIP_VISIBLE_DEVICES", "ROCR_VISIBLE_DEVICES"):
+        value = os.environ.get(key, "")
+        if value != "":
+            detected = _CountVisibleDevices(value)
+            if detected > 0:
+                return detected
+
+    for key in ("SLURM_GPUS_ON_NODE", "SLURM_GPUS_PER_NODE", "SLURM_GPUS"):
+        detected = ParsePositiveInt(os.environ.get(key), default=0)
+        if detected > 0:
+            return detected
+
+    return 1
+
+
 # Parse JSON configs
 def ParseTestConfiguration(file_path: str):
     """Parses a JSON configuration at the path specified"""
@@ -500,12 +579,13 @@ def RunTests(tests: list, argv):
     """Actually runs the tests. This routine dynamically checks the system load."""
     start_time = time.perf_counter()
 
-    # os.cpu_count() may not be ideal in this case since it returns the number of logical cpus.
-    capacity = os.cpu_count()
+    cpu_capacity = GetAllocatedCpuCapacity()
     if argv.jobs > 0:
-        capacity = argv.jobs
-    capacity = max(1, capacity)
-    system_load = 0
+        cpu_capacity = argv.jobs
+    cpu_capacity = max(1, cpu_capacity)
+    gpu_capacity = GetGPUCapacity(argv)
+    cpu_load = 0
+    gpu_load = 0
     test_slots = []
     scheduler_blocked = False
 
@@ -525,31 +605,50 @@ def RunTests(tests: list, argv):
         if test.weight_class in weight_classes_allowed
         and ((test.requires_gpu and argv.gpu) or (not test.requires_gpu and not argv.gpu))
     ]
-    max_test_procs = max((test.num_procs for test in runnable_tests), default=1)
-    if max_test_procs > capacity:
-        print(
-            "\033[93mNote:\033[0m requested job capacity "
-            f"({capacity}) is smaller than the largest selected test "
-            f"({max_test_procs} MPI processes). Raising capacity to {max_test_procs}."
-        )
-        capacity = max_test_procs
+    oversized_tests = []
+    selected_test_count = len(runnable_tests)
+    runnable_and_schedulable_tests = []
+    for test in runnable_tests:
+        cpu_slots = GetCpuSlotsForTest(test)
+        if cpu_slots > cpu_capacity:
+            oversized_tests.append((test, cpu_slots))
+            test.skip_reason_override = (
+                f"requires {cpu_slots} CPU slots but scheduler capacity is {cpu_capacity}"
+            )
+            continue
+        runnable_and_schedulable_tests.append(test)
+    runnable_tests = runnable_and_schedulable_tests
 
     print("Executing tests")
     print("  weights  : " + ", ".join(weight_classes_allowed))
-    print(f"  selected : {len(runnable_tests)}")
-    print(f"  capacity : {capacity} MPI processes")
+    print(f"  selected : {selected_test_count}")
+    print(f"  runnable : {len(runnable_tests)}")
+    print(f"  cpu cap  : {cpu_capacity} CPU slots")
+    if argv.gpu:
+        print(f"  gpu cap  : {gpu_capacity} concurrent GPU tests")
     print()
+
+    for test, cpu_slots in oversized_tests:
+        warnings.warn(
+            "Skipping unschedulable test: "
+            + GetDisplayName(test)
+            + f" requires {cpu_slots} CPU slots but scheduler capacity is {cpu_capacity}."
+        )
 
     while True:
         # Check test progress
-        system_load = 0
+        cpu_load = 0
+        gpu_load = 0
         for slot in test_slots:
             if slot.Probe():
-                system_load += slot.test.num_procs
+                cpu_load += GetCpuSlotsForTest(slot.test)
+                if slot.test.requires_gpu:
+                    gpu_load += 1
 
         remaining_tests = [
             test for test in tests
             if not test.ran
+            and test.skip_reason_override is None
             and test.weight_class in weight_classes_allowed
             and ((test.requires_gpu and argv.gpu) or (not test.requires_gpu and not argv.gpu))
         ]
@@ -568,19 +667,28 @@ def RunTests(tests: list, argv):
                 blocked_reasons[test] = f'dependency "{test.dependency}" did not pass'
                 continue
 
-            if test.num_procs > (capacity - system_load):
+            cpu_slots = GetCpuSlotsForTest(test)
+            if cpu_slots > (cpu_capacity - cpu_load):
                 blocked_reasons[test] = (
-                    f"waiting for {test.num_procs} MPI processes; "
-                    f"{capacity - system_load} currently available"
+                    f"waiting for {cpu_slots} CPU slots; "
+                    f"{cpu_capacity - cpu_load} currently available"
                 )
                 continue
 
-            system_load += test.num_procs
+            if test.requires_gpu and gpu_load >= gpu_capacity:
+                blocked_reasons[test] = (
+                    f"waiting for a GPU slot; {gpu_capacity - gpu_load} currently available"
+                )
+                continue
+
+            cpu_load += cpu_slots
+            if test.requires_gpu:
+                gpu_load += 1
             new_slot = test_slot.TestSlot(test, argv)
             test_slots.append(new_slot)
             launched_test = True
 
-        if system_load == 0 and not launched_test:
+        if cpu_load == 0 and gpu_load == 0 and not launched_test:
             scheduler_blocked = True
             warnings.warn(
                 "Stopping test scheduler because remaining tests cannot be launched. "
