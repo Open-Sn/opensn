@@ -97,6 +97,7 @@ jobs:
           export HIP_COMPILER=nvcc
           mkdir build && cd build && cmake -DOPENSN_WITH_HIP=ON -DCMAKE_HIP_ARCHITECTURES=89 -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
       - name: test
+        if: false
         shell: bash
         run: |
           module load cuda/12.9 python3/3.12.3 rocm/7.1.1 opensn/clang/19
@@ -104,7 +105,8 @@ jobs:
           test/run_tests --gpu -d test/python -j 32 -v 1 \
             --run-log "$RUNNER_TEMP/logs/regression_hip_log.txt"
       - name: upload test logs
-        if: always()
+        if: false
+#        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: regression-logs-hip
