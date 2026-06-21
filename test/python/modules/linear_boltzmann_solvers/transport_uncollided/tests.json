@@ -280,6 +280,7 @@
     "env": {
       "OPENSN_NUM_THREADS": 8
     }, 
+    "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -294,6 +295,7 @@
     "comment": "Long Kobayashi case-i full uncollided plus collided solve on the coarse tetrahedral mesh",
     "num_procs": 4,
     "dependency": "uncollided_kobayashi_coarse_generate.py",
+    "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -434,6 +436,7 @@
     "comment": "Long Kobayashi case-ii full uncollided plus collided solve on the coarse tetrahedral mesh",
     "num_procs": 4,
     "dependency": "uncollided_kobayashi_coarse_generate.py",
+    "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -576,6 +579,7 @@
     "env": {
       "OPENSN_NUM_THREADS": 8
     },
+    "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -590,6 +594,7 @@
     "comment": "Long Kobayashi case-i collided solve on the fine tetrahedral mesh",
     "num_procs": 8,
     "dependency": "uncollided_kobayashi_fine_generate.py",
+    "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
