@@ -913,8 +913,8 @@ WrapLBS(py::module& slv)
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
         The ``AAH`` all-at-once sweep scheduler uses an internal thread pool
-        whose worker count is capped by the ``OPENSN_NUM_THREADS`` environment
-        variable and defaults to ``1`` when the variable is unset or invalid.
+        sized to the number of angle sets; set ``OPENSN_NUM_THREADS`` to cap
+        it below that count.
     time_dependent : bool, default=False
         If true, the problem starts in time-dependent mode. Otherwise it starts in
         steady-state mode. Requires ``options.save_angular_flux=True``.

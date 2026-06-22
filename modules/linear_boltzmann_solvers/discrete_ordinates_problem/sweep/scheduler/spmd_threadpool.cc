@@ -16,9 +16,13 @@ ResolveWorkerCount(std::size_t requested_workers)
   if (requested_workers == 0)
     return 0;
 
-  const auto capped_workers =
-    std::min<std::size_t>(requested_workers, std::max(1U, opensn_num_threads));
-  return std::max<std::size_t>(1, capped_workers);
+  // Only cap when OPENSN_NUM_THREADS is explicitly set; otherwise use the
+  // requested count so callers that size the pool to their work item count
+  // are not silently throttled to one thread.
+  if (std::getenv("OPENSN_NUM_THREADS") == nullptr) // NOLINT(concurrency-mt-unsafe)
+    return requested_workers;
+
+  return std::min<std::size_t>(requested_workers, std::max(1U, opensn_num_threads));
 }
 
 } // namespace
