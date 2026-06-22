@@ -233,6 +233,9 @@
     "comment": "3D 172G keigenvalue test using OpenMX MGXS cross-sections and power iteration",
     "num_procs": 4,
     "requires_gpu": "True",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -247,6 +250,9 @@
     "comment": "3D 172G keigenvalue test using OpenMX MGXS cross-sections and power iteration (CBC)",
     "num_procs": 4,
     "requires_gpu": "True",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -492,6 +498,9 @@
     "comment": "3D_2G Infinite medium testing pyramid elements of EXODUSII; should agree with the hex model",
     "num_procs": 1,
     "requires_gpu": "True",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -506,6 +515,9 @@
     "comment": "3D_2G Infinite medium testing pyramid elements of EXODUSII; should agree with the hex model (CBC)",
     "num_procs": 1,
     "requires_gpu": "True",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
