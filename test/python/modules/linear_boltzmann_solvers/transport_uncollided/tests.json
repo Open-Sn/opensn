@@ -576,6 +576,7 @@
     "env": {
       "OPENSN_NUM_THREADS": 8
     },
+    "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -590,6 +591,7 @@
     "comment": "Long Kobayashi case-i collided solve on the fine tetrahedral mesh",
     "num_procs": 8,
     "dependency": "uncollided_kobayashi_fine_generate.py",
+    "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
