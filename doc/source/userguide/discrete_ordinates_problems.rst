@@ -304,8 +304,11 @@ The practical differences are:
 * ``CBC`` does not support local sweep cycles.
 
 When the ``AAH`` GPU all-at-once scheduler is used, its internal thread pool
-is capped by the environment variable ``OPENSN_NUM_THREADS``. If the variable
-is unset or invalid, OpenSn uses ``1`` thread.
+is sized to the number of angle sets by default. If the environment variable
+``OPENSN_NUM_THREADS`` is left unset, that full worker count is preserved and
+no cap is applied. If it is present but invalid or ``0``, OpenSn caps the
+pool at ``1`` thread instead; if it is present and a valid positive integer,
+the pool is capped at that value.
 
 .. note::
 
