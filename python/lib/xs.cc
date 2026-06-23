@@ -182,7 +182,16 @@ WrapMultiGroupXS(py::module& xs)
 
     Notes
     -----
-    This method mutates ``self`` by replacing its current contents.
+    When delayed-neutron data is present in the OpenMC MGXS library, this
+    method also imports:
+
+    - the number of precursor groups
+    - prompt and delayed fission production data
+    - precursor decay constants
+    - delayed emission spectra
+
+    If delayed data is present but ``chi-prompt`` is not available, the steady
+    fission spectrum ``chi`` is used as the prompt spectrum.
     )",
     py::arg("file_name"),
     py::arg("dataset_name"),

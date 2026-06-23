@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -535,7 +536,11 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter("write_restart_time_interval",
                               0,
                               "Time interval in seconds at which restart data is to be written.");
-  params.AddOptionalParameter("use_precursors", true, "Flag for using delayed neutron precursors.");
+  params.AddOptionalParameter(
+    "use_precursors",
+    true,
+    "Flag for storing and evolving delayed neutron precursors. Steady-state fission sources "
+    "include delayed neutron production whenever delayed data exists.");
   params.AddOptionalParameter("use_source_moments",
                               false,
                               "Flag for ignoring fixed sources and selectively using source "
@@ -986,17 +991,18 @@ LBSProblem::InitializeMaterials()
                          "precursor coupling.";
   }
 
-  // check compatibility when at least one fissionable material has delayed-neutron data
-  if (options_.use_precursors and has_fissionable_precursors)
+  // Check compatibility when delayed-neutron production is active and at least one
+  // fissionable material has delayed-neutron data.
+  if (UseDelayedNeutronProduction(*this) and has_fissionable_precursors)
   {
     for (const auto& [mat_id, xs] : block_id_to_xs_map_)
     {
       OpenSnInvalidArgumentIf(xs->IsFissionable() and xs->GetNumPrecursors() == 0,
                               GetName() + ": incompatible cross-section data for material id " +
                                 std::to_string(mat_id) +
-                                ". When options.use_precursors=true and "
-                                "delayed-neutron precursor data is present for one fissionable "
-                                "material, it must be present for all fissionable materials.");
+                                ". When delayed-neutron production is active and delayed-neutron "
+                                "precursor data is present for one fissionable material, it must "
+                                "be present for all fissionable materials.");
     }
   }
 

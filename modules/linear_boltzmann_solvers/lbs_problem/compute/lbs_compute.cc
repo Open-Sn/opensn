@@ -3,11 +3,39 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/runtime.h"
 #include <cassert>
 
 namespace opensn
 {
+
+bool
+UseDelayedNeutronProduction(const LBSProblem& lbs_problem)
+{
+  return lbs_problem.GetNumPrecursors() > 0 and
+         (not lbs_problem.IsTimeDependent() or lbs_problem.GetOptions().use_precursors);
+}
+
+double
+ComputeDelayedFissionProduction(const MultiGroupXS& xs,
+                                const unsigned int to_group,
+                                const unsigned int from_group)
+{
+  if (xs.GetNumPrecursors() == 0)
+    return 0.0;
+
+  const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
+  if (nu_delayed_sigma_f.empty())
+    return 0.0;
+
+  double delayed_production = 0.0;
+  for (const auto& precursor : xs.GetPrecursors())
+    delayed_production += precursor.emission_spectrum[to_group] * precursor.fractional_yield *
+                          nu_delayed_sigma_f[from_group];
+
+  return delayed_production;
+}
 
 double
 ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
@@ -16,9 +44,9 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
-  const auto& options = lbs_problem.GetOptions();
   assert(phi.size() == lbs_problem.GetPhiNewLocal().size() &&
          "ComputeFissionProduction size mismatch.");
+  const bool include_delayed_production = UseDelayedNeutronProduction(lbs_problem);
 
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
@@ -33,7 +61,6 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
     // Obtain xs
     const auto& xs = transport_view.GetXS();
     const auto& F = xs.GetProductionMatrix();
-    const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     if (not xs.IsFissionable())
       continue;
@@ -52,12 +79,13 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
         for (unsigned int gp = 0; gp <= last_grp; ++gp)
           local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
 
-        // When delayed-neutrons are enabled, this utility assumes production matrix
-        // contributions are prompt-only and adds delayed production separately via
-        // nu_delayed_sigma_f. If the production matrix changes to include delayed
-        // production, adjust this sum to prevent double counting.
-        if (options.use_precursors and xs.GetNumPrecursors() > 0)
-          local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+        // When delayed-neutron data is included, the production matrix is prompt-only
+        // and delayed production is added separately. If the production matrix changes
+        // to include delayed production, adjust this sum to prevent double counting.
+        if (include_delayed_production)
+          for (unsigned int gp = 0; gp <= last_grp; ++gp)
+            local_production +=
+              ComputeDelayedFissionProduction(xs, g, gp) * phi[uk_map + gp] * IntV_ShapeI;
       }
     } // for node
   } // for cell
