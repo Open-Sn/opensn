@@ -25,10 +25,10 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 
   // Loop over local cells
   double local_production = 0.0;
-  for (auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell->local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -83,10 +83,10 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
 
   // Loop over local cells
   double local_fission_rate = 0.0;
-  for (auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell->local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -131,10 +131,10 @@ ComputePrecursors(LBSProblem& lbs_problem)
   const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
 
   // Loop over cells
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& fe_values = unit_cell_matrices[cell.local_id];
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& fe_values = unit_cell_matrices[cell->local_id];
+    const auto& transport_view = cell_transport_views[cell->local_id];
     const double cell_volume = transport_view.GetVolume();
     assert(cell_volume > 0.0 && "ComputePrecursors encountered non-positive cell volume.");
 
@@ -146,7 +146,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
     // Loop over precursors
     for (unsigned int j = 0; j < xs.GetNumPrecursors(); ++j)
     {
-      size_t dof = cell.local_id * J + j;
+      size_t dof = cell->local_id * J + j;
       const auto& precursor = precursors[j];
       assert(precursor.decay_constant > 0.0 &&
              "ComputePrecursors encountered non-positive precursor decay constant.");

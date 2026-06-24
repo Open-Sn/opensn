@@ -48,10 +48,10 @@ ComputePointwisePhiChange(
   auto num_moments = lbs_problem.GetNumMoments();
 
   double pw_change = 0.0;
-  for (const auto& cell : grid_ptr->local_cells)
+  for (const auto& cell : grid_ptr->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    for (auto i = 0; i < cell.vertex_ids.size(); ++i)
+    const auto& transport_view = cell_transport_views[cell->local_id];
+    for (auto i = 0; i < cell->vertex_ids.size(); ++i)
     {
       for (auto id : groupset_ids)
       {

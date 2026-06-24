@@ -360,11 +360,11 @@ TransientSolver::StepPrecursors()
 
   // Uses phi_new and precursor_prev_local to compute precursor_new_local (theta-flavor)
   const auto& transport_views = do_problem_->GetCellTransportViews();
-  for (const auto& cell : do_problem_->GetGrid()->local_cells)
+  for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
   {
-    const auto& fe_values = do_problem_->GetUnitCellMatrices()[cell.local_id];
-    const double cell_volume = transport_views[cell.local_id].GetVolume();
-    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
+    const auto& fe_values = do_problem_->GetUnitCellMatrices()[cell->local_id];
+    const double cell_volume = transport_views[cell->local_id].GetVolume();
+    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell->block_id);
     const auto& precursors = xs->GetPrecursors();
     if (precursors.empty())
       continue;
@@ -373,9 +373,9 @@ TransientSolver::StepPrecursors()
 
     // Compute delayed fission production
     double delayed_fission = 0.0;
-    for (int i = 0; i < transport_views[cell.local_id].GetNumNodes(); ++i)
+    for (int i = 0; i < transport_views[cell->local_id].GetNumNodes(); ++i)
     {
-      const size_t uk_map = transport_views[cell.local_id].MapDOF(i, 0, 0);
+      const size_t uk_map = transport_views[cell->local_id].MapDOF(i, 0, 0);
       const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
 
       for (int g = 0; g < do_problem_->GetNumGroups(); ++g)
@@ -386,7 +386,7 @@ TransientSolver::StepPrecursors()
     const auto& max_precursors = do_problem_->GetMaxPrecursorsPerMaterial();
     for (unsigned int j = 0; j < xs->GetNumPrecursors(); ++j)
     {
-      const size_t dof_map = cell.local_id * max_precursors + j;
+      const size_t dof_map = cell->local_id * max_precursors + j;
       const auto& precursor = precursors[j];
       const double coeff = 1.0 / (1.0 + eff_dt * precursor.decay_constant);
 

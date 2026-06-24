@@ -106,30 +106,37 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
                                   "match the number of groups in the solver the source is "
                                   "attached to.");
 
+  auto grid = lbs_problem.GetGrid();
   // Set cell subscribers based on logical volumes, block IDs, or both
   subscribers_.clear();
   if (logvol_ and block_ids_.empty())
   {
     std::set<unsigned int> blk_ids;
-    for (const auto& cell : lbs_problem.GetGrid()->local_cells)
-      if (logvol_->Inside(cell.centroid))
+    for (const auto& cell : grid->GetLocalCells())
+    {
+      if (logvol_->Inside(cell->centroid))
       {
-        blk_ids.insert(cell.block_id);
-        subscribers_.push_back(cell.local_id);
+        blk_ids.insert(cell->block_id);
+        subscribers_.push_back(cell->local_id);
       }
+    }
   }
   else if (not logvol_ and not block_ids_.empty())
   {
-    for (const auto& cell : lbs_problem.GetGrid()->local_cells)
-      if (std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
-        subscribers_.push_back(cell.local_id);
+    for (const auto& cell : grid->GetLocalCells())
+    {
+      if (std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
+        subscribers_.push_back(cell->local_id);
+    }
   }
   else
   {
-    for (const auto& cell : lbs_problem.GetGrid()->local_cells)
-      if (logvol_->Inside(cell.centroid) and
-          std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
-        subscribers_.push_back(cell.local_id);
+    for (const auto& cell : grid->GetLocalCells())
+    {
+      if (logvol_->Inside(cell->centroid) and
+          std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
+        subscribers_.push_back(cell->local_id);
+    }
   }
 
   num_local_subsribers_ = subscribers_.size();

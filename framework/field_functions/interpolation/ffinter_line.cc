@@ -60,15 +60,15 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
   std::vector<uint32_t> local_owner_cell_lids(number_of_points_,
                                               std::numeric_limits<uint32_t>::max());
 
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
     for (int p = 0; p < number_of_points_; ++p)
     {
       auto& point = tmp_points[p];
-      if (grid->CheckPointInsideCell(cell, point) and cell.global_id < local_owner_cell_gids[p])
+      if (grid->CheckPointInsideCell(*cell, point) and cell->global_id < local_owner_cell_gids[p])
       {
-        local_owner_cell_gids[p] = cell.global_id;
-        local_owner_cell_lids[p] = cell.local_id;
+        local_owner_cell_gids[p] = cell->global_id;
+        local_owner_cell_lids[p] = cell->local_id;
       }
     }
   }
@@ -118,7 +118,7 @@ FieldFunctionInterpolationLine::Execute()
   {
     auto& point = local_interpolation_points_[p];
     auto cell_local_index = local_cells_[p];
-    const auto& cell = grid->local_cells[cell_local_index];
+    const auto& cell = grid->GetLocalCell(cell_local_index);
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 

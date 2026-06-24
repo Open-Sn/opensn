@@ -59,7 +59,7 @@ ReadPrecursorVector(hid_t file_id,
                             std::to_string(expected_size) + ".");
 
   const auto& grid = problem.GetGrid();
-  const size_t num_local_cells = grid->local_cells.size();
+  const size_t num_local_cells = grid->GetLocalCellCount();
   OpenSnInvalidArgumentIf(num_local_cells == 0,
                           problem.GetName() +
                             ": cannot remap restart precursor data without local cells.");
@@ -74,10 +74,10 @@ ReadPrecursorVector(hid_t file_id,
   const size_t copy_stride = std::min(old_stride, new_stride);
 
   std::vector<double> remapped(expected_size, 0.0);
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const size_t old_base = cell.local_id * old_stride;
-    const size_t new_base = cell.local_id * new_stride;
+    const size_t old_base = cell->local_id * old_stride;
+    const size_t new_base = cell->local_id * new_stride;
     for (size_t j = 0; j < copy_stride; ++j)
       remapped[new_base + j] = values[old_base + j];
   }

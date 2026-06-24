@@ -854,11 +854,11 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
     // Develop list of faces and nodes
     std::set<uint64_t> nodes_set;
     std::vector<CellFace> faces_to_export;
-    for (auto& cell : grid->local_cells)
+    for (const auto& cell : grid->GetLocalCells())
     {
-      if (cell.GetType() == CellType::POLYHEDRON)
+      if (cell->GetType() == CellType::POLYHEDRON)
       {
-        for (auto& face : cell.faces)
+        for (auto& face : cell->faces)
         {
           if (not face.has_neighbor)
           {
@@ -946,14 +946,14 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
 
   // Check block consistency
   std::map<int, CellType> block_id_map;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto blk_id = static_cast<int>(cell.block_id);
+    const auto blk_id = static_cast<int>(cell->block_id);
     if (block_id_map.count(blk_id) == 0)
-      block_id_map[blk_id] = cell.GetSubType();
+      block_id_map[blk_id] = cell->GetSubType();
     else
     {
-      if (cell.GetSubType() != block_id_map.at(blk_id))
+      if (cell->GetSubType() != block_id_map.at(blk_id))
         throw std::logic_error(fname + ": Block id " + std::to_string(blk_id) +
                                " appearing for more than one cell type.");
     }
@@ -991,17 +991,17 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     }
 
     // Load cells
-    for (const auto& cell : grid->local_cells)
+    for (const auto& cell : grid->GetLocalCells())
     {
-      if (cell.GetSubType() == CellType::POLYGON or cell.GetSubType() == CellType::POLYHEDRON)
-        throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell.GetSubType()) +
+      if (cell->GetSubType() == CellType::POLYGON or cell->GetSubType() == CellType::POLYHEDRON)
+        throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell->GetSubType()) +
                                "\" encountered that is not supported by ExodusII.");
-      UploadCellGeometryContinuous(cell, vertex_map, ugrid);
-      block_id_list->InsertNextValue(static_cast<int>(cell.block_id));
-      max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(cell));
+      UploadCellGeometryContinuous(*cell, vertex_map, ugrid);
+      block_id_list->InsertNextValue(static_cast<int>(cell->block_id));
+      max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(*cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
-      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id) +
+      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell->global_id) +
                                            static_cast<vtkIdType>(1));
     } // for local cells
 
@@ -1030,32 +1030,33 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     int source_face_id;
   };
   std::map<uint64_t, std::vector<FaceInfo>> boundary_id_faces_map;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
     // Here we build a face mapping because OpenSn's face orientation for prisms (wedges) and
     // hexahedrons differ from that of VTK. OpenSn's orientation for prisms and hexes actually
     // matches that of Exodus but VTK assumes the incoming mesh to be conformant to VTK and
     // therefore, internally performs a mapping. Fortunately, the only relevant cell-types, for
     // which a special mapping is required, are the prisms and hexes.
-    const size_t num_faces = cell.faces.size();
+    const size_t num_faces = cell->faces.size();
     std::vector<int> face_mapping(num_faces, 0);
-    if (cell.GetSubType() == CellType::WEDGE)
+    if (cell->GetSubType() == CellType::WEDGE)
       face_mapping = {2, 3, 4, 0, 1};
-    else if (cell.GetSubType() == CellType::HEXAHEDRON)
+    else if (cell->GetSubType() == CellType::HEXAHEDRON)
       face_mapping = {2, 1, 3, 0, 4, 5};
     else
     {
-      for (size_t f = 0; f < cell.faces.size(); ++f)
+      for (size_t f = 0; f < cell->faces.size(); ++f)
         face_mapping[f] = static_cast<int>(f);
     }
 
     // Here we store face information as a triplet, i.e., a face pointer, the id of the cell owning
     // it, and the local face index (relative to the cell) of the face.
     int f = 0;
-    for (const auto& face : cell.faces)
+    for (const auto& face : cell->faces)
     {
       if (not face.has_neighbor)
-        boundary_id_faces_map[face.neighbor_id].push_back({&face, cell.global_id, face_mapping[f]});
+        boundary_id_faces_map[face.neighbor_id].push_back(
+          {&face, cell->global_id, face_mapping[f]});
       ++f;
     }
   }

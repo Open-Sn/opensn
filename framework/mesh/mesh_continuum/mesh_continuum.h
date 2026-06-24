@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h"
 #include "framework/math/geometry.h"
 #include <memory>
 #include <array>
@@ -198,6 +198,14 @@ public:
   std::shared_ptr<GridFaceHistogram> MakeGridFaceHistogram(double master_tolerance = 100.0,
                                                            double slave_tolerance = 1.1) const;
 
+  std::size_t GetLocalCellCount() const;
+
+  const Cell& GetLocalCell(uint64_t id) const;
+  Cell& GetLocalCell(uint64_t id);
+
+  std::vector<std::shared_ptr<Cell>>& GetLocalCells();
+  const std::vector<std::shared_ptr<Cell>>& GetLocalCells() const;
+
   /// Returns whether the cell with the given global id is locally owned.
   bool IsCellLocal(uint64_t global_id) const noexcept
   {
@@ -267,8 +275,6 @@ public:
 
   /// Compute volume per block IDs
   std::map<unsigned int, double> ComputeVolumePerBlockID() const;
-
-  LocalCellHandler local_cells;
 
 private:
   /// Spatial dimension

@@ -66,13 +66,13 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
+    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(*cell);
 
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
@@ -111,7 +111,7 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
     // Develop node mapping
     std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = sdm.MapDOF(cell, i);
+      imap[i] = sdm.MapDOF(*cell, i);
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)

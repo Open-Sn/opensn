@@ -40,19 +40,19 @@ MeshMapping::Build(const std::shared_ptr<MeshContinuum>& fine_grid,
   fine_to_coarse_.clear();
 
   // Instantiate the maps; constructors take the cell to size the face maps.
-  for (const auto& coarse_cell : coarse_grid->local_cells)
-    coarse_to_fine_.emplace(&coarse_cell, coarse_cell);
-  for (const auto& fine_cell : fine_grid->local_cells)
-    fine_to_coarse_.emplace(&fine_cell, fine_cell);
+  for (const auto& coarse_cell : coarse_grid->GetLocalCells())
+    coarse_to_fine_.emplace(coarse_cell.get(), *coarse_cell);
+  for (const auto& fine_cell : fine_grid->GetLocalCells())
+    fine_to_coarse_.emplace(fine_cell.get(), *fine_cell);
 
   // Volumetric mapping; find the coarse cell that contains a fine cell centroid
   for (auto& [fine_cell_ptr, fine_mapping] : fine_to_coarse_)
   {
     const auto& fine_cell = *fine_cell_ptr;
-    for (const auto& coarse_cell : coarse_grid->local_cells)
-      if (coarse_grid->CheckPointInsideCell(coarse_cell, fine_cell.centroid))
+    for (const auto& coarse_cell : coarse_grid->GetLocalCells())
+      if (coarse_grid->CheckPointInsideCell(*coarse_cell, fine_cell.centroid))
       {
-        fine_mapping.coarse_cell = &coarse_cell;
+        fine_mapping.coarse_cell = coarse_cell.get();
         break;
       }
 
