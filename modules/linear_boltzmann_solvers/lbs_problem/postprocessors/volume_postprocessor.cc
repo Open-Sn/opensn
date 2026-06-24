@@ -170,7 +170,9 @@ VolumePostprocessor::CreateMultipliers()
     // computation
   }
   else
+  {
     throw std::logic_error("Can specify either 'multiplier' or 'group_multipliers', not both.");
+  }
 }
 
 std::vector<std::uint32_t>

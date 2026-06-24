@@ -116,8 +116,6 @@ public:
 
   void ComputeBalance(double scaling_factor = 1.0);
 
-  void PrintSimHeader() override;
-
   /// Returns the sweep boundaries as a read-only reference.
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
 
@@ -196,6 +194,8 @@ protected:
 
   void InitializeBoundaries() override;
   /** @} */
+
+  void PrintSimHeader() override;
 
   /**
    * @name Solver and sweep state

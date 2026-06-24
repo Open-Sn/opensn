@@ -121,7 +121,9 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
             Dg * intV_gradshapeI_gradshapeJ(i, j) + sigr_g * intV_shapeI_shapeJ(i, j);
 
           if (not node_is_dirichlet[j].first)
+          {
             cell_A(i, j) += entry_aij;
+          }
           else
           {
             const double bcvalue = node_is_dirichlet[j].second;

@@ -517,7 +517,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
   {
     std::vector<double> cell_id_vec(1);
     cell_id_array_ptr->GetTuple(c, cell_id_vec.data());
-    const auto mat_id = (int)cell_id_vec.front();
+    const auto mat_id = static_cast<int>(cell_id_vec.front());
 
     block_ids[c] = mat_id;
   }
@@ -554,7 +554,9 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
   for (const auto& cell : grid->local_cells)
   {
     if (discontinuous)
+    {
       UploadCellGeometryDiscontinuous(grid, cell, node_count, points, ugrid);
+    }
     else
     {
       for (uint64_t vid : cell.vertex_ids)

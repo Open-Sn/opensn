@@ -124,14 +124,14 @@ PrintIterationProgress(const size_t current_iteration,
     return output.str();
   }
 
-  const double dI = std::ceil(double(N) / I); // Interval size
+  const double dI = std::ceil(static_cast<double>(N) / I); // Interval size
 
   // std::modf is used to get the integral part
   // of a real value
   double x1 = 0.0;
-  std::modf(double(i - 1) / dI, &x1);
+  std::modf(static_cast<double>(i - 1) / dI, &x1);
   double x2 = 0.0;
-  std::modf(double(i) / dI, &x2);
+  std::modf(static_cast<double>(i) / dI, &x2);
 
   if (static_cast<unsigned int>(x2) != static_cast<unsigned int>(x1))
   {

@@ -48,7 +48,9 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   }
 
   if (status == AngleSetStatus::RECEIVING)
+  {
     return status;
+  }
   else if (status == AngleSetStatus::READY_TO_EXECUTE and permission == AngleSetStatus::EXECUTE)
   {
     async_comm_.InitializeLocalAndDownstreamBuffers();
@@ -70,7 +72,9 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
     return AngleSetStatus::FINISHED;
   }
   else
+  {
     return AngleSetStatus::READY_TO_EXECUTE;
+  }
 }
 
 AngleSetStatus

@@ -64,7 +64,9 @@ LinearGraphPartitioner::Partition(const std::vector<std::vector<uint64_t>>& grap
         pids[n++] = k;
   }
   else
+  {
     pids.assign(graph.size(), all_to_rank_);
+  }
 
   log.Log0Verbose1() << "Done partitioning with LinearGraphPartitioner";
   return pids;

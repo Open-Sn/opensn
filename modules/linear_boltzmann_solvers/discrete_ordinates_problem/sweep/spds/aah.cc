@@ -228,7 +228,9 @@ AAH_SPDS::BuildGlobalSweepTDG()
   {
     auto loc = global_linear_sweep_order[k];
     if (global_dependencies_[loc].empty())
+    {
       global_sweep_order_rank[k] = 0;
+    }
     else
     {
       int max_rank = -1;

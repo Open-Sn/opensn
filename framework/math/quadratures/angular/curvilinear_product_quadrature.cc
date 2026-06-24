@@ -59,8 +59,10 @@ GLProductQuadrature1DSpherical::Initialize(unsigned int Npolar, const bool verbo
         w *= fac;
   }
   else
+  {
     throw std::invalid_argument("GLProductQuadrature1DSpherical: "
                                 "Polar quadrature weights sum to zero.");
+  }
 
   // Defined on range [-1;+1]
   if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
@@ -258,8 +260,10 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
         w *= fac;
   }
   else
+  {
     throw std::invalid_argument("GLCProductQuadrature2DRZ: "
                                 "Polar quadrature weights sum to zero.");
+  }
 
   // Defined on range [-1;+1]
   if (std::abs(polar_quad.GetRange().first - polar_quad_span.first) > eps or
@@ -283,8 +287,10 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
           w *= fac;
     }
     else
+    {
       throw std::invalid_argument("GLCProductQuadrature2DRZ: "
                                   "Azimuthal quadrature weights sum to zero.");
+    }
 
     // Defined on range [-1;+1]
     if (std::abs(azimu_quad.GetRange().first - azimu_quad_span.first) > eps or

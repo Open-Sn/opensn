@@ -223,9 +223,13 @@ public:
     Vector3 khat(0.0, 0.0, 1.0);
 
     if (n.Dot(khat) > 0.9999999)
+    {
       R.SetDiagonalVec(1.0, 1.0, 1.0);
+    }
     else if (n.Dot(khat) < -0.9999999)
+    {
       R.SetDiagonalVec(1.0, 1.0, -1.0);
+    }
     else
     {
       auto tangent = n.Cross(khat).Normalized();

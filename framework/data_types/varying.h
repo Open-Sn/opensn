@@ -79,20 +79,20 @@ private:
   };
 
   template <typename T>
-  using BoolType = typename std::enable_if_t<IsBool<T>::value, T>;
+  using BoolType = std::enable_if_t<IsBool<T>::value, T>;
   template <typename T>
-  using FloatType = typename std::enable_if_t<IsFloat<T>::value, T>;
+  using FloatType = std::enable_if_t<IsFloat<T>::value, T>;
   template <typename T>
-  using IntegerType = typename std::enable_if_t<IsInteger<T>::value, T>;
+  using IntegerType = std::enable_if_t<IsInteger<T>::value, T>;
 
   template <typename T>
-  using BoolStorageType = typename std::enable_if_t<IsBool<T>::value, bool>;
+  using BoolStorageType = std::enable_if_t<IsBool<T>::value, bool>;
   template <typename T>
-  using FloatStorageType = typename std::enable_if_t<IsFloat<T>::value, double>;
+  using FloatStorageType = std::enable_if_t<IsFloat<T>::value, double>;
   template <typename T>
-  using IntegerStorageType = typename std::enable_if_t<IsInteger<T>::value, int64_t>;
+  using IntegerStorageType = std::enable_if_t<IsInteger<T>::value, int64_t>;
   template <typename T>
-  using UserDataStorageType = typename std::enable_if_t<IsUserData<T>::value, T>;
+  using UserDataStorageType = std::enable_if_t<IsUserData<T>::value, T>;
 
   template <typename T>
   BoolStorageType<T> CastValue(const T& value)
@@ -309,7 +309,9 @@ public:
       type_ = VaryingDataType::INTEGER;
     }
     else
+    {
       type_ = VaryingDataType::USER_DATA;
+    }
 
     data_ = Helper(CastValue(value));
   }
@@ -405,13 +407,13 @@ public:
   };
 
   template <typename T>
-  using StringType = typename std::enable_if_t<IsString<T>::value, T>;
+  using StringType = std::enable_if_t<IsString<T>::value, T>;
   template <typename T>
-  using SignedIntegerType = typename std::enable_if_t<IsSignedInteger<T>::value, T>;
+  using SignedIntegerType = std::enable_if_t<IsSignedInteger<T>::value, T>;
   template <typename T>
-  using UnsignedIntegerType = typename std::enable_if_t<IsUnsignedInteger<T>::value, T>;
+  using UnsignedIntegerType = std::enable_if_t<IsUnsignedInteger<T>::value, T>;
   template <typename T>
-  using UserDataType = typename std::enable_if_t<IsUserData<T>::value, T>;
+  using UserDataType = std::enable_if_t<IsUserData<T>::value, T>;
 
   /// Returns values of type bool if able.
   template <typename T>

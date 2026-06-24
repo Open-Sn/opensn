@@ -31,7 +31,7 @@ private:
   using conjunction = std::is_same<bool_pack<true, U::value...>, bool_pack<U::value..., true>>;
 
   template <typename... U>
-  using AllIntegral = typename conjunction<std::is_integral<U>...>::type;
+  using AllIntegral = conjunction<std::is_integral<U>...>::type;
 
 public:
   /**
@@ -461,15 +461,11 @@ private:
     else if constexpr (sizeof...(args) == 3)
       return indices[0] * strides_[0] + indices[1] * strides_[1] + indices[2] * strides_[2];
     else if constexpr (sizeof...(args) == 4)
-    {
       return indices[0] * strides_[0] + indices[1] * strides_[1] + indices[2] * strides_[2] +
              indices[3] * strides_[3];
-    }
     else if constexpr (sizeof...(args) == 5)
-    {
       return indices[0] * strides_[0] + indices[1] * strides_[1] + indices[2] * strides_[2] +
              indices[3] * strides_[3] + indices[4] * strides_[4];
-    }
 
     size_t index = 0;
     for (int i = 0; i < D; ++i)

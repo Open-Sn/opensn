@@ -341,14 +341,16 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
         cell.faces.push_back(lw_face);
     }
     else
+    {
       throw std::runtime_error(fname + ": Unsupported cell type");
+    }
 
   } // for elements
 
   file.close();
 
   // create boundary names and IDs
-  unsigned int dimension = (mesh_is_2D) ? 2 : 3;
+  unsigned int dimension = mesh_is_2D ? 2 : 3;
   for (auto& [id, e] : physical_names)
   {
     if (std::get<0>(e) == dimension - 1)

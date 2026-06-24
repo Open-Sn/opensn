@@ -99,7 +99,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
   const uint64_t source_cell_id = source_cell_ptr->global_id;
 
   // Define lambdas
-  RandomNumberGenerator rng;
+  RandomNumberGenerator rng(0);
   auto SampleRandomDirection = [&rng]()
   {
     double costheta = 2.0 * rng.Rand() - 1.0;

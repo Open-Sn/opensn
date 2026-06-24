@@ -28,7 +28,9 @@ UnpartitionedMesh::ComputeBoundingBox()
   {
     const auto& vertex = vertices_[p];
     if (p == 0)
+    {
       bound_box_ = {vertex.x, vertex.x, vertex.y, vertex.y, vertex.z, vertex.z};
+    }
     else
     {
       bound_box_.xmin = std::min(bound_box_.xmin, vertex.x);

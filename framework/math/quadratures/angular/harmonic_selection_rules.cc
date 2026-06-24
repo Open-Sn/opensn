@@ -50,6 +50,7 @@ HarmonicSelectionRules::SelectHarmonics(const SelectionParameters& params)
       return SelectSLDFESQ(params);
 
     default:
+      throw std::logic_error("`quadrature_type` was not set in SelectionParameters");
       break;
   }
 

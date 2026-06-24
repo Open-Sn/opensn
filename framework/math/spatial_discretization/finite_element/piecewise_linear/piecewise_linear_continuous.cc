@@ -108,7 +108,9 @@ PieceWiseLinearContinuous::OrderNodes()
 
     for (const uint64_t node_id : node_list)
       if (node_mapping_.count(node_id) == 0)
+      {
         throw std::logic_error("PieceWiseLinearContinuous: Error mapping query node");
+      }
       else
       {
         const int64_t mapping = node_mapping_.at(node_id);
@@ -446,7 +448,9 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
     }
   }
   else if (storage == UnknownStorageType::NODAL)
+  {
     address = global_id * static_cast<int64_t>(num_unknowns) + static_cast<int64_t>(block_id);
+  }
 
   return address;
 }
@@ -474,9 +478,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
   if (is_local)
   {
     if (storage == UnknownStorageType::BLOCK)
-    {
       address = static_cast<int64_t>(local_base_block_size_ * block_id) + local_id;
-    }
     else if (storage == UnknownStorageType::NODAL)
       address = local_id * static_cast<int64_t>(num_unknowns) + static_cast<int64_t>(block_id);
   } // if is_local
@@ -495,9 +497,7 @@ PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
       ++counter;
     }
     if (storage == UnknownStorageType::BLOCK)
-    {
       address = static_cast<int64_t>(ghost_node_mapping_.size() * block_id) + ghost_local_node_id;
-    }
     else if (storage == UnknownStorageType::NODAL)
       address =
         ghost_local_node_id * static_cast<int64_t>(num_unknowns) + static_cast<int64_t>(block_id);
@@ -553,8 +553,10 @@ PieceWiseLinearContinuous::GetGhostDOFIndices(const UnknownManager& unknown_mana
           }
         }
         else if (storage == UnknownStorageType::NODAL)
+        {
           address =
             global_id * static_cast<int64_t>(num_unknown_comps) + static_cast<int64_t>(block_id);
+        }
 
         dof_ids.push_back(address);
       } // for c

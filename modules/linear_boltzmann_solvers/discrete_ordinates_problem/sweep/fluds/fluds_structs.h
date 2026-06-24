@@ -48,7 +48,7 @@ protected:
   /// \name Incoming/outgoing bit
   /// \{
   /// First bit mask (``1`` followed by 63 zeros).
-  static constexpr std::uint64_t inout_bit_mask = std::uint64_t(1) << (64 - 1);
+  static constexpr std::uint64_t inout_bit_mask = std::uint64_t{1} << (64 - 1);
   /// Encode the value as incoming or outgoing.
   constexpr void SetInOut(bool is_outgoing) noexcept
   {
@@ -62,7 +62,7 @@ protected:
   /// \name Boundary bit
   /// \{
   /// Second bit mask (``01`` followed by 62 zeros).
-  static constexpr std::uint64_t boundary_bit_mask = std::uint64_t(1) << (64 - 2);
+  static constexpr std::uint64_t boundary_bit_mask = std::uint64_t{1} << (64 - 2);
   /// Encode the value as boundary.
   constexpr void SetBoundary(bool is_boundary) noexcept
   {

@@ -485,7 +485,9 @@ SPDS::PopulateCellRelationships(
               std::make_pair(face_info[cell.local_id][f].neighbor_local_id, weight));
           }
           else
+          {
             location_successors.insert(face_info[cell.local_id][f].neighbor_partition_id);
+          }
         }
       }
       // If not outgoing determine what it is dependent on

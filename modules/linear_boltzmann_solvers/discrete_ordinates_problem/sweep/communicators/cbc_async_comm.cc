@@ -147,7 +147,9 @@ CBC_AsynchronousCommunicator::SendData()
       send_requests_.pop_back();
     }
     else
+    {
       ++i;
+    }
   }
   std::fill(
     open_send_buffer_indices_.begin(), open_send_buffer_indices_.end(), INVALID_BUFFER_INDEX);

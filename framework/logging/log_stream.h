@@ -174,6 +174,7 @@ struct DummyStream : public std::ostream
 {
   struct DummyStreamBuffer : std::streambuf
   {
+  protected:
     int overflow(int c) override { return c; };
   } buffer;
 

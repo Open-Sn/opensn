@@ -214,7 +214,9 @@ LBSProblem::WriteRestartData(const RestartDataHook& extra_writer)
     log.Log() << "Successfully wrote restart data." << std::endl;
   }
   else
+  {
     log.Log() << "Failed to write restart data." << std::endl;
+  }
 
   return success;
 }

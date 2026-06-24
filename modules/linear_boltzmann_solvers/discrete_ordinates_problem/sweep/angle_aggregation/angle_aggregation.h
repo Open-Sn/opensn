@@ -52,8 +52,8 @@ public:
                    std::shared_ptr<AngularQuadrature>& quadrature,
                    std::shared_ptr<MeshContinuum>& grid);
 
-  using iterator = typename std::vector<std::shared_ptr<AngleSet>>::iterator;
-  using const_iterator = typename std::vector<std::shared_ptr<AngleSet>>::const_iterator;
+  using iterator = std::vector<std::shared_ptr<AngleSet>>::iterator;
+  using const_iterator = std::vector<std::shared_ptr<AngleSet>>::const_iterator;
   iterator begin() { return angle_set_groups_.begin(); }
   iterator end() { return angle_set_groups_.end(); }
   const_iterator begin() const { return angle_set_groups_.begin(); }

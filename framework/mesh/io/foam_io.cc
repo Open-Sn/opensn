@@ -230,7 +230,9 @@ ReadFoamList(std::istream& in,
     // find closing ')'
     SkipWSAndComments(in);
     if (in.peek() == ')')
+    {
       in.get();
+    }
     else
     {
       // catch to parse for ')' if earlier statement failed
@@ -272,7 +274,9 @@ ReadFoamList(std::istream& in,
     // catch closure char ' } '
     SkipWSAndComments(in);
     if (in.peek() == '}')
+    {
       in.get();
+    }
     else
     {
       // catch for ' } ' in event that comments or extra whitespace exists
@@ -418,7 +422,9 @@ ReadBoundaryFile(const std::filesystem::path& path, const std::string& fname)
       const auto key_l = LowerCase(key);
 
       if (key_l == "type")
+      {
         patch.type = value;
+      }
       else if (key_l == "nfaces")
       {
         patch.n_faces = std::stoi(value);

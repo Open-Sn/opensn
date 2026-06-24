@@ -331,7 +331,9 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
               cell_psi_data[imap + gsg] = inv_theta * (psi_sol + (theta - 1.0) * psi_old_val);
             }
             else
+            {
               cell_psi_data[imap + gsg] = psi_sol;
+            }
           }
         }
       }

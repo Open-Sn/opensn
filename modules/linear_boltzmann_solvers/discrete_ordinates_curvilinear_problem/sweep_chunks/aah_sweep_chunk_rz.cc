@@ -179,9 +179,13 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
 
             const double* psi = nullptr;
             if (is_local_face)
+            {
               psi = fluds.UpwindPsi(spls_index, in_face_counter, fj, 0, as_ss_idx);
+            }
             else if (not is_boundary_face)
+            {
               psi = fluds.NLUpwindPsi(preloc_face_counter, fj, 0, as_ss_idx);
+            }
             else
             {
               //  Determine whether incoming direction is incident on the point

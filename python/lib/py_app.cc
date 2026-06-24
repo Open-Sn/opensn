@@ -97,7 +97,9 @@ PyApp::Run(int argc, char** argv)
     }
   }
   else
+  {
     return EXIT_FAILURE;
+  }
 
   if (opensn::use_caliper and opensn::mpi_comm.rank() == 0)
     std::cout << std::endl;

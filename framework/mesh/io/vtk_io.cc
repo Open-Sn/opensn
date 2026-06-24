@@ -950,7 +950,9 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
   {
     const auto blk_id = static_cast<int>(cell.block_id);
     if (block_id_map.count(blk_id) == 0)
+    {
       block_id_map[blk_id] = cell.GetSubType();
+    }
     else
     {
       if (cell.GetSubType() != block_id_map.at(blk_id))
@@ -1040,9 +1042,13 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     const size_t num_faces = cell.faces.size();
     std::vector<int> face_mapping(num_faces, 0);
     if (cell.GetSubType() == CellType::WEDGE)
+    {
       face_mapping = {2, 3, 4, 0, 1};
+    }
     else if (cell.GetSubType() == CellType::HEXAHEDRON)
+    {
       face_mapping = {2, 1, 3, 0, 4, 5};
+    }
     else
     {
       for (size_t f = 0; f < cell.faces.size(); ++f)

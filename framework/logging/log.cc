@@ -40,7 +40,9 @@ Logger::Log(LOG_LVL level)
         stream = &std::cout;
       }
       else
+      {
         use_dummy = true;
+      }
       break;
     }
     case LOG_0WARNING:
@@ -51,7 +53,9 @@ Logger::Log(LOG_LVL level)
         stream = &std::cout;
       }
       else
+      {
         use_dummy = true;
+      }
       break;
     }
     case LOG_0ERROR:
@@ -62,7 +66,9 @@ Logger::Log(LOG_LVL level)
         stream = &std::cerr;
       }
       else
+      {
         use_dummy = true;
+      }
       break;
     }
     case LOG_0VERBOSE_1:
@@ -73,7 +79,9 @@ Logger::Log(LOG_LVL level)
         stream = &std::cout;
       }
       else
+      {
         use_dummy = true;
+      }
       break;
     }
     case LOG_0VERBOSE_2:
@@ -84,7 +92,9 @@ Logger::Log(LOG_LVL level)
         stream = &std::cout;
       }
       else
+      {
         use_dummy = true;
+      }
       break;
     }
     case LOG_ALL:
@@ -114,7 +124,9 @@ Logger::Log(LOG_LVL level)
         stream = &std::cout;
       }
       else
+      {
         use_dummy = true;
+      }
       break;
     }
     case LOG_ALLVERBOSE_2:
@@ -125,7 +137,9 @@ Logger::Log(LOG_LVL level)
         stream = &std::cout;
       }
       else
+      {
         use_dummy = true;
+      }
       break;
     }
     default:

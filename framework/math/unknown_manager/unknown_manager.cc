@@ -43,8 +43,10 @@ UnknownManager::AddUnknown(UnknownType unk_type, unsigned int dimension)
     unknowns.back().name = "Unknown_" + std::to_string(unknowns.size() - 1);
   }
   else
+  {
     throw std::runtime_error(
       "UnknownManager: Invalid call to AddUnknown. Unknown type not supported.");
+  }
 
   return unknowns.size();
 }

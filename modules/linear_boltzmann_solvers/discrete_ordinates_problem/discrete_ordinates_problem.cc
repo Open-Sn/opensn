@@ -228,7 +228,9 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
   }
   else
+  {
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
+  }
 
   if (params.Has("boundary_conditions"))
   {
@@ -942,7 +944,9 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
       SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
     }
     else
+    {
       SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
+    }
   }
 
   if (switching_modes or default_to_transient)
@@ -1054,7 +1058,9 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
         psi_new.assign(num_ang_unknowns, 0.0);
     }
     else
+    {
       std::vector<double>().swap(psi_new);
+    }
 
     if (save_old)
     {
@@ -1062,7 +1068,9 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
         psi_old.assign(num_ang_unknowns, 0.0);
     }
     else
+    {
       std::vector<double>().swap(psi_old);
+    }
   }
 }
 
@@ -1520,7 +1528,9 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
     }
   }
   else
+  {
     OpenSnInvalidArgument("Unsupported sweep type \"" + sweep_type_ + "\"");
+  }
 
   opensn::mpi_comm.barrier();
 
@@ -1992,7 +2002,9 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
       }
       else
+      {
         OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
+      }
     } // for an_ss
   } // for so_grouping
 
@@ -2026,7 +2038,9 @@ DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
     return std::make_shared<CBCSweepChunk>(*this, groupset);
   }
   else
+  {
     OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");
+  }
 }
 
 void

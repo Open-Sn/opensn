@@ -38,7 +38,7 @@ IsotropicBoundary::UpdateBoundaryFlux(const std::vector<LBSGroupset>& groupsets)
       double* boundary_flux = GetBoundaryFlux(groupset.id);
       for (unsigned int g = 0; g < groupset.GetNumGroups(); ++g)
       {
-        boundary_flux[g] = ((is_active) ? active_boundary_flux_[groupset.first_group + g] : 0.0);
+        boundary_flux[g] = (is_active ? active_boundary_flux_[groupset.first_group + g] : 0.0);
       }
     }
     current_state_ = is_active;

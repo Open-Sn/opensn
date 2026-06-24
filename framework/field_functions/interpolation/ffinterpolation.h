@@ -81,7 +81,9 @@ public:
       field_function_ = std::move(gbff);
     }
     else
+    {
       throw std::runtime_error("Expected FieldFunctionGridBased field function");
+    }
   }
 
   FieldFunctionInterpolationType Type() const { return type_; }
