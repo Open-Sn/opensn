@@ -14,7 +14,13 @@ jobs:
         shell: bash
         run: |
           module load cuda/13.0 python3/3.12.3 opensn/gcc/14
-          cmake -DOPENSN_WITH_PYTHON_MODULE=ON -DOPENSN_WITH_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=89 --preset coverage
+          cmake \
+            -DBLAS_LIBRARIES="/opt/local/opensn/gcc/14.2.0/dependencies/lib/libf2cblas.a" \
+            -DLAPACK_LIBRARIES="/opt/local/opensn/gcc/14.2.0/dependencies/lib/libf2cblas.a" \
+            -DOPENSN_WITH_PYTHON_MODULE=ON \
+            -DOPENSN_WITH_CUDA=ON \
+            -DCMAKE_CUDA_ARCHITECTURES=89 \
+            --preset coverage
           cmake --build --preset coverage -j64
       - name: test
         shell: bash

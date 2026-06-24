@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.29)
 
 project(opensn
     VERSION 1.0.1
-    LANGUAGES C CXX
+    LANGUAGES C CXX Fortran
 )
 
 set(CMAKE_CXX_STANDARD 20)
@@ -14,6 +14,8 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(CheckTypeSize)
 include(CheckSymbolExists)
+include(CheckFortranFunctionExists)
+include(CMakePushCheckState)
 include(CheckCXXCompilerFlag)
 include(CheckLinkerFlag)
 include(FetchContent)
@@ -138,7 +140,17 @@ if(OPENSN_WITH_PYTHON_MODULE)
 endif()
 
 # dependencies
-find_package(MPI REQUIRED)
+find_package(LAPACK REQUIRED)
+if(TARGET LAPACK::LAPACK)
+  cmake_push_check_state(RESET)
+
+  set(CMAKE_REQUIRED_LIBRARIES LAPACK::LAPACK)
+  check_fortran_function_exists(dgesv OPENSN_HAVE_DGESV)
+
+  cmake_pop_check_state()
+endif()
+
+find_package(MPI REQUIRED COMPONENTS C)
 find_package(mpicpp-lite 2.7.1 REQUIRED)
 
 find_package(HDF5 REQUIRED COMPONENTS C HL)
@@ -367,7 +379,7 @@ if (OPENSN_WITH_GPU)
       $<BUILD_INTERFACE:${PETSC_INCLUDE_DIR}>
       $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>
   )
-  target_link_libraries(libopensngpu PRIVATE MPI::MPI_CXX)
+  target_link_libraries(libopensngpu PRIVATE MPI::MPI_C)
 endif()
 
 target_link_libraries(libopensn
@@ -377,7 +389,9 @@ target_link_libraries(libopensn
     caliper
     ${HDF5_LIBRARIES}
     mpicpp-lite::mpicpp-lite
-    MPI::MPI_CXX
+    MPI::MPI_C
+    PRIVATE
+    LAPACK::LAPACK
 )
 if (OPENSN_WITH_GPU)
   target_link_libraries(libopensn INTERFACE libopensngpu)
