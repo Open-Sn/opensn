@@ -18,7 +18,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   : SPDS(omega, grid)
 {
 
-  const auto num_loc_cells = grid->local_cells.size();
+  const auto num_loc_cells = grid->GetLocalCellCount();
 
   // Populate cell relationships
   std::vector<std::set<std::pair<std::uint32_t, double>>> cell_successors(num_loc_cells);
@@ -69,18 +69,18 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   constexpr auto OUTGOING = FaceOrientation::OUTGOING;
 
   // For each local cell create a task
-  task_list_.reserve(grid_->local_cells.size());
-  for (const auto& cell : grid_->local_cells)
+  task_list_.reserve(grid_->GetLocalCellCount());
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto num_faces = cell.faces.size();
+    const auto num_faces = cell->faces.size();
     unsigned int num_dependencies = 0;
     std::vector<std::uint32_t> successors;
     successors.reserve(num_faces);
 
     for (std::size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
-      const auto& orientation = cell_face_orientations_[cell.local_id][f];
+      const auto& face = cell->faces[f];
+      const auto& orientation = cell_face_orientations_[cell->local_id][f];
 
       if (orientation == INCOMING)
       {
@@ -94,7 +94,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
       }
     }
 
-    task_list_.push_back({num_dependencies, successors, cell.local_id, &cell, false});
+    task_list_.push_back({num_dependencies, successors, cell->local_id, cell.get(), false});
   }
 }
 

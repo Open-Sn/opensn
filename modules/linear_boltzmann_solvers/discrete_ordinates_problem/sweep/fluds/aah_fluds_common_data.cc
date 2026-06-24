@@ -51,7 +51,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   // Given a local cell index, gives the so index
   std::vector<uint64_t> local_so_cell_mapping;
-  local_so_cell_mapping.resize(grid->local_cells.size(), 0);
+  local_so_cell_mapping.resize(grid->GetLocalCellCount(), 0);
 
   largest_face_ = 0;                                     // Will contain the max dofs per face
   std::vector<LockBox> lock_boxes(num_face_categories_); // cell,face index pairs
@@ -65,7 +65,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   for (auto csoi = 0; csoi < spls.size(); ++csoi)
   {
     auto cell_local_id = spls[csoi];
-    const auto& cell = grid->local_cells[cell_local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
 
     local_so_cell_mapping[cell.local_id] = csoi; // Set mapping
 
@@ -82,7 +82,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   for (auto csoi = 0; csoi < spls.size(); ++csoi)
   {
     auto cell_local_id = spls[csoi];
-    const auto& cell = grid->local_cells[cell_local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
 
     LocalIncidentMapping(cell, spds, local_so_cell_mapping);
 
@@ -486,7 +486,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
   for (auto csoi = 0; csoi < spls.size(); ++csoi)
   {
     auto cell_local_index = spls[csoi];
-    const auto& cell = grid->local_cells[cell_local_index];
+    const auto& cell = grid->GetLocalCell(cell_local_index);
 
     NonLocalIncidentMapping(cell, spds);
   } // for csoi

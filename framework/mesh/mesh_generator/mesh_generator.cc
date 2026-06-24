@@ -257,7 +257,7 @@ MeshGenerator::Create(const ParameterBlock& params)
 void
 MeshGenerator::ComputeAndPrintStats(const std::shared_ptr<MeshContinuum>& grid)
 {
-  const size_t num_local_cells = grid->local_cells.size();
+  const size_t num_local_cells = grid->GetLocalCellCount();
   size_t num_global_cells = 0;
 
   mpi_comm.all_reduce(num_local_cells, num_global_cells, mpi::op::sum<size_t>());

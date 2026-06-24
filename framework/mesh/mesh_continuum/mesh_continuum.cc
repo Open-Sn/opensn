@@ -20,8 +20,7 @@ namespace opensn
 {
 
 MeshContinuum::MeshContinuum()
-  : local_cells(LocalCellHandler::Create(local_cells_)),
-    dim_(0),
+  : dim_(0),
     mesh_type_(UNSTRUCTURED),
     coord_sys_(CoordinateSystemType::UNDEFINED),
     extruded_(false),
@@ -107,8 +106,8 @@ MeshContinuum::GetUniqueBoundaryIDs() const
 
   // Develop local bndry-id set
   std::set<uint64_t> local_bndry_ids_set;
-  for (const auto& cell : local_cells)
-    for (const auto& face : cell.faces)
+  for (const auto& cell : local_cells_)
+    for (const auto& face : cell->faces)
       if (not face.has_neighbor)
         local_bndry_ids_set.insert(face.neighbor_id);
 
@@ -127,8 +126,8 @@ MeshContinuum::GetUniqueBoundaryIDs() const
 void
 MeshContinuum::ComputeGeometricInfo()
 {
-  for (auto& cell : local_cells)
-    cell.ComputeGeometricInfo(this);
+  for (auto& cell : local_cells_)
+    cell->ComputeGeometricInfo(this);
 
   for (const auto& ghost_id : GetGhostGlobalIDs())
     GetGlobalCell(ghost_id).ComputeGeometricInfo(this);
@@ -203,9 +202,9 @@ MeshContinuum::SetOrthogonalBoundaries()
   const Vector3 jhat(0.0, 1.0, 0.0);
   const Vector3 khat(0.0, 0.0, 1.0);
 
-  for (auto& cell : local_cells)
+  for (auto& cell : local_cells_)
   {
-    for (auto& face : cell.faces)
+    for (auto& face : cell->faces)
     {
       if (not face.has_neighbor)
       {
@@ -304,14 +303,48 @@ MeshContinuum::GetGhostLocalID(uint64_t cell_global_index) const
                           " not found.");
 }
 
+std::size_t
+MeshContinuum::GetLocalCellCount() const
+{
+  return local_cells_.size();
+}
+
+Cell&
+MeshContinuum::GetLocalCell(uint64_t id)
+{
+  assert(not local_cells_.empty());
+  assert(id < local_cells_.size());
+  return *local_cells_[id];
+}
+
+const Cell&
+MeshContinuum::GetLocalCell(uint64_t id) const
+{
+  assert(not local_cells_.empty());
+  assert(id < local_cells_.size());
+  return *local_cells_[id];
+}
+
+std::vector<std::shared_ptr<Cell>>&
+MeshContinuum::GetLocalCells()
+{
+  return local_cells_;
+}
+
+const std::vector<std::shared_ptr<Cell>>&
+MeshContinuum::GetLocalCells() const
+{
+  return local_cells_;
+}
+
 std::shared_ptr<GridFaceHistogram>
 MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_tolerance) const
 {
   std::vector<std::pair<size_t, size_t>> face_categories_list;
   // Fill histogram
   std::vector<size_t> face_size_histogram;
-  for (const auto& cell : local_cells)
-    for (const auto& face : cell.faces)
+  for (const auto& cell : local_cells_)
+    for (const auto& face : cell->faces)
       face_size_histogram.push_back(face.vertex_ids.size());
 
   std::stable_sort(face_size_histogram.begin(), face_size_histogram.end());
@@ -473,8 +506,8 @@ size_t
 MeshContinuum::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 {
   size_t count = 0;
-  for (const auto& cell : local_cells)
-    if (log_vol.Inside(cell.centroid))
+  for (const auto& cell : local_cells_)
+    if (log_vol.Inside(cell->centroid))
       ++count;
   mpi_comm.all_reduce(count, mpi::op::sum<size_t>());
   return count;
@@ -627,13 +660,13 @@ MeshContinuum::MakeIJKToGlobalIDMapping() const
 std::vector<Vector3>
 MeshContinuum::MakeCellOrthoSizes() const
 {
-  std::vector<Vector3> cell_ortho_sizes(local_cells.size());
-  for (const auto& cell : local_cells)
+  std::vector<Vector3> cell_ortho_sizes(local_cells_.size());
+  for (const auto& cell : local_cells_)
   {
-    Vector3 vmin = GlobalVertex(cell.vertex_ids.front());
+    Vector3 vmin = GlobalVertex(cell->vertex_ids.front());
     Vector3 vmax = vmin;
 
-    for (const auto vid : cell.vertex_ids)
+    for (const auto vid : cell->vertex_ids)
     {
       const auto& vertex = GlobalVertex(vid);
       vmin.x = std::min(vertex.x, vmin.x);
@@ -645,7 +678,7 @@ MeshContinuum::MakeCellOrthoSizes() const
       vmax.z = std::max(vertex.z, vmax.z);
     }
 
-    cell_ortho_sizes[cell.local_id] = vmax - vmin;
+    cell_ortho_sizes[cell->local_id] = vmax - vmin;
   } // for cell
 
   return cell_ortho_sizes;
@@ -669,9 +702,9 @@ MeshContinuum::GetLocalBoundingBox() const
   };
 
   bool initialized = false;
-  for (const auto& cell : local_cells)
+  for (const auto& cell : local_cells_)
   {
-    for (const uint64_t vid : cell.vertex_ids)
+    for (const uint64_t vid : cell->vertex_ids)
     {
       const auto& vertex = GlobalVertex(vid);
       if (not initialized)
@@ -690,8 +723,8 @@ MeshContinuum::GetLocalBoundingBox() const
 void
 MeshContinuum::SetUniformBlockID(const unsigned int blk_id)
 {
-  for (auto& cell : local_cells)
-    cell.block_id = blk_id;
+  for (auto& cell : local_cells_)
+    cell->block_id = blk_id;
 
   const auto& ghost_ids = GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
@@ -708,11 +741,11 @@ MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol,
                                            bool sense)
 {
   int num_cells_modified = 0;
-  for (auto& cell : local_cells)
+  for (auto& cell : local_cells_)
   {
-    if (log_vol.Inside(cell.centroid) and sense)
+    if (log_vol.Inside(cell->centroid) and sense)
     {
-      cell.block_id = blk_id;
+      cell->block_id = blk_id;
       ++num_cells_modified;
     }
   }
@@ -737,9 +770,9 @@ void
 MeshContinuum::SetUniformBoundaryID(const std::string& boundary_name)
 {
   auto bndry_id = MakeBoundaryID(boundary_name);
-  for (auto& cell : local_cells)
+  for (auto& cell : local_cells_)
   {
-    for (auto& face : cell.faces)
+    for (auto& face : cell->faces)
     {
       if (face.has_neighbor)
         continue;
@@ -759,9 +792,9 @@ MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
 
   // Loop over cells
   int num_faces_modified = 0;
-  for (auto& cell : local_cells)
+  for (auto& cell : local_cells_)
   {
-    for (auto& face : cell.faces)
+    for (auto& face : cell->faces)
     {
       if (face.has_neighbor)
         continue;
@@ -821,9 +854,9 @@ MeshContinuum::MakeMPILocalCommunicatorSet() const
   // Loop over local cells
   // Populate local_graph_edges
   local_graph_edges.insert(mpi_comm.rank()); // add current location
-  for (const auto& cell : local_cells)
+  for (const auto& cell : local_cells_)
   {
-    for (const auto& face : cell.faces)
+    for (const auto& face : cell->faces)
     {
       if (face.has_neighbor)
         if (not face.IsNeighborLocal(this))
@@ -929,8 +962,8 @@ MeshContinuum::ComputeVolumePerBlockID() const
 {
   // Create a map to hold local volume with local block as key
   std::map<unsigned int, double> block_volumes;
-  for (const auto& cell : this->local_cells)
-    block_volumes[cell.block_id] += cell.volume;
+  for (const auto& cell : this->local_cells_)
+    block_volumes[cell->block_id] += cell->volume;
 
   // Collect all local block IDs
   std::set<unsigned int> unique_block_ids;

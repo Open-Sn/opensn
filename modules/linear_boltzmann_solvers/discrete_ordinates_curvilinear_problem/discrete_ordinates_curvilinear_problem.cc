@@ -202,9 +202,9 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
     Vector3(0.0, 1.0, 0.0),
     Vector3(0.0, 0.0, 1.0),
   };
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    for (const auto& face : cell.faces)
+    for (const auto& face : cell->faces)
     {
       if (not face.has_neighbor)
       {
@@ -319,11 +319,11 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
                             {}};
   };
 
-  const size_t num_local_cells = grid_->local_cells.size();
+  const size_t num_local_cells = grid_->GetLocalCellCount();
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_->local_cells)
-    secondary_unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell);
+  for (const auto& cell : grid_->GetLocalCells())
+    secondary_unit_cell_matrices_[cell->local_id] = ComputeCellUnitIntegrals(*cell);
 
   opensn::mpi_comm.barrier();
   log.Log() << "Secondary Cell matrices computed.";
