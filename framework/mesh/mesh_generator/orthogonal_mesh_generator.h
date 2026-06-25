@@ -13,12 +13,15 @@ class OrthogonalMeshGenerator : public MeshGenerator
 public:
   explicit OrthogonalMeshGenerator(const InputParameters& params);
 
+  std::shared_ptr<MeshContinuum> Execute() override;
+
 protected:
   std::shared_ptr<UnpartitionedMesh>
   GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> input_umesh) override;
 
   const CoordinateSystemType coord_sys_;
   std::vector<std::vector<double>> node_sets_;
+  const bool distributed_generation_;
 
 public:
   static InputParameters GetInputParameters();

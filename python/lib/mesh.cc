@@ -402,6 +402,9 @@ WrapMeshGenerator(py::module& mesh)
         Sets of nodes per dimension. Node values must be monotonically increasing.
     coord_sys: {'cartesian', 'cylindrical', 'spherical'}
         The coordinate system of the mesh.
+    distributed_generation: bool, default=False
+        When true, partition the orthogonal cell graph on rank 0 and build each
+        rank's local and ghost cells directly on that rank.
     )"
   );
 
