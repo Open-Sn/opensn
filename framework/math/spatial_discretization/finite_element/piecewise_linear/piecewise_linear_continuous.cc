@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<MeshContinuum> grid,
+PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<Mesh> grid,
                                                      QuadratureOrder q_order)
   : PieceWiseLinearBase(grid, q_order, SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS)
 {
@@ -22,7 +22,7 @@ PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<MeshC
 }
 
 std::shared_ptr<PieceWiseLinearContinuous>
-PieceWiseLinearContinuous::New(const std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order)
+PieceWiseLinearContinuous::New(const std::shared_ptr<Mesh> grid, QuadratureOrder q_order)
 {
   return std::shared_ptr<PieceWiseLinearContinuous>(new PieceWiseLinearContinuous(grid, q_order));
 }
