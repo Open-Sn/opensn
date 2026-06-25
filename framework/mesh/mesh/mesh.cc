@@ -128,6 +128,10 @@ Mesh::ComputeGeometricInfo()
   for (auto& cell : local_cells_)
     cell.ComputeGeometricInfo(this);
 
+  cell_volumes_.resize(local_cells_.size(), 0);
+  for (auto& cell : local_cells_)
+    cell_volumes_[cell.local_id] = ComputeVolume(*this, cell);
+
   for (const auto& ghost_id : GetGhostGlobalIDs())
     GetGlobalCell(ghost_id).ComputeGeometricInfo(this);
 }
@@ -888,7 +892,7 @@ Mesh::ComputeVolumePerBlockID() const
   // Create a map to hold local volume with local block as key
   std::map<unsigned int, double> block_volumes;
   for (const auto& cell : this->local_cells_)
-    block_volumes[cell.block_id] += cell.volume;
+    block_volumes[cell.block_id] += cell_volumes_[cell.local_id];
 
   // Collect all local block IDs
   std::set<unsigned int> unique_block_ids;
@@ -939,6 +943,14 @@ Mesh::ComputeVolumePerBlockID() const
   }
 
   return global_block_volumes;
+}
+
+double
+Mesh::GetCellVolume(uint64_t id) const
+{
+  assert(not cell_volumes_.empty());
+  assert(id < cell_volumes_.size());
+  return cell_volumes_[id];
 }
 
 } // namespace opensn
