@@ -342,16 +342,20 @@ Cell::ComputeGeometricInfo(const Mesh* grid)
   // Compute face geometric data
   for (auto& face : faces)
     face.ComputeGeometricInfo(grid, *this);
+}
 
+double
+ComputeVolume(const Mesh& mesh, const Cell& cell)
+{
   // Compute cell volumes
-  volume = 0.0;
-  switch (cell_type_)
+  double volume = 0.0;
+  switch (cell.GetType())
   {
     // The volume of a slab is the distance between the two vertices.
     case CellType::SLAB:
     {
-      const auto& v0 = grid->GlobalVertex(vertex_ids[0]);
-      const auto& v1 = grid->GlobalVertex(vertex_ids[1]);
+      const auto& v0 = mesh.GlobalVertex(cell.vertex_ids[0]);
+      const auto& v1 = mesh.GlobalVertex(cell.vertex_ids[1]);
       volume = (v1 - v0).Norm();
       break;
     }
@@ -360,13 +364,13 @@ Cell::ComputeGeometricInfo(const Mesh* grid)
     // with each edge and the centroid.
     case CellType::POLYGON:
     {
-      for (const auto& face : faces)
+      for (const auto& face : cell.faces)
       {
-        const auto& v0 = grid->GlobalVertex(face.vertex_ids[0]);
-        const auto& v1 = grid->GlobalVertex(face.vertex_ids[1]);
+        const auto& v0 = mesh.GlobalVertex(face.vertex_ids[0]);
+        const auto& v1 = mesh.GlobalVertex(face.vertex_ids[1]);
 
         const auto e0 = v1 - v0;
-        const auto e1 = centroid - v0;
+        const auto e1 = cell.centroid - v0;
         volume += 0.5 * std::fabs(e0.x * e1.y - e0.y * e1.x);
       }
       break;
@@ -376,19 +380,19 @@ Cell::ComputeGeometricInfo(const Mesh* grid)
     // formed with on each face with the cell centroid.
     case CellType::POLYHEDRON:
     {
-      for (const auto& face : faces)
+      for (const auto& face : cell.faces)
       {
         const auto num_verts = face.vertex_ids.size();
         for (unsigned int v = 0; v < num_verts; ++v)
         {
           const auto vid1 = v < num_verts - 1 ? v + 1 : 0;
-          const auto& v0 = grid->GlobalVertex(face.vertex_ids[v]);
-          const auto& v1 = grid->GlobalVertex(face.vertex_ids[vid1]);
+          const auto& v0 = mesh.GlobalVertex(face.vertex_ids[v]);
+          const auto& v1 = mesh.GlobalVertex(face.vertex_ids[vid1]);
 
           Matrix3x3 J;
           J.SetColJVec(0, face.centroid - v0);
           J.SetColJVec(1, v1 - v0);
-          J.SetColJVec(2, centroid - v0);
+          J.SetColJVec(2, cell.centroid - v0);
           volume += J.Det() / 6.0;
         }
       }
@@ -397,6 +401,8 @@ Cell::ComputeGeometricInfo(const Mesh* grid)
     default:
       throw std::runtime_error("Unknown cell type.");
   }
+
+  return volume;
 }
 
 ByteArray
