@@ -276,6 +276,14 @@ public:
   /// Compute volume per block IDs
   std::map<unsigned int, double> ComputeVolumePerBlockID() const;
 
+  /**
+   * Get cell volume
+   *
+   * \param id Local cell ID
+   * \return Cell volume
+   */
+  double GetCellVolume(uint64_t id) const;
+
 private:
   /// Spatial dimension
   unsigned int dim_;
@@ -298,6 +306,8 @@ private:
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
   /// Global to ghost ID map
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
+
+  std::vector<double> cell_volumes_;
 
 public:
   /// Returns a new instance of the spatial discretization.
