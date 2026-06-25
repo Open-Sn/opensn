@@ -9,7 +9,7 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 
@@ -19,7 +19,7 @@ namespace
 {
 
 void
-acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
+acceleration_Diffusion_CFEM(std::shared_ptr<Mesh> grid)
 {
   using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
   opensn::log.Log() << "SimTest92_DSA";

@@ -6,7 +6,7 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/random_number_generation/random_number_generator.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/raytrace/raytracer.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
@@ -18,7 +18,7 @@ namespace
 {
 
 void
-SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
+SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
 {
   const std::string fname = "SimTest93_RayTracing";
   opensn::log.Log() << "SimTest93_RayTracing";

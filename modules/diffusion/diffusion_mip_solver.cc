@@ -4,7 +4,7 @@
 #include "modules/diffusion/diffusion_mip_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
@@ -131,7 +131,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-          const size_t acf = MeshContinuum::MapCellFace(*cell, adj_cell, f);
+          const size_t acf = Mesh::MapCellFace(*cell, adj_cell, f);
           const double hp = HPerpendicular(adj_cell, acf);
 
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.block_id);
@@ -662,7 +662,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
           const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-          const size_t acf = MeshContinuum::MapCellFace(*cell, adj_cell, f);
+          const size_t acf = Mesh::MapCellFace(*cell, adj_cell, f);
           const double hp = HPerpendicular(adj_cell, acf);
 
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.block_id);
