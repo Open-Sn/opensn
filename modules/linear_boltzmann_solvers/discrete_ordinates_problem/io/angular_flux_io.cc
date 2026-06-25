@@ -51,10 +51,10 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    cell_ids.push_back(cell->global_id);
-    num_cell_nodes.push_back(discretization.GetCellNumNodes(*cell));
+    cell_ids.push_back(cell.global_id);
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
 
-    const auto& nodes = discretization.GetCellNodeLocations(*cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell);
     for (const auto& node : nodes)
     {
       nodes_x.push_back(node.x);
@@ -93,11 +93,11 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
     std::vector<double> values;
     for (const auto& cell : grid->GetLocalCells())
     {
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(*cell); ++i)
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
-            const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
             values.push_back(src[groupset_id][dof_map]);
           }
     }

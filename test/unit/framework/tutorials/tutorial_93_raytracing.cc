@@ -89,9 +89,9 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    if (grid->CheckPointInsideCell(*cell, source_pos))
+    if (grid->CheckPointInsideCell(cell, source_pos))
     {
-      source_cell_ptr = cell.get();
+      source_cell_ptr = &cell;
       break;
     }
   }
@@ -206,7 +206,7 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
   // Create raytracer
   std::vector<double> cell_sizes(grid->GetLocalCellCount(), 0.0);
   for (const auto& cell : grid->GetLocalCells())
-    cell_sizes[cell->local_id] = GetCellApproximateSize(*cell);
+    cell_sizes[cell.local_id] = GetCellApproximateSize(cell);
 
   RayTracer ray_tracer(grid, &cell_sizes);
 
@@ -272,7 +272,7 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
   for (const auto& cell : grid->GetLocalCells())
   {
     // Compute mass matrix and its inverse
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto& fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
@@ -292,7 +292,7 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
       {
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto imap = sdm.MapDOFLocal(*cell, i, phi_uk_man, m, g);
+          const auto imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
           T(i) = phi_tally[imap] / num_particles;
         }
 
@@ -300,7 +300,7 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto imap = sdm.MapDOFLocal(*cell, i, phi_uk_man, m, g);
+          const auto imap = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
           phi_tally[imap] = phi_uc(i);
         }
       } // for group g

@@ -114,10 +114,10 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
     std::set<unsigned int> blk_ids;
     for (const auto& cell : grid->GetLocalCells())
     {
-      if (logvol_->Inside(cell->centroid))
+      if (logvol_->Inside(cell.centroid))
       {
-        blk_ids.insert(cell->block_id);
-        subscribers_.push_back(cell->local_id);
+        blk_ids.insert(cell.block_id);
+        subscribers_.push_back(cell.local_id);
       }
     }
   }
@@ -125,17 +125,17 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
   {
     for (const auto& cell : grid->GetLocalCells())
     {
-      if (std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
-        subscribers_.push_back(cell->local_id);
+      if (std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
+        subscribers_.push_back(cell.local_id);
     }
   }
   else
   {
     for (const auto& cell : grid->GetLocalCells())
     {
-      if (logvol_->Inside(cell->centroid) and
-          std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
-        subscribers_.push_back(cell->local_id);
+      if (logvol_->Inside(cell.centroid) and
+          std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
+        subscribers_.push_back(cell.local_id);
     }
   }
 

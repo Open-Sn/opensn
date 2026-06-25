@@ -22,28 +22,28 @@ OutflowBank::OutflowBank(const Mesh& grid, unsigned int num_groups, bool include
   : views_(grid.GetLocalCellCount())
 {
   for (const auto& cell : grid.GetLocalCells())
-    views_[cell->local_id] = CellOutflowView(cell->faces.size(), num_groups);
+    views_[cell.local_id] = CellOutflowView(cell.faces.size(), num_groups);
 
   std::vector<std::int64_t> cell_offsets(grid.GetLocalCellCount(), -1);
 
   std::size_t num_faces = 0;
   for (const auto& cell : grid.GetLocalCells())
   {
-    auto& cell_view = views_[cell->local_id];
+    auto& cell_view = views_[cell.local_id];
     cell_view.InitializeFaceOffsets();
     std::size_t cell_num_stored_faces = 0;
 
-    for (std::size_t f = 0; f < cell->faces.size(); ++f)
+    for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = cell.faces[f];
       if (face.has_neighbor and not include_internal_faces)
         continue;
 
       if (cell_num_stored_faces == 0)
-        cell_offsets[cell->local_id] = static_cast<std::int64_t>(num_faces);
+        cell_offsets[cell.local_id] = static_cast<std::int64_t>(num_faces);
 
       cell_view.SetFaceOffset(f, static_cast<std::int64_t>(cell_num_stored_faces) * num_groups);
-      cellface_map_[Merge(cell->local_id, f)] = num_faces * num_groups;
+      cellface_map_[Merge(cell.local_id, f)] = num_faces * num_groups;
       ++num_faces;
       ++cell_num_stored_faces;
     }

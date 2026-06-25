@@ -133,9 +133,9 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& face_orientations = cell_face_orientations_[cell->local_id];
+    const auto& face_orientations = cell_face_orientations_[cell.local_id];
     std::size_t f = 0;
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
     {
       if (face.has_neighbor and not face.IsNeighborLocal(grid_.get()) and
           face_orientations[f] == FaceOrientation::OUTGOING)

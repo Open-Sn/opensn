@@ -88,10 +88,10 @@ ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
   std::uint64_t face_node_counter = 0;
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_id = cell->local_id;
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    const auto& cell_id = cell.local_id;
+    for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = cell.faces[f];
       if (not face.has_neighbor and face.neighbor_id == bid)
       {
         const auto num_face_nodes = face.vertex_ids.size();

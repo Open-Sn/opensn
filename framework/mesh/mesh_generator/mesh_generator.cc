@@ -145,7 +145,7 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
     {
       auto cell = SetupCell(*raw_cell, cell_global_id, cell_pids[cell_global_id]);
 
-      for (const auto vid : cell->vertex_ids)
+      for (const auto vid : cell.vertex_ids)
         grid_ptr->AddGlobalVertex(vid, input_umesh->GetVertices()[vid]);
 
       grid_ptr->AddGlobalCell(std::move(cell));
@@ -193,18 +193,18 @@ MeshGenerator::CellHasLocalScope(const int location_id,
   return false;
 }
 
-std::unique_ptr<Cell>
+Cell
 MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
                          const uint64_t global_id,
                          const int partition_id)
 {
-  auto cell = std::make_unique<Cell>(raw_cell.type, raw_cell.sub_type);
-  cell->centroid = raw_cell.centroid;
-  cell->global_id = global_id;
-  cell->partition_id = partition_id;
-  cell->block_id = raw_cell.block_id;
+  Cell cell(raw_cell.type, raw_cell.sub_type);
+  cell.centroid = raw_cell.centroid;
+  cell.global_id = global_id;
+  cell.partition_id = partition_id;
+  cell.block_id = raw_cell.block_id;
 
-  cell->vertex_ids = raw_cell.vertex_ids;
+  cell.vertex_ids = raw_cell.vertex_ids;
 
   size_t face_counter = 0;
   for (const auto& raw_face : raw_cell.faces)
@@ -213,7 +213,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
     newFace.has_neighbor = raw_face.has_neighbor;
     newFace.neighbor_id = raw_face.neighbor;
     newFace.vertex_ids = raw_face.vertex_ids;
-    cell->faces.push_back(newFace);
+    cell.faces.push_back(newFace);
   }
   return cell;
 }

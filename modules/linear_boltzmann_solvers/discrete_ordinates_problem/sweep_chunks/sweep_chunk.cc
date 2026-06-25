@@ -33,7 +33,7 @@ SweepChunk::ZeroDestinationPhi()
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views_[cell->local_id];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
     const auto num_nodes = static_cast<size_t>(transport_view.GetNumNodes());
     for (size_t i = 0; i < num_nodes; ++i)
     {

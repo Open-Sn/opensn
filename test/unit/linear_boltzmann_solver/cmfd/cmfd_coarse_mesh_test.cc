@@ -18,22 +18,22 @@ TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
 
   for (const auto& fine_cell : grid->GetLocalCells())
   {
-    ASSERT_TRUE(coarse_mesh.HasCoarseCell(fine_cell->global_id));
-    EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell->global_id), fine_cell->global_id);
+    ASSERT_TRUE(coarse_mesh.HasCoarseCell(fine_cell.global_id));
+    EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell.global_id), fine_cell.global_id);
 
-    const auto& coarse_cell = coarse_mesh.LocalCell(fine_cell->local_id);
-    EXPECT_EQ(coarse_cell.global_id, fine_cell->global_id);
-    EXPECT_EQ(coarse_cell.local_id, fine_cell->local_id);
-    EXPECT_EQ(coarse_cell.partition_id, fine_cell->partition_id);
-    EXPECT_EQ(coarse_cell.block_id, fine_cell->block_id);
-    EXPECT_DOUBLE_EQ(coarse_cell.volume, fine_cell->volume);
-    EXPECT_EQ(coarse_cell.fine_cell_ids, std::vector<uint64_t>({fine_cell->global_id}));
-    ASSERT_EQ(coarse_cell.faces.size(), fine_cell->faces.size());
+    const auto& coarse_cell = coarse_mesh.LocalCell(fine_cell.local_id);
+    EXPECT_EQ(coarse_cell.global_id, fine_cell.global_id);
+    EXPECT_EQ(coarse_cell.local_id, fine_cell.local_id);
+    EXPECT_EQ(coarse_cell.partition_id, fine_cell.partition_id);
+    EXPECT_EQ(coarse_cell.block_id, fine_cell.block_id);
+    EXPECT_DOUBLE_EQ(coarse_cell.volume, fine_cell.volume);
+    EXPECT_EQ(coarse_cell.fine_cell_ids, std::vector<uint64_t>({fine_cell.global_id}));
+    ASSERT_EQ(coarse_cell.faces.size(), fine_cell.faces.size());
 
-    for (size_t f = 0; f < fine_cell->faces.size(); ++f)
+    for (size_t f = 0; f < fine_cell.faces.size(); ++f)
     {
       const auto& coarse_face = coarse_cell.faces[f];
-      const auto& fine_face = fine_cell->faces[f];
+      const auto& fine_face = fine_cell.faces[f];
       EXPECT_EQ(coarse_face.has_neighbor, fine_face.has_neighbor);
       EXPECT_EQ(coarse_face.neighbor_id, fine_face.neighbor_id);
       EXPECT_DOUBLE_EQ(coarse_face.area, fine_face.area);

@@ -16,8 +16,8 @@ const Cell&
 FindCellByCentroid(const std::shared_ptr<Mesh>& grid, const Vector3& centroid)
 {
   for (const auto& cell : grid->GetLocalCells())
-    if (cell->centroid.AbsoluteEquals(centroid, 1.0e-12))
-      return *cell;
+    if (cell.centroid.AbsoluteEquals(centroid, 1.0e-12))
+      return cell;
 
   throw std::logic_error("Failed to find test cell by centroid.");
 }
