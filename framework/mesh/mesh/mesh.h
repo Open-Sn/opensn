@@ -159,7 +159,7 @@ public:
    * Adds a new cell to the appropriate category (local or ghost).
    * @param new_cell The cell to add.
    */
-  void AddGlobalCell(std::shared_ptr<Cell> new_cell);
+  void AddGlobalCell(Cell&& new_cell);
 
   /// Returns a reference to a cell given its global cell index.
   Cell& GetGlobalCell(uint64_t cell_global_index);
@@ -203,8 +203,8 @@ public:
   const Cell& GetLocalCell(uint64_t id) const;
   Cell& GetLocalCell(uint64_t id);
 
-  std::vector<std::shared_ptr<Cell>>& GetLocalCells();
-  const std::vector<std::shared_ptr<Cell>>& GetLocalCells() const;
+  std::vector<Cell>& GetLocalCells();
+  const std::vector<Cell>& GetLocalCells() const;
 
   /// Returns whether the cell with the given global id is locally owned.
   bool IsCellLocal(uint64_t global_id) const noexcept
@@ -291,9 +291,9 @@ private:
   ///
   GlobalVertexIDMap global_vertex_id_map_;
   /// Locally owned cells
-  std::vector<std::shared_ptr<Cell>> local_cells_;
+  std::vector<Cell> local_cells_;
   /// Locally stored ghost cells
-  std::vector<std::shared_ptr<Cell>> ghost_cells_;
+  std::vector<Cell> ghost_cells_;
 
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
   /// Global to ghost ID map
