@@ -56,12 +56,12 @@ protected:
   std::map<uint64_t, int64_t> ghost_node_mapping_;
 
 private:
-  explicit PieceWiseLinearContinuous(std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order);
+  explicit PieceWiseLinearContinuous(std::shared_ptr<Mesh> grid, QuadratureOrder q_order);
 
 public:
   /// Construct a shared object using the protected constructor.
   static std::shared_ptr<PieceWiseLinearContinuous>
-  New(std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order = QuadratureOrder::SECOND);
+  New(std::shared_ptr<Mesh> grid, QuadratureOrder q_order = QuadratureOrder::SECOND);
 };
 
 } // namespace opensn

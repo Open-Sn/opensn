@@ -190,7 +190,7 @@ Mesh
    :nosignatures:
    :template: noinit.rst
 
-   mesh.MeshContinuum
+   mesh.Mesh
 
 Surface mesh
 ^^^^^^^^^^^^

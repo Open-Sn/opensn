@@ -5,7 +5,7 @@
 
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
@@ -20,7 +20,7 @@ namespace opensn
 
 struct AAHSweepData
 {
-  const std::shared_ptr<MeshContinuum>& grid;
+  const std::shared_ptr<Mesh>& grid;
   const SpatialDiscretization& discretization;
   const std::vector<UnitCellMatrices>& unit_cell_matrices;
   const std::vector<CellLBSView>& cell_transport_views;

@@ -8,7 +8,7 @@
 
 namespace opensn
 {
-class MeshContinuum;
+class Mesh;
 class Cell;
 struct Vector3;
 class SpatialDiscretization;

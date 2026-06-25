@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <algorithm>
 #include <queue>
 #include <set>
@@ -40,7 +40,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
   std::set<std::pair<std::uint32_t, std::uint32_t>> fas_edges(spds_.GetLocalSweepFAS().begin(),
                                                               spds_.GetLocalSweepFAS().end());
   // for each level
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetGrid());
   std::vector<AAHD_DirectedEdgeNode> local_node_stack;
   std::queue<std::uint64_t> idle_slots;
 
@@ -147,7 +147,7 @@ void
 AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscretization& sdm)
 {
   // get reference to the grid
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetGrid());
   // record the FAS edges
   std::uint64_t fas_node_index = 0;
   const std::vector<std::pair<std::uint32_t, std::uint32_t>>& fas_edges = spds_.GetLocalSweepFAS();
@@ -188,7 +188,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
 void
 AAHD_FLUDSCommonData::ComputeNodeIndexForNonLocalFaces(const SpatialDiscretization& sdm)
 {
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const auto& grid = *(spds_.GetGrid());
   // Sort each bank before assigning node indices so that index ordering is deterministic. Face
   // nodes are unique, so the banks do not require duplicate removal.
   std::vector<std::vector<AAHD_NonLocalFaceNode>> incoming_bank, delayed_incoming_bank,
@@ -314,7 +314,7 @@ void
 AAHD_FLUDSCommonData::ComputeNodeIndexForParallelFaces(const SpatialDiscretization& sdm)
 {
   // get reference to the mesh
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetGrid());
   // loop for each cell and detect parallel faces
   for (const auto& cell : grid.GetLocalCells())
   {

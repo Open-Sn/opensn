@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/grid_vtk_utils.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <vtkPoints.h>
@@ -19,7 +19,7 @@ namespace opensn
 {
 
 void
-UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
+UploadCellGeometryDiscontinuous(const std::shared_ptr<Mesh> grid,
                                 const Cell& cell,
                                 int64_t& node_counter,
                                 vtkNew<vtkPoints>& points,
@@ -526,7 +526,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
 }
 
 vtkNew<vtkUnstructuredGrid>
-PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool discontinuous)
+PrepareVtkUnstructuredGrid(const std::shared_ptr<Mesh> grid, bool discontinuous)
 {
   // Instantiate VTK items
   vtkNew<vtkUnstructuredGrid> ugrid;

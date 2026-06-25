@@ -3,8 +3,8 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
-#include "framework/mesh/mesh_continuum/cell.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include <boost/unordered/unordered_flat_map.hpp>
 #include <cassert>

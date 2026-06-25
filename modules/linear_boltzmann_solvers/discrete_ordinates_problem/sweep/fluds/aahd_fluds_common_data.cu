@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "caribou/main.hpp"
 #include <cinttypes>
 
@@ -34,7 +34,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
 {
   std::uint64_t incremental_boundary_index = 0;
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetGrid());
   for (const auto& cell : grid.GetLocalCells())
   {
     for (std::uint32_t f = 0; f < cell->faces.size(); ++f)
@@ -98,7 +98,7 @@ AAHD_FLUDSCommonData::CopyFlattenNodeIndexToDevice(const SpatialDiscretization& 
   crb::HostVector<std::uint64_t> cell_offset;
   crb::HostVector<std::uint64_t> data;
   // loop for each cell
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetGrid());
   std::uint64_t offset = 2 * grid.GetLocalCellCount();
   for (const auto& cell : grid.GetLocalCells())
   {

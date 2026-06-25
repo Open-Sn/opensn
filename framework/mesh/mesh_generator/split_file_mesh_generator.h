@@ -33,7 +33,7 @@ protected:
 public:
   explicit SplitFileMeshGenerator(const InputParameters& params);
 
-  std::shared_ptr<MeshContinuum> Execute() override;
+  std::shared_ptr<Mesh> Execute() override;
 
 protected:
   void WriteSplitMesh(const std::vector<int>& cell_pids,
@@ -53,7 +53,7 @@ public:
   static std::shared_ptr<SplitFileMeshGenerator> Create(const ParameterBlock& params);
 
 protected:
-  static std::shared_ptr<MeshContinuum> SetupLocalMesh(SplitMeshInfo& mesh_info);
+  static std::shared_ptr<Mesh> SetupLocalMesh(SplitMeshInfo& mesh_info);
 
   static void SerializeCell(const UnpartitionedMesh::LightWeightCell& cell,
                             ByteArray& serial_buffer);

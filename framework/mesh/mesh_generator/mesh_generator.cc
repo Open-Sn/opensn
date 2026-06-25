@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_generator/mesh_generator.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/graphs/graph_partitioner.h"
 #include "framework/graphs/petsc_graph_partitioner.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include <memory>
 
 namespace opensn
@@ -40,7 +40,7 @@ MeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> inpu
   return input_umesh;
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 MeshGenerator::Execute()
 {
   // Execute all input generators
@@ -126,12 +126,12 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, const int num
   return cell_pids;
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
                          const std::vector<int>& cell_pids) const
 {
   // Convert mesh
-  auto grid_ptr = MeshContinuum::New();
+  auto grid_ptr = Mesh::New();
 
   grid_ptr->GetBoundaryIDMap() = input_umesh->GetBoundaryIDMap();
   grid_ptr->GetBoundaryNameMap() = input_umesh->GetBoundaryNameMap();
@@ -255,7 +255,7 @@ MeshGenerator::Create(const ParameterBlock& params)
 }
 
 void
-MeshGenerator::ComputeAndPrintStats(const std::shared_ptr<MeshContinuum>& grid)
+MeshGenerator::ComputeAndPrintStats(const std::shared_ptr<Mesh>& grid)
 {
   const size_t num_local_cells = grid->GetLocalCellCount();
   size_t num_global_cells = 0;

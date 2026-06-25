@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-SpatialDiscretization::SpatialDiscretization(const std::shared_ptr<MeshContinuum> grid,
+SpatialDiscretization::SpatialDiscretization(const std::shared_ptr<Mesh> grid,
                                              SpatialDiscretizationType sdm_type)
   : UNITARY_UNKNOWN_MANAGER({std::make_pair(UnknownType::SCALAR, 0)}), grid_(grid), type_(sdm_type)
 {
@@ -20,7 +20,7 @@ SpatialDiscretization::GetType() const
   return type_;
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 SpatialDiscretization::GetGrid() const
 {
   return grid_;

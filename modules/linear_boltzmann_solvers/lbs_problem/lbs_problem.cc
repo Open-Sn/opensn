@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
@@ -38,7 +38,7 @@ LBSProblem::GetInputParameters()
 
   params.ChangeExistingParamToOptional("name", "LBSProblem");
 
-  params.AddRequiredParameter<std::shared_ptr<MeshContinuum>>("mesh", "Mesh");
+  params.AddRequiredParameter<std::shared_ptr<Mesh>>("mesh", "Mesh");
 
   params.AddRequiredParameter<unsigned int>("num_groups",
                                             "The total number of groups within the solver");
@@ -69,7 +69,7 @@ LBSProblem::GetInputParameters()
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
     num_groups_(params.GetParamValue<unsigned int>("num_groups")),
-    grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
+    grid_(params.GetSharedPtrParam<Mesh>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
   // Check system for GPU acceleration
@@ -333,7 +333,7 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
   InitializeGPUExtras();
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 LBSProblem::GetGrid() const
 {
   return grid_;

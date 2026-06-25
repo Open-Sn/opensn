@@ -5,7 +5,7 @@
 
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 

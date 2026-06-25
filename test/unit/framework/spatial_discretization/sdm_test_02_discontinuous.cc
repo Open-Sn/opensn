@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -30,7 +30,7 @@ int MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
 double HPerpendicular(const CellMapping& cell_mapping, unsigned int f);
 
 void
-math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
+math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
                               std::string sdm_type,
                               bool export_vtk,
                               double gold)
@@ -131,7 +131,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
         const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-        const size_t acf = MeshContinuum::MapCellFace(*cell, adj_cell, f);
+        const size_t acf = Mesh::MapCellFace(*cell, adj_cell, f);
         const double hp = HPerpendicular(adj_cell_mapping, acf);
 
         // Compute kappa

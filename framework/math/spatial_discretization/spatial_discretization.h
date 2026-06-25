@@ -6,8 +6,8 @@
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
 #include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/mesh.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/math/math.h"
 #include <petscksp.h>
 #include <cassert>
@@ -40,7 +40,7 @@ public:
   SpatialDiscretizationType GetType() const;
 
   /// Returns the reference grid on which this discretization is based.
-  std::shared_ptr<MeshContinuum> GetGrid() const;
+  std::shared_ptr<Mesh> GetGrid() const;
 
   /**
    * Builds the sparsity pattern for a local block matrix compatible withthe given unknown manager.
@@ -209,9 +209,9 @@ public:
   virtual ~SpatialDiscretization() = default;
 
 protected:
-  SpatialDiscretization(std::shared_ptr<MeshContinuum> grid, SpatialDiscretizationType sdm_type);
+  SpatialDiscretization(std::shared_ptr<Mesh> grid, SpatialDiscretizationType sdm_type);
 
-  const std::shared_ptr<MeshContinuum> grid_;
+  const std::shared_ptr<Mesh> grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;
   std::map<uint64_t, std::shared_ptr<CellMapping>> nb_cell_mappings_;
 

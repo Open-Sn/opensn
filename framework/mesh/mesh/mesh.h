@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/math/geometry.h"
 #include <memory>
@@ -74,12 +74,12 @@ struct OrthoMeshAttributes
 };
 
 /// Encapsulates all the necessary information required to fully define a computational domain.
-class MeshContinuum
+class Mesh
 {
   using GlobalVertexIDMap = std::map<uint64_t, Vector3>;
 
 public:
-  MeshContinuum();
+  Mesh();
 
   unsigned int GetDimension() const { return dim_; }
   void SetDimension(const unsigned int dim) { dim_ = dim; }
@@ -301,7 +301,7 @@ private:
 
 public:
   /// Returns a new instance of the spatial discretization.
-  static std::shared_ptr<MeshContinuum> New() { return std::make_shared<MeshContinuum>(); }
+  static std::shared_ptr<Mesh> New() { return std::make_shared<Mesh>(); }
 
   /// Returns the spatial dimensionality of the cell.
   static int GetCellDimension(const Cell& cell);

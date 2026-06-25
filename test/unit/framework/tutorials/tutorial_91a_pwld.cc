@@ -8,7 +8,7 @@
 #include "framework/materials/multi_group_xs/xsfile.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/data_types/range.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/logging/log.h"
@@ -25,7 +25,7 @@ namespace
 /**PWLD Sweep. */
 
 void
-SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
+SimTest91_PWLD(std::shared_ptr<Mesh> grid)
 {
   const std::string fname = "SimTest91_PWLD";
 

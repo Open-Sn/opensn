@@ -31,7 +31,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/field_functions/field_function.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
@@ -59,7 +59,7 @@ namespace
 {
 
 std::set<std::uint64_t>
-GetGlobalUniqueBoundaryIDs(const std::shared_ptr<MeshContinuum>& grid, mpi::Communicator& mpi_comm)
+GetGlobalUniqueBoundaryIDs(const std::shared_ptr<Mesh>& grid, mpi::Communicator& mpi_comm)
 {
   std::set<std::uint64_t> local_unique_bids_set;
   for (const auto& cell : grid->GetLocalCells())
@@ -187,7 +187,7 @@ DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
 std::shared_ptr<DiscreteOrdinatesProblem>
 DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 {
-  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
+  const auto grid = params.GetParamValue<std::shared_ptr<Mesh>>("mesh");
   std::shared_ptr<SpatialDiscretization> discretization = PieceWiseLinearDiscontinuous::New(grid);
 
   auto input_params = GetInputParameters();

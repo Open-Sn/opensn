@@ -3,7 +3,7 @@
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polyhedron_mapping.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 
 namespace opensn
@@ -11,7 +11,7 @@ namespace opensn
 
 PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
   const Cell& polyh_cell,
-  const std::shared_ptr<MeshContinuum> ref_grid,
+  const std::shared_ptr<Mesh> ref_grid,
   const TetrahedraQuadrature& volume_quadrature,
   const TriangleQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(

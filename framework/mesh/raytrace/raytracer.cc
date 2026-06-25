@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/raytrace/raytracer.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/mesh.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/logging/log.h"
 #include <algorithm>
 #include <set>
@@ -14,7 +14,7 @@ namespace
 {
 
 double
-EstimateCellSize(const MeshContinuum& grid, const Cell& cell)
+EstimateCellSize(const Mesh& grid, const Cell& cell)
 {
   const auto& v0 = grid.GlobalVertex(cell.vertex_ids.front());
   double xmin = v0.x;
@@ -39,7 +39,7 @@ EstimateCellSize(const MeshContinuum& grid, const Cell& cell)
 }
 
 bool
-CheckIntersectionAtVertex(const std::shared_ptr<MeshContinuum>& grid,
+CheckIntersectionAtVertex(const std::shared_ptr<Mesh>& grid,
                           const std::vector<uint64_t>& vertex_ids,
                           const Vector3& line_point0,
                           const Vector3& line_point1,
@@ -74,7 +74,7 @@ CheckIntersectionAtVertex(const std::shared_ptr<MeshContinuum>& grid,
 
 } // namespace
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 RayTracer::Grid() const
 {
   return reference_grid_;
@@ -684,7 +684,7 @@ CheckPlaneTetIntersect(const Vector3& plane_normal,
 }
 
 void
-PopulateRaySegmentLengths(const std::shared_ptr<MeshContinuum> grid,
+PopulateRaySegmentLengths(const std::shared_ptr<Mesh> grid,
                           const Cell& cell,
                           const Vector3& line_point0,
                           const Vector3& line_point1,

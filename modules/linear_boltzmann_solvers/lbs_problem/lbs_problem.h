@@ -13,7 +13,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/linear_solver/linear_solver.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/math/geometry.h"
@@ -181,7 +181,7 @@ public:
   virtual void SetBlockID2XSMap(const BlockID2XSMap& xs_map);
 
   /// Obtains a reference to the grid.
-  std::shared_ptr<MeshContinuum> GetGrid() const;
+  std::shared_ptr<Mesh> GetGrid() const;
 
   /// Low-level device/runtime carriers used by solver components.
   TotalXSCarrier* GetTotalXSCarrier() { return total_xs_carrier_.get(); }
@@ -360,7 +360,7 @@ protected:
   std::vector<std::shared_ptr<PointSource>> point_sources_;
   std::vector<std::shared_ptr<VolumetricSource>> volumetric_sources_;
 
-  std::shared_ptr<MeshContinuum> grid_;
+  std::shared_ptr<Mesh> grid_;
   std::shared_ptr<SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;

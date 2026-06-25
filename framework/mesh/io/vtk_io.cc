@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/io/mesh_io.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
+#include "framework/mesh/mesh/grid_vtk_utils.h"
 #include <vtkCell.h>
 #include <vtkPolygon.h>
 #include <vtkLine.h>
@@ -842,7 +842,7 @@ MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
 }
 
 void
-MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name, bool per_material)
+MeshIO::ToOBJ(const std::shared_ptr<Mesh>& grid, const char* file_name, bool per_material)
 {
   if (not per_material)
   {
@@ -933,7 +933,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
 }
 
 void
-MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
+MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
                    const std::string& file_name,
                    bool write_node_sets,
                    bool write_side_sets)
@@ -998,7 +998,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
                                "\" encountered that is not supported by ExodusII.");
       UploadCellGeometryContinuous(*cell, vertex_map, ugrid);
       block_id_list->InsertNextValue(static_cast<int>(cell->block_id));
-      max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(*cell));
+      max_dimension = std::max(max_dimension, Mesh::GetCellDimension(*cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
       global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell->global_id) +
@@ -1220,7 +1220,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
 }
 
 void
-MeshIO::ToPVTU(const std::shared_ptr<MeshContinuum>& grid, const std::string& file_base_name)
+MeshIO::ToPVTU(const std::shared_ptr<Mesh>& grid, const std::string& file_base_name)
 {
   log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
 

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_generator/distributed_mesh_generator.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -18,7 +18,7 @@ DistributedMeshGenerator::DistributedMeshGenerator(const InputParameters& params
 {
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 DistributedMeshGenerator::Execute()
 {
   const auto rank = mpi_comm.rank();
@@ -276,10 +276,10 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
   return info_block;
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
 {
-  auto grid_ptr = MeshContinuum::New();
+  auto grid_ptr = Mesh::New();
   for (auto& [id, name] : mesh_info.boundary_id_map)
     grid_ptr->SetBoundaryName(id, name);
 
