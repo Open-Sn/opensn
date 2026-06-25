@@ -74,10 +74,11 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
   std::map<int, std::vector<uint64_t>> pid_keys;
   std::map<int, std::vector<double>> pid_values;
 
+  const auto& mesh = do_problem.GetGrid();
   for (const auto& membership : coarse_mesh.LocalFineCellMemberships())
   {
     std::vector<double> group_integrals(num_coarse_groups, 0.0);
-    const auto& fine_cell = do_problem.GetGrid()->GetGlobalCell(membership.fine_cell_id);
+    const auto& fine_cell = mesh->GetGlobalCell(membership.fine_cell_id);
     OpenSnInvalidArgumentIf(fine_cell.partition_id != opensn::mpi_comm.rank(),
                             "CMFD restriction fine-cell membership is not locally owned.");
 
@@ -98,7 +99,7 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
     auto& keys = pid_keys[membership.coarse_cell_partition_id];
     auto& values = pid_values[membership.coarse_cell_partition_id];
     keys.push_back(membership.coarse_cell_id);
-    values.push_back(fine_cell.volume);
+    values.push_back(mesh->GetCellVolume(fine_cell.local_id));
     values.insert(values.end(), group_integrals.begin(), group_integrals.end());
   }
 

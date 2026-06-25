@@ -126,11 +126,12 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
       const auto M_inv = Inverse(fe_values.intV_shapeI_shapeJ);
       const auto node_wgts = Mult(M_inv, shape_vals);
 
+      auto cell_volume = grid->GetCellVolume(cell.local_id);
       // Increment the total volume
-      total_volume += cell.volume;
+      total_volume += cell_volume;
 
       // Add to subscribers
-      subscribers.push_back(Subscriber{cell.volume, cell.local_id, shape_vals, node_wgts});
+      subscribers.push_back(Subscriber{cell_volume, cell.local_id, shape_vals, node_wgts});
     }
   }
 
