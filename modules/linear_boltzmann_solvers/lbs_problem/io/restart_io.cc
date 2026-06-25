@@ -76,8 +76,8 @@ ReadPrecursorVector(hid_t file_id,
   std::vector<double> remapped(expected_size, 0.0);
   for (const auto& cell : grid->GetLocalCells())
   {
-    const size_t old_base = cell->local_id * old_stride;
-    const size_t new_base = cell->local_id * new_stride;
+    const size_t old_base = cell.local_id * old_stride;
+    const size_t new_base = cell.local_id * new_stride;
     for (size_t j = 0; j < copy_stride; ++j)
       remapped[new_base + j] = values[old_base + j];
   }

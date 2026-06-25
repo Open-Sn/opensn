@@ -107,7 +107,7 @@ Mesh::GetUniqueBoundaryIDs() const
   // Develop local bndry-id set
   std::set<uint64_t> local_bndry_ids_set;
   for (const auto& cell : local_cells_)
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
       if (not face.has_neighbor)
         local_bndry_ids_set.insert(face.neighbor_id);
 
@@ -127,7 +127,7 @@ void
 Mesh::ComputeGeometricInfo()
 {
   for (auto& cell : local_cells_)
-    cell->ComputeGeometricInfo(this);
+    cell.ComputeGeometricInfo(this);
 
   for (const auto& ghost_id : GetGhostGlobalIDs())
     GetGlobalCell(ghost_id).ComputeGeometricInfo(this);
@@ -204,7 +204,7 @@ Mesh::SetOrthogonalBoundaries()
 
   for (auto& cell : local_cells_)
   {
-    for (auto& face : cell->faces)
+    for (auto& face : cell.faces)
     {
       if (not face.has_neighbor)
       {
@@ -234,18 +234,18 @@ Mesh::SetOrthogonalBoundaries()
 }
 
 void
-Mesh::AddGlobalCell(std::shared_ptr<Cell> new_cell)
+Mesh::AddGlobalCell(Cell&& new_cell)
 {
-  if (new_cell->partition_id == opensn::mpi_comm.rank())
+  if (new_cell.partition_id == opensn::mpi_comm.rank())
   {
-    new_cell->local_id = local_cells_.size();
+    new_cell.local_id = local_cells_.size();
     local_cells_.push_back(std::move(new_cell));
-    global_cell_id_to_local_id_map_[local_cells_.back()->global_id] = local_cells_.size() - 1;
+    global_cell_id_to_local_id_map_[local_cells_.back().global_id] = local_cells_.size() - 1;
   }
   else
   {
     ghost_cells_.push_back(std::move(new_cell));
-    global_cell_id_to_nonlocal_id_map_[ghost_cells_.back()->global_id] = ghost_cells_.size() - 1;
+    global_cell_id_to_nonlocal_id_map_[ghost_cells_.back().global_id] = ghost_cells_.size() - 1;
   }
 }
 
@@ -254,11 +254,11 @@ Mesh::GetGlobalCell(uint64_t cell_global_index)
 {
   auto local_it = global_cell_id_to_local_id_map_.find(cell_global_index);
   if (local_it != global_cell_id_to_local_id_map_.end())
-    return *local_cells_[local_it->second];
+    return local_cells_[local_it->second];
 
   auto ghost_it = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
   if (ghost_it != global_cell_id_to_nonlocal_id_map_.end())
-    return *ghost_cells_[ghost_it->second];
+    return ghost_cells_[ghost_it->second];
 
   throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
                           " not found.");
@@ -269,11 +269,11 @@ Mesh::GetGlobalCell(uint64_t cell_global_index) const
 {
   auto local_it = global_cell_id_to_local_id_map_.find(cell_global_index);
   if (local_it != global_cell_id_to_local_id_map_.end())
-    return *local_cells_[local_it->second];
+    return local_cells_[local_it->second];
 
   auto ghost_it = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
   if (ghost_it != global_cell_id_to_nonlocal_id_map_.end())
-    return *ghost_cells_[ghost_it->second];
+    return ghost_cells_[ghost_it->second];
 
   throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
                           " not found.");
@@ -286,7 +286,7 @@ Mesh::GetGhostGlobalIDs() const
   ids.reserve(GhostCellCount());
 
   for (const auto& cell : ghost_cells_)
-    ids.push_back(cell->global_id);
+    ids.push_back(cell.global_id);
 
   return ids;
 }
@@ -314,7 +314,7 @@ Mesh::GetLocalCell(uint64_t id)
 {
   assert(not local_cells_.empty());
   assert(id < local_cells_.size());
-  return *local_cells_[id];
+  return local_cells_[id];
 }
 
 const Cell&
@@ -322,16 +322,16 @@ Mesh::GetLocalCell(uint64_t id) const
 {
   assert(not local_cells_.empty());
   assert(id < local_cells_.size());
-  return *local_cells_[id];
+  return local_cells_[id];
 }
 
-std::vector<std::shared_ptr<Cell>>&
+std::vector<Cell>&
 Mesh::GetLocalCells()
 {
   return local_cells_;
 }
 
-const std::vector<std::shared_ptr<Cell>>&
+const std::vector<Cell>&
 Mesh::GetLocalCells() const
 {
   return local_cells_;
@@ -344,7 +344,7 @@ Mesh::MakeGridFaceHistogram(double master_tolerance, double slave_tolerance) con
   // Fill histogram
   std::vector<size_t> face_size_histogram;
   for (const auto& cell : local_cells_)
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
       face_size_histogram.push_back(face.vertex_ids.size());
 
   std::stable_sort(face_size_histogram.begin(), face_size_histogram.end());
@@ -507,7 +507,7 @@ Mesh::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 {
   size_t count = 0;
   for (const auto& cell : local_cells_)
-    if (log_vol.Inside(cell->centroid))
+    if (log_vol.Inside(cell.centroid))
       ++count;
   mpi_comm.all_reduce(count, mpi::op::sum<size_t>());
   return count;
@@ -663,10 +663,10 @@ Mesh::MakeCellOrthoSizes() const
   std::vector<Vector3> cell_ortho_sizes(local_cells_.size());
   for (const auto& cell : local_cells_)
   {
-    Vector3 vmin = GlobalVertex(cell->vertex_ids.front());
+    Vector3 vmin = GlobalVertex(cell.vertex_ids.front());
     Vector3 vmax = vmin;
 
-    for (const auto vid : cell->vertex_ids)
+    for (const auto vid : cell.vertex_ids)
     {
       const auto& vertex = GlobalVertex(vid);
       vmin.x = std::min(vertex.x, vmin.x);
@@ -678,7 +678,7 @@ Mesh::MakeCellOrthoSizes() const
       vmax.z = std::max(vertex.z, vmax.z);
     }
 
-    cell_ortho_sizes[cell->local_id] = vmax - vmin;
+    cell_ortho_sizes[cell.local_id] = vmax - vmin;
   } // for cell
 
   return cell_ortho_sizes;
@@ -704,7 +704,7 @@ Mesh::GetLocalBoundingBox() const
   bool initialized = false;
   for (const auto& cell : local_cells_)
   {
-    for (const uint64_t vid : cell->vertex_ids)
+    for (const uint64_t vid : cell.vertex_ids)
     {
       const auto& vertex = GlobalVertex(vid);
       if (not initialized)
@@ -724,7 +724,7 @@ void
 Mesh::SetUniformBlockID(const unsigned int blk_id)
 {
   for (auto& cell : local_cells_)
-    cell->block_id = blk_id;
+    cell.block_id = blk_id;
 
   const auto& ghost_ids = GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
@@ -741,9 +741,9 @@ Mesh::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, unsigned int blk
   int num_cells_modified = 0;
   for (auto& cell : local_cells_)
   {
-    if (log_vol.Inside(cell->centroid) and sense)
+    if (log_vol.Inside(cell.centroid) and sense)
     {
-      cell->block_id = blk_id;
+      cell.block_id = blk_id;
       ++num_cells_modified;
     }
   }
@@ -770,7 +770,7 @@ Mesh::SetUniformBoundaryID(const std::string& boundary_name)
   auto bndry_id = MakeBoundaryID(boundary_name);
   for (auto& cell : local_cells_)
   {
-    for (auto& face : cell->faces)
+    for (auto& face : cell.faces)
     {
       if (face.has_neighbor)
         continue;
@@ -792,7 +792,7 @@ Mesh::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
   int num_faces_modified = 0;
   for (auto& cell : local_cells_)
   {
-    for (auto& face : cell->faces)
+    for (auto& face : cell.faces)
     {
       if (face.has_neighbor)
         continue;
@@ -852,7 +852,7 @@ Mesh::MakeMPILocalCommunicatorSet() const
   local_graph_edges.insert(mpi_comm.rank()); // add current location
   for (const auto& cell : local_cells_)
   {
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
     {
       if (face.has_neighbor)
         if (not face.IsNeighborLocal(this))
@@ -959,7 +959,7 @@ Mesh::ComputeVolumePerBlockID() const
   // Create a map to hold local volume with local block as key
   std::map<unsigned int, double> block_volumes;
   for (const auto& cell : this->local_cells_)
-    block_volumes[cell->block_id] += cell->volume;
+    block_volumes[cell.block_id] += cell.volume;
 
   // Collect all local block IDs
   std::set<unsigned int> unique_block_ids;

@@ -554,21 +554,21 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<Mesh> grid, bool discontinuous)
   for (const auto& cell : grid->GetLocalCells())
   {
     if (discontinuous)
-      UploadCellGeometryDiscontinuous(grid, *cell, node_count, points, ugrid);
+      UploadCellGeometryDiscontinuous(grid, cell, node_count, points, ugrid);
     else
     {
-      for (uint64_t vid : cell->vertex_ids)
+      for (uint64_t vid : cell.vertex_ids)
       {
         const auto& vertex = grid->GlobalVertex(vid);
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
         vertex_map[vid] = node_count;
         ++node_count;
       }
-      UploadCellGeometryContinuous(*cell, vertex_map, ugrid);
+      UploadCellGeometryContinuous(cell, vertex_map, ugrid);
     }
 
-    block_array->InsertNextValue(static_cast<int>(cell->block_id));
-    partition_id_array->InsertNextValue(cell->partition_id);
+    block_array->InsertNextValue(static_cast<int>(cell.block_id));
+    partition_id_array->InsertNextValue(cell.partition_id);
   } // for local cells
   ugrid->SetPoints(points);
 

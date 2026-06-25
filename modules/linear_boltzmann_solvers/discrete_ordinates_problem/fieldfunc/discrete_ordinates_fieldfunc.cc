@@ -109,13 +109,13 @@ DiscreteOrdinatesProblem::ComputeAngularFieldFunctionData(const size_t groupset_
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(*cell, i, uk_man, angle, group_in_groupset);
-      const auto imapB = sdm.MapDOFLocal(*cell, i);
+      const auto imapA = sdm.MapDOFLocal(cell, i, uk_man, angle, group_in_groupset);
+      const auto imapB = sdm.MapDOFLocal(cell, i);
       data_vector_local[imapB] = psi[imapA];
     }
   }

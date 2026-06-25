@@ -50,7 +50,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& grid = lbs_problem_.GetGrid();
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     cell_volume_ = transport_view.GetVolume();
 
     // Obtain xs

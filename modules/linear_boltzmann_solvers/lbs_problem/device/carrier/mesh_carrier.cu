@@ -41,15 +41,15 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
     // offset for saved angular flux
     alloc_size += sizeof(std::uint64_t);
     // G and M matrix
-    const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell->local_id];
+    const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell.local_id];
     const DenseMatrix<double>& M = unit_matrices.intV_shapeI_shapeJ;
     alloc_size += M.size() * (4 * sizeof(double));
     // offset to the data of each face
-    std::size_t cell_num_faces = cell->faces.size();
+    std::size_t cell_num_faces = cell.faces.size();
     alloc_size += cell_num_faces * sizeof(std::uint64_t);
     // data of each face
     const std::vector<std::vector<int>>& face_node_mappings =
-      discretization.GetCellMapping(*cell).GetFaceNodeMappings();
+      discretization.GetCellMapping(cell).GetFaceNodeMappings();
     for (int f = 0; f < cell_num_faces; ++f)
     {
       // num_face_nodes
@@ -91,8 +91,8 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
   std::uint64_t saved_psi_index = 0;
   for (char* cell_data = data; const auto& cell : mesh.GetLocalCells())
   {
-    std::size_t cell_num_faces = cell->faces.size();
-    const CellMapping& cell_mapping = discretization.GetCellMapping(*cell);
+    std::size_t cell_num_faces = cell.faces.size();
+    const CellMapping& cell_mapping = discretization.GetCellMapping(cell);
     std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
     // check for cell num nodes compatibility with sweep kernel
     if (cell_num_nodes > LBSProblem::max_dofs_gpu)
@@ -100,7 +100,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       throw std::runtime_error(
         std::format("GPU acceleration error: Cell local ID {} has {} DOFs which exceeds the "
                     "maximum supported DOFs per cell on GPU: {}.",
-                    cell->local_id,
+                    cell.local_id,
                     cell_num_nodes,
                     LBSProblem::max_dofs_gpu));
     }
@@ -113,11 +113,11 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     cell_data = reinterpret_cast<char*>(num_node_and_face_data);
     // pointer to total cross section
     double** total_xs_data = reinterpret_cast<double**>(cell_data);
-    *(total_xs_data++) = xs.GetXSGPUData(cell->block_id);
+    *(total_xs_data++) = xs.GetXSGPUData(cell.block_id);
     cell_data = reinterpret_cast<char*>(total_xs_data);
     // phi address
     std::uint64_t* phi_address_data = reinterpret_cast<std::uint64_t*>(cell_data);
-    const CellLBSView& cell_transport_view = cell_transport_views[cell->local_id];
+    const CellLBSView& cell_transport_view = cell_transport_views[cell.local_id];
     auto phi_address = cell_transport_view.MapDOF(0, 0, 0);
     *(phi_address_data++) = phi_address;
     cell_data = reinterpret_cast<char*>(phi_address_data);
@@ -128,7 +128,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     saved_psi_index += cell_num_nodes;
     cell_data = reinterpret_cast<char*>(saved_psi_index_data);
     // GM matrices (G and M matrices are combined into one single Matrix of double4)
-    const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell->local_id];
+    const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell.local_id];
     const DenseMatrix<Vector3>& G = unit_matrices.intV_shapeI_gradshapeJ;
     const DenseMatrix<double>& M = unit_matrices.intV_shapeI_shapeJ;
     double* GM_data = reinterpret_cast<double*>(cell_data);
@@ -153,7 +153,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     char* face_data = cell_data;
     for (int f = 0; f < cell_num_faces; ++f)
     {
-      const CellFace& face = cell->faces[f];
+      const CellFace& face = cell.faces[f];
       *(offset_face_data++) = face_data - cell_data;
       // number of face node
       std::uint64_t* num_face_nodes_data = reinterpret_cast<std::uint64_t*>(face_data);
@@ -163,8 +163,8 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       // pointer to outflow
       double** outflow_data = reinterpret_cast<double**>(face_data);
       double* face_outflow = nullptr;
-      if (outflow.GetDevicePtr() != nullptr and outflow.HasOffset(cell->local_id, f))
-        face_outflow = outflow.GetDevicePtr() + outflow.GetOffset(cell->local_id, f);
+      if (outflow.GetDevicePtr() != nullptr and outflow.HasOffset(cell.local_id, f))
+        face_outflow = outflow.GetDevicePtr() + outflow.GetOffset(cell.local_id, f);
       *(outflow_data++) = face_outflow;
       face_data = reinterpret_cast<char*>(outflow_data);
       // normal vector

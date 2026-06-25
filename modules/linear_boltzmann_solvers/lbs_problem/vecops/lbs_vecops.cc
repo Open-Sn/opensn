@@ -23,7 +23,7 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
   int64_t idx = -1;
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     const auto num_nodes = static_cast<std::size_t>(transport_view.GetNumNodes());
     for (std::size_t i = 0; i < num_nodes; ++i)
     {
@@ -56,12 +56,12 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dof_map = static_cast<long>(sdm.MapDOFLocal(*cell, i, unknown_manager, 0, 0));
+      const auto dof_map = static_cast<long>(sdm.MapDOFLocal(cell, i, unknown_manager, 0, 0));
       std::fill(phi.begin() + dof_map + first_grp, phi.begin() + dof_map + final_grp + 1, value);
     }
   }

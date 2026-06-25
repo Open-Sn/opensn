@@ -1743,7 +1743,7 @@ CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double
   bool local_nonfinite = false;
   for (const auto& cell : grid.GetLocalCells())
   {
-    const auto& transport_view = transport_views[cell->local_id];
+    const auto& transport_view = transport_views[cell.local_id];
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
       const auto phi_map = transport_view.MapDOF(i, 0, first_group_);
