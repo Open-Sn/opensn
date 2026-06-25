@@ -837,7 +837,7 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    mesh : MeshContinuum
+    mesh : Mesh
         Cartesian two- or three-dimensional spatial mesh.
     num_groups : int
         Number of energy groups.
@@ -925,7 +925,7 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    mesh : MeshContinuum
+    mesh : Mesh
         The spatial mesh.
     num_groups : int
         The total number of energy groups.
@@ -1435,7 +1435,7 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    mesh : MeshContinuum
+    mesh : Mesh
         The spatial mesh. Its geometry type (cylindrical or spherical) is taken directly from
         the mesh -- e.g. from the ``coord_sys`` argument used to build it with a mesh
         generator. There is no separate ``coord_system`` parameter on this class; supplying

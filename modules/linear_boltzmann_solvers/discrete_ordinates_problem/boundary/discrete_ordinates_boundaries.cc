@@ -10,7 +10,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/caliper_scopes.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
@@ -29,7 +29,7 @@ namespace
 {
 
 std::set<std::uint64_t>
-GetGlobalUniqueBoundaryIDs(const std::shared_ptr<MeshContinuum>& grid, mpi::Communicator& mpi_comm)
+GetGlobalUniqueBoundaryIDs(const std::shared_ptr<Mesh>& grid, mpi::Communicator& mpi_comm)
 {
   std::set<std::uint64_t> local_unique_bids_set;
   for (const auto& cell : grid->GetLocalCells())
@@ -130,7 +130,7 @@ namespace
 {
 
 bool
-UsesRZBoundaryNames(const MeshContinuum& grid)
+UsesRZBoundaryNames(const Mesh& grid)
 {
   return grid.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL and
          grid.GetType() == MeshType::ORTHOGONAL and grid.GetDimension() == 2;

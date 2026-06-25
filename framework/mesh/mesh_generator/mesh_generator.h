@@ -12,7 +12,7 @@ namespace mpi = mpicpp_lite;
 namespace opensn
 {
 class GraphPartitioner;
-class MeshContinuum;
+class Mesh;
 
 /**
  * Mesh generation can be very complicated in parallel. Some mesh formats
@@ -22,7 +22,7 @@ class MeshContinuum;
  * types of objects need to consider the previous generation of how we did this.
  * We had the concept of a VolumeMesher, which essentially took an
  * `UnpartitionedMesh` and converted it into a partitioned mesh (i.e. the
- * required `MeshContinuum` object). Up to now we've really only had two
+ * required `Mesh` object). Up to now we've really only had two
  * variants. The `VolumeMesherPredefinedUnpartitioned` and the
  * `VolumeMesherExtruder`. Both of which operated on an `UnpartitionedMesh`
  * object. With this new design we want to unify these concepts to make them
@@ -36,7 +36,7 @@ class MeshGenerator
 {
 public:
   /// Final execution step.
-  virtual std::shared_ptr<MeshContinuum> Execute();
+  virtual std::shared_ptr<Mesh> Execute();
 
   explicit MeshGenerator(const InputParameters& params);
   virtual ~MeshGenerator() = default;
@@ -57,8 +57,8 @@ protected:
   std::vector<int> PartitionMesh(const UnpartitionedMesh& input_umesh, int num_partitions) const;
 
   /// Executes the partitioner and configures the mesh as a real mesh.
-  std::shared_ptr<MeshContinuum> SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
-                                           const std::vector<int>& cell_pids) const;
+  std::shared_ptr<Mesh> SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
+                                  const std::vector<int>& cell_pids) const;
 
   /// Determines if a cells needs to be included as a ghost or as a local cell.
   bool CellHasLocalScope(int location_id,
@@ -82,7 +82,7 @@ protected:
                                          uint64_t global_id,
                                          int partition_id);
 
-  static void ComputeAndPrintStats(const std::shared_ptr<MeshContinuum>& grid);
+  static void ComputeAndPrintStats(const std::shared_ptr<Mesh>& grid);
 
   /// Broadcasts PIDs to other locations.
   static void

@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"

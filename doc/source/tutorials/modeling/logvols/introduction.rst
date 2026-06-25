@@ -24,7 +24,7 @@ All of these derive from :py:class:`~pyopensn.logvol.LogicalVolume`. See the
 :doc:`Python API reference </pyapi/index>` for their constructor parameters and methods.
 
 When a logical volume is passed to
-:py:meth:`~pyopensn.mesh.MeshContinuum.SetBlockIDFromLogicalVolume`, OpenSn selects a cell by
+:py:meth:`~pyopensn.mesh.Mesh.SetBlockIDFromLogicalVolume`, OpenSn selects a cell by
 testing its centroid. Boundary IDs can similarly be assigned with
-:py:meth:`~pyopensn.mesh.MeshContinuum.SetBoundaryIDFromLogicalVolume`. A logical volume that
+:py:meth:`~pyopensn.mesh.Mesh.SetBoundaryIDFromLogicalVolume`. A logical volume that
 only intersects a cell, without containing its centroid, therefore does not select that cell.

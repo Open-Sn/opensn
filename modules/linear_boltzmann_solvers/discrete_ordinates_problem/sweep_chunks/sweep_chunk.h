@@ -23,7 +23,7 @@ public:
 
   SweepChunk(std::vector<double>& destination_phi,
              std::vector<double>& destination_psi,
-             const std::shared_ptr<MeshContinuum>& grid,
+             const std::shared_ptr<Mesh>& grid,
              const SpatialDiscretization& discretization,
              const std::vector<UnitCellMatrices>& unit_cell_matrices,
              const std::vector<CellLBSView>& cell_transport_views,
@@ -97,7 +97,7 @@ public:
   std::vector<MomentCallbackFunc> moment_callbacks;
 
 protected:
-  const std::shared_ptr<MeshContinuum> grid_;
+  const std::shared_ptr<Mesh> grid_;
   const SpatialDiscretization& discretization_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
   const std::vector<CellLBSView>& cell_transport_views_;
