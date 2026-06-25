@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <algorithm>
 #include <limits>
 

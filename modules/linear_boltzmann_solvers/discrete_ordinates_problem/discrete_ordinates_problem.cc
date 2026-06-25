@@ -15,7 +15,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
@@ -104,7 +104,7 @@ DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
 std::shared_ptr<DiscreteOrdinatesProblem>
 DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 {
-  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
+  const auto grid = params.GetParamValue<std::shared_ptr<Mesh>>("mesh");
   std::shared_ptr<SpatialDiscretization> discretization = PieceWiseLinearDiscontinuous::New(grid);
 
   auto input_params = GetInputParameters();

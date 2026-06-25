@@ -24,7 +24,7 @@ public:
    */
   AAH_SPDS(int id,
            const Vector3& omega,
-           std::shared_ptr<MeshContinuum> grid,
+           std::shared_ptr<Mesh> grid,
            const SPDSFaceNeighborInfoVec& face_neighbor_info,
            bool allow_cycles,
            bool use_gpus = false);

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/mesh.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/matrix3x3.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
@@ -57,7 +57,7 @@ CellTypeName(const CellType type)
 }
 
 bool
-CellFace::IsNeighborLocal(const MeshContinuum* grid) const
+CellFace::IsNeighborLocal(const Mesh* grid) const
 {
   if (not has_neighbor)
     return false;
@@ -70,7 +70,7 @@ CellFace::IsNeighborLocal(const MeshContinuum* grid) const
 }
 
 int
-CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
+CellFace::GetNeighborPartitionID(const Mesh* grid) const
 {
   if (not has_neighbor)
     return -1;
@@ -83,7 +83,7 @@ CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
 }
 
 std::uint32_t
-CellFace::GetNeighborLocalID(const MeshContinuum* grid) const
+CellFace::GetNeighborLocalID(const Mesh* grid) const
 {
   if (not has_neighbor)
     return -1;
@@ -99,7 +99,7 @@ CellFace::GetNeighborLocalID(const MeshContinuum* grid) const
 }
 
 int
-CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
+CellFace::GetNeighborAdjacentFaceIndex(const Mesh* grid) const
 {
   const auto& cur_face = *this; // just for readability
   // Check index validity
@@ -153,7 +153,7 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
 }
 
 void
-CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell)
+CellFace::ComputeGeometricInfo(const Mesh* grid, const Cell& cell)
 {
   // Compute the centroid
   centroid = Vector3(0.0, 0.0, 0.0);
@@ -331,7 +331,7 @@ Cell::operator=(const Cell& other)
 }
 
 void
-Cell::ComputeGeometricInfo(const MeshContinuum* grid)
+Cell::ComputeGeometricInfo(const Mesh* grid)
 {
   // Compute cell centroid
   centroid = Vector3(0.0, 0.0, 0.0);

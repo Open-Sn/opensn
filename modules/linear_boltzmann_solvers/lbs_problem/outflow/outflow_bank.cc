@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_bank.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 
 namespace opensn
 {
@@ -18,9 +18,7 @@ Merge(const std::uint32_t& high, const std::uint32_t& low)
 
 } // namespace
 
-OutflowBank::OutflowBank(const MeshContinuum& grid,
-                         unsigned int num_groups,
-                         bool include_internal_faces)
+OutflowBank::OutflowBank(const Mesh& grid, unsigned int num_groups, bool include_internal_faces)
   : views_(grid.GetLocalCellCount())
 {
   for (const auto& cell : grid.GetLocalCells())

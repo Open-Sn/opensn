@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
@@ -18,7 +18,7 @@ namespace opensn
 AngleAggregation::AngleAggregation(const LBSGroupset& groupset,
                                    std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                                    std::shared_ptr<AngularQuadrature>& quadrature,
-                                   std::shared_ptr<MeshContinuum>& grid)
+                                   std::shared_ptr<Mesh>& grid)
   : groupset_id_(groupset.id),
     num_ang_unknowns_avail_(false),
     grid_(grid),

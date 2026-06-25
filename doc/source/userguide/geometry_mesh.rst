@@ -19,7 +19,7 @@ Overview
 
 The Python geometry interface API is:
 
-* :py:class:`pyopensn.mesh.MeshContinuum`
+* :py:class:`pyopensn.mesh.Mesh`
 * :py:class:`pyopensn.mesh.MeshGenerator`
 * :py:class:`pyopensn.mesh.OrthogonalMeshGenerator`
 * :py:class:`pyopensn.mesh.FromFileMeshGenerator`
@@ -38,7 +38,7 @@ The Python geometry interface API is:
 The most common workflow is:
 
 1. create a mesh generator,
-2. execute it to obtain a :py:class:`MeshContinuum`,
+2. execute it to obtain a :py:class:`Mesh`,
 3. assign block ids and boundary ids if not already present on the mesh,
 4. attach materials and sources using those ids,
 5. build the transport problem on that mesh.
@@ -50,11 +50,11 @@ The most common workflow is:
    source definitions. That is why mesh setup deserves its own careful pass in
    a new input.
 
-MeshContinuum
-=============
+Mesh
+====
 
-:py:class:`pyopensn.mesh.MeshContinuum` is the mesh object used by the transport
-solvers. ``MeshContinuum`` is produced by a mesh generator and consumed by the
+:py:class:`pyopensn.mesh.Mesh` is the mesh object used by the transport
+solvers. ``Mesh`` is produced by a mesh generator and consumed by the
 transport problem. It has a number of methods available for manipulating block
 and boundary ids, querying properties, and exporting to file:
 
@@ -92,7 +92,7 @@ This is the key design pattern behind mesh construction in the Python API:
 
 * mesh generators are composable,
 * generator execution is explicit,
-* the transport problem only sees the final ``MeshContinuum``.
+* the transport problem only sees the final ``Mesh``.
 
 For example, these are all valid chaining patterns:
 
@@ -128,7 +128,7 @@ For example, these are all valid chaining patterns:
    each step focused: one generator can create or import the base mesh, another
    can transform it, and another can handle partitioning or distribution.
 
-The generators below are the main paths by which a ``MeshContinuum`` is created.
+The generators below are the main paths by which a ``Mesh`` is created.
 
 OrthogonalMeshGenerator
 -----------------------
@@ -493,18 +493,18 @@ The main mesh generators support ``replicated_mesh``.
 
 When ``replicated_mesh=False``:
 
-* the final :py:class:`MeshContinuum` on each rank contains only its locally
+* the final :py:class:`Mesh` on each rank contains only its locally
   owned cells plus the ghost cells it needs.
 
 When ``replicated_mesh=True``:
 
 * the full mesh is present on every rank.
 
-This flag affects the final ``MeshContinuum``, not the earlier mesh-generation
+This flag affects the final ``Mesh``, not the earlier mesh-generation
 workflow.
 
 For the ordinary generator path, ranks still participate in creating or reading
-the full intermediate mesh before the final ``MeshContinuum`` is built. The
+the full intermediate mesh before the final ``Mesh`` is built. The
 difference is what survives into the final mesh object:
 
 * with ``replicated_mesh=False``, each rank keeps only its local piece plus
@@ -627,8 +627,8 @@ itself.
 
 For mesh labeling, the key methods are:
 
-* :py:meth:`MeshContinuum.SetBlockIDFromLogicalVolume`
-* :py:meth:`MeshContinuum.SetBoundaryIDFromLogicalVolume`
+* :py:meth:`Mesh.SetBlockIDFromLogicalVolume`
+* :py:meth:`Mesh.SetBoundaryIDFromLogicalVolume`
 
 In both cases, the ``inside`` argument controls whether the selected cells or
 faces are the ones whose centroids are inside the logical volume or outside it.
@@ -889,7 +889,7 @@ This is useful when the natural geometry description is layered.
 Inspecting and Exporting Meshes
 ===============================
 
-Use :py:meth:`MeshContinuum.ExportToPVTU` when you need to inspect the mesh,
+Use :py:meth:`Mesh.ExportToPVTU` when you need to inspect the mesh,
 the block-id layout, or the domain decomposition.
 
 Practical Guidance
@@ -901,7 +901,7 @@ As a practical guide:
   box-like and easy to describe with node locations,
 * choose :py:class:`FromFileMeshGenerator` when the mesh already exists in
   another tool,
-* choose :py:class:`ExtruderMeshGenerator` when a 2D input geometry can 
+* choose :py:class:`ExtruderMeshGenerator` when a 2D input geometry can
   be cleanly extruded in the third dimension,
 * use logical volumes to assign block ids, boundaries, or source regions after
   the mesh exists,

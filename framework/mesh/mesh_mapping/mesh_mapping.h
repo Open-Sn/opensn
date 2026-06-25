@@ -9,7 +9,7 @@
 
 namespace opensn
 {
-class MeshContinuum;
+class Mesh;
 class Cell;
 
 /**
@@ -23,8 +23,7 @@ public:
   MeshMapping() = default;
 
   /// Builds the mapping.
-  void Build(const std::shared_ptr<MeshContinuum>& fine_grid,
-             const std::shared_ptr<MeshContinuum>& coarse_grid);
+  void Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr<Mesh>& coarse_grid);
 
   /// Helper struct for storing the mapping to a coarse cell from a fine cell.
   struct CoarseMapping

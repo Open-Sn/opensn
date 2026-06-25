@@ -1,13 +1,13 @@
 #include "gtest/gtest.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 
 using namespace opensn;
 
 /// Helper for the PointInsideCellXD tests
 void
-TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
+TestPointInsideCell(const std::shared_ptr<Mesh> grid)
 {
   // Centroid is contained within cell whose centroid it is
   for (const auto& cell : grid->GetLocalCells())
@@ -99,19 +99,19 @@ TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
   }
 }
 
-TEST(MeshContinuumTest, PointInsideCell1D)
+TEST(MeshTest, PointInsideCell1D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0, 1.0, 2.0}});
   TestPointInsideCell(grid_ptr);
 }
 
-TEST(MeshContinuumTest, PointInsideCell2D)
+TEST(MeshTest, PointInsideCell2D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0, 1.0}, {0.0, 0.5, 1.0}});
   TestPointInsideCell(grid_ptr);
 }
 
-TEST(MeshContinuumTest, PointInsideCell3D)
+TEST(MeshTest, PointInsideCell3D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCell(grid_ptr);
@@ -119,7 +119,7 @@ TEST(MeshContinuumTest, PointInsideCell3D)
 
 /// Helper for the PointInsideCellFaceXD tests
 void
-TestPointInsideCellFace(const std::shared_ptr<MeshContinuum> grid)
+TestPointInsideCellFace(const std::shared_ptr<Mesh> grid)
 {
   // Vertices contained within faces that have those vertices
   for (uint64_t vi = 0; vi < grid->GetGlobalVertexCount(); ++vi)
@@ -187,7 +187,7 @@ TestPointInsideCellFace(const std::shared_ptr<MeshContinuum> grid)
   }
 }
 
-TEST(MeshContinuumTest, PointInsideCellFace1D)
+TEST(MeshTest, PointInsideCellFace1D)
 {
   if (opensn::mpi_comm.size() != 1)
     return;
@@ -196,13 +196,13 @@ TEST(MeshContinuumTest, PointInsideCellFace1D)
   TestPointInsideCellFace(grid_ptr);
 }
 
-TEST(MeshContinuumTest, PointInsideCellFace2D)
+TEST(MeshTest, PointInsideCellFace2D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0}, {0.0, 0.5, 1.0}});
   TestPointInsideCellFace(grid_ptr);
 }
 
-TEST(MeshContinuumTest, PointInsideCellFace3D)
+TEST(MeshTest, PointInsideCellFace3D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCellFace(grid_ptr);

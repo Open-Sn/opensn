@@ -3,8 +3,8 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_continuum/grid_face_histogram.h"
+#include "framework/mesh/mesh/mesh.h"
+#include "framework/mesh/mesh/grid_face_histogram.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <algorithm>

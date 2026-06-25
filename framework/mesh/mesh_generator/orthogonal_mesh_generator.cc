@@ -3,7 +3,7 @@
 
 #include "framework/mesh/mesh_generator/orthogonal_mesh_generator.h"
 #include "framework/graphs/graph_partitioner.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
@@ -170,7 +170,7 @@ RebalanceOrthogonalPartitions(std::vector<int>& cell_pids, const int num_partiti
 }
 
 void
-SetOrthogonalBoundaryMaps(const std::shared_ptr<MeshContinuum>& grid, const unsigned int dimension)
+SetOrthogonalBoundaryMaps(const std::shared_ptr<Mesh>& grid, const unsigned int dimension)
 {
   if (dimension >= 2)
   {
@@ -549,7 +549,7 @@ OrthogonalMeshGenerator::GenerateUnpartitionedMesh(
   throw std::logic_error("");
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 OrthogonalMeshGenerator::Execute()
 {
   if (not distributed_generation_)
@@ -628,7 +628,7 @@ OrthogonalMeshGenerator::Execute()
     local_cell_pids.emplace(cell_gid, cell_pid);
   }
 
-  auto grid_ptr = MeshContinuum::New();
+  auto grid_ptr = Mesh::New();
   SetOrthogonalBoundaryMaps(grid_ptr, info.dimension);
 
   std::vector<uint64_t> vertices_needed;

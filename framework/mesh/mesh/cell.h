@@ -16,7 +16,7 @@ namespace opensn
 {
 
 class Cell;
-class MeshContinuum;
+class Mesh;
 
 /// Key identifying a face by global cell ID and local face ID.
 struct CellFaceKey
@@ -110,19 +110,19 @@ class CellFace
 {
 public:
   /// Determines the neighbor's partition and whether it's local or not.
-  bool IsNeighborLocal(const MeshContinuum* grid) const;
+  bool IsNeighborLocal(const Mesh* grid) const;
 
   /// Determines the neighbor's partition.
-  int GetNeighborPartitionID(const MeshContinuum* grid) const;
+  int GetNeighborPartitionID(const Mesh* grid) const;
 
   /// Determines the neighbor's local id.
-  std::uint32_t GetNeighborLocalID(const MeshContinuum* grid) const;
+  std::uint32_t GetNeighborLocalID(const Mesh* grid) const;
 
   /// Determines the neighbor's associated face.
-  int GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const;
+  int GetNeighborAdjacentFaceIndex(const Mesh* grid) const;
 
   /// Computes the geometric info on the face.
-  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell);
+  void ComputeGeometricInfo(const Mesh* grid, const Cell& cell);
 
   /// Serializes a face into a vector of bytes.
   ByteArray Serialize() const;
@@ -130,7 +130,7 @@ public:
   /// Provides string information of the face.
   std::string ToString() const;
 
-  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell, unsigned int f);
+  void ComputeGeometricInfo(const Mesh* grid, const Cell& cell, unsigned int f);
 
   /// Flag indicating whether face has a neighbor
   bool has_neighbor = false;
@@ -169,7 +169,7 @@ public:
   CellType GetSubType() const { return cell_sub_type_; }
 
   /// Computes the geometric info on the cell.
-  void ComputeGeometricInfo(const MeshContinuum* grid);
+  void ComputeGeometricInfo(const Mesh* grid);
 
   /// Serializes a cell into a vector of bytes.
   ByteArray Serialize() const;

@@ -6,7 +6,7 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <cmath>

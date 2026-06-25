@@ -4,7 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <petscksp.h>
 #include <cstdint>
 #include <vector>

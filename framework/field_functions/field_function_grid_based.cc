@@ -5,8 +5,8 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
+#include "framework/mesh/mesh/mesh.h"
+#include "framework/mesh/mesh/grid_vtk_utils.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
@@ -49,7 +49,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(const InputParameters& params)
   : FieldFunction(params),
     discretization_(MakeSpatialDiscretization(params)),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(params.GetSharedPtrParam<MeshContinuum>("mesh")->GetLocalBoundingBox())
+    local_grid_bounding_box_(params.GetSharedPtrParam<Mesh>("mesh")->GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(params.GetParamValue<double>("initial_value"));
 }
@@ -345,7 +345,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
 std::shared_ptr<SpatialDiscretization>
 FieldFunctionGridBased::MakeSpatialDiscretization(const InputParameters& params)
 {
-  const auto grid = params.GetSharedPtrParam<MeshContinuum>("mesh");
+  const auto grid = params.GetSharedPtrParam<Mesh>("mesh");
   const auto sdm_type = params.GetParamValue<std::string>("discretization");
 
   std::string cs = "cartesian";

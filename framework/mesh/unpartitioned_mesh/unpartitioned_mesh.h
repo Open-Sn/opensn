@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "framework/mesh/mesh_continuum/cell.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <map>
 #include <array>
 #include <set>

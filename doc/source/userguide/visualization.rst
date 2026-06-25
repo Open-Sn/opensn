@@ -16,7 +16,7 @@ Overview
 The OpenSn export methods are:
 
 * :py:meth:`pyopensn.fieldfunc.FieldFunctionGridBased.ExportMultipleToPVTU`
-* :py:meth:`pyopensn.mesh.MeshContinuum.ExportToPVTU`
+* :py:meth:`pyopensn.mesh.Mesh.ExportToPVTU`
 
 In practice, users usually visualize one of two things:
 

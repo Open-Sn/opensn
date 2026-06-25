@@ -15,7 +15,7 @@ namespace opensn
 
 class GridFaceHistogram;
 class LBSGroupset;
-class MeshContinuum;
+class Mesh;
 class SPDS;
 class SpatialDiscretization;
 
@@ -33,7 +33,7 @@ struct SweepRuntime
 
 SweepRuntime BuildSweepRuntime(const std::string& problem_name,
                                const std::vector<LBSGroupset>& groupsets,
-                               const std::shared_ptr<MeshContinuum>& grid,
+                               const std::shared_ptr<Mesh>& grid,
                                const std::string& sweep_type,
                                bool use_gpus,
                                const SpatialDiscretization& discretization,

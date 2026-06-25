@@ -8,7 +8,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/math/quadratures/angular/angular_quadrature.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <memory>
 #include <map>
 #include <set>
@@ -49,7 +49,7 @@ public:
   AngleAggregation(const LBSGroupset& groupset,
                    std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                    std::shared_ptr<AngularQuadrature>& quadrature,
-                   std::shared_ptr<MeshContinuum>& grid);
+                   std::shared_ptr<Mesh>& grid);
 
   using iterator = std::vector<std::shared_ptr<AngleSet>>::iterator;
   using const_iterator = std::vector<std::shared_ptr<AngleSet>>::const_iterator;
@@ -145,7 +145,7 @@ private:
   int groupset_id_;
   bool num_ang_unknowns_avail_;
   std::pair<size_t, size_t> number_angular_unknowns_;
-  std::shared_ptr<MeshContinuum> grid_;
+  std::shared_ptr<Mesh> grid_;
   std::shared_ptr<AngularQuadrature> quadrature_;
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries_;
   std::vector<std::shared_ptr<AngleSet>> angle_set_groups_;

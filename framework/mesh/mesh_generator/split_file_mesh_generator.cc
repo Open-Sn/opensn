@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_generator/split_file_mesh_generator.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -24,7 +24,7 @@ SplitFileMeshGenerator::SplitFileMeshGenerator(const InputParameters& params)
 {
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 SplitFileMeshGenerator::Execute()
 {
   const auto num_mpi = mpi_comm.size();
@@ -50,7 +50,7 @@ SplitFileMeshGenerator::Execute()
   // Other locations wait here for files to be written
   mpi_comm.barrier();
 
-  std::shared_ptr<MeshContinuum> grid_ptr;
+  std::shared_ptr<Mesh> grid_ptr;
   if (mpi_comm.size() == num_partitions)
   {
     log.Log() << "Reading split-mesh";
@@ -361,10 +361,10 @@ SplitFileMeshGenerator::Create(const ParameterBlock& params)
   return factory.Create<SplitFileMeshGenerator>("mesh::SplitFileMeshGenerator", params);
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 {
-  auto grid_ptr = MeshContinuum::New();
+  auto grid_ptr = Mesh::New();
   for (auto& [id, name] : mesh_info.boundary_id_map)
     grid_ptr->SetBoundaryName(id, name);
 

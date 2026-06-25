@@ -7,7 +7,7 @@
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"

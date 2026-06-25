@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -33,7 +33,7 @@ MMS_q(const Vector3& pt)
 }
 
 void
-SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
+SimTest04_PWLC(std::shared_ptr<Mesh> grid)
 {
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);

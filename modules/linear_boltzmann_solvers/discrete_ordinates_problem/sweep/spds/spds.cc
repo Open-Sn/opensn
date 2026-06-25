@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
@@ -17,7 +17,7 @@ namespace opensn
 {
 
 SPDSFaceNeighborInfoVec
-BuildSPDSFaceNeighborInfo(const MeshContinuum& grid)
+BuildSPDSFaceNeighborInfo(const Mesh& grid)
 {
   SPDSFaceNeighborInfoVec info;
   info.resize(grid.GetLocalCellCount());

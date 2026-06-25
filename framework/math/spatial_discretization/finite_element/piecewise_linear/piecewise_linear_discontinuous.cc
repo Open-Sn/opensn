@@ -3,7 +3,7 @@
 
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -14,8 +14,8 @@
 namespace opensn
 {
 
-PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(
-  const std::shared_ptr<MeshContinuum>& grid, QuadratureOrder q_order)
+PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(const std::shared_ptr<Mesh>& grid,
+                                                           QuadratureOrder q_order)
   : PieceWiseLinearBase(grid, q_order, SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
 {
   CreateCellMappings();
@@ -23,8 +23,7 @@ PieceWiseLinearDiscontinuous::PieceWiseLinearDiscontinuous(
 }
 
 std::shared_ptr<PieceWiseLinearDiscontinuous>
-PieceWiseLinearDiscontinuous::New(const std::shared_ptr<MeshContinuum>& grid,
-                                  QuadratureOrder q_order)
+PieceWiseLinearDiscontinuous::New(const std::shared_ptr<Mesh>& grid, QuadratureOrder q_order)
 {
   return std::shared_ptr<PieceWiseLinearDiscontinuous>(
     new PieceWiseLinearDiscontinuous(grid, q_order));

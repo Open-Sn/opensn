@@ -7,7 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <stdexcept>
 
 namespace opensn
