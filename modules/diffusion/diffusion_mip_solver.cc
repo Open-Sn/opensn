@@ -1186,13 +1186,14 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 double
 DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
 {
+  const auto& mesh = sdm_.GetGrid();
   const auto& cell_mapping = sdm_.GetCellMapping(cell);
   double hp = 0.0;
 
   const auto num_faces = cell.faces.size();
   const auto num_vertices = cell.vertex_ids.size();
 
-  const auto volume = cell.volume;
+  const auto volume = mesh->GetCellVolume(cell.local_id);
   const auto face_area = cell.faces.at(f).area;
 
   /**Lambda to compute surface area.*/
