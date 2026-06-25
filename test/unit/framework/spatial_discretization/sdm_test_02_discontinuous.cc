@@ -27,7 +27,7 @@ int MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
                     size_t ccfi,
                     double epsilon = 1.0e-12);
 
-double HPerpendicular(const CellMapping& cell_mapping, unsigned int f);
+double HPerpendicular(const Mesh& mesh, const CellMapping& cell_mapping, unsigned int f);
 
 void
 math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
@@ -124,7 +124,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
       const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       const auto fqp_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
-      const double hm = HPerpendicular(cell_mapping, f);
+      const double hm = HPerpendicular(*grid, cell_mapping, f);
 
       if (face.has_neighbor)
       {
@@ -132,7 +132,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
         const size_t acf = Mesh::MapCellFace(cell, adj_cell, f);
-        const double hp = HPerpendicular(adj_cell_mapping, acf);
+        const double hp = HPerpendicular(*grid, adj_cell_mapping, acf);
 
         // Compute kappa
         double kappa = 1.0;
@@ -414,7 +414,7 @@ MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
 }
 
 double
-HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
+HPerpendicular(const Mesh& mesh, const CellMapping& cell_mapping, unsigned int f)
 {
   const auto& cell = cell_mapping.GetCell();
   double hp;
@@ -422,7 +422,7 @@ HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
   const auto num_faces = cell.faces.size();
   const auto num_vertices = cell.vertex_ids.size();
 
-  const auto volume = cell.volume;
+  const auto volume = mesh.GetCellVolume(cell.local_id);
   const auto face_area = cell.faces.at(f).area;
 
   /**Lambda to compute surface area.*/
