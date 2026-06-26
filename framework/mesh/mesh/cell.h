@@ -180,7 +180,6 @@ public:
   uint64_t global_id = 0;
   std::uint32_t local_id = 0;
   int partition_id = 0;
-  int num_parition = 0;
   unsigned int block_id = std::numeric_limits<unsigned int>::max();
 
   Vector3 centroid;
