@@ -57,24 +57,24 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const size_t num_faces = cell.faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(cell);
+    const size_t num_faces = cell->faces.size();
+    const auto& cell_mapping = sdm_.GetCellMapping(*cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell->local_id];
 
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
 
     // Mark dirichlet nodes
     std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell->faces[f];
       if (not face.has_neighbor and not suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -98,7 +98,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       cell_A.Set(0.);
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(*cell, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
@@ -106,7 +106,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
-        qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
+        qg[j] = q_vector[sdm_.MapDOFLocal(*cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; ++i)
@@ -137,7 +137,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell->faces[f];
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
@@ -262,25 +262,25 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const size_t num_faces = cell.faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(cell);
+    const size_t num_faces = cell->faces.size();
+    const auto& cell_mapping = sdm_.GetCellMapping(*cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell->local_id];
 
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
     const auto& intV_shapeI = unit_cell_matrices.intV_shapeI;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
 
     // Mark dirichlet nodes
     std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell->faces[f];
       if (not face.has_neighbor and suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -303,12 +303,12 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(*cell, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
-        qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
+        qg[j] = q_vector[sdm_.MapDOFLocal(*cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       const double Dg = xs.Dg[g];
@@ -339,7 +339,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell->faces[f];
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
@@ -415,13 +415,13 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   OpenSnPETScCall(VecGetArrayRead(petsc_q_vector, &q_vector));
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const size_t num_faces = cell.faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(cell);
+    const size_t num_faces = cell->faces.size();
+    const auto& cell_mapping = sdm_.GetCellMapping(*cell);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell.local_id];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell->local_id];
 
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
     const auto& intV_shapeI = unit_cell_matrices.intV_shapeI;
@@ -430,7 +430,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     std::vector<bool> node_is_dirichlet(num_nodes, false);
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell->faces[f];
       if (not face.has_neighbor and not suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -453,12 +453,12 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(*cell, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
-        qg[j] = q_vector[sdm_.MapDOFLocal(cell, j, uk_man_, 0, g)];
+        qg[j] = q_vector[sdm_.MapDOFLocal(*cell, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; ++i)
@@ -475,7 +475,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       // Assemble face terms
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell->faces[f];
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];

@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"

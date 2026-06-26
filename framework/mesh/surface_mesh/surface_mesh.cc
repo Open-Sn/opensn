@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/surface_mesh/surface_mesh.h"
-#include "framework/mesh/mesh_face.h"
-#include "framework/mesh/mesh_edge_loops.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -46,7 +44,7 @@ SurfaceMesh::~SurfaceMesh()
 std::ostream&
 operator<<(std::ostream& os, SurfaceMesh& obj)
 {
-  std::vector<Face>::const_iterator curface;
+  std::vector<SurfaceMesh::Face>::const_iterator curface;
   for (curface = obj.GetTriangles().begin(); curface != obj.GetTriangles().end(); ++curface)
   {
     long index = std::distance(obj.GetTriangles().begin(), curface);

@@ -17,8 +17,8 @@ PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(
     v1i_(slab_cell.vertex_ids[1]),
     volume_quadrature_(volume_quadrature)
 {
-  v0_ = grid_->vertices[v0i_];
-  const auto& v1 = grid_->vertices[v1i_];
+  v0_ = grid_->GlobalVertex(v0i_);
+  const auto& v1 = grid_->GlobalVertex(v1i_);
 
   Vector3 v01 = v1 - v0_;
   h_ = v01.Norm();
@@ -64,8 +64,8 @@ PieceWiseLinearSlabMapping::SlabGradShape(uint32_t index) const
 double
 PieceWiseLinearSlabMapping::ShapeValue(size_t i, const Vector3& xyz) const
 {
-  const auto& p0 = grid_->vertices[v0i_];
-  const auto& p1 = grid_->vertices[v1i_];
+  const auto& p0 = grid_->GlobalVertex(v0i_);
+  const auto& p1 = grid_->GlobalVertex(v1i_);
   Vector3 xyz_ref = xyz - p0;
 
   Vector3 v01 = p1 - p0;
@@ -87,8 +87,8 @@ void
 PieceWiseLinearSlabMapping::ShapeValues(const Vector3& xyz, Vector<double>& shape_values) const
 {
   shape_values.Resize(num_nodes_, 0.0);
-  const auto& p0 = grid_->vertices[v0i_];
-  const auto& p1 = grid_->vertices[v1i_];
+  const auto& p0 = grid_->GlobalVertex(v0i_);
+  const auto& p1 = grid_->GlobalVertex(v1i_);
   Vector3 xyz_ref = xyz - p0;
 
   Vector3 v01 = p1 - p0;
@@ -243,7 +243,7 @@ PieceWiseLinearSlabMapping::MakeSurfaceFiniteElementData(size_t face_index) cons
   for (size_t qp = 0; qp < num_srf_qpoints; ++qp)
   {
     F_JxW.push_back(JxW);
-    const auto face_xyz = (f == 0) ? grid_->vertices[v0i_] : grid_->vertices[v1i_];
+    const auto face_xyz = (f == 0) ? grid_->GlobalVertex(v0i_) : grid_->GlobalVertex(v1i_);
     F_qpoints_xyz.push_back(face_xyz);
   }
 

@@ -156,20 +156,20 @@ WrapMesh(py::module& mesh)
     {
       int local_num_cells_modified = 0;
       // change local cells
-      for (Cell& cell : self.local_cells)
+      for (auto& cell : self.GetLocalCells())
       {
-        auto new_block_id = func(cell.centroid, cell.block_id);
-        if (cell.block_id != new_block_id)
+        auto new_block_id = func(cell->centroid, cell->block_id);
+        if (cell->block_id != new_block_id)
         {
-          cell.block_id = new_block_id;
+          cell->block_id = new_block_id;
           ++local_num_cells_modified;
         }
       }
       // change ghost cells
-      std::vector<std::uint64_t> ghost_ids = self.cells.GetGhostGlobalIDs();
+      std::vector<std::uint64_t> ghost_ids = self.GetGhostGlobalIDs();
       for (std::uint64_t ghost_id : ghost_ids)
       {
-        Cell& cell = self.cells[ghost_id];
+        Cell& cell = self.GetGlobalCell(ghost_id);
         auto new_block_id = func(cell.centroid, cell.block_id);
         if (cell.block_id != new_block_id)
         {

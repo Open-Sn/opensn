@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mpi/mpi_utils.h"
 #include <boost/unordered/unordered_flat_map.hpp>
@@ -30,24 +30,24 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
 {
   const auto& grid = *spds.GetGrid();
   const auto& face_orientations = spds.GetCellFaceOrientations();
-  face_offsets_.resize(grid.local_cells.size(), 0);
+  face_offsets_.resize(grid.GetLocalCellCount(), 0);
 
   std::size_t num_local_faces = 0;
   std::size_t num_incoming_faces = 0;
   std::size_t num_outgoing_faces = 0;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid.GetLocalCells())
   {
-    assert(cell.local_id < face_offsets_.size());
-    face_offsets_[cell.local_id] = num_local_faces;
-    num_local_faces += cell.faces.size();
+    assert(cell->local_id < face_offsets_.size());
+    face_offsets_[cell->local_id] = num_local_faces;
+    num_local_faces += cell->faces.size();
 
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    for (std::size_t f = 0; f < cell->faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell->faces[f];
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
         continue;
 
-      const auto orientation = face_orientations[cell.local_id][f];
+      const auto orientation = face_orientations[cell->local_id][f];
       if (orientation == FaceOrientation::INCOMING)
         ++num_incoming_faces;
       else if (orientation == FaceOrientation::OUTGOING)
@@ -67,13 +67,13 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
     outgoing_peer_index_by_location.emplace(location_successors[i], i);
 
   std::map<int, std::vector<std::uint64_t>> incoming_slot_records_by_upstream_location;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid.GetLocalCells())
   {
-    const auto face_offset = face_offsets_[cell.local_id];
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    const auto face_offset = face_offsets_[cell->local_id];
+    for (std::size_t f = 0; f < cell->faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
-      const auto orientation = face_orientations[cell.local_id][f];
+      const auto& face = cell->faces[f];
+      const auto orientation = face_orientations[cell->local_id][f];
 
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
         continue;
@@ -82,10 +82,10 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
       {
         const auto slot = num_incoming_faces_;
         incoming_face_slots_[face_offset + f] = slot;
-        incoming_face_cells_.push_back(cell.local_id);
+        incoming_face_cells_.push_back(cell->local_id);
         auto& records =
           incoming_slot_records_by_upstream_location[face.GetNeighborPartitionID(&grid)];
-        records.push_back(cell.global_id);
+        records.push_back(cell->global_id);
         records.push_back(static_cast<std::uint64_t>(f));
         records.push_back(static_cast<std::uint64_t>(slot));
         ++num_incoming_faces_;
@@ -117,20 +117,20 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
     }
   }
 
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid.GetLocalCells())
   {
-    const auto face_offset = face_offsets_[cell.local_id];
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    const auto face_offset = face_offsets_[cell->local_id];
+    for (std::size_t f = 0; f < cell->faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell->faces[f];
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
         continue;
 
-      if (face_orientations[cell.local_id][f] != FaceOrientation::OUTGOING)
+      if (face_orientations[cell->local_id][f] != FaceOrientation::OUTGOING)
         continue;
 
       const auto& face_nodal_mapping =
-        GetFaceNodalMapping(cell.local_id, static_cast<unsigned int>(f));
+        GetFaceNodalMapping(cell->local_id, static_cast<unsigned int>(f));
       assert(face_nodal_mapping.associated_face_ >= 0);
 
       const CellFaceKey key{face.neighbor_id,

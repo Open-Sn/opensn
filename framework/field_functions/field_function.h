@@ -5,7 +5,6 @@
 
 #include "framework/parameters/input_parameters.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/mesh/mesh.h"
 
 namespace opensn
 {

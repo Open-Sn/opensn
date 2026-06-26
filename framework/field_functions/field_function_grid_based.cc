@@ -5,7 +5,6 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include "framework/object_factory.h"
@@ -184,11 +183,11 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
       point.z >= zmin and point.z <= zmax)
   {
     const auto& grid = discretization_->GetGrid();
-    for (const auto& cell : grid->local_cells)
+    for (const auto& cell : grid->GetLocalCells())
     {
-      if (grid->CheckPointInsideCell(cell, point))
+      if (grid->CheckPointInsideCell(*cell, point))
       {
-        const auto& cell_mapping = discretization_->GetCellMapping(cell);
+        const auto& cell_mapping = discretization_->GetCellMapping(*cell);
         Vector<double> shape_values;
         cell_mapping.ShapeValues(point, shape_values);
 
@@ -199,7 +198,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
         {
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto dof_map = discretization_->MapDOFLocal(cell, j, uk_man, 0, c);
+            const auto dof_map = discretization_->MapDOFLocal(*cell, j, uk_man, 0, c);
             const double dof_value = field_vector[dof_map];
 
             local_point_value[c] += dof_value * shape_values(j);
@@ -299,15 +298,15 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
       point_array->SetName(component_name.c_str());
 
       // Populate the array here
-      for (const auto& cell : grid->local_cells)
+      for (const auto& cell : grid->GetLocalCells())
       {
-        const size_t num_nodes = sdm->GetCellNumNodes(cell);
+        const size_t num_nodes = sdm->GetCellNumNodes(*cell);
 
-        if (num_nodes == cell.vertex_ids.size())
+        if (num_nodes == cell->vertex_ids.size())
         {
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const auto nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(*cell, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
 
@@ -319,13 +318,13 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
           double node_average = 0.0;
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const auto nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(*cell, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
             node_average += field_value;
           } // for node
           node_average /= static_cast<double>(num_nodes);
-          for (std::size_t n = 0; n < cell.vertex_ids.size(); ++n)
+          for (std::size_t n = 0; n < cell->vertex_ids.size(); ++n)
           {
             point_array->InsertNextValue(node_average);
           } // for vertex

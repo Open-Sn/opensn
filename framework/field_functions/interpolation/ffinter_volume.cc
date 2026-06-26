@@ -36,9 +36,9 @@ FieldFunctionInterpolationVolume::RebuildVolumeCellList()
 
   // Find cells inside volume
   cell_local_ids_inside_logvol_.clear();
-  for (const auto& cell : grid->local_cells)
-    if (logical_volume_->Inside(cell.centroid))
-      cell_local_ids_inside_logvol_.push_back(cell.local_id);
+  for (const auto& cell : grid->GetLocalCells())
+    if (logical_volume_->Inside(cell->centroid))
+      cell_local_ids_inside_logvol_.push_back(cell->local_id);
 }
 
 void
@@ -62,7 +62,7 @@ FieldFunctionInterpolationVolume::Execute()
   double local_min = std::numeric_limits<double>::infinity();
   for (const uint64_t cell_local_id : cell_local_ids_inside_logvol_)
   {
-    const auto& cell = grid->local_cells[cell_local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();

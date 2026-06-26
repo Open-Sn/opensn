@@ -8,7 +8,7 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include <memory>
 
 namespace opensn
@@ -146,9 +146,9 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
       auto cell = SetupCell(*raw_cell, cell_global_id, cell_pids[cell_global_id]);
 
       for (const auto vid : cell->vertex_ids)
-        grid_ptr->vertices.Insert(vid, input_umesh->GetVertices()[vid]);
+        grid_ptr->AddGlobalVertex(vid, input_umesh->GetVertices()[vid]);
 
-      grid_ptr->cells.PushBack(std::move(cell));
+      grid_ptr->AddGlobalCell(std::move(cell));
     }
     ++cell_global_id;
   } // for raw_cell
@@ -257,7 +257,7 @@ MeshGenerator::Create(const ParameterBlock& params)
 void
 MeshGenerator::ComputeAndPrintStats(const std::shared_ptr<MeshContinuum>& grid)
 {
-  const size_t num_local_cells = grid->local_cells.size();
+  const size_t num_local_cells = grid->GetLocalCellCount();
   size_t num_global_cells = 0;
 
   mpi_comm.all_reduce(num_local_cells, num_global_cells, mpi::op::sum<size_t>());
@@ -269,7 +269,7 @@ MeshGenerator::ComputeAndPrintStats(const std::shared_ptr<MeshContinuum>& grid)
   mpi_comm.all_reduce(num_local_cells, min_num_local_cells, mpi::op::min<size_t>());
 
   const size_t avg_num_local_cells = num_global_cells / mpi_comm.size();
-  const size_t num_local_ghosts = grid->cells.GhostCellCount();
+  const size_t num_local_ghosts = grid->GhostCellCount();
   const double local_ghost_to_local_cell_ratio = double(num_local_ghosts) / double(num_local_cells);
 
   double average_ghost_ratio = 0.0;

@@ -3,14 +3,13 @@
 
 #pragma once
 
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/mesh/mesh.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h"
 #include "framework/math/geometry.h"
 #include <memory>
 #include <array>
+#include <map>
+#include <cstddef>
 
 namespace opensn
 {
@@ -19,9 +18,66 @@ class GridFaceHistogram;
 class MeshGenerator;
 class LogicalVolume;
 
+constexpr std::string_view
+ToString(CoordinateSystemType type) noexcept
+{
+  switch (type)
+  {
+    case CoordinateSystemType::UNDEFINED:
+      return "UNDEFINED";
+    case CoordinateSystemType::CARTESIAN:
+      return "CARTESIAN";
+    case CoordinateSystemType::CYLINDRICAL:
+      return "CYLINDRICAL";
+    case CoordinateSystemType::SPHERICAL:
+      return "SPHERICAL";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+enum MeshType : int
+{
+  ORTHOGONAL,
+  UNSTRUCTURED
+};
+
+constexpr std::string_view
+ToString(MeshType type) noexcept
+{
+  switch (type)
+  {
+    case ORTHOGONAL:
+      return "UNDEFINED";
+    case UNSTRUCTURED:
+      return "CARTESIAN";
+    default:
+      return "UNKNOWN";
+  }
+}
+
+enum BoundaryID : int
+{
+  XMIN = 0,
+  XMAX = 1,
+  YMIN = 2,
+  YMAX = 3,
+  ZMIN = 4,
+  ZMAX = 5
+};
+
+struct OrthoMeshAttributes
+{
+  size_t Nx = 0;
+  size_t Ny = 0;
+  size_t Nz = 0;
+};
+
 /// Encapsulates all the necessary information required to fully define a computational domain.
 class MeshContinuum
 {
+  using GlobalVertexIDMap = std::map<uint64_t, Vector3>;
+
 public:
   MeshContinuum();
 
@@ -45,6 +101,22 @@ public:
 
   void SetGlobalVertexCount(const uint64_t count) { global_vertex_count_ = count; }
   uint64_t GetGlobalVertexCount() const { return global_vertex_count_; }
+
+  /// Get vertex using global vertex ID
+  Vector3& GlobalVertex(const uint64_t global_id) { return global_vertex_id_map_.at(global_id); }
+
+  /// Get vertex using global vertex ID
+  const Vector3& GlobalVertex(const uint64_t global_id) const
+  {
+    return global_vertex_id_map_.at(global_id);
+  }
+
+  /// Add global vertex providing global ID and location in 3D space
+  void AddGlobalVertex(const uint64_t global_id, const Vector3& pos)
+  {
+    global_vertex_id_map_.insert(std::make_pair(global_id, pos));
+  }
+
   int GetNumPartitions() const { return num_partitions_; }
   size_t GetGlobalNumberOfCells() const;
 
@@ -69,8 +141,44 @@ public:
    */
   uint64_t MakeBoundaryID(const std::string& boundary_name) const;
 
+  /**
+   * Associate boundary name with a boundary ID
+   *
+   * \param id Boundary ID
+   * \param name Boundary name to associate with ``id``
+   */
+  void SetBoundaryName(std::uint64_t id, const std::string& name);
+
   /// Defines the standard x/y/z min/max boundaries.
   void SetOrthogonalBoundaries();
+
+  /// Returns the the total number of ghost cells
+  size_t GhostCellCount() const { return global_cell_id_to_nonlocal_id_map_.size(); }
+
+  /**
+   * Adds a new cell to the appropriate category (local or ghost).
+   * @param new_cell The cell to add.
+   */
+  void AddGlobalCell(std::shared_ptr<Cell> new_cell);
+
+  /// Returns a reference to a cell given its global cell index.
+  Cell& GetGlobalCell(uint64_t cell_global_index);
+
+  /// Returns a const reference to a cell given its global cell index.
+  const Cell& GetGlobalCell(uint64_t cell_global_index) const;
+
+  /**
+   * Returns the cell global ids of all ghost cells. These are cells that neighbors to this
+   * partition's cells but are on a different partition.
+   */
+  std::vector<uint64_t> GetGhostGlobalIDs() const;
+
+  /**
+   * Returns the local storage address of a ghost cell. If the ghost is not truly a ghost then -1 is
+   * returned, but is wasteful and therefore the user of this function should implement code to
+   * prevent it.
+   */
+  uint64_t GetGhostLocalID(uint64_t cell_global_index) const;
 
   /**
    * Populates a face histogram.
@@ -89,6 +197,14 @@ public:
    */
   std::shared_ptr<GridFaceHistogram> MakeGridFaceHistogram(double master_tolerance = 100.0,
                                                            double slave_tolerance = 1.1) const;
+
+  std::size_t GetLocalCellCount() const;
+
+  const Cell& GetLocalCell(uint64_t id) const;
+  Cell& GetLocalCell(uint64_t id);
+
+  std::vector<std::shared_ptr<Cell>>& GetLocalCells();
+  const std::vector<std::shared_ptr<Cell>>& GetLocalCells() const;
 
   /// Returns whether the cell with the given global id is locally owned.
   bool IsCellLocal(uint64_t global_id) const noexcept
@@ -160,10 +276,6 @@ public:
   /// Compute volume per block IDs
   std::map<unsigned int, double> ComputeVolumePerBlockID() const;
 
-  VertexHandler vertices;
-  LocalCellHandler local_cells;
-  GlobalCellHandler cells;
-
 private:
   /// Spatial dimension
   unsigned int dim_;
@@ -176,12 +288,15 @@ private:
   int num_partitions_;
   uint64_t global_vertex_count_;
 
+  ///
+  GlobalVertexIDMap global_vertex_id_map_;
   /// Locally owned cells
   std::vector<std::shared_ptr<Cell>> local_cells_;
   /// Locally stored ghost cells
   std::vector<std::shared_ptr<Cell>> ghost_cells_;
 
   std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
+  /// Global to ghost ID map
   std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
 
 public:

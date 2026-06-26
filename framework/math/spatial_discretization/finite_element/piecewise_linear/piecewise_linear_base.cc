@@ -64,13 +64,13 @@ PieceWiseLinearBase::CreateCellMappings()
     return mapping;
   };
 
-  for (const auto& cell : grid_->local_cells)
-    cell_mappings_.push_back(MakeCellMapping(cell));
+  for (const auto& cell : grid_->GetLocalCells())
+    cell_mappings_.push_back(MakeCellMapping(*cell));
 
-  const auto ghost_ids = grid_->cells.GetGhostGlobalIDs();
+  const auto ghost_ids = grid_->GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
-    auto ghost_mapping = MakeCellMapping(grid_->cells[ghost_id]);
+    auto ghost_mapping = MakeCellMapping(grid_->GetGlobalCell(ghost_id));
     nb_cell_mappings_.insert(std::make_pair(ghost_id, std::move(ghost_mapping)));
   }
 }

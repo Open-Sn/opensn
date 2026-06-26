@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"

@@ -1208,7 +1208,7 @@ CMFDAcceleration::BuildFaceCurrentCache()
       const auto requested_face_index = static_cast<std::size_t>(requests[r + 1]);
       const auto neighbor_cell_gid = requests[r + 2];
       const auto cg = static_cast<unsigned int>(requests[r + 3]);
-      const auto& owner_cell = grid.cells[owner_cell_gid];
+      const auto& owner_cell = grid.GetGlobalCell(owner_cell_gid);
       OpenSnInvalidArgumentIf(owner_cell.partition_id != opensn::mpi_comm.rank(),
                               "CMFD face-current request references a nonlocal owner cell.");
 
@@ -1446,7 +1446,7 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
     double owner_outflow = 0.0;
     if (fine_face.cell_partition_id == opensn::mpi_comm.rank())
     {
-      const auto& fine_cell = grid.cells[fine_face.cell_id];
+      const auto& fine_cell = grid.GetGlobalCell(fine_face.cell_id);
       for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
         owner_outflow +=
           outflow_views[fine_cell.local_id].Get(fine_face.face_index, first_group_ + g);
@@ -1473,7 +1473,7 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
 
     if (fine_face.neighbor_partition_id == opensn::mpi_comm.rank())
     {
-      const auto& neighbor_cell = grid.cells[*neighbor_id];
+      const auto& neighbor_cell = grid.GetGlobalCell(*neighbor_id);
       bool found_face = false;
       for (std::size_t nf = 0; nf < neighbor_cell.faces.size(); ++nf)
       {
@@ -1741,9 +1741,9 @@ CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double
   const auto& grid = *do_problem_.GetGrid();
   double local_min_phi = std::numeric_limits<double>::max();
   bool local_nonfinite = false;
-  for (const auto& cell : grid.local_cells)
+  for (const auto& cell : grid.GetLocalCells())
   {
-    const auto& transport_view = transport_views[cell.local_id];
+    const auto& transport_view = transport_views[cell->local_id];
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
       const auto phi_map = transport_view.MapDOF(i, 0, first_group_);

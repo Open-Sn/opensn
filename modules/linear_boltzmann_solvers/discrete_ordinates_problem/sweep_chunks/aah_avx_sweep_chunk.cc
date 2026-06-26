@@ -40,7 +40,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     const uint64_t cell_local_id = spls[spls_index];
-    auto& cell = data.grid->local_cells[cell_local_id];
+    auto& cell = data.grid->GetLocalCell(cell_local_id);
     const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
     auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
     const auto& cell_mapping = data.discretization.GetCellMapping(cell);
