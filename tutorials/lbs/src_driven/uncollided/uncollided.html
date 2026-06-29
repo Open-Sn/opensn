@@ -502,8 +502,8 @@ UncollidedSampleRelativeError=1.452796346063e-01
 <section id="Step-2:-Solve-the-Collided-Problem">
 <h2><span class="section-number">5.3.2.7. </span>Step 2: Solve the Collided Problem<a class="headerlink" href="#Step-2:-Solve-the-Collided-Problem" title="Link to this heading"></a></h2>
 <p>The collided problem does <strong>not</strong> define the point source again. It reads the uncollided file through <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> and constructs the first-collision source internally.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">make_mesh</span><span class="p">()</span>
@@ -524,7 +524,6 @@ UncollidedSampleRelativeError=1.452796346063e-01
             <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
             <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
             <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;single&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;angle_aggregation_num_subsets&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
             <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
             <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
             <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
@@ -540,87 +539,6 @@ UncollidedSampleRelativeError=1.452796346063e-01
 <span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[0]  FromFileMeshGenerator: Generating UnpartitionedMesh
-[0]  Making unpartitioned mesh from Gmsh file /Users/dhawkins/opensn_dev/opensn/test/assets/mesh/uncollided_cube_coarse.msh (format v4.1 binary)
-[0]  Done checking cell-center-to-face orientations
-[0]  00:00:00.7 Establishing cell connectivity.
-[0]  00:00:00.7 Vertex cell subscriptions complete.
-[0]  00:00:00.7 Surpassing cell 74 of 735 (10%)
-[0]  00:00:00.7 Surpassing cell 147 of 735 (20%)
-[0]  00:00:00.7 Surpassing cell 221 of 735 (30%)
-[0]  00:00:00.7 Surpassing cell 294 of 735 (40%)
-[0]  00:00:00.7 Surpassing cell 368 of 735 (50%)
-[0]  00:00:00.7 Surpassing cell 442 of 735 (60%)
-[0]  00:00:00.7 Surpassing cell 515 of 735 (70%)
-[0]  00:00:00.7 Surpassing cell 588 of 735 (80%)
-[0]  00:00:00.7 Surpassing cell 662 of 735 (90%)
-[0]  00:00:00.7 Surpassing cell 735 of 735 (100%)
-[0]  00:00:00.7 Establishing cell boundary connectivity.
-[0]  00:00:00.7 Done establishing cell connectivity.
-[0]  Done processing /Users/dhawkins/opensn_dev/opensn/test/assets/mesh/uncollided_cube_coarse.msh.
-[0]  Number of nodes read: 237
-[0]  Number of cells read: 735
-[0]  Number of cells per partition (max,min,avg) = 735,735,735
-[0]
-[0]  Mesh statistics:
-[0]    Global cell count             : 735
-[0]    Local cell count (avg,max,min): 735,735,735
-[0]    Ghost-to-local ratio (avg)    : 0
-[0]
-[0]  00:00:00.7 Done setting block id 0 to all cells
-[0]
-[0]  Initializing DiscreteOrdinatesProblem
-[0]
-[0]  Scattering order    : 0
-[0]  Number of moments   : 1
-[0]  Number of groups    : 1
-[0]  Number of groupsets : 1
-[0]
-[0]  ***** Groupset 0 *****
-[0]  Quadrature type : 3D XYZ Gauss-Legendre/Chebyshev product
-[0]  Number of angles: 32
-[0]  Quadrature norm : 1.00
-[0]  Groups:
-[0]      0
-[0]
-[0]  00:00:00.7 Initializing spatial discretization metadata.
-[0]  00:00:00.7 Computing unit integrals.
-[0]  00:00:00.7 Ghost cell unit cell-matrix ratio: 0%
-[0]  00:00:00.7 Cell matrices computed.
-[0]  00:00:00.7 Initializing parallel arrays. G=1 M=1
-[0]  00:00:00.7 Done with parallel arrays.
-[0]  00:00:00.7 Reading uncollided flux from
-[0]      &#34;/Users/dhawkins/opensn_dev/opensn/doc/source/tutorials/lbs/src_driven/uncollided/uncollided.h5&#34;.
-[0]  00:00:00.7 Successfully loaded uncollided flux from
-[0]      &#34;/Users/dhawkins/opensn_dev/opensn/doc/source/tutorials/lbs/src_driven/uncollided/uncollided.h5&#34; and constructed the
-[0]      first-collision source (groups=1, max moment order=0, global cells=735).
-[0]  00:00:00.7 Initializing sweep datastructures.
-[0]  00:00:00.9 Done initializing sweep datastructures.
-[0]  00:00:00.9 Initialized angle aggregation.
-[0]  00:00:00.9 Initializing solver SteadyStateSourceSolver.
-[0]  00:00:00.9 Starting solver execution SteadyStateSourceSolver.
-[0]  00:00:00.9 WGS groups [0-0] iteration = 0, residual = 1.000000e+00
-[0]  00:00:00.9 WGS groups [0-0] iteration = 1, residual = 1.517591e-03
-[0]  00:00:00.9 WGS groups [0-0] iteration = 2, residual = 1.657536e-06
-[0]  00:00:00.9 WGS groups [0-0] iteration = 3, residual = 1.309965e-09, status = converged
-[0]  00:00:00.9 WGS groups [0-0] avg_sweep_time = 7.882083e-03 s, sweep_time_per_unknown = 8.378065e+01 ns
-[0]  00:00:00.9 WGS groups [0-0] unknowns = 94080, lagged_unknowns = 0, lagged_pct = 0.00
-[0]
-[0]  Balance table:
-[0]   Absorption rate             = 7.915129e-03
-[0]   Production rate             = 1.000000e+00
-[0]   In-flow rate                = 0.000000e+00
-[0]   Out-flow rate               = 9.920849e-01
-[0]   Balance                     = -2.220446e-15
-[0]
-[0]  00:00:00.9 Finished solver execution SteadyStateSourceSolver.
-</pre></div></div>
 </div>
 </section>
 <section id="Post-Process-the-Total-Flux">
