@@ -67,7 +67,6 @@ if __name__ == "__main__":
                 "groups_from_to": [0, 0],
                 "angular_quadrature": quadrature,
                 "angle_aggregation_type": "single",
-                "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_gmres",
                 "gmres_restart_interval": 30,
                 "l_abs_tol": 1.0e-8,
