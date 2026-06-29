@@ -780,6 +780,8 @@ WrapLBS(py::module& slv)
               Handle to an angular quadrature.
           - angle_aggregation_type: {'polar', 'single', 'azimuthal'}, default='polar'
               Angle aggregation method to use during sweeping.
+          - angle_aggregation_num_subsets: int, default=1
+              Number of angle subsets used for aggregation.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
             'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
               Iterative method used for inner linear solves.
@@ -1289,6 +1291,8 @@ WrapLBS(py::module& slv)
               Handle to an angular quadrature.
           - angle_aggregation_type: {'polar', 'single', 'azimuthal'}, default='polar'
               Angle aggregation method to use during sweeping.
+          - angle_aggregation_num_subsets: int, default=1
+              Number of angle subsets used for aggregation.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
             'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
               Iterative method used for inner linear solves.

@@ -60,6 +60,7 @@ if __name__ == "__main__":
                 "l_max_its": 5,
                 "l_abs_tol": 1.0e-10,
                 "angle_aggregation_type": "polar",
+                "angle_aggregation_num_subsets": 1,
             },
         ],
         xs_map=xs_map,

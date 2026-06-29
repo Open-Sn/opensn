@@ -67,6 +67,8 @@ public:
   UniqueSOGroupings unique_so_groupings;
   DirIDToSOMap dir_id_to_so_map;
 
+  int master_num_ang_subsets;
+
   LinearSystemSolver::IterativeMethod iterative_method;
   AngleAggregationType angleagg_method;
   double residual_tolerance;

@@ -65,6 +65,7 @@ if __name__ == "__main__":
                 "groups_from_to": (0, num_groups - 1),
                 "angular_quadrature": pquad,
                 "angle_aggregation_type": "single",
+                "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_bicgstab",
                 "l_abs_tol": 1.0e-6,
                 "l_max_its": 300,

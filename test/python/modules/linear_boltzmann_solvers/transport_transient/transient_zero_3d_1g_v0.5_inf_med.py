@@ -57,6 +57,7 @@ if __name__ == "__main__":
                 "groups_from_to": gs0,
                 "angular_quadrature": pquad,
                 "angle_aggregation_type": "single",
+                "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_richardson",
                 "l_abs_tol": 1.0e-6,
                 "l_max_its": 500,

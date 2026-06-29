@@ -26,6 +26,7 @@ The main groupset fields exposed in the Python API are:
 * ``groups_from_to``
 * ``angular_quadrature``
 * ``angle_aggregation_type``
+* ``angle_aggregation_num_subsets``
 * ``inner_linear_method``
 * ``l_abs_tol``
 * ``l_max_its``

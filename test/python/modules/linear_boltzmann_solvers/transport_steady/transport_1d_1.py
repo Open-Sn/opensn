@@ -71,6 +71,7 @@ if __name__ == "__main__":
             {
                 "groups_from_to": (0, 62),
                 "angular_quadrature": pquad,
+                "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,
                 "l_max_its": 300,
@@ -79,6 +80,7 @@ if __name__ == "__main__":
             {
                 "groups_from_to": (63, num_groups - 1),
                 "angular_quadrature": pquad,
+                "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,
                 "l_max_its": 300,
