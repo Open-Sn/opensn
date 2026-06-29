@@ -48,7 +48,6 @@ def solve(mode):
     quad = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=4, scattering_order=1)
     common = {
         "angular_quadrature": quad,
-        "angle_aggregation_num_subsets": 1,
         "inner_linear_method": "petsc_gmres",
         "l_abs_tol": 1.0e-8,
         "l_max_its": 1000,

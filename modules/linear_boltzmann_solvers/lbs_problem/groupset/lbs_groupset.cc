@@ -30,11 +30,6 @@ LBSGroupset::GetInputParameters()
     "angular_quadrature", nullptr, "A handle to an angular quadrature");
   params.AddOptionalParameter(
     "angle_aggregation_type", "polar", "The angle aggregation method to use during sweeping");
-  params.AddOptionalParameter("angle_aggregation_num_subsets",
-                              1,
-                              "The number of subsets to apply to sets of angles that have been "
-                              "aggregated. This is useful for increasing pipeline size for "
-                              "parallel simulations");
 
   // Iterative method
   params.AddOptionalParameter("inner_linear_method",
@@ -94,7 +89,6 @@ LBSGroupset::GetInputParameters()
   // Constraints
   params.ConstrainParameterRange("angle_aggregation_type",
                                  AllowableRangeList::New({"polar", "single", "azimuthal"}));
-  params.ConstrainParameterRange("angle_aggregation_num_subsets", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange(
     "inner_linear_method",
     AllowableRangeList::New(
@@ -126,7 +120,6 @@ LBSGroupset::Init(int aid)
   size = 0;
   quadrature = nullptr;
   angle_agg = nullptr;
-  master_num_ang_subsets = 1;
   iterative_method = LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON;
   angleagg_method = AngleAggregationType::POLAR;
   residual_tolerance = 1.0e-6;
@@ -188,8 +181,6 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
     angleagg_method = AngleAggregationType::SINGLE;
   else if (angle_agg_typestr == "azimuthal")
     angleagg_method = AngleAggregationType::AZIMUTHAL;
-
-  master_num_ang_subsets = params.GetParamValue<int>("angle_aggregation_num_subsets");
 
   // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");

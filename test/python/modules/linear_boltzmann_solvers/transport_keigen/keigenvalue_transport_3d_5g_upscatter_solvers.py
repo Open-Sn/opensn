@@ -112,7 +112,6 @@ def make_problem():
                 "groups_from_to": [group, group],
                 "angular_quadrature": quad,
                 "angle_aggregation_type": "single",
-                "angle_aggregation_num_subsets": 1,
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-10,
                 "l_max_its": 200,
