@@ -4,6 +4,7 @@
 #pragma once
 
 #include "hdf5.h"
+#include <cstdint>
 #include <functional>
 #include <optional>
 #include <string>
