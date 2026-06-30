@@ -94,7 +94,12 @@ def generate_strong_scaling(nodes, **kwargs):
     # copy necessary files to output directory
     processor = kwargs["processor"]
     engine = kwargs["engine"]
-    out_dir = base_dir.parent / "output" / f"strong_{processor}"
+    suffix = kwargs["suffix"]
+    if suffix:
+        out_name = f"strong_{processor}_{suffix}"
+    else:
+        out_name = f"strong_{processor}"
+    out_dir = base_dir.parent / "output" / out_name
     os.makedirs(out_dir, exist_ok=True)
     shutil.copyfile(
         base_dir / "xs_168g.xs",
@@ -151,7 +156,12 @@ def generate_weak_scaling(nodes, divisors, **kwargs):
     # copy necessary files to output directory
     processor = kwargs["processor"]
     engine = kwargs["engine"]
-    out_dir = base_dir.parent / "output" / f"weak_{processor}"
+    suffix = kwargs["suffix"]
+    if suffix:
+        out_name = f"weak_{processor}_{suffix}"
+    else:
+        out_name = f"weak_{processor}"
+    out_dir = base_dir.parent / "output" / out_name
     os.makedirs(out_dir, exist_ok=True)
     shutil.copyfile(
         base_dir / "xs_168g.xs",

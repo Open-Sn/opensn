@@ -13,6 +13,7 @@
 {{environment}}
 {% endif -%}
 cd {{outdir}}
+export OPENSN_NUM_THREADS={{n_cores}}
 mpiexec -n {{n_nodes * n_tasks}} \
 {% if processor == "gpu" -%}
   --ppn {{n_tasks}} \
