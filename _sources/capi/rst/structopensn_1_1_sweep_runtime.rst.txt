@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_sweep_runtime:
+
+Struct SweepRuntime
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep_runtime_builder.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SweepRuntime
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

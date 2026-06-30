@@ -25,3 +25,12 @@ Classes
 
 
 - :ref:`exhale_struct_structopensn_1_1detail_1_1_gather_index_builder`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1af92a8b17fda4546bfd3f759eb28f988a`
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1a7816fcfa405217f20d43f08f3f9aedac`

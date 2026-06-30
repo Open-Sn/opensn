@@ -32,6 +32,8 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`)
 
+- ``utility``
+
 
 
 

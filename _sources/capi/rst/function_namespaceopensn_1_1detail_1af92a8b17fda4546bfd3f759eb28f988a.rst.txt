@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1detail_1af92a8b17fda4546bfd3f759eb28f988a:
+
+Function opensn::detail::BuildAAHGPUFludsCommonData
+===================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep_runtime_builder.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::detail::BuildAAHGPUFludsCommonData(SweepRuntime&, const SpatialDiscretization&, const std::vector<CellFaceNodalMapping>&)
+   :project: opensn

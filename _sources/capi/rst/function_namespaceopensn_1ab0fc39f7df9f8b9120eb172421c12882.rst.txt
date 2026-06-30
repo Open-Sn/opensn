@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab0fc39f7df9f8b9120eb172421c12882:
+
+Function opensn::BuildSweepRuntime
+==================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep_runtime_builder.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::BuildSweepRuntime(const std::string&, const std::vector<LBSGroupset>&, const std::shared_ptr<MeshContinuum>&, const std::string&, bool, const SpatialDiscretization&, const std::vector<CellFaceNodalMapping>&)
+   :project: opensn

@@ -620,6 +620,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_sweep_runtime.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_sweep_w_g_s_context.rst
 
 .. toctree::
@@ -3543,6 +3548,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep_runtime_builder.h.rst
 
 .. toctree::
    :maxdepth: 1

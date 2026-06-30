@@ -1,0 +1,82 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep_runtime_builder.h:
+
+File sweep_runtime_builder.h
+============================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep_runtime_builder.h``)
+----------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep_runtime_builder.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``memory``
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_aggregation_angle_aggregation.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h`)
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+- :ref:`namespace_opensn__detail`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_sweep_runtime`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ab0fc39f7df9f8b9120eb172421c12882`
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1af92a8b17fda4546bfd3f759eb28f988a`
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1a7816fcfa405217f20d43f08f3f9aedac`
+
+
+Typedefs
+--------
+
+
+- :ref:`exhale_typedef_namespaceopensn_1a78bd32e2dc7ea993a989d05ce4b1bb11`
+
