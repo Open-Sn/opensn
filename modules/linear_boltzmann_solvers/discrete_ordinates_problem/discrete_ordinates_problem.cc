@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aah_angle_set.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep_runtime_builder.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
@@ -129,11 +130,6 @@ DiscreteOrdinatesProblem::GetInputParameters()
     "boundary_conditions", {}, "An array containing tables for each boundary specification.");
   params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
 
-  params.AddOptionalParameterArray(
-    "directions_sweep_order_to_print",
-    std::vector<int>(),
-    "List of direction id's for which sweep ordering info is to be printed.");
-
   params.AddOptionalParameter(
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
   params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
@@ -208,9 +204,7 @@ DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 }
 
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
-  : LBSProblem(params),
-    verbose_sweep_angles_(params.GetParamVectorValue<int>("directions_sweep_order_to_print")),
-    sweep_type_(params.GetParamValue<std::string>("sweep_type"))
+  : LBSProblem(params), sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
   if (params.GetParamValue<bool>("time_dependent"))
   {
@@ -556,9 +550,6 @@ DiscreteOrdinatesProblem::BuildRuntime()
 
   LBSProblem::BuildRuntime();
   InitializeFCS();
-
-  // Make face histogram
-  grid_face_histogram_ = grid_->MakeGridFaceHistogram();
 
   UpdateAngularFluxStorage();
 
@@ -1328,235 +1319,12 @@ DiscreteOrdinatesProblem::InitializeSweepDataStructures()
 
   log.Log() << program_timer.GetTimeString() << " Initializing sweep datastructures.\n";
 
-  // Define sweep ordering groups
-  quadrature_unq_so_grouping_map_.clear();
-  std::map<std::shared_ptr<AngularQuadrature>, bool> quadrature_allow_cycles_map_;
-  for (auto& groupset : groupsets_)
-  {
-    if (quadrature_unq_so_grouping_map_.count(groupset.quadrature) == 0)
-    {
-      quadrature_unq_so_grouping_map_[groupset.quadrature] = AssociateSOsAndDirections(
-        grid_, *groupset.quadrature, groupset.angleagg_method, geometry_type_);
-    }
+  auto sweep_runtime = BuildSweepRuntime(
+    GetName(), groupsets_, grid_, sweep_type_, use_gpus_, *discretization_, grid_nodal_mappings_);
 
-    if (quadrature_allow_cycles_map_.count(groupset.quadrature) == 0)
-      quadrature_allow_cycles_map_[groupset.quadrature] = groupset.allow_cycles;
-  }
-
-  // Build sweep orderings
-  quadrature_spds_map_.clear();
-  if (sweep_type_ == "AAH")
-  {
-    // Creating an AAH SPDS can be an expensive operation. We break it up into multiple phases so
-    // so that we can distribute the work across MPI ranks:
-    // 1) Initialize the SPDS for each angleset. This is done by all ranks.
-    // 2) For each SPDS, generate the feedback arc set (FAS) for the global sweep graph. Angelsets
-    //    are distributed as evenly as possible across MPI ranks.
-    // 3) Gather the FAS for each SPDS on all ranks.
-    // 4) Build the global sweep task dependency graph (TDG) for each SPDS.
-
-    // Initalize SPDS. All ranks initialize a SPDS for each angleset.
-    log.Log0Verbose1() << program_timer.GetTimeString() << " Initializing AAH SPDS.";
-    for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
-    {
-      int id = 0;
-      const auto& unique_so_groupings = info.first;
-      for (const auto& so_grouping : unique_so_groupings)
-      {
-        if (so_grouping.empty())
-          continue;
-
-        const size_t master_dir_id = so_grouping.front();
-        const auto& omega = quadrature->GetOmega(master_dir_id);
-        const auto new_swp_order = std::make_shared<AAH_SPDS>(
-          id, omega, this->grid_, quadrature_allow_cycles_map_[quadrature], use_gpus_);
-        quadrature_spds_map_[quadrature].push_back(new_swp_order);
-        ++id;
-      }
-    }
-
-    // Accumulate global edge weights for each SPDS on the owning rank only.
-    const int comm_size = opensn::mpi_comm.size();
-    const int matrix_size = comm_size * comm_size;
-    std::vector<int> recv_counts(opensn::mpi_comm.size(), comm_size);
-    std::vector<int> recv_displacements(opensn::mpi_comm.size(), 0);
-    for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc)
-      recv_displacements[loc] = loc * comm_size;
-    for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
-    {
-      for (const auto& spds : spds_list)
-      {
-        auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        const int owner = aah_spds->GetId() % opensn::mpi_comm.size();
-
-        // Local contributions - weights from this rank to all others for this SPDS
-        const auto local_row = aah_spds->ComputeLocalLocationEdgeWeights();
-        std::vector<double> recv;
-        if (opensn::mpi_comm.rank() == owner)
-          recv.assign(matrix_size, 0.0);
-        opensn::mpi_comm.gather(local_row, recv, recv_counts, recv_displacements, owner);
-
-        if (opensn::mpi_comm.rank() == owner)
-          aah_spds->SetGlobalEdgeWeights(recv);
-      }
-    }
-
-    // Generate the global sweep FAS for each SPDS. This is an expensive operation. It is
-    // distributed via MPI so that multiple MPI ranks can compute the FAS for one or more SPDS
-    // independently.
-    log.Log0Verbose1() << program_timer.GetTimeString() << " Build global sweep FAS for each SPDS.";
-    for (const auto& quadrature : quadrature_spds_map_)
-    {
-      for (const auto& spds : quadrature.second)
-      {
-        auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        auto id = aah_spds->GetId();
-        if (opensn::mpi_comm.rank() == (id % opensn::mpi_comm.size()))
-          aah_spds->BuildGlobalSweepFAS();
-      }
-    }
-
-    // Communicate the FAS for each SPDS to all ranks.
-    log.Log0Verbose1() << program_timer.GetTimeString() << " Gather FAS for each SPDS.";
-    std::vector<int> local_edges_to_remove;
-    for (const auto& quadrature : quadrature_spds_map_)
-    {
-      for (const auto& spds : quadrature.second)
-      {
-        auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-        auto id = aah_spds->GetId();
-        if ((id % opensn::mpi_comm.size()) == opensn::mpi_comm.rank())
-        {
-          auto edges_to_remove = aah_spds->GetGlobalSweepFAS();
-          local_edges_to_remove.push_back(id);
-          local_edges_to_remove.push_back(static_cast<int>(edges_to_remove.size()));
-          local_edges_to_remove.insert(
-            local_edges_to_remove.end(), edges_to_remove.begin(), edges_to_remove.end());
-        }
-      }
-    }
-
-    int local_size = static_cast<int>(local_edges_to_remove.size());
-    std::vector<int> receive_counts(opensn::mpi_comm.size(), 0);
-    std::vector<int> displacements(opensn::mpi_comm.size(), 0);
-    mpi_comm.all_gather(local_size, receive_counts);
-
-    int total_size = 0;
-    for (auto i = 0; i < receive_counts.size(); ++i)
-    {
-      displacements[i] = total_size;
-      total_size += receive_counts[i];
-    }
-
-    std::vector<int> global_edges_to_remove(total_size, 0);
-    mpi_comm.all_gather(
-      local_edges_to_remove, global_edges_to_remove, receive_counts, displacements);
-
-    // Unpack the gathered data and update SPDS on all ranks.
-    int offset = 0;
-    while (offset < global_edges_to_remove.size())
-    {
-      auto spds_id = global_edges_to_remove[offset++];
-      auto num_edges = global_edges_to_remove[offset++];
-      std::vector<int> edges;
-      edges.reserve(num_edges);
-      for (auto i = 0; i < num_edges; ++i)
-        edges.emplace_back(global_edges_to_remove[offset++]);
-
-      for (const auto& quadrature : quadrature_spds_map_)
-      {
-        for (const auto& spds : quadrature.second)
-        {
-          auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-          if (aah_spds->GetId() == spds_id)
-          {
-            aah_spds->SetGlobalSweepFAS(edges);
-            break;
-          }
-        }
-      }
-    }
-
-    // Build TDG for each SPDS on all ranks.
-    log.Log0Verbose1() << program_timer.GetTimeString() << " Build global sweep TDGs.";
-    for (const auto& quadrature : quadrature_spds_map_)
-      for (const auto& spds : quadrature.second)
-        std::static_pointer_cast<AAH_SPDS>(spds)->BuildGlobalSweepTDG();
-
-    // Print ghosted sweep graph if requested
-    if (not verbose_sweep_angles_.empty())
-    {
-      for (const auto& quadrature : quadrature_spds_map_)
-      {
-        for (const auto& spds : quadrature.second)
-        {
-          for (const int dir_id : verbose_sweep_angles_)
-          {
-            auto aah_spds = std::static_pointer_cast<AAH_SPDS>(spds);
-            if (aah_spds->GetId() == dir_id)
-              aah_spds->PrintGhostedGraph();
-          }
-        }
-      }
-    }
-  }
-  else if (sweep_type_ == "CBC")
-  {
-    // Build SPDS
-    for (const auto& [quadrature, info] : quadrature_unq_so_grouping_map_)
-    {
-      const auto& unique_so_groupings = info.first;
-      for (const auto& so_grouping : unique_so_groupings)
-      {
-        if (so_grouping.empty())
-          continue;
-
-        const size_t master_dir_id = so_grouping.front();
-        const auto& omega = quadrature->GetOmega(master_dir_id);
-        const auto new_swp_order =
-          std::make_shared<CBC_SPDS>(omega, this->grid_, quadrature_allow_cycles_map_[quadrature]);
-        quadrature_spds_map_[quadrature].push_back(new_swp_order);
-      }
-    }
-  }
-  else
-    OpenSnInvalidArgument("Unsupported sweep type \"" + sweep_type_ + "\"");
-
-  opensn::mpi_comm.barrier();
-
-  // Build FLUDS templates
-  quadrature_fluds_commondata_map_.clear();
-  if (sweep_type_ == "AAH" && use_gpus_)
-  {
-    CreateAAHD_FLUDSCommonData();
-  }
-  else if (sweep_type_ == "AAH")
-  {
-    for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
-    {
-      for (const auto& spds : spds_list)
-      {
-        quadrature_fluds_commondata_map_[quadrature].push_back(
-          std::make_unique<AAH_FLUDSCommonData>(
-            grid_nodal_mappings_, *spds, *grid_face_histogram_));
-      }
-    }
-  }
-  else if (sweep_type_ == "CBC" and use_gpus_)
-  {
-    CreateCBCD_FLUDSCommonData();
-  }
-  else if (sweep_type_ == "CBC")
-  {
-    for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
-    {
-      for (const auto& spds : spds_list)
-      {
-        quadrature_fluds_commondata_map_[quadrature].push_back(
-          std::make_unique<CBC_FLUDSCommonData>(*spds, grid_nodal_mappings_));
-      }
-    }
-  }
+  quadrature_unq_so_grouping_map_ = std::move(sweep_runtime.quadrature_unq_so_grouping_map);
+  quadrature_spds_map_ = std::move(sweep_runtime.quadrature_spds_map);
+  quadrature_fluds_commondata_map_ = std::move(sweep_runtime.quadrature_fluds_commondata_map);
 
   log.Log() << program_timer.GetTimeString() << " Done initializing sweep datastructures.\n";
 }
@@ -1577,13 +1345,6 @@ DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id,
 void
 DiscreteOrdinatesProblem::ResetBoundaryCarrier()
 {
-}
-
-void
-DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
-{
-  throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData : OPENSN_WITH_CUDA not enabled.");
 }
 
 void
@@ -1637,13 +1398,6 @@ DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
 {
 }
 
-void
-DiscreteOrdinatesProblem::CreateCBCD_FLUDSCommonData()
-{
-  throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateCBCD_FLUDSCommonData : OPENSN_WITH_CUDA not enabled.");
-}
-
 std::shared_ptr<FLUDS>
 DiscreteOrdinatesProblem::CreateCBCD_FLUDS(std::size_t num_groups,
                                            std::size_t num_angles,
@@ -1681,187 +1435,6 @@ DiscreteOrdinatesProblem::CreateCBCDSweepChunk(LBSGroupset& groupset)
   return {};
 }
 #endif
-
-std::pair<UniqueSOGroupings, DirIDToSOMap>
-DiscreteOrdinatesProblem::AssociateSOsAndDirections(const std::shared_ptr<MeshContinuum> grid,
-                                                    const AngularQuadrature& quadrature,
-                                                    const AngleAggregationType agg_type,
-                                                    const GeometryType lbs_geo_type)
-{
-
-  // Checks
-  if (quadrature.GetOmegas().empty())
-    throw std::logic_error(GetName() + ": Quadrature with no omegas cannot be used");
-  if (quadrature.GetWeights().empty())
-    throw std::logic_error(GetName() + ": Quadrature with no weights cannot be used");
-
-  // Build groupings
-  UniqueSOGroupings unq_so_grps;
-  switch (agg_type)
-  {
-    // SINGLE AGGREGATION
-    // The simplest aggregation type. Every direction is assumed to have a unique sweep ordering.
-    // There are as many direction sets as there are directions.
-    case AngleAggregationType::SINGLE:
-    {
-      if (lbs_geo_type == GeometryType::TWOD_CYLINDRICAL)
-      {
-        // Preserve azimuthal ordering per polar level
-        const auto* product_quad = dynamic_cast<const ProductQuadrature*>(&quadrature);
-        if (product_quad)
-        {
-          for (const auto& dir_set : product_quad->GetDirectionMap())
-            for (const auto dir_id : dir_set.second)
-              unq_so_grps.push_back({dir_id});
-        }
-        else
-        {
-          const size_t num_dirs = quadrature.GetNumAngles();
-          for (size_t n = 0; n < num_dirs; ++n)
-            unq_so_grps.push_back({n});
-        }
-      }
-      else
-      {
-        const size_t num_dirs = quadrature.GetNumAngles();
-        for (size_t n = 0; n < num_dirs; ++n)
-          unq_so_grps.push_back({n});
-      }
-      break;
-    } // case agg_type SINGLE
-
-    // POLAR AGGREGATION
-    // Aggregate all polar directions for a given azimuthal direction into a direction set.
-    case AngleAggregationType::POLAR:
-    {
-      // Check geometry types
-      if (grid->GetType() != ORTHOGONAL and grid->GetDimension() != 2 and not grid->Extruded())
-        throw std::logic_error(
-          GetName() + ": The simulation is using polar angle aggregation for which only certain "
-                      "geometry types are supported, i.e., ORTHOGONAL, 2D or 3D EXTRUDED");
-
-      // Check quadrature type
-      const auto quad_type = quadrature.GetType();
-      if (quad_type != AngularQuadratureType::PRODUCT_QUADRATURE)
-        throw std::logic_error(GetName() + ": The simulation is using polar angle aggregation for "
-                                           "which only Product-type quadratures are supported");
-
-      // Process Product Quadrature
-      try
-      {
-        const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
-
-        const auto& azimuthal_angles = product_quad.GetAzimuthalAngles();
-        const auto& polar_angles = product_quad.GetPolarAngles();
-        const auto num_azi = azimuthal_angles.size();
-        const auto num_pol = polar_angles.size();
-
-        // Make two separate list of polar angles
-        // One upward-pointing and one downward
-        std::vector<size_t> upward_polar_ids;
-        std::vector<size_t> dnward_polar_ids;
-        for (size_t p = 0; p < num_pol; ++p)
-          if (polar_angles[p] > M_PI_2)
-            upward_polar_ids.push_back(p);
-          else
-            dnward_polar_ids.push_back(p);
-
-        // Define lambda working for both upward and dnward polar-ids
-        /**Lambda to convert indices and push it onto unq_so_grps.*/
-        auto MapPolarAndAzimuthalIDs =
-          [&product_quad, &unq_so_grps](const DirIDs& polar_ids, const size_t azimuthal_id)
-        {
-          DirIDs dir_ids;
-          dir_ids.reserve(polar_ids.size());
-          for (const size_t p : polar_ids)
-            dir_ids.push_back(product_quad.GetAngleNum(p, azimuthal_id));
-          unq_so_grps.push_back(std::move(dir_ids));
-        };
-
-        // Stack id's for all azimuthal angles
-        for (size_t a = 0; a < num_azi; ++a)
-        {
-          if (not upward_polar_ids.empty())
-            MapPolarAndAzimuthalIDs(upward_polar_ids, a);
-          if (not dnward_polar_ids.empty())
-            MapPolarAndAzimuthalIDs(dnward_polar_ids, a);
-        } // for azi-id a
-
-      } // try product quadrature
-      catch (const std::bad_cast& bc)
-      {
-        throw std::runtime_error(
-          GetName() + ": Casting the angular quadrature to the product quadrature base failed");
-      }
-
-      break;
-    } // case agg_type POLAR
-
-    // AZIMUTHAL AGGREGATION
-    // All azimuthal direction in a quadrant/octant are assigned to a direction set
-    case AngleAggregationType::AZIMUTHAL:
-    {
-      // Check geometry types
-      if (lbs_geo_type != GeometryType::ONED_SPHERICAL and
-          lbs_geo_type != GeometryType::TWOD_CYLINDRICAL)
-        throw std::logic_error(
-          GetName() + ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL geometry");
-
-      // Check quadrature type
-      const auto quad_type = quadrature.GetType();
-      if (quad_type != AngularQuadratureType::PRODUCT_QUADRATURE)
-        throw std::logic_error(
-          GetName() + ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL geometry.");
-
-      // Process Product Quadrature
-      try
-      {
-        const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
-
-        for (const auto& dir_set : product_quad.GetDirectionMap())
-        {
-          std::vector<unsigned int> group1;
-          std::vector<unsigned int> group2;
-          for (const auto& dir_id : dir_set.second)
-            if (quadrature.GetAbscissa(dir_id).phi > M_PI_2)
-              group1.push_back(dir_id);
-            else
-              group2.push_back(dir_id);
-
-          DirIDs group1_ids(group1.begin(), group1.end());
-          DirIDs group2_ids(group2.begin(), group2.end());
-
-          unq_so_grps.push_back(std::move(group1_ids));
-          unq_so_grps.push_back(std::move(group2_ids));
-        }
-      } // try product quadrature
-      catch (const std::bad_cast& bc)
-      {
-        throw std::runtime_error(
-          GetName() + ": Casting the angular quadrature to the product quadrature base failed");
-      }
-
-      break;
-    }
-    default:
-      throw std::invalid_argument(GetName() + ": Called with UNDEFINED angle aggregation type");
-  } // switch angle aggregation type
-
-  // Map directions to sweep orderings
-  DirIDToSOMap dir_id_to_so_map;
-  {
-    size_t so_grouping_id = 0;
-    for (const auto& so_grouping : unq_so_grps)
-    {
-      for (const size_t dir_id : so_grouping)
-        dir_id_to_so_map[dir_id] = so_grouping_id;
-
-      ++so_grouping_id;
-    } // for so_grouping
-  } // map scope
-
-  return {unq_so_grps, dir_id_to_so_map};
-}
 
 void
 DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)

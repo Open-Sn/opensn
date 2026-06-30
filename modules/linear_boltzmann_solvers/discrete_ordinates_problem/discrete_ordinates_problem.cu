@@ -5,11 +5,9 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_carrier.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbcd_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h"
@@ -45,19 +43,6 @@ void
 DiscreteOrdinatesProblem::ResetBoundaryCarrier()
 {
   boundary_carrier_.reset();
-}
-
-void
-DiscreteOrdinatesProblem::CreateAAHD_FLUDSCommonData()
-{
-  for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
-  {
-    for (const auto& spds : spds_list)
-    {
-      quadrature_fluds_commondata_map_[quadrature].push_back(
-        std::make_unique<AAHD_FLUDSCommonData>(*spds, grid_nodal_mappings_, *discretization_));
-    }
-  }
 }
 
 void
@@ -101,19 +86,6 @@ std::shared_ptr<SweepChunk>
 DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
 {
   return std::make_shared<AAHDSweepChunk>(*this, groupset);
-}
-
-void
-DiscreteOrdinatesProblem::CreateCBCD_FLUDSCommonData()
-{
-  for (const auto& [quadrature, spds_list] : quadrature_spds_map_)
-  {
-    for (const auto& spds : spds_list)
-    {
-      quadrature_fluds_commondata_map_[quadrature].push_back(
-        std::make_unique<CBCD_FLUDSCommonData>(*spds, grid_nodal_mappings_, *discretization_));
-    }
-  }
 }
 
 std::shared_ptr<FLUDS>

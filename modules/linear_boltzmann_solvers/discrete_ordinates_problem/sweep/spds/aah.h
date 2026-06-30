@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
+#include <utility>
 
 namespace opensn
 {
@@ -51,19 +52,19 @@ public:
   }
 
   /// Returns the global sweep FAS as a vector of edges.
-  std::vector<int> GetGlobalSweepFAS() { return global_sweep_fas_; }
+  const std::vector<int>& GetGlobalSweepFAS() const { return global_sweep_fas_; }
 
   /**
    * Sets the global sweep FAS.
    * \param edges A vector of edges representing the FAS.
    */
-  void SetGlobalSweepFAS(std::vector<int>& edges) { global_sweep_fas_ = edges; }
+  void SetGlobalSweepFAS(std::vector<int> edges) { global_sweep_fas_ = std::move(edges); }
 
   /// Returns the locally accumulated location-to-location edge weights for this SPDS.
   std::vector<double> ComputeLocalLocationEdgeWeights() const;
 
   /// Sets the global location-to-location edge weights for this SPDS.
-  void SetGlobalEdgeWeights(std::vector<double>& weights)
+  void SetGlobalEdgeWeights(std::vector<double> weights)
   {
     global_edge_weights_ = std::move(weights);
   }
