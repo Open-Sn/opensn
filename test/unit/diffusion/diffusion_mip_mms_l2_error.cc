@@ -67,9 +67,10 @@ SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid)
   matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell);
   }
 
   ScalarSpatialFunction mms_phi = MMS_phi;

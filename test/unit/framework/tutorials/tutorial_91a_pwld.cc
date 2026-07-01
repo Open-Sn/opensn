@@ -203,7 +203,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
     const auto& cell = grid->GetGlobalCell(cell_global_id);
-    const auto cell_local_id = cell.local_id;
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const size_t num_faces = cell.faces.size();
@@ -243,7 +243,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
             if (face.has_neighbor)
             {
               const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
-              const int aj = cell_adj_mapping[cell.local_id][f][fj];
+              const int aj = cell_adj_mapping[cell_local_id][f][fj];
               const auto ajmap = sdm.MapDOFLocal(adj_cell, aj, psi_uk_man, d, 0);
               upwind_psi = &psi_old[ajmap];
             }

@@ -31,9 +31,10 @@ SweepChunk::ZeroDestinationPhi()
   const auto gsi = groupset_.first_group;
   const auto gss = groupset_.GetNumGroups();
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views_[cell_local_id];
     const auto num_nodes = static_cast<size_t>(transport_view.GetNumNodes());
     for (size_t i = 0; i < num_nodes; ++i)
     {
