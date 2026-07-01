@@ -13,7 +13,7 @@ jobs:
         shell: bash -el {0}
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: clang-format style check
         run: |
@@ -35,14 +35,14 @@ jobs:
         shell: bash -el {0}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: kt3k/license_checker@v1.0.6
 
   check-flake8:
     name: Python linting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
