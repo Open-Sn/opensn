@@ -201,8 +201,9 @@ UncollidedProblem::InitializeSpatialDiscretization()
 
   // Per-cell bounding-box diagonals, which scale geometric tolerances.
   cell_sizes_.resize(grid_->GetLocalCellCount());
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto& v0 = grid_->GlobalVertex(cell.vertex_ids.front());
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
@@ -217,7 +218,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
       zmin = std::min(zmin, v.z);
       zmax = std::max(zmax, v.z);
     }
-    cell_sizes_[cell.local_id] =
+    cell_sizes_[cell_local_id] =
       std::max((Vector3(xmax, ymax, zmax) - Vector3(xmin, ymin, zmin)).Norm(), 1.0);
   }
 
@@ -413,11 +414,15 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
 
   const size_t num_local_cells = grid_->GetLocalCellCount();
   cell_face_orientations_.assign(num_local_cells, {});
-  for (const auto& cell : grid_->GetLocalCells())
-    cell_face_orientations_[cell.local_id].assign(cell.faces.size(), FOPARALLEL);
-
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    cell_face_orientations_[cell_local_id].assign(cell.faces.size(), FOPARALLEL);
+  }
+
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     size_t f = 0;
     for (auto& face : cell.faces)
     {
@@ -437,13 +442,14 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
         else if (mu < -tolerance)
           orientation = FOINCOMING;
 
-        cell_face_orientations_[cell.local_id][f] = orientation;
+        cell_face_orientations_[cell_local_id][f] = orientation;
 
         if (face.has_neighbor)
         {
           const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
+          const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
           const auto adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_.get());
-          auto& adj_face_ori = cell_face_orientations_[adj_cell.local_id][adj_face_idx];
+          auto& adj_face_ori = cell_face_orientations_[adj_cell_local_id][adj_face_idx];
 
           switch (orientation)
           {
@@ -465,12 +471,13 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
   }
 
   Graph local_cell_graph(num_local_cells);
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     for (size_t f = 0; f < cell.faces.size(); ++f)
-      if (cell_face_orientations_[cell.local_id][f] == FOOUTGOING and cell.faces[f].has_neighbor)
+      if (cell_face_orientations_[cell_local_id][f] == FOOUTGOING and cell.faces[f].has_neighbor)
         boost::add_edge(
-          cell.local_id, cell.faces[f].GetNeighborLocalID(grid_.get()), 0.0, local_cell_graph);
+          cell_local_id, cell.faces[f].GetNeighborLocalID(grid_.get()), 0.0, local_cell_graph);
   }
 
   std::vector<size_t> sweep_order;
@@ -604,10 +611,11 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
   nodes_x.reserve(num_loc_nodes);
   nodes_y.reserve(num_loc_nodes);
   nodes_z.reserve(num_loc_nodes);
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    global_ids[cell.local_id] = cell.global_id;
-    cell_node_counts[cell.local_id] = sdm.GetCellNumNodes(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    global_ids[cell_local_id] = cell.global_id;
+    cell_node_counts[cell_local_id] = sdm.GetCellNumNodes(cell);
     for (const auto vertex_id : cell.vertex_ids)
     {
       const auto& vertex = grid_->GlobalVertex(vertex_id);
@@ -616,9 +624,9 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
       nodes_z.push_back(vertex.z);
     }
 
-    const auto& sigma_t = cell_transport_views_[cell.local_id].GetXS().GetSigmaTotal();
+    const auto& sigma_t = cell_transport_views_[cell_local_id].GetXS().GetSigmaTotal();
     for (size_t g = 0; g < num_groups_; ++g)
-      cell_sigma_t[static_cast<size_t>(cell.local_id) * num_groups_ + g] = sigma_t[g];
+      cell_sigma_t[static_cast<size_t>(cell_local_id) * num_groups_ + g] = sigma_t[g];
   }
   OpenSnLogicalErrorIf(not H5WriteDataset1D<uint64_t>(file, "cell ids", global_ids),
                        GetName() + ": failed to write cell ids.");
@@ -877,9 +885,9 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
         const auto& cell_mapping = sdm.GetCellMapping(cell);
         const size_t cell_num_nodes = cell_mapping.GetNumNodes();
         const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-        const auto& unit_matrices = unit_cell_matrices_[cell.local_id];
+        const auto& unit_matrices = unit_cell_matrices_[cell_index];
         const auto& intV_shapeI = unit_matrices.intV_shapeI;
-        const auto& sigma_t = cell_transport_views_[cell.local_id].GetXS().GetSigmaTotal();
+        const auto& sigma_t = cell_transport_views_[cell_index].GetXS().GetSigmaTotal();
         std::vector<Vector<double>> cell_phi(num_groups_, Vector<double>(cell_num_nodes, 0.0));
         std::vector<std::vector<Vector<double>>> moment_rhs(
           num_moments,
@@ -1410,7 +1418,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       const auto& xs = transport_view.GetXS();
       const auto& sigma_t = xs.GetSigmaTotal();
 
-      const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
+      const auto& fe_intgrl_values = unit_cell_matrices_[c];
       const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
 
       // Enforce conservation
@@ -2201,9 +2209,10 @@ UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
   for (size_t g = 0; g < num_groups_; ++g)
     production_ += strength[g];
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const uint64_t c = cell.local_id;
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const uint64_t c = cell_local_id;
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto& sigma_t = cell_transport_views_[c].GetXS().GetSigmaTotal();
@@ -2258,8 +2267,9 @@ UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
   const auto& sdm = *discretization_;
   const auto swf = SpatialWeightFunction::FromCoordinateType(grid_->GetCoordinateSystem());
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
@@ -2302,7 +2312,7 @@ UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
     for (size_t moment_index = 0; moment_index < moments_.size(); ++moment_index)
       for (size_t g = 0; g < num_groups_; ++g)
       {
-        auto mass_matrix = unit_cell_matrices_[cell.local_id].intV_shapeI_shapeJ;
+        auto mass_matrix = unit_cell_matrices_[cell_local_id].intV_shapeI_shapeJ;
         GaussElimination(
           mass_matrix, moment_rhs[moment_index][g], static_cast<int>(cell_num_nodes));
         for (size_t i = 0; i < cell_num_nodes; ++i)

@@ -42,10 +42,11 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
 
   std::size_t num_local_faces = 0;
   std::size_t num_incoming_faces = 0;
-  for (const auto& cell : grid.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
-    assert(cell.local_id < face_offsets_.size());
-    face_offsets_[cell.local_id] = num_local_faces;
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    assert(cell_local_id < face_offsets_.size());
+    face_offsets_[cell_local_id] = num_local_faces;
     num_local_faces += cell.faces.size();
 
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
@@ -54,7 +55,7 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
         continue;
 
-      const auto orientation = face_orientations[cell.local_id][f];
+      const auto orientation = face_orientations[cell_local_id][f];
       if (orientation == FaceOrientation::INCOMING)
         ++num_incoming_faces;
       else if (orientation == FaceOrientation::OUTGOING)
@@ -67,13 +68,14 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
   outgoing_face_slots_.assign(num_local_faces, INVALID_FACE_SLOT);
   outgoing_peer_indices_.assign(num_local_faces, INVALID_PEER_INDEX);
 
-  for (const auto& cell : grid.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
-    const auto face_offset = face_offsets_[cell.local_id];
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto face_offset = face_offsets_[cell_local_id];
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {
       const auto& face = cell.faces[f];
-      const auto orientation = face_orientations[cell.local_id][f];
+      const auto orientation = face_orientations[cell_local_id][f];
 
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
         continue;
@@ -82,7 +84,7 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
       {
         const auto slot = num_incoming_faces_;
         incoming_face_slots_[face_offset + f] = slot;
-        incoming_face_cells_.push_back(cell.local_id);
+        incoming_face_cells_.push_back(cell_local_id);
         auto& records =
           incoming_slot_records_by_upstream_location_[face.GetNeighborPartitionID(&grid)];
         records.push_back(cell.global_id);
@@ -132,20 +134,21 @@ CBC_FLUDSCommonData::FinalizeBeta()
     }
   }
 
-  for (const auto& cell : grid.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
-    const auto face_offset = face_offsets_[cell.local_id];
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto face_offset = face_offsets_[cell_local_id];
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {
       const auto& face = cell.faces[f];
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
         continue;
 
-      if (face_orientations[cell.local_id][f] != FaceOrientation::OUTGOING)
+      if (face_orientations[cell_local_id][f] != FaceOrientation::OUTGOING)
         continue;
 
       const auto& face_nodal_mapping =
-        GetFaceNodalMapping(cell.local_id, static_cast<unsigned int>(f));
+        GetFaceNodalMapping(cell_local_id, static_cast<unsigned int>(f));
       assert(face_nodal_mapping.associated_face_ >= 0);
 
       const CellFaceKey key{face.neighbor_id,

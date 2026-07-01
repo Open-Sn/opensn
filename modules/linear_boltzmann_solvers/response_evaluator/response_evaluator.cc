@@ -409,11 +409,13 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
   // Material sources
   if (not material_sources_.empty())
   {
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto& cell_mapping = discretization.GetCellMapping(cell);
-      const auto& transport_view = transport_views[cell.local_id];
-      const auto& fe_values = unit_cell_matrices[cell.local_id];
+      const auto& transport_view = transport_views[cell_local_id];
+      const auto& fe_values = unit_cell_matrices[cell_local_id];
       const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
       if (material_sources_.count(cell.block_id) > 0)
@@ -444,10 +446,12 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       // inner products of forward and adjoint angular fluxes carry a factor W.
       const double weight_sum = quadrature->GetWeightSum();
 
-      for (const auto& cell : grid->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
+        const auto& cell = grid->GetLocalCell(cell_local_id);
         const auto& cell_mapping = discretization.GetCellMapping(cell);
-        const auto& fe_values = unit_cell_matrices[cell.local_id];
+        const auto& fe_values = unit_cell_matrices[cell_local_id];
 
         size_t f = 0;
         for (const auto& face : cell.faces)
@@ -494,8 +498,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       continue;
     for (const auto& subscriber : point_source->GetSubscribers())
     {
-      const auto& cell = grid->GetLocalCell(subscriber.cell_local_id);
-      const auto& transport_view = transport_views[cell.local_id];
+      const auto& transport_view = transport_views[subscriber.cell_local_id];
 
       const auto src = point_source->GetStrength(time, num_groups);
       const auto& vol_wt = subscriber.volume_weight;
@@ -520,8 +523,8 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
     for (const std::uint32_t local_id : volumetric_source->GetSubscribers())
     {
       const auto& cell = grid->GetLocalCell(local_id);
-      const auto& transport_view = transport_views[cell.local_id];
-      const auto& mass = unit_cell_matrices[cell.local_id].intV_shapeI_shapeJ;
+      const auto& transport_view = transport_views[local_id];
+      const auto& mass = unit_cell_matrices[local_id].intV_shapeI_shapeJ;
       const auto& nodes = discretization.GetCellNodeLocations(cell);
 
       const auto num_cell_nodes = transport_view.GetNumNodes();

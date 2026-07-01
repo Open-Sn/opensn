@@ -36,9 +36,12 @@ FieldFunctionInterpolationVolume::RebuildVolumeCellList()
 
   // Find cells inside volume
   cell_local_ids_inside_logvol_.clear();
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     if (logical_volume_->Inside(cell.centroid))
-      cell_local_ids_inside_logvol_.push_back(cell.local_id);
+      cell_local_ids_inside_logvol_.push_back(cell_local_id);
+  }
 }
 
 void

@@ -87,12 +87,12 @@ public:
     const auto num_bins = num_bins_[0] * num_bins_[1] * num_bins_[2];
     std::vector<std::size_t> cell_bin(num_cells);
     offsets_.assign(num_bins + 1, 0);
-    for (const auto& cell : cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < num_cells; ++cell_local_id)
     {
-      const auto& c = cell.centroid;
-      cell_bin[cell.local_id] =
+      const auto& c = cells[cell_local_id].centroid;
+      cell_bin[cell_local_id] =
         (BinIndex(0, c.x) * num_bins_[1] + BinIndex(1, c.y)) * num_bins_[2] + BinIndex(2, c.z);
-      ++offsets_[cell_bin[cell.local_id] + 1];
+      ++offsets_[cell_bin[cell_local_id] + 1];
     }
     for (std::size_t b = 0; b < num_bins; ++b)
       offsets_[b + 1] += offsets_[b];
@@ -170,8 +170,8 @@ GetLogicalVolumeCellIDs(const Mesh& grid,
   }
   else
   {
-    for (const auto& cell : grid.GetLocalCells())
-      add_if_selected(cell.local_id);
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
+      add_if_selected(cell_local_id);
   }
   return cell_ids;
 }
@@ -279,15 +279,21 @@ VolumePostprocessor::CreateSpatialRestriction()
     std::vector<std::uint32_t> cell_ids;
     if (block_ids_.empty())
     {
-      for (const auto& cell : grid->GetLocalCells())
-        cell_ids.push_back(cell.local_id);
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
+      {
+        const auto& cell = grid->GetLocalCell(cell_local_id);
+        cell_ids.push_back(cell_local_id);
+      }
     }
     else
     {
-      for (const auto& cell : grid->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
+        const auto& cell = grid->GetLocalCell(cell_local_id);
         if (std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
-          cell_ids.push_back(cell.local_id);
+          cell_ids.push_back(cell_local_id);
       }
     }
     cell_local_ids_[0] = cell_ids;

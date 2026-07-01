@@ -63,8 +63,9 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
 
   // For each local cell create a task
   task_list_.reserve(grid_->GetLocalCellCount());
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto num_faces = cell.faces.size();
     unsigned int num_dependencies = 0;
     std::vector<std::uint32_t> successors;
@@ -73,7 +74,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
     for (std::size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces[f];
-      const auto& orientation = cell_face_orientations_[cell.local_id][f];
+      const auto& orientation = cell_face_orientations_[cell_local_id][f];
 
       if (orientation == INCOMING)
       {
@@ -83,11 +84,11 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
       else if (orientation == OUTGOING)
       {
         if (face.has_neighbor and grid->IsCellLocal(face.neighbor_id))
-          successors.push_back(grid->GetGlobalCell(face.neighbor_id).local_id);
+          successors.push_back(grid->MapCellGlobalID2LocalID(face.neighbor_id));
       }
     }
 
-    task_list_.push_back({num_dependencies, successors, cell.local_id, &cell, false});
+    task_list_.push_back({num_dependencies, successors, cell_local_id, &cell, false});
   }
 }
 

@@ -196,13 +196,13 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
     }
     return data;
   };
-
-  for (const auto& cell : grid->GetLocalCells())
-  {
+for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+{
+  const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = discretization.GetCellMapping(cell);
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    const auto& outflow_view = cell_outflow_views[cell.local_id];
-    const auto& fe_intgrl_values = unit_cell_matrices[cell.local_id];
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    const auto& outflow_view = cell_outflow_views[cell_local_id];
+    const auto& fe_intgrl_values = unit_cell_matrices[cell_local_id];
     const size_t num_nodes = transport_view.GetNumNodes();
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
     const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
@@ -254,7 +254,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
                   {
                     const auto g = groupset.first_group + gsg;
                     const double psi =
-                      *bndry->PsiIncoming(cell.local_id, f, fi, n, groupset.id, gsg);
+                      *bndry->PsiIncoming(cell_local_id, f, fi, n, groupset.id, gsg);
                     local_in_flow -= mu * wt * psi * IntFi_shapeI;
                     if (compute_csda_energy_balance)
                       local_csda_energy_in_flow -= energy.centers[g] * mu * wt * psi * IntFi_shapeI;
@@ -328,7 +328,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
 
         if (cell_volume > 0.0)
         {
-          const size_t cell_g_offset = cell.local_id * static_cast<size_t>(num_groups);
+          const size_t cell_g_offset = cell_local_id * static_cast<size_t>(num_groups);
           for (const auto& [g_begin, g_end] : csda_data->charged_ranges)
           {
             for (unsigned int g = g_begin; g < g_end; ++g)
@@ -643,10 +643,11 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
   const auto gsi = groupset.first_group;
 
   std::vector<double> local_leakage(num_gs_groups, 0.0);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    const auto& outflow_view = cell_outflow_views[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    const auto& outflow_view = cell_outflow_views[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
 
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
@@ -710,10 +711,12 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
   {
     const auto& quad = groupset.quadrature;
 
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& transport_view = cell_transport_views[cell.local_id];
-      const auto& outflow_view = cell_outflow_views[cell.local_id];
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& transport_view = cell_transport_views[cell_local_id];
+      const auto& outflow_view = cell_outflow_views[cell_local_id];
       const auto& cell_mapping = sdm.GetCellMapping(cell);
 
       for (unsigned int f = 0; f < cell.faces.size(); ++f)

@@ -148,9 +148,12 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnOrthogonalCells)
     DiffusionMIPSolver solver(
       "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
     solver.options.h_perp_convention = "face_side";
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(solver.HPerpendicular(cell, f), grid->GetCellVolume(cell.local_id) / cell.faces[f].area, 1.0e-12);
+        EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), grid->GetCellVolume(cell_local_id) / cell.faces[f].area, 1.0e-12);
+    }
     EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   }
 }
@@ -209,16 +212,19 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
     DiffusionMIPSolver solver(
       "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
     solver.options.h_perp_convention = "face_side";
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
       {
         const double h_face = FaceOrthogonalLength(*grid, cell, f);
-        EXPECT_NEAR(solver.HPerpendicular(cell, f), h_face, 1.0e-10 * h_face);
+        EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), h_face, 1.0e-10 * h_face);
         if (cell.faces.size() == 4)
         {
           EXPECT_NEAR(FaceSideLength(*grid, cell, f), 0.5 * h_face, 1.0e-10 * h_face);
         }
       }
+    }
   }
 }
 

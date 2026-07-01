@@ -90,7 +90,7 @@ public:
    * Nv = Number of vertices. If Nv <= 4 then the perimeter parameter
    * should be replaced by edge length.
    */
-  double HPerpendicular(const Cell& cell, unsigned int f);
+  double HPerpendicular(std::uint32_t cell_local_id, unsigned int f);
 
   /// Factor on the interior and boundary penalties of polygons: 2 for "face_side", 1 for "cell"
   /// (OpenSn's original polygon penalty).
