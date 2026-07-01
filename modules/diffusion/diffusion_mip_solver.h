@@ -74,7 +74,7 @@ public:
    * Nv = Number of vertices. If Nv <= 4 then the perimeter parameter
    * should be replaced by edge length.
    */
-  double HPerpendicular(const Cell& cell, unsigned int f);
+  double HPerpendicular(std::uint32_t cell_local_id, unsigned int f);
 
   /// Maps a face, in a discontinuous sense, using the spatial discretization.
   int MapFaceNodeDisc(const Cell& cur_cell,

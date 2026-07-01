@@ -458,10 +458,12 @@ TransientSolver::StepPrecursors()
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto max_precursors = do_problem_->GetMaxPrecursorsPerMaterial();
 
+  const auto& grid = do_problem_->GetGrid();
   const auto& transport_views = do_problem_->GetCellTransportViews();
-  for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = transport_views[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = transport_views[cell_local_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
     const auto& precursors = xs->GetPrecursors();
     if (precursors.empty())

@@ -25,10 +25,11 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 
   // Loop over local cells
   double local_production = 0.0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell_local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -83,10 +84,11 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
 
   // Loop over local cells
   double local_fission_rate = 0.0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell_local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -131,9 +133,10 @@ ComputePrecursors(LBSProblem& lbs_problem)
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
     const auto& xs = transport_view.GetXS();
     const auto& precursors = xs.GetPrecursors();
     if (precursors.empty())

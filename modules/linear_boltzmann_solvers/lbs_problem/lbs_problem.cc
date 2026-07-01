@@ -309,8 +309,10 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
     std::vector<double> remapped_precursors_old(num_precursor_dofs, 0.0);
     if (old_precursor_new_state.size() == local_node_count_ * old_max_precursors_per_material)
     {
-      for (const auto& cell : grid_->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+           ++cell_local_id)
       {
+        const auto& cell = grid_->GetLocalCell(cell_local_id);
         unsigned int old_num_precursors = 0;
         if (const auto old_xs_it = old_xs_map.find(cell.block_id); old_xs_it != old_xs_map.end())
         {
@@ -1063,10 +1065,12 @@ LBSProblem::InitializeMaterials()
 
   // Update transport views if available
   if (grid_->GetLocalCellCount() == cell_transport_views_.size())
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
       const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
-      auto& transport_view = cell_transport_views_[cell.local_id];
+      auto& transport_view = cell_transport_views_[cell_local_id];
       transport_view.ReassignXS(*xs_ptr);
     }
 
@@ -1097,9 +1101,10 @@ LBSProblem::ComputeUnitIntegrals()
   const size_t num_local_cells = grid_->GetLocalCellCount();
   unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    unit_cell_matrices_[cell.local_id] =
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    unit_cell_matrices_[cell_local_id] =
       ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
   }
 
@@ -1168,13 +1173,14 @@ LBSProblem::InitializeParrays()
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
   cell_transport_views_.reserve(grid_->GetLocalCellCount());
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
 
     // compute cell volumes
     double cell_volume = 0.0;
-    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
+    const auto& IntV_shapeI = unit_cell_matrices_[cell_local_id].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
       cell_volume += IntV_shapeI(i);
 

@@ -584,11 +584,12 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
   const double measure_scale = IntegralMeasureScale(grid->GetCoordinateSystem());
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = discretization.GetCellMapping(cell);
     const auto& node_locations = cell_mapping.GetNodeLocations();
-    const auto& fe_values = unit_cell_matrices.at(cell.local_id);
+    const auto& fe_values = unit_cell_matrices.at(cell_local_id);
 
     for (size_t f = 0; f < cell.faces.size(); ++f)
     {
@@ -630,7 +631,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
         continue;
 
       const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-      SurfaceFaceInfo surface_face{cell.local_id, surface_name, face.normal, {}, {}, {}};
+      SurfaceFaceInfo surface_face{cell_local_id, surface_name, face.normal, {}, {}, {}};
       surface_face.node_indices.reserve(num_face_nodes);
       surface_face.fe_shape.reserve(num_face_nodes);
       surface_face.mass_matrix.reserve(num_face_nodes * num_face_nodes);

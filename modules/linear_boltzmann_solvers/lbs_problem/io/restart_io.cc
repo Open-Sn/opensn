@@ -86,13 +86,14 @@ ReadPrecursorVector(hid_t file_id,
   const size_t copy_stride = std::min(old_stride, new_stride);
 
   std::vector<double> remapped(expected_size, 0.0);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = discretization.GetCellMapping(cell);
     for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
       const auto node_id = discretization.MapDOFLocal(cell, i);
-      const size_t old_base = (node_layout ? node_id : cell.local_id) * old_stride;
+      const size_t old_base = (node_layout ? node_id : cell_local_id) * old_stride;
       const size_t new_base = node_id * new_stride;
       for (size_t j = 0; j < copy_stride; ++j)
         remapped[new_base + j] = values[old_base + j];
