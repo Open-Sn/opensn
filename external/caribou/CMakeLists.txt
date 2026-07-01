@@ -12,6 +12,9 @@ elseif(OPENSN_WITH_SYCL)
     ${CMAKE_CURRENT_SOURCE_DIR}/caribou/sycl/*.cpp
   )
   add_library(libcaribou SHARED ${LIBCARIBOU_SRCS})
+  if(SYCL_COMPILER STREQUAL "acpp")
+    add_sycl_to_target(TARGET libcaribou SOURCES ${LIBCARIBOU_SRCS})
+  endif()
   set_target_properties(libcaribou PROPERTIES
     OUTPUT_NAME crb
   )

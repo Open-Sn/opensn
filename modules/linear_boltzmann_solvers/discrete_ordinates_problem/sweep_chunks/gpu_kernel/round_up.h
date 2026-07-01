@@ -14,7 +14,7 @@ namespace opensn::gpu_kernel
 constexpr unsigned int threshold = 128;
 #elif defined(__HIPCC__)
 constexpr unsigned int threshold = 64;
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+#elif defined(SYCL_LANGUAGE_VERSION) || defined(__ACPP__)
 constexpr unsigned int threshold = 32;
 #endif
 

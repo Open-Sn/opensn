@@ -95,7 +95,7 @@ class Stream : public impl::Stream {
 #if defined(__NVCC__) || defined(__HIPCC__)
     /** @brief Member constructor.*/
     inline Stream(impl::StreamNativeHandle handle) : impl::Stream(nullptr), is_default_(true) {}
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+#elif defined(SYCL_LANGUAGE_VERSION) || defined(__ACPP__)
     /** @brief Member constructor.*/
     inline Stream(const impl::StreamNativeHandle & handle) : impl::Stream(handle), is_default_(true) {}
 #endif

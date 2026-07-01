@@ -53,13 +53,16 @@ __CRB_GLOBAL_FUNC__ void
 SweepKernel(Arguments<t> args,
             const std::uint32_t* cells_to_sweep,
             unsigned int num_cells,
+#if defined(SYCL_LANGUAGE_VERSION) || defined(__ACPP__)
+            ::sycl::nd_item<3> work_index,
+#endif
             double* saved_psi)
 {
 #if defined(__NVCC__) || defined(__HIPCC__)
   unsigned int cell_idx = threadIdx.y + blockDim.y * blockIdx.y;
   unsigned int angle_group_idx = threadIdx.x + blockDim.x * blockIdx.x;
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-  auto work_index = ::sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+#elif defined(SYCL_LANGUAGE_VERSION) || defined(__ACPP__)
+  // auto work_index = ::sycl::ext::oneapi::this_work_item::get_nd_item<3>();
   unsigned int cell_idx = work_index.get_global_id(1);
   unsigned int angle_group_idx = work_index.get_global_id(2);
 #endif

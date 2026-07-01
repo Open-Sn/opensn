@@ -69,7 +69,7 @@ OpenSn-specific variants:
 - `+native` / `~native`: use OpenSn's `Native` CMake build type. Default:
   `~native`.
 - `+cuda`, `+hip`, `+sycl`: enable one GPU backend. Default: all disabled.
-- `sycl_arch=<value>`: SYCL target architecture. Default: `spir64_gen`.
+- `sycl_arch=<value>`: SYCL target architecture. Default: `spir64_gen` (see [ICPX](https://github.com/intel/llvm/blob/sycl/sycl/doc/UsersManual.md) or [ACPP](https://github.com/AdaptiveCpp/AdaptiveCpp/blob/develop/doc/using-acpp.md)).
 - `sycl_target_backend=<value>`: optional SYCL target backend value.
 - `sycl_register_alloc_mode=<value>`: optional SYCL register allocation mode.
 

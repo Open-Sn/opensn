@@ -67,13 +67,14 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
 #if defined(__NVCC__) || defined(__HIPCC__)
     gpu_kernel::SweepKernel<gpu_kernel::SweepType::AAH><<<grid_size, block_size, 0, stream>>>(
       args, level_data, static_cast<unsigned int>(level_size), saved_psi);
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-    stream.parallel_for(sycl::nd_range<3>(grid_size * block_size, block_size),
-                        [=](sycl::nd_item<3> work_index)
-                        {
-                          gpu_kernel::SweepKernel<gpu_kernel::SweepType::AAH>(
-                            args, level_data, static_cast<unsigned int>(level_size), saved_psi);
-                        });
+#elif defined(SYCL_LANGUAGE_VERSION) || defined(__ACPP__)
+    stream.parallel_for(
+      sycl::nd_range<3>(grid_size * block_size, block_size),
+      [=](sycl::nd_item<3> work_index)
+      {
+        gpu_kernel::SweepKernel<gpu_kernel::SweepType::AAH>(
+          args, level_data, static_cast<unsigned int>(level_size), work_index, saved_psi);
+      });
 #endif
   }
 }

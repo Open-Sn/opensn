@@ -5,8 +5,9 @@
  */
 #pragma once
 
-#include <stdexcept>  // std::runtime_error
-#include <utility>    // std::forward, std::move
+#include <functional>  // std::invoke
+#include <stdexcept>   // std::runtime_error
+#include <utility>     // std::forward, std::move
 
 #include "caribou/backend.hpp"
 
@@ -45,12 +46,22 @@ inline void destroy_stream(StreamNativeHandle stream_handle) {}
 
 template <typename Function, typename... Args>
 void add_callback(Stream & stream, Function && callback, Args &&... args) {
+#if defined(__ACPP__)
+    stream.submit(
+        [callback = std::forward<Function>(callback), ... args = std::forward<Args>(args)](sycl::handler & h) mutable {
+            h.AdaptiveCpp_enqueue_custom_operation(
+                [callback = std::move(callback), ... args = std::move(args)](sycl::interop_handle & interop) mutable {
+                    std::invoke(std::move(callback), std::move(args)...);
+                });
+        });
+#else
     stream.submit(
         [callback = std::forward<Function>(callback), ... args = std::forward<Args>(args)](sycl::handler & h) mutable {
             h.host_task([callback = std::move(callback), ... args = std::move(args)]() mutable {
                 std::invoke(std::move(callback), std::move(args)...);
             });
         });
+#endif
 }
 
 // Stream synchronization
@@ -58,15 +69,14 @@ void add_callback(Stream & stream, Function && callback, Args &&... args) {
 
 inline void synchronize(Stream & stream) { stream.wait_and_throw(); }
 
-#if !defined(SYCL_EXT_ONEAPI_QUEUE_EMPTY) || !defined(SYCL_KHR_QUEUE_EMPTY_QUERY)
-    #error No extension for querying queue completeness
-#endif
-
 inline bool query(Stream & stream) {
 #if defined(SYCL_EXT_ONEAPI_QUEUE_EMPTY)
     return stream.ext_oneapi_empty();
 #elif defined(SYCL_KHR_QUEUE_EMPTY_QUERY)
     return stream.khr_empty();
+#else
+    stream.wait_and_throw();
+    return true;
 #endif
 }
 
