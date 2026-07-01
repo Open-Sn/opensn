@@ -10,5 +10,6 @@
 {{gpu_options}}
 {% endif %}
 cd {{outdir}}
+export OPENSN_NUM_THREADS={{n_cores}}
 flux run -n {{n_nodes * n_tasks}} -c {{n_cores}} {{opensn_binary}} -i {{input_script}}
 

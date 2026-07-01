@@ -19,6 +19,9 @@ gmsh_binary = "gmsh"
 opensn_binary = base_dir.parents[1] / "build/python/opensn"
 """Path to the OpenSn binary. Default is '../../../build/python/opensn'."""
 
+suffix = ""
+"""Suffix appended to the output folder to distincguish between different binary versions."""
+
 strong_divisor = 39
 """Divisor for Gmsh to control mesh resolution for strong scaling study (default: 39)."""
 
@@ -32,7 +35,7 @@ weak_divisors = [15, 19, 24, 31, 39, 49, 62, 78, 98, 124]
 nodes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 """List of node counts to generate job files for."""
 
-ncores = 64
+ncores = 0
 """
 Number of CPU cores available per node.
 
@@ -63,6 +66,9 @@ extra_data = {
     "name": "dane",
     "description": "LLNL Dane (64 rpn)"
 }
+"""
+Extra data describing the run in history file.
+"""
 
 if __name__ == "__main__":
 
@@ -90,6 +96,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    if ncores == 0:
+        raise ValueError("Please specify the number of CPU cores per node.")
     if args.processor == "gpu" and ngpus == 0:
         raise ValueError("Please specify the number of GPUs per node.")
 
@@ -100,6 +108,7 @@ if __name__ == "__main__":
 
     inputs = {
         "opensn_binary": opensn_binary,
+        "suffix": suffix,
         "gmsh_binary": gmsh_binary,
         "geo_filename": geo_filename,
         "ncores": ncores,
