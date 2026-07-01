@@ -627,10 +627,12 @@ DiscreteOrdinatesProblem::InitializeFCS()
   for (size_t m = 0; m < num_moments_; ++m)
   {
     const auto ell = moment_to_harmonics[m].ell;
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
       const auto num_nodes = discretization_->GetCellNumNodes(cell);
-      const auto& transport_view = cell_transport_views_[cell.local_id];
+      const auto& transport_view = cell_transport_views_[cell_local_id];
       const auto& xs = transport_view.GetXS();
       const auto& transfer_matrices = xs.GetTransferMatrices();
       for (size_t i = 0; i < num_nodes; ++i)
@@ -1260,9 +1262,11 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
     const auto gsg_i = groupset.first_group;
     const auto gsg_f = groupset.last_group;
 
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& transport_view = cell_transport_views_[cell.local_id];
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto& transport_view = cell_transport_views_[cell_local_id];
       for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         // Reorient flux moments
@@ -1308,10 +1312,13 @@ void
 DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 {
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     for (int f = 0; f < cell.faces.size(); ++f)
       for (auto group = groupset.first_group; group <= groupset.last_group; ++group)
-        cell_outflow_views_[cell.local_id].Zero(f, group);
+        cell_outflow_views_[cell_local_id].Zero(f, group);
+  }
 }
 
 void

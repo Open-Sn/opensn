@@ -277,7 +277,7 @@ public:
   /**
    * Get cell volume
    *
-   * \param id Local cell ID
+   * \param id Local cell ID (local or ghost)
    * \return Cell volume
    */
   double GetCellVolume(uint64_t id) const;

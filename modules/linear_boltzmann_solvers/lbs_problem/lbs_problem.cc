@@ -306,8 +306,10 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
     std::vector<double> remapped_precursors(num_precursor_dofs, 0.0);
     if (old_precursor_state.size() == num_cells * old_max_precursors_per_material)
     {
-      for (const auto& cell : grid_->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+           ++cell_local_id)
       {
+        const auto& cell = grid_->GetLocalCell(cell_local_id);
         unsigned int old_num_precursors = 0;
         if (const auto old_xs_it = old_xs_map.find(cell.block_id); old_xs_it != old_xs_map.end())
           old_num_precursors = old_xs_it->second->GetNumPrecursors();
@@ -317,8 +319,8 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
         const unsigned int num_precursors_to_copy =
           std::min(old_num_precursors, new_num_precursors);
 
-        const size_t old_base = cell.local_id * old_max_precursors_per_material;
-        const size_t new_base = cell.local_id * new_max_precursors_per_material;
+        const size_t old_base = cell_local_id * old_max_precursors_per_material;
+        const size_t new_base = cell_local_id * new_max_precursors_per_material;
         for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
           remapped_precursors[new_base + j] = old_precursor_state[old_base + j];
       }
@@ -1002,10 +1004,12 @@ LBSProblem::InitializeMaterials()
 
   // Update transport views if available
   if (grid_->GetLocalCellCount() == cell_transport_views_.size())
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
       const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
-      auto& transport_view = cell_transport_views_[cell.local_id];
+      auto& transport_view = cell_transport_views_[cell_local_id];
       transport_view.ReassignXS(*xs_ptr);
     }
 
@@ -1036,9 +1040,10 @@ LBSProblem::ComputeUnitIntegrals()
   const size_t num_local_cells = grid_->GetLocalCellCount();
   unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    unit_cell_matrices_[cell.local_id] =
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    unit_cell_matrices_[cell_local_id] =
       ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
   }
 
@@ -1105,13 +1110,14 @@ LBSProblem::InitializeParrays()
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
   cell_transport_views_.reserve(grid_->GetLocalCellCount());
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     size_t num_nodes = discretization_->GetCellNumNodes(cell);
 
     // compute cell volumes
     double cell_volume = 0.0;
-    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
+    const auto& IntV_shapeI = unit_cell_matrices_[cell_local_id].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
       cell_volume += IntV_shapeI(i);
 

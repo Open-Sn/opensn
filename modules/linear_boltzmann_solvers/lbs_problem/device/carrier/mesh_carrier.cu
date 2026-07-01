@@ -30,8 +30,9 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
   alloc_size += mesh.GetLocalCellCount() * sizeof(std::uint64_t);
   saved_psi_offset.reserve(mesh.GetLocalCellCount());
   // compute size for each cell in the mesh
-  for (const auto& cell : mesh.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < mesh.GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = mesh.GetLocalCell(cell_local_id);
     // number of faces and nodes
     alloc_size += 2 * sizeof(std::uint32_t);
     // pointer to total cross sections
@@ -41,7 +42,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
     // offset for saved angular flux
     alloc_size += sizeof(std::uint64_t);
     // G and M matrix
-    const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell.local_id];
+    const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell_local_id];
     const DenseMatrix<double>& M = unit_matrices.intV_shapeI_shapeJ;
     alloc_size += M.size() * (4 * sizeof(double));
     // offset to the data of each face
@@ -100,7 +101,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       throw std::runtime_error(
         std::format("GPU acceleration error: Cell local ID {} has {} DOFs which exceeds the "
                     "maximum supported DOFs per cell on GPU: {}.",
-                    cell.local_id,
+                    cell_local_id,
                     cell_num_nodes,
                     LBSProblem::max_dofs_gpu));
     }
@@ -117,7 +118,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     cell_data = reinterpret_cast<char*>(total_xs_data);
     // phi address
     std::uint64_t* phi_address_data = reinterpret_cast<std::uint64_t*>(cell_data);
-    const CellLBSView& cell_transport_view = cell_transport_views[cell.local_id];
+    const CellLBSView& cell_transport_view = cell_transport_views[cell_local_id];
     auto phi_address = cell_transport_view.MapDOF(0, 0, 0);
     *(phi_address_data++) = phi_address;
     cell_data = reinterpret_cast<char*>(phi_address_data);
@@ -128,7 +129,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     saved_psi_index += cell_num_nodes;
     cell_data = reinterpret_cast<char*>(saved_psi_index_data);
     // GM matrices (G and M matrices are combined into one single Matrix of double4)
-    const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell.local_id];
+    const UnitCellMatrices& unit_matrices = unit_cell_matrices[cell_local_id];
     const DenseMatrix<Vector3>& G = unit_matrices.intV_shapeI_gradshapeJ;
     const DenseMatrix<double>& M = unit_matrices.intV_shapeI_shapeJ;
     double* GM_data = reinterpret_cast<double*>(cell_data);
@@ -163,8 +164,8 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       // pointer to outflow
       double** outflow_data = reinterpret_cast<double**>(face_data);
       double* face_outflow = nullptr;
-      if (outflow.GetDevicePtr() != nullptr and outflow.HasOffset(cell.local_id, f))
-        face_outflow = outflow.GetDevicePtr() + outflow.GetOffset(cell.local_id, f);
+      if (outflow.GetDevicePtr() != nullptr and outflow.HasOffset(cell_local_id, f))
+        face_outflow = outflow.GetDevicePtr() + outflow.GetOffset(cell_local_id, f);
       *(outflow_data++) = face_outflow;
       face_data = reinterpret_cast<char*>(outflow_data);
       // normal vector

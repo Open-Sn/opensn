@@ -21,15 +21,19 @@ Merge(const std::uint32_t& high, const std::uint32_t& low)
 OutflowBank::OutflowBank(const Mesh& grid, unsigned int num_groups, bool include_internal_faces)
   : views_(grid.GetLocalCellCount())
 {
-  for (const auto& cell : grid.GetLocalCells())
-    views_[cell.local_id] = CellOutflowView(cell.faces.size(), num_groups);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    views_[cell_local_id] = CellOutflowView(cell.faces.size(), num_groups);
+  }
 
   std::vector<std::int64_t> cell_offsets(grid.GetLocalCellCount(), -1);
 
   std::size_t num_faces = 0;
-  for (const auto& cell : grid.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
-    auto& cell_view = views_[cell.local_id];
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    auto& cell_view = views_[cell_local_id];
     cell_view.InitializeFaceOffsets();
     std::size_t cell_num_stored_faces = 0;
 
@@ -40,10 +44,10 @@ OutflowBank::OutflowBank(const Mesh& grid, unsigned int num_groups, bool include
         continue;
 
       if (cell_num_stored_faces == 0)
-        cell_offsets[cell.local_id] = static_cast<std::int64_t>(num_faces);
+        cell_offsets[cell_local_id] = static_cast<std::int64_t>(num_faces);
 
       cell_view.SetFaceOffset(f, static_cast<std::int64_t>(cell_num_stored_faces) * num_groups);
-      cellface_map_[Merge(cell.local_id, f)] = num_faces * num_groups;
+      cellface_map_[Merge(cell_local_id, f)] = num_faces * num_groups;
       ++num_faces;
       ++cell_num_stored_faces;
     }

@@ -322,8 +322,11 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   const size_t num_local_cells = grid_->GetLocalCellCount();
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_->GetLocalCells())
-    secondary_unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    secondary_unit_cell_matrices_[cell_local_id] = ComputeCellUnitIntegrals(cell);
+  }
 
   opensn::mpi_comm.barrier();
   log.Log() << "Secondary Cell matrices computed.";
