@@ -205,8 +205,11 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
 
   // Create raytracer
   std::vector<double> cell_sizes(grid->GetLocalCellCount(), 0.0);
-  for (const auto& cell : grid->GetLocalCells())
-    cell_sizes[cell.local_id] = GetCellApproximateSize(cell);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    cell_sizes[cell_local_id] = GetCellApproximateSize(cell);
+  }
 
   RayTracer ray_tracer(grid, &cell_sizes);
 

@@ -117,15 +117,21 @@ VolumePostprocessor::CreateSpatialRestriction()
     std::vector<std::uint32_t> cell_ids;
     if (block_ids_.empty())
     {
-      for (const auto& cell : grid->GetLocalCells())
-        cell_ids.push_back(cell.local_id);
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
+      {
+        const auto& cell = grid->GetLocalCell(cell_local_id);
+        cell_ids.push_back(cell_local_id);
+      }
     }
     else
     {
-      for (const auto& cell : grid->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
+        const auto& cell = grid->GetLocalCell(cell_local_id);
         if (std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
-          cell_ids.push_back(cell.local_id);
+          cell_ids.push_back(cell_local_id);
       }
     }
     cell_local_ids_[0] = cell_ids;
@@ -180,10 +186,11 @@ VolumePostprocessor::GetLogicalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_
 
   // filter on logical volumes
   std::vector<std::uint32_t> cell_ids;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     if (log_vol->Inside(cell.centroid))
-      cell_ids.push_back(cell.local_id);
+      cell_ids.push_back(cell_local_id);
   }
   std::vector<std::uint32_t> final_cell_ids;
   // apply block restriction

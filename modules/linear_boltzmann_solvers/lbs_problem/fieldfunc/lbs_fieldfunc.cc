@@ -219,12 +219,13 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
   std::vector<double> data_vector_power_local(local_node_count_, 0.0);
   local_total_power = 0.0;
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
+    const auto& Vi = unit_cell_matrices_[cell_local_id].intV_shapeI;
     const auto& xs = block_id_to_xs_map_.at(cell.block_id);
 
     if (not xs->IsFissionable())

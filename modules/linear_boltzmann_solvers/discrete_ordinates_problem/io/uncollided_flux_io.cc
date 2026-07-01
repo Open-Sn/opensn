@@ -156,8 +156,10 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
       .append(".");
     OpenSnInvalidArgumentIf(uncollided_moment.size() != file_node_offset * num_groups, size_error);
 
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto file_cell_it = cell_id_to_file_layout.find(cell.global_id);
       std::string missing_cell_error = problem_name + ": local cell ";
       missing_cell_error.append(std::to_string(cell.global_id))
@@ -171,7 +173,7 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
       OpenSnInvalidArgumentIf(file_num_nodes != num_nodes,
                               problem_name + ": node count mismatch for cell " +
                                 std::to_string(cell.global_id) + ".");
-      const auto& transport_view = transport_views[cell.local_id];
+      const auto& transport_view = transport_views[cell_local_id];
       const auto& sigma_t = transport_view.GetXS().GetSigmaTotal();
       for (size_t i = 0; i < num_nodes; ++i)
       {

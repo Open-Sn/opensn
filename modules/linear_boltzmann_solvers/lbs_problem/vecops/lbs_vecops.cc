@@ -21,9 +21,10 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
   auto num_moments = lbs_problem.GetNumMoments();
 
   int64_t idx = -1;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
     const auto num_nodes = static_cast<std::size_t>(transport_view.GetNumNodes());
     for (std::size_t i = 0; i < num_nodes; ++i)
     {

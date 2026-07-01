@@ -94,8 +94,7 @@ CellFace::GetNeighborLocalID(const Mesh* grid) const
 
   if (adj_cell.partition_id != opensn::mpi_comm.rank())
     throw std::logic_error("Cell local ID requested from a non-local cell.");
-
-  return adj_cell.local_id;
+  return grid->MapCellGlobalID2LocalID(neighbor_id);
 }
 
 int

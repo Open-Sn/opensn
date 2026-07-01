@@ -86,9 +86,9 @@ ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
   extra_data_.resize(groupsets.size());
 
   std::uint64_t face_node_counter = 0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_id = cell.local_id;
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {
       const auto& face = cell.faces[f];
@@ -97,7 +97,7 @@ ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
         const auto num_face_nodes = face.vertex_ids.size();
         for (unsigned int fnode = 0; fnode < num_face_nodes; ++fnode)
         {
-          FaceNode fn(cell_id, f, fnode);
+          FaceNode fn(cell_local_id, f, fnode);
           facenode_to_index_[fn] = face_node_counter++;
         }
       }

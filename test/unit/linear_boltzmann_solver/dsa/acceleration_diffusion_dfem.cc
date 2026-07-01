@@ -64,9 +64,10 @@ acceleration_Diffusion_DFEM(std::shared_ptr<Mesh> grid)
   unit_cell_matrices.resize(grid->GetLocalCellCount());
 
   // Build unit integrals
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell);
   }
 
   ScalarSpatialFunction mms_phi = MMS_phi;
