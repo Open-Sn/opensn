@@ -42,10 +42,11 @@ PieceWiseLinearDiscontinuous::OrderNodes()
   cell_local_block_address_.resize(num_loc_cells, 0);
 
   uint64_t local_node_count = 0;
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto& cell_mapping = GetCellMapping(cell);
-    cell_local_block_address_[cell.local_id] = local_node_count;
+    cell_local_block_address_[cell_local_id] = local_node_count;
     local_node_count += cell_mapping.GetNumNodes();
   }
 
@@ -92,10 +93,10 @@ PieceWiseLinearDiscontinuous::OrderNodes()
 
     for (uint64_t cell_global_id : cell_id_list)
     {
-      const auto& cell = grid_->GetGlobalCell(cell_global_id);
+      auto cell_local_id = grid_->MapCellGlobalID2LocalID(cell_global_id);
 
       const auto cell_block_address =
-        local_block_address_ + cell_local_block_address_[cell.local_id];
+        local_block_address_ + cell_local_block_address_[cell_local_id];
       map_list.push_back(cell_block_address);
     }
   }

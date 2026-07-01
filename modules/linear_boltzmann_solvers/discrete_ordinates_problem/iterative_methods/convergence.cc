@@ -48,9 +48,11 @@ ComputePointwisePhiChange(
   auto num_moments = lbs_problem.GetNumMoments();
 
   double pw_change = 0.0;
-  for (const auto& cell : grid_ptr->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_ptr->GetLocalCellCount();
+       ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell = grid_ptr->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
     for (auto i = 0; i < cell.vertex_ids.size(); ++i)
     {
       for (auto id : groupset_ids)

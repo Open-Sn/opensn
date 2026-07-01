@@ -285,8 +285,9 @@ SMMAcceleration::ComputeAuxiliaryUnitCellMatrices()
   auto grid = do_problem_.GetGrid();
   const auto num_local_cells = grid->GetLocalCellCount();
   K_tensor_matrices_.resize(num_local_cells);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = discretization.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
@@ -303,7 +304,7 @@ SMMAcceleration::ComputeAuxiliaryUnitCellMatrices()
                                qp_data.ShapeGrad(i, qp)[dimension_ > 1 ? k : 2] *
                                qp_data.ShapeGrad(j, qp)[dimension_ > 1 ? l : 2] * qp_data.JxW(qp);
       }
-    K_tensor_matrices_[cell.local_id] = K;
+    K_tensor_matrices_[cell_local_id] = K;
   }
 
   opensn::mpi_comm.barrier();
@@ -375,10 +376,11 @@ SMMAcceleration::AssembleDiffusionBCs() const
   std::vector<int64_t> rows;
   std::vector<int64_t> cols;
   std::vector<double> vals;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = pwld.GetCellMapping(cell);
-    const auto& fe_values = unit_cell_matrices[cell.local_id];
+    const auto& fe_values = unit_cell_matrices[cell_local_id];
 
     // Loop over faces
     int f = 0;
@@ -454,9 +456,11 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
     const auto num_gs_groups = groupset.GetNumGroups();
 
     // Loop over cells
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& transport_view = transport_views[cell.local_id];
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& transport_view = transport_views[cell_local_id];
       const auto& cell_mapping = pwld.GetCellMapping(cell);
 
       // Compute node-wise, groupset wise tensors
@@ -562,15 +566,16 @@ SMMAcceleration::ComputeSourceCorrection() const
     diff_sd.GetNumLocalDOFs(diff_uk_man), diff_sd.GetNumGlobalDOFs(diff_uk_man), mpi_comm);
 
   // Build the source
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto nodes = cell_mapping.GetNodeLocations();
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
     const auto num_cell_faces = cell.faces.size();
 
-    const auto& fe_values = unit_cell_matrices[cell.local_id];
-    const auto& K = K_tensor_matrices_[cell.local_id];
+    const auto& fe_values = unit_cell_matrices[cell_local_id];
+    const auto& K = K_tensor_matrices_[cell_local_id];
 
     const auto& xs = matid_to_xs_map.at(cell.block_id);
     const auto& sigma_tr = xs->GetSigmaTransport();
@@ -848,9 +853,10 @@ SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
     diff_sd.GetNumLocalDOFs(diff_uk_man), diff_sd.GetNumGlobalDOFs(diff_uk_man), mpi_comm);
 
   // Test the nodal source against diffusion test functions
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& M = unit_cell_matrices[cell.local_id].intV_shapeI_shapeJ;
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& M = unit_cell_matrices[cell_local_id].intV_shapeI_shapeJ;
     const auto& cell_mapping = pwld.GetCellMapping(cell);
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
     for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)

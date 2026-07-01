@@ -48,9 +48,10 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
   // Apply all nodal sources
   const auto& grid = lbs_problem_.GetGrid();
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
     cell_volume_ = transport_view.GetVolume();
 
     // Obtain xs

@@ -132,10 +132,17 @@ Mesh::ComputeGeometricInfo()
     cell.ComputeGeometricInfo(this);
 
   cell_volumes_.resize(local_cells_.size() + ghost_cells_.size(), 0);
+  std::size_t cell_local_id = 0;
   for (auto& cell : local_cells_)
-    cell_volumes_[cell.local_id] = ComputeVolume(*this, cell);
+  {
+    cell_volumes_[cell_local_id] = ComputeVolume(*this, cell);
+    ++cell_local_id;
+  }
   for (auto& cell : ghost_cells_)
-    cell_volumes_[cell.local_id] = ComputeVolume(*this, cell);
+  {
+    cell_volumes_[cell_local_id] = ComputeVolume(*this, cell);
+    ++cell_local_id;
+  }
 }
 
 void
@@ -678,8 +685,9 @@ std::vector<Vector3>
 Mesh::MakeCellOrthoSizes() const
 {
   std::vector<Vector3> cell_ortho_sizes(local_cells_.size());
-  for (const auto& cell : local_cells_)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
+    const auto& cell = local_cells_[cell_local_id];
     Vector3 vmin = GlobalVertex(cell.vertex_ids.front());
     Vector3 vmax = vmin;
 
@@ -695,7 +703,7 @@ Mesh::MakeCellOrthoSizes() const
       vmax.z = std::max(vertex.z, vmax.z);
     }
 
-    cell_ortho_sizes[cell.local_id] = vmax - vmin;
+    cell_ortho_sizes[cell_local_id] = vmax - vmin;
   } // for cell
 
   return cell_ortho_sizes;
@@ -975,8 +983,11 @@ Mesh::ComputeVolumePerBlockID() const
 {
   // Create a map to hold local volume with local block as key
   std::map<unsigned int, double> block_volumes;
-  for (const auto& cell : this->local_cells_)
-    block_volumes[cell.block_id] += cell_volumes_[cell.local_id];
+  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
+  {
+    const auto& cell = this->local_cells_[cell_local_id];
+    block_volumes[cell.block_id] += cell_volumes_[cell_local_id];
+  }
 
   // Collect all local block IDs
   std::set<unsigned int> unique_block_ids;

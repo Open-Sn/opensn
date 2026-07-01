@@ -27,7 +27,7 @@ int MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
                     size_t ccfi,
                     double epsilon = 1.0e-12);
 
-double HPerpendicular(const Mesh& mesh, const CellMapping& cell_mapping, unsigned int f);
+double HPerpendicular(const Mesh& mesh, std::uint32_t cell_local_id, unsigned int f);
 
 void
 math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
@@ -77,8 +77,9 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -124,15 +125,16 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
       const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       const auto fqp_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
-      const double hm = HPerpendicular(*grid, cell_mapping, f);
+      const double hm = HPerpendicular(*grid, cell_local_id, f);
 
       if (face.has_neighbor)
       {
         const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
+        const auto adj_cell_local_id = grid->MapCellGlobalID2LocalID(face.neighbor_id);
         const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
         const size_t acf = Mesh::MapCellFace(cell, adj_cell, f);
-        const double hp = HPerpendicular(*grid, adj_cell_mapping, acf);
+        const double hp = HPerpendicular(*grid, adj_cell_local_id, acf);
 
         // Compute kappa
         double kappa = 1.0;
@@ -414,15 +416,15 @@ MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
 }
 
 double
-HPerpendicular(const Mesh& mesh, const CellMapping& cell_mapping, unsigned int f)
+HPerpendicular(const Mesh& mesh, std::uint32_t cell_local_id, unsigned int f)
 {
-  const auto& cell = cell_mapping.GetCell();
+  const auto& cell = mesh.GetLocalCell(cell_local_id);
   double hp;
 
   const auto num_faces = cell.faces.size();
   const auto num_vertices = cell.vertex_ids.size();
 
-  const auto volume = mesh.GetCellVolume(cell.local_id);
+  const auto volume = mesh.GetCellVolume(cell_local_id);
   const auto face_area = cell.faces.at(f).area;
 
   /**Lambda to compute surface area.*/

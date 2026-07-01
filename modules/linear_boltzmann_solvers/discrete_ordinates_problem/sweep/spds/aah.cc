@@ -131,9 +131,10 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
 
   constexpr double tolerance = FACE_ORIENTATION_TOLERANCE;
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& face_orientations = cell_face_orientations_[cell.local_id];
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& face_orientations = cell_face_orientations_[cell_local_id];
     std::size_t f = 0;
     for (const auto& face : cell.faces)
     {
