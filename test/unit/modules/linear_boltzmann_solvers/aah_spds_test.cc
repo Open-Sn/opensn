@@ -16,10 +16,10 @@ using namespace opensn;
 TEST(AAHSPDSTest, ReportsGlobalCycle)
 {
   auto grid = Mesh::New();
-  auto cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
-  cell->global_id = static_cast<std::uint64_t>(mpi_comm.rank());
-  cell->partition_id = mpi_comm.rank();
-  grid->AddGlobalCell(cell);
+  auto cell = Cell(CellType::SLAB, CellType::SLAB);
+  cell.global_id = static_cast<std::uint64_t>(mpi_comm.rank());
+  cell.partition_id = mpi_comm.rank();
+  grid->SetCells({cell}, {});
 
   SPDSFaceNeighborInfoVec face_info(1);
   AAH_SPDS spds(0, {1.0, 0.0, 0.0}, grid, face_info, false);

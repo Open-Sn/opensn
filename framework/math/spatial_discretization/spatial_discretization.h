@@ -31,10 +31,16 @@ public:
 
   const CellMapping& GetCellMapping(const Cell& cell) const
   {
-    assert(cell.local_id < cell_mappings_.size());
-    if (GetGrid()->IsCellLocal(cell.global_id))
+    if (cell.local_id < cell_mappings_.size())
+    {
+      assert(cell.local_id < cell_mappings_.size());
       return *cell_mappings_[cell.local_id];
-    return *nb_cell_mappings_.at(cell.global_id);
+    }
+    else
+    {
+      assert(nb_cell_mappings_.contains(cell.global_id));
+      return *nb_cell_mappings_.at(cell.global_id);
+    }
   }
 
   SpatialDiscretizationType GetType() const;
