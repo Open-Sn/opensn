@@ -64,6 +64,7 @@ PieceWiseLinearBase::CreateCellMappings()
     return mapping;
   };
 
+  cell_mappings_.reserve(grid_->GetLocalCellCount());
   for (const auto& cell : grid_->GetLocalCells())
     cell_mappings_.push_back(MakeCellMapping(cell));
 
