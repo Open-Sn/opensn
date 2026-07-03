@@ -1302,7 +1302,7 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   // faces with a skinny side simplex get the penalty their trace inequality requires.
   if (options.h_perp_convention == "face_side" and
       (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
-    return std::min(FaceOrthogonalLength(cell, f), 2.0 * FaceSideLength(*grid_, cell, f));
+    return std::min(FaceOrthogonalLength(*grid_, cell, f), 2.0 * FaceSideLength(*grid_, cell, f));
 
   if (cell.GetType() == CellType::SLAB)
   {
@@ -1371,7 +1371,7 @@ DiffusionMIPSolver::ComputeClosureFaceData(const Cell& cell) const
 
     auto& cf = data[f];
     cf.beta = QuadratureHalfRangeMoment(closure_omegas_, closure_weights_, face.normal);
-    cf.h = FaceOrthogonalLength(cell, f);
+    cf.h = FaceOrthogonalLength(*grid_, cell, f);
 
     // The unit cell matrices carry the coordinate weight (r in RZ); the face matrix must too.
     cf.c_grad = FaceTraceConstant(cell_mapping,

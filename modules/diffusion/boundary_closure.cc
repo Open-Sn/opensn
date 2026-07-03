@@ -37,9 +37,9 @@ QuadratureHalfRangeMoment(const std::vector<Vector3>& omegas,
 }
 
 double
-FaceOrthogonalLength(const Cell& cell, unsigned int f)
+FaceOrthogonalLength(const Mesh& grid, const Cell& cell, unsigned int f)
 {
-  const double volume = cell.volume;
+  const double volume = grid.GetCellVolume(cell.local_id);
   const double face_area = cell.faces.at(f).area;
   const size_t num_faces = cell.faces.size();
   double surface_area = 0.0;
@@ -75,7 +75,7 @@ FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
   switch (cell.GetType())
   {
     case CellType::SLAB:
-      return cell.volume;
+      return grid.GetCellVolume(cell.local_id);
     case CellType::POLYGON:
     {
       // Side triangle (v0, v1, xc): height over the edge = 2 |T| / |e|.
@@ -183,7 +183,8 @@ FaceTraceConstant(const CellMapping& cell_mapping,
       for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
         N(i, j) += (*swf)(fe_srf_data.QPointXYZ(qp)) * normal.Dot(fe_srf_data.ShapeGrad(i, qp)) *
                    normal.Dot(fe_srf_data.ShapeGrad(j, qp)) * fe_srf_data.JxW(qp);
-  return FaceOrthogonalLength(cell, f) * MaxEigenvalueOnStiffnessRange(N, stiffness);
+  const auto& grid = *cell_mapping.GetGrid();
+  return FaceOrthogonalLength(grid, cell, f) * MaxEigenvalueOnStiffnessRange(N, stiffness);
 }
 
 double
