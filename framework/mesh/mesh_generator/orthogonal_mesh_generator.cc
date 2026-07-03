@@ -632,14 +632,22 @@ OrthogonalMeshGenerator::Execute()
   SetOrthogonalBoundaryMaps(grid_ptr, info.dimension);
 
   std::vector<uint64_t> vertices_needed;
-  for (const auto cell_gid : cells_needed)
+  std::vector<Cell> local_cells;
+  std::vector<Cell> ghost_cells;
+  for (const auto cell_global_id : cells_needed)
   {
-    const auto raw_cell = MakeLightWeightCell(info, node_sets_, cell_gid);
+    const auto raw_cell = MakeLightWeightCell(info, node_sets_, cell_global_id);
     for (const auto vid : raw_cell->vertex_ids)
       vertices_needed.push_back(vid);
 
-    grid_ptr->AddGlobalCell(SetupCell(*raw_cell, cell_gid, local_cell_pids.at(cell_gid)));
+    const auto cell_pid = local_cell_pids.at(cell_global_id);
+    auto cell = SetupCell(*raw_cell, cell_global_id, cell_pid);
+    if (cell_pid == opensn::mpi_comm.rank())
+      local_cells.push_back(std::move(cell));
+    else
+      ghost_cells.push_back(std::move(cell));
   }
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells));
 
   SortUnique(vertices_needed);
   for (const auto vid : vertices_needed)

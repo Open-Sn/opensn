@@ -374,12 +374,18 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
   for (const auto& [vid, vertex] : vertices)
     grid_ptr->AddGlobalVertex(vid, vertex);
 
+  std::vector<Cell> local_cells;
+  std::vector<Cell> ghost_cells;
   for (const auto& [pidgid, raw_cell] : cells)
   {
     const auto& [cell_pid, cell_global_id] = pidgid;
     auto cell = SetupCell(raw_cell, cell_global_id, cell_pid);
-    grid_ptr->AddGlobalCell(std::move(cell));
+    if (cell_pid == opensn::mpi_comm.rank())
+      local_cells.push_back(std::move(cell));
+    else
+      ghost_cells.push_back(std::move(cell));
   }
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells));
 
   grid_ptr->SetDimension(mesh_info.dimension);
   grid_ptr->SetCoordinateSystem(mesh_info.coord_sys);

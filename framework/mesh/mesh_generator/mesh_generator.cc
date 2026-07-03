@@ -136,22 +136,44 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   grid_ptr->GetBoundaryIDMap() = input_umesh->GetBoundaryIDMap();
   grid_ptr->GetBoundaryNameMap() = input_umesh->GetBoundaryNameMap();
 
-  size_t cell_global_id = 0;
   const auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
 
-  for (auto& raw_cell : input_umesh->GetRawCells())
+  std::size_t n_local_cells = 0;
+  std::size_t n_ghost_cells = 0;
+  for (std::size_t cell_id = 0; cell_id < input_umesh->GetRawCells().size(); cell_id++)
   {
+    auto raw_cell = input_umesh->GetRawCells()[cell_id];
+    if (CellHasLocalScope(mpi_comm.rank(), *raw_cell, cell_id, vertex_subs, cell_pids))
+    {
+      auto partition_id = cell_pids[cell_id];
+      if (partition_id == opensn::mpi_comm.rank())
+        ++n_local_cells;
+      else
+        ++n_ghost_cells;
+    }
+  }
+  std::vector<Cell> local_cells;
+  local_cells.reserve(n_local_cells);
+  std::vector<Cell> ghost_cells;
+  ghost_cells.reserve(n_ghost_cells);
+  for (std::size_t cell_global_id = 0; cell_global_id < input_umesh->GetRawCells().size();
+       ++cell_global_id)
+  {
+    auto raw_cell = input_umesh->GetRawCells()[cell_global_id];
     if (CellHasLocalScope(mpi_comm.rank(), *raw_cell, cell_global_id, vertex_subs, cell_pids))
     {
-      auto cell = SetupCell(*raw_cell, cell_global_id, cell_pids[cell_global_id]);
-
+      auto partition_id = cell_pids[cell_global_id];
+      auto cell = SetupCell(*raw_cell, cell_global_id, partition_id);
       for (const auto vid : cell.vertex_ids)
         grid_ptr->AddGlobalVertex(vid, input_umesh->GetVertices()[vid]);
 
-      grid_ptr->AddGlobalCell(std::move(cell));
+      if (partition_id == opensn::mpi_comm.rank())
+        local_cells.push_back(std::move(cell));
+      else
+        ghost_cells.push_back(std::move(cell));
     }
-    ++cell_global_id;
   } // for raw_cell
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells));
 
   grid_ptr->SetDimension(input_umesh->GetDimension());
   grid_ptr->SetCoordinateSystem(input_umesh->GetCoordinateSystem());
