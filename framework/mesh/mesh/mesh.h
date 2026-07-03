@@ -153,13 +153,9 @@ public:
   void SetOrthogonalBoundaries();
 
   /// Returns the the total number of ghost cells
-  size_t GhostCellCount() const { return global_cell_id_to_nonlocal_id_map_.size(); }
+  size_t GhostCellCount() const { return ghost_cells_.size(); }
 
-  /**
-   * Adds a new cell to the appropriate category (local or ghost).
-   * @param new_cell The cell to add.
-   */
-  void AddGlobalCell(Cell&& new_cell);
+  void SetCells(std::vector<Cell>&& local_cells, std::vector<Cell>&& ghost_cells);
 
   /// Returns a reference to a cell given its global cell index.
   Cell& GetGlobalCell(uint64_t cell_global_index);
@@ -209,7 +205,9 @@ public:
   /// Returns whether the cell with the given global id is locally owned.
   bool IsCellLocal(uint64_t global_id) const noexcept
   {
-    return global_cell_id_to_local_id_map_.contains(global_id);
+    assert(global_to_local_cell_id_map_.contains(global_id));
+    auto local_id = global_to_local_cell_id_map_.at(global_id);
+    return local_id < local_cells_.size();
   }
 
   /**
@@ -303,9 +301,7 @@ private:
   /// Locally stored ghost cells
   std::vector<Cell> ghost_cells_;
 
-  std::map<uint64_t, uint64_t> global_cell_id_to_local_id_map_;
-  /// Global to ghost ID map
-  std::map<uint64_t, uint64_t> global_cell_id_to_nonlocal_id_map_;
+  std::map<uint64_t, uint64_t> global_to_local_cell_id_map_;
 
   std::vector<double> cell_volumes_;
 

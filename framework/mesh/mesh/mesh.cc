@@ -128,13 +128,14 @@ Mesh::ComputeGeometricInfo()
 {
   for (auto& cell : local_cells_)
     cell.ComputeGeometricInfo(this);
+  for (auto& cell : ghost_cells_)
+    cell.ComputeGeometricInfo(this);
 
-  cell_volumes_.resize(local_cells_.size(), 0);
+  cell_volumes_.resize(local_cells_.size() + ghost_cells_.size(), 0);
   for (auto& cell : local_cells_)
     cell_volumes_[cell.local_id] = ComputeVolume(*this, cell);
-
-  for (const auto& ghost_id : GetGhostGlobalIDs())
-    GetGlobalCell(ghost_id).ComputeGeometricInfo(this);
+  for (auto& cell : ghost_cells_)
+    cell_volumes_[cell.local_id] = ComputeVolume(*this, cell);
 }
 
 void
@@ -142,8 +143,7 @@ Mesh::ClearCellReferences()
 {
   local_cells_.clear();
   ghost_cells_.clear();
-  global_cell_id_to_local_id_map_.clear();
-  global_cell_id_to_nonlocal_id_map_.clear();
+  global_to_local_cell_id_map_.clear();
   global_vertex_id_map_.clear();
 }
 
@@ -238,49 +238,58 @@ Mesh::SetOrthogonalBoundaries()
 }
 
 void
-Mesh::AddGlobalCell(Cell&& new_cell)
+Mesh::SetCells(std::vector<Cell>&& local_cells, std::vector<Cell>&& ghost_cells)
 {
-  if (new_cell.partition_id == opensn::mpi_comm.rank())
+  local_cells_ = std::move(local_cells);
+  ghost_cells_ = std::move(ghost_cells);
+
+  std::size_t local_id = 0;
+  for (auto& cell : local_cells_)
   {
-    new_cell.local_id = local_cells_.size();
-    local_cells_.push_back(std::move(new_cell));
-    global_cell_id_to_local_id_map_[local_cells_.back().global_id] = local_cells_.size() - 1;
+    cell.local_id = local_id;
+    global_to_local_cell_id_map_[cell.global_id] = local_id;
+    ++local_id;
   }
-  else
+  for (auto& cell : ghost_cells_)
   {
-    ghost_cells_.push_back(std::move(new_cell));
-    global_cell_id_to_nonlocal_id_map_[ghost_cells_.back().global_id] = ghost_cells_.size() - 1;
+    cell.local_id = local_id;
+    global_to_local_cell_id_map_[cell.global_id] = local_id;
+    ++local_id;
   }
 }
 
 Cell&
 Mesh::GetGlobalCell(uint64_t cell_global_index)
 {
-  auto local_it = global_cell_id_to_local_id_map_.find(cell_global_index);
-  if (local_it != global_cell_id_to_local_id_map_.end())
-    return local_cells_[local_it->second];
-
-  auto ghost_it = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
-  if (ghost_it != global_cell_id_to_nonlocal_id_map_.end())
-    return ghost_cells_[ghost_it->second];
-
-  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
-                          " not found.");
+  auto it = global_to_local_cell_id_map_.find(cell_global_index);
+  if (it != global_to_local_cell_id_map_.end())
+  {
+    auto local_id = it->second;
+    if (local_id < local_cells_.size())
+      return local_cells_[local_id];
+    else
+      return ghost_cells_[local_id - local_cells_.size()];
+  }
+  else
+    throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
+                            " not found.");
 }
 
 const Cell&
 Mesh::GetGlobalCell(uint64_t cell_global_index) const
 {
-  auto local_it = global_cell_id_to_local_id_map_.find(cell_global_index);
-  if (local_it != global_cell_id_to_local_id_map_.end())
-    return local_cells_[local_it->second];
-
-  auto ghost_it = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
-  if (ghost_it != global_cell_id_to_nonlocal_id_map_.end())
-    return ghost_cells_[ghost_it->second];
-
-  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
-                          " not found.");
+  auto it = global_to_local_cell_id_map_.find(cell_global_index);
+  if (it != global_to_local_cell_id_map_.end())
+  {
+    auto local_id = it->second;
+    if (local_id < local_cells_.size())
+      return local_cells_[local_id];
+    else
+      return ghost_cells_[local_id - local_cells_.size()];
+  }
+  else
+    throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
+                            " not found.");
 }
 
 std::vector<uint64_t>
@@ -298,13 +307,7 @@ Mesh::GetGhostGlobalIDs() const
 uint64_t
 Mesh::GetGhostLocalID(uint64_t cell_global_index) const
 {
-  auto foreign_location = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
-
-  if (foreign_location != global_cell_id_to_nonlocal_id_map_.end())
-    return foreign_location->second;
-
-  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
-                          " not found.");
+  throw std::runtime_error("DELETED METHOD CALLED");
 }
 
 std::size_t
@@ -316,17 +319,25 @@ Mesh::GetLocalCellCount() const
 Cell&
 Mesh::GetLocalCell(uint64_t id)
 {
-  assert(not local_cells_.empty());
-  assert(id < local_cells_.size());
-  return local_cells_[id];
+  if (id < local_cells_.size())
+    return local_cells_[id];
+  else
+  {
+    auto idx = id - local_cells_.size();
+    return ghost_cells_[idx];
+  }
 }
 
 const Cell&
 Mesh::GetLocalCell(uint64_t id) const
 {
-  assert(not local_cells_.empty());
-  assert(id < local_cells_.size());
-  return local_cells_[id];
+  if (id < local_cells_.size())
+    return local_cells_[id];
+  else
+  {
+    auto idx = id - local_cells_.size();
+    return ghost_cells_[idx];
+  }
 }
 
 std::vector<Cell>&
@@ -503,7 +514,9 @@ Mesh::FindAssociatedCellVertices(const CellFace& cur_face, std::vector<short>& d
 size_t
 Mesh::MapCellGlobalID2LocalID(const uint64_t global_id) const
 {
-  return global_cell_id_to_local_id_map_.at(global_id);
+  assert(global_to_local_cell_id_map_.contains(global_id));
+  auto lid = global_to_local_cell_id_map_.at(global_id);
+  return lid;
 }
 
 size_t
