@@ -89,7 +89,7 @@ ReadPrecursorVector(hid_t file_id,
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    const auto& cell_mapping = discretization.GetCellMapping(cell);
+    const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
       const auto node_id = discretization.MapDOFLocal(cell, i);

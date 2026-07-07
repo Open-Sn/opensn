@@ -64,15 +64,16 @@ PieceWiseLinearBase::CreateCellMappings()
     return mapping;
   };
 
-  cell_mappings_.reserve(grid_->GetLocalCellCount());
+  const auto ghost_ids = grid_->GetGhostGlobalIDs();
+  cell_mappings_.reserve(grid_->GetLocalCellCount() + grid_->GhostCellCount());
   for (const auto& cell : grid_->GetLocalCells())
     cell_mappings_.push_back(MakeCellMapping(cell));
 
-  const auto ghost_ids = grid_->GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
     auto ghost_mapping = MakeCellMapping(grid_->GetGlobalCell(ghost_id));
-    nb_cell_mappings_.insert(std::make_pair(ghost_id, std::move(ghost_mapping)));
+    cell_mappings_.push_back(std::move(ghost_mapping));
+    nb_cell_mappings_.insert(std::make_pair(ghost_id, cell_mappings_.back().get()));
   }
 }
 } // namespace opensn

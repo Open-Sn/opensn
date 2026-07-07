@@ -327,7 +327,7 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
         const unsigned int num_precursors_to_copy =
           std::min(old_num_precursors, new_num_precursors);
 
-        const auto& cell_mapping = discretization_->GetCellMapping(cell);
+        const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
         for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
         {
           const auto node_id = discretization_->MapDOFLocal(cell, i);
@@ -1103,15 +1103,17 @@ LBSProblem::ComputeUnitIntegrals()
 
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell = grid_->GetLocalCell(cell_local_id);
     unit_cell_matrices_[cell_local_id] =
-      ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
+      ComputeUnitCellIntegrals(sdm, cell_local_id, grid_->GetCoordinateSystem());
   }
 
   const auto ghost_ids = grid_->GetGhostGlobalIDs();
   for (auto ghost_id : ghost_ids)
+  {
+    const auto cell_local_id = grid_->MapCellGlobalID2LocalID(ghost_id);
     unit_ghost_cell_matrices_[ghost_id] =
-      ComputeUnitCellIntegrals(sdm, grid_->GetGlobalCell(ghost_id), grid_->GetCoordinateSystem());
+      ComputeUnitCellIntegrals(sdm, cell_local_id, grid_->GetCoordinateSystem());
+  }
 
   // Assessing global unit cell matrix storage
   std::array<size_t, 2> num_local_ucms = {unit_cell_matrices_.size(),

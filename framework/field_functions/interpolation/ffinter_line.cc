@@ -120,7 +120,7 @@ FieldFunctionInterpolationLine::Execute()
     auto& point = local_interpolation_points_[p];
     auto cell_local_index = local_cells_[p];
     const auto& cell = grid->GetLocalCell(cell_local_index);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_index);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     Vector<double> shape_function_vals(num_nodes, 0.0);

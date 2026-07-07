@@ -42,7 +42,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
     {
       const CellFace& face = cell.faces[f];
       const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
-      std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
 
       if (face.has_neighbor)
         continue;
@@ -110,7 +110,7 @@ AAHD_FLUDSCommonData::CopyFlattenNodeIndexToDevice(const SpatialDiscretization& 
     std::uint64_t num_nodes = 0;
     for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
     {
-      std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
       for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
       {
         FaceNode node(cell_local_id, f, fnode);
