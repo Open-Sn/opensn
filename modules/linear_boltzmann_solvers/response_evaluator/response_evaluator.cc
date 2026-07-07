@@ -413,7 +413,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
          ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
-      const auto& cell_mapping = discretization.GetCellMapping(cell);
+      const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
       const auto& transport_view = transport_views[cell_local_id];
       const auto& fe_values = unit_cell_matrices[cell_local_id];
       const auto num_cell_nodes = cell_mapping.GetNumNodes();
@@ -450,7 +450,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
            ++cell_local_id)
       {
         const auto& cell = grid->GetLocalCell(cell_local_id);
-        const auto& cell_mapping = discretization.GetCellMapping(cell);
+        const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
         const auto& fe_values = unit_cell_matrices[cell_local_id];
 
         size_t f = 0;

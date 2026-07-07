@@ -94,7 +94,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
         if (fas_edges.contains(
               std::pair<std::uint32_t, std::uint32_t>(cell_local_idx, neighbor_local_idx)))
           continue;
-        std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+        std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_idx).GetNumFaceNodes(f);
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
           FaceNode upwind(cell_local_idx, f, fnode);
@@ -166,7 +166,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
         if (std::cmp_equal(neighbor_local_idx, edge.second))
         {
           // record the address of all the nodes
-          std::uint32_t num_face_nodes = sdm.GetCellMapping(upwind_cell).GetNumFaceNodes(f);
+          std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(edge.first).GetNumFaceNodes(f);
           for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
           {
             FaceNode upwind(edge.first, f, fnode);
@@ -206,7 +206,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonLocalFaces(const SpatialDiscretizati
       const CellFace& face = cell.faces[f];
       const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
       const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell_local_id][f];
-      std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
       // Skip for local face and boundary face
       if (face.IsNeighborLocal(&grid) or not face.has_neighbor)
         continue;
@@ -326,7 +326,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForParallelFaces(const SpatialDiscretizati
       const CellFace& face = cell.faces[f];
       const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
       const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell_local_id][f];
-      std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
       // skip for non-parallel face
       if (orientation != FaceOrientation::PARALLEL)
         continue;

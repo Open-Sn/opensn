@@ -86,8 +86,8 @@ MIPMatrix(const std::shared_ptr<Mesh>& grid,
   std::map<unsigned int, Multigroup_D_and_sigR> xs;
   xs.insert(std::make_pair(0, Multigroup_D_and_sigR{{100.0}, {1.0e-3}}));
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
-  for (const auto& cell : grid->GetLocalCells())
-    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell_local_id);
   DiffusionMIPSolver solver(
     "SidePenalty", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
   solver.options.h_perp_convention = convention;

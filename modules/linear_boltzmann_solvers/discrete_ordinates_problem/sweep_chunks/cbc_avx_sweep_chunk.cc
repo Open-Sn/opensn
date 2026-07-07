@@ -28,7 +28,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
   const auto group_angle_stride = gs_size * num_angles_in_as;
   const auto& cell = *sweep_chunk.cell_;
   const auto cell_local_id = cell.local_id;
-  const auto& cell_mapping = sweep_chunk.discretization_.GetCellMapping(cell);
+  const auto& cell_mapping = sweep_chunk.discretization_.GetLocalCellMapping(cell_local_id);
   const auto& cell_transport_view = sweep_chunk.cell_transport_views_[cell_local_id];
   auto& cell_outflow_view = sweep_chunk.cell_outflow_views_[cell_local_id];
   const std::size_t cell_num_faces = cell.faces.size();

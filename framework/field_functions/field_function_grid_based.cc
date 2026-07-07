@@ -326,11 +326,13 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
       point.z >= zmin and point.z <= zmax)
   {
     const auto& grid = discretization_->GetGrid();
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       if (grid->CheckPointInsideCell(cell, point))
       {
-        const auto& cell_mapping = discretization_->GetCellMapping(cell);
+        const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
         Vector<double> shape_values;
         cell_mapping.ShapeValues(point, shape_values);
 
@@ -423,7 +425,7 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         continue;
 
       ++local_num_point_hits[p];
-      const auto& master_mapping = master.discretization_->GetCellMapping(cell);
+      const auto& master_mapping = master.discretization_->GetLocalCellMapping(c);
       Vector<double> master_shape_values;
       master_mapping.ShapeValues(point, master_shape_values);
       for (size_t f = 0; f < field_functions.size(); ++f)
@@ -431,7 +433,7 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         const auto& field_function = *field_functions[f];
         const auto& discretization = *field_function.discretization_;
         const auto& unknown_manager = field_function.GetUnknownManager();
-        const auto& cell_mapping = discretization.GetCellMapping(cell);
+        const auto& cell_mapping = discretization.GetLocalCellMapping(c);
         const auto& field_vector = *field_function.ghosted_field_vector_;
         Vector<double> alternate_shape_values;
         const Vector<double>* shape_values = &master_shape_values;
@@ -490,7 +492,7 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
 {
   const auto& field_vector = *ghosted_field_vector_;
 
-  const auto& cell_mapping = discretization_->GetCellMapping(cell);
+  const auto& cell_mapping = discretization_->GetGlobalCellMapping(cell);
 
   Vector<double> shape_values;
   cell_mapping.ShapeValues(position, shape_values);

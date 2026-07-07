@@ -97,8 +97,8 @@ public:
   double PolygonPenaltyScale() const;
 
   /// Maps a face, in a discontinuous sense, using the spatial discretization.
-  int MapFaceNodeDisc(const Cell& cur_cell,
-                      const Cell& adj_cell,
+  int MapFaceNodeDisc(std::uint32_t cur_cell_local_id,
+                      std::uint32_t adj_cell_local_id,
                       const std::vector<Vector3>& cc_node_locs,
                       const std::vector<Vector3>& ac_node_locs,
                       size_t ccf,

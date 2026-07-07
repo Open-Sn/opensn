@@ -92,8 +92,8 @@ CubeMatrix(unsigned int num_cells,
   std::map<unsigned int, Multigroup_D_and_sigR> xs;
   xs.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0 / (3.0 * sigma_t)}, {1.0e-4 * sigma_t}}));
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
-  for (const auto& cell : grid->GetLocalCells())
-    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell_local_id);
 
   DiffusionMIPSolver solver(
     "ClosureR", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
@@ -157,11 +157,12 @@ TEST(DiffusionClosureR, TraceConstant)
   {
     auto grid = BuildBoxMesh(2.0, 2, 0.0);
     std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
     {
-      const auto K = ComputeUnitCellIntegrals(*sdm, cell).intV_gradshapeI_gradshapeJ;
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto K = ComputeUnitCellIntegrals(*sdm, cell_local_id).intV_gradshapeI_gradshapeJ;
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceTraceConstant(sdm->GetCellMapping(cell), cell, f, K), 1.0, 1.0e-10);
+        EXPECT_NEAR(FaceTraceConstant(sdm->GetLocalCellMapping(cell_local_id), cell, f, K), 1.0, 1.0e-10);
     }
   }
   {
@@ -170,13 +171,14 @@ TEST(DiffusionClosureR, TraceConstant)
     auto grid = BuildMeshFromFile(mfile);
     std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
     size_t checked = 0;
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
     {
       if (checked++ == 50)
         break;
-      const auto K = ComputeUnitCellIntegrals(*sdm, cell).intV_gradshapeI_gradshapeJ;
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto K = ComputeUnitCellIntegrals(*sdm, cell_local_id).intV_gradshapeI_gradshapeJ;
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceTraceConstant(sdm->GetCellMapping(cell), cell, f, K), 3.0, 1.0e-9);
+        EXPECT_NEAR(FaceTraceConstant(sdm->GetLocalCellMapping(cell_local_id), cell, f, K), 3.0, 1.0e-9);
     }
   }
 }
@@ -189,11 +191,12 @@ TEST(DiffusionClosureR, TraceConstantRZ)
   const double r0 = 1000.0;
   auto grid = BuildOrthogonalMesh({{r0, r0 + 0.5, r0 + 1.0}, {0.0, 0.3, 1.0}});
   std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& mapping = sdm->GetCellMapping(cell);
-    const auto K = ComputeUnitCellIntegrals(*sdm, cell).intV_gradshapeI_gradshapeJ;
-    const auto K_rz = ComputeUnitCellIntegrals(*sdm, cell, CoordinateSystemType::CYLINDRICAL)
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& mapping = sdm->GetLocalCellMapping(cell_local_id);
+    const auto K = ComputeUnitCellIntegrals(*sdm, cell_local_id).intV_gradshapeI_gradshapeJ;
+    const auto K_rz = ComputeUnitCellIntegrals(*sdm, cell_local_id, CoordinateSystemType::CYLINDRICAL)
                         .intV_gradshapeI_gradshapeJ;
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {

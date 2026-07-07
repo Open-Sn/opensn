@@ -11,11 +11,12 @@ namespace opensn
 
 UnitCellMatrices
 ComputeUnitCellIntegrals(const SpatialDiscretization& sdm,
-                         const Cell& cell,
+                         std::uint32_t cell_local_id,
                          const CoordinateSystemType coord_sys)
 {
+  const auto& cell = sdm.GetGrid()->GetLocalCell(cell_local_id);
   auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
-  const auto& cell_mapping = sdm.GetCellMapping(cell);
+  const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
   const size_t cell_num_faces = cell.faces.size();
   const size_t cell_num_nodes = cell_mapping.GetNumNodes();
   const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();

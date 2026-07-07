@@ -24,7 +24,7 @@ ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
                         const std::vector<double>& phi_new_local,
                         const unsigned int num_groups)
 {
-  const auto& cell_mapping = sdm.GetCellMapping(cell);
+  const auto& cell_mapping = sdm.GetGlobalCellMapping(cell);
   const size_t num_nodes = cell_mapping.GetNumNodes();
   const auto& intV_shapeI = unit_cell_matrices[cell.local_id].intV_shapeI;
 
@@ -147,9 +147,10 @@ DiscreteOrdinatesProblem::ComputeAngularFieldFunctionData(const size_t groupset_
   const auto& uk_man = groupset.psi_uk_man_;
   const auto& psi = psi_new_local_.at(groupset_id);
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -257,14 +258,15 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
     return data;
   };
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& data = GetMaterialData(cell.block_id);
     const auto& stopping_power = data.xs->GetStoppingPower();
 
-    const size_t cell_g_offset = cell.local_id * static_cast<size_t>(num_groups_);
+    const size_t cell_g_offset = cell_local_id * static_cast<size_t>(num_groups_);
 
     if (is_csda_charge_deposition_term)
     {

@@ -1417,13 +1417,14 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
     return;
 
   std::size_t num_slots = 0;
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = discretization_->GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
       if (not cell.faces[f].has_neighbor)
       {
-        boundary_inflow_slots_[{cell.local_id, f}] = num_slots;
+        boundary_inflow_slots_[{cell_local_id, f}] = num_slots;
         num_slots += cell_mapping.GetNumFaceNodes(f);
       }
   }
@@ -1441,9 +1442,11 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
     inflow.assign(num_slots * num_dirs * num_gs_groups, 0.0);
 
     std::map<uint64_t, std::vector<std::uint32_t>> reflected_maps;
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = discretization_->GetCellMapping(cell);
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
       {
         const auto& face = cell.faces[f];
@@ -1468,7 +1471,7 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
           reflected = &it->second;
         }
 
-        const auto slot = boundary_inflow_slots_.at({cell.local_id, f});
+        const auto slot = boundary_inflow_slots_.at({cell_local_id, f});
         for (unsigned int fi = 0; fi < cell_mapping.GetNumFaceNodes(f); ++fi)
         {
           const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -1488,7 +1491,7 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
                 inflow[base + g] = 0.0;
               else
               {
-                const double* incoming = boundary.PsiIncoming(cell.local_id, f, fi, d, gs, g);
+                const double* incoming = boundary.PsiIncoming(cell_local_id, f, fi, d, gs, g);
                 inflow[base + g] = incoming != nullptr ? *incoming : 0.0;
               }
             }
