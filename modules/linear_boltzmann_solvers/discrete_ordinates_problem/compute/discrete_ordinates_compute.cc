@@ -21,7 +21,7 @@ namespace
 {
 
 double
-GetInflow(const Cell& cell,
+GetInflow(std::uint32_t cell_local_id,
           const CellMapping& cell_mapping,
           const std::vector<UnitCellMatrices>& unit_cell_matrices,
           const CellFace& face,
@@ -31,7 +31,7 @@ GetInflow(const Cell& cell,
           int gs_id,
           unsigned int g)
 {
-  const auto& fe_vals = unit_cell_matrices.at(cell.local_id);
+  const auto& fe_vals = unit_cell_matrices.at(cell_local_id);
   const auto& int_f_shape_i = fe_vals.intS_shapeI[f];
   const unsigned int num_face_nodes = cell_mapping.GetNumFaceNodes(f);
   const size_t num_angles = quadrature->GetNumAngles();
@@ -49,7 +49,7 @@ GetInflow(const Cell& cell,
     for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
     {
       const unsigned int i = cell_mapping.MapFaceNode(f, fi);
-      const double* psi_ptr = boundary.PsiIncoming(cell.local_id, f, fi, n, gs_id, g);
+      const double* psi_ptr = boundary.PsiIncoming(cell_local_id, f, fi, n, gs_id, g);
       const double psi_inc = (psi_ptr != nullptr) ? *psi_ptr : 0.0;
       inflow += mu * weight * int_f_shape_i(i) * psi_inc;
     }
@@ -402,8 +402,15 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
         {
           auto g = gsi + gsg;
           local_leakage[gsg] += outflow_view.Get(f, g);
-          local_leakage[gsg] += GetInflow(
-            cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, groupset.id, gsg);
+          local_leakage[gsg] += GetInflow(cell_local_id,
+                                          cell_mapping,
+                                          unit_cell_matrices,
+                                          face,
+                                          quad,
+                                          bndry,
+                                          f,
+                                          groupset.id,
+                                          gsg);
         }
       }
     }
@@ -467,8 +474,15 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
           {
             auto group_num = groupset.first_group + g;
             local_leakage[face.neighbor_id][group_num] += outflow_view.Get(f, group_num);
-            local_leakage[face.neighbor_id][group_num] += GetInflow(
-              cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, groupset.id, g);
+            local_leakage[face.neighbor_id][group_num] += GetInflow(cell_local_id,
+                                                                    cell_mapping,
+                                                                    unit_cell_matrices,
+                                                                    face,
+                                                                    quad,
+                                                                    bndry,
+                                                                    f,
+                                                                    groupset.id,
+                                                                    g);
           }
         }
       }
