@@ -52,10 +52,7 @@ acceleration_Diffusion_CFEM(std::shared_ptr<Mesh> grid)
 
   // Build unit integrals
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
-  {
-    const auto& cell = grid->GetLocalCell(cell_local_id);
-    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell);
-  }
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell_local_id);
 
   // Make solver
   DiffusionPWLCSolver solver("SimTest92b_DSA_PWLC",

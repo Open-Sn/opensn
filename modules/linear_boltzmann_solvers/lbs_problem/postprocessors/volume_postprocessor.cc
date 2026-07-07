@@ -286,7 +286,7 @@ VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids
   for (const auto cell_id : cell_local_ids)
   {
     const auto& cell = grid->GetLocalCell(cell_id);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const auto& coeffs = GetCoefficients(cell);
@@ -331,7 +331,7 @@ VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
   for (const auto cell_id : cell_local_ids)
   {
     const auto& cell = grid->GetLocalCell(cell_id);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto& coeffs = GetCoefficients(cell);
 
@@ -364,7 +364,7 @@ VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
   for (const auto cell_id : cell_local_ids)
   {
     const auto& cell = grid->GetLocalCell(cell_id);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto& coeffs = GetCoefficients(cell);
 
@@ -398,7 +398,7 @@ VolumePostprocessor::ComputeVolumeWeightedAverage(const std::vector<uint32_t>& c
   for (const auto cell_id : cell_local_ids)
   {
     const auto& cell = grid->GetLocalCell(cell_id);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_id);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const auto& coeffs = GetCoefficients(cell);
 

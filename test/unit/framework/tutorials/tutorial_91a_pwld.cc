@@ -109,10 +109,11 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
   opensn::log.Log() << "End vectors." << std::endl;
 
   // Make material source term
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cc = cell.centroid;
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     if (cc.x < 0.5 and cc.y < 0.5 and cc.z < 0.5 and cc.x > -0.5 and cc.y > -0.5 and cc.z > -0.5)
@@ -133,9 +134,10 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
   std::vector<DenseMatrix<double>> cell_Mmatrices;
   std::vector<std::vector<DenseMatrix<double>>> cell_faceMmatrices;
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -204,7 +206,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
     const auto& cell = grid->GetGlobalCell(cell_global_id);
     const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const size_t num_faces = cell.faces.size();
 
@@ -353,9 +355,11 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
                     num_moments,
                     &phi_uk_man]()
   {
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
       const size_t num_nodes = cell_mapping.GetNumNodes();
       const auto& S = xs.GetTransferMatrices();
 
@@ -393,9 +397,11 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
   {
     double pw_change = 0.0;
 
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
       const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)

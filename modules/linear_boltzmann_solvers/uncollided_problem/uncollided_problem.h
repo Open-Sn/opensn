@@ -121,7 +121,7 @@ protected:
 
   void SweepBulkRegion(const SourcePoint& source_point);
 
-  UncollidedMatrices ComputeUncollidedIntegrals(const Cell& cell, const Vector3& pt_loc);
+  UncollidedMatrices ComputeUncollidedIntegrals(std::uint32_t cell_local_id, const Vector3& pt_loc);
 
   void Execute(const std::string& file_name, unsigned int progress_interval);
 

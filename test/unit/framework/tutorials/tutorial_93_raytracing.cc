@@ -120,7 +120,7 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
       const int g,
       double weight)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetGlobalCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto phi_theta = OmegaToPhiThetaSafe(omega);
@@ -272,10 +272,11 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
   } // for ray n
 
   // Post process tallies
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     // Compute mass matrix and its inverse
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto& fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 

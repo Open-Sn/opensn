@@ -61,7 +61,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
     const size_t num_faces = cell.faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(cell);
+    const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell_local_id];
@@ -267,7 +267,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
     const size_t num_faces = cell.faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(cell);
+    const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell_local_id];
@@ -421,7 +421,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
     const size_t num_faces = cell.faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(cell);
+    const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto& unit_cell_matrices = unit_cell_matrices_[cell_local_id];

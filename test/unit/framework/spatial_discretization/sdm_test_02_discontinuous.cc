@@ -80,7 +80,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
@@ -131,7 +131,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
       {
         const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
         const auto adj_cell_local_id = grid->MapCellGlobalID2LocalID(face.neighbor_id);
-        const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
+        const auto& adj_cell_mapping = sdm.GetLocalCellMapping(adj_cell_local_id);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
         const size_t acf = Mesh::MapCellFace(cell, adj_cell, f);
         const double hp = HPerpendicular(*grid, adj_cell_local_id, acf);

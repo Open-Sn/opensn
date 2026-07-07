@@ -29,7 +29,13 @@ public:
   std::pair<std::set<uint32_t>, std::set<uint32_t>>
   MakeCellInternalAndBndryNodeIDs(const Cell& cell) const;
 
-  const CellMapping& GetCellMapping(const Cell& cell) const
+  const CellMapping& GetLocalCellMapping(std::uint32_t cell_local_id) const
+  {
+    assert(cell_local_id < cell_mappings_.size());
+    return *cell_mappings_[cell_local_id];
+  }
+
+  const CellMapping& GetGlobalCellMapping(const Cell& cell) const
   {
     if (cell.local_id < cell_mappings_.size())
     {
@@ -219,7 +225,7 @@ protected:
 
   const std::shared_ptr<Mesh> grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;
-  std::map<uint64_t, std::shared_ptr<CellMapping>> nb_cell_mappings_;
+  std::map<uint64_t, CellMapping*> nb_cell_mappings_;
 
   uint64_t local_block_address_ = 0;
   std::vector<uint64_t> locJ_block_address_;
