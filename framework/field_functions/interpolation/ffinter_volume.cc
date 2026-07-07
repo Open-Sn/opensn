@@ -66,7 +66,7 @@ FieldFunctionInterpolationVolume::Execute()
   for (const uint64_t cell_local_id : cell_local_ids_inside_logvol_)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 

@@ -19,16 +19,19 @@ CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization
   const Mesh& grid = *(spds_.GetGrid());
   const std::size_t num_local_cells = grid.GetLocalCellCount();
   std::uint64_t total_face_nodes = 0;
-  for (const auto& cell : grid.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
-      total_face_nodes += sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      total_face_nodes += sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
+  }
   std::vector<std::size_t> cell_spatial_dof_offsets(num_local_cells);
   std::size_t current_dof_offset = 0;
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
     cell_spatial_dof_offsets[cell_local_id] = current_dof_offset;
-    current_dof_offset += sdm.GetCellMapping(cell).GetNumNodes();
+    current_dof_offset += sdm.GetLocalCellMapping(cell_local_id).GetNumNodes();
   }
   const std::size_t offsets_size = 2 * num_local_cells;
   const std::size_t total_size = offsets_size + total_face_nodes;
@@ -48,7 +51,7 @@ CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization
       const CellFace& face = cell.faces[f];
       const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
       const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell_local_id][f];
-      const std::size_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      const std::size_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
       const bool is_outgoing_face = (orientation == FaceOrientation::OUTGOING);
       const bool is_incoming_face = (orientation == FaceOrientation::INCOMING);
       const bool is_local_face = face.IsNeighborLocal(&grid);
@@ -104,7 +107,7 @@ CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization
         {
           if (is_local_face)
           {
-            const int cell_node = sdm.GetCellMapping(cell).MapFaceNode(f, fn);
+            const int cell_node = sdm.GetLocalCellMapping(cell_local_id).MapFaceNode(f, fn);
             const std::uint64_t index = cell_spatial_dof_offsets[cell_local_id] + cell_node;
             node_index = CBCD_NodeIndex(index, is_outgoing_face, is_local_face);
           }

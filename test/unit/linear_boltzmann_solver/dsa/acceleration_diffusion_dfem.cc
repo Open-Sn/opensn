@@ -65,10 +65,7 @@ acceleration_Diffusion_DFEM(std::shared_ptr<Mesh> grid)
 
   // Build unit integrals
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
-  {
-    const auto& cell = grid->GetLocalCell(cell_local_id);
-    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell);
-  }
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell_local_id);
 
   ScalarSpatialFunction mms_phi = MMS_phi;
   ScalarSpatialFunction mms_q = MMS_q;
@@ -104,9 +101,10 @@ acceleration_Diffusion_DFEM(std::shared_ptr<Mesh> grid)
   // First get ghosted values
   const auto field_wg = ff->GetGhostedFieldVector();
   double local_error = 0.0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 

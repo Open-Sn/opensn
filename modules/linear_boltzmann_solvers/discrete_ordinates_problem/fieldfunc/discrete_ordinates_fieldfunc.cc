@@ -107,9 +107,10 @@ DiscreteOrdinatesProblem::ComputeAngularFieldFunctionData(const size_t groupset_
   const auto& uk_man = groupset.psi_uk_man_;
   const auto& psi = psi_new_local_.at(groupset_id);
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
