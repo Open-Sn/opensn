@@ -187,7 +187,7 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
       for (const auto& node : outgoing_nonlocal_it->second)
       {
         const auto& face = cell.faces[node.face_id];
-        const auto& cell_mapping = sdm_.GetCellMapping(cell);
+        const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
         const auto& face_nodal_mapping =
           common_data_.GetFaceNodalMapping(node.cell_local_id, node.face_id);
         const auto& num_face_nodes = cell_mapping.GetNumFaceNodes(node.face_id);
@@ -239,7 +239,7 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
     double* dst_psi = &destination_psi[discretization.MapDOFLocal(cell, 0, psi_uk_man_, 0, 0)];
     double* src_psi =
       host_saved_psi_.data() + mesh->saved_psi_offset[cell_local_id] * GetStrideSize();
-    std::uint32_t cell_num_nodes = discretization.GetCellMapping(cell).GetNumNodes();
+    std::uint32_t cell_num_nodes = discretization.GetLocalCellMapping(cell_local_id).GetNumNodes();
     for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
     {
       for (std::uint32_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)

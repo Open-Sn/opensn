@@ -112,7 +112,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    const auto& cell_mapping = discretization.GetCellMapping(cell);
+    const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     const auto& transport_view = cell_transport_views[cell_local_id];
     const auto& outflow_view = cell_outflow_views[cell_local_id];
     const auto& fe_intgrl_values = unit_cell_matrices[cell_local_id];
@@ -388,7 +388,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
     const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& transport_view = cell_transport_views[cell_local_id];
     const auto& outflow_view = cell_outflow_views[cell_local_id];
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
 
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {
@@ -460,7 +460,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
       const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto& transport_view = cell_transport_views[cell_local_id];
       const auto& outflow_view = cell_outflow_views[cell_local_id];
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
 
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
       {

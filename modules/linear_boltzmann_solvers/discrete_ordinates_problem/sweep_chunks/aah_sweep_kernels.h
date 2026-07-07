@@ -74,7 +74,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
     auto& cell = data.grid->GetLocalCell(cell_local_id);
     const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
     auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
-    const auto& cell_mapping = data.discretization.GetCellMapping(cell);
+    const auto& cell_mapping = data.discretization.GetLocalCellMapping(cell_local_id);
     const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 

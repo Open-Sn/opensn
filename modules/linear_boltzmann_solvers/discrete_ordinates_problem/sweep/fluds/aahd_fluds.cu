@@ -283,7 +283,7 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
     double* src_psi = save_angular_flux_.host_storage.data() +
                       mesh_carrier->saved_psi_offset[cell_local_id] * num_groups_and_angles_;
     // get number of cell nodes
-    std::uint32_t cell_num_nodes = discretization.GetCellMapping(cell).GetNumNodes();
+    std::uint32_t cell_num_nodes = discretization.GetLocalCellMapping(cell_local_id).GetNumNodes();
     // loop for each cell node
     for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
     {
