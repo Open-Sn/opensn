@@ -43,7 +43,7 @@ CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
         continue;
 
       incoming_nonlocal_psi_offsets_[slot + 1] =
-        sdm_.GetCellMapping(cell).GetNumFaceNodes(f) * num_groups_and_angles_;
+        sdm_.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f) * num_groups_and_angles_;
     }
   }
 

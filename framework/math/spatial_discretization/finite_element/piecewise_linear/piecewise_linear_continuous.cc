@@ -221,9 +221,10 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   nodal_nnz_in_diag.resize(local_base_block_size_, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_, 0);
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = GetLocalCellMapping(cell_local_id);
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
       const auto ir = MapDOF(cell, i);
@@ -260,9 +261,10 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   using ROWJLINKS = std::pair<uint64_t, std::vector<uint64_t>>;
   std::vector<ROWJLINKS> ir_links;
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = GetLocalCellMapping(cell_local_id);
 
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {

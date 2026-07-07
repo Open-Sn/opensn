@@ -288,7 +288,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   // Define lambda for cell-wise comps
   auto ComputeCellUnitIntegrals = [&sdm, &swf](const Cell& cell)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetGlobalCellMapping(cell);
     //    const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();

@@ -50,7 +50,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
     alloc_size += cell_num_faces * sizeof(std::uint64_t);
     // data of each face
     const std::vector<std::vector<int>>& face_node_mappings =
-      discretization.GetCellMapping(cell).GetFaceNodeMappings();
+      discretization.GetLocalCellMapping(cell_local_id).GetFaceNodeMappings();
     for (int f = 0; f < cell_num_faces; ++f)
     {
       // num_face_nodes
@@ -93,7 +93,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
   for (char* cell_data = data; const auto& cell : mesh.GetLocalCells())
   {
     std::size_t cell_num_faces = cell.faces.size();
-    const CellMapping& cell_mapping = discretization.GetCellMapping(cell);
+    const CellMapping& cell_mapping = discretization.GetLocalCellMapping(cell);
     std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
     // check for cell num nodes compatibility with sweep kernel
     if (cell_num_nodes > LBSProblem::max_dofs_gpu)

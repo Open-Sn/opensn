@@ -1042,15 +1042,17 @@ LBSProblem::ComputeUnitIntegrals()
 
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell = grid_->GetLocalCell(cell_local_id);
     unit_cell_matrices_[cell_local_id] =
-      ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
+      ComputeUnitCellIntegrals(sdm, cell_local_id, grid_->GetCoordinateSystem());
   }
 
   const auto ghost_ids = grid_->GetGhostGlobalIDs();
   for (auto ghost_id : ghost_ids)
+  {
+    const auto cell_local_id = grid_->MapCellGlobalID2LocalID(ghost_id);
     unit_ghost_cell_matrices_[ghost_id] =
-      ComputeUnitCellIntegrals(sdm, grid_->GetGlobalCell(ghost_id), grid_->GetCoordinateSystem());
+      ComputeUnitCellIntegrals(sdm, cell_local_id, grid_->GetCoordinateSystem());
+  }
 
   // Assessing global unit cell matrix storage
   std::array<size_t, 2> num_local_ucms = {unit_cell_matrices_.size(),

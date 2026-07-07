@@ -118,7 +118,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
     const auto& cell = grid->GetLocalCell(cell_local_id);
     if (PointIsInCellOrOnBoundary(cell, location_))
     {
-      const auto& cell_mapping = discretization.GetCellMapping(cell);
+      const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
       const auto& fe_values = unit_cell_matrices[cell_local_id];
 
       // Map the point source to the finite element space

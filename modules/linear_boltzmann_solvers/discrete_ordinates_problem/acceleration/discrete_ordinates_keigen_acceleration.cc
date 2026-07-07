@@ -87,7 +87,7 @@ DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostIndices(const SpatialDiscretiz
   for (const uint64_t ghost_id : grid.GetGhostGlobalIDs())
   {
     const auto& cell = grid.GetGlobalCell(ghost_id);
-    const auto& cell_mapping = pwld.GetCellMapping(cell);
+    const auto& cell_mapping = pwld.GetGlobalCellMapping(cell);
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       for (int u = 0; u < uk_man.GetNumberOfUnknowns(); ++u)
         for (int c = 0; c < uk_man.unknowns[u].GetNumComponents(); ++c)
@@ -147,9 +147,10 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
 
   // Local cells first
   std::set<uint64_t> partition_bndry_vertex_id_set;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = pwld_sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -186,7 +187,7 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
   for (const auto global_id : ghost_cell_ids)
   {
     const auto& cell = grid->GetGlobalCell(global_id);
-    const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
+    const auto& cell_mapping = pwld_sdm.GetGlobalCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -225,9 +226,10 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
 
   // Project back to dfem
   output = input;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = pwld_sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -269,9 +271,11 @@ DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi
   phi_local.resize(diff_num_local_dofs);
   std::fill(phi_local.begin(), phi_local.end(), 0.0);
 
-  for (const auto& cell : do_problem_.GetGrid()->GetLocalCells())
+  const auto& grid = do_problem_.GetGrid();
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = lbs_sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -308,9 +312,11 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
     output.resize(output_size, 0.0);
   OpenSnLogicalErrorIf(output.size() != output_size, "Output vector size mismatch");
 
-  for (const auto& cell : do_problem_.GetGrid()->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < do_problem_.GetGrid()->GetLocalCellCount();
+       ++cell_local_id)
   {
-    const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
+    const auto& cell = do_problem_.GetGrid()->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = lbs_sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)

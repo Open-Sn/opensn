@@ -63,19 +63,19 @@ SpatialDiscretization::GetNumLocalAndGhostDOFs(const UnknownManager& unknown_man
 size_t
 SpatialDiscretization::GetCellNumNodes(const Cell& cell) const
 {
-  return GetCellMapping(cell).GetNumNodes();
+  return GetLocalCellMapping(cell.local_id).GetNumNodes();
 }
 
 const std::vector<Vector3>&
 SpatialDiscretization::GetCellNodeLocations(const Cell& cell) const
 {
-  return GetCellMapping(cell).GetNodeLocations();
+  return GetLocalCellMapping(cell.local_id).GetNodeLocations();
 }
 
 std::pair<std::set<uint32_t>, std::set<uint32_t>>
 SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
 {
-  const auto& cell_mapping = GetCellMapping(cell);
+  const auto& cell_mapping = GetLocalCellMapping(cell.local_id);
   const size_t num_faces = cell.faces.size();
   const size_t num_nodes = cell_mapping.GetNumNodes();
 
@@ -104,9 +104,10 @@ std::vector<std::vector<std::vector<int>>>
 SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) const
 {
   std::vector<std::vector<std::vector<int>>> cell_adj_mapping;
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = this->GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = this->GetLocalCellMapping(cell_local_id);
     const auto& node_locations = cell_mapping.GetNodeLocations();
     const size_t num_faces = cell.faces.size();
 
@@ -120,7 +121,7 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
       if (face.has_neighbor)
       {
         const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
-        const auto& adj_cell_mapping = this->GetCellMapping(adj_cell);
+        const auto& adj_cell_mapping = this->GetGlobalCellMapping(adj_cell);
         const auto& adj_node_locations = adj_cell_mapping.GetNodeLocations();
         const size_t adj_num_nodes = adj_cell_mapping.GetNumNodes();
 
@@ -177,9 +178,11 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
 
     const size_t num_comps = ukA.num_components;
 
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = this->GetCellMapping(cell);
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = this->GetLocalCellMapping(cell_local_id);
       const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
