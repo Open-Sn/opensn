@@ -24,7 +24,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
   // number of cells in the mesh
   alloc_size += sizeof(std::uint64_t);
   // offset of the data of each cell wrt to the origin pointer
-  Mesh& mesh = *(lbs_problem.GetGrid());
+  Mesh& mesh = *(lbs_problem.GetMesh());
   const std::vector<UnitCellMatrices>& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const SpatialDiscretization& discretization = lbs_problem.GetSpatialDiscretization();
   alloc_size += mesh.GetLocalCellCount() * sizeof(std::uint64_t);
@@ -76,7 +76,7 @@ void
 MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrier& outflow)
 {
   // get information
-  Mesh& mesh = *(lbs_problem.GetGrid());
+  Mesh& mesh = *(lbs_problem.GetMesh());
   const std::vector<UnitCellMatrices>& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const SpatialDiscretization& discretization = lbs_problem.GetSpatialDiscretization();
   const std::vector<CellLBSView>& cell_transport_views = lbs_problem.GetCellTransportViews();

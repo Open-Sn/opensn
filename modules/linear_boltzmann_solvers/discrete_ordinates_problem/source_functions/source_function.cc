@@ -47,7 +47,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& m_to_ell_em_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
 
   // Apply all nodal sources
-  const auto& grid = lbs_problem_.GetGrid();
+  const auto& grid = lbs_problem_.GetMesh();
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
@@ -216,7 +216,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 {
   const bool apply_fixed_src = source_flags & APPLY_FIXED_SOURCES;
 
-  const auto& grid = lbs_problem_.GetGrid();
+  const auto& grid = lbs_problem_.GetMesh();
   const auto& discretization = lbs_problem_.GetSpatialDiscretization();
   const auto& cell_transport_views = lbs_problem_.GetCellTransportViews();
   const auto num_groups = lbs_problem_.GetNumGroups();

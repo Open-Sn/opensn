@@ -225,7 +225,7 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
     return;
   DiscreteOrdinatesProblem& problem = sweep_chunk.GetProblem();
   auto* mesh = problem.GetMeshCarrier();
-  auto grid = problem.GetGrid();
+  auto grid = problem.GetMesh();
   auto& groupset = sweep_chunk.GetGroupset();
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();

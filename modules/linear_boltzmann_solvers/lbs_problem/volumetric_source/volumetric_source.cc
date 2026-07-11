@@ -106,7 +106,7 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
                                   "match the number of groups in the solver the source is "
                                   "attached to.");
 
-  auto grid = lbs_problem.GetGrid();
+  auto grid = lbs_problem.GetMesh();
   // Set cell subscribers based on logical volumes, block IDs, or both
   subscribers_.clear();
   if (logvol_ and block_ids_.empty())

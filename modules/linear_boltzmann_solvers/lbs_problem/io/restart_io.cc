@@ -58,7 +58,7 @@ ReadPrecursorVector(hid_t file_id,
                             std::to_string(values.size()) + " but expected " +
                             std::to_string(expected_size) + ".");
 
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const size_t num_local_cells = grid->GetLocalCellCount();
   OpenSnInvalidArgumentIf(num_local_cells == 0,
                           problem.GetName() +

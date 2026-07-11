@@ -181,7 +181,7 @@ public:
   virtual void SetBlockID2XSMap(const BlockID2XSMap& xs_map);
 
   /// Obtains a reference to the grid.
-  std::shared_ptr<Mesh> GetGrid() const;
+  std::shared_ptr<Mesh> GetMesh() const;
 
   /// Low-level device/runtime carriers used by solver components.
   TotalXSCarrier* GetTotalXSCarrier() { return total_xs_carrier_.get(); }

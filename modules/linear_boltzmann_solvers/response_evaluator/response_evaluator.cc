@@ -289,7 +289,7 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
                              "' in ResponseEvaluator does not support \"function\".");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
-  auto grid = do_problem_->GetGrid();
+  auto grid = do_problem_->GetMesh();
   const auto bnd_name_map = grid->GetBoundaryNameMap();
   OpenSnInvalidArgumentIf(not bnd_name_map.count(bndry_name),
                           "Boundary \"" + bndry_name + "\" does not exist.");
@@ -362,7 +362,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                        "If boundary sources are set, adjoint angular fluxes "
                        "must be available for response evaluation.");
 
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();

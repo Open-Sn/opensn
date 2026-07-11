@@ -65,7 +65,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
 {
   opensn::mpi_comm.barrier();
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   auto& phi_new_local = do_problem.GetPhiNewLocal();
   const auto& groupsets = do_problem.GetGroupsets();
@@ -371,7 +371,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
 
   OpenSnInvalidArgumentIf(groupset_id >= do_problem.GetNumGroupsets(), "Invalid groupset id.");
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& groupset = do_problem.GetGroupset(groupset_id);
   const auto& cell_transport_views = do_problem.GetCellTransportViews();
@@ -430,7 +430,7 @@ std::map<uint64_t, std::vector<double>>
 ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>& boundary_ids)
 {
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto uniq = grid->GetUniqueBoundaryIDs();
   for (const auto& bid : boundary_ids)
     OpenSnInvalidArgumentIf(std::find(uniq.begin(), uniq.end(), bid) == uniq.end(),

@@ -357,7 +357,7 @@ TransientSolver::StepPrecursors()
   do_problem_->ZeroPrecursors();
   auto& phi_new_local = do_problem_->GetPhiNewLocal();
   auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
-  auto grid = do_problem_->GetGrid();
+  auto grid = do_problem_->GetMesh();
 
   // Uses phi_new and precursor_prev_local to compute precursor_new_local (theta-flavor)
   const auto& transport_views = do_problem_->GetCellTransportViews();
