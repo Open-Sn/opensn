@@ -113,7 +113,7 @@ SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid)
       std::vector<double> nodal_phi(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
       {
-        const auto jmap = sdm.MapDOFLocal(cell, j);
+        const auto jmap = sdm.MapDOFLocal(cell_local_id, j);
         nodal_phi[j] = field_wg[jmap];
       }
 

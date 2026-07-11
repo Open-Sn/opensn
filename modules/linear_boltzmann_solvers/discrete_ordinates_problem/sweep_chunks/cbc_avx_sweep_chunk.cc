@@ -92,9 +92,8 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
   const double* psi_old = nullptr;
   if constexpr (time_dependent)
-    psi_old =
-      &sweep_chunk
-         .psi_old_[sweep_chunk.discretization_.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+    psi_old = &sweep_chunk.psi_old_[sweep_chunk.discretization_.MapDOFLocal(
+      cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
 
   const auto& as_angle_indices = angle_set.GetAngleIndices();
   PrepareNonlocalOutgoingPsi(sweep_chunk.workspace_,
@@ -308,7 +307,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
     if (sweep_chunk.SaveAngularFluxEnabled())
     {
       auto* psi_new = &sweep_chunk.destination_psi_[sweep_chunk.discretization_.MapDOFLocal(
-        cell, 0, groupset.psi_uk_man_, 0, 0)];
+        cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
 
       double theta = 1.0;
       double inv_theta = 1.0;

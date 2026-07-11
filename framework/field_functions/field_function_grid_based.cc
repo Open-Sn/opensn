@@ -200,7 +200,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
         {
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto dof_map = discretization_->MapDOFLocal(cell, j, uk_man, 0, c);
+            const auto dof_map = discretization_->MapDOFLocal(cell_local_id, j, uk_man, 0, c);
             const double dof_value = field_vector[dof_map];
 
             local_point_value[c] += dof_value * shape_values(j);
@@ -245,7 +245,8 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
   const size_t num_nodes = cell_mapping.GetNumNodes();
   for (size_t j = 0; j < num_nodes; ++j)
   {
-    const auto dof_map = discretization_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);
+    const auto dof_map =
+      discretization_->MapDOFLocal(cell_local_id, j, GetUnknownManager(), 0, component);
     value += field_vector[dof_map] * shape_values(j);
   }
 
@@ -301,15 +302,17 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
       point_array->SetName(component_name.c_str());
 
       // Populate the array here
-      for (const auto& cell : grid->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
+        const auto& cell = grid->GetLocalCell(cell_local_id);
         const size_t num_nodes = sdm->GetCellNumNodes(cell);
 
         if (num_nodes == cell.vertex_ids.size())
         {
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const auto nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(cell_local_id, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
 
@@ -321,7 +324,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
           double node_average = 0.0;
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const auto nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(cell_local_id, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
             node_average += field_value;

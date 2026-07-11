@@ -1295,8 +1295,8 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
           for (const auto& [idir, jdir] : reversed_angle_map)
           {
             const auto dof_map =
-              std::make_pair(discretization_->MapDOFLocal(cell, i, uk_man, idir, 0),
-                             discretization_->MapDOFLocal(cell, i, uk_man, jdir, 0));
+              std::make_pair(discretization_->MapDOFLocal(cell_local_id, i, uk_man, idir, 0),
+                             discretization_->MapDOFLocal(cell_local_id, i, uk_man, jdir, 0));
 
             for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
               std::swap(psi[dof_map.first + gsg], psi[dof_map.second + gsg]);

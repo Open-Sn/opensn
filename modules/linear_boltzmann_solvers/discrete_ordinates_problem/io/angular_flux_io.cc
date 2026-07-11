@@ -91,13 +91,15 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
 
     // Write the groupset angular flux data
     std::vector<double> values;
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
-            const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, n, g);
             values.push_back(src[groupset_id][dof_map]);
           }
     }
@@ -231,13 +233,14 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
     for (uint64_t c = 0; c < file_num_local_cells; ++c)
     {
       const auto cell_global_id = file_cell_ids[c];
-      const auto& cell = grid->GetGlobalCell(cell_global_id);
+      const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
             const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
-            const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell_local_id, imap, uk_man, n, g);
             psi[dof_map] = values[v];
             ++v;
           }

@@ -172,10 +172,10 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         }
       }
 
-      const double* psi_old =
-        (time_dependent and data.psi_old)
-          ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
-          : nullptr;
+      const double* psi_old = (time_dependent and data.psi_old)
+                                ? &(*data.psi_old)[data.discretization.MapDOFLocal(
+                                    cell_local_id, 0, groupset.psi_uk_man_, 0, 0)]
+                                : nullptr;
       const double* m2d_row = m2d_op.data() + direction_num * static_cast<size_t>(data.num_moments);
       const double* d2m_row = d2m_op.data() + direction_num * static_cast<size_t>(data.num_moments);
 
@@ -233,9 +233,8 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
       if (data.save_angular_flux)
       {
-        double* psi_new =
-          &data
-             .destination_psi[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+        double* psi_new = &data.destination_psi[data.discretization.MapDOFLocal(
+          cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
         double theta = 1.0;
         double inv_theta = 1.0;
         if constexpr (time_dependent)

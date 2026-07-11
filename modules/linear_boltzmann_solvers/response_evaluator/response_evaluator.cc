@@ -437,7 +437,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                 {
                   const auto& wt = quadrature->GetWeight(n);
                   const auto weight = -mu * wt * intF_shapeI;
-                  const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
+                  const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, n, 0);
 
                   for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
                     local_response +=
