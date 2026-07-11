@@ -632,7 +632,8 @@ SMMAcceleration::ComputeSourceCorrection() const
       if (face.has_neighbor)
       {
         const auto& nbr_cell = grid->GetGlobalCell(face.neighbor_id);
-        const auto& nbr_cell_mapping = pwld.GetGlobalCellMapping(nbr_cell);
+        const auto nbr_cell_local_id = grid->MapCellGlobalID2LocalID(face.neighbor_id);
+        const auto& nbr_cell_mapping = pwld.GetLocalCellMapping(nbr_cell_local_id);
         const auto& nbr_nodes = nbr_cell_mapping.GetNodeLocations();
 
         for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)

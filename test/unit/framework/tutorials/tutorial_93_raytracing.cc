@@ -120,7 +120,8 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
       const int g,
       double weight)
   {
-    const auto& cell_mapping = sdm.GetGlobalCellMapping(cell);
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell.global_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto phi_theta = OmegaToPhiThetaSafe(omega);
