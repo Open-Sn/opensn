@@ -87,7 +87,7 @@ SCDSAAcceleration::Initialize()
   else
   {
     const auto& sdm = do_problem_.GetSpatialDiscretization();
-    pwlc_ptr_ = PieceWiseLinearContinuous::New(sdm.GetGrid());
+    pwlc_ptr_ = PieceWiseLinearContinuous::New(sdm.GetMesh());
     ghost_info_ = MakePWLDGhostInfo(sdm, do_problem_.GetUnknownManager());
     diffusion_solver_ = std::make_shared<DiffusionPWLCSolver>(std::string(GetName() + "_WGDSA"),
                                                               *pwlc_ptr_,

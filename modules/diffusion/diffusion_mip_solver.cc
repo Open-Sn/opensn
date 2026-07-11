@@ -1193,7 +1193,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 double
 DiffusionMIPSolver::HPerpendicular(std::uint32_t cell_local_id, unsigned int f)
 {
-  const auto& mesh = sdm_.GetGrid();
+  const auto& mesh = sdm_.GetMesh();
   const auto& cell = mesh->GetLocalCell(cell_local_id);
   const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
   double hp = 0.0;

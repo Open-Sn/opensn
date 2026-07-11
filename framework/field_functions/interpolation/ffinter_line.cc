@@ -45,7 +45,7 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
 
   ref_ff_ = field_function_;
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
 
   // Assign each interpolation point to a single globally-determined owning cell.
   auto estimated_local_size = number_of_points_ / opensn::mpi_comm.size();
@@ -104,7 +104,7 @@ FieldFunctionInterpolationLine::Execute()
   log.Log0Verbose1() << "Executing line interpolator.";
 
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
   const auto& uk_man = ref_ff_->GetUnknownManager();
   const auto uid = 0;
   const auto cid = ref_component_;
