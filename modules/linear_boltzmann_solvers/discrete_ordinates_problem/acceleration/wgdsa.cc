@@ -94,8 +94,8 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       double* delta_phi_mapped = &delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -131,8 +131,8 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       const double* delta_phi_mapped = &delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
@@ -175,8 +175,8 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       double* output_mapped = &output_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -214,8 +214,8 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];

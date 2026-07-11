@@ -128,7 +128,7 @@ FieldFunctionInterpolationLine::Execute()
     double point_value = 0.0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
+      const auto imap = sdm.MapDOFLocal(cell_local_index, i, uk_man, uid, cid);
       point_value += shape_function_vals(i) * field_data[imap];
     }
     local_interpolation_values_[p] = point_value;

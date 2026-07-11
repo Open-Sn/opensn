@@ -59,7 +59,7 @@ public:
 
   /// Maps the local address of a degree of freedom. This can include ghost entries if the specific
   /// discretization has any.
-  virtual uint64_t MapDOFLocal(const Cell& cell,
+  virtual uint64_t MapDOFLocal(std::uint32_t cell_local_id,
                                unsigned int node,
                                const UnknownManager& unknown_manager,
                                unsigned int unknown_id,
@@ -75,7 +75,7 @@ public:
    * Maps the local address of a degree of freedom. This can include ghost entries if the specific
    * discretization has any. Default structure here is a single scalar unknown.
    */
-  virtual uint64_t MapDOFLocal(const Cell& cell, unsigned int node) const = 0;
+  virtual uint64_t MapDOFLocal(std::uint32_t cell_local_id, unsigned int node) const = 0;
 
   /// Returns the number of local nodes used in this discretization.
   std::uint64_t GetNumLocalNodes() const;
