@@ -128,7 +128,7 @@ CrossSectionSensitivityPostprocessor::CrossSectionSensitivityPostprocessor(
 void
 CrossSectionSensitivityPostprocessor::CreateSpatialRestriction()
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
 
   if (logical_volumes_.empty())
   {
@@ -157,7 +157,7 @@ std::vector<std::uint32_t>
 CrossSectionSensitivityPostprocessor::GetLogicalVolumeCellIDs(
   std::shared_ptr<LogicalVolume> log_vol) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   std::vector<std::uint32_t> cell_ids;
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
@@ -331,7 +331,7 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
   const std::vector<std::vector<double>>& forward_psi,
   const std::vector<std::vector<double>>& adjoint_psi) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& groupsets = do_problem_->GetGroupsets();
@@ -400,7 +400,7 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
   const std::vector<double>& forward_phi,
   const std::vector<double>& adjoint_phi) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto from_group = from_group_.value_or(0);
@@ -480,7 +480,7 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
   const std::vector<double>& forward_phi,
   const std::vector<double>& adjoint_phi) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto group = selected_group_.value_or(0);
@@ -542,7 +542,7 @@ double
 CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
   const std::vector<double>& forward_phi, const std::vector<double>& adjoint_phi) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
 

@@ -14,7 +14,7 @@ ComputeUnitCellIntegrals(const SpatialDiscretization& sdm,
                          std::uint32_t cell_local_id,
                          const CoordinateSystemType coord_sys)
 {
-  const auto& cell = sdm.GetGrid()->GetLocalCell(cell_local_id);
+  const auto& cell = sdm.GetMesh()->GetLocalCell(cell_local_id);
   auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
   const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
   const size_t cell_num_faces = cell.faces.size();
