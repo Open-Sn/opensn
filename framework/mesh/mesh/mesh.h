@@ -282,6 +282,8 @@ public:
    */
   double GetCellVolume(uint64_t id) const;
 
+  int GetCellPartition(std::uint32_t cell_local_id) const;
+
 private:
   /// Spatial dimension
   unsigned int dim_;
