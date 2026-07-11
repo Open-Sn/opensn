@@ -35,20 +35,6 @@ public:
     return *cell_mappings_[cell_local_id];
   }
 
-  const CellMapping& GetGlobalCellMapping(const Cell& cell) const
-  {
-    if (cell.local_id < cell_mappings_.size())
-    {
-      assert(cell.local_id < cell_mappings_.size());
-      return *cell_mappings_[cell.local_id];
-    }
-    else
-    {
-      assert(nb_cell_mappings_.contains(cell.global_id));
-      return *nb_cell_mappings_.at(cell.global_id);
-    }
-  }
-
   SpatialDiscretizationType GetType() const;
 
   /// Returns the reference grid on which this discretization is based.

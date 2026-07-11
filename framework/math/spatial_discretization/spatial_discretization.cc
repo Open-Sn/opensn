@@ -120,8 +120,8 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
       std::vector<int> face_adj_mapping(num_face_nodes, -1);
       if (face.has_neighbor)
       {
-        const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
-        const auto& adj_cell_mapping = this->GetGlobalCellMapping(adj_cell);
+        const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
+        const auto& adj_cell_mapping = this->GetLocalCellMapping(adj_cell_local_id);
         const auto& adj_node_locations = adj_cell_mapping.GetNodeLocations();
         const size_t adj_num_nodes = adj_cell_mapping.GetNumNodes();
 
