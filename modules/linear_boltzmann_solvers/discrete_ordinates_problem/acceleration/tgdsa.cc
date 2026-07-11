@@ -85,7 +85,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                               std::vector<double>& delta_phi_local)
 {
 
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
@@ -134,7 +134,7 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                  std::vector<double>& ref_phi_new)
 {
 
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 

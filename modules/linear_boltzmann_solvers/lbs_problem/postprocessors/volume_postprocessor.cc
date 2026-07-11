@@ -109,7 +109,7 @@ VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
 void
 VolumePostprocessor::CreateSpatialRestriction()
 {
-  const auto& grid = lbs_problem_->GetGrid();
+  const auto& grid = lbs_problem_->GetMesh();
 
   if (logical_volumes_.empty())
   {
@@ -182,7 +182,7 @@ VolumePostprocessor::CreateMultipliers()
 std::vector<std::uint32_t>
 VolumePostprocessor::GetLogicalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol)
 {
-  const auto& grid = lbs_problem_->GetGrid();
+  const auto& grid = lbs_problem_->GetMesh();
 
   // filter on logical volumes
   std::vector<std::uint32_t> cell_ids;

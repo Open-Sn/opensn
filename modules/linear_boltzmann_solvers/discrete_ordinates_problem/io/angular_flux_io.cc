@@ -29,7 +29,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   log.Log() << "Writing angular flux to " << file_base;
 
   // Write macro info
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 
@@ -131,7 +131,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   H5ReadAttribute(file.Id(), "mesh/num_local_cells", file_num_local_cells);
   H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes);
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 

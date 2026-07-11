@@ -273,7 +273,7 @@ DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi
   phi_local.resize(diff_num_local_dofs);
   std::fill(phi_local.begin(), phi_local.end(), 0.0);
 
-  const auto& grid = do_problem_.GetGrid();
+  const auto& grid = do_problem_.GetMesh();
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
@@ -314,10 +314,10 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
     output.resize(output_size, 0.0);
   OpenSnLogicalErrorIf(output.size() != output_size, "Output vector size mismatch");
 
-  for (std::uint32_t cell_local_id = 0; cell_local_id < do_problem_.GetGrid()->GetLocalCellCount();
+  for (std::uint32_t cell_local_id = 0; cell_local_id < do_problem_.GetMesh()->GetLocalCellCount();
        ++cell_local_id)
   {
-    const auto& cell = do_problem_.GetGrid()->GetLocalCell(cell_local_id);
+    const auto& cell = do_problem_.GetMesh()->GetLocalCell(cell_local_id);
     const auto& cell_mapping = lbs_sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 

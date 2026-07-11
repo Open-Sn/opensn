@@ -13,7 +13,7 @@ double
 ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& options = lbs_problem.GetOptions();
@@ -74,7 +74,7 @@ double
 ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   assert(phi.size() == lbs_problem.GetPhiNewLocal().size() && "ComputeFissionRate size mismatch.");
@@ -127,7 +127,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
   auto& precursor_new_local = lbs_problem.GetPrecursorsNewLocal();
   precursor_new_local.assign(precursor_new_local.size(), 0.0);
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
