@@ -83,7 +83,7 @@ DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostIndices(const SpatialDiscretiz
                                                           const UnknownManager& uk_man)
 {
   std::set<uint64_t> ghost_ids;
-  const auto& grid = *pwld.GetGrid();
+  const auto& grid = *pwld.GetMesh();
   for (const uint64_t ghost_id : grid.GetGhostGlobalIDs())
   {
     const auto& cell = grid.GetGlobalCell(ghost_id);
@@ -135,7 +135,7 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
   auto input_with_ghosts = vgc->MakeGhostedVector(input);
   vgc->CommunicateGhostEntries(input_with_ghosts);
 
-  const auto& grid = pwld_sdm.GetGrid();
+  const auto& grid = pwld_sdm.GetMesh();
 
   const size_t num_unknowns = uk_man.unknowns.size();
 
