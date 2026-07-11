@@ -73,7 +73,6 @@ PieceWiseLinearBase::CreateCellMappings()
   {
     auto ghost_mapping = MakeCellMapping(grid_->GetGlobalCell(ghost_id));
     cell_mappings_.push_back(std::move(ghost_mapping));
-    nb_cell_mappings_.insert(std::make_pair(ghost_id, cell_mappings_.back().get()));
   }
 }
 } // namespace opensn
