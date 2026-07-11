@@ -21,7 +21,7 @@ SpatialDiscretization::GetType() const
 }
 
 std::shared_ptr<Mesh>
-SpatialDiscretization::GetGrid() const
+SpatialDiscretization::GetMesh() const
 {
   return grid_;
 }

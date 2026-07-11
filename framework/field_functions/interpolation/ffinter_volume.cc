@@ -32,7 +32,7 @@ FieldFunctionInterpolationVolume::RebuildVolumeCellList()
   if (logical_volume_ == nullptr)
     throw std::logic_error("Unassigned logical volume in volume field function interpolator.");
 
-  const auto& grid = field_function_->GetSpatialDiscretization().GetGrid();
+  const auto& grid = field_function_->GetSpatialDiscretization().GetMesh();
 
   // Find cells inside volume
   cell_local_ids_inside_logvol_.clear();
@@ -51,7 +51,7 @@ FieldFunctionInterpolationVolume::Execute()
 
   const auto& ref_ff = *field_function_;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;

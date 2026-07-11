@@ -38,7 +38,7 @@ public:
   SpatialDiscretizationType GetType() const;
 
   /// Returns the reference grid on which this discretization is based.
-  std::shared_ptr<Mesh> GetGrid() const;
+  std::shared_ptr<Mesh> GetMesh() const;
 
   /**
    * Builds the sparsity pattern for a local block matrix compatible withthe given unknown manager.

@@ -26,7 +26,7 @@ FieldFunctionInterpolationPoint::RebuildPointLocationData()
   if (not field_function_)
     throw std::logic_error("Unassigned field function in point field function interpolator.");
 
-  const auto& grid = field_function_->GetSpatialDiscretization().GetGrid();
+  const auto& grid = field_function_->GetSpatialDiscretization().GetMesh();
   std::vector<uint64_t> cells_potentially_owning_point;
   for (const auto& cell : grid->GetLocalCells())
   {
@@ -73,7 +73,7 @@ FieldFunctionInterpolationPoint::Execute()
 
   const auto& ref_ff = *field_function_;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;

@@ -24,7 +24,7 @@ ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
                         const std::vector<double>& phi_new_local,
                         const unsigned int num_groups)
 {
-  const auto& cell_mapping = sdm.GetGlobalCellMapping(cell);
+  const auto& cell_mapping = sdm.GetLocalCellMapping(cell.local_id);
   const size_t num_nodes = cell_mapping.GetNumNodes();
   const auto& intV_shapeI = unit_cell_matrices[cell.local_id].intV_shapeI;
 

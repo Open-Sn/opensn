@@ -481,7 +481,7 @@ VolumePostprocessor::AccumulateLocalIntegral(const std::vector<uint32_t>& cell_l
                                              double* volume)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
   const auto& phi = lbs_problem_->GetPhiNewLocal();
   auto coord = sdm.GetSpatialWeightingFunction();
@@ -526,7 +526,7 @@ VolumePostprocessor::ComputeLocalExtremum(const std::vector<uint32_t>& cell_loca
                                           double* extremum)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
   const auto& phi = lbs_problem_->GetPhiNewLocal();
 
