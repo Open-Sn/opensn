@@ -1048,4 +1048,19 @@ Mesh::GetCellVolume(uint64_t id) const
   return cell_volumes_[id];
 }
 
+int
+Mesh::GetCellPartition(std::uint32_t cell_local_id) const
+{
+  if (cell_local_id < local_cells_.size())
+  {
+    return local_cells_[cell_local_id].partition_id;
+  }
+  else if (cell_local_id - local_cells_.size() < ghost_cells_.size())
+  {
+    return ghost_cells_[cell_local_id - local_cells_.size()].partition_id;
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
 } // namespace opensn
