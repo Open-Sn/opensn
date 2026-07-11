@@ -87,7 +87,8 @@ DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostIndices(const SpatialDiscretiz
   for (const uint64_t ghost_id : grid.GetGhostGlobalIDs())
   {
     const auto& cell = grid.GetGlobalCell(ghost_id);
-    const auto& cell_mapping = pwld.GetGlobalCellMapping(cell);
+    const auto cell_local_id = grid.MapCellGlobalID2LocalID(cell.global_id);
+    const auto& cell_mapping = pwld.GetLocalCellMapping(cell_local_id);
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       for (int u = 0; u < uk_man.GetNumberOfUnknowns(); ++u)
         for (int c = 0; c < uk_man.unknowns[u].GetNumComponents(); ++c)
@@ -187,7 +188,8 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
   for (const auto global_id : ghost_cell_ids)
   {
     const auto& cell = grid->GetGlobalCell(global_id);
-    const auto& cell_mapping = pwld_sdm.GetGlobalCellMapping(cell);
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(global_id);
+    const auto& cell_mapping = pwld_sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
