@@ -36,7 +36,7 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
   const SPDS& spds, const std::vector<CellFaceNodalMapping>& grid_nodal_mappings)
   : FLUDSCommonData(spds, grid_nodal_mappings), num_incoming_faces_(0), num_outgoing_faces_(0)
 {
-  const auto& grid = *spds.GetGrid();
+  const auto& grid = *spds.GetMesh();
   const auto& face_orientations = spds.GetCellFaceOrientations();
   face_offsets_.resize(grid.GetLocalCellCount(), 0);
 
@@ -101,7 +101,7 @@ CBC_FLUDSCommonData::FinalizeBeta()
 {
   if (finalized_)
     throw std::logic_error("CBC FLUDS common data has already been finalized");
-  const auto& grid = *spds_.GetGrid();
+  const auto& grid = *spds_.GetMesh();
   const auto& face_orientations = spds_.GetCellFaceOrientations();
   boost::unordered_flat_map<int, std::size_t> outgoing_peer_index_by_location;
   const auto& location_successors = spds_.GetLocationSuccessors();

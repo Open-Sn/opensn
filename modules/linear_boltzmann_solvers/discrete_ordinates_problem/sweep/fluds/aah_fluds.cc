@@ -515,7 +515,7 @@ template <typename Fn>
 void
 AAH_FLUDS::ForEachDelayedIncomingFace(const Fn& fn) const
 {
-  const auto& grid = *spds_.GetGrid();
+  const auto& grid = *spds_.GetMesh();
   const auto& spls = spds_.GetLocalSubgrid();
   const auto& face_orientations = spds_.GetCellFaceOrientations();
 
@@ -612,7 +612,7 @@ AAH_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
 {
   OpenSnLogicalErrorIf(angle_indices.size() != num_angles_,
                        "AAH_FLUDS: the number of directions does not match the FLUDS.");
-  const auto& grid = *spds_.GetGrid();
+  const auto& grid = *spds_.GetMesh();
   const auto& omegas = quadrature.GetOmegas();
   const auto& weights = quadrature.GetWeights();
 
