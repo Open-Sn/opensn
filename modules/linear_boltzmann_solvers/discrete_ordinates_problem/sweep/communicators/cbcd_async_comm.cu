@@ -138,7 +138,7 @@ CBCD_AsynchronousCommunicator::ReceiveData()
 
         deplocs_outgoing_messages[{cell_global_id, face_id}] = std::move(psi_data);
         cells_who_received_data.push_back(
-          fluds_.GetSPDS().GetGrid()->MapCellGlobalID2LocalID(cell_global_id));
+          fluds_.GetSPDS().GetMesh()->MapCellGlobalID2LocalID(cell_global_id));
       }
     }
   }

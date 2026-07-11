@@ -16,7 +16,7 @@ namespace opensn
 void
 CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization& sdm)
 {
-  const Mesh& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   const std::size_t num_local_cells = grid.GetLocalCellCount();
   std::uint64_t total_face_nodes = 0;
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
