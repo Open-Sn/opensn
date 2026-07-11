@@ -31,7 +31,7 @@ public:
   const Cell& GetCell() const { return cell_; }
 
   /// Returns the grid on which the cell for this mapping lives.
-  std::shared_ptr<Mesh> GetGrid() const { return grid_; }
+  std::shared_ptr<Mesh> GetMesh() const { return grid_; }
 
   /// Returns the number of nodes on this element.
   size_t GetNumNodes() const { return num_nodes_; }
