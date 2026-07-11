@@ -21,7 +21,7 @@ public:
   AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset);
 
   DiscreteOrdinatesProblem& GetProblem() { return problem_; }
-  Mesh& GetGrid() { return *grid_; }
+  Mesh& GetMesh() { return *grid_; }
   const LBSGroupset& GetGroupset() const { return groupset_; }
 
   void Sweep(AngleSet& angle_set) override;
