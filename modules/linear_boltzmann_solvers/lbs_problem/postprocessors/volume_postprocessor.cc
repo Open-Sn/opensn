@@ -277,7 +277,7 @@ std::vector<double>
 VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
   const auto phi = lbs_problem_->GetPhiNewLocal();
   auto coord = sdm.GetSpatialWeightingFunction();
@@ -323,7 +323,7 @@ std::vector<double>
 VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
   const auto phi = lbs_problem_->GetPhiNewLocal();
 
@@ -356,7 +356,7 @@ std::vector<double>
 VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
   const auto phi = lbs_problem_->GetPhiNewLocal();
 
@@ -389,7 +389,7 @@ std::vector<double>
 VolumePostprocessor::ComputeVolumeWeightedAverage(const std::vector<uint32_t>& cell_local_ids)
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
   const auto phi = lbs_problem_->GetPhiNewLocal();
   auto coord = sdm.GetSpatialWeightingFunction();
