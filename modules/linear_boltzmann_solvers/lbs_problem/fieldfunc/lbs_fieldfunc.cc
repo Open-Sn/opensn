@@ -147,8 +147,8 @@ LBSProblem::ComputeScalarFluxFieldFunctionData(const unsigned int g, const unsig
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-      const auto imapB = sdm.MapDOFLocal(cell, i);
+      const auto imapA = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, g);
+      const auto imapB = sdm.MapDOFLocal(cell_local_id, i);
       data_vector_local[imapB] = phi_new_local_[imapA];
     }
   }
@@ -199,8 +199,8 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i);
-      const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+      const auto imapA = sdm.MapDOFLocal(cell_local_id, i);
+      const auto imapB = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
       double nodal_value = 0.0;
       for (unsigned int g = 0; g < num_groups_; ++g)
@@ -235,8 +235,8 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i);
-      const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+      const auto imapA = sdm.MapDOFLocal(cell_local_id, i);
+      const auto imapB = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
       double nodal_power = 0.0;
       for (unsigned int g = 0; g < num_groups_; ++g)

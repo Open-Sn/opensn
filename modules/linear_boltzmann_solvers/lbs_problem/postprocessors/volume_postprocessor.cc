@@ -296,7 +296,7 @@ VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids
       std::vector<double> nodal_value(num_nodes, 0.0);
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = sdm.MapDOFLocal(cell_id, i, uk_man, 0, groups_[k]);
         nodal_value[i] = phi[imap];
       }
 
@@ -339,7 +339,7 @@ VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
     {
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = sdm.MapDOFLocal(cell_id, i, uk_man, 0, groups_[k]);
         local_max[k] = std::max(local_max[k], coeffs[groups_[k]] * phi[imap]);
       }
     }
@@ -372,7 +372,7 @@ VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
     {
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = sdm.MapDOFLocal(cell_id, i, uk_man, 0, groups_[k]);
         local_min[k] = std::min(local_min[k], coeffs[groups_[k]] * phi[imap]);
       }
     }

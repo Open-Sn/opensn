@@ -279,7 +279,7 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
     const auto& cell = grid.GetLocalCell(cell_local_id);
     // get pointer to the cell's angular fluxes
     double* dst_psi =
-      &destination_psi[discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+      &destination_psi[discretization.MapDOFLocal(cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
     double* src_psi = save_angular_flux_.host_storage.data() +
                       mesh_carrier->saved_psi_offset[cell_local_id] * num_groups_and_angles_;
     // get number of cell nodes

@@ -343,7 +343,7 @@ SMMAcceleration::ComputeBoundaryFactors()
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const auto i = cell_mapping.MapFaceNode(f, fi);
-          const auto imap = pwld.MapDOFLocal(cell, i);
+          const auto imap = pwld.MapDOFLocal(cell_local_id, i);
 
           if (bndry_factors_.count(imap) == 0)
             bndry_factors_[imap].resize(num_groupsets, 0.0);
@@ -412,7 +412,7 @@ SMMAcceleration::AssembleDiffusionBCs() const
             {
               const auto j = cell_mapping.MapFaceNode(f, fj);
               const auto jmap = diff_sd.MapDOF(cell, j, diff_uk_man, 0, 0);
-              const auto bfac = bndry_factors_.at(pwld.MapDOFLocal(cell, j))[0];
+              const auto bfac = bndry_factors_.at(pwld.MapDOFLocal(cell_local_id, j))[0];
 
               for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
               {
@@ -473,7 +473,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
           const auto g = first_grp + gsg;
 
           // Get the tensor, set it to zero
-          const auto dof_map = pwld.MapDOFLocal(cell, i, tensor_uk_man_, g, 0);
+          const auto dof_map = pwld.MapDOFLocal(cell_local_id, i, tensor_uk_man_, g, 0);
           double* T = &local_tensors[dof_map];
 
           // Perform the quad integration
@@ -482,7 +482,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
             const auto& omega = quad->GetOmega(d);
             const auto& wt = quad->GetWeight(d);
 
-            const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
+            const auto psi_dof = pwld.MapDOFLocal(cell_local_id, i, psi_uk_man, d, gsg);
             const auto coeff = wt * psi[gs][psi_dof];
 
             for (size_t k = 0; k < dimension_; ++k)
@@ -510,7 +510,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
             const auto i = cell_mapping.MapFaceNode(f, fi);
-            const auto imap = pwld.MapDOFLocal(cell, i);
+            const auto imap = pwld.MapDOFLocal(cell_local_id, i);
             const auto bfac = bndry_factors_[imap][gs];
 
             // Reset boundary closures
@@ -529,7 +529,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
                 const auto& omega = quad->GetOmega(d);
                 const auto mu = std::fabs(omega.Dot(face.normal));
 
-                const auto psi_dof = pwld.MapDOFLocal(cell, i, psi_uk_man, d, gsg);
+                const auto psi_dof = pwld.MapDOFLocal(cell_local_id, i, psi_uk_man, d, gsg);
                 beta[g] += wt * (mu - bfac) * psi[gs][psi_dof];
               } // for direction n
             } // for groupset group gsg
@@ -604,7 +604,7 @@ SMMAcceleration::ComputeSourceCorrection() const
         {
           // Here, because the tensors are transport-based, the transport
           // discretization is used to obtain the tensor DoF.
-          const auto jmap = pwld.MapDOFLocal(cell, j, tensor_uk_man_, g, 0);
+          const auto jmap = pwld.MapDOFLocal(cell_local_id, j, tensor_uk_man_, g, 0);
           const double* T = &tensors[jmap];
 
           // This adds the rank-2 tensor contraction (double dot product)
@@ -663,10 +663,10 @@ SMMAcceleration::ComputeSourceCorrection() const
               const auto jp = MapAssociatedFaceNode(nodes[jm], nbr_nodes);
 
               // Get the SM tensor DoFs
-              const auto jmmap = pwld.MapDOFLocal(cell, jm, tensor_uk_man_, g, 0);
+              const auto jmmap = pwld.MapDOFLocal(cell_local_id, jm, tensor_uk_man_, g, 0);
               const auto jpmap =
                 grid->IsCellLocal(face.neighbor_id)
-                  ? pwld.MapDOFLocal(nbr_cell, jp, tensor_uk_man_, g, 0)
+                  ? pwld.MapDOFLocal(nbr_cell_local_id, jp, tensor_uk_man_, g, 0)
                   : tensors_->MapGhostToLocal(pwld.MapDOF(nbr_cell, jp, tensor_uk_man_, g, 0));
 
               const double* Tm = &tensors[jmmap];
@@ -711,7 +711,7 @@ SMMAcceleration::ComputeSourceCorrection() const
               double val = 0.0;
               for (size_t j = 0; j < num_cell_nodes; ++j)
               {
-                const auto jmap = pwld.MapDOFLocal(cell, j, tensor_uk_man_, g, 0);
+                const auto jmap = pwld.MapDOFLocal(cell_local_id, j, tensor_uk_man_, g, 0);
                 const double* Tm = &tensors[jmap];
 
                 for (size_t k = 0; k < dimension_; ++k)
@@ -763,7 +763,7 @@ SMMAcceleration::ComputeSourceCorrection() const
               for (size_t fj = 0; fj < num_face_nodes; ++fj)
               {
                 const auto j = cell_mapping.MapFaceNode(f, fj);
-                const auto jmap = pwld.MapDOFLocal(cell, j);
+                const auto jmap = pwld.MapDOFLocal(cell_local_id, j);
                 val += betas_.at(jmap)[g] * face_M(i, j);
               } // for face node fj
 
@@ -872,7 +872,7 @@ SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
         double val = 0.0;
         for (size_t j = 0; j < num_cell_nodes; ++j)
         {
-          const auto jmap = pwld.MapDOFLocal(cell, j, uk_man, 0, g);
+          const auto jmap = pwld.MapDOFLocal(cell_local_id, j, uk_man, 0, g);
           val += M(i, j) * q0[jmap];
         }
         rhs.SetValue(imap, val, VecOpType::ADD_VALUE);

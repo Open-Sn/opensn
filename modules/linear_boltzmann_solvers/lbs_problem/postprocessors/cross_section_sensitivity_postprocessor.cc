@@ -348,7 +348,7 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
         const auto V_i = fe_values.intV_shapeI(i);
         for (size_t n = 0; n < num_gs_angles; ++n)
         {
-          const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
+          const auto dof_map = discretization.MapDOFLocal(cell_id, i, uk_man, n, 0);
           const auto weight = quadrature->GetWeight(n) * V_i;
           for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
           {

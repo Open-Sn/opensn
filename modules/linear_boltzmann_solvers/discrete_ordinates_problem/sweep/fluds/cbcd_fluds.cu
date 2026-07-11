@@ -236,7 +236,8 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    double* dst_psi = &destination_psi[discretization.MapDOFLocal(cell, 0, psi_uk_man_, 0, 0)];
+    double* dst_psi =
+      &destination_psi[discretization.MapDOFLocal(cell_local_id, 0, psi_uk_man_, 0, 0)];
     double* src_psi =
       host_saved_psi_.data() + mesh->saved_psi_offset[cell_local_id] * GetStrideSize();
     std::uint32_t cell_num_nodes = discretization.GetLocalCellMapping(cell_local_id).GetNumNodes();
