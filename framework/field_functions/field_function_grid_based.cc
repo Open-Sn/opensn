@@ -234,8 +234,9 @@ double
 FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int component) const
 {
   const auto& field_vector = *ghosted_field_vector_;
-
-  const auto& cell_mapping = discretization_->GetGlobalCellMapping(cell);
+  const auto mesh = discretization_->GetGrid();
+  const auto cell_local_id = mesh->MapCellGlobalID2LocalID(cell.global_id);
+  const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
 
   Vector<double> shape_values;
   cell_mapping.ShapeValues(position, shape_values);
