@@ -211,7 +211,6 @@ protected:
 
   const std::shared_ptr<Mesh> grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;
-  std::map<uint64_t, CellMapping*> nb_cell_mappings_;
 
   uint64_t local_block_address_ = 0;
   std::vector<uint64_t> locJ_block_address_;
