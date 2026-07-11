@@ -40,7 +40,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
   std::set<std::pair<std::uint32_t, std::uint32_t>> fas_edges(spds_.GetLocalSweepFAS().begin(),
                                                               spds_.GetLocalSweepFAS().end());
   // for each level
-  const Mesh& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   std::vector<AAHD_DirectedEdgeNode> local_node_stack;
   std::queue<std::uint64_t> idle_slots;
 
@@ -147,7 +147,7 @@ void
 AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscretization& sdm)
 {
   // get reference to the grid
-  const Mesh& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   // record the FAS edges
   std::uint64_t fas_node_index = 0;
   const std::vector<std::pair<std::uint32_t, std::uint32_t>>& fas_edges = spds_.GetLocalSweepFAS();
@@ -188,7 +188,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
 void
 AAHD_FLUDSCommonData::ComputeNodeIndexForNonLocalFaces(const SpatialDiscretization& sdm)
 {
-  const auto& grid = *(spds_.GetGrid());
+  const auto& grid = *(spds_.GetMesh());
   // Sort each bank before assigning node indices so that index ordering is deterministic. Face
   // nodes are unique, so the banks do not require duplicate removal.
   std::vector<std::vector<AAHD_NonLocalFaceNode>> incoming_bank, delayed_incoming_bank,
@@ -315,7 +315,7 @@ void
 AAHD_FLUDSCommonData::ComputeNodeIndexForParallelFaces(const SpatialDiscretization& sdm)
 {
   // get reference to the mesh
-  const Mesh& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   // loop for each cell and detect parallel faces
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {

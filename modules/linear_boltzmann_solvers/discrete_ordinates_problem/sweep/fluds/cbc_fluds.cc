@@ -26,7 +26,7 @@ CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
     incoming_nonlocal_psi_offsets_(common_data.NumIncomingFaces() + 1, 0),
     incoming_psi_epoch_(common_data.NumIncomingFaces(), 0)
 {
-  const auto& grid = *spds_.GetGrid();
+  const auto& grid = *spds_.GetMesh();
   const auto num_angles_in_gs_quadrature = psi_uk_man_.GetNumberOfUnknowns();
   cell_psi_start_.resize(grid.GetLocalCellCount());
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)

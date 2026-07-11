@@ -52,7 +52,7 @@ public:
   SPDS(const Vector3& omega, const std::shared_ptr<Mesh>& grid) : omega_(omega), grid_(grid) {}
 
   /// Return a reference to the Mesh object.
-  std::shared_ptr<Mesh> GetGrid() const { return grid_; }
+  std::shared_ptr<Mesh> GetMesh() const { return grid_; }
 
   /// Return a reference to the direction vector.
   const Vector3& GetOmega() const { return omega_; }
