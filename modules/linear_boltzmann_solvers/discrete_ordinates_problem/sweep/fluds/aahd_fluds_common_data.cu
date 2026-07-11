@@ -34,7 +34,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
 {
   std::uint64_t incremental_boundary_index = 0;
-  const Mesh& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
@@ -99,7 +99,7 @@ AAHD_FLUDSCommonData::CopyFlattenNodeIndexToDevice(const SpatialDiscretization& 
   crb::HostVector<std::uint64_t> cell_offset;
   crb::HostVector<std::uint64_t> data;
   // loop for each cell
-  const Mesh& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   std::uint64_t offset = 2 * grid.GetLocalCellCount();
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {

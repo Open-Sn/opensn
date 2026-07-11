@@ -159,7 +159,7 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
     return;
   const auto& angle_indices = angle_set->GetAngleIndices();
   const auto& num_angles = angle_indices.size();
-  const auto& grid = *(GetSPDS().GetGrid());
+  const auto& grid = *(GetSPDS().GetMesh());
   for (const auto& cell_local_id : cell_local_ids)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
