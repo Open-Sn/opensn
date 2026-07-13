@@ -227,7 +227,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
     const auto& cell_mapping = GetLocalCellMapping(cell_local_id);
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto ir = MapDOF(cell, i);
+      const auto ir = MapDOF(cell.global_id, i);
 
       if (dof_handler.IsMapLocal(ir))
       {
@@ -236,7 +236,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const auto jr = MapDOF(cell, j);
+          const auto jr = MapDOF(cell.global_id, j);
 
           if (IS_VALUE_IN_VECTOR(node_links, jr))
             continue;
@@ -268,7 +268,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto ir = MapDOF(cell, i);
+      const auto ir = MapDOF(cell.global_id, i);
 
       if (not dof_handler.IsMapLocal(ir))
       {
@@ -289,7 +289,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         auto& node_links = cur_ir_link->second;
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const auto jr = MapDOF(cell, j);
+          const auto jr = MapDOF(cell.global_id, j);
 
           if (IS_VALUE_IN_VECTOR(node_links, jr))
             continue;
@@ -416,12 +416,13 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 }
 
 uint64_t
-PieceWiseLinearContinuous::MapDOF(const Cell& cell,
+PieceWiseLinearContinuous::MapDOF(std::uint32_t cell_global_id,
                                   const unsigned int node,
                                   const UnknownManager& unknown_manager,
                                   const unsigned int unknown_id,
                                   const unsigned int component) const
 {
+  const auto& cell = GetMesh()->GetGlobalCell(cell_global_id);
   const uint64_t vertex_id = cell.vertex_ids[node];
 
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0,

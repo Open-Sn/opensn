@@ -111,7 +111,7 @@ SimTest04_PWLC(std::shared_ptr<Mesh> grid)
     // Develop node mapping
     std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = sdm.MapDOF(cell, i);
+      imap[i] = sdm.MapDOF(cell.global_id, i);
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)

@@ -75,7 +75,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
       cell_A.Set(0.);
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
@@ -155,7 +155,8 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           {
             const auto jp = MapFaceNodeDisc(
               cell_local_id, adj_cell_local_id, cc_nodes, ac_nodes, f, acf, fj); // j-plus
-            adj_idxs(fj) = static_cast<PetscInt>(sdm_.MapDOF(adj_cell, jp, uk_man_, 0, g));
+            adj_idxs(fj) =
+              static_cast<PetscInt>(sdm_.MapDOF(adj_cell.global_id, jp, uk_man_, 0, g));
           }
 
           // Assembly penalty terms
@@ -416,7 +417,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
@@ -622,7 +623,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
       cell_A.Set(0.);
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
@@ -689,7 +690,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           {
             const auto jp = MapFaceNodeDisc(
               cell_local_id, adj_cell_local_id, cc_nodes, ac_nodes, f, acf, fj); // j-plus
-            adj_idxs(fj) = static_cast<PetscInt>(sdm_.MapDOF(adj_cell, jp, uk_man_, 0, g));
+            adj_idxs(fj) =
+              static_cast<PetscInt>(sdm_.MapDOF(adj_cell.global_id, jp, uk_man_, 0, g));
           }
 
           // Assembly penalty terms
@@ -916,7 +918,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
@@ -1071,7 +1073,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
