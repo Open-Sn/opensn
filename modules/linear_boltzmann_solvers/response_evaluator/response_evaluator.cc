@@ -479,7 +479,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& cell = grid->GetLocalCell(local_id);
       const auto& transport_view = transport_views[local_id];
       const auto& fe_values = unit_cell_matrices[local_id];
-      const auto& nodes = discretization.GetCellNodeLocations(cell);
+      const auto& nodes = discretization.GetCellNodeLocations(local_id);
 
       const auto num_cell_nodes = transport_view.GetNumNodes();
       for (int i = 0; i < num_cell_nodes; ++i)
