@@ -67,9 +67,9 @@ SpatialDiscretization::GetCellNumNodes(std::uint32_t cell_local_id) const
 }
 
 const std::vector<Vector3>&
-SpatialDiscretization::GetCellNodeLocations(const Cell& cell) const
+SpatialDiscretization::GetCellNodeLocations(std::uint32_t cell_local_id) const
 {
-  return GetLocalCellMapping(cell.local_id).GetNodeLocations();
+  return GetLocalCellMapping(cell_local_id).GetNodeLocations();
 }
 
 std::pair<std::set<uint32_t>, std::set<uint32_t>>
