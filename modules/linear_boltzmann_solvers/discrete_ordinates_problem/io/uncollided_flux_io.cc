@@ -168,7 +168,7 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
         .append("\".");
       OpenSnInvalidArgumentIf(file_cell_it == cell_id_to_file_layout.end(), missing_cell_error);
 
-      const auto num_nodes = discretization.GetCellNumNodes(cell);
+      const auto num_nodes = discretization.GetCellNumNodes(cell_local_id);
       const auto [file_cell_offset, file_num_nodes, file_cell_ordinal] = file_cell_it->second;
       OpenSnInvalidArgumentIf(file_num_nodes != num_nodes,
                               problem_name + ": node count mismatch for cell " +

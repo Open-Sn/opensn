@@ -117,7 +117,7 @@ public:
    * For the given cell, returns the number of relevant nodes. The same can be achieved by
    * retrieving the cell-to-element mapping first.
    */
-  size_t GetCellNumNodes(const Cell& cell) const;
+  size_t GetCellNumNodes(std::uint32_t cell_local_id) const;
 
   /**
    * For the given cell, returns a reference to the relevant node locations. The same can be

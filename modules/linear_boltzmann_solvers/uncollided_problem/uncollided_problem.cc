@@ -658,7 +658,7 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
     global_ids[cell_local_id] = cell.global_id;
-    cell_node_counts[cell_local_id] = sdm.GetCellNumNodes(cell);
+    cell_node_counts[cell_local_id] = sdm.GetCellNumNodes(cell_local_id);
     for (const auto vertex_id : cell.vertex_ids)
     {
       const auto& vertex = grid_->GlobalVertex(vertex_id);

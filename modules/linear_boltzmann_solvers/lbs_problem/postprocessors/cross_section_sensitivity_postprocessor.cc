@@ -343,7 +343,7 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
       const auto num_gs_groups = groupset.GetNumGroups();
       const auto num_gs_angles = quadrature->GetOmegas().size();
 
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_id); ++i)
       {
         const auto V_i = fe_values.intV_shapeI(i);
         for (size_t n = 0; n < num_gs_angles; ++n)
