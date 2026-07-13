@@ -149,7 +149,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
-          const auto imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
+          const auto imap = sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0);
 
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
@@ -161,8 +161,8 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
                                            f,
                                            acf,
                                            fj); // j-plus
-            const auto jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
-            const auto jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
+            const auto jmmap = sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0);
+            const auto jpmap = sdm.MapDOF(adj_cell.global_id, jp, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -181,7 +181,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
         for (int i = 0; i < num_nodes; ++i)
         {
-          const auto imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
+          const auto imap = sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0);
 
           for (int fj = 0; fj < num_face_nodes; ++fj)
           {
@@ -193,8 +193,8 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
                                            f,
                                            acf,
                                            fj); // j-plus
-            const auto jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
-            const auto jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
+            const auto jmmap = sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0);
+            const auto jpmap = sdm.MapDOF(adj_cell.global_id, jp, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -217,12 +217,12 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
                                          f,
                                          acf,
                                          fi); // i-plus
-          const auto immap = sdm.MapDOF(cell, im, OneDofPerNode, 0, 0);
-          const auto ipmap = sdm.MapDOF(adj_cell, ip, OneDofPerNode, 0, 0);
+          const auto immap = sdm.MapDOF(cell.global_id, im, OneDofPerNode, 0, 0);
+          const auto ipmap = sdm.MapDOF(adj_cell.global_id, ip, OneDofPerNode, 0, 0);
 
           for (int j = 0; j < num_nodes; ++j)
           {
-            const auto jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
+            const auto jmap = sdm.MapDOF(cell.global_id, j, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -252,12 +252,12 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
-          const auto imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
+          const auto imap = sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0);
 
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
             const int jm = cell_mapping.MapFaceNode(f, fj);
-            const auto jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
+            const auto jmmap = sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -277,11 +277,11 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         // D* n dot (b_j^+ - b_j^-)*nabla b_i^-
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
+          const auto imap = sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0);
 
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
+            const auto jmap = sdm.MapDOF(cell.global_id, j, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -301,7 +301,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
     // Develop node mapping
     std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = sdm.MapDOF(cell, i);
+      imap[i] = sdm.MapDOF(cell.global_id, i);
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)

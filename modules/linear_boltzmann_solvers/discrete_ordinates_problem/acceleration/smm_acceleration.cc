@@ -406,12 +406,12 @@ SMMAcceleration::AssembleDiffusionBCs() const
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
             const auto i = cell_mapping.MapFaceNode(f, fi);
-            const auto imap = diff_sd.MapDOF(cell, i, diff_uk_man, 0, 0);
+            const auto imap = diff_sd.MapDOF(cell.global_id, i, diff_uk_man, 0, 0);
 
             for (size_t fj = 0; fj < num_face_nodes; ++fj)
             {
               const auto j = cell_mapping.MapFaceNode(f, fj);
-              const auto jmap = diff_sd.MapDOF(cell, j, diff_uk_man, 0, 0);
+              const auto jmap = diff_sd.MapDOF(cell.global_id, j, diff_uk_man, 0, 0);
               const auto bfac = bndry_factors_.at(pwld.MapDOFLocal(cell_local_id, j))[0];
 
               for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
@@ -597,7 +597,7 @@ SMMAcceleration::ComputeSourceCorrection() const
 
       for (size_t i = 0; i < num_cell_nodes; ++i)
       {
-        const auto imap = diff_sd.MapDOF(cell, i, diff_uk_man, 0, gsg);
+        const auto imap = diff_sd.MapDOF(cell.global_id, i, diff_uk_man, 0, gsg);
 
         double val = 0.0;
         for (size_t j = 0; j < num_cell_nodes; ++j)
@@ -650,7 +650,7 @@ SMMAcceleration::ComputeSourceCorrection() const
 
           for (size_t i = 0; i < num_cell_nodes; ++i)
           {
-            const auto imap = diff_sd.MapDOF(cell, i, diff_uk_man, 0, gsg);
+            const auto imap = diff_sd.MapDOF(cell.global_id, i, diff_uk_man, 0, gsg);
 
             double val = 0.0;
             for (size_t fj = 0; fj < num_face_nodes; ++fj)
@@ -664,10 +664,10 @@ SMMAcceleration::ComputeSourceCorrection() const
 
               // Get the SM tensor DoFs
               const auto jmmap = pwld.MapDOFLocal(cell_local_id, jm, tensor_uk_man_, g, 0);
-              const auto jpmap =
-                grid->IsCellLocal(face.neighbor_id)
-                  ? pwld.MapDOFLocal(nbr_cell_local_id, jp, tensor_uk_man_, g, 0)
-                  : tensors_->MapGhostToLocal(pwld.MapDOF(nbr_cell, jp, tensor_uk_man_, g, 0));
+              const auto jpmap = grid->IsCellLocal(face.neighbor_id)
+                                   ? pwld.MapDOFLocal(nbr_cell_local_id, jp, tensor_uk_man_, g, 0)
+                                   : tensors_->MapGhostToLocal(
+                                       pwld.MapDOF(nbr_cell.global_id, jp, tensor_uk_man_, g, 0));
 
               const double* Tm = &tensors[jmmap];
               const double* Tp = &tensors[jpmap];
@@ -705,8 +705,8 @@ SMMAcceleration::ComputeSourceCorrection() const
               const auto ip = MapAssociatedFaceNode(nodes[im], nbr_nodes);
 
               // Get the corresponding current and neighbor cell DoFs
-              const auto immap = diff_sd.MapDOF(cell, im, diff_uk_man, 0, gsg);
-              const auto ipmap = diff_sd.MapDOF(nbr_cell, ip, diff_uk_man, 0, gsg);
+              const auto immap = diff_sd.MapDOF(cell.global_id, im, diff_uk_man, 0, gsg);
+              const auto ipmap = diff_sd.MapDOF(nbr_cell.global_id, ip, diff_uk_man, 0, gsg);
 
               double val = 0.0;
               for (size_t j = 0; j < num_cell_nodes; ++j)
@@ -757,7 +757,7 @@ SMMAcceleration::ComputeSourceCorrection() const
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
-              const auto imap = diff_sd.MapDOF(cell, i, diff_uk_man, 0, gsg);
+              const auto imap = diff_sd.MapDOF(cell.global_id, i, diff_uk_man, 0, gsg);
 
               double val = 0.0;
               for (size_t fj = 0; fj < num_face_nodes; ++fj)
@@ -867,7 +867,7 @@ SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
       const auto g = first_grp + gsg;
       for (size_t i = 0; i < num_cell_nodes; ++i)
       {
-        const auto imap = diff_sd.MapDOF(cell, i, diff_uk_man, 0, gsg);
+        const auto imap = diff_sd.MapDOF(cell.global_id, i, diff_uk_man, 0, gsg);
 
         double val = 0.0;
         for (size_t j = 0; j < num_cell_nodes; ++j)

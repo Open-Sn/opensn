@@ -92,7 +92,7 @@ DiscreteOrdinatesKEigenAcceleration::MakePWLDGhostIndices(const SpatialDiscretiz
     for (int i = 0; i < cell_mapping.GetNumNodes(); ++i)
       for (int u = 0; u < uk_man.GetNumberOfUnknowns(); ++u)
         for (int c = 0; c < uk_man.unknowns[u].GetNumComponents(); ++c)
-          ghost_ids.insert(pwld.MapDOF(cell, i, uk_man, u, c));
+          ghost_ids.insert(pwld.MapDOF(cell.global_id, i, uk_man, u, c));
   }
   return {ghost_ids.begin(), ghost_ids.end()};
 }
@@ -163,7 +163,7 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
         {
           const auto dof_dfem_map = pwld_sdm.MapDOFLocal(cell_local_id, i, uk_man, u, c);
           const auto dof_cfem_map = pwlc_sdm.MapDOFLocal(cell_local_id, i, uk_man, u, c);
-          const auto dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
+          const auto dof_cfem_map_global = pwlc_sdm.MapDOF(cell.global_id, i, uk_man, u, c);
 
           cfem_dof_global2local_map[dof_cfem_map_global] = dof_cfem_map;
 
@@ -202,8 +202,8 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
         const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
-          const auto dof_dfem_map_global = pwld_sdm.MapDOF(cell, i, uk_man, u, c);
-          const auto dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
+          const auto dof_dfem_map_global = pwld_sdm.MapDOF(cell.global_id, i, uk_man, u, c);
+          const auto dof_cfem_map_global = pwlc_sdm.MapDOF(cell.global_id, i, uk_man, u, c);
           if (cfem_dof_global2local_map.count(dof_cfem_map_global) > 0)
           {
             const auto dof_dfem_map = dfem_dof_global2local_map.at(dof_dfem_map_global);
