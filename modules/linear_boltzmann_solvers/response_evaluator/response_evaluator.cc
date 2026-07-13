@@ -525,7 +525,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       const auto& cell = grid->GetLocalCell(local_id);
       const auto& transport_view = transport_views[local_id];
       const auto& mass = unit_cell_matrices[local_id].intV_shapeI_shapeJ;
-      const auto& nodes = discretization.GetCellNodeLocations(cell);
+      const auto& nodes = discretization.GetCellNodeLocations(local_id);
 
       const auto num_cell_nodes = transport_view.GetNumNodes();
       std::vector<std::vector<double>> node_values(num_cell_nodes);

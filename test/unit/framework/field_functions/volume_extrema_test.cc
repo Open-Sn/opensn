@@ -23,7 +23,7 @@ TEST(FieldFunctionInterpolationVolume, TransformedExtrema)
   {
     auto& cell = grid->GetLocalCell(cell_local_id);
     cell.block_id = 3;
-    const auto& nodes = sdm->GetCellNodeLocations(cell);
+    const auto& nodes = sdm->GetCellNodeLocations(cell_local_id);
     for (size_t i = 0; i < nodes.size(); ++i)
       values[sdm->MapDOFLocal(cell_local_id, i, unknowns, 0, 0)] = nodes[i].z;
   }
@@ -82,7 +82,7 @@ TEST(FieldFunctionGridBased, BatchedPointValues)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    const auto& nodes = sdm->GetCellNodeLocations(cell);
+    const auto& nodes = sdm->GetCellNodeLocations(cell_local_id);
     for (size_t i = 0; i < nodes.size(); ++i)
     {
       const auto dof = sdm->MapDOFLocal(cell_local_id, i, unknowns, 0, 0);
@@ -137,7 +137,7 @@ TEST(FieldFunctionGridBased, BatchedPointValues3D)
     for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
-      const auto& nodes = sdm->GetCellNodeLocations(cell);
+      const auto& nodes = sdm->GetCellNodeLocations(cell_local_id);
       for (size_t i = 0; i < nodes.size(); ++i)
         values[sdm->MapDOFLocal(cell_local_id, i, unknowns, 0, 0)] = field(nodes[i]);
     }

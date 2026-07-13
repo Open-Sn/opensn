@@ -91,7 +91,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
     cell_ids.push_back(cell.global_id);
     num_cell_nodes.push_back(discretization.GetCellNumNodes(cell_local_id));
 
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     for (const auto& node : nodes)
     {
       nodes_x.push_back(node.x);

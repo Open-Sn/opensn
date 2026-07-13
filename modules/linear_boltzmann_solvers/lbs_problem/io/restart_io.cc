@@ -91,7 +91,7 @@ WriteRestartMeshData(hid_t file_id, const LBSProblem& problem)
     cell_ids.push_back(cell.global_id);
     const auto num_nodes = discretization.GetCellNumNodes(cell_local_id);
     num_cell_nodes.push_back(num_nodes);
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     OpenSnLogicalErrorIf(nodes.size() != num_nodes,
                          problem.GetName() + ": inconsistent local cell-node metadata.");
     for (const auto& node : nodes)
@@ -168,7 +168,7 @@ SameLocalPartition(const LBSProblem& problem, const RestartMeshData& data)
     if (data.cell_ids[c] != cell.global_id or
         data.num_cell_nodes[c] != discretization.GetCellNumNodes(cell_local_id))
       return false;
-    const auto& local_nodes = discretization.GetCellNodeLocations(cell);
+    const auto& local_nodes = discretization.GetCellNodeLocations(cell_local_id);
     for (size_t i = 0; i < local_nodes.size(); ++i)
     {
       const Vector3 file_node(data.nodes_x[node_offset + i],
@@ -240,7 +240,7 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
         OpenSnInvalidArgumentIf(found.at(cell_local_id),
                                 problem.GetName() + ": restart contains duplicate cell " +
                                   std::to_string(cell_id) + ".");
-        const auto& local_nodes = discretization.GetCellNodeLocations(cell);
+        const auto& local_nodes = discretization.GetCellNodeLocations(cell_local_id);
         OpenSnInvalidArgumentIf(local_nodes.size() != num_nodes_in_cell,
                                 problem.GetName() + ": restart cell " + std::to_string(cell_id) +
                                   " has an incompatible node count.");

@@ -123,7 +123,7 @@ public:
    * For the given cell, returns a reference to the relevant node locations. The same can be
    * achieved by retrieving the cell-to-element mapping first.
    */
-  const std::vector<Vector3>& GetCellNodeLocations(const Cell& cell) const;
+  const std::vector<Vector3>& GetCellNodeLocations(std::uint32_t cell_local_id) const;
 
   /**
    * For each cell, for each face of that cell, for each node on that face, maps to which local
