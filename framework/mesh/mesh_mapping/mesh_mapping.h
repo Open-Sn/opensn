@@ -46,21 +46,21 @@ public:
     explicit FineMapping(const Cell& fine_cell);
 
     /// The coarse cell that the fine cell is contained within.
-    const Cell* coarse_cell;
+    std::uint32_t coarse_cell_local_id;
     /// The coarse CellFace index each fine CellFace is contained within (if any)
     std::vector<size_t> coarse_faces;
   };
 
   /// Get the mapping from the given coarse mesh cell.
-  const CoarseMapping& GetCoarseMapping(const Cell& coarse_cell) const;
+  const CoarseMapping& GetCoarseMapping(std::uint32_t coarse_cell_local_id) const;
   /// Get the mapping for the given fine mesh cell.
-  const FineMapping& GetFineMapping(const Cell& fine_cell) const;
+  const FineMapping& GetFineMapping(std::uint32_t cell_local_id) const;
 
 private:
   /// Mapping for coarse cells to fine cells.
-  std::unordered_map<const Cell*, CoarseMapping> coarse_to_fine_;
-  /// Mapping for fine cells to a coarse cell.
-  std::unordered_map<const Cell*, FineMapping> fine_to_coarse_;
+  std::unordered_map<std::uint32_t, CoarseMapping> coarse_to_fine_;
+  /// Mapping for fine cells to a coarse cell : local cell id of a fine cell -> cell mapping
+  std::unordered_map<std::uint32_t, FineMapping> fine_to_coarse_;
 
 public:
   /// Identifier for an invalid face index that means a face maps to nothing.
