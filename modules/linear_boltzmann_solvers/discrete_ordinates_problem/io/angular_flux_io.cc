@@ -49,10 +49,11 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   nodes_y.reserve(num_local_nodes);
   nodes_z.reserve(num_local_nodes);
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     cell_ids.push_back(cell.global_id);
-    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell_local_id));
 
     const auto& nodes = discretization.GetCellNodeLocations(cell);
     for (const auto& node : nodes)
@@ -95,7 +96,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
          ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
@@ -235,7 +236,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
       const auto cell_global_id = file_cell_ids[c];
       const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
       const auto& cell = grid->GetLocalCell(cell_local_id);
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {

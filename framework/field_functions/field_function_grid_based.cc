@@ -306,7 +306,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
            ++cell_local_id)
       {
         const auto& cell = grid->GetLocalCell(cell_local_id);
-        const size_t num_nodes = sdm->GetCellNumNodes(cell);
+        const size_t num_nodes = sdm->GetCellNumNodes(cell_local_id);
 
         if (num_nodes == cell.vertex_ids.size())
         {
