@@ -127,7 +127,7 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
        ++cell_local_id)
   {
     const auto& cell = problem.GetMesh()->GetLocalCell(cell_local_id);
-    for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell); ++i)
+    for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell_local_id); ++i)
       for (unsigned int m = 0; m < problem.GetNumMoments(); ++m)
       {
         const auto ell = moment_map[m].ell;
@@ -319,7 +319,7 @@ TEST(MakeSourceMomentsFromPhiTest, ReverseMomentDirectionsNegatesOddMoments)
        ++cell_local_id)
   {
     const auto& cell = problem->GetMesh()->GetLocalCell(cell_local_id);
-    for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell); ++i)
+    for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell_local_id); ++i)
       for (unsigned int m = 0; m < problem->GetNumMoments(); ++m)
         for (unsigned int g = 0; g < 2; ++g)
         {

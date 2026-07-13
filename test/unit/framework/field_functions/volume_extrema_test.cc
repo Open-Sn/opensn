@@ -148,7 +148,7 @@ TEST(FieldFunctionGridBased, BatchedPointValues3D)
     for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
-      for (size_t i = 0; i < sdm->GetCellNumNodes(cell); ++i)
+      for (size_t i = 0; i < sdm->GetCellNumNodes(cell_local_id); ++i)
         jump_values[sdm->MapDOFLocal(cell_local_id, i, unknowns, 0, 0)] =
           1.0 + static_cast<double>(cell.global_id);
     }

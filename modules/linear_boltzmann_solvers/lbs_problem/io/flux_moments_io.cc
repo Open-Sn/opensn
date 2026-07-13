@@ -72,10 +72,11 @@ LBSSolverIO::WriteFluxMoments(
   nodes_y.reserve(num_local_nodes);
   nodes_z.reserve(num_local_nodes);
   // Loop through mesh nodes and store data
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     cell_ids.push_back(cell.global_id);
-    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell_local_id));
 
     const auto& nodes = discretization.GetCellNodeLocations(cell);
     for (const auto& node : nodes)
@@ -102,7 +103,7 @@ LBSSolverIO::WriteFluxMoments(
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
       for (unsigned int m = 0; m < num_moments; ++m)
         for (unsigned int g = 0; g < num_groups; ++g)
         {

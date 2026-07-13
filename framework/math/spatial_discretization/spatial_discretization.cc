@@ -61,9 +61,9 @@ SpatialDiscretization::GetNumLocalAndGhostDOFs(const UnknownManager& unknown_man
 }
 
 size_t
-SpatialDiscretization::GetCellNumNodes(const Cell& cell) const
+SpatialDiscretization::GetCellNumNodes(std::uint32_t cell_local_id) const
 {
-  return GetLocalCellMapping(cell.local_id).GetNumNodes();
+  return GetLocalCellMapping(cell_local_id).GetNumNodes();
 }
 
 const std::vector<Vector3>&

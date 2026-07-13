@@ -85,10 +85,11 @@ WriteRestartMeshData(hid_t file_id, const LBSProblem& problem)
   cell_ids.reserve(grid->GetLocalCellCount());
   num_cell_nodes.reserve(grid->GetLocalCellCount());
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     cell_ids.push_back(cell.global_id);
-    const auto num_nodes = discretization.GetCellNumNodes(cell);
+    const auto num_nodes = discretization.GetCellNumNodes(cell_local_id);
     num_cell_nodes.push_back(num_nodes);
     const auto& nodes = discretization.GetCellNodeLocations(cell);
     OpenSnLogicalErrorIf(nodes.size() != num_nodes,
@@ -128,7 +129,7 @@ WriteCellwiseDataset(hid_t file_id,
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    for (size_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+    for (size_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
       for (size_t c = 0; c < stride; ++c)
       {
         size_t dof = 0;
@@ -161,10 +162,11 @@ SameLocalPartition(const LBSProblem& problem, const RestartMeshData& data)
 
   size_t c = 0;
   size_t node_offset = 0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     if (data.cell_ids[c] != cell.global_id or
-        data.num_cell_nodes[c] != discretization.GetCellNumNodes(cell))
+        data.num_cell_nodes[c] != discretization.GetCellNumNodes(cell_local_id))
       return false;
     const auto& local_nodes = discretization.GetCellNodeLocations(cell);
     for (size_t i = 0; i < local_nodes.size(); ++i)
