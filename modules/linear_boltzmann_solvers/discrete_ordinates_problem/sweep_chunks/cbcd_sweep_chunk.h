@@ -46,7 +46,7 @@ private:
   std::vector<CBCD_AngleSet*> angle_sets_;
   std::vector<CBCD_FLUDS*> fluds_list_;
   std::vector<crb::Stream> streams_list_;
-  std::vector<gpu_kernel::Arguments<gpu_kernel::SweepType::CBC>> kernel_args_list_;
+  std::vector<gpu_kernel::Arguments<SweepKind::CBC>> kernel_args_list_;
   std::vector<crb::Dim3> block_sizes_;
   std::vector<unsigned int> grid_size_x_list_;
 };

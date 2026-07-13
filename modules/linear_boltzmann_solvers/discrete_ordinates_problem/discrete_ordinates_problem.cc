@@ -3,27 +3,11 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/vacuum_boundary.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/arbitrary_boundary.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbc_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aah_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep_runtime_builder.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk_td.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/solver_scheme.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/math/functions/function.h"
 #include "framework/data_types/allowable_range.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/source_function.h"
@@ -32,21 +16,18 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/field_functions/field_function.h"
-#include "framework/field_functions/field_function_grid_based.h"
-#include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include "framework/utils/caliper_scopes.h"
 #include "framework/utils/timer.h"
-#include "framework/utils/utils.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <iomanip>
+#include <numeric>
 #include <sstream>
 #include <stdexcept>
 
@@ -54,68 +35,6 @@ namespace opensn
 {
 
 OpenSnRegisterObjectParametersOnlyInNamespace(lbs, DiscreteOrdinatesProblem);
-
-namespace
-{
-
-std::set<std::uint64_t>
-GetGlobalUniqueBoundaryIDs(const std::shared_ptr<MeshContinuum>& grid, mpi::Communicator& mpi_comm)
-{
-  std::set<std::uint64_t> local_unique_bids_set;
-  for (const auto& cell : grid->local_cells)
-    for (const auto& face : cell.faces)
-      if (not face.has_neighbor)
-        local_unique_bids_set.insert(face.neighbor_id);
-
-  const std::vector<std::uint64_t> local_unique_bids(local_unique_bids_set.begin(),
-                                                     local_unique_bids_set.end());
-
-  std::vector<std::uint64_t> recvbuf;
-  mpi_comm.all_gather(local_unique_bids, recvbuf);
-
-  std::set<std::uint64_t> global_unique_bids_set = local_unique_bids_set;
-  global_unique_bids_set.insert(recvbuf.begin(), recvbuf.end());
-
-  return global_unique_bids_set;
-}
-
-void
-RecursiveAngleSort(AngleSet* angleset,
-                   AngleAggregation& angle_agg,
-                   const std::vector<std::vector<std::uint32_t>>& reflected_maps,
-                   std::set<AngleSet*>& unsorted,
-                   std::set<AngleSet*>& sorted)
-{
-  sorted.insert(angleset);
-  std::uint32_t angle_zero = angleset->GetAngleIndices()[0];
-  for (const auto& reflected_map : reflected_maps)
-  {
-    auto reflected_angle_zero = reflected_map[angle_zero];
-    auto* reflected_angleset = angle_agg.GetAngleSetForAngleIndex(reflected_angle_zero);
-    if (sorted.contains(reflected_angleset))
-    {
-      bool is_coherent = std::equal(angleset->GetAngleIndices().begin(),
-                                    angleset->GetAngleIndices().end(),
-                                    reflected_angleset->GetAngleIndices().begin(),
-                                    [&](std::uint32_t angle, std::uint32_t reflected)
-                                    { return reflected_map[angle] == reflected; });
-      if (not is_coherent)
-        throw std::logic_error("Cannot find an unanimous sort order for the angle set.\n");
-    }
-    else
-    {
-      std::transform(angleset->GetAngleIndices().begin(),
-                     angleset->GetAngleIndices().end(),
-                     reflected_angleset->GetAngleIndices().begin(),
-                     [&](std::uint32_t angle) { return reflected_map[angle]; });
-      reflected_angleset->SyncDeviceAngleIndices();
-      unsorted.erase(reflected_angleset);
-      RecursiveAngleSort(reflected_angleset, angle_agg, reflected_maps, unsorted, sorted);
-    }
-  }
-}
-
-} // namespace
 
 InputParameters
 DiscreteOrdinatesProblem::GetInputParameters()
@@ -206,21 +125,12 @@ DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
   : LBSProblem(params), sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
+  // Time-dependent mode (GPU/adjoint/geometry/save_angular_flux) is checked in
+  // BuildRuntime(), once the object is fully constructed. SupportsTimeDependentMode() is
+  // virtual, and virtual dispatch to a derived override is not available from within the
+  // base-class constructor.
   if (params.GetParamValue<bool>("time_dependent"))
-  {
-    if (UseGPUs())
-      throw std::runtime_error(GetName() + ": Time dependent problems are not supported on GPUs.");
-    if (options_.adjoint)
-      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
-    if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
-      throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
-
-    OpenSnInvalidArgumentIf(not options_.save_angular_flux,
-                            GetName() + ": `time_dependent=true` requires "
-                                        "`options.save_angular_flux=true`.");
-
     SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
-  }
   else
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
@@ -378,81 +288,6 @@ DiscreteOrdinatesProblem::GetWGSContext(int groupset_id)
   return *wgs_context_ptr;
 }
 
-const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&
-DiscreteOrdinatesProblem::GetSweepBoundaries() const
-{
-  return sweep_boundaries_;
-}
-
-const std::map<uint64_t, BoundaryDefinition>&
-DiscreteOrdinatesProblem::GetBoundaryDefinitions() const
-{
-  return boundary_definitions_;
-}
-
-void
-DiscreteOrdinatesProblem::SetBoundaryOptions(const std::vector<InputParameters>& boundary_params,
-                                             bool clear_existing)
-{
-  if (clear_existing)
-    boundary_definitions_.clear();
-
-  for (const auto& params : boundary_params)
-    UpdateBoundaryDefinition(params);
-
-  if (clear_existing or not boundary_params.empty())
-  {
-    InitializeBoundaries();
-    RebuildBoundaryRuntimeData();
-  }
-}
-
-void
-DiscreteOrdinatesProblem::UpdateBoundaryDefinition(const InputParameters& params)
-{
-  const auto boundary_name = params.GetParamValue<std::string>("name");
-  const auto coord_sys = grid_->GetCoordinateSystem();
-  const auto bnd_name_map = grid_->GetBoundaryNameMap();
-  const auto mesh_type = grid_->GetType();
-
-  // If we're using RZ, the user should use rmin/rmax/zmin/zmax and we'll
-  // map internally to xmin/xmax/ymin/max
-  std::string lookup_name = boundary_name;
-  if (coord_sys == CoordinateSystemType::CYLINDRICAL and mesh_type == MeshType::ORTHOGONAL and
-      grid_->GetDimension() == 2)
-  {
-    if (boundary_name != "rmin" and boundary_name != "rmax" and boundary_name != "zmin" and
-        boundary_name != "zmax")
-    {
-      throw std::runtime_error(GetName() + ": Boundary name '" + boundary_name +
-                               "' is invalid for cylindrical orthogonal meshes. "
-                               "Use rmin, rmax, zmin, zmax.");
-    }
-
-    const std::map<std::string, std::string> rz_map = {
-      {"rmin", "xmin"}, {"rmax", "xmax"}, {"zmin", "ymin"}, {"zmax", "ymax"}};
-    const auto rz_it = rz_map.find(boundary_name);
-    if (rz_it != rz_map.end())
-      lookup_name = rz_it->second;
-  }
-
-  const auto it = bnd_name_map.find(lookup_name);
-  if (it == bnd_name_map.end())
-  {
-    throw std::runtime_error("Boundary name \"" + boundary_name + "\" not found in mesh.");
-  }
-  const auto bid = it->second;
-  boundary_definitions_[bid] = BoundaryDefinition(params, GetNumGroups());
-}
-
-void
-DiscreteOrdinatesProblem::ClearBoundaries()
-{
-  boundary_definitions_.clear();
-  InitializeBoundaries();
-  RebuildBoundaryRuntimeData();
-}
-
 std::vector<std::vector<double>>&
 DiscreteOrdinatesProblem::GetPsiNewLocal()
 {
@@ -533,9 +368,26 @@ DiscreteOrdinatesProblem::PrintSimHeader()
 }
 
 void
+DiscreteOrdinatesProblem::ValidateTimeDependentModeAllowed() const
+{
+  if (UseGPUs())
+    throw std::runtime_error(GetName() + ": Time-dependent problems are not supported on GPUs.");
+  if (options_.adjoint)
+    throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
+  if (not SupportsTimeDependentMode())
+    throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
+  OpenSnInvalidArgumentIf(not options_.save_angular_flux,
+                          GetName() +
+                            ": Time-dependent mode requires `options.save_angular_flux=true`.");
+}
+
+void
 DiscreteOrdinatesProblem::BuildRuntime()
 {
   CaliperPhaseScope cali_setup_phase("Setup", CaliperSetupPhaseDepth());
+
+  if (IsTimeDependent())
+    ValidateTimeDependentModeAllowed();
 
   if (boundary_conditions_block_)
   {
@@ -710,44 +562,6 @@ DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
 }
 
 void
-DiscreteOrdinatesProblem::RebuildBoundaryRuntimeData()
-{
-  if (boundary_runtime_data_initialized_)
-    return;
-
-  const bool solver_schemes_initialized =
-    ags_solver_ or (not wgs_solvers_.empty()) or (not wgs_contexts_.empty());
-
-  for (auto& [bid, boundary] : sweep_boundaries_)
-    boundary->InitializeReflectingMap(groupsets_);
-  if (use_gpus_)
-    SortAngleSetsAngleIndices();
-  for (auto& [bid, boundary] : sweep_boundaries_)
-    boundary->InitializeAngleDependent(groupsets_);
-  boundary_bank_.ShrinkToFit();
-  boundary_bank_.DisableAllocation();
-  InitializeBoundaryCarrier();
-  if (sweep_type_ == "AAH" and use_gpus_)
-    UpdateAAHD_FLUDSCommonDataWithBoundary();
-  for (auto& groupset : groupsets_)
-    groupset.angle_agg->SetupAngleSetDependencies();
-
-  if (solver_schemes_initialized)
-  {
-    for (auto& groupset : groupsets_)
-    {
-      WGDSA::CleanUp(groupset);
-      TGDSA::CleanUp(groupset);
-      WGDSA::Init(*this, groupset);
-      TGDSA::Init(*this, groupset);
-    }
-    ReinitializeSolverSchemes();
-  }
-
-  boundary_runtime_data_initialized_ = true;
-}
-
-void
 DiscreteOrdinatesProblem::InitializeSolverSchemes()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeSolverSchemes");
@@ -779,6 +593,108 @@ DiscreteOrdinatesProblem::SetSteadyStateMode()
 }
 
 void
+DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState()
+{
+  // Cache converged steady-state flux moments
+  const auto phi_new_ref = GetPhiNewLocal();
+  const auto phi_old_ref = GetPhiOldLocal();
+
+  // Reconstruct psi from the converged steady-state phi before enabling transient RHS time terms.
+  ReinitializeSolverSchemes();
+  // A single call to RebuildAngularFluxFromConvergedPhi is insufficient with
+  // lagged angular fluxes. Instead, we perform a fixed-point iteration on the
+  // lagged fluxes with phi/q held at the converged steady-state value. This is
+  // a sweep-only reconstruction of psi.
+  constexpr int max_reconstruction_passes = 50;
+  constexpr double lagged_psi_rel_tol = 1.0e-3;
+  const auto q_moments_ref = GetQMomentsLocal();
+  bool lagged_psi_converged = false;
+  for (int pass = 0; pass < max_reconstruction_passes; ++pass)
+  {
+    double dpsi_local_sum_sq = 0.0;
+    double psi_local_sum_sq = 0.0;
+
+    for (size_t gsid = 0; gsid < GetNumWGSSolvers(); ++gsid)
+    {
+      auto wgs_solver = GetWGSSolver(gsid);
+      OpenSnLogicalErrorIf(not wgs_solver,
+                           GetName() +
+                             ": Null WGS solver while reconstructing angular flux solution.");
+      auto wgs_context = std::dynamic_pointer_cast<SweepWGSContext>(wgs_solver->GetContext());
+      OpenSnLogicalErrorIf(
+        not wgs_context,
+        GetName() + ": Cast to SweepWGSContext failed while reconstructing angular flux solution.");
+
+      const auto delayed_psi_old =
+        wgs_context->groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
+
+      // Keep source moments and scalar flux fixed at converged steady-state values.
+      GetQMomentsLocal() = q_moments_ref;
+      GetPhiOldLocal() = phi_new_ref;
+      wgs_context->RebuildAngularFluxFromConvergedPhi(false, pass == 0);
+
+      const auto delayed_psi_new =
+        wgs_context->groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
+      OpenSnLogicalErrorIf(delayed_psi_new.size() != delayed_psi_old.size(),
+                           GetName() + ": Lagged angular DOF size mismatch during reconstruction.");
+
+      for (size_t i = 0; i < delayed_psi_new.size(); ++i)
+      {
+        const double dpsi = delayed_psi_new[i] - delayed_psi_old[i];
+        dpsi_local_sum_sq += dpsi * dpsi;
+        psi_local_sum_sq += delayed_psi_new[i] * delayed_psi_new[i];
+      }
+
+      // psi_old <- psi_new
+      wgs_context->groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(delayed_psi_new);
+    }
+
+    double dpsi_sum_sq = 0.0;
+    double psi_sum_sq = 0.0;
+    mpi_comm.all_reduce(dpsi_local_sum_sq, dpsi_sum_sq, mpi::op::sum<double>());
+    mpi_comm.all_reduce(psi_local_sum_sq, psi_sum_sq, mpi::op::sum<double>());
+    const double dpsi_norm = std::sqrt(dpsi_sum_sq);
+    const double psi_norm = std::sqrt(psi_sum_sq);
+    const double rel_change = (psi_norm > 0.0) ? dpsi_norm / psi_norm : dpsi_norm;
+    if (rel_change < lagged_psi_rel_tol)
+    {
+      lagged_psi_converged = true;
+      break;
+    }
+  }
+  if (not lagged_psi_converged)
+    log.Log0Warning() << GetName()
+                      << ": Lagged angular-flux reconstruction reached iteration limit ("
+                      << max_reconstruction_passes << ") without converging " << lagged_psi_rel_tol
+                      << ".";
+  GetQMomentsLocal() = q_moments_ref;
+
+  // Scale psi to match the norm of the cached steady-state phi, then restore cached phi.
+  auto& phi_new = GetPhiNewLocal();
+  auto& phi_old = GetPhiOldLocal();
+  const auto& phi_new_rebuilt = phi_new;
+  const double phi_ref_local_sum_sq =
+    std::inner_product(phi_new_ref.begin(), phi_new_ref.end(), phi_new_ref.begin(), 0.0);
+  const double phi_rebuilt_local_sum_sq = std::inner_product(
+    phi_new_rebuilt.begin(), phi_new_rebuilt.end(), phi_new_rebuilt.begin(), 0.0);
+  double phi_ref_sum_sq = 0.0;
+  double phi_rebuilt_sum_sq = 0.0;
+  mpi_comm.all_reduce(phi_ref_local_sum_sq, phi_ref_sum_sq, mpi::op::sum<double>());
+  mpi_comm.all_reduce(phi_rebuilt_local_sum_sq, phi_rebuilt_sum_sq, mpi::op::sum<double>());
+  const double phi_ref_norm = std::sqrt(phi_ref_sum_sq);
+  const double phi_rebuilt_norm = std::sqrt(phi_rebuilt_sum_sq);
+  const double scale =
+    (phi_ref_norm > 0.0 and phi_rebuilt_norm > 0.0) ? phi_ref_norm / phi_rebuilt_norm : 1.0;
+
+  phi_new = phi_new_ref;
+  phi_old = phi_old_ref;
+
+  for (auto& psi_gs : psi_new_local_)
+    for (double& v : psi_gs)
+      v *= scale;
+}
+
+void
 DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 {
   OpenSnInvalidArgumentIf(target_mode == SweepChunkMode::DEFAULT,
@@ -799,128 +715,15 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
   // True when the requested target mode is time-dependent.
   const bool switching_to_transient = target_mode == SweepChunkMode::TIME_DEPENDENT;
 
-  const auto prepare_for_transient = [&]()
-  {
-    // Cache converged steady-state flux moments
-    const auto phi_new_ref = GetPhiNewLocal();
-    const auto phi_old_ref = GetPhiOldLocal();
-
-    // Reconstruct psi from the converged steady-state phi before enabling transient RHS time terms.
-    ReinitializeSolverSchemes();
-    // A single call to RebuildAngularFluxFromConvergedPhi is insufficient with
-    // lagged angular fluxes. Instead, we perform a fixed-point iteration on the
-    // lagged fluxes with phi/q held at the converged steady-state value. This is
-    // a sweep-only reconstruction of psi.
-    constexpr int max_reconstruction_passes = 50;
-    constexpr double lagged_psi_rel_tol = 1.0e-3;
-    const auto q_moments_ref = GetQMomentsLocal();
-    bool lagged_psi_converged = false;
-    for (int pass = 0; pass < max_reconstruction_passes; ++pass)
-    {
-      double dpsi_local_sum_sq = 0.0;
-      double psi_local_sum_sq = 0.0;
-
-      for (size_t gsid = 0; gsid < GetNumWGSSolvers(); ++gsid)
-      {
-        auto wgs_solver = GetWGSSolver(gsid);
-        OpenSnLogicalErrorIf(not wgs_solver,
-                             GetName() +
-                               ": Null WGS solver while reconstructing angular flux solution.");
-        auto wgs_context = std::dynamic_pointer_cast<SweepWGSContext>(wgs_solver->GetContext());
-        OpenSnLogicalErrorIf(
-          not wgs_context,
-          GetName() +
-            ": Cast to SweepWGSContext failed while reconstructing angular flux solution.");
-
-        const auto delayed_psi_old =
-          wgs_context->groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
-
-        // Keep source moments and scalar flux fixed at converged steady-state values.
-        GetQMomentsLocal() = q_moments_ref;
-        GetPhiOldLocal() = phi_new_ref;
-        wgs_context->RebuildAngularFluxFromConvergedPhi(false, pass == 0);
-
-        const auto delayed_psi_new =
-          wgs_context->groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
-        OpenSnLogicalErrorIf(delayed_psi_new.size() != delayed_psi_old.size(),
-                             GetName() +
-                               ": Lagged angular DOF size mismatch during reconstruction.");
-
-        for (size_t i = 0; i < delayed_psi_new.size(); ++i)
-        {
-          const double dpsi = delayed_psi_new[i] - delayed_psi_old[i];
-          dpsi_local_sum_sq += dpsi * dpsi;
-          psi_local_sum_sq += delayed_psi_new[i] * delayed_psi_new[i];
-        }
-
-        // psi_old <- psi_new
-        wgs_context->groupset.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(delayed_psi_new);
-      }
-
-      double dpsi_sum_sq = 0.0;
-      double psi_sum_sq = 0.0;
-      mpi_comm.all_reduce(dpsi_local_sum_sq, dpsi_sum_sq, mpi::op::sum<double>());
-      mpi_comm.all_reduce(psi_local_sum_sq, psi_sum_sq, mpi::op::sum<double>());
-      const double dpsi_norm = std::sqrt(dpsi_sum_sq);
-      const double psi_norm = std::sqrt(psi_sum_sq);
-      const double rel_change = (psi_norm > 0.0) ? dpsi_norm / psi_norm : dpsi_norm;
-      if (rel_change < lagged_psi_rel_tol)
-      {
-        lagged_psi_converged = true;
-        break;
-      }
-    }
-    if (not lagged_psi_converged)
-      log.Log0Warning() << GetName()
-                        << ": Lagged angular-flux reconstruction reached iteration limit ("
-                        << max_reconstruction_passes << ") without converging "
-                        << lagged_psi_rel_tol << ".";
-    GetQMomentsLocal() = q_moments_ref;
-
-    // Scale psi to match the norm of the cached steady-state phi, then restore cached phi.
-    auto& phi_new = GetPhiNewLocal();
-    auto& phi_old = GetPhiOldLocal();
-    const auto& phi_new_rebuilt = phi_new;
-    const double phi_ref_local_sum_sq =
-      std::inner_product(phi_new_ref.begin(), phi_new_ref.end(), phi_new_ref.begin(), 0.0);
-    const double phi_rebuilt_local_sum_sq = std::inner_product(
-      phi_new_rebuilt.begin(), phi_new_rebuilt.end(), phi_new_rebuilt.begin(), 0.0);
-    double phi_ref_sum_sq = 0.0;
-    double phi_rebuilt_sum_sq = 0.0;
-    mpi_comm.all_reduce(phi_ref_local_sum_sq, phi_ref_sum_sq, mpi::op::sum<double>());
-    mpi_comm.all_reduce(phi_rebuilt_local_sum_sq, phi_rebuilt_sum_sq, mpi::op::sum<double>());
-    const double phi_ref_norm = std::sqrt(phi_ref_sum_sq);
-    const double phi_rebuilt_norm = std::sqrt(phi_rebuilt_sum_sq);
-    const double scale =
-      (phi_ref_norm > 0.0 and phi_rebuilt_norm > 0.0) ? phi_ref_norm / phi_rebuilt_norm : 1.0;
-
-    phi_new = phi_new_ref;
-    phi_old = phi_old_ref;
-
-    for (auto& psi_gs : psi_new_local_)
-      for (double& v : psi_gs)
-        v *= scale;
-  };
-
   if (switching_to_transient)
-  {
-    if (UseGPUs())
-      throw std::runtime_error(GetName() + ": Time dependent problems are not supported on GPUs.");
-    if (options_.adjoint)
-      throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
-    if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
-      throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
-    OpenSnInvalidArgumentIf(not options_.save_angular_flux,
-                            GetName() +
-                              ": Time-dependent mode requires `options.save_angular_flux=true`.");
-  }
+    ValidateTimeDependentModeAllowed();
 
   const bool default_to_transient = has_no_active_mode and switching_to_transient;
 
   if (has_no_active_mode)
   {
     if (switching_to_transient)
-      prepare_for_transient();
+      ReconstructAngularFluxFromSteadyState();
 
     SetSweepChunkMode(target_mode);
 
@@ -932,7 +735,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
   {
     if (switching_to_transient)
     {
-      prepare_for_transient();
+      ReconstructAngularFluxFromSteadyState();
       SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
     }
     else
@@ -1066,145 +869,6 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
 }
 
 void
-DiscreteOrdinatesProblem::InitializeBoundaries()
-{
-  CALI_CXX_MARK_SCOPE("Boundaries");
-
-  ResetBoundaryCarrier();
-  boundary_runtime_data_initialized_ = false;
-  has_reflecting_boundaries_ = false;
-  has_time_dependent_boundaries_ = false;
-
-  // RZ doesn't yet support reflecting boundaries on rmax
-  if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
-  {
-    const auto& bndry_map = grid_->GetBoundaryNameMap();
-    const auto it = bndry_map.find("xmax");
-    if (it != bndry_map.end())
-    {
-      const uint64_t bid = it->second;
-      const auto bndry_it = boundary_definitions_.find(bid);
-      if (bndry_it != boundary_definitions_.end() &&
-          bndry_it->second.type == LBSBoundaryType::REFLECTING)
-      {
-        std::ostringstream oss;
-        oss << GetName() << ":\n"
-            << "Reflecting boundary on rmax is not supported in RZ.\n"
-            << "Please use vacuum or isotropic on rmax.";
-        throw std::runtime_error(oss.str());
-      }
-    }
-  }
-
-  // Determine boundary-ids involved in the problem
-  const auto unique_bids_set = GetGlobalUniqueBoundaryIDs(grid_, mpi_comm);
-  for (const auto bid : unique_bids_set)
-  {
-    if (boundary_definitions_.find(bid) == boundary_definitions_.end())
-      boundary_definitions_.emplace(bid, BoundaryDefinition());
-  }
-  boundary_bank_ = BoundaryBank(groupsets_);
-
-  sweep_boundaries_.clear();
-  const auto coord_sys = MapGeometryTypeToCoordSys(geometry_type_);
-  for (auto bid : unique_bids_set)
-  {
-    auto& bndry_def = boundary_definitions_.find(bid)->second;
-
-    switch (bndry_def.type)
-    {
-      case LBSBoundaryType::VACUUM:
-      {
-        sweep_boundaries_[bid] = std::make_shared<VacuumBoundary>(boundary_bank_);
-        break;
-      }
-      case LBSBoundaryType::ISOTROPIC:
-      {
-        sweep_boundaries_[bid] = std::make_shared<IsotropicBoundary>(boundary_bank_,
-                                                                     groupsets_,
-                                                                     bndry_def.group_strength,
-                                                                     bndry_def.start_time,
-                                                                     bndry_def.end_time);
-        has_time_dependent_boundaries_ = true;
-        break;
-      }
-      case LBSBoundaryType::ARBITRARY:
-      {
-        sweep_boundaries_[bid] = std::make_shared<ArbitraryBoundary>(
-          boundary_bank_, groupsets_, bndry_def.time_angular_flux_function);
-        has_time_dependent_boundaries_ = true;
-        break;
-      }
-      case LBSBoundaryType::REFLECTING:
-      {
-        const double EPSILON = 1.0e-12;
-        std::unique_ptr<Vector3> n_ptr = nullptr;
-        for (const auto& cell : grid_->local_cells)
-        {
-          for (const auto& face : cell.faces)
-          {
-            if (not face.has_neighbor and face.neighbor_id == bid)
-            {
-              if (not n_ptr)
-                n_ptr = std::make_unique<Vector3>(face.normal);
-              if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
-                throw std::logic_error(
-                  GetName() +
-                  ": Not all face normals are, within tolerance, locally the same for the "
-                  "reflecting boundary condition requested");
-            }
-          }
-        }
-
-        const int local_has_bid = n_ptr != nullptr ? 1 : 0;
-        const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
-
-        std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
-        std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3L, 0.0);
-
-        mpi_comm.all_gather(local_has_bid, locJ_has_bid);
-        std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
-        mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
-
-        Vector3 global_normal;
-        for (int j = 0; j < opensn::mpi_comm.size(); ++j)
-        {
-          if (locJ_has_bid[j])
-          {
-            int offset = 3 * j;
-            const double* n = &locJ_n_val[offset];
-            const Vector3 locJ_normal(n[0], n[1], n[2]);
-
-            if (local_has_bid)
-              if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
-                throw std::logic_error(
-                  GetName() +
-                  ": Not all face normals are, within tolerance, globally the same for the "
-                  "reflecting boundary condition requested");
-
-            global_normal = locJ_normal;
-          }
-        }
-
-        sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
-          boundary_bank_, bid, grid_, groupsets_, global_normal, coord_sys);
-        has_reflecting_boundaries_ = true;
-        break;
-      }
-      default:
-      {
-        throw std::logic_error("Boundary type not implemented.");
-      }
-    }
-  }
-
-  for (auto& [bid, bndry] : sweep_boundaries_)
-  {
-    bndry->SetOpposingReflected(bid, sweep_boundaries_);
-  }
-}
-
-void
 DiscreteOrdinatesProblem::ReorientAdjointSolution()
 {
   CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ReorientAdjointSolution");
@@ -1320,78 +984,7 @@ DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
         cell_outflow_views_[cell.local_id].Zero(f, group);
 }
 
-void
-DiscreteOrdinatesProblem::InitializeSweepDataStructures()
-{
-  CALI_CXX_MARK_SCOPE("SweepDataStructures");
-
-  auto sweep_runtime = BuildSweepRuntime(
-    GetName(), groupsets_, grid_, sweep_type_, use_gpus_, *discretization_, grid_nodal_mappings_);
-
-  quadrature_unq_so_grouping_map_ = std::move(sweep_runtime.quadrature_unq_so_grouping_map);
-  quadrature_spds_map_ = std::move(sweep_runtime.quadrature_spds_map);
-  quadrature_fluds_commondata_map_ = std::move(sweep_runtime.quadrature_fluds_commondata_map);
-}
-
 #ifndef __OPENSN_WITH_GPU__
-void
-DiscreteOrdinatesProblem::InitializeBoundaryCarrier()
-{
-}
-
-void
-DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id,
-                                                     bool host_to_device,
-                                                     bool force)
-{
-}
-
-void
-DiscreteOrdinatesProblem::ResetBoundaryCarrier()
-{
-}
-
-void
-DiscreteOrdinatesProblem::UpdateAAHD_FLUDSCommonDataWithBoundary()
-{
-  throw std::runtime_error("DiscreteOrdinatesProblem::UpdateAAHD_FLUDSCommonDataWithBoundary : "
-                           "OPENSN_WITH_CUDA not enabled.");
-}
-
-std::shared_ptr<FLUDS>
-DiscreteOrdinatesProblem::CreateAAHD_FLUDS(unsigned int num_groups,
-                                           std::size_t num_angles,
-                                           const FLUDSCommonData& common_data)
-{
-  throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateAAHD_FLUDS : OPENSN_WITH_CUDA not enabled.");
-  return {};
-}
-
-std::shared_ptr<AngleSet>
-DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
-  size_t id,
-  const LBSGroupset& groupset,
-  const SPDS& spds,
-  std::shared_ptr<FLUDS>& fluds,
-  std::vector<size_t>& angle_indices,
-  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-  int maximum_message_size,
-  const MPICommunicatorSet& in_comm_set)
-{
-  throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateAAHD_AngleSet : OPENSN_WITH_CUDA not enabled.");
-  return {};
-}
-
-std::shared_ptr<SweepChunk>
-DiscreteOrdinatesProblem::CreateAAHD_SweepChunk(LBSGroupset& groupset)
-{
-  throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateAAHD_SweepChunk : OPENSN_WITH_CUDA not enabled.");
-  return {};
-}
-
 void
 DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
 {
@@ -1401,248 +994,7 @@ void
 DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
 {
 }
-
-std::shared_ptr<FLUDS>
-DiscreteOrdinatesProblem::CreateCBCD_FLUDS(std::size_t num_groups,
-                                           std::size_t num_angles,
-                                           std::size_t num_local_cells,
-                                           const FLUDSCommonData& common_data,
-                                           const UnknownManager& psi_uk_man,
-                                           const SpatialDiscretization& sdm,
-                                           bool save_angular_flux)
-{
-  throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateCBCD_FLUDS : OPENSN_WITH_CUDA not enabled.");
-  return {};
-}
-
-std::shared_ptr<AngleSet>
-DiscreteOrdinatesProblem::CreateCBCD_AngleSet(
-  size_t id,
-  const LBSGroupset& groupset,
-  const SPDS& spds,
-  std::shared_ptr<FLUDS>& fluds,
-  std::vector<size_t>& angle_indices,
-  std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-  const MPICommunicatorSet& in_comm_set)
-{
-  throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateCBCD_AngleSet : OPENSN_WITH_CUDA not enabled.");
-  return {};
-}
-
-std::shared_ptr<SweepChunk>
-DiscreteOrdinatesProblem::CreateCBCDSweepChunk(LBSGroupset& groupset)
-{
-  throw std::runtime_error(
-    "DiscreteOrdinatesProblem::CreateCBCDSweepChunk : OPENSN_WITH_CUDA not enabled.");
-  return {};
-}
 #endif
-
-void
-DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
-{
-  CALI_CXX_MARK_SCOPE("FluxDataStructures");
-
-  const auto& quadrature_sweep_info = quadrature_unq_so_grouping_map_[groupset.quadrature];
-
-  const auto& unique_so_groupings = quadrature_sweep_info.first;
-  const auto& dir_id_to_so_map = quadrature_sweep_info.second;
-
-  const size_t gs_num_grps = groupset.GetNumGroups();
-
-  // Passing the sweep boundaries to the angle aggregation
-  groupset.angle_agg =
-    std::make_shared<AngleAggregation>(groupset, sweep_boundaries_, groupset.quadrature, grid_);
-
-  size_t angle_set_id = 0;
-  for (const auto& so_grouping : unique_so_groupings)
-  {
-    const size_t master_dir_id = so_grouping.front();
-    const size_t so_id = dir_id_to_so_map.at(master_dir_id);
-
-    const auto& sweep_ordering = quadrature_spds_map_[groupset.quadrature][so_id];
-    const auto& fluds_common_data = *quadrature_fluds_commondata_map_[groupset.quadrature][so_id];
-
-    std::vector<size_t> angle_indices(so_grouping.begin(), so_grouping.end());
-
-    if (sweep_type_ == "AAH")
-    {
-      std::shared_ptr<FLUDS> fluds;
-      if (use_gpus_)
-      {
-        fluds = CreateAAHD_FLUDS(gs_num_grps, angle_indices.size(), fluds_common_data);
-      }
-      else
-      {
-        fluds =
-          std::make_shared<AAH_FLUDS>(gs_num_grps,
-                                      angle_indices.size(),
-                                      dynamic_cast<const AAH_FLUDSCommonData&>(fluds_common_data));
-      }
-
-      std::shared_ptr<AngleSet> angle_set;
-      if (use_gpus_)
-      {
-        angle_set = CreateAAHD_AngleSet(angle_set_id++,
-                                        groupset,
-                                        *sweep_ordering,
-                                        fluds,
-                                        angle_indices,
-                                        sweep_boundaries_,
-                                        options_.max_mpi_message_size,
-                                        *grid_local_comm_set_);
-      }
-      else
-      {
-        angle_set = std::make_shared<AAH_AngleSet>(angle_set_id++,
-                                                   groupset,
-                                                   *sweep_ordering,
-                                                   fluds,
-                                                   angle_indices,
-                                                   sweep_boundaries_,
-                                                   options_.max_mpi_message_size,
-                                                   *grid_local_comm_set_);
-      }
-      groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
-    }
-    else if (sweep_type_ == "CBC")
-    {
-      std::shared_ptr<FLUDS> fluds;
-      if (use_gpus_)
-      {
-        fluds = CreateCBCD_FLUDS(gs_num_grps,
-                                 angle_indices.size(),
-                                 grid_->local_cells.size(),
-                                 fluds_common_data,
-                                 groupset.psi_uk_man_,
-                                 *discretization_,
-                                 (not GetPsiNewLocal()[groupset.id].empty()));
-      }
-      else
-      {
-        fluds =
-          std::make_shared<CBC_FLUDS>(gs_num_grps,
-                                      angle_indices.size(),
-                                      dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                      groupset.psi_uk_man_,
-                                      *discretization_);
-      }
-
-      std::shared_ptr<AngleSet> angle_set;
-      if (use_gpus_)
-      {
-        angle_set = CreateCBCD_AngleSet(angle_set_id++,
-                                        groupset,
-                                        *sweep_ordering,
-                                        fluds,
-                                        angle_indices,
-                                        sweep_boundaries_,
-                                        *grid_local_comm_set_);
-      }
-      else
-      {
-        angle_set = std::make_shared<CBC_AngleSet>(angle_set_id++,
-                                                   groupset,
-                                                   *sweep_ordering,
-                                                   fluds,
-                                                   angle_indices,
-                                                   sweep_boundaries_,
-                                                   *grid_local_comm_set_);
-      }
-
-      groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
-    }
-    else
-      OpenSnInvalidArgument("Unsupported sweeptype \"" + sweep_type_ + "\"");
-  } // for so_grouping
-
-  groupset.angle_agg->BuildDirnumToAnglesetMap();
-
-  opensn::mpi_comm.barrier();
-}
-
-std::shared_ptr<SweepChunk>
-DiscreteOrdinatesProblem::SetSweepChunk(LBSGroupset& groupset)
-{
-
-  const auto mode = sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT);
-
-  const bool use_time_dependent_chunk = (mode == SweepChunkMode::TIME_DEPENDENT);
-
-  if (sweep_type_ == "AAH")
-  {
-    if (use_time_dependent_chunk)
-      return std::make_shared<AAHSweepChunkTD>(*this, groupset);
-    if (use_gpus_)
-      return CreateAAHD_SweepChunk(groupset);
-    return std::make_shared<AAHSweepChunk>(*this, groupset);
-  }
-  else if (sweep_type_ == "CBC")
-  {
-    if (use_time_dependent_chunk)
-      return std::make_shared<CBCSweepChunkTD>(*this, groupset);
-    if (use_gpus_)
-      return CreateCBCDSweepChunk(groupset);
-    return std::make_shared<CBCSweepChunk>(*this, groupset);
-  }
-  else
-    OpenSnLogicalError("Unsupported sweep_type_ \"" + sweep_type_ + "\"");
-}
-
-void
-DiscreteOrdinatesProblem::SortAngleSetsAngleIndices()
-{
-  for (auto& groupset : groupsets_)
-  {
-    // build the total reflected map
-    std::vector<std::vector<std::uint32_t>> reflected_maps;
-    for (auto& [bid, boundary] : sweep_boundaries_)
-      boundary->GetReflectedMap(groupset.id, reflected_maps);
-
-    // check for each map and angle set that the mapped angle indices is also another angleset
-    auto& angle_agg = *(groupset.angle_agg);
-    std::list<std::set<std::uint32_t>> angle_indices_list;
-    for (const auto& angleset : angle_agg)
-    {
-      const auto& angle_indices = angleset->GetAngleIndices();
-      angle_indices_list.emplace_back(angle_indices.begin(), angle_indices.end());
-    }
-    for (const auto& reflected_map : reflected_maps)
-    {
-      std::list<std::set<std::uint32_t>> angle_indices_list_copy(angle_indices_list);
-      for (auto it_in = angle_indices_list_copy.begin(); it_in != angle_indices_list_copy.end();)
-      {
-        std::set<std::uint32_t> reflected;
-        std::transform(it_in->begin(),
-                       it_in->end(),
-                       std::inserter(reflected, reflected.end()),
-                       [&](std::uint32_t n) { return reflected_map[n]; });
-        auto it_out =
-          std::find(angle_indices_list_copy.begin(), angle_indices_list_copy.end(), reflected);
-        if (it_out == it_in or it_out == angle_indices_list_copy.end())
-          throw std::logic_error("Angleset parity was broken for one of the reflected boundaries.");
-        angle_indices_list_copy.erase(it_out);
-        it_in = angle_indices_list_copy.erase(it_in);
-      }
-    }
-    angle_indices_list.clear();
-
-    // sort angle indices in anglesets
-    std::set<AngleSet*> sorted_anglesets, unsorted_anglesets;
-    std::transform(angle_agg.begin(),
-                   angle_agg.end(),
-                   std::inserter(unsorted_anglesets, unsorted_anglesets.end()),
-                   [](auto& angleset) { return angleset.get(); });
-    while (not unsorted_anglesets.empty())
-    {
-      AngleSet* angleset = *unsorted_anglesets.begin();
-      unsorted_anglesets.erase(unsorted_anglesets.begin());
-      RecursiveAngleSort(angleset, angle_agg, reflected_maps, unsorted_anglesets, sorted_anglesets);
-    }
-  }
-}
 
 void
 DiscreteOrdinatesProblem::ZeroPsi()

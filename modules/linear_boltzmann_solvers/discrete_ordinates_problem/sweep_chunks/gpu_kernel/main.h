@@ -31,7 +31,7 @@ ForDOFs1ToMax(F&& f)
               std::forward<F>(f));
 }
 
-template <SweepType t, class... Args>
+template <SweepKind k, class... Args>
 __CRB_DEVICE_FUNC__ void
 SweepDispatch(std::uint32_t n, Args&&... args)
 {
@@ -42,15 +42,15 @@ SweepDispatch(std::uint32_t n, Args&&... args)
       constexpr std::uint32_t dof = decltype(dof_c)::value;
       if (!done && n == dof)
       {
-        gpu_kernel::Sweep<dof, t>(std::forward<Args>(args)...);
+        gpu_kernel::Sweep<dof, k>(std::forward<Args>(args)...);
         done = true;
       }
     });
 }
 
-template <SweepType t>
+template <SweepKind k>
 __CRB_GLOBAL_FUNC__ void
-SweepKernel(Arguments<t> args,
+SweepKernel(Arguments<k> args,
             const std::uint32_t* cells_to_sweep,
             unsigned int num_cells,
             double* saved_psi)
@@ -81,7 +81,7 @@ SweepKernel(Arguments<t> args,
     num_moments = quadrature.num_moments;
     quadrature.GetDirectionView(direction, direction_num);
   }
-  opensn::gpu_kernel::SweepDispatch<t>(cell.num_nodes,
+  opensn::gpu_kernel::SweepDispatch<k>(cell.num_nodes,
                                        args,
                                        cell,
                                        direction,

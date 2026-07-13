@@ -26,29 +26,23 @@ namespace crb = caribou;
 namespace opensn::gpu_kernel
 {
 
-enum class SweepType
-{
-  AAH = 0,
-  CBC = 1
-};
-
 consteval bool
-to_bool(SweepType t)
+to_bool(SweepKind k)
 {
-  return t == SweepType::AAH;
+  return k == SweepKind::AAH;
 }
 
-template <SweepType t>
-using NodeIndexType = std::conditional_t<to_bool(t), AAHD_NodeIndex, CBCD_NodeIndex>;
+template <SweepKind k>
+using NodeIndexType = std::conditional_t<to_bool(k), AAHD_NodeIndex, CBCD_NodeIndex>;
 
 /// Arguments for AAHD and CBCD kernels
-template <SweepType t>
+template <SweepKind k>
 struct Arguments
 {
-  using AngleSetType = std::conditional_t<to_bool(t), AAHD_AngleSet, CBCD_AngleSet>;
-  using FLUDSType = std::conditional_t<to_bool(t), AAHD_FLUDS, CBCD_FLUDS>;
+  using AngleSetType = std::conditional_t<to_bool(k), AAHD_AngleSet, CBCD_AngleSet>;
+  using FLUDSType = std::conditional_t<to_bool(k), AAHD_FLUDS, CBCD_FLUDS>;
   using FLUDSPointerSetType =
-    std::conditional_t<to_bool(t), AAHD_FLUDSPointerSet, CBCD_FLUDSPointerSet>;
+    std::conditional_t<to_bool(k), AAHD_FLUDSPointerSet, CBCD_FLUDSPointerSet>;
 
   Arguments(DiscreteOrdinatesProblem& problem,
             const LBSGroupset& groupset,
@@ -75,7 +69,7 @@ struct Arguments
     // Copy angleset data to GPU
     directions = angle_set.GetDeviceAngleIndices();
     angleset_size = angle_set.GetNumAngles();
-    if constexpr (t == SweepType::AAH)
+    if constexpr (k == SweepKind::AAH)
       boundary_offset = angle_set.GetDeviceBoudnaryOffset();
     // Copy FLUDS data to GPU and retrieve the pointer set
     flud_data = fluds.GetDevicePointerSet();
