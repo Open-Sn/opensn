@@ -105,17 +105,22 @@
 <span class="cm">   * \param id The unique identifier for this SPDS.</span>
 <span class="cm">   * \param omega The angular direction for the sweep operation.</span>
 <span class="cm">   * \param grid The grid on which the sweep is performed.</span>
-<span class="cm">   * \param allow_cycles Whether cycles are allowed in the local and global swepp dependency graphs.</span>
+<span class="cm">   * \param face_neighbor_info Cached neighbor information for every local cell face.</span>
+<span class="cm">   * \param allow_cycles Whether cycles are allowed in the local and global sweep dependency graphs.</span>
 <span class="cm">   * \param use_gpus Whether to allocate device memory for GPU acceleration.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">AAH_SPDS</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
 <span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span>
 <span class="w">           </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
+<span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">SPDSFaceNeighborInfoVec</span><span class="o">&amp;</span><span class="w"> </span><span class="n">face_neighbor_info</span><span class="p">,</span>
 <span class="w">           </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_cycles</span><span class="p">,</span>
 <span class="w">           </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Returns the id of this SPDS.</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetId</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">id_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Returns true if this SPDS is allowed to remove local and global sweep cycles.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">AllowCycles</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">allow_cycles_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Return the levelized global sweep TDG.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">STDG</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetGlobalSweepPlanes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">global_sweep_planes_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -154,6 +159,12 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetGlobalEdgeWeights</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">weights</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="n">global_edge_weights_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">weights</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Sets the global location-to-location dependencies (result of BatchCommunicateLocationDeps).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetGlobalDependencies</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">deps</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">global_dependencies_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">deps</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Destructor.</span>

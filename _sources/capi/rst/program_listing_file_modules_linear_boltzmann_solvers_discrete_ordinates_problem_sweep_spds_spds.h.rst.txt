@@ -19,6 +19,7 @@ Program Listing for File spds.h
    #include "framework/mesh/logical_volume/logical_volume.h"
    #include "framework/data_types/vector3.h"
    #include <boost/graph/directed_graph.hpp>
+   #include <cstdint>
    #include <memory>
    #include <stack>
    
@@ -36,6 +37,20 @@ Program Listing for File spds.h
                                        opensn::VertexProperties,
                                        boost::property<boost::edge_weight_t, double>>;
    using Vertex = boost::graph_traits<Graph>::vertex_descriptor;
+   
+   struct SPDSFaceNeighborInfo
+   {
+     bool has_neighbor = false;
+     bool neighbor_local = false;
+     bool owns_face = true;
+     std::uint32_t neighbor_local_id = 0;
+     int neighbor_partition_id = -1;
+     unsigned int neighbor_adj_face = 0;
+   };
+   
+   using SPDSFaceNeighborInfoVec = std::vector<std::vector<SPDSFaceNeighborInfo>>;
+   
+   SPDSFaceNeighborInfoVec BuildSPDSFaceNeighborInfo(const MeshContinuum& grid);
    
    class SPDS
    {
@@ -131,9 +146,10 @@ Program Listing for File spds.h
       */
      void PopulateCellRelationships(
        const Vector3& omega,
-       std::set<int>& location_dependencies,
-       std::set<int>& location_successors,
-       std::vector<std::set<std::pair<std::uint32_t, double>>>& cell_successors);
+       const SPDSFaceNeighborInfoVec& face_info,
+       std::vector<int>& location_dependencies,
+       std::vector<int>& location_successors,
+       std::vector<std::vector<std::pair<std::uint32_t, double>>>& cell_successors);
    
      /// Find bi-, tri-, and n-connected strongly connected components (SCCs) in the given graph.
      std::vector<std::vector<Vertex>> FindSCCs(Graph& g);

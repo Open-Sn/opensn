@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2a5d81e6f1f631a771bbab49bd79bae7:
+
+Function opensn::BuildSPDSFaceNeighborInfo
+==========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::BuildSPDSFaceNeighborInfo(const MeshContinuum&)
+   :project: opensn

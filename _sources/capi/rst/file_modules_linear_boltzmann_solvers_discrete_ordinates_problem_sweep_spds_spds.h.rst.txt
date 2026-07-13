@@ -32,6 +32,8 @@ Includes
 
 - ``boost/graph/directed_graph.hpp``
 
+- ``cstdint``
+
 - ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
 
 - ``framework/mesh/logical_volume/logical_volume.h`` (:ref:`file_framework_mesh_logical_volume_logical_volume.h`)
@@ -70,9 +72,18 @@ Classes
 -------
 
 
+- :ref:`exhale_struct_structopensn_1_1_s_p_d_s_face_neighbor_info`
+
 - :ref:`exhale_struct_structopensn_1_1_vertex_properties`
 
 - :ref:`exhale_class_classopensn_1_1_s_p_d_s`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a2a5d81e6f1f631a771bbab49bd79bae7`
 
 
 Typedefs
@@ -80,6 +91,8 @@ Typedefs
 
 
 - :ref:`exhale_typedef_namespaceopensn_1a63eff85795c7a492580a1dd1fa09e00e`
+
+- :ref:`exhale_typedef_namespaceopensn_1a8fd4f4ff9caf68507ee5b5a3e986c155`
 
 - :ref:`exhale_typedef_namespaceopensn_1afaffa8c1eb306ccaca9cc78583b4f6cc`
 

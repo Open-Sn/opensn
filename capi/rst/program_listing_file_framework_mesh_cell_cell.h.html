@@ -181,6 +181,9 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">value_</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
 <span class="w">  </span><span class="p">}</span>
 
+<span class="w">  </span><span class="c1">/// Return the packed 64-bit value (cell|face|node) for hashing.</span>
+<span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">GetValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Core value.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">value_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>

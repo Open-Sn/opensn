@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad1113780d966f0fad569a39c2f989224:
+
+Function opensn::BatchCommunicateLocationDependencies
+=====================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::BatchCommunicateLocationDependencies(const std::vector<std::vector<int>>&)
+   :project: opensn

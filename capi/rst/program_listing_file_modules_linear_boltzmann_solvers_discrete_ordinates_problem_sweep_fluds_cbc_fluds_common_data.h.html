@@ -94,6 +94,9 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdexcept&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -103,8 +106,13 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">CBC_FLUDSCommonData</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">FLUDSCommonData</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="n">CBC_FLUDSCommonData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">,</span>
-<span class="w">                      </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellFaceNodalMapping</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid_nodal_mappings</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Construct alpha phase only (local work, no MPI). Call FinalizeBeta() afterwards.</span>
+<span class="w">  </span><span class="c1">/// MakeAlpha() prevents us from holding an unfinalized object.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">CBC_FLUDSCommonData</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">MakeAlpha</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellFaceNodalMapping</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid_nodal_mappings</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Exchange nonlocal face slots after parallel local construction.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">FinalizeBeta</span><span class="p">();</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">NumIncomingFaces</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_incoming_faces_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
@@ -150,7 +158,18 @@
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">INVALID_PEER_INDEX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="n">CBC_FLUDSCommonData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SPDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">spds</span><span class="p">,</span>
+<span class="w">                      </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellFaceNodalMapping</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid_nodal_mappings</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckFinalized</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">not</span><span class="w"> </span><span class="n">finalized_</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">logic_error</span><span class="p">(</span><span class="s">&quot;CBC FLUDS common data must be finalized before use&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_incoming_faces_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_outgoing_faces_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">finalized_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Prefix offsets into local-face-indexed slot arrays.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">face_offsets_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Local-face-indexed incoming slots.</span>
@@ -161,6 +180,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">outgoing_face_slots_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Local-face-indexed SPDS-successor peer indices.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">outgoing_peer_indices_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Incoming face-slot records grouped by upstream location.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">incoming_slot_records_by_upstream_location_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

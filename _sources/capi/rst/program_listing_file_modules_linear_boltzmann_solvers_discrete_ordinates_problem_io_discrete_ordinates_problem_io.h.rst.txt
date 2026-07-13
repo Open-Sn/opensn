@@ -16,6 +16,7 @@ Program Listing for File discrete_ordinates_problem_io.h
    #pragma once
    
    #include "hdf5.h"
+   #include <cstdint>
    #include <functional>
    #include <optional>
    #include <string>

@@ -36,7 +36,13 @@ Includes
 
 - ``limits``
 
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``memory``
+
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_common_data.h`)
+
+- ``stdexcept``
 
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
 

@@ -105,9 +105,10 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19CBC_FLUDSCommonData19CBC_FLUDSCommonDataERK4SPDSRKNSt6vectorI20CellFaceNodalMappingEE">
-<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_common_data_1ab79707b2d1d3c3cfd1f90f9a6d3bfc0e"></span><span class="sig-name descname"><span class="n"><span class="pre">CBC_FLUDSCommonData</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_s_p_d_s.html#_CPPv4N6opensn4SPDSE" title="opensn::SPDS"><span class="n"><span class="pre">SPDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spds</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="typedef_namespaceopensn_1a9c76e5b0d99acccc20a0bfbcd6b225f8.html#_CPPv4N6opensn20CellFaceNodalMappingE" title="opensn::CellFaceNodalMapping"><span class="n"><span class="pre">CellFaceNodalMapping</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid_nodal_mappings</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn19CBC_FLUDSCommonData19CBC_FLUDSCommonDataERK4SPDSRKNSt6vectorI20CellFaceNodalMappingEE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19CBC_FLUDSCommonData12FinalizeBetaEv">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_common_data_1ad7ce3d5af57747b7c896d4eac940f48e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FinalizeBeta</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn19CBC_FLUDSCommonData12FinalizeBetaEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Exchange nonlocal face slots after parallel local construction. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn19CBC_FLUDSCommonData16NumIncomingFacesEv">
@@ -177,6 +178,16 @@
 <dd class="field-even"><p>Local cell ID associated with the incoming face slot. </p>
 </dd>
 </dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19CBC_FLUDSCommonData9MakeAlphaERK4SPDSRKNSt6vectorI20CellFaceNodalMappingEE">
+<span class="target" id="classopensn_1_1_c_b_c___f_l_u_d_s_common_data_1a58217876ecc60a51eb2c2d927d61a76c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn19CBC_FLUDSCommonDataE" title="opensn::CBC_FLUDSCommonData"><span class="n"><span class="pre">CBC_FLUDSCommonData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MakeAlpha</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_s_p_d_s.html#_CPPv4N6opensn4SPDSE" title="opensn::SPDS"><span class="n"><span class="pre">SPDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">spds</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="typedef_namespaceopensn_1a9c76e5b0d99acccc20a0bfbcd6b225f8.html#_CPPv4N6opensn20CellFaceNodalMappingE" title="opensn::CellFaceNodalMapping"><span class="n"><span class="pre">CellFaceNodalMapping</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid_nodal_mappings</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn19CBC_FLUDSCommonData9MakeAlphaERK4SPDSRKNSt6vectorI20CellFaceNodalMappingEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Construct alpha phase only (local work, no MPI). </p>
+<p>Call <a class="reference internal" href="#classopensn_1_1_c_b_c___f_l_u_d_s_common_data_1ad7ce3d5af57747b7c896d4eac940f48e"><span class="std std-ref">FinalizeBeta()</span></a> afterwards. <a class="reference internal" href="#classopensn_1_1_c_b_c___f_l_u_d_s_common_data_1a58217876ecc60a51eb2c2d927d61a76c"><span class="std std-ref">MakeAlpha()</span></a> prevents us from holding an unfinalized object. </p>
 </dd></dl>
 
 </div>

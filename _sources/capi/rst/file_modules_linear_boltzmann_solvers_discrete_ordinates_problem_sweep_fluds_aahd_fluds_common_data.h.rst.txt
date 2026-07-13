@@ -46,6 +46,8 @@ Includes
 
 - ``stdexcept``
 
+- ``unordered_map``
+
 
 
 Included By
@@ -69,6 +71,8 @@ Namespaces
 Classes
 -------
 
+
+- :ref:`exhale_struct_structopensn_1_1_face_node_hash`
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h_d___f_l_u_d_s_common_data`
 

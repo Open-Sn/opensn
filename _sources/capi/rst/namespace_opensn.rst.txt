@@ -133,6 +133,8 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_face_nodal_mapping`
 
+- :ref:`exhale_struct_structopensn_1_1_face_node_hash`
+
 - :ref:`exhale_struct_structopensn_1_1_face_view`
 
 - :ref:`exhale_struct_structopensn_1_1_f_l_u_d_s_pointer_set`
@@ -256,6 +258,8 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_sparse_matrix_1_1_entry_reference`
 
 - :ref:`exhale_struct_structopensn_1_1_spatial_weight_function`
+
+- :ref:`exhale_struct_structopensn_1_1_s_p_d_s_face_neighbor_info`
 
 - :ref:`exhale_struct_structopensn_1_1_spherical_spatial_weight_function`
 
@@ -859,6 +863,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a177b73b5df38403f1ebd18ff52244206`
 
+- :ref:`exhale_function_namespaceopensn_1ad1113780d966f0fad569a39c2f989224`
+
 - :ref:`exhale_function_namespaceopensn_1a327d93dfb09c6e4b27ff28cd3b8f1e77`
 
 - :ref:`exhale_function_namespaceopensn_1a1f18b38c31316e2b4ed40c6b9ec89b08`
@@ -866,6 +872,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1ab8dd289d1a78eb4563bd266a07f0ac43`
 
 - :ref:`exhale_function_namespaceopensn_1a45093feece0959be2b7efc220a91f80d`
+
+- :ref:`exhale_function_namespaceopensn_1a2a5d81e6f1f631a771bbab49bd79bae7`
 
 - :ref:`exhale_function_namespaceopensn_1ab0fc39f7df9f8b9120eb172421c12882`
 
@@ -1083,9 +1091,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a2603b50ede73cc62a97d092346a976af`
 
-- :ref:`exhale_function_namespaceopensn_1ae3c19e76a3093fc6b02efdd9c3e32f23`
-
 - :ref:`exhale_function_namespaceopensn_1a4a943cd4ab43ee0c8732ea13052460f8`
+
+- :ref:`exhale_function_namespaceopensn_1ae3c19e76a3093fc6b02efdd9c3e32f23`
 
 - :ref:`exhale_function_namespaceopensn_1a18b5e25b2eb4c7f42b6018278d5073dc`
 
@@ -1176,6 +1184,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1ae7b499513b903d1588322ea3e6fbfcca`
 
 - :ref:`exhale_function_namespaceopensn_1a073c22c5a84f641da97dabf6ee200eb6`
+
+- :ref:`exhale_function_namespaceopensn_1a315bfb0e24539afe8ca380d6350fd9c6`
 
 - :ref:`exhale_function_namespaceopensn_1a6c9b162528be69b3b3ef1bdc01ee0136`
 
@@ -1331,6 +1341,8 @@ Typedefs
 - :ref:`exhale_typedef_namespaceopensn_1ae53af89aad1c3d272bebcbdbfff860d7`
 
 - :ref:`exhale_typedef_namespaceopensn_1aafd494a5bc37e5f11c981a72b1d55a57`
+
+- :ref:`exhale_typedef_namespaceopensn_1a8fd4f4ff9caf68507ee5b5a3e986c155`
 
 - :ref:`exhale_typedef_namespaceopensn_1a0771bf570639d0d589493415608d3750`
 

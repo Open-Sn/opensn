@@ -94,6 +94,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/logical_volume/logical_volume.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/graph/directed_graph.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stack&gt;</span>
 
@@ -111,6 +112,20 @@
 <span class="w">                                    </span><span class="n">opensn</span><span class="o">::</span><span class="n">VertexProperties</span><span class="p">,</span>
 <span class="w">                                    </span><span class="n">boost</span><span class="o">::</span><span class="n">property</span><span class="o">&lt;</span><span class="n">boost</span><span class="o">::</span><span class="n">edge_weight_t</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 <span class="k">using</span><span class="w"> </span><span class="n">Vertex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">graph_traits</span><span class="o">&lt;</span><span class="n">Graph</span><span class="o">&gt;::</span><span class="n">vertex_descriptor</span><span class="p">;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">SPDSFaceNeighborInfo</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">neighbor_local</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">owns_face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">neighbor_local_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor_partition_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor_adj_face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">SPDSFaceNeighborInfoVec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SPDSFaceNeighborInfo</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+
+<span class="n">SPDSFaceNeighborInfoVec</span><span class="w"> </span><span class="nf">BuildSPDSFaceNeighborInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">);</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SPDS</span>
 <span class="p">{</span>
@@ -206,9 +221,10 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">PopulateCellRelationships</span><span class="p">(</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_dependencies</span><span class="p">,</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_successors</span><span class="p">,</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;&gt;&gt;&amp;</span><span class="w"> </span><span class="n">cell_successors</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">SPDSFaceNeighborInfoVec</span><span class="o">&amp;</span><span class="w"> </span><span class="n">face_info</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_dependencies</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_successors</span><span class="p">,</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;&gt;&gt;&amp;</span><span class="w"> </span><span class="n">cell_successors</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Find bi-, tri-, and n-connected strongly connected components (SCCs) in the given graph.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">FindSCCs</span><span class="p">(</span><span class="n">Graph</span><span class="o">&amp;</span><span class="w"> </span><span class="n">g</span><span class="p">);</span>

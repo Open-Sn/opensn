@@ -285,6 +285,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_face_node_hash.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_face_view.rst
 
 .. toctree::
@@ -596,6 +601,11 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_spatial_weight_function.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_s_p_d_s_face_neighbor_info.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3548,6 +3558,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep_parallel_for.h.rst
 
 .. toctree::
    :maxdepth: 1

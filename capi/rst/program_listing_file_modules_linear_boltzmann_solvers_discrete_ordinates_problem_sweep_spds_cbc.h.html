@@ -105,9 +105,13 @@
 <span class="cm">   *</span>
 <span class="cm">   * \param omega The angular direction vector.</span>
 <span class="cm">   * \param grid Reference to the grid.</span>
+<span class="cm">   * \param face_neighbor_info Cached neighbor information for every local cell face.</span>
 <span class="cm">   * \param allow_cycles Whether cycles are allowed in the local sweep dependency graph.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">CBC_SPDS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_cycles</span><span class="p">);</span>
+<span class="w">  </span><span class="n">CBC_SPDS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span>
+<span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
+<span class="w">           </span><span class="k">const</span><span class="w"> </span><span class="n">SPDSFaceNeighborInfoVec</span><span class="o">&amp;</span><span class="w"> </span><span class="n">face_neighbor_info</span><span class="p">,</span>
+<span class="w">           </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_cycles</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetTaskList</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 

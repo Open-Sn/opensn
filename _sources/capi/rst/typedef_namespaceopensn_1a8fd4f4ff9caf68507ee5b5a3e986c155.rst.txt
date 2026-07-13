@@ -1,0 +1,14 @@
+.. _exhale_typedef_namespaceopensn_1a8fd4f4ff9caf68507ee5b5a3e986c155:
+
+Typedef opensn::SPDSFaceNeighborInfoVec
+=======================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`
+
+
+Typedef Documentation
+---------------------
+
+
+.. doxygentypedef:: opensn::SPDSFaceNeighborInfoVec
+   :project: opensn
