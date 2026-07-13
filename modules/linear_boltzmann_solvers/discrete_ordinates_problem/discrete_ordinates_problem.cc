@@ -631,7 +631,7 @@ DiscreteOrdinatesProblem::InitializeFCS()
          ++cell_local_id)
     {
       const auto& cell = grid_->GetLocalCell(cell_local_id);
-      const auto num_nodes = discretization_->GetCellNumNodes(cell);
+      const auto num_nodes = discretization_->GetCellNumNodes(cell_local_id);
       const auto& transport_view = cell_transport_views_[cell_local_id];
       const auto& xs = transport_view.GetXS();
       const auto& transfer_matrices = xs.GetTransferMatrices();

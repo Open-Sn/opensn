@@ -1115,7 +1115,7 @@ LBSProblem::InitializeParrays()
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    size_t num_nodes = discretization_->GetCellNumNodes(cell);
+    size_t num_nodes = discretization_->GetCellNumNodes(cell_local_id);
 
     // compute cell volumes
     double cell_volume = 0.0;
