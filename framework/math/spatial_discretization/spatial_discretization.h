@@ -51,7 +51,7 @@ public:
                                     const UnknownManager& unknown_manager) const = 0;
 
   /// Maps the global address of a degree of freedom.
-  virtual uint64_t MapDOF(const Cell& cell,
+  virtual uint64_t MapDOF(std::uint32_t cell_local_id,
                           unsigned int node,
                           const UnknownManager& unknown_manager,
                           unsigned int unknown_id,
@@ -69,7 +69,7 @@ public:
    * Maps the local address of a degree of freedom. This can include ghost entries if the specific
    * discretization has any. Default structure here is a single scalar unknown.
    */
-  virtual uint64_t MapDOF(const Cell& cell, unsigned int node) const = 0;
+  virtual uint64_t MapDOF(std::uint32_t cell_global_id, unsigned int node) const = 0;
 
   /**
    * Maps the local address of a degree of freedom. This can include ghost entries if the specific

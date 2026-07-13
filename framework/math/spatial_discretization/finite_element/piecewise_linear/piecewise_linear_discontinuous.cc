@@ -240,30 +240,32 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
 }
 
 uint64_t
-PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
+PieceWiseLinearDiscontinuous::MapDOF(std::uint32_t cell_global_id,
                                      const unsigned int node,
                                      const UnknownManager& unknown_manager,
                                      const unsigned int unknown_id,
                                      const unsigned int component) const
 {
+  auto cell_local_id = GetMesh()->MapCellGlobalID2LocalID(cell_global_id);
+  auto partition_id = GetMesh()->GetCellPartition(cell_local_id);
   auto storage = unknown_manager.dof_storage_type;
 
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
-  if (cell.partition_id == opensn::mpi_comm.rank())
+  if (partition_id == opensn::mpi_comm.rank())
   {
     if (storage == UnknownStorageType::BLOCK)
     {
       auto address = local_block_address_ * num_unknowns +
-                     cell_local_block_address_[cell.local_id] + local_base_block_size_ * block_id +
+                     cell_local_block_address_[cell_local_id] + local_base_block_size_ * block_id +
                      node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
     {
       auto address = local_block_address_ * num_unknowns +
-                     cell_local_block_address_[cell.local_id] * num_unknowns + node * num_unknowns +
+                     cell_local_block_address_[cell_local_id] * num_unknowns + node * num_unknowns +
                      block_id;
       return address;
     }
@@ -274,7 +276,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
     bool found = false;
     for (auto neighbor_info : neighbor_cell_block_address_)
     {
-      if (neighbor_info.first == cell.global_id)
+      if (neighbor_info.first == cell_global_id)
       {
         found = true;
         break;
@@ -286,14 +288,14 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
     {
       std::ostringstream oss;
       oss << "PieceWiseLinearDiscontinuous: Mapping failed for cell (global index = "
-          << cell.global_id << ", partition id = " << cell.partition_id << ")";
+          << cell_global_id << ", partition id = " << partition_id << ")";
       throw std::runtime_error(oss.str());
     }
 
     if (storage == UnknownStorageType::BLOCK)
     {
       auto address = neighbor_cell_block_address_[index].second +
-                     locJ_block_size_[cell.partition_id] * block_id + node;
+                     locJ_block_size_[partition_id] * block_id + node;
       return address;
     }
     else if (storage == UnknownStorageType::NODAL)
