@@ -55,7 +55,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
     cell_ids.push_back(cell.global_id);
     num_cell_nodes.push_back(discretization.GetCellNumNodes(cell_local_id));
 
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     for (const auto& node : nodes)
     {
       nodes_x.push_back(node.x);
@@ -168,7 +168,8 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
       continue;
 
     // Check for cell compatibility
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes[c],
                          "Incompatible number of cell nodes encountered on cell " +
                            std::to_string(cell_global_id) + ".");
