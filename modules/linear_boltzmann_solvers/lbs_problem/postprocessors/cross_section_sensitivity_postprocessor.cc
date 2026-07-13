@@ -356,7 +356,7 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
       // group. A moment source Q enters each direction as Q / W, where W is the quadrature weight
       // sum, so angular inner products carry a factor W relative to moment inner products.
       const double weight_sum = quadrature->GetWeightSum();
-      const auto num_nodes = discretization.GetCellNumNodes(cell);
+      const auto num_nodes = discretization.GetCellNumNodes(cell_id);
       for (uint64_t i = 0; i < num_nodes; ++i)
         for (uint64_t j = 0; j < num_nodes; ++j)
         {
