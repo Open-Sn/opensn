@@ -88,7 +88,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
       }
     }
 
-    task_list_.push_back({num_dependencies, successors, cell_local_id, &cell, false});
+    task_list_.push_back({num_dependencies, successors, cell_local_id, false});
   }
 }
 
