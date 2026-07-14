@@ -25,7 +25,7 @@ public:
               double volume,
               const std::vector<bool>& face_local_flags,
               const std::vector<int>& face_locality,
-              const std::vector<const Cell*>& neighbor_cell_ptrs)
+              const std::vector<std::uint32_t>& neighbor_cell_local_id)
     : phi_address_(phi_address),
       num_nodes_(num_nodes),
       num_groups_(num_groups),
@@ -34,7 +34,7 @@ public:
       volume_(volume),
       face_local_flags_(face_local_flags),
       face_locality_(face_locality),
-      neighbor_cell_ptrs_(neighbor_cell_ptrs)
+      neighbor_cell_local_id_(neighbor_cell_local_id)
   {
   }
 
@@ -57,10 +57,11 @@ public:
     return face_locality_[f];
   }
 
-  const Cell* FaceNeighbor(std::size_t f) const
+  std::uint32_t FaceNeighbor(std::size_t f) const
   {
-    assert(f < neighbor_cell_ptrs_.size() && "CellLBSView::FaceNeighbor face index out of range.");
-    return neighbor_cell_ptrs_[f];
+    assert(f < neighbor_cell_local_id_.size() &&
+           "CellLBSView::FaceNeighbor face index out of range.");
+    return neighbor_cell_local_id_[f];
   }
 
   int GetNumNodes() const { return num_nodes_; }
@@ -78,7 +79,7 @@ private:
   double volume_;
   const std::vector<bool> face_local_flags_;
   const std::vector<int> face_locality_;
-  const std::vector<const Cell*> neighbor_cell_ptrs_;
+  const std::vector<std::uint32_t> neighbor_cell_local_id_;
 };
 
 } // namespace opensn

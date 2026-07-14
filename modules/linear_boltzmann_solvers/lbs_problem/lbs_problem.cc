@@ -1128,7 +1128,7 @@ LBSProblem::InitializeParrays()
     const size_t num_faces = cell.faces.size();
     std::vector<bool> face_local_flags(num_faces, true);
     std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
-    std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
+    std::vector<std::uint32_t> neighbor_cell_local_ids(num_faces, 0);
     int f = 0;
     for (const auto& face : cell.faces)
     {
@@ -1142,7 +1142,8 @@ LBSProblem::InitializeParrays()
         const int neighbor_partition = face.GetNeighborPartitionID(grid_.get());
         face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
         face_locality[f] = neighbor_partition;
-        neighbor_cell_ptrs[f] = &grid_->GetGlobalCell(face.neighbor_id);
+        auto neigh_local_cell_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
+        neighbor_cell_local_ids[f] = neigh_local_cell_id;
       }
 
       ++f;
@@ -1158,7 +1159,7 @@ LBSProblem::InitializeParrays()
                                        cell_volume,
                                        face_local_flags,
                                        face_locality,
-                                       neighbor_cell_ptrs);
+                                       neighbor_cell_local_ids);
     block_MG_counter += num_nodes * num_groups_ * num_moments_;
   } // for local cell
   cell_outflow_views_.clear();
