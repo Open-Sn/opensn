@@ -214,7 +214,7 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
           const double* psi = nullptr;
 
           if (is_local_face)
-            psi = fluds.UpwindPsi(*cell_transport_view.FaceNeighbor(f),
+            psi = fluds.UpwindPsi(cell_transport_view.FaceNeighbor(f),
                                   face_nodal_mapping->cell_node_mapping_[fj],
                                   as_ss_idx);
           else if (not is_boundary_face)
