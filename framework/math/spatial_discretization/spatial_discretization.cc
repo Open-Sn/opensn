@@ -73,9 +73,10 @@ SpatialDiscretization::GetCellNodeLocations(std::uint32_t cell_local_id) const
 }
 
 std::pair<std::set<uint32_t>, std::set<uint32_t>>
-SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
+SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(std::uint32_t cell_local_id) const
 {
-  const auto& cell_mapping = GetLocalCellMapping(cell.local_id);
+  const auto& cell_mapping = GetLocalCellMapping(cell_local_id);
+  const auto& cell = GetMesh()->GetLocalCell(cell_local_id);
   const size_t num_faces = cell.faces.size();
   const size_t num_nodes = cell_mapping.GetNumNodes();
 

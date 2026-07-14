@@ -27,7 +27,7 @@ public:
    * boundary nodes.
    */
   std::pair<std::set<uint32_t>, std::set<uint32_t>>
-  MakeCellInternalAndBndryNodeIDs(const Cell& cell) const;
+  MakeCellInternalAndBndryNodeIDs(std::uint32_t cell_local_id) const;
 
   const CellMapping& GetLocalCellMapping(std::uint32_t cell_local_id) const
   {
