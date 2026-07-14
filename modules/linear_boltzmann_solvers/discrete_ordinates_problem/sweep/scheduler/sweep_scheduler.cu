@@ -208,7 +208,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
 
         ready_cell_ids[i].clear();
         for (auto* task : ready_tasks[i])
-          ready_cell_ids[i].push_back(task->reference_id);
+          ready_cell_ids[i].push_back(task->cell_local_id);
 
         fluds_list[i]->CopyIncomingNonlocalPsiToDevice(angle_sets[i], ready_cell_ids[i]);
         cbcd_sweep_chunk.Sweep(ready_cell_ids[i], i);
