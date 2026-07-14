@@ -40,8 +40,7 @@ struct Task
 {
   unsigned int num_dependencies;
   std::vector<std::uint32_t> successors;
-  uint64_t reference_id;
-  const Cell* cell_ptr;
+  std::uint32_t cell_local_id;
   bool completed = false;
 };
 
