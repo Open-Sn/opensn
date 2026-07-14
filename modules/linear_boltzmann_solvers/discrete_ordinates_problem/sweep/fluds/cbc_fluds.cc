@@ -59,9 +59,11 @@ CBC_FLUDS::GetCommonData() const
 }
 
 double*
-CBC_FLUDS::UpwindPsi(const Cell& face_neighbor, unsigned int adj_cell_node, std::size_t as_ss_idx)
+CBC_FLUDS::UpwindPsi(std::uint32_t face_neighbor_local_id,
+                     unsigned int adj_cell_node,
+                     std::size_t as_ss_idx)
 {
-  const auto index = cell_psi_start_[face_neighbor.local_id] +
+  const auto index = cell_psi_start_[face_neighbor_local_id] +
                      adj_cell_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
   return &local_psi_data_[index];
 }
