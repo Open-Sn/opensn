@@ -352,7 +352,7 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
         double* psi = nullptr;
         if (is_local_face)
-          psi = fluds.OutgoingPsi(cell, i, as_ss_idx);
+          psi = fluds.OutgoingPsi(cell_local_id, i, as_ss_idx);
         else if (not is_boundary_face)
           psi = fluds.NLOutgoingPsi(psi_nonlocal_outgoing, fi, as_ss_idx);
         else if (is_reflecting_boundary_face)
