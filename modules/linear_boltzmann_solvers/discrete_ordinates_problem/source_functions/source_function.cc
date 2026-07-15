@@ -235,7 +235,6 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 
       for (const auto local_id : volumetric_source->GetSubscribers())
       {
-        const auto& cell = grid->GetLocalCell(local_id);
         const auto& transport_view = cell_transport_views[local_id];
         const auto nodes = discretization.GetCellNodeLocations(local_id);
         const auto num_cell_nodes = discretization.GetCellNumNodes(local_id);
@@ -244,7 +243,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           // Compute group-wise values for this node
-          const auto src = volumetric_source->Evaluate(cell, nodes[i], num_groups, source_time);
+          const auto src = volumetric_source->Evaluate(local_id, nodes[i], num_groups, source_time);
 
           // Contribute to the source moments
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
