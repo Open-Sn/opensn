@@ -21,11 +21,6 @@ Namespaces
 .. toctree::
    :maxdepth: 1
 
-   namespace_opensn__detail__anonymous_namespace{avx_sweep_chunk_utils.h}.rst
-
-.. toctree::
-   :maxdepth: 1
-
    namespace_opensn__EmpiricalHarmonicRules.rst
 
 .. toctree::

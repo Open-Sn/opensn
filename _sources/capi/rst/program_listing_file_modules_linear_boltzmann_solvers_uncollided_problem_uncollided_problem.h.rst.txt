@@ -49,6 +49,8 @@ Program Listing for File uncollided_problem.h
    
      ~UncollidedProblem() override;
    
+     void ClearBoundaries() override {}
+   
    protected:
      friend class UncollidedSolver;
    
@@ -89,8 +91,6 @@ Program Listing for File uncollided_problem.h
      void PrintSimHeader() override;
    
      void InitializeSpatialDiscretization() override;
-   
-     void ClearBoundaries() override {}
    
      static Vector3 ComputeOmega(const Vector3& point0, const Vector3& point1)
      {

@@ -128,8 +128,6 @@ Program Listing for File discrete_ordinates_problem.h
    
      void ComputeBalance(double scaling_factor = 1.0);
    
-     void PrintSimHeader() override;
-   
      /// Returns the sweep boundaries as a read-only reference.
      const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetSweepBoundaries() const;
    
@@ -208,6 +206,8 @@ Program Listing for File discrete_ordinates_problem.h
    
      void InitializeBoundaries() override;
      /** @} */
+   
+     void PrintSimHeader() override;
    
      /**
       * @name Solver and sweep state

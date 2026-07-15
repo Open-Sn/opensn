@@ -99,10 +99,11 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">RandomNumberGenerator</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Default constructor. Seeds the generator with a zero.</span>
+<span class="w">  </span><span class="c1">/// Default constructor. Use this to get truly random behavior.</span>
 <span class="w">  </span><span class="n">RandomNumberGenerator</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Constructor where a seed is supplied.</span>
+<span class="w">  </span><span class="c1">/// Constructor where a seed is supplied. Use this here you need to replicate results, as in</span>
+<span class="w">  </span><span class="c1">/// tests.</span>
 <span class="w">  </span><span class="n">RandomNumberGenerator</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">seed</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Generates a random number with the default distribution.</span>

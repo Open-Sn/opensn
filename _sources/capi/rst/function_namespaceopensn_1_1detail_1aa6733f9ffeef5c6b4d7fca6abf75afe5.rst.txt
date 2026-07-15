@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1detail_1aa6733f9ffeef5c6b4d7fca6abf75afe5:
+
+Template Function opensn::detail::MakeGatherIndex
+=================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::detail::MakeGatherIndex(int)
+   :project: opensn

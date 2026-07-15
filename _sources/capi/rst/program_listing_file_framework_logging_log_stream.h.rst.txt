@@ -186,6 +186,7 @@ Program Listing for File log_stream.h
    {
      struct DummyStreamBuffer : std::streambuf
      {
+     protected:
        int overflow(int c) override { return c; };
      } buffer;
    

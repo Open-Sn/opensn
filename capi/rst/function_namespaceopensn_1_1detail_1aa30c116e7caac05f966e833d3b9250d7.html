@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Template Function opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::MakeGatherIndex &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Template Function opensn::detail::SimdBatchSolve &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Template Function opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::SimdBatchSolve" href="function_namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a3db0570f3538995fda1215f6c1786612.html" />
-    <link rel="prev" title="Function opensn::d2Legendredx2" href="function_namespaceopensn_1a5ed5bb563b45f1906f828d406750c3c1.html" /> 
+    <link rel="next" title="Template Function opensn::Determinant" href="function_namespaceopensn_1a42728ba3cf18aa0e98f4997376672d65.html" />
+    <link rel="prev" title="Template Function opensn::detail::MakeGatherIndex" href="function_namespaceopensn_1_1detail_1aa6733f9ffeef5c6b4d7fca6abf75afe5.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -129,10 +129,10 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a19f6abef3b4a8567173206de39d6031d.html">Function opensn::CreateVector(Vec&amp;, PetscInt, PetscInt)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab6271f7ed1afb9d81103672fbeef6d7d.html">Function opensn::CreateVectorWithGhosts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a5ed5bb563b45f1906f828d406750c3c1.html">Function opensn::d2Legendredx2</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Function opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::MakeGatherIndex</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a3db0570f3538995fda1215f6c1786612.html">Template Function opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::SimdBatchSolve</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1detail_1af92a8b17fda4546bfd3f759eb28f988a.html">Function opensn::detail::BuildAAHGPUFludsCommonData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1detail_1a7816fcfa405217f20d43f08f3f9aedac.html">Function opensn::detail::BuildCBCGPUFludsCommonData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1_1detail_1aa6733f9ffeef5c6b4d7fca6abf75afe5.html">Template Function opensn::detail::MakeGatherIndex</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Function opensn::detail::SimdBatchSolve</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a42728ba3cf18aa0e98f4997376672d65.html">Template Function opensn::Determinant</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a6fba4337d1fd96234b6edbe19504b575.html">Function opensn::dLegendredx</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a83267a6e1df77a97b0010a4d12450360.html">Template Function opensn::Dot(const Vector&lt;TYPE&gt;&amp;, const Vector&lt;TYPE&gt;&amp;)</a></li>
@@ -342,7 +342,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Template Function opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::MakeGatherIndex</li>
+      <li class="breadcrumb-item active">Template Function opensn::detail::SimdBatchSolve</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -351,18 +351,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="template-function-opensn-detail-anonymous-namespace-avx-sweep-chunk-utils-h-makegatherindex">
-<span id="exhale-function-namespaceopensn-1-1detail-1-1anonymous-namespace-02avx-sweep-chunk-utils-8h-03-1a8c6fa2a80e30a3aa2fe8a3c1d4e0d766"></span><h1>Template Function opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::MakeGatherIndex<a class="headerlink" href="#template-function-opensn-detail-anonymous-namespace-avx-sweep-chunk-utils-h-makegatherindex" title="Link to this heading"></a></h1>
+  <section id="template-function-opensn-detail-simdbatchsolve">
+<span id="exhale-function-namespaceopensn-1-1detail-1aa30c116e7caac05f966e833d3b9250d7"></span><h1>Template Function opensn::detail::SimdBatchSolve<a class="headerlink" href="#template-function-opensn-detail-simdbatchsolve" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-avx-sweep-chunk-utils-h"><span class="std std-ref">File avx_sweep_chunk_utils.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
-<dl class="cpp function">
-<dt class="sig sig-object cpp">
-<span class="target" id="namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a8c6fa2a80e30a3aa2fe8a3c1d4e0d766"></span><span class="sig-name descname"><span class="pre">template&lt;class</span> <span class="pre">Ops,</span> <span class="pre">int</span> <span class="pre">N&gt;</span> <span class="pre">inline</span> <span class="pre">Ops::avx_index</span> <span class="pre">opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::MakeGatherIndex</span> <span class="pre">(int</span> <span class="pre">row)</span></span></dt>
-<dd></dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve function “opensn::detail::SimdBatchSolve” with arguments “(const double*, const double*, const double*, double*)”.
+Candidate function could not be parsed. Parsing error is
+Error when parsing function declaration.
+If the function has no return type:
+  Error in declarator or parameters-and-qualifiers
+  Invalid C++ declaration: Expected identifier in nested name, got keyword: void [error at 31]
+    template&lt;class Ops, int N&gt; void SimdBatchSolve (const double *Am, const double *Mm, const double *sigma_t, double *__restrict b)
+    ——————————-^
+If the function has a return type:
+  Error in declarator or parameters-and-qualifiers
+  If pointer to member declarator:
+    Invalid C++ declaration: Expected ‘::’ in pointer to member (function). [error at 47]
+      template&lt;class Ops, int N&gt; void SimdBatchSolve (const double *Am, const double *Mm, const double *sigma_t, double *__restrict b)
+      ———————————————–^
+  If declarator-id:
+    Invalid C++ declaration: Expecting “,” or “)” in parameters-and-qualifiers, got “b”. [error at 126]
+      template&lt;class Ops, int N&gt; void SimdBatchSolve (const double *Am, const double *Mm, const double *sigma_t, double *__restrict b)
+      ——————————————————————————————————————————^
+</p>
+</div>
 </section>
 </section>
 
@@ -370,8 +387,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="function_namespaceopensn_1a5ed5bb563b45f1906f828d406750c3c1.html" class="btn btn-neutral float-left" title="Function opensn::d2Legendredx2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1_1detail_1_1anonymous__namespace_02avx__sweep__chunk__utils_8h_03_1a3db0570f3538995fda1215f6c1786612.html" class="btn btn-neutral float-right" title="Template Function opensn::detail::anonymous_namespace{avx_sweep_chunk_utils.h}::SimdBatchSolve" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1_1detail_1aa6733f9ffeef5c6b4d7fca6abf75afe5.html" class="btn btn-neutral float-left" title="Template Function opensn::detail::MakeGatherIndex" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_namespaceopensn_1a42728ba3cf18aa0e98f4997376672d65.html" class="btn btn-neutral float-right" title="Template Function opensn::Determinant" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -225,7 +225,7 @@
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">Ops</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="o">&gt;</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">GatherIndexBuilder</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Ops</span><span class="o">::</span><span class="n">avx_index</span><span class="w"> </span><span class="nf">Build</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">row</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">Ops</span><span class="o">::</span><span class="n">avx_index</span><span class="w"> </span><span class="nf">Build</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">row</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="cp">#if __AVX512F__</span>
@@ -255,11 +255,8 @@
 <span class="p">};</span>
 <span class="cp">#endif</span>
 
-<span class="k">namespace</span>
-<span class="p">{</span>
-
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">Ops</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="o">&gt;</span>
-<span class="kr">inline</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Ops</span><span class="o">::</span><span class="n">avx_index</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">Ops</span><span class="o">::</span><span class="n">avx_index</span>
 <span class="n">MakeGatherIndex</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">row</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">GatherIndexBuilder</span><span class="o">&lt;</span><span class="n">Ops</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="o">&gt;::</span><span class="n">Build</span><span class="p">(</span><span class="n">row</span><span class="p">);</span>
@@ -269,7 +266,7 @@
 <span class="kr">inline</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">SimdBatchSolve</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">Am</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">Mm</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">sigma_t</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="k">__restrict</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">avx_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">Ops</span><span class="o">::</span><span class="n">avx_vec</span><span class="p">;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">avx_vec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Ops</span><span class="o">::</span><span class="n">avx_vec</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">avx_vec</span><span class="w"> </span><span class="n">rhs</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
 <span class="w">  </span><span class="n">PRAGMA_UNROLL</span>
@@ -320,8 +317,6 @@
 <span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">row</span><span class="p">)</span>
 <span class="w">    </span><span class="n">Ops</span><span class="o">::</span><span class="n">Scatter</span><span class="p">(</span><span class="n">MakeGatherIndex</span><span class="o">&lt;</span><span class="n">Ops</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="o">&gt;</span><span class="p">(</span><span class="n">row</span><span class="p">),</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">rhs</span><span class="p">[</span><span class="n">row</span><span class="p">]);</span>
 <span class="p">}</span>
-
-<span class="p">}</span><span class="w"> </span><span class="c1">// namespace</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace detail</span>
 
