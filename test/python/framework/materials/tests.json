@@ -143,5 +143,31 @@
         "gold": "<unset>"
       }
     ]
+  },
+  {
+    "file": "linear_interpolator_1g.py",
+    "comment": "linear interpolator reproduces one-group total, absorption, and scatter through the Python API",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS ",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "linear_interpolator_2a.py",
+    "comment": "linear interpolator reproduces trilinear total, scattering, nu-fission, and production-matrix values from OpenMC 2a fuel XS data",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS ",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
   }
 ]

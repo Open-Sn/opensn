@@ -443,6 +443,84 @@ The current factor can be queried with ``GetScaleFactor()``.
    relative to the original material" each time, not "multiply the current
    state again."
 
+Interpolating Cross Sections
+============================
+
+Use :py:class:`pyopensn.xs.LinearInterpolator` when a material's cross
+sections are tabulated at discrete state points, such as combinations of boron
+concentration, fuel temperature, and moderator temperature.
+
+First, create a :py:class:`pyopensn.xs.CartesianGrid` from one sorted, unique
+sequence of coordinates per state variable. Each dimension must contain at least
+two coordinates. Next, construct a NumPy array of ``MultiGroupXS`` matching the
+grid points.
+
+.. code-block:: python
+
+   import numpy as np
+   from pyopensn.xs import CartesianGrid, LinearInterpolator, MultiGroupXS
+
+   grid_data = [[600.0, 1300.0], [900.0, 1200.0], [500.0, 700.0]]
+   grid = CartesianGrid(grid_data)
+
+   corner_files = {
+       (0, 0, 0): "xs_0_0_0.h5",
+       (0, 0, 1): "xs_0_0_1.h5",
+       (0, 1, 0): "xs_0_1_0.h5",
+       (0, 1, 1): "xs_0_1_1.h5",
+       (1, 0, 0): "xs_1_0_0.h5",
+       (1, 0, 1): "xs_1_0_1.h5",
+       (1, 1, 0): "xs_1_1_0.h5",
+       (1, 1, 1): "xs_1_1_1.h5",
+   }
+   xs_data = np.empty((2, 2, 2), dtype=object)
+   for corner, file_name in corner_files.items():
+       xs = MultiGroupXS()
+       xs.LoadFromOpenMC(file_name, "fuel", 294.0)
+       xs_data[corner] = xs
+
+   interpolator = LinearInterpolator(grid, xs_data)
+
+   state_point = np.array([990.0, 1040.0, 620.0], dtype=float)
+   xs = interpolator.Evaluate(state_point)
+
+An optional bitmask :py:class:`pyopensn.xs.XSType` can be provided to precise
+which cross-section type to interpolate. Omitting it, as in the example, means
+selecting all supported cross-section data. Supply a bitwise combination to
+interpolate only the data needed by a calculation:
+
+.. code-block:: python
+
+   from pyopensn.xs import XSType
+
+   interpolator = LinearInterpolator(
+       grid,
+       xs_data,
+       XSType.Total | XSType.Absorption | XSType.NuFission | XSType.Transfer,
+   )
+
+All source cross sections must have compatible invariant metadata, including:
+
+* number of energy groups
+* scattering order
+* fissionability
+* adjoint mode
+* energy-deposition data
+
+Transfer-matrix sparsity patterns and delayed neutron precursor identities may
+differ between grid points; OpenSn forms their union before interpolation.
+
+The evaluation point must have one coordinate per grid dimension and every
+coordinate must lie within that dimension's grid bounds. Values at grid
+endpoints are accepted. Evaluation returns a new
+:py:class:`pyopensn.xs.MultiGroupXS` object, so it does not modify any of the
+source cross sections.
+
+.. note::
+
+   Scale factor will be lost: all interpolated cross-sections have scaling
+   factor of 1.0.
+
 Choosing Between OpenSn and OpenMC Inputs
 =========================================
 
