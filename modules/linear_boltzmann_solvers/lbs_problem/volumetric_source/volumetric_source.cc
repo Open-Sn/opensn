@@ -158,20 +158,20 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
 }
 
 std::vector<double>
-VolumetricSource::operator()(const Cell& cell,
+VolumetricSource::operator()(std::uint32_t cell_local_id,
                              const Vector3& xyz,
                              const unsigned int num_groups) const
 {
-  return Evaluate(cell, xyz, num_groups, 0.0);
+  return Evaluate(cell_local_id, xyz, num_groups, 0.0);
 }
 
 std::vector<double>
-VolumetricSource::Evaluate(const Cell& cell,
+VolumetricSource::Evaluate(std::uint32_t cell_local_id,
                            const Vector3& xyz,
                            const unsigned int num_groups,
                            const double time) const
 {
-  if (cell.local_id >= is_subscriber_.size() or not is_subscriber_[cell.local_id])
+  if (cell_local_id >= is_subscriber_.size() or not is_subscriber_[cell_local_id])
     return std::vector<double>(num_groups, 0.0); // NOLINT
   else if (not function_)
   {

@@ -522,7 +522,6 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       continue;
     for (const std::uint32_t local_id : volumetric_source->GetSubscribers())
     {
-      const auto& cell = grid->GetLocalCell(local_id);
       const auto& transport_view = transport_views[local_id];
       const auto& mass = unit_cell_matrices[local_id].intV_shapeI_shapeJ;
       const auto& nodes = discretization.GetCellNodeLocations(local_id);
@@ -530,7 +529,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       const auto num_cell_nodes = transport_view.GetNumNodes();
       std::vector<std::vector<double>> node_values(num_cell_nodes);
       for (int j = 0; j < num_cell_nodes; ++j)
-        node_values[j] = volumetric_source->Evaluate(cell, nodes[j], num_groups, time);
+        node_values[j] = volumetric_source->Evaluate(local_id, nodes[j], num_groups, time);
 
       for (int i = 0; i < num_cell_nodes; ++i)
       {
