@@ -476,7 +476,6 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   for (const auto& volumetric_source : volumetric_sources_)
     for (const std::uint32_t local_id : volumetric_source->GetSubscribers())
     {
-      const auto& cell = grid->GetLocalCell(local_id);
       const auto& transport_view = transport_views[local_id];
       const auto& fe_values = unit_cell_matrices[local_id];
       const auto& nodes = discretization.GetCellNodeLocations(local_id);
@@ -486,7 +485,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       {
         const auto& V_i = fe_values.intV_shapeI(i);
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
-        const auto& vals = volumetric_source->Evaluate(cell, nodes[i], num_groups, 0.0);
+        const auto& vals = volumetric_source->Evaluate(local_id, nodes[i], num_groups, 0.0);
         for (unsigned int g = 0; g < num_groups; ++g)
           local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
       }
