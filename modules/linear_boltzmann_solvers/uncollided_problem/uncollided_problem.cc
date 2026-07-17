@@ -856,8 +856,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
         if (not found)
         {
           // Rare fallback for degenerate cases (point on a face/vertex): let TraceRay nudge.
-          const auto oi =
-            ray_tracer.TraceRay(grid_->GetLocalCell(cell_local_id), line_point, segment_omega);
+          const auto oi = ray_tracer.TraceRay(cell_local_id, line_point, segment_omega);
           OpenSnLogicalErrorIf(oi.particle_lost,
                                GetName() +
                                  ": reflected image-source ray lost in fast-trace fallback.");
@@ -869,8 +868,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
       else
       {
         // Original path: used for non-convex meshes or faces with >max_sides vertices.
-        const auto oi =
-          ray_tracer.TraceRay(grid_->GetLocalCell(cell_local_id), line_point, segment_omega);
+        const auto oi = ray_tracer.TraceRay(cell_local_id, line_point, segment_omega);
         OpenSnLogicalErrorIf(oi.particle_lost,
                              GetName() + ": ray lost in mesh during segment traversal.");
         dist_in_cell = oi.distance_to_surface;
@@ -1059,7 +1057,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
               const auto omega = ComputeOmega(source_point.location, qp_xyz);
               const double integrand = omega.Dot(face.normal) * fe_srf_data.JxW(qp);
               RaytraceLineInto(ray_tracer,
-                               cell,
+                               cell_index,
                                qp_xyz,
                                source_point,
                                phi_qp,
