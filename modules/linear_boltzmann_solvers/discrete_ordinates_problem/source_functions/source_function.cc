@@ -126,7 +126,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                 rhs += F_g[gp] * phi_im[gp];
 
             if (lbs_problem_.GetOptions().use_precursors)
-              rhs += DelayedFission(precursors, nu_delayed_sigma_f, &phi[uk_map], cell.local_id);
+              rhs += DelayedFission(precursors, nu_delayed_sigma_f, &phi[uk_map], cell_local_id);
           }
 
           // Add to destination vector
