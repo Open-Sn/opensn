@@ -12,12 +12,15 @@ using namespace opensn;
 namespace
 {
 
-const Cell&
+std::uint32_t
 FindCellByCentroid(const std::shared_ptr<Mesh>& grid, const Vector3& centroid)
 {
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     if (cell.centroid.AbsoluteEquals(centroid, 1.0e-12))
-      return cell;
+      return cell_local_id;
+  }
 
   throw std::logic_error("Failed to find test cell by centroid.");
 }
@@ -32,7 +35,7 @@ TEST(RayTracerTest, TraceRayHandlesFaceAndVertexStarts)
   const auto grid = BuildSquareMesh(2.0, 2, -1.0);
   RayTracer ray_tracer(grid);
 
-  const auto& lower_right_cell = FindCellByCentroid(grid, Vector3(0.5, -0.5, 0.0));
+  const auto lower_right_cell = FindCellByCentroid(grid, Vector3(0.5, -0.5, 0.0));
   const Vector3 face_start_initial(0.0, -0.5, 0.0);
   Vector3 face_start = face_start_initial;
   Vector3 face_direction(1.0, 0.0, 0.0);
@@ -45,7 +48,7 @@ TEST(RayTracerTest, TraceRayHandlesFaceAndVertexStarts)
   EXPECT_TRUE(face_trace.pos_f.AbsoluteEquals(Vector3(1.0, -0.5, 0.0), 1.0e-10));
   EXPECT_NEAR((face_trace.pos_f - face_start_initial).Norm(), 1.0, 1.0e-10);
 
-  const auto& upper_right_cell = FindCellByCentroid(grid, Vector3(0.5, 0.5, 0.0));
+  const auto upper_right_cell = FindCellByCentroid(grid, Vector3(0.5, 0.5, 0.0));
   const Vector3 vertex_start_initial(0.0, 0.0, 0.0);
   Vector3 vertex_start = vertex_start_initial;
   Vector3 vertex_direction = Vector3(1.0, 1.0, 0.0).Normalized();
@@ -67,7 +70,7 @@ TEST(RayTracerTest, TraceRayHandlesEdgeStart3D)
   const auto grid = BuildBoxMesh(2.0, 2, -1.0);
   RayTracer ray_tracer(grid);
 
-  const auto& upper_right_front_cell = FindCellByCentroid(grid, Vector3(0.5, 0.5, 0.5));
+  const auto upper_right_front_cell = FindCellByCentroid(grid, Vector3(0.5, 0.5, 0.5));
   const Vector3 edge_start_initial(0.0, 0.0, 0.5);
   Vector3 edge_start = edge_start_initial;
   Vector3 edge_direction = Vector3(1.0, 1.0, 0.0).Normalized();
