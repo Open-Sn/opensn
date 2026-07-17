@@ -49,11 +49,11 @@ public:
    * marked as lost.
    */
   RayTracerOutputInformation
-  TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth = 0);
+  TraceRay(std::uint32_t cell_local_id, Vector3& pos_i, Vector3& omega_i, int function_depth = 0);
 
   /// Traces a ray with an initial position, presumed to be outside the cell, to an incident face.
   RayTracerOutputInformation
-  TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector3& omega_i);
+  TraceIncidentRay(std::uint32_t cell_local_id, const Vector3& pos_i, const Vector3& omega_i);
 
 private:
   std::shared_ptr<Mesh> Grid() const;
