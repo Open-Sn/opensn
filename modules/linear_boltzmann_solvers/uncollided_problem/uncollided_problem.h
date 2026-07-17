@@ -101,7 +101,7 @@ protected:
   void ProjectReflectedImageSources(unsigned int progress_interval);
 
   std::vector<double> RaytraceLine(RayTracer& ray_tracer,
-                                   const Cell& cell,
+                                   std::uint32_t cell_local_id,
                                    const Vector3& qp_xyz,
                                    const SourcePoint& source_point,
                                    double tolerance = 1.0e-12);
@@ -110,7 +110,7 @@ protected:
   /// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call
   /// (they are reset internally each call, so no manual clearing is needed between calls).
   void RaytraceLineInto(RayTracer& ray_tracer,
-                        const Cell& cell,
+                        std::uint32_t cell_local_id,
                         const Vector3& qp_xyz,
                         const SourcePoint& source_point,
                         std::vector<double>& phi_out,
