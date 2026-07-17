@@ -205,6 +205,7 @@ protected:
   void InitializeSolverSchemes();
   /// Rebuild WGS/AGS solver schemes after runtime configuration changes.
   void ReinitializeSolverSchemes();
+  void ConfigureTransientSourceScopes();
 
   void SetSweepChunkMode(SweepChunkMode mode);
   void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }

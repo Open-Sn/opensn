@@ -81,6 +81,7 @@ protected:
   bool apply_ags_scatter_src_ = false;
   bool apply_wgs_fission_src_ = false;
   bool apply_ags_fission_src_ = false;
+  bool apply_previous_precursor_src_ = false;
   bool suppress_wg_scatter_src_ = false;
 
   unsigned int gs_i_ = 0;

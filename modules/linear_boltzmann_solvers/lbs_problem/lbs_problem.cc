@@ -312,10 +312,15 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
       {
         unsigned int old_num_precursors = 0;
         if (const auto old_xs_it = old_xs_map.find(cell.block_id); old_xs_it != old_xs_map.end())
-          old_num_precursors = old_xs_it->second->GetNumPrecursors();
+        {
+          const auto& old_xs = old_xs_it->second;
+          if (old_xs->IsFissionable())
+            old_num_precursors = old_xs->GetPrecursors().size();
+        }
 
+        const auto& new_xs = block_id_to_xs_map_.at(cell.block_id);
         const unsigned int new_num_precursors =
-          block_id_to_xs_map_.at(cell.block_id)->GetNumPrecursors();
+          new_xs->IsFissionable() ? new_xs->GetPrecursors().size() : 0;
         const unsigned int num_precursors_to_copy =
           std::min(old_num_precursors, new_num_precursors);
 
@@ -977,8 +982,12 @@ LBSProblem::InitializeMaterials()
   for (const auto& mat_id_xs : block_id_to_xs_map_)
   {
     const auto& xs = mat_id_xs.second;
-    num_precursors_ += xs->GetNumPrecursors();
-    max_precursors_per_material_ = std::max(xs->GetNumPrecursors(), max_precursors_per_material_);
+    if (xs->IsFissionable())
+    {
+      num_precursors_ += xs->GetPrecursors().size();
+      max_precursors_per_material_ = std::max(static_cast<unsigned int>(xs->GetPrecursors().size()),
+                                              max_precursors_per_material_);
+    }
   }
 
   const bool has_fissionable_precursors =
@@ -987,7 +996,7 @@ LBSProblem::InitializeMaterials()
                 [](const auto& mat_id_xs)
                 {
                   const auto& xs = mat_id_xs.second;
-                  return xs->IsFissionable() and xs->GetNumPrecursors() > 0;
+                  return xs->IsFissionable() and not xs->GetPrecursors().empty();
                 });
   const bool has_fissionable_material =
     std::any_of(block_id_to_xs_map_.begin(),
@@ -997,7 +1006,11 @@ LBSProblem::InitializeMaterials()
   const bool has_any_precursor_data =
     std::any_of(block_id_to_xs_map_.begin(),
                 block_id_to_xs_map_.end(),
-                [](const auto& mat_id_xs) { return mat_id_xs.second->GetNumPrecursors() > 0; });
+                [](const auto& mat_id_xs)
+                {
+                  const auto& xs = mat_id_xs.second;
+                  return xs->IsFissionable() and not xs->GetPrecursors().empty();
+                });
 
   if (options_.use_precursors and has_fissionable_material and not has_any_precursor_data)
   {
@@ -1012,7 +1025,7 @@ LBSProblem::InitializeMaterials()
   {
     for (const auto& [mat_id, xs] : block_id_to_xs_map_)
     {
-      OpenSnInvalidArgumentIf(xs->IsFissionable() and xs->GetNumPrecursors() == 0,
+      OpenSnInvalidArgumentIf(xs->IsFissionable() and xs->GetPrecursors().empty(),
                               GetName() + ": incompatible cross-section data for material id " +
                                 std::to_string(mat_id) +
                                 ". When options.use_precursors=true and "
@@ -1243,7 +1256,8 @@ LBSProblem::MakeSourceMomentsFromPhi()
                                 source_moments,
                                 phi_new_local_,
                                 APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
-                                  APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+                                  APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES |
+                                  APPLY_PREVIOUS_PRECURSOR_SOURCES);
   }
 
   return source_moments;

@@ -348,7 +348,7 @@ MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id)
   mgxs.num_groups_ = parsed.num_groups;
   mgxs.scattering_order_ = parsed.scattering_order;
   mgxs.is_fissionable_ = parsed.is_fissionable;
-  mgxs.num_precursors_ = parsed.num_precursors;
+  mgxs.num_precursors_ = mgxs.is_fissionable_ ? parsed.num_precursors : 0;
 
   mgxs.e_bounds_ = parsed.e_bounds;
   mgxs.sigma_t_ = parsed.sigma_t;

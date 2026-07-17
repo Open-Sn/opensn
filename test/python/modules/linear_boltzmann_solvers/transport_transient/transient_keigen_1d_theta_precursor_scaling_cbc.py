@@ -16,7 +16,7 @@ from fission during this step (~coeff * eff_dt * beta_j * F, which scales
 close to linearly with eff_dt=theta*dt). For this test's parameters
 (lambda=0.08, beta=0.0065, dt=1e-2), contribution (a) is roughly three orders
 of magnitude larger than (b), so the theta-dependence of the newly-born term
-is swamped and the ratio of deltas is expected to be close to 1, not 2.
+is swamped and the ratio of deltas is expected to be very close to 1.
 """
 
 import os

@@ -56,7 +56,7 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
         // contributions are prompt-only and adds delayed production separately via
         // nu_delayed_sigma_f. If the production matrix changes to include delayed
         // production, adjust this sum to prevent double counting.
-        if (options.use_precursors and xs.GetNumPrecursors() > 0)
+        if (options.use_precursors and not xs.GetPrecursors().empty())
           local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
       }
     } // for node
@@ -144,7 +144,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     // Loop over precursors
-    for (unsigned int j = 0; j < xs.GetNumPrecursors(); ++j)
+    for (unsigned int j = 0; j < precursors.size(); ++j)
     {
       size_t dof = cell.local_id * J + j;
       const auto& precursor = precursors[j];

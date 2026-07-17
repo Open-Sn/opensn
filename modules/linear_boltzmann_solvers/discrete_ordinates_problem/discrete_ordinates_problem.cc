@@ -647,7 +647,7 @@ DiscreteOrdinatesProblem::InitializeFCS()
             for (size_t gp = 0; gp < num_groups_; ++gp)
               rhs += production[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
 
-            if (options_.use_precursors and xs.GetNumPrecursors() > 0)
+            if (options_.use_precursors and not xs.GetPrecursors().empty())
             {
               const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
               for (size_t gp = 0; gp < num_groups_; ++gp)
@@ -761,6 +761,9 @@ DiscreteOrdinatesProblem::InitializeSolverSchemes()
   max_groupset_size_ = solver_scheme.max_groupset_size;
   max_level_size_ = solver_scheme.max_level_size;
   max_angleset_size_ = solver_scheme.max_angleset_size;
+
+  if (IsTimeDependent())
+    ConfigureTransientSourceScopes();
 }
 
 void
@@ -955,19 +958,24 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 
     ReinitializeSolverSchemes();
   }
+}
 
-  if (switching_to_transient)
-    for (size_t gsid = 0; gsid < GetNumWGSSolvers(); ++gsid)
-    {
-      auto wgs_solver = GetWGSSolver(gsid);
-      OpenSnLogicalErrorIf(not wgs_solver,
-                           GetName() + ": Null WGS solver while enabling transient source scopes.");
-      auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
-      OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
-      wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
-      wgs_context->rhs_src_scope |= APPLY_WGS_FISSION_SOURCES;
-      wgs_context->rhs_src_scope |= APPLY_AGS_FISSION_SOURCES;
-    }
+void
+DiscreteOrdinatesProblem::ConfigureTransientSourceScopes()
+{
+  for (size_t gsid = 0; gsid < GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_solver = GetWGSSolver(gsid);
+    OpenSnLogicalErrorIf(not wgs_solver,
+                         GetName() + ": Null WGS solver while enabling transient source scopes.");
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
+    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
+    wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
+    wgs_context->lhs_src_scope.Unset(APPLY_PREVIOUS_PRECURSOR_SOURCES);
+    wgs_context->rhs_src_scope |= APPLY_WGS_FISSION_SOURCES;
+    wgs_context->rhs_src_scope |= APPLY_AGS_FISSION_SOURCES;
+    wgs_context->rhs_src_scope |= APPLY_PREVIOUS_PRECURSOR_SOURCES;
+  }
 }
 
 void

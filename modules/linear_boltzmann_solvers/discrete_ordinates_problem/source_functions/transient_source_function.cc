@@ -43,10 +43,9 @@ TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
       }
 
   // Contribution from the decay of precursor inventory accumulated prior to this time step
-  // (C_j(t_n)). This term is independent of the flux being solved for, so it belongs with the
-  // other fixed (RHS-only) sources: folding it in under the AGS/WGS fission flags above would
-  // incorrectly re-add this flux-independent constant on every inner (LHS-operator) iteration.
-  if (apply_fixed_src_ and not precursors.empty())
+  // (C_j(t_n)). This term is independent of the flux being solved for, so it must be requested
+  // only for RHS/source diagnostics and not for inner LHS-operator applications.
+  if (apply_previous_precursor_src_ and not precursors.empty())
   {
     const auto& precursor_old_local = lbs_problem_.GetPrecursorsOldLocal();
     const auto max_precursors = lbs_problem_.GetMaxPrecursorsPerMaterial();

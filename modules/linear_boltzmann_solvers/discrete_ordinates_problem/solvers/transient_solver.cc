@@ -34,6 +34,16 @@ HasFissionableMaterial(const DiscreteOrdinatesProblem& do_problem)
   return false;
 }
 
+bool
+HasPrecursorData(const DiscreteOrdinatesProblem& do_problem)
+{
+  for (const auto& [_, xs] : do_problem.GetBlockID2XSMap())
+    if (xs->IsFissionable() and not xs->GetPrecursors().empty())
+      return true;
+
+  return false;
+}
+
 } // namespace
 
 InputParameters
@@ -96,6 +106,44 @@ TransientSolver::TransientSolver(const InputParameters& params)
 }
 
 void
+TransientSolver::CheckPrecursorStatus()
+{
+  const auto& options = do_problem_->GetOptions();
+  const bool use_precursors = options.use_precursors;
+  const bool has_fissionable_material = HasFissionableMaterial(*do_problem_);
+  const bool has_precursor_data = HasPrecursorData(*do_problem_);
+
+  const bool unchanged = precursor_status_reported_ and use_precursors == last_use_precursors_ and
+                         has_fissionable_material == last_has_fissionable_material_ and
+                         has_precursor_data == last_has_precursor_data_;
+  if (unchanged)
+    return;
+
+  const bool was_active = precursor_status_reported_ and last_use_precursors_ and
+                          last_has_fissionable_material_ and last_has_precursor_data_;
+  const bool is_active = use_precursors and has_fissionable_material and has_precursor_data;
+
+  // The "fissionable material present but no precursor data" case is intentionally not warned
+  // about here: LBSProblem::InitializeMaterials() already emits that warning, re-evaluated live
+  // on every cross-section assignment (construction and SetXSMap), so duplicating it here would
+  // just print the same information twice.
+  if (use_precursors and not has_fissionable_material)
+    log.Log0Warning() << GetName()
+                      << ": use_precursors is enabled but no fissionable material is present.";
+  else if ((not use_precursors) and has_fissionable_material)
+    log.Log0Warning() << GetName()
+                      << ": fissionable material is present but use_precursors is disabled. "
+                         "Running prompt-only transient.";
+  else if (is_active and precursor_status_reported_ and not was_active)
+    log.Log() << GetName() << ": Delayed-neutron precursor coupling is now active.";
+
+  last_use_precursors_ = use_precursors;
+  last_has_fissionable_material_ = has_fissionable_material;
+  last_has_precursor_data_ = has_precursor_data;
+  precursor_status_reported_ = true;
+}
+
+void
 TransientSolver::Initialize()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
@@ -138,14 +186,7 @@ TransientSolver::Initialize()
       std::fill(psi.begin(), psi.end(), 0.0);
   }
 
-  const bool has_fissionable_material = HasFissionableMaterial(*do_problem_);
-  if (options.use_precursors and not has_fissionable_material)
-    log.Log0Warning() << GetName()
-                      << ": use_precursors is enabled but no fissionable material is present.";
-  if ((not options.use_precursors) and has_fissionable_material)
-    log.Log0Warning() << GetName()
-                      << ": fissionable material is present but use_precursors is disabled. "
-                         "Running prompt-only transient.";
+  CheckPrecursorStatus();
 
   if (not restart_successful)
   {
@@ -261,6 +302,8 @@ TransientSolver::Advance()
       log.Log() << GetName() << " Advance skipped (stop_time <= current_time).";
     return;
   }
+  CheckPrecursorStatus();
+
   const double dt = do_problem_->GetTimeStep();
   const double theta = do_problem_->GetTheta();
   auto& phi_new_local = do_problem_->GetPhiNewLocal();
@@ -386,7 +429,7 @@ TransientSolver::StepPrecursors()
 
     // Loop over precursors
     const auto& max_precursors = do_problem_->GetMaxPrecursorsPerMaterial();
-    for (unsigned int j = 0; j < xs->GetNumPrecursors(); ++j)
+    for (unsigned int j = 0; j < precursors.size(); ++j)
     {
       const size_t dof_map = cell.local_id * max_precursors + j;
       const auto& precursor = precursors[j];

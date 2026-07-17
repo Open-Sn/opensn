@@ -6,6 +6,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
+#include <algorithm>
 
 namespace opensn
 {
@@ -27,9 +28,16 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
   mgxs.chi_ = xsf.chi_;
   mgxs.transfer_matrices_ = xsf.transfer_matrices_;
 
-  // Determine if the material is fissionable
+  // Determine if the material is fissionable. Cross-section data merely being present in
+  // the data file is not sufficient. Some files may include a uniformly-zero SIGMA_F block
+  // for consistency across fissile and non-fissile materials, and such a material has no
+  // actual fission capability.
+  const bool production_matrix_has_nonzero =
+    std::any_of(xsf.production_matrix_.begin(),
+                xsf.production_matrix_.end(),
+                [](const std::vector<double>& row) { return HasNonZero(row); });
   mgxs.is_fissionable_ =
-    not xsf.sigma_f_.empty() or not xsf.nu_sigma_f_.empty() or not xsf.production_matrix_.empty();
+    HasNonZero(xsf.sigma_f_) or HasNonZero(xsf.nu_sigma_f_) or production_matrix_has_nonzero;
 
   // Check and set the fission data
   if (mgxs.is_fissionable_)
@@ -211,6 +219,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
     mgxs.nu_prompt_sigma_f_.clear();
     mgxs.nu_delayed_sigma_f_.clear();
     mgxs.production_matrix_.clear();
+    mgxs.num_precursors_ = 0;
     mgxs.precursors_.clear();
   } // if not fissionable
 

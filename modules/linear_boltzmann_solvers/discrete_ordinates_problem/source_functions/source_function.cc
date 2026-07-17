@@ -28,6 +28,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   apply_ags_scatter_src_ = (source_flags & APPLY_AGS_SCATTER_SOURCES);
   apply_wgs_fission_src_ = (source_flags & APPLY_WGS_FISSION_SOURCES);
   apply_ags_fission_src_ = (source_flags & APPLY_AGS_FISSION_SOURCES);
+  apply_previous_precursor_src_ = (source_flags & APPLY_PREVIOUS_PRECURSOR_SOURCES);
   suppress_wg_scatter_src_ = (source_flags & SUPPRESS_WG_SCATTER);
 
   // Get group setup
@@ -148,7 +149,7 @@ double
 SourceFunction::DelayedFission(const PrecursorList& precursors,
                                const std::vector<double>& nu_delayed_sigma_f,
                                const double* phi,
-                               std::uint64_t /*cell_local_id*/) const
+                               std::uint64_t cell_local_id) const
 {
   double value = 0.0;
   if (apply_ags_fission_src_)

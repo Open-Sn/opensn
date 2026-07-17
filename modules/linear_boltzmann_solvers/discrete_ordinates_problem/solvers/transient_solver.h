@@ -42,11 +42,26 @@ private:
   bool ReadInitialConditionData();
   bool WriteRestartData();
 
+  /**
+   * Re-evaluates the current precursor state (use_precursors vs. presence of fissionable
+   * material and delayed-neutron data in the active cross-section map) and logs a warning
+   * or informational message only when that status has changed since the last check. This
+   * keeps the reported status accurate across cross-section swaps (e.g. via
+   * Problem.SetXSMap), rather than reflecting only a one-time check made at Initialize().
+   */
+  void CheckPrecursorStatus();
+
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
 
   /// Previous time step vectors
   std::vector<double> phi_prev_local_;
   std::vector<double> precursor_prev_local_;
+
+  /// State tracked by CheckPrecursorStatus() to detect transitions.
+  bool precursor_status_reported_ = false;
+  bool last_use_precursors_ = false;
+  bool last_has_fissionable_material_ = false;
+  bool last_has_precursor_data_ = false;
 
   /// Time discretization values and methods
   double stop_time_ = 0.1;
