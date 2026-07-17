@@ -786,7 +786,7 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 
 void
 UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
-                                    const Cell& cell,
+                                    std::uint32_t cell_local_id,
                                     const Vector3& qp_xyz,
                                     const SourcePoint& source_point,
                                     std::vector<double>& phi_out,
@@ -823,7 +823,6 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
   std::sort(scratch_bp.begin(), scratch_bp.end());
 
   scratch_segs.clear();
-  size_t cell_id = cell.local_id;
   for (size_t interval = 0; interval + 1 < scratch_bp.size(); ++interval)
   {
     Vector3 segment_start = qp_xyz + scratch_bp[interval] * unfolded_direction;
@@ -851,10 +850,10 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
       if (use_fast_trace_)
       {
         // Fast path: precomputed flat face vertex data -- no std::map traversal.
-        const double cell_size = cell_sizes_[cell_id];
+        const double cell_size = cell_sizes_[cell_local_id];
         const double back_tol = cell_size * 1.0e-10;
-        const uint32_t face_off = cell_face_offsets_[cell_id];
-        const uint32_t n_faces = cell_num_faces_[cell_id];
+        const uint32_t face_off = cell_face_offsets_[cell_local_id];
+        const uint32_t n_faces = cell_num_faces_[cell_local_id];
 
         bool found = false;
         for (uint32_t f = 0; f < n_faces and not found; ++f)
@@ -888,7 +887,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
         {
           // Rare fallback for degenerate cases (point on a face/vertex): let TraceRay nudge.
           const auto oi =
-            ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), line_point, segment_omega);
+            ray_tracer.TraceRay(grid_->GetLocalCell(cell_local_id), line_point, segment_omega);
           OpenSnLogicalErrorIf(oi.particle_lost,
                                GetName() +
                                  ": reflected image-source ray lost in fast-trace fallback.");
@@ -901,7 +900,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
       {
         // Original path: used for non-convex meshes or faces with >max_sides vertices.
         const auto oi =
-          ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), line_point, segment_omega);
+          ray_tracer.TraceRay(grid_->GetLocalCell(cell_local_id), line_point, segment_omega);
         OpenSnLogicalErrorIf(oi.particle_lost,
                              GetName() + ": ray lost in mesh during segment traversal.");
         dist_in_cell = oi.distance_to_surface;
@@ -912,7 +911,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
       const double distance_in_cell = std::min(dist_in_cell, remaining_distance);
       OpenSnLogicalErrorIf(distance_in_cell <= tolerance,
                            GetName() + ": reflected image-source ray failed to advance.");
-      scratch_segs.emplace_back(cell_id, distance_in_cell);
+      scratch_segs.emplace_back(cell_local_id, distance_in_cell);
       remaining_distance -= distance_in_cell;
       if (remaining_distance <= tolerance)
         break;
@@ -924,14 +923,14 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
         OpenSnLogicalErrorIf(
           it == global_to_local_id_.end(),
           GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = it->second;
+        cell_local_id = it->second;
       }
       else
       {
         OpenSnLogicalErrorIf(
           not grid_->IsCellLocal(dest_neighbor),
           GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = grid_->MapCellGlobalID2LocalID(dest_neighbor);
+        cell_local_id = grid_->MapCellGlobalID2LocalID(dest_neighbor);
       }
       line_point = exit_point;
     }
@@ -1013,7 +1012,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
           {
             const auto& qp_xyz = fe_vol_data.QPointXYZ(qp);
             RaytraceLineInto(ray_tracer,
-                             cell,
+                             cell_index,
                              qp_xyz,
                              source_point,
                              phi_qp,
@@ -1240,7 +1239,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         {
           const auto& qp_xyz = fe_srf_data.QPointXYZ(qp);
           const auto omega = ComputeOmega(pt_loc, qp_xyz);
-          const auto phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+          const auto phi_qp = RaytraceLine(ray_tracer, cell_local_id, qp_xyz, source_point);
           const double integrand = (*swf)(qp_xyz)*omega.Dot(normal) * fe_srf_data.JxW(qp);
 
           for (size_t g = 0; g < num_groups_; ++g)
@@ -1337,7 +1336,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       // Raytrace to point
       Vector3 qp_xyz = fe_vol_data.QPointXYZ(qp);
 
-      std::vector<double> phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+      std::vector<double> phi_qp = RaytraceLine(ray_tracer, cell_local_id, qp_xyz, source_point);
 
       for (unsigned int i = 0; i < cell_num_nodes; ++i)
       {
@@ -1497,7 +1496,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 
 std::vector<double>
 UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
-                                const Cell& cell,
+                                std::uint32_t cell_local_id,
                                 const Vector3& qp_xyz,
                                 const SourcePoint& source_point,
                                 const double tolerance)
@@ -1508,8 +1507,15 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
   std::vector<double> scratch_mfp(num_groups_, 0.0);
   scratch_segs.reserve(16);
   scratch_bp.reserve(8);
-  RaytraceLineInto(
-    ray_tracer, cell, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
+  RaytraceLineInto(ray_tracer,
+                   cell_local_id,
+                   qp_xyz,
+                   source_point,
+                   phi,
+                   scratch_segs,
+                   scratch_bp,
+                   scratch_mfp,
+                   tolerance);
   return phi;
 }
 
