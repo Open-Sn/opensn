@@ -81,11 +81,15 @@ RayTracer::Grid() const
 }
 
 RayTracerOutputInformation
-RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth)
+RayTracer::TraceRay(std::uint32_t cell_local_id,
+                    Vector3& pos_i,
+                    Vector3& omega_i,
+                    int function_depth)
 {
   const auto& grid = Grid();
+  const auto& cell = grid->GetLocalCell(cell_local_id);
   const double cell_size =
-    cell_sizes_ ? (*cell_sizes_)[cell.local_id] : EstimateCellSize(*grid, cell);
+    cell_sizes_ ? (*cell_sizes_)[cell_local_id] : EstimateCellSize(*grid, cell);
   SetTolerancesFromCellSize(cell_size);
 
   RayTracerOutputInformation oi;
@@ -111,7 +115,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
       Vector3 v_p_i_cc = (cell.centroid - pos_i);
       Vector3 pos_i_nudged = pos_i + v_p_i_cc * epsilon_nudge_;
 
-      oi = TraceRay(cell, pos_i_nudged, omega_i, function_depth + 1);
+      oi = TraceRay(cell_local_id, pos_i_nudged, omega_i, function_depth + 1);
 
       return oi;
     }
@@ -122,7 +126,7 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
       Vector3 v_p_i_cc = (cell.centroid - pos_i).Cross(omega_i);
       Vector3 pos_i_nudged = pos_i + v_p_i_cc * epsilon_nudge_;
 
-      oi = TraceRay(cell, pos_i_nudged, omega_i, function_depth + 1);
+      oi = TraceRay(cell_local_id, pos_i_nudged, omega_i, function_depth + 1);
 
       return oi;
     }
@@ -183,10 +187,13 @@ RayTracer::TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int func
 }
 
 RayTracerOutputInformation
-RayTracer::TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector3& omega_i)
+RayTracer::TraceIncidentRay(std::uint32_t cell_local_id,
+                            const Vector3& pos_i,
+                            const Vector3& omega_i)
 {
+  const auto& cell = Grid()->GetLocalCell(cell_local_id);
   const auto cell_type = cell.GetType();
-  const double cell_char_length = (*cell_sizes_)[cell.local_id];
+  const double cell_char_length = (*cell_sizes_)[cell_local_id];
   const auto& grid = reference_grid_;
 
   bool intersects_cell = false;
