@@ -253,13 +253,11 @@ Mesh::SetCells(std::vector<Cell>&& local_cells, std::vector<Cell>&& ghost_cells)
   std::size_t local_id = 0;
   for (auto& cell : local_cells_)
   {
-    cell.local_id = local_id;
     global_to_local_cell_id_map_[cell.global_id] = local_id;
     ++local_id;
   }
   for (auto& cell : ghost_cells_)
   {
-    cell.local_id = local_id;
     global_to_local_cell_id_map_[cell.global_id] = local_id;
     ++local_id;
   }

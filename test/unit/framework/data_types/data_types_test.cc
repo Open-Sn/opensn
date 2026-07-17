@@ -26,7 +26,6 @@ TEST(DataTypesTest, 00)
     Cell poster_child_cell(CellType::POLYHEDRON, CellType::HEXAHEDRON);
     {
       poster_child_cell.global_id = 321;
-      poster_child_cell.local_id = 123;
       poster_child_cell.partition_id = 0;
       poster_child_cell.centroid = Vector3(0.5, 0.5, 0.5);
       poster_child_cell.block_id = 2;
@@ -136,12 +135,6 @@ TEST(DataTypesTest, 00)
           break;
         }
         if (rcell.global_id != pcell.global_id)
-        {
-          passed = false;
-          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-          break;
-        }
-        if (rcell.local_id != pcell.local_id)
         {
           passed = false;
           opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";

@@ -319,7 +319,6 @@ Cell::operator=(const Cell& other)
     throw std::runtime_error("Cannot copy from cells of different types.");
 
   global_id = other.global_id;
-  local_id = other.local_id;
   partition_id = other.partition_id;
   centroid = other.centroid;
   block_id = other.block_id;
@@ -410,7 +409,6 @@ Cell::Serialize() const
   ByteArray raw;
 
   raw.Write<uint64_t>(global_id);
-  raw.Write<std::uint32_t>(local_id);
   raw.Write<int>(partition_id);
   raw.Write<double>(centroid.x);
   raw.Write<double>(centroid.y);
@@ -435,7 +433,6 @@ Cell
 Cell::DeSerialize(const ByteArray& raw, size_t& address)
 {
   auto cell_global_id = raw.Read<uint64_t>(address, &address);
-  auto cell_local_id = raw.Read<std::uint32_t>(address, &address);
   auto cell_prttn_id = raw.Read<int>(address, &address);
   auto cell_centroid_x = raw.Read<double>(address, &address);
   auto cell_centroid_y = raw.Read<double>(address, &address);
@@ -447,7 +444,6 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
 
   Cell cell(cell_type, cell_sub_type);
   cell.global_id = cell_global_id;
-  cell.local_id = cell_local_id;
   cell.partition_id = cell_prttn_id;
   cell.centroid.x = cell_centroid_x;
   cell.centroid.y = cell_centroid_y;
@@ -475,7 +471,6 @@ Cell::ToString() const
   outstr << "cell_type: " << CellTypeName(cell_type_) << "\n";
   outstr << "cell_sub_type: " << CellTypeName(cell_sub_type_) << "\n";
   outstr << "global_id: " << global_id << "\n";
-  outstr << "local_id: " << local_id << "\n";
   outstr << "partition_id: " << partition_id << "\n";
   outstr << "centroid: " << centroid.PrintStr() << "\n";
   outstr << "block_id: " << block_id << "\n";
