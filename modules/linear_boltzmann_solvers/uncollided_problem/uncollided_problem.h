@@ -109,7 +109,7 @@ protected:
 
   void ProjectReflectedImageSources(unsigned int progress_interval);
 
-  std::vector<double> RaytraceLine(const Cell& cell,
+  std::vector<double> RaytraceLine(std::uint32_t cell_local_id,
                                    const Vector3& qp_xyz,
                                    const SourcePoint& source_point,
                                    double tolerance = 1.0e-12);
@@ -118,7 +118,7 @@ protected:
   /// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call
   /// (they are reset internally each call, so no manual clearing is needed between calls).
   /// On return, @p scratch_mfp holds the optical depth from the source to @p qp_xyz per group.
-  void RaytraceLineInto(const Cell& cell,
+  void RaytraceLineInto(std::uint32_t cell_local_id,
                         const Vector3& qp_xyz,
                         const SourcePoint& source_point,
                         std::vector<double>& phi_out,
@@ -157,7 +157,7 @@ protected:
    * the source, when a face is not directly visible from it. Also returns std::nullopt when the
    * source is on the inner side of a face that is not outgoing.
    */
-  std::optional<ExactCellIntegrals> IntegrateCellExactly(const Cell& cell,
+  std::optional<ExactCellIntegrals> IntegrateCellExactly(std::uint32_t cell_local_id,
                                                          const SourcePoint& source_point);
 
   /**

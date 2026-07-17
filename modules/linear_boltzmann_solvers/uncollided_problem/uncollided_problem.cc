@@ -751,7 +751,7 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 // NOLINTEND(clang-analyzer-security.ArrayBound)
 
 void
-UncollidedProblem::RaytraceLineInto(const Cell& cell,
+UncollidedProblem::RaytraceLineInto(std::uint32_t cell_local_id,
                                     const Vector3& qp_xyz,
                                     const SourcePoint& source_point,
                                     std::vector<double>& phi_out,
@@ -789,7 +789,7 @@ UncollidedProblem::RaytraceLineInto(const Cell& cell,
 
   scratch_segs.clear();
   thread_local std::vector<MeshSegmentTracer::Segment> traced;
-  auto cell_id = static_cast<std::uint32_t>(cell.local_id);
+  auto cell_id = cell_local_id;
   for (size_t interval = 0; interval + 1 < scratch_bp.size(); ++interval)
   {
     Vector3 segment_start = qp_xyz + scratch_bp[interval] * unfolded_direction;
@@ -902,7 +902,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
           {
             const auto& qp_xyz = fe_vol_data.QPointXYZ(qp);
             RaytraceLineInto(
-              cell, qp_xyz, source_point, phi_qp, scratch_segs, scratch_bp, scratch_mfp);
+              cell_index, qp_xyz, source_point, phi_qp, scratch_segs, scratch_bp, scratch_mfp);
             for (size_t i = 0; i < cell_num_nodes; ++i)
             {
               const double integrand = fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
@@ -973,7 +973,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
               const auto omega = ComputeOmega(source_point.location, qp_xyz);
               const double integrand = omega.Dot(face.normal) * fe_srf_data.JxW(qp);
               RaytraceLineInto(
-                cell, qp_xyz, source_point, phi_qp, scratch_segs, scratch_bp, scratch_mfp);
+                cell_index, qp_xyz, source_point, phi_qp, scratch_segs, scratch_bp, scratch_mfp);
               for (size_t g = 0; g < num_groups_; ++g)
                 local_outflow += phi_qp[g] * integrand;
             }
@@ -1154,7 +1154,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
                   source_point.subscribers.end(),
                   [c](const auto& subscriber) { return subscriber.cell_local_id == c; });
     if (is_source_cell or is_exact_neighbor[c])
-      exact_integrals = IntegrateCellExactly(cell, source_point);
+      exact_integrals = IntegrateCellExactly(c, source_point);
     traced.is_source_cell = is_source_cell;
     traced.has_exact_integrals = exact_integrals.has_value();
 
@@ -1183,7 +1183,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         {
           const auto& qp_xyz = fe_srf_data.QPointXYZ(qp);
           const auto omega = ComputeOmega(pt_loc, qp_xyz);
-          const auto phi_qp = RaytraceLine(cell, qp_xyz, source_point);
+          const auto phi_qp = RaytraceLine(c, qp_xyz, source_point);
           const double integrand = (*swf)(qp_xyz)*omega.Dot(normal) * fe_srf_data.JxW(qp);
 
           for (size_t g = 0; g < num_groups_; ++g)
@@ -1304,7 +1304,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         // Raytrace to point
         Vector3 qp_xyz = fe_vol_data.QPointXYZ(qp);
 
-        std::vector<double> phi_qp = RaytraceLine(cell, qp_xyz, source_point);
+        std::vector<double> phi_qp = RaytraceLine(c, qp_xyz, source_point);
 
         for (unsigned int i = 0; i < cell_num_nodes; ++i)
         {
@@ -1599,7 +1599,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 }
 
 std::vector<double>
-UncollidedProblem::RaytraceLine(const Cell& cell,
+UncollidedProblem::RaytraceLine(std::uint32_t cell_local_id,
                                 const Vector3& qp_xyz,
                                 const SourcePoint& source_point,
                                 const double tolerance)
@@ -1611,7 +1611,7 @@ UncollidedProblem::RaytraceLine(const Cell& cell,
   scratch_segs.reserve(16);
   scratch_bp.reserve(8);
   RaytraceLineInto(
-    cell, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
+    cell_local_id, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
   return phi;
 }
 
@@ -1780,13 +1780,16 @@ ForEachVisibleSideTriangle(const Mesh& grid,
 } // namespace
 
 std::optional<UncollidedProblem::ExactCellIntegrals>
-UncollidedProblem::IntegrateCellExactly(const Cell& cell, const SourcePoint& source_point)
+UncollidedProblem::IntegrateCellExactly(std::uint32_t cell_local_id,
+                                        const SourcePoint& source_point)
 {
+  const Cell& cell = grid_->GetLocalCell(cell_local_id);
   const Vector3& source = source_point.location;
-  const bool contains_source = std::any_of(source_point.subscribers.begin(),
-                                           source_point.subscribers.end(),
-                                           [&cell](const auto& subscriber)
-                                           { return subscriber.cell_local_id == cell.local_id; });
+  const bool contains_source =
+    std::any_of(source_point.subscribers.begin(),
+                source_point.subscribers.end(),
+                [cell_local_id](const auto& subscriber)
+                { return subscriber.cell_local_id == cell_local_id; });
 
   // The entry distance below assumes that a ray from the source crosses the cell at most once.
   // That holds for a convex cell, and for the cell containing the source when every face is
@@ -1794,7 +1797,7 @@ UncollidedProblem::IntegrateCellExactly(const Cell& cell, const SourcePoint& sou
   if (not contains_source and not IsConvex(cell))
     return std::nullopt;
 
-  const auto& sigma_t = cell_transport_views_[cell.local_id].GetXS().GetSigmaTotal();
+  const auto& sigma_t = cell_transport_views_[cell_local_id].GetXS().GetSigmaTotal();
 
   // Planes of the side triangles of every face, for the distance at which a ray from the source
   // enters the cell. It is zero for the cell containing the source.
@@ -1830,7 +1833,7 @@ UncollidedProblem::IntegrateCellExactly(const Cell& cell, const SourcePoint& sou
 
   for (size_t f = 0; f < cell.faces.size(); ++f)
   {
-    const bool outgoing = cell_face_orientations_[cell.local_id][f] == FaceOrientation::OUTGOING;
+    const bool outgoing = cell_face_orientations_[cell_local_id][f] == FaceOrientation::OUTGOING;
     bool visible_through_non_outgoing_face = false;
     const auto visible = ForEachVisibleSideTriangle(
       *grid_,
@@ -1861,7 +1864,8 @@ UncollidedProblem::IntegrateCellExactly(const Cell& cell, const SourcePoint& sou
             const double chord = std::max(0.0, R - R_in);
 
             // On return, scratch_mfp holds the optical depth from the source to x.
-            RaytraceLineInto(cell, x, source_point, phi, scratch_segs, scratch_bp, scratch_mfp);
+            RaytraceLineInto(
+              cell_local_id, x, source_point, phi, scratch_segs, scratch_bp, scratch_mfp);
             for (size_t g = 0; g < num_groups_; ++g)
             {
               const double optical_chord = sigma_t[g] * chord;
