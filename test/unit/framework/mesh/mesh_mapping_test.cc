@@ -20,9 +20,9 @@ TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> c
     for (std::size_t flid = 0; flid < fine_grid->GetLocalCellCount(); ++flid)
     {
       const auto& fine_cell = fine_grid->GetLocalCell(flid);
-      const auto in_coarse_mapping =
-        std::find(coarse_mapping.fine_cells.begin(), coarse_mapping.fine_cells.end(), &fine_cell) !=
-        coarse_mapping.fine_cells.end();
+      const auto in_coarse_mapping = std::find(coarse_mapping.fine_cell_local_ids.begin(),
+                                               coarse_mapping.fine_cell_local_ids.end(),
+                                               flid) != coarse_mapping.fine_cell_local_ids.end();
       const auto& fine_mapping = mesh_mapping.GetFineMapping(flid);
       const auto in_fine_mapping = fine_mapping.coarse_cell_local_id == clid;
       EXPECT_EQ(in_coarse_mapping, in_fine_mapping);
