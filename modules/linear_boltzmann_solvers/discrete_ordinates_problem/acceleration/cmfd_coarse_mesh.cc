@@ -189,8 +189,9 @@ BuildGlobalFineCellInfoMap(const Mesh& grid)
   std::vector<uint64_t> local_keys;
   std::vector<double> local_values;
 
-  for (const auto& cell : grid.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     local_keys.push_back(cell.global_id);
     local_keys.push_back(static_cast<uint64_t>(cell.partition_id));
     local_keys.push_back(static_cast<uint64_t>(cell.block_id));
@@ -199,7 +200,7 @@ BuildGlobalFineCellInfoMap(const Mesh& grid)
     local_values.push_back(cell.centroid.x);
     local_values.push_back(cell.centroid.y);
     local_values.push_back(cell.centroid.z);
-    local_values.push_back(grid.GetCellVolume(cell.local_id));
+    local_values.push_back(grid.GetCellVolume(cell_local_id));
 
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {
@@ -390,14 +391,16 @@ CMFDCoarseMesh::BuildIdentity(const Mesh& grid)
   CMFDCoarseMesh coarse_mesh;
   coarse_mesh.local_cells_.reserve(grid.GetLocalCellCount());
 
-  for (const auto& fine_cell : grid.GetLocalCells())
+  for (std::uint32_t fine_cell_local_id = 0; fine_cell_local_id < grid.GetLocalCellCount();
+       ++fine_cell_local_id)
   {
+    const auto& fine_cell = grid.GetLocalCell(fine_cell_local_id);
     CMFDCoarseCell coarse_cell;
     coarse_cell.global_id = fine_cell.global_id;
     coarse_cell.partition_id = fine_cell.partition_id;
     coarse_cell.block_id = fine_cell.block_id;
     coarse_cell.centroid = fine_cell.centroid;
-    coarse_cell.volume = grid.GetCellVolume(fine_cell.local_id);
+    coarse_cell.volume = grid.GetCellVolume(fine_cell_local_id);
     coarse_cell.fine_cell_ids = {fine_cell.global_id};
     coarse_cell.faces.reserve(fine_cell.faces.size());
 
@@ -468,10 +471,11 @@ CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
     {
       const auto fine_cell_id = queue.front();
       queue.pop_front();
-      const auto& fine_cell = grid.GetGlobalCell(fine_cell_id);
+      const auto fine_cell_local_id = grid.MapCellGlobalID2LocalID(fine_cell_id);
+      const auto& fine_cell = grid.GetLocalCell(fine_cell_local_id);
 
       coarse_cell.fine_cell_ids.push_back(fine_cell.global_id);
-      auto fine_cell_volume = grid.GetCellVolume(fine_cell.local_id);
+      auto fine_cell_volume = grid.GetCellVolume(fine_cell_local_id);
       coarse_cell.volume += fine_cell_volume;
       coarse_cell.centroid += fine_cell.centroid * fine_cell_volume;
 
