@@ -230,9 +230,11 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
     {
       // Get the current cell
       const auto& cell = grid->GetGlobalCell(particle.cell_id);
+      const auto cell_local_id = grid->MapCellGlobalID2LocalID(particle.cell_id);
 
       // Perform the trace to the next surface
-      auto destination_info = ray_tracer.TraceRay(cell, particle.position, particle.direction);
+      auto destination_info =
+        ray_tracer.TraceRay(cell_local_id, particle.position, particle.direction);
 
       const Vector3& end_of_track_position = destination_info.pos_f;
 
