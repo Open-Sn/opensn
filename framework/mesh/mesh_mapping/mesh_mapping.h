@@ -32,7 +32,7 @@ public:
     explicit CoarseMapping(const Cell& coarse_cell);
 
     /// The fine cells contained within a coarse cell.
-    std::vector<const Cell*> fine_cells;
+    std::vector<std::uint32_t> fine_cell_local_ids;
     /// The fine cell faces contained within each coarse cell face.
     /// Outer index coarse cell face index (size == # of faces in coarse cell)
     /// Inner index is arbitrary and entries are fine Cell -> fine CellFace index
