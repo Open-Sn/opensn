@@ -294,6 +294,8 @@ TransientSolver::Advance()
 
   // Solve
   do_problem_->SetPhiOldFrom(phi_prev_local_);
+  if (options.use_precursors)
+    do_problem_->SetPrecursorsOldFrom(precursor_prev_local_);
   auto ags_solver = do_problem_->GetAGSSolver();
   OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
   try

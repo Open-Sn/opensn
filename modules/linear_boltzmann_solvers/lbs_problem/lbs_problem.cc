@@ -292,7 +292,8 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 {
   const BlockID2XSMap old_xs_map = block_id_to_xs_map_;
   const size_t old_max_precursors_per_material = max_precursors_per_material_;
-  const auto old_precursor_state = precursor_new_local_;
+  const auto old_precursor_new_state = precursor_new_local_;
+  const auto old_precursor_old_state = precursor_old_local_;
 
   block_id_to_xs_map_ = xs_map;
   InitializeMaterials();
@@ -303,8 +304,9 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
     const size_t new_max_precursors_per_material = max_precursors_per_material_;
     const size_t num_precursor_dofs = num_cells * new_max_precursors_per_material;
 
-    std::vector<double> remapped_precursors(num_precursor_dofs, 0.0);
-    if (old_precursor_state.size() == num_cells * old_max_precursors_per_material)
+    std::vector<double> remapped_precursors_new(num_precursor_dofs, 0.0);
+    std::vector<double> remapped_precursors_old(num_precursor_dofs, 0.0);
+    if (old_precursor_new_state.size() == num_cells * old_max_precursors_per_material)
     {
       for (const auto& cell : grid_->local_cells)
       {
@@ -320,14 +322,21 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
         const size_t old_base = cell.local_id * old_max_precursors_per_material;
         const size_t new_base = cell.local_id * new_max_precursors_per_material;
         for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
-          remapped_precursors[new_base + j] = old_precursor_state[old_base + j];
+        {
+          remapped_precursors_new[new_base + j] = old_precursor_new_state[old_base + j];
+          remapped_precursors_old[new_base + j] = old_precursor_old_state[old_base + j];
+        }
       }
     }
 
-    precursor_new_local_ = std::move(remapped_precursors);
+    precursor_new_local_ = std::move(remapped_precursors_new);
+    precursor_old_local_ = std::move(remapped_precursors_old);
   }
   else
+  {
     precursor_new_local_.clear();
+    precursor_old_local_.clear();
+  }
 
   ResetGPUCarriers();
   InitializeGPUExtras();
@@ -482,6 +491,18 @@ const std::vector<double>&
 LBSProblem::GetPrecursorsNewLocal() const
 {
   return precursor_new_local_;
+}
+
+std::vector<double>&
+LBSProblem::GetPrecursorsOldLocal()
+{
+  return precursor_old_local_;
+}
+
+const std::vector<double>&
+LBSProblem::GetPrecursorsOldLocal() const
+{
+  return precursor_old_local_;
 }
 
 SetSourceFunction
@@ -1095,6 +1116,7 @@ LBSProblem::InitializeParrays()
   {
     size_t num_precursor_dofs = grid_->local_cells.size() * max_precursors_per_material_;
     precursor_new_local_.assign(num_precursor_dofs, 0.0);
+    precursor_old_local_.assign(num_precursor_dofs, 0.0);
   }
 
   // Initialize cell transport metadata and outflow tallies.
@@ -1251,6 +1273,14 @@ LBSProblem::SetPhiOldFrom(const std::vector<double>& phi_old)
 {
   assert(phi_old.size() == phi_old_local_.size() && "SetPhiOldFrom size mismatch.");
   phi_old_local_ = phi_old;
+}
+
+void
+LBSProblem::SetPrecursorsOldFrom(const std::vector<double>& precursors_old)
+{
+  assert(precursors_old.size() == precursor_old_local_.size() &&
+         "SetPrecursorsOldFrom size mismatch.");
+  precursor_old_local_ = precursors_old;
 }
 
 void

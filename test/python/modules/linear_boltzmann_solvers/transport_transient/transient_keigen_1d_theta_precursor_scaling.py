@@ -2,11 +2,21 @@
 # -*- coding: utf-8 -*-
 
 """
-1D transient check: delayed fission source scales with theta*dt.
+1D transient check: delayed fission source theta-sensitivity.
 
 Compare delayed-vs-prompt FP ratio deltas at theta=1.0 and theta=0.5 for a
-single step. The transient delayed-fission source should scale with theta,
-so the delta at theta=1 should be roughly twice the delta at theta=0.5.
+single step, starting from a critical, precursor-bearing steady state (so the
+precursor inventory C_j(0) = beta_j/lambda_j * F_ss is nonzero at t=0).
+
+The delayed-fission source has two contributions: (a) decay of the precursor
+inventory carried in from the previous time step (~coeff * C_j(t_n), nearly
+theta-insensitive since coeff = lambda_j/(1+eff_dt*lambda_j) barely changes
+with eff_dt=theta*dt for eff_dt*lambda_j << 1), and (b) newly-born precursors
+from fission during this step (~coeff * eff_dt * beta_j * F, which scales
+close to linearly with eff_dt=theta*dt). For this test's parameters
+(lambda=0.08, beta=0.0065, dt=1e-2), contribution (a) is roughly three orders
+of magnitude larger than (b), so the theta-dependence of the newly-born term
+is swamped and the ratio of deltas is expected to be close to 1, not 2.
 """
 
 import os

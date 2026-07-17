@@ -204,14 +204,14 @@
   },
   {
     "file": "transient_keigen_1d_theta_precursor_scaling.py",
-    "comment": "1D delayed fission source scales with theta (TransientSourceFunction check)",
+    "comment": "1D delayed fission source theta-sensitivity is dominated by pre-existing precursor decay (TransientSourceFunction check)",
     "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
         "key": "DELAYED_THETA_RATIO",
         "wordnum": 1,
-        "gold": 2,
+        "gold": 1,
         "abs_tol": 0.01
       }
     ]
@@ -922,14 +922,14 @@
   },
   {
     "file": "transient_keigen_1d_theta_precursor_scaling_cbc.py",
-    "comment": "1D delayed fission source scales with theta (TransientSourceFunction check) (CBC)",
+    "comment": "1D delayed fission source theta-sensitivity is dominated by pre-existing precursor decay (TransientSourceFunction check) (CBC)",
     "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
         "key": "DELAYED_THETA_RATIO",
         "wordnum": 1,
-        "gold": 2,
+        "gold": 1,
         "abs_tol": 0.01
       }
     ]

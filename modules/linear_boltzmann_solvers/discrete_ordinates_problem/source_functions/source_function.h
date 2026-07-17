@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -48,7 +49,8 @@ public:
   /// Compute delayed particle precursor sources.
   virtual double DelayedFission(const PrecursorList& precursors,
                                 const std::vector<double>& nu_delayed_sigma_f,
-                                const double* phi) const;
+                                const double* phi,
+                                std::uint64_t cell_local_id) const;
 
   virtual void AddAdditionalSources(const LBSGroupset& groupset,
                                     std::vector<double>& q,
