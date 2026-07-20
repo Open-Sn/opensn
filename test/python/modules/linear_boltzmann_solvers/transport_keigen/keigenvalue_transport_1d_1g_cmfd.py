@@ -4,7 +4,7 @@
 """
 1D 1G k-eigenvalue smoke test using power iteration with CMFD acceleration.
 
-Test: Final k-eigenvalue: 0.9945456
+Test: Final k-eigenvalue: 0.9995433
 """
 
 import os
@@ -148,7 +148,7 @@ if __name__ == "__main__":
         print(f"Python CMFD sweep speedup: {cmfd_speedup}")
 
     if not get_option("cmfd_limiter_stress", False):
-        expected_k = 0.9945456
+        expected_k = 0.9995433
         if abs(pi_k - expected_k) > 5.0e-6:
             raise RuntimeError(f"Expected PI k={expected_k}, got {pi_k}")
         if abs(cmfd_k - expected_k) > 5.0e-6:

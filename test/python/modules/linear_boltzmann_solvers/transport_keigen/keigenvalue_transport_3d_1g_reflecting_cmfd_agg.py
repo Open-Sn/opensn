@@ -4,7 +4,7 @@
 """
 3D 1G reflecting-boundary k-eigenvalue test using aggregated CMFD acceleration.
 
-Test: Final k-eigenvalue: 0.995
+Test: Final k-eigenvalue: 1.0
 """
 
 import os
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         print(f"Python sweeps: {sweeps}")
         print(f"Balance={balance['balance']:.6e}")
 
-    if abs(k - 0.995) > 1.0e-4:
-        raise RuntimeError(f"Expected k near 0.995, got {k}")
+    if abs(k - 1.0) > 1.0e-4:
+        raise RuntimeError(f"Expected k near 1.0, got {k}")
     if abs(balance["balance"]) > 5.0e-4:
         raise RuntimeError(f"Expected balance closure, got {balance['balance']}")

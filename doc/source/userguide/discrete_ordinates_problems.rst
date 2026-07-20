@@ -221,9 +221,17 @@ The most important options for everyday use are:
 * ``ags_convergence_check``
 * ``field_function_prefix_option``
 * ``field_function_prefix``
+* ``use_precursors``
 
 There are also restart, precursor, and message-size options for more
 specialized workflows.
+
+``use_precursors`` controls precursor storage and transient delayed-neutron
+evolution. Steady-state and k-eigenvalue solves include delayed neutron
+production whenever the active cross-section data contains it, independent of
+this option. In transient mode, ``use_precursors=False`` selects a prompt-only
+transient, while ``use_precursors=True`` evolves precursor concentrations and
+includes delayed production through those precursor equations.
 
 Restart-related options include:
 
