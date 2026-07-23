@@ -62,7 +62,7 @@ protected:
 
   /// Determines if a cells needs to be included as a ghost or as a local cell.
   bool CellHasLocalScope(int location_id,
-                         const UnpartitionedMesh::LightWeightCell& lwcell,
+                         const Cell& lwcell,
                          uint64_t cell_global_id,
                          const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                          const std::vector<int>& cell_partition_ids) const;
@@ -78,9 +78,7 @@ public:
 
 protected:
   /// Converts a light-weight cell to a real cell.
-  static Cell SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
-                        uint64_t global_id,
-                        int partition_id);
+  static Cell SetupCell(const Cell& raw_cell, uint64_t global_id, int partition_id);
 
   static void ComputeAndPrintStats(const std::shared_ptr<Mesh>& grid);
 

@@ -81,7 +81,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   struct BlockData
   {
     std::string name;
-    std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> cells;
+    std::vector<std::shared_ptr<Cell>> cells;
     std::vector<std::pair<uint64_t, uint64_t>> edges;
   };
 
@@ -146,7 +146,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       else if (number_of_verts == 4)
         sub_type = CellType::QUADRILATERAL;
 
-      auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON, sub_type);
+      auto cell = std::make_shared<Cell>(CellType::POLYGON, sub_type);
       cell->block_id = material_id.value_or(std::numeric_limits<unsigned int>::max());
 
       // Populate vertex-ids
@@ -162,7 +162,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       const size_t num_verts = cell->vertex_ids.size();
       for (size_t v = 0; v < num_verts; ++v)
       {
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
 
         face.vertex_ids.resize(2);
         face.vertex_ids[0] = cell->vertex_ids[v];
@@ -333,7 +333,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   // Set boundary ids
   if (not bndry_block_ids.empty())
   {
-    std::vector<UnpartitionedMesh::LightWeightFace*> bndry_faces;
+    std::vector<CellFace*> bndry_faces;
     for (auto& cell_ptr : mesh->GetRawCells())
       for (auto& face : cell_ptr->faces)
         if (not face.has_neighbor)
@@ -356,7 +356,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
           if (face_vert_id_set == edge_vert_id_set)
           {
-            face_ptr->neighbor = bndry_id;
+            face_ptr->neighbor_id = bndry_id;
             ++num_faces_boundarified;
             break;
           }
