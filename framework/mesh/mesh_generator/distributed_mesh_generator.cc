@@ -100,7 +100,7 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
     {
       if (cell_pids[cell_global_id] == pid)
       {
-        const auto& raw_cell = *raw_cells[cell_global_id];
+        const auto& raw_cell = raw_cells[cell_global_id];
         local_cells_needed.push_back(cell_global_id);
         cells_needed.emplace(cell_global_id);
 
@@ -114,7 +114,7 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
             if (ghost_gid != cell_global_id && cells_needed.find(ghost_gid) == cells_needed.end())
             {
               cells_needed.emplace(ghost_gid);
-              const auto& ghost_raw_cell = *raw_cells[ghost_gid];
+              const auto& ghost_raw_cell = raw_cells[ghost_gid];
 
               // Insert ghost vertex IDs
               for (const auto gvid : ghost_raw_cell.vertex_ids)
@@ -155,7 +155,7 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
     // Cell data
     for (const auto& cell_global_id : cells_needed)
     {
-      const auto& cell = *raw_cells[cell_global_id];
+      const auto& cell = raw_cells[cell_global_id];
       serial_data.Write(static_cast<int>(cell_pids[cell_global_id]));
       serial_data.Write(cell_global_id);
       serial_data.Write(cell.GetType());

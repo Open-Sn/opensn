@@ -31,13 +31,12 @@ namespace opensn
 namespace
 {
 
-std::shared_ptr<Cell>
+Cell
 CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolyhedron";
 
   CellType sub_type = CellType::POLYHEDRON;
-  ;
   switch (vtk_cell->GetCellType())
   {
     case VTK_HEXAGONAL_PRISM:
@@ -61,17 +60,17 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
     default:
       throw std::logic_error(fname + ": Unsupported 3D cell type encountered.");
   }
-  auto polyh_cell = std::make_shared<Cell>(CellType::POLYHEDRON, sub_type);
+  Cell polyh_cell(CellType::POLYHEDRON, sub_type);
 
   auto num_cpoints = vtk_cell->GetNumberOfPoints();
   auto num_cfaces = vtk_cell->GetNumberOfFaces();
 
-  polyh_cell->vertex_ids.reserve(num_cpoints);
+  polyh_cell.vertex_ids.reserve(num_cpoints);
   auto* point_ids = vtk_cell->GetPointIds();
   for (int p = 0; p < num_cpoints; ++p)
   {
     uint64_t point_id = point_ids->GetId(p);
-    polyh_cell->vertex_ids.push_back(point_id);
+    polyh_cell.vertex_ids.push_back(point_id);
   }
 
   switch (sub_type)
@@ -88,9 +87,9 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 
         face.vertex_ids.reserve(4);
         for (int p = 0; p < 4; ++p)
-          face.vertex_ids.push_back(polyh_cell->vertex_ids[face_vids[f][p]]);
+          face.vertex_ids.push_back(polyh_cell.vertex_ids[face_vids[f][p]]);
 
-        polyh_cell->faces.push_back(face);
+        polyh_cell.faces.push_back(face);
       }
       break;
     }
@@ -105,9 +104,9 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 
         face.vertex_ids.reserve(4);
         for (int p = 0; p < face_vids[f].size(); ++p)
-          face.vertex_ids.push_back(polyh_cell->vertex_ids[face_vids[f][p]]);
+          face.vertex_ids.push_back(polyh_cell.vertex_ids[face_vids[f][p]]);
 
-        polyh_cell->faces.push_back(face);
+        polyh_cell.faces.push_back(face);
       }
       break;
     }
@@ -121,15 +120,15 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 
         face.vertex_ids.reserve(3);
         for (int p = 0; p < 3; ++p)
-          face.vertex_ids.push_back(polyh_cell->vertex_ids[face_vids[f][p]]);
+          face.vertex_ids.push_back(polyh_cell.vertex_ids[face_vids[f][p]]);
 
-        polyh_cell->faces.push_back(face);
+        polyh_cell.faces.push_back(face);
       }
       break;
     }
     default:
     {
-      polyh_cell->faces.reserve(num_cfaces);
+      polyh_cell.faces.reserve(num_cfaces);
       for (int f = 0; f < num_cfaces; ++f)
       {
         CellFace face;
@@ -144,7 +143,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
           face.vertex_ids.push_back(point_id);
         }
 
-        polyh_cell->faces.push_back(face);
+        polyh_cell.faces.push_back(face);
       }
       break;
     }
@@ -153,7 +152,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
   return polyh_cell;
 }
 
-std::shared_ptr<Cell>
+Cell
 CreateCellFromVTKPolygon(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
@@ -175,38 +174,38 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
       throw std::logic_error(fname + ": Unsupported 2D cell type encountered.");
   }
 
-  auto poly_cell = std::make_shared<Cell>(CellType::POLYGON, sub_type);
+  Cell poly_cell(CellType::POLYGON, sub_type);
 
   auto num_cpoints = vtk_cell->GetNumberOfPoints();
   auto num_cfaces = num_cpoints;
 
-  poly_cell->vertex_ids.reserve(num_cpoints);
+  poly_cell.vertex_ids.reserve(num_cpoints);
   auto* point_ids = vtk_cell->GetPointIds();
   for (int p = 0; p < num_cpoints; ++p)
   {
     uint64_t point_id = point_ids->GetId(p);
-    poly_cell->vertex_ids.push_back(point_id);
+    poly_cell.vertex_ids.push_back(point_id);
   }
 
-  poly_cell->faces.reserve(num_cfaces);
+  poly_cell.faces.reserve(num_cfaces);
   for (int f = 0; f < num_cfaces; ++f)
   {
     CellFace face;
 
-    auto v0_id = poly_cell->vertex_ids[f];
-    auto v1_id = (f < (num_cfaces - 1)) ? poly_cell->vertex_ids[f + 1] : poly_cell->vertex_ids[0];
+    auto v0_id = poly_cell.vertex_ids[f];
+    auto v1_id = (f < (num_cfaces - 1)) ? poly_cell.vertex_ids[f + 1] : poly_cell.vertex_ids[0];
 
     face.vertex_ids.reserve(2);
     face.vertex_ids.push_back(v0_id);
     face.vertex_ids.push_back(v1_id);
 
-    poly_cell->faces.push_back(face);
+    poly_cell.faces.push_back(face);
   }
 
   return poly_cell;
 }
 
-std::shared_ptr<Cell>
+Cell
 CreateCellFromVTKLine(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
@@ -221,50 +220,50 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
       throw std::logic_error(fname + ": Unsupported 1D cell type encountered.");
   }
 
-  auto slab_cell = std::make_shared<Cell>(CellType::SLAB, sub_type);
+  Cell slab_cell(CellType::SLAB, sub_type);
 
   auto* vtk_line = vtkLine::SafeDownCast(vtk_cell);
   auto num_cpoints = vtk_line->GetNumberOfPoints();
   auto num_cfaces = num_cpoints;
 
-  slab_cell->vertex_ids.reserve(num_cpoints);
+  slab_cell.vertex_ids.reserve(num_cpoints);
   auto* point_ids = vtk_line->GetPointIds();
   for (int p = 0; p < num_cpoints; ++p)
   {
     uint64_t point_id = point_ids->GetId(p);
-    slab_cell->vertex_ids.push_back(point_id);
+    slab_cell.vertex_ids.push_back(point_id);
   }
 
-  slab_cell->faces.reserve(num_cfaces);
+  slab_cell.faces.reserve(num_cfaces);
   for (int f = 0; f < num_cfaces; ++f)
   {
     CellFace face;
 
-    auto v_id = slab_cell->vertex_ids[f];
+    auto v_id = slab_cell.vertex_ids[f];
 
     face.vertex_ids.reserve(1);
     face.vertex_ids.push_back(v_id);
 
-    slab_cell->faces.push_back(face);
+    slab_cell.faces.push_back(face);
   }
 
   return slab_cell;
 }
 
-std::shared_ptr<Cell>
+Cell
 CreateCellFromVTKVertex(vtkCell* vtk_cell)
 {
-  auto point_cell = std::make_shared<Cell>(CellType::GHOST, CellType::POINT);
+  Cell point_cell(CellType::GHOST, CellType::POINT);
 
   auto* vtk_vertex = vtkVertex::SafeDownCast(vtk_cell);
   auto num_cpoints = vtk_vertex->GetNumberOfPoints();
 
-  point_cell->vertex_ids.reserve(num_cpoints);
+  point_cell.vertex_ids.reserve(num_cpoints);
   auto* point_ids = vtk_vertex->GetPointIds();
   for (int p = 0; p < num_cpoints; ++p)
   {
     uint64_t point_id = point_ids->GetId(p);
-    point_cell->vertex_ids.push_back(point_id);
+    point_cell.vertex_ids.push_back(point_id);
   }
 
   return point_cell;
@@ -296,7 +295,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
   if (has_global_ids)
   {
-    std::vector<std::shared_ptr<Cell>> cells(total_cell_count);
+    std::vector<std::optional<Cell>> cells(total_cell_count);
     std::vector<std::shared_ptr<Vector3>> vertices(total_point_count);
 
     auto* cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
@@ -338,7 +337,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       if (vtk_celldim != dimension_to_copy)
         continue;
 
-      std::shared_ptr<Cell> raw_cell;
+      std::optional<Cell> raw_cell;
       if (vtk_celldim == 3)
         raw_cell = CreateCellFromVTKPolyhedron(vtk_cell);
       else if (vtk_celldim == 2)
@@ -362,7 +361,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
       raw_cell->block_id = block_id_array->GetValue(c);
 
-      cells[cell_gid] = raw_cell;
+      cells[cell_gid] = std::move(raw_cell);
     } // for cell c
 
     // Load points
@@ -380,15 +379,19 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
     // Check all cells assigned
     for (vtkIdType c = 0; c < total_cell_count; ++c)
-      if (cells[c] == nullptr)
-        throw std::logic_error(fname + ": Cell pointer not assigned ");
+      if (not cells[c].has_value())
+        throw std::logic_error(fname + ": Cell not assigned ");
 
     // Check all points assigned
     for (vtkIdType p = 0; p < total_point_count; ++p)
       if (vertices[p] == nullptr)
         throw std::logic_error(fname + ": Vertex pointer not assigned");
 
-    mesh->GetRawCells() = cells;
+    std::vector<Cell> new_cells;
+    new_cells.reserve(total_cell_count);
+    for (auto& cell : cells)
+      new_cells.emplace_back(cell.value());
+    mesh->GetRawCells() = new_cells;
     mesh->GetVertices().reserve(total_point_count);
     for (auto& vertex_ptr : vertices)
       mesh->GetVertices().push_back(*vertex_ptr);
@@ -396,6 +399,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
   else
   {
     auto& raw_cells = mesh->GetRawCells();
+    raw_cells.reserve(total_cell_count);
     // Push cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
     {
@@ -406,17 +410,17 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
         continue;
 
       if (vtk_celldim == 3)
-        raw_cells.push_back(CreateCellFromVTKPolyhedron(vtk_cell));
+        raw_cells.emplace_back(CreateCellFromVTKPolyhedron(vtk_cell));
       else if (vtk_celldim == 2)
-        raw_cells.push_back(CreateCellFromVTKPolygon(vtk_cell));
+        raw_cells.emplace_back(CreateCellFromVTKPolygon(vtk_cell));
       else if (vtk_celldim == 1)
-        raw_cells.push_back(CreateCellFromVTKLine(vtk_cell));
+        raw_cells.emplace_back(CreateCellFromVTKLine(vtk_cell));
       else if (vtk_celldim == 0)
-        raw_cells.push_back(CreateCellFromVTKVertex(vtk_cell));
+        raw_cells.emplace_back(CreateCellFromVTKVertex(vtk_cell));
       else
         throw std::logic_error(fname + ": Unsupported cell dimension.");
 
-      raw_cells.back()->block_id = block_id_array->GetValue(c);
+      raw_cells.back().block_id = block_id_array->GetValue(c);
     }
 
     // Push points
@@ -443,7 +447,7 @@ SetBlockIDsFromList(std::shared_ptr<UnpartitionedMesh> mesh, const std::vector<i
   auto& raw_cells = mesh->GetRawCells();
   const size_t total_cell_count = raw_cells.size();
   for (size_t c = 0; c < total_cell_count; ++c)
-    raw_cells[c]->block_id = block_ids[c];
+    raw_cells[c].block_id = block_ids[c];
 }
 
 void
@@ -454,8 +458,8 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
   auto& raw_cells = mesh->GetRawCells();
   // Build boundary faces
   std::vector<CellFace*> bndry_faces;
-  for (auto& cell_ptr : raw_cells)
-    for (auto& face : cell_ptr->faces)
+  for (auto& cell : raw_cells)
+    for (auto& face : cell.faces)
       if (not face.has_neighbor)
         bndry_faces.push_back(&face);
 

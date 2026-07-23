@@ -103,15 +103,15 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, const int num
   cell_graph.reserve(num_raw_cells);
   cell_centroids.reserve(num_raw_cells);
   {
-    for (const auto& raw_cell_ptr : raw_cells)
+    for (const auto& cell : raw_cells)
     {
       std::vector<uint64_t> cell_graph_node; // <-- Note A
-      for (auto& face : raw_cell_ptr->faces)
+      for (auto& face : cell.faces)
         if (face.has_neighbor)
           cell_graph_node.push_back(face.neighbor_id);
 
       cell_graph.push_back(cell_graph_node);
-      cell_centroids.push_back(raw_cell_ptr->centroid);
+      cell_centroids.push_back(cell.centroid);
     }
   }
 
@@ -142,8 +142,8 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   std::size_t n_ghost_cells = 0;
   for (std::size_t cell_id = 0; cell_id < input_umesh->GetRawCells().size(); cell_id++)
   {
-    auto raw_cell = input_umesh->GetRawCells()[cell_id];
-    if (CellHasLocalScope(mpi_comm.rank(), *raw_cell, cell_id, vertex_subs, cell_pids))
+    auto& raw_cell = input_umesh->GetRawCells()[cell_id];
+    if (CellHasLocalScope(mpi_comm.rank(), raw_cell, cell_id, vertex_subs, cell_pids))
     {
       auto partition_id = cell_pids[cell_id];
       if (partition_id == opensn::mpi_comm.rank())
@@ -159,18 +159,18 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   for (std::size_t cell_global_id = 0; cell_global_id < input_umesh->GetRawCells().size();
        ++cell_global_id)
   {
-    auto raw_cell = input_umesh->GetRawCells()[cell_global_id];
-    if (CellHasLocalScope(mpi_comm.rank(), *raw_cell, cell_global_id, vertex_subs, cell_pids))
+    auto& raw_cell = input_umesh->GetRawCells()[cell_global_id];
+    if (CellHasLocalScope(mpi_comm.rank(), raw_cell, cell_global_id, vertex_subs, cell_pids))
     {
       auto partition_id = cell_pids[cell_global_id];
-      auto cell = SetupCell(*raw_cell, cell_global_id, partition_id);
+      auto cell = SetupCell(raw_cell, cell_global_id, partition_id);
       for (const auto vid : cell.vertex_ids)
         grid_ptr->AddGlobalVertex(vid, input_umesh->GetVertices()[vid]);
 
       if (partition_id == opensn::mpi_comm.rank())
-        local_cells.push_back(std::move(cell));
+        local_cells.emplace_back(cell);
       else
-        ghost_cells.push_back(std::move(cell));
+        ghost_cells.emplace_back(cell);
     }
   } // for raw_cell
   grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells));

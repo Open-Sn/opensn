@@ -479,7 +479,7 @@ AssignBoundaryIDsFromOpenFOAMPatches(std::shared_ptr<UnpartitionedMesh> mesh,
         throw std::logic_error(fname + ": Missing owner face location for boundary face " +
                                std::to_string(f) + " in patch '" + patch.name + "'.");
 
-      auto& face = raw_cells.at(loc.cell_id)->faces.at(loc.local_face_id);
+      auto& face = raw_cells.at(loc.cell_id).faces.at(loc.local_face_id);
 
       // Adjust this to your final field name
       face.neighbor_id = bid;
@@ -820,8 +820,8 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
 
   for (size_t c = 0; c < ncells; ++c)
   {
-    auto cell = std::make_shared<Cell>(CellType::POLYHEDRON, CellType::POLYHEDRON);
-    cell->block_id = block_map[c];
+    Cell cell(CellType::POLYHEDRON, CellType::POLYHEDRON);
+    cell.block_id = block_map[c];
 
     for (auto code : cell_faces[c])
     {
@@ -842,8 +842,8 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
           lwf.vertex_ids.push_back(static_cast<uint64_t>(*it));
       }
 
-      const auto local_face_id = cell->faces.size();
-      cell->faces.push_back(std::move(lwf));
+      const auto local_face_id = cell.faces.size();
+      cell.faces.push_back(std::move(lwf));
 
       // Keep the owner-oriented location for each global face.
       // Boundary patch assignment will use this directly.
@@ -852,14 +852,14 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     }
 
     std::vector<uint64_t> v_set;
-    for (const auto& f : cell->faces)
+    for (const auto& f : cell.faces)
       v_set.insert(v_set.end(), f.vertex_ids.begin(), f.vertex_ids.end());
 
     std::sort(v_set.begin(), v_set.end());
     v_set.erase(std::unique(v_set.begin(), v_set.end()), v_set.end());
-    cell->vertex_ids = std::move(v_set);
+    cell.vertex_ids = std::move(v_set);
 
-    raw_cells.push_back(std::move(cell));
+    raw_cells.emplace_back(cell);
   }
 
   mesh->SetDimension(3);
