@@ -89,7 +89,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   for (const auto& template_cell_ptr : template_cells)
   {
     const auto& template_cell = *template_cell_ptr;
-    if (template_cell.type != CellType::POLYGON)
+    if (template_cell.GetType() != CellType::POLYGON)
       throw std::logic_error("ExtruderMeshGenerator: "
                              "Template cell error. Not of base type POLYGON");
 
@@ -147,7 +147,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
       {
         // Determine cell subtype
         CellType extruded_subtype = CellType::POLYHEDRON;
-        switch (template_cell->sub_type)
+        switch (template_cell->GetSubType())
         {
           case CellType::TRIANGLE:
             extruded_subtype = CellType::WEDGE;
@@ -160,8 +160,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
         }
 
         // Create new cell
-        auto new_cell_ptr = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYHEDRON, extruded_subtype);
+        auto new_cell_ptr = std::make_shared<Cell>(CellType::POLYHEDRON, extruded_subtype);
         auto& new_cell = *new_cell_ptr;
 
         new_cell.block_id = template_cell->block_id;
@@ -177,7 +176,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
         // Create side faces
         for (const auto& tc_face : template_cell->faces)
         {
-          UnpartitionedMesh::LightWeightFace new_face;
+          CellFace new_face;
 
           new_face.vertex_ids.resize(4);
           new_face.vertex_ids[0] = tc_face.vertex_ids[0] + k * num_template_vertices;
@@ -187,12 +186,12 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
 
           if (tc_face.has_neighbor)
           {
-            new_face.neighbor = num_template_cells * k + tc_face.neighbor;
+            new_face.neighbor_id = num_template_cells * k + tc_face.neighbor_id;
             new_face.has_neighbor = true;
           }
           else
           {
-            new_face.neighbor = tc_face.neighbor;
+            new_face.neighbor_id = tc_face.neighbor_id;
             new_face.has_neighbor = false;
           }
 
@@ -202,7 +201,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
         // Create top and bottom faces
         // Top face
         {
-          UnpartitionedMesh::LightWeightFace new_face;
+          CellFace new_face;
 
           new_face.vertex_ids.reserve(template_cell->vertex_ids.size());
           for (auto vid : template_cell->vertex_ids)
@@ -210,12 +209,12 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
 
           if (k == (z_levels.size() - 2))
           {
-            new_face.neighbor = zmax_bndry_id;
+            new_face.neighbor_id = zmax_bndry_id;
             new_face.has_neighbor = false;
           }
           else
           {
-            new_face.neighbor = num_template_cells * (k + 1) + tc_counter;
+            new_face.neighbor_id = num_template_cells * (k + 1) + tc_counter;
             new_face.has_neighbor = true;
           }
 
@@ -224,7 +223,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
 
         // Bottom face
         {
-          UnpartitionedMesh::LightWeightFace new_face;
+          CellFace new_face;
 
           new_face.vertex_ids.reserve(template_cell->vertex_ids.size());
           auto& vs = template_cell->vertex_ids;
@@ -233,12 +232,12 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
 
           if (k == 0)
           {
-            new_face.neighbor = zmin_bndry_id;
+            new_face.neighbor_id = zmin_bndry_id;
             new_face.has_neighbor = false;
           }
           else
           {
-            new_face.neighbor = num_template_cells * (k - 1) + tc_counter;
+            new_face.neighbor_id = num_template_cells * (k - 1) + tc_counter;
             new_face.has_neighbor = true;
           }
 

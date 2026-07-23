@@ -16,29 +16,6 @@ namespace opensn
 class UnpartitionedMesh
 {
 public:
-  struct LightWeightFace
-  {
-    std::vector<uint64_t> vertex_ids;
-    bool has_neighbor = false;
-    uint64_t neighbor = std::numeric_limits<uint64_t>::max();
-
-    LightWeightFace() = default;
-    explicit LightWeightFace(std::vector<uint64_t> vertex_ids) : vertex_ids(std::move(vertex_ids))
-    {
-    }
-  };
-  struct LightWeightCell
-  {
-    const CellType type;
-    const CellType sub_type;
-    Vector3 centroid;
-    unsigned int block_id = std::numeric_limits<unsigned int>::max();
-    std::vector<uint64_t> vertex_ids;
-    std::vector<LightWeightFace> faces;
-
-    explicit LightWeightCell(CellType type, CellType sub_type) : type(type), sub_type(sub_type) {}
-  };
-
   struct Options
   {
     std::string file_name;
@@ -85,17 +62,14 @@ public:
     return vertex_cell_subscriptions_;
   }
 
-  void AddCell(const std::shared_ptr<LightWeightCell>& cell) { raw_cells_.push_back(cell); }
+  void AddCell(const std::shared_ptr<Cell>& cell) { raw_cells_.push_back(cell); }
   size_t GetNumberOfCells() const { return raw_cells_.size(); }
 
-  std::vector<std::shared_ptr<LightWeightCell>>& GetRawCells() { return raw_cells_; }
-  const std::vector<std::shared_ptr<LightWeightCell>>& GetRawCells() const { return raw_cells_; }
+  std::vector<std::shared_ptr<Cell>>& GetRawCells() { return raw_cells_; }
+  const std::vector<std::shared_ptr<Cell>>& GetRawCells() const { return raw_cells_; }
 
-  std::vector<std::shared_ptr<LightWeightCell>>& GetRawBoundaryCells()
-  {
-    return raw_boundary_cells_;
-  }
-  const std::vector<std::shared_ptr<LightWeightCell>>& GetRawBoundaryCells() const
+  std::vector<std::shared_ptr<Cell>>& GetRawBoundaryCells() { return raw_boundary_cells_; }
+  const std::vector<std::shared_ptr<Cell>>& GetRawBoundaryCells() const
   {
     return raw_boundary_cells_;
   }
@@ -130,8 +104,8 @@ protected:
   std::map<std::string, uint64_t> boundary_name_map_;
 
   std::vector<Vector3> vertices_;
-  std::vector<std::shared_ptr<LightWeightCell>> raw_cells_;
-  std::vector<std::shared_ptr<LightWeightCell>> raw_boundary_cells_;
+  std::vector<std::shared_ptr<Cell>> raw_cells_;
+  std::vector<std::shared_ptr<Cell>> raw_boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
 
