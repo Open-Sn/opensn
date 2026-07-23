@@ -31,7 +31,7 @@ namespace opensn
 namespace
 {
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+std::shared_ptr<Cell>
 CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolyhedron";
@@ -61,8 +61,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
     default:
       throw std::logic_error(fname + ": Unsupported 3D cell type encountered.");
   }
-  auto polyh_cell =
-    std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON, sub_type);
+  auto polyh_cell = std::make_shared<Cell>(CellType::POLYHEDRON, sub_type);
 
   auto num_cpoints = vtk_cell->GetNumberOfPoints();
   auto num_cfaces = vtk_cell->GetNumberOfFaces();
@@ -85,7 +84,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
         {1, 2, 6, 5}, {3, 0, 4, 7}, {2, 3, 7, 6}, {0, 1, 5, 4}, {4, 5, 6, 7}, {3, 2, 1, 0}};
       for (int f = 0; f < 6; ++f)
       {
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
 
         face.vertex_ids.reserve(4);
         for (int p = 0; p < 4; ++p)
@@ -102,7 +101,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
         {0, 1, 4, 3}, {1, 2, 5, 4}, {2, 0, 3, 5}, {3, 4, 5}, {0, 2, 1}};
       for (int f = 0; f < 5; ++f)
       {
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
 
         face.vertex_ids.reserve(4);
         for (int p = 0; p < face_vids[f].size(); ++p)
@@ -118,7 +117,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
       std::vector<std::vector<uint64_t>> face_vids = {{0, 2, 1}, {0, 1, 3}, {0, 3, 2}, {3, 1, 2}};
       for (int f = 0; f < 4; ++f)
       {
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
 
         face.vertex_ids.reserve(3);
         for (int p = 0; p < 3; ++p)
@@ -133,7 +132,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
       polyh_cell->faces.reserve(num_cfaces);
       for (int f = 0; f < num_cfaces; ++f)
       {
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
         auto* vtk_face = vtk_cell->GetFace(f);
         auto num_face_points = vtk_face->GetNumberOfPoints();
 
@@ -154,7 +153,7 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
   return polyh_cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+std::shared_ptr<Cell>
 CreateCellFromVTKPolygon(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
@@ -176,8 +175,7 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
       throw std::logic_error(fname + ": Unsupported 2D cell type encountered.");
   }
 
-  auto poly_cell =
-    std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON, sub_type);
+  auto poly_cell = std::make_shared<Cell>(CellType::POLYGON, sub_type);
 
   auto num_cpoints = vtk_cell->GetNumberOfPoints();
   auto num_cfaces = num_cpoints;
@@ -193,7 +191,7 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
   poly_cell->faces.reserve(num_cfaces);
   for (int f = 0; f < num_cfaces; ++f)
   {
-    UnpartitionedMesh::LightWeightFace face;
+    CellFace face;
 
     auto v0_id = poly_cell->vertex_ids[f];
     auto v1_id = (f < (num_cfaces - 1)) ? poly_cell->vertex_ids[f + 1] : poly_cell->vertex_ids[0];
@@ -208,7 +206,7 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
   return poly_cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+std::shared_ptr<Cell>
 CreateCellFromVTKLine(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
@@ -223,7 +221,7 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
       throw std::logic_error(fname + ": Unsupported 1D cell type encountered.");
   }
 
-  auto slab_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, sub_type);
+  auto slab_cell = std::make_shared<Cell>(CellType::SLAB, sub_type);
 
   auto* vtk_line = vtkLine::SafeDownCast(vtk_cell);
   auto num_cpoints = vtk_line->GetNumberOfPoints();
@@ -240,7 +238,7 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
   slab_cell->faces.reserve(num_cfaces);
   for (int f = 0; f < num_cfaces; ++f)
   {
-    UnpartitionedMesh::LightWeightFace face;
+    CellFace face;
 
     auto v_id = slab_cell->vertex_ids[f];
 
@@ -253,11 +251,10 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
   return slab_cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+std::shared_ptr<Cell>
 CreateCellFromVTKVertex(vtkCell* vtk_cell)
 {
-  auto point_cell =
-    std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::GHOST, CellType::POINT);
+  auto point_cell = std::make_shared<Cell>(CellType::GHOST, CellType::POINT);
 
   auto* vtk_vertex = vtkVertex::SafeDownCast(vtk_cell);
   auto num_cpoints = vtk_vertex->GetNumberOfPoints();
@@ -299,7 +296,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
   if (has_global_ids)
   {
-    std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> cells(total_cell_count);
+    std::vector<std::shared_ptr<Cell>> cells(total_cell_count);
     std::vector<std::shared_ptr<Vector3>> vertices(total_point_count);
 
     auto* cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
@@ -341,7 +338,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       if (vtk_celldim != dimension_to_copy)
         continue;
 
-      std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
+      std::shared_ptr<Cell> raw_cell;
       if (vtk_celldim == 3)
         raw_cell = CreateCellFromVTKPolyhedron(vtk_cell);
       else if (vtk_celldim == 2)
@@ -456,7 +453,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
   const double EPSILON = 1.0e-12;
   auto& raw_cells = mesh->GetRawCells();
   // Build boundary faces
-  std::vector<UnpartitionedMesh::LightWeightFace*> bndry_faces;
+  std::vector<CellFace*> bndry_faces;
   for (auto& cell_ptr : raw_cells)
     for (auto& face : cell_ptr->faces)
       if (not face.has_neighbor)
@@ -543,7 +540,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
 
         if (face_id_set == bndry_cell_id_set)
         {
-          face->neighbor = bndry_id;
+          face->neighbor_id = bndry_id;
           ++num_faces_boundarified;
         }
       } // for face_id

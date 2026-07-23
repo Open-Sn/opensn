@@ -278,7 +278,7 @@ SplitFileMeshGenerator::ReadSplitMesh() const
     const auto cell_type = ReadBinaryValue<CellType>(ifile);
     const auto cell_sub_type = ReadBinaryValue<CellType>(ifile);
 
-    UnpartitionedMesh::LightWeightCell new_cell(cell_type, cell_sub_type);
+    Cell new_cell(cell_type, cell_sub_type);
 
     new_cell.centroid = ReadBinaryValue<Vector3>(ifile);
     new_cell.block_id = ReadBinaryValue<unsigned int>(ifile);
@@ -290,13 +290,13 @@ SplitFileMeshGenerator::ReadSplitMesh() const
     const auto num_faces = ReadBinaryValue<size_t>(ifile);
     for (size_t f = 0; f < num_faces; ++f)
     {
-      UnpartitionedMesh::LightWeightFace new_face;
+      CellFace new_face;
       const auto num_face_vids = ReadBinaryValue<size_t>(ifile);
       for (size_t v = 0; v < num_face_vids; ++v)
         new_face.vertex_ids.push_back(ReadBinaryValue<uint64_t>(ifile));
 
       new_face.has_neighbor = ReadBinaryValue<bool>(ifile);
-      new_face.neighbor = ReadBinaryValue<uint64_t>(ifile);
+      new_face.neighbor_id = ReadBinaryValue<uint64_t>(ifile);
 
       new_cell.faces.push_back(std::move(new_face));
     } // for f
@@ -401,11 +401,10 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 }
 
 void
-SplitFileMeshGenerator::SerializeCell(const UnpartitionedMesh::LightWeightCell& cell,
-                                      ByteArray& serial_buffer)
+SplitFileMeshGenerator::SerializeCell(const Cell& cell, ByteArray& serial_buffer)
 {
-  serial_buffer.Write(cell.type);
-  serial_buffer.Write(cell.sub_type);
+  serial_buffer.Write(cell.GetType());
+  serial_buffer.Write(cell.GetSubType());
   serial_buffer.Write(cell.centroid);
   serial_buffer.Write(cell.block_id);
   serial_buffer.Write(cell.vertex_ids.size());
@@ -418,7 +417,7 @@ SplitFileMeshGenerator::SerializeCell(const UnpartitionedMesh::LightWeightCell& 
     for (const uint64_t vid : face.vertex_ids)
       serial_buffer.Write(vid);
     serial_buffer.Write(face.has_neighbor);
-    serial_buffer.Write(face.neighbor);
+    serial_buffer.Write(face.neighbor_id);
   }
 }
 

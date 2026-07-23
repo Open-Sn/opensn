@@ -108,7 +108,7 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, const int num
       std::vector<uint64_t> cell_graph_node; // <-- Note A
       for (auto& face : raw_cell_ptr->faces)
         if (face.has_neighbor)
-          cell_graph_node.push_back(face.neighbor);
+          cell_graph_node.push_back(face.neighbor_id);
 
       cell_graph.push_back(cell_graph_node);
       cell_centroids.push_back(raw_cell_ptr->centroid);
@@ -190,7 +190,7 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
 
 bool
 MeshGenerator::CellHasLocalScope(const int location_id,
-                                 const UnpartitionedMesh::LightWeightCell& lwcell,
+                                 const Cell& lwcell,
                                  const uint64_t cell_global_id,
                                  const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                                  const std::vector<int>& cell_partition_ids) const
@@ -216,11 +216,9 @@ MeshGenerator::CellHasLocalScope(const int location_id,
 }
 
 Cell
-MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
-                         const uint64_t global_id,
-                         const int partition_id)
+MeshGenerator::SetupCell(const Cell& raw_cell, const uint64_t global_id, const int partition_id)
 {
-  Cell cell(raw_cell.type, raw_cell.sub_type);
+  Cell cell(raw_cell.GetType(), raw_cell.GetSubType());
   cell.centroid = raw_cell.centroid;
   cell.global_id = global_id;
   cell.partition_id = partition_id;
@@ -233,7 +231,7 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
   {
     CellFace newFace;
     newFace.has_neighbor = raw_face.has_neighbor;
-    newFace.neighbor_id = raw_face.neighbor;
+    newFace.neighbor_id = raw_face.neighbor_id;
     newFace.vertex_ids = raw_face.vertex_ids;
     cell.faces.push_back(newFace);
   }

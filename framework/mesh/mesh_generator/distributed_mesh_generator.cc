@@ -158,8 +158,8 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
       const auto& cell = *raw_cells[cell_global_id];
       serial_data.Write(static_cast<int>(cell_pids[cell_global_id]));
       serial_data.Write(cell_global_id);
-      serial_data.Write(cell.type);
-      serial_data.Write(cell.sub_type);
+      serial_data.Write(cell.GetType());
+      serial_data.Write(cell.GetSubType());
       serial_data.Write(cell.centroid.x);
       serial_data.Write(cell.centroid.y);
       serial_data.Write(cell.centroid.z);
@@ -175,7 +175,7 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
         for (const auto vid : face.vertex_ids)
           serial_data.Write(vid);
         serial_data.Write(face.has_neighbor);
-        serial_data.Write(face.neighbor);
+        serial_data.Write(face.neighbor_id);
       }
     }
 
@@ -236,7 +236,7 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     const auto type = serial_data.Read<CellType>();
     const auto sub_type = serial_data.Read<CellType>();
 
-    UnpartitionedMesh::LightWeightCell cell(type, sub_type);
+    Cell cell(type, sub_type);
 
     cell.centroid.x = serial_data.Read<double>();
     cell.centroid.y = serial_data.Read<double>();
@@ -250,13 +250,13 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     const auto num_faces = serial_data.Read<size_t>();
     for (size_t f = 0; f < num_faces; ++f)
     {
-      UnpartitionedMesh::LightWeightFace face;
+      CellFace face;
       auto num_face_vids = serial_data.Read<size_t>();
       for (size_t v = 0; v < num_face_vids; ++v)
         face.vertex_ids.push_back(serial_data.Read<uint64_t>());
 
       face.has_neighbor = serial_data.Read<bool>();
-      face.neighbor = serial_data.Read<uint64_t>();
+      face.neighbor_id = serial_data.Read<uint64_t>();
 
       cell.faces.push_back(std::move(face));
     }

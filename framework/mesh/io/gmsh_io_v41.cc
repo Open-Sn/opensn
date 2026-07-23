@@ -465,20 +465,18 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     auto& raw_cells = mesh->GetRawCells();
 
     // Make the cell on either the volume or the boundary
-    std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
+    std::shared_ptr<Cell> raw_cell;
     if (mesh_is_2D)
     {
       if (IsElementType1D(element_type))
       {
-        raw_cell =
-          std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, CellType::SLAB);
+        raw_cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
         raw_boundary_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
       else if (IsElementType2D(element_type))
       {
-        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
+        raw_cell = std::make_shared<Cell>(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
         raw_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_cells.";
       }
@@ -487,15 +485,14 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     {
       if (IsElementType2D(element_type))
       {
-        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
+        raw_cell = std::make_shared<Cell>(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
         raw_boundary_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
       else if (IsElementType3D(element_type))
       {
-        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
+        raw_cell =
+          std::make_shared<Cell>(CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
         raw_cells.push_back(raw_cell);
         log.Log0Verbose2() << "Added to raw_cells.";
       }
@@ -514,8 +511,8 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     // Populate faces
     if (element_type == 1) // 2-node edge
     {
-      UnpartitionedMesh::LightWeightFace face0;
-      UnpartitionedMesh::LightWeightFace face1;
+      CellFace face0;
+      CellFace face1;
 
       face0.vertex_ids = {cell.vertex_ids.at(0)};
       face1.vertex_ids = {cell.vertex_ids.at(1)};
@@ -529,7 +526,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       for (size_t e = 0; e < num_verts; e++)
       {
         size_t ep1 = (e < (num_verts - 1)) ? e + 1 : 0;
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
 
         face.vertex_ids = {cell.vertex_ids[e], cell.vertex_ids[ep1]};
 
@@ -539,7 +536,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     else if (element_type == 4) // 4-node tetrahedron
     {
       auto& v = cell.vertex_ids;
-      std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(4);
+      std::vector<CellFace> lw_faces(4);
       lw_faces[0].vertex_ids = {v[0], v[2], v[1]}; // Base face
       lw_faces[1].vertex_ids = {v[0], v[3], v[2]};
       lw_faces[2].vertex_ids = {v[3], v[1], v[2]};
@@ -551,7 +548,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     else if (element_type == 5) // 8-node hexahedron
     {
       auto& v = cell.vertex_ids;
-      std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(6);
+      std::vector<CellFace> lw_faces(6);
       lw_faces[0].vertex_ids = {v[5], v[1], v[2], v[6]}; // East face
       lw_faces[1].vertex_ids = {v[0], v[4], v[7], v[3]}; // West face
       lw_faces[2].vertex_ids = {v[0], v[3], v[2], v[1]}; // North face
@@ -606,7 +603,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
 
         auto it = bnd_cell_to_bnd_id_map.find(key);
         if (it != bnd_cell_to_bnd_id_map.end())
-          face.neighbor = it->second;
+          face.neighbor_id = it->second;
       }
 
   log.Log() << "Done processing " << options.file_name << ".\n"
@@ -941,19 +938,18 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           auto& raw_boundary_cells = mesh->GetRawBoundaryCells();
           auto& raw_cells = mesh->GetRawCells();
 
-          std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
+          std::shared_ptr<Cell> raw_cell;
           if (mesh_is_2D)
           {
             if (IsElementType1D(element_type))
             {
-              raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB,
-                                                                              CellType::SLAB);
+              raw_cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
               raw_boundary_cells.push_back(raw_cell);
             }
             else if (IsElementType2D(element_type))
             {
-              raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-                CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
+              raw_cell =
+                std::make_shared<Cell>(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
               raw_cells.push_back(raw_cell);
             }
           }
@@ -961,14 +957,14 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           {
             if (IsElementType2D(element_type))
             {
-              raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-                CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
+              raw_cell =
+                std::make_shared<Cell>(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
               raw_boundary_cells.push_back(raw_cell);
             }
             else if (IsElementType3D(element_type))
             {
-              raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-                CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
+              raw_cell =
+                std::make_shared<Cell>(CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
               raw_cells.push_back(raw_cell);
             }
           }
@@ -985,8 +981,8 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
 
           if (element_type == 1)
           {
-            UnpartitionedMesh::LightWeightFace face0;
-            UnpartitionedMesh::LightWeightFace face1;
+            CellFace face0;
+            CellFace face1;
 
             face0.vertex_ids = {cell.vertex_ids.at(0)};
             face1.vertex_ids = {cell.vertex_ids.at(1)};
@@ -1000,7 +996,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
             for (size_t e = 0; e < num_verts; e++)
             {
               size_t ep1 = (e < (num_verts - 1)) ? e + 1 : 0;
-              UnpartitionedMesh::LightWeightFace face;
+              CellFace face;
 
               face.vertex_ids = {cell.vertex_ids[e], cell.vertex_ids[ep1]};
 
@@ -1010,7 +1006,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           else if (element_type == 4)
           {
             auto& v = cell.vertex_ids;
-            std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(4);
+            std::vector<CellFace> lw_faces(4);
             lw_faces[0].vertex_ids = {v[0], v[2], v[1]}; // Base face
             lw_faces[1].vertex_ids = {v[0], v[3], v[2]};
             lw_faces[2].vertex_ids = {v[3], v[1], v[2]};
@@ -1022,7 +1018,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           else if (element_type == 5)
           {
             auto& v = cell.vertex_ids;
-            std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(6);
+            std::vector<CellFace> lw_faces(6);
             lw_faces[0].vertex_ids = {v[5], v[1], v[2], v[6]}; // East face
             lw_faces[1].vertex_ids = {v[0], v[4], v[7], v[3]}; // West face
             lw_faces[2].vertex_ids = {v[0], v[3], v[2], v[1]}; // North face
@@ -1080,7 +1076,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
 
         auto it = bnd_cell_to_bnd_id_map.find(key);
         if (it != bnd_cell_to_bnd_id_map.end())
-          face.neighbor = it->second;
+          face.neighbor_id = it->second;
       }
 
   log.Log() << "Done processing " << options.file_name << ".\n"
