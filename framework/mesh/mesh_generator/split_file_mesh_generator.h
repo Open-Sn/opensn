@@ -24,7 +24,7 @@ protected:
     bool extruded{};
     OrthoMeshAttributes ortho_attributes;
 
-    std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
+    std::map<std::pair<int, uint64_t>, Cell> cells;
     std::map<uint64_t, Vector3> vertices;
     std::map<uint64_t, std::string> boundary_id_map;
     size_t num_global_vertices{};
@@ -55,8 +55,7 @@ public:
 protected:
   static std::shared_ptr<Mesh> SetupLocalMesh(SplitMeshInfo& mesh_info);
 
-  static void SerializeCell(const UnpartitionedMesh::LightWeightCell& cell,
-                            ByteArray& serial_buffer);
+  static void SerializeCell(const Cell& cell, ByteArray& serial_buffer);
 };
 
 } // namespace opensn

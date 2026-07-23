@@ -482,7 +482,7 @@ AssignBoundaryIDsFromOpenFOAMPatches(std::shared_ptr<UnpartitionedMesh> mesh,
       auto& face = raw_cells.at(loc.cell_id)->faces.at(loc.local_face_id);
 
       // Adjust this to your final field name
-      face.neighbor = bid;
+      face.neighbor_id = bid;
 
       ++num_assigned;
     }
@@ -820,8 +820,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
 
   for (size_t c = 0; c < ncells; ++c)
   {
-    auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
-                                                                     CellType::POLYHEDRON);
+    auto cell = std::make_shared<Cell>(CellType::POLYHEDRON, CellType::POLYHEDRON);
     cell->block_id = block_map[c];
 
     for (auto code : cell_faces[c])
@@ -829,7 +828,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
       const int64_t f = (code >= 0) ? code : (-code - 1);
       const auto& f_v = face_verts[static_cast<size_t>(f)];
 
-      UnpartitionedMesh::LightWeightFace lwf;
+      CellFace lwf;
       lwf.vertex_ids.reserve(f_v.size());
 
       if (code >= 0)

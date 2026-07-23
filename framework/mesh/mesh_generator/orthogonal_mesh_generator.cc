@@ -236,25 +236,25 @@ CellGraphNode(const OrthoCellInfo& info, const size_t i, const size_t j, const s
   return node;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+std::shared_ptr<Cell>
 MakeLightWeightCell1D(const OrthoCellInfo& info,
                       const std::vector<std::vector<double>>& node_sets,
                       const size_t k)
 {
-  auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, CellType::SLAB);
+  auto cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
 
   cell->centroid = CellCentroid(node_sets, 1, 0, 0, k);
   cell->vertex_ids = {VertexGlobalID(info, 0, 0, k), VertexGlobalID(info, 0, 0, k + 1)};
 
-  UnpartitionedMesh::LightWeightFace left_face;
+  CellFace left_face;
   left_face.vertex_ids = {cell->vertex_ids[0]};
   left_face.has_neighbor = k != 0;
-  left_face.neighbor = k == 0 ? ZMIN : CellGlobalID(info, 0, 0, k - 1);
+  left_face.neighbor_id = k == 0 ? ZMIN : CellGlobalID(info, 0, 0, k - 1);
 
-  UnpartitionedMesh::LightWeightFace right_face;
+  CellFace right_face;
   right_face.vertex_ids = {cell->vertex_ids[1]};
   right_face.has_neighbor = k + 1 != info.cell_counts[2];
-  right_face.neighbor = right_face.has_neighbor ? CellGlobalID(info, 0, 0, k + 1) : ZMAX;
+  right_face.neighbor_id = right_face.has_neighbor ? CellGlobalID(info, 0, 0, k + 1) : ZMAX;
 
   cell->faces.push_back(left_face);
   cell->faces.push_back(right_face);
@@ -262,14 +262,13 @@ MakeLightWeightCell1D(const OrthoCellInfo& info,
   return cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+std::shared_ptr<Cell>
 MakeLightWeightCell2D(const OrthoCellInfo& info,
                       const std::vector<std::vector<double>>& node_sets,
                       const size_t i,
                       const size_t j)
 {
-  auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON,
-                                                                   CellType::QUADRILATERAL);
+  auto cell = std::make_shared<Cell>(CellType::POLYGON, CellType::QUADRILATERAL);
 
   const auto v00 = VertexGlobalID(info, i, j, 0);
   const auto v10 = VertexGlobalID(info, i + 1, j, 0);
@@ -283,7 +282,7 @@ MakeLightWeightCell2D(const OrthoCellInfo& info,
 
   for (int f = 0; f < 4; ++f)
   {
-    UnpartitionedMesh::LightWeightFace face;
+    CellFace face;
     if (f < 3)
       face.vertex_ids = {cell->vertex_ids[f], cell->vertex_ids[f + 1]};
     else
@@ -292,22 +291,22 @@ MakeLightWeightCell2D(const OrthoCellInfo& info,
     if (f == 1)
     {
       face.has_neighbor = i != max_i;
-      face.neighbor = face.has_neighbor ? CellGlobalID(info, i + 1, j, 0) : XMAX;
+      face.neighbor_id = face.has_neighbor ? CellGlobalID(info, i + 1, j, 0) : XMAX;
     }
     else if (f == 3)
     {
       face.has_neighbor = i != 0;
-      face.neighbor = face.has_neighbor ? CellGlobalID(info, i - 1, j, 0) : XMIN;
+      face.neighbor_id = face.has_neighbor ? CellGlobalID(info, i - 1, j, 0) : XMIN;
     }
     else if (f == 2)
     {
       face.has_neighbor = j != max_j;
-      face.neighbor = face.has_neighbor ? CellGlobalID(info, i, j + 1, 0) : YMAX;
+      face.neighbor_id = face.has_neighbor ? CellGlobalID(info, i, j + 1, 0) : YMAX;
     }
     else
     {
       face.has_neighbor = j != 0;
-      face.neighbor = face.has_neighbor ? CellGlobalID(info, i, j - 1, 0) : YMIN;
+      face.neighbor_id = face.has_neighbor ? CellGlobalID(info, i, j - 1, 0) : YMIN;
     }
 
     cell->faces.push_back(face);
@@ -316,15 +315,14 @@ MakeLightWeightCell2D(const OrthoCellInfo& info,
   return cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+std::shared_ptr<Cell>
 MakeLightWeightCell3D(const OrthoCellInfo& info,
                       const std::vector<std::vector<double>>& node_sets,
                       const size_t i,
                       const size_t j,
                       const size_t k)
 {
-  auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
-                                                                   CellType::HEXAHEDRON);
+  auto cell = std::make_shared<Cell>(CellType::POLYHEDRON, CellType::HEXAHEDRON);
 
   const auto v000 = VertexGlobalID(info, i, j, k);
   const auto v100 = VertexGlobalID(info, i + 1, j, k);
@@ -345,10 +343,10 @@ MakeLightWeightCell3D(const OrthoCellInfo& info,
   auto add_face =
     [&cell](std::vector<uint64_t> vertex_ids, const bool has_neighbor, const uint64_t neighbor)
   {
-    UnpartitionedMesh::LightWeightFace face;
+    CellFace face;
     face.vertex_ids = std::move(vertex_ids);
     face.has_neighbor = has_neighbor;
-    face.neighbor = neighbor;
+    face.neighbor_id = neighbor;
     cell->faces.push_back(std::move(face));
   };
 
@@ -365,7 +363,7 @@ MakeLightWeightCell3D(const OrthoCellInfo& info,
   return cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+std::shared_ptr<Cell>
 MakeLightWeightCell(const OrthoCellInfo& info,
                     const std::vector<std::vector<double>>& node_sets,
                     const uint64_t cell_global_id)
@@ -742,31 +740,30 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   const auto max_cz = zverts.size() - 2;
   for (size_t c = 0; c < zverts.size() - 1; ++c)
   {
-    auto cell =
-      std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, CellType::SLAB);
+    auto cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
 
     cell->vertex_ids = {c, c + 1};
 
-    UnpartitionedMesh::LightWeightFace left_face;
-    UnpartitionedMesh::LightWeightFace right_face;
+    CellFace left_face;
+    CellFace right_face;
 
     left_face.vertex_ids = {c};
     right_face.vertex_ids = {c + 1};
 
-    left_face.neighbor = c - 1;
-    right_face.neighbor = c + 1;
+    left_face.neighbor_id = c - 1;
+    right_face.neighbor_id = c + 1;
     left_face.has_neighbor = true;
     right_face.has_neighbor = true;
 
     // boundary logic
     if (c == 0)
     {
-      left_face.neighbor = ZMIN;
+      left_face.neighbor_id = ZMIN;
       left_face.has_neighbor = false;
     }
     if (c == max_cz)
     {
-      right_face.neighbor = ZMAX;
+      right_face.neighbor_id = ZMAX;
       right_face.has_neighbor = false;
     }
 
@@ -834,8 +831,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   {
     for (size_t j = 0; j < Nx - 1; ++j)
     {
-      auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON,
-                                                                       CellType::QUADRILATERAL);
+      auto cell = std::make_shared<Cell>(CellType::POLYGON, CellType::QUADRILATERAL);
 
       // vertex ids:   face ids:
       //                 2
@@ -848,42 +844,42 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
 
       for (int v = 0; v < 4; ++v)
       {
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
 
         if (v < 3)
           face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[v + 1]};
         else
           face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[0]};
 
-        face.neighbor = true;
+        face.neighbor_id = true;
         if (v == 1 and j != max_j)
-          face.neighbor = cmap[i][j + 1]; /*XMAX*/
+          face.neighbor_id = cmap[i][j + 1]; /*XMAX*/
         if (v == 3 and j != 0)
-          face.neighbor = cmap[i][j - 1]; /*XMIN*/
+          face.neighbor_id = cmap[i][j - 1]; /*XMIN*/
         if (v == 2 and i != max_i)
-          face.neighbor = cmap[i + 1][j]; /*YMAX*/
+          face.neighbor_id = cmap[i + 1][j]; /*YMAX*/
         if (v == 0 and i != 0)
-          face.neighbor = cmap[i - 1][j]; /*YMIN*/
+          face.neighbor_id = cmap[i - 1][j]; /*YMIN*/
 
         // boundary logic
         if (v == 1 and j == max_j)
         {
-          face.neighbor = XMAX;
+          face.neighbor_id = XMAX;
           face.has_neighbor = false;
         }
         if (v == 3 and j == 0)
         {
-          face.neighbor = XMIN;
+          face.neighbor_id = XMIN;
           face.has_neighbor = false;
         }
         if (v == 2 and i == max_i)
         {
-          face.neighbor = YMAX;
+          face.neighbor_id = YMAX;
           face.has_neighbor = false;
         }
         if (v == 0 and i == 0)
         {
-          face.neighbor = YMIN;
+          face.neighbor_id = YMIN;
           face.has_neighbor = false;
         }
 
@@ -974,8 +970,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
     {
       for (size_t k = 0; k < Nz - 1; ++k)
       {
-        auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
-                                                                         CellType::HEXAHEDRON);
+        auto cell = std::make_shared<Cell>(CellType::POLYHEDRON, CellType::HEXAHEDRON);
 
         cell->vertex_ids = std::vector<uint64_t>{vmap[i][j][k],
                                                  vmap[i][j + 1][k],
@@ -989,67 +984,67 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
 
         // East face
         {
-          UnpartitionedMesh::LightWeightFace face;
+          CellFace face;
 
           face.vertex_ids = std::vector<uint64_t>{vmap[i][j + 1][k],
                                                   vmap[i + 1][j + 1][k],
                                                   vmap[i + 1][j + 1][k + 1],
                                                   vmap[i][j + 1][k + 1]};
-          face.neighbor = j == max_j ? XMAX : cmap[i][j + 1][k];
+          face.neighbor_id = j == max_j ? XMAX : cmap[i][j + 1][k];
           face.has_neighbor = j != max_j;
           cell->faces.push_back(face);
         }
         // West face
         {
-          UnpartitionedMesh::LightWeightFace face;
+          CellFace face;
 
           face.vertex_ids = std::vector<uint64_t>{
             vmap[i][j][k], vmap[i][j][k + 1], vmap[i + 1][j][k + 1], vmap[i + 1][j][k]};
-          face.neighbor = j == 0 ? XMIN : cmap[i][j - 1][k];
+          face.neighbor_id = j == 0 ? XMIN : cmap[i][j - 1][k];
           face.has_neighbor = j != 0;
           cell->faces.push_back(face);
         }
         // North face
         {
-          UnpartitionedMesh::LightWeightFace face;
+          CellFace face;
 
           face.vertex_ids = std::vector<uint64_t>{vmap[i + 1][j][k],
                                                   vmap[i + 1][j][k + 1],
                                                   vmap[i + 1][j + 1][k + 1],
                                                   vmap[i + 1][j + 1][k]};
-          face.neighbor = i == max_i ? YMAX : cmap[i + 1][j][k];
+          face.neighbor_id = i == max_i ? YMAX : cmap[i + 1][j][k];
           face.has_neighbor = i != max_i;
           cell->faces.push_back(face);
         }
         // South face
         {
-          UnpartitionedMesh::LightWeightFace face;
+          CellFace face;
 
           face.vertex_ids = std::vector<uint64_t>{
             vmap[i][j][k], vmap[i][j + 1][k], vmap[i][j + 1][k + 1], vmap[i][j][k + 1]};
-          face.neighbor = i == 0 ? YMIN : cmap[i - 1][j][k];
+          face.neighbor_id = i == 0 ? YMIN : cmap[i - 1][j][k];
           face.has_neighbor = i != 0;
           cell->faces.push_back(face);
         }
         // Top face
         {
-          UnpartitionedMesh::LightWeightFace face;
+          CellFace face;
 
           face.vertex_ids = std::vector<uint64_t>{vmap[i][j][k + 1],
                                                   vmap[i][j + 1][k + 1],
                                                   vmap[i + 1][j + 1][k + 1],
                                                   vmap[i + 1][j][k + 1]};
-          face.neighbor = k == max_k ? ZMAX : cmap[i][j][k + 1];
+          face.neighbor_id = k == max_k ? ZMAX : cmap[i][j][k + 1];
           face.has_neighbor = k != max_k;
           cell->faces.push_back(face);
         }
         // Bottom face
         {
-          UnpartitionedMesh::LightWeightFace face;
+          CellFace face;
 
           face.vertex_ids = std::vector<uint64_t>{
             vmap[i][j][k], vmap[i + 1][j][k], vmap[i + 1][j + 1][k], vmap[i][j + 1][k]};
-          face.neighbor = k == 0 ? ZMIN : cmap[i][j][k - 1];
+          face.neighbor_id = k == 0 ? ZMIN : cmap[i][j][k - 1];
           face.has_neighbor = k != 0;
           cell->faces.push_back(face);
         }
