@@ -391,14 +391,14 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     new_cells.reserve(total_cell_count);
     for (auto& cell : cells)
       new_cells.emplace_back(cell.value());
-    mesh->GetRawCells() = new_cells;
+    mesh->GetCells() = new_cells;
     mesh->GetVertices().reserve(total_point_count);
     for (auto& vertex_ptr : vertices)
       mesh->GetVertices().push_back(*vertex_ptr);
   } // If global-ids available
   else
   {
-    auto& raw_cells = mesh->GetRawCells();
+    auto& raw_cells = mesh->GetCells();
     raw_cells.reserve(total_cell_count);
     // Push cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
@@ -444,7 +444,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 void
 SetBlockIDsFromList(std::shared_ptr<UnpartitionedMesh> mesh, const std::vector<int>& block_ids)
 {
-  auto& raw_cells = mesh->GetRawCells();
+  auto& raw_cells = mesh->GetCells();
   const size_t total_cell_count = raw_cells.size();
   for (size_t c = 0; c < total_cell_count; ++c)
     raw_cells[c].block_id = block_ids[c];
@@ -455,7 +455,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
                          std::vector<vtkUGridPtrAndName>& bndry_grid_blocks)
 {
   const double EPSILON = 1.0e-12;
-  auto& raw_cells = mesh->GetRawCells();
+  auto& raw_cells = mesh->GetCells();
   // Build boundary faces
   std::vector<CellFace*> bndry_faces;
   for (auto& cell : raw_cells)

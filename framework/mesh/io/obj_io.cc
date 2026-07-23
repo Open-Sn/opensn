@@ -320,7 +320,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       }
   }
   mesh->GetVertices() = cell_vertices;
-  mesh->GetRawCells() = std::move(block_data[main_block_id].cells);
+  mesh->GetCells() = std::move(block_data[main_block_id].cells);
 
   // Always do this
   mesh->SetDimension(2);
@@ -334,7 +334,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   if (not bndry_block_ids.empty())
   {
     std::vector<CellFace*> bndry_faces;
-    for (auto& cell : mesh->GetRawCells())
+    for (auto& cell : mesh->GetCells())
       for (auto& face : cell.faces)
         if (not face.has_neighbor)
           bndry_faces.push_back(&face);

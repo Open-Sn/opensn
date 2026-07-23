@@ -461,8 +461,8 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
 
   for (const auto& [element_tag, element_type, physical_reg, node_tags] : element_data)
   {
-    auto& raw_boundary_cells = mesh->GetRawBoundaryCells();
-    auto& raw_cells = mesh->GetRawCells();
+    auto& raw_boundary_cells = mesh->GetBoundaryCells();
+    auto& raw_cells = mesh->GetCells();
 
     // Make the cell on either the volume or the boundary
     std::optional<Cell> raw_cell;
@@ -587,14 +587,14 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
 
   // remap boundary cells onto cell faces
   std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
-  for (auto& bnd_cell : mesh->GetRawBoundaryCells())
+  for (auto& bnd_cell : mesh->GetBoundaryCells())
   {
     std::set<uint64_t> key;
     for (auto& vid : bnd_cell.vertex_ids)
       key.insert(vid);
     bnd_cell_to_bnd_id_map[key] = bnd_cell.block_id;
   }
-  for (auto& cell : mesh->GetRawCells())
+  for (auto& cell : mesh->GetCells())
     for (auto& face : cell.faces)
       if (not face.has_neighbor)
       {
@@ -609,7 +609,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
 
   log.Log() << "Done processing " << options.file_name << ".\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
-            << "Number of cells read: " << mesh->GetRawCells().size();
+            << "Number of cells read: " << mesh->GetCells().size();
 
   return mesh;
 }
@@ -936,8 +936,8 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           for (int j = 0; j < num_cell_nodes; ++j)
             node_tags[j] = static_cast<size_t>(ReadSize(file));
 
-          auto& raw_boundary_cells = mesh->GetRawBoundaryCells();
-          auto& raw_cells = mesh->GetRawCells();
+          auto& raw_boundary_cells = mesh->GetBoundaryCells();
+          auto& raw_cells = mesh->GetCells();
 
           std::optional<Cell> raw_cell;
           bool is_boundary_cell = false;
@@ -1061,14 +1061,14 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
 
   // remap boundary cells onto cell faces
   std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
-  for (auto& bnd_cell : mesh->GetRawBoundaryCells())
+  for (auto& bnd_cell : mesh->GetBoundaryCells())
   {
     std::set<uint64_t> key;
     for (auto& vid : bnd_cell.vertex_ids)
       key.insert(vid);
     bnd_cell_to_bnd_id_map[key] = bnd_cell.block_id;
   }
-  for (auto& cell : mesh->GetRawCells())
+  for (auto& cell : mesh->GetCells())
     for (auto& face : cell.faces)
       if (not face.has_neighbor)
       {
@@ -1083,7 +1083,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
 
   log.Log() << "Done processing " << options.file_name << ".\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
-            << "Number of cells read: " << mesh->GetRawCells().size();
+            << "Number of cells read: " << mesh->GetCells().size();
 
   return mesh;
 }

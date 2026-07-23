@@ -83,7 +83,7 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
                                                        const int num_partitions)
 {
   const auto& vertex_subs = umesh.GetVertextCellSubscriptions();
-  const auto& raw_cells = umesh.GetRawCells();
+  const auto& raw_cells = umesh.GetCells();
   const auto& raw_vertices = umesh.GetVertices();
   ByteArray loc0_data;
 

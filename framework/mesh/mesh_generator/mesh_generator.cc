@@ -90,7 +90,7 @@ MeshGenerator::Execute()
 std::vector<int>
 MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, const int num_partitions) const
 {
-  const auto& raw_cells = input_umesh.GetRawCells();
+  const auto& raw_cells = input_umesh.GetCells();
   const auto num_raw_cells = raw_cells.size();
 
   if (num_raw_cells == 0)
@@ -140,9 +140,9 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
 
   std::size_t n_local_cells = 0;
   std::size_t n_ghost_cells = 0;
-  for (std::size_t cell_id = 0; cell_id < input_umesh->GetRawCells().size(); cell_id++)
+  for (std::size_t cell_id = 0; cell_id < input_umesh->GetCells().size(); cell_id++)
   {
-    auto& raw_cell = input_umesh->GetRawCells()[cell_id];
+    auto& raw_cell = input_umesh->GetCells()[cell_id];
     if (CellHasLocalScope(mpi_comm.rank(), raw_cell, cell_id, vertex_subs, cell_pids))
     {
       auto partition_id = cell_pids[cell_id];
@@ -156,10 +156,10 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   local_cells.reserve(n_local_cells);
   std::vector<Cell> ghost_cells;
   ghost_cells.reserve(n_ghost_cells);
-  for (std::size_t cell_global_id = 0; cell_global_id < input_umesh->GetRawCells().size();
+  for (std::size_t cell_global_id = 0; cell_global_id < input_umesh->GetCells().size();
        ++cell_global_id)
   {
-    auto& raw_cell = input_umesh->GetRawCells()[cell_global_id];
+    auto& raw_cell = input_umesh->GetCells()[cell_global_id];
     if (CellHasLocalScope(mpi_comm.rank(), raw_cell, cell_global_id, vertex_subs, cell_pids))
     {
       auto partition_id = cell_pids[cell_global_id];
