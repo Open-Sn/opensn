@@ -171,7 +171,7 @@ UnpartitionedMesh::CheckQuality()
   size_t num_negative_volume_elements = 0;
   for (const auto& cell : raw_cells_)
   {
-    if (cell->type == CellType::POLYGON)
+    if (cell->GetType() == CellType::POLYGON)
     {
       // Form triangles
       size_t num_verts = cell->vertex_ids.size();
@@ -189,7 +189,7 @@ UnpartitionedMesh::CheckQuality()
           ++num_negative_volume_elements;
       } // for v
     }
-    else if (cell->type == CellType::POLYHEDRON)
+    else if (cell->GetType() == CellType::POLYHEDRON)
     {
       for (auto& face : cell->faces)
       {
@@ -229,7 +229,7 @@ UnpartitionedMesh::CheckQuality()
   size_t cell_id = 0;
   for (const auto& cell : raw_cells_)
   {
-    if (cell->type == CellType::POLYGON)
+    if (cell->GetType() == CellType::POLYGON)
     {
       size_t f = 0;
       for (const auto& face : cell->faces)
@@ -243,7 +243,7 @@ UnpartitionedMesh::CheckQuality()
         ++f;
       }
     } // if polygon
-    if (cell->type == CellType::POLYHEDRON)
+    if (cell->GetType() == CellType::POLYHEDRON)
     {
       size_t f = 0;
       for (const auto& face : cell->faces)
@@ -511,7 +511,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
   // Establish boundary connectivity
   // Make list of internal cells on the boundary
-  std::vector<std::shared_ptr<LightWeightCell>> internal_cells_on_boundary;
+  std::vector<std::shared_ptr<Cell>> internal_cells_on_boundary;
   for (auto& cell : raw_cells_)
   {
     bool cell_on_boundary = false;
@@ -559,7 +559,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
         if (cfvids == afvids)
         {
-          face.neighbor = adj_cell_id;
+          face.neighbor_id = adj_cell_id;
           break;
         }
       } // for adj_cell_id
