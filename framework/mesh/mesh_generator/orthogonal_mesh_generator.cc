@@ -740,9 +740,9 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   const auto max_cz = zverts.size() - 2;
   for (size_t c = 0; c < zverts.size() - 1; ++c)
   {
-    auto cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
+    Cell cell(CellType::SLAB, CellType::SLAB);
 
-    cell->vertex_ids = {c, c + 1};
+    cell.vertex_ids = {c, c + 1};
 
     CellFace left_face;
     CellFace right_face;
@@ -767,10 +767,10 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
       right_face.has_neighbor = false;
     }
 
-    cell->faces.push_back(left_face);
-    cell->faces.push_back(right_face);
+    cell.faces.push_back(left_face);
+    cell.faces.push_back(right_face);
 
-    umesh->AddCell(cell);
+    umesh->AddCell(std::move(cell));
   }
 
   umesh->ComputeCentroids();
@@ -831,7 +831,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   {
     for (size_t j = 0; j < Nx - 1; ++j)
     {
-      auto cell = std::make_shared<Cell>(CellType::POLYGON, CellType::QUADRILATERAL);
+      Cell cell(CellType::POLYGON, CellType::QUADRILATERAL);
 
       // vertex ids:   face ids:
       //                 2
@@ -840,16 +840,16 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
       //    0---1      x---x
       //                 0
 
-      cell->vertex_ids = {vmap[i][j], vmap[i][j + 1], vmap[i + 1][j + 1], vmap[i + 1][j]};
+      cell.vertex_ids = {vmap[i][j], vmap[i][j + 1], vmap[i + 1][j + 1], vmap[i + 1][j]};
 
       for (int v = 0; v < 4; ++v)
       {
         CellFace face;
 
         if (v < 3)
-          face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[v + 1]};
+          face.vertex_ids = std::vector<uint64_t>{cell.vertex_ids[v], cell.vertex_ids[v + 1]};
         else
-          face.vertex_ids = std::vector<uint64_t>{cell->vertex_ids[v], cell->vertex_ids[0]};
+          face.vertex_ids = std::vector<uint64_t>{cell.vertex_ids[v], cell.vertex_ids[0]};
 
         face.neighbor_id = true;
         if (v == 1 and j != max_j)
@@ -883,10 +883,10 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
           face.has_neighbor = false;
         }
 
-        cell->faces.push_back(face);
+        cell.faces.push_back(face);
       }
 
-      umesh->AddCell(cell);
+      umesh->AddCell(std::move(cell));
     }
   }
 
@@ -970,17 +970,17 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
     {
       for (size_t k = 0; k < Nz - 1; ++k)
       {
-        auto cell = std::make_shared<Cell>(CellType::POLYHEDRON, CellType::HEXAHEDRON);
+        Cell cell(CellType::POLYHEDRON, CellType::HEXAHEDRON);
 
-        cell->vertex_ids = std::vector<uint64_t>{vmap[i][j][k],
-                                                 vmap[i][j + 1][k],
-                                                 vmap[i + 1][j + 1][k],
-                                                 vmap[i + 1][j][k],
+        cell.vertex_ids = std::vector<uint64_t>{vmap[i][j][k],
+                                                vmap[i][j + 1][k],
+                                                vmap[i + 1][j + 1][k],
+                                                vmap[i + 1][j][k],
 
-                                                 vmap[i][j][k + 1],
-                                                 vmap[i][j + 1][k + 1],
-                                                 vmap[i + 1][j + 1][k + 1],
-                                                 vmap[i + 1][j][k + 1]};
+                                                vmap[i][j][k + 1],
+                                                vmap[i][j + 1][k + 1],
+                                                vmap[i + 1][j + 1][k + 1],
+                                                vmap[i + 1][j][k + 1]};
 
         // East face
         {
@@ -992,7 +992,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
                                                   vmap[i][j + 1][k + 1]};
           face.neighbor_id = j == max_j ? XMAX : cmap[i][j + 1][k];
           face.has_neighbor = j != max_j;
-          cell->faces.push_back(face);
+          cell.faces.push_back(face);
         }
         // West face
         {
@@ -1002,7 +1002,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
             vmap[i][j][k], vmap[i][j][k + 1], vmap[i + 1][j][k + 1], vmap[i + 1][j][k]};
           face.neighbor_id = j == 0 ? XMIN : cmap[i][j - 1][k];
           face.has_neighbor = j != 0;
-          cell->faces.push_back(face);
+          cell.faces.push_back(face);
         }
         // North face
         {
@@ -1014,7 +1014,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
                                                   vmap[i + 1][j + 1][k]};
           face.neighbor_id = i == max_i ? YMAX : cmap[i + 1][j][k];
           face.has_neighbor = i != max_i;
-          cell->faces.push_back(face);
+          cell.faces.push_back(face);
         }
         // South face
         {
@@ -1024,7 +1024,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
             vmap[i][j][k], vmap[i][j + 1][k], vmap[i][j + 1][k + 1], vmap[i][j][k + 1]};
           face.neighbor_id = i == 0 ? YMIN : cmap[i - 1][j][k];
           face.has_neighbor = i != 0;
-          cell->faces.push_back(face);
+          cell.faces.push_back(face);
         }
         // Top face
         {
@@ -1036,7 +1036,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
                                                   vmap[i + 1][j][k + 1]};
           face.neighbor_id = k == max_k ? ZMAX : cmap[i][j][k + 1];
           face.has_neighbor = k != max_k;
-          cell->faces.push_back(face);
+          cell.faces.push_back(face);
         }
         // Bottom face
         {
@@ -1046,10 +1046,10 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
             vmap[i][j][k], vmap[i + 1][j][k], vmap[i + 1][j + 1][k], vmap[i][j + 1][k]};
           face.neighbor_id = k == 0 ? ZMIN : cmap[i][j][k - 1];
           face.has_neighbor = k != 0;
-          cell->faces.push_back(face);
+          cell.faces.push_back(face);
         }
 
-        umesh->AddCell(cell);
+        umesh->AddCell(std::move(cell));
       }
     }
   }

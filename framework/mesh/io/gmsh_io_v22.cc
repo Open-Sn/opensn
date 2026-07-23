@@ -249,19 +249,19 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     auto& raw_cells = mesh->GetRawCells();
 
     // Make the cell on either the volume or the boundary
-    std::shared_ptr<Cell> raw_cell;
+    std::optional<Cell> raw_cell;
+    bool is_boundary_cell = false;
     if (mesh_is_2D)
     {
       if (IsElementType1D(element_type))
       {
-        raw_cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
-        raw_boundary_cells.push_back(raw_cell);
+        raw_cell = Cell(CellType::SLAB, CellType::SLAB);
+        is_boundary_cell = true;
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
       else if (IsElementType2D(element_type))
       {
-        raw_cell = std::make_shared<Cell>(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
-        raw_cells.push_back(raw_cell);
+        raw_cell = Cell(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
         log.Log0Verbose2() << "Added to raw_cells.";
       }
     }
@@ -269,23 +269,21 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     {
       if (IsElementType2D(element_type))
       {
-        raw_cell = std::make_shared<Cell>(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
-        raw_boundary_cells.push_back(raw_cell);
+        raw_cell = Cell(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
+        is_boundary_cell = true;
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
       else if (IsElementType3D(element_type))
       {
-        raw_cell =
-          std::make_shared<Cell>(CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
-        raw_cells.push_back(raw_cell);
+        raw_cell = Cell(CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
         log.Log0Verbose2() << "Added to raw_cells.";
       }
     }
 
-    if (raw_cell == nullptr)
+    if (not raw_cell.has_value())
       continue;
 
-    auto& cell = *raw_cell;
+    auto& cell = raw_cell.value();
     cell.block_id = physical_region;
     cell.vertex_ids = ReadNodes(num_cell_nodes);
     for (const auto vid : cell.vertex_ids)
@@ -349,6 +347,10 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     else
       throw std::runtime_error(fname + ": Unsupported cell type");
 
+    if (is_boundary_cell)
+      raw_boundary_cells.emplace_back(cell);
+    else
+      raw_cells.emplace_back(cell);
   } // for elements
 
   file.close();
@@ -375,13 +377,12 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   for (auto& bnd_cell : mesh->GetRawBoundaryCells())
   {
     std::set<uint64_t> key;
-    for (auto& vid : bnd_cell->vertex_ids)
+    for (auto& vid : bnd_cell.vertex_ids)
       key.insert(vid);
-    bnd_cell_to_bnd_id_map[key] = bnd_cell->block_id;
+    bnd_cell_to_bnd_id_map[key] = bnd_cell.block_id;
   }
-  auto& raw_cells = mesh->GetRawCells();
-  for (auto& cell_ptr : raw_cells)
-    for (auto& face : cell_ptr->faces)
+  for (auto& cell : mesh->GetRawCells())
+    for (auto& face : cell.faces)
       if (not face.has_neighbor)
       {
         std::set<uint64_t> key;

@@ -62,17 +62,14 @@ public:
     return vertex_cell_subscriptions_;
   }
 
-  void AddCell(const std::shared_ptr<Cell>& cell) { raw_cells_.push_back(cell); }
+  void AddCell(Cell&& cell) { raw_cells_.emplace_back(std::move(cell)); }
   size_t GetNumberOfCells() const { return raw_cells_.size(); }
 
-  std::vector<std::shared_ptr<Cell>>& GetRawCells() { return raw_cells_; }
-  const std::vector<std::shared_ptr<Cell>>& GetRawCells() const { return raw_cells_; }
+  std::vector<Cell>& GetRawCells() { return raw_cells_; }
+  const std::vector<Cell>& GetRawCells() const { return raw_cells_; }
 
-  std::vector<std::shared_ptr<Cell>>& GetRawBoundaryCells() { return raw_boundary_cells_; }
-  const std::vector<std::shared_ptr<Cell>>& GetRawBoundaryCells() const
-  {
-    return raw_boundary_cells_;
-  }
+  std::vector<Cell>& GetRawBoundaryCells() { return raw_boundary_cells_; }
+  const std::vector<Cell>& GetRawBoundaryCells() const { return raw_boundary_cells_; }
 
   const std::vector<Vector3>& GetVertices() const { return vertices_; }
   std::vector<Vector3>& GetVertices() { return vertices_; }
@@ -104,8 +101,8 @@ protected:
   std::map<std::string, uint64_t> boundary_name_map_;
 
   std::vector<Vector3> vertices_;
-  std::vector<std::shared_ptr<Cell>> raw_cells_;
-  std::vector<std::shared_ptr<Cell>> raw_boundary_cells_;
+  std::vector<Cell> raw_cells_;
+  std::vector<Cell> raw_boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
 

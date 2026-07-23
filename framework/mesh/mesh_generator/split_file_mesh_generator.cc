@@ -119,7 +119,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
       for (const auto cell_global_id : local_cells_needed)
       {
         cells_needed.insert(cell_global_id);
-        const auto& raw_cell = *raw_cells[cell_global_id];
+        const auto& raw_cell = raw_cells[cell_global_id];
         for (const auto vid : raw_cell.vertex_ids)
         {
           vertices_needed.insert(vid);
@@ -129,7 +129,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
               continue;
 
             cells_needed.insert(ghost_gid);
-            const auto& ghost_raw_cell = *raw_cells[ghost_gid];
+            const auto& ghost_raw_cell = raw_cells[ghost_gid];
             for (const auto gvid : ghost_raw_cell.vertex_ids)
               vertices_needed.insert(gvid);
           }
@@ -174,7 +174,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
     serial_data.Data().reserve(BUFFER_SIZE * 2);
     for (const auto& cell_global_id : cells_needed)
     {
-      const auto& cell = *raw_cells[cell_global_id];
+      const auto& cell = raw_cells[cell_global_id];
       serial_data.Write(cell_pids[cell_global_id]);
       serial_data.Write(cell_global_id);
       SerializeCell(cell, serial_data);

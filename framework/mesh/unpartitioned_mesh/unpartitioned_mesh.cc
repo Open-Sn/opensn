@@ -47,11 +47,11 @@ UnpartitionedMesh::ComputeCentroids()
   log.Log0Verbose1() << "Computing cell-centroids.";
   for (auto& cell : raw_cells_)
   {
-    cell->centroid = Vector3(0.0, 0.0, 0.0);
-    for (auto vid : cell->vertex_ids)
-      cell->centroid += vertices_[vid];
+    cell.centroid = Vector3(0.0, 0.0, 0.0);
+    for (auto vid : cell.vertex_ids)
+      cell.centroid += vertices_[vid];
 
-    cell->centroid = cell->centroid / static_cast<double>(cell->vertex_ids.size());
+    cell.centroid = cell.centroid / static_cast<double>(cell.vertex_ids.size());
   }
   log.Log0Verbose1() << "Done computing cell-centroids.";
 }
@@ -64,27 +64,27 @@ UnpartitionedMesh::CheckQuality()
   size_t num_negative_volume_elements = 0;
   for (const auto& cell : raw_cells_)
   {
-    if (cell->GetType() == CellType::POLYGON)
+    if (cell.GetType() == CellType::POLYGON)
     {
       // Form triangles
-      size_t num_verts = cell->vertex_ids.size();
+      size_t num_verts = cell.vertex_ids.size();
       for (size_t v = 0; v < num_verts; ++v)
       {
         size_t vp1 = (v < (num_verts - 1)) ? v + 1 : 0;
 
-        const auto& v0 = vertices_[cell->vertex_ids[v]];
-        const auto& v1 = vertices_[cell->vertex_ids[vp1]];
+        const auto& v0 = vertices_[cell.vertex_ids[v]];
+        const auto& v1 = vertices_[cell.vertex_ids[vp1]];
 
         auto E01 = v1 - v0;
         auto n = E01.Cross(khat).Normalized();
 
-        if (n.Dot(v0 - cell->centroid) < 0.0)
+        if (n.Dot(v0 - cell.centroid) < 0.0)
           ++num_negative_volume_elements;
       } // for v
     }
-    else if (cell->GetType() == CellType::POLYHEDRON)
+    else if (cell.GetType() == CellType::POLYHEDRON)
     {
-      for (auto& face : cell->faces)
+      for (auto& face : cell.faces)
       {
         if (face.vertex_ids.size() < 2)
           throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
@@ -111,7 +111,7 @@ UnpartitionedMesh::CheckQuality()
           auto E1 = fv2 - face_centroid;
           auto n = E0.Cross(E1).Normalized();
 
-          if (n.Dot(fv1 - cell->centroid) < 0.0)
+          if (n.Dot(fv1 - cell.centroid) < 0.0)
             ++num_negative_volume_elements;
         }
       } // for face
@@ -122,24 +122,24 @@ UnpartitionedMesh::CheckQuality()
   size_t cell_id = 0;
   for (const auto& cell : raw_cells_)
   {
-    if (cell->GetType() == CellType::POLYGON)
+    if (cell.GetType() == CellType::POLYGON)
     {
       size_t f = 0;
-      for (const auto& face : cell->faces)
+      for (const auto& face : cell.faces)
       {
         const auto& v0 = vertices_.at(face.vertex_ids[0]);
         const auto& v1 = vertices_.at(face.vertex_ids[1]);
         OpenSnLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
                              "Cell " + std::to_string(cell_id) +
-                               " (centroid=" + cell->centroid.PrintStr() + ") face " +
+                               " (centroid=" + cell.centroid.PrintStr() + ") face " +
                                std::to_string(f) + ": Face has length < 1.0e-12.");
         ++f;
       }
     } // if polygon
-    if (cell->GetType() == CellType::POLYHEDRON)
+    if (cell.GetType() == CellType::POLYHEDRON)
     {
       size_t f = 0;
-      for (const auto& face : cell->faces)
+      for (const auto& face : cell.faces)
       {
         size_t num_face_verts = face.vertex_ids.size();
         for (size_t s = 0; s < face.vertex_ids.size(); ++s)
@@ -151,7 +151,7 @@ UnpartitionedMesh::CheckQuality()
 
           OpenSnLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
                                "Cell " + std::to_string(cell_id) + " (centroid=" +
-                                 cell->centroid.PrintStr() + ") face " + std::to_string(f) +
+                                 cell.centroid.PrintStr() + ") face " + std::to_string(f) +
                                  " side " + std::to_string(s) + ": Side has length < 1.0e-12.");
         }
 
@@ -211,7 +211,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
   // Reset all cell neighbors
   int num_bndry_faces = 0;
   for (auto& cell : raw_cells_)
-    for (auto& face : cell->faces)
+    for (auto& face : cell.faces)
       if (not face.has_neighbor)
         ++num_bndry_faces;
 
@@ -227,7 +227,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
     uint64_t cur_cell_id = 0;
     for (const auto& cell : raw_cells_)
     {
-      for (auto vid : cell->vertex_ids)
+      for (auto vid : cell.vertex_ids)
         vertex_cell_subscriptions_.at(vid).insert(cur_cell_id);
       ++cur_cell_id;
     }
@@ -241,7 +241,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
     uint64_t cur_cell_id = 0;
     for (auto& cell : raw_cells_)
     {
-      for (auto& cur_cell_face : cell->faces)
+      for (auto& cur_cell_face : cell.faces)
       {
         if (cur_cell_face.has_neighbor)
           continue;
@@ -256,9 +256,9 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
         for (uint64_t adj_cell_id : cells_to_search)
         {
-          auto adj_cell = raw_cells_.at(adj_cell_id);
+          auto& adj_cell = raw_cells_.at(adj_cell_id);
 
-          for (auto& adj_cell_face : adj_cell->faces)
+          for (auto& adj_cell_face : adj_cell.faces)
           {
             if (adj_cell_face.has_neighbor)
               continue;
@@ -296,11 +296,11 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
   // Establish boundary connectivity
   // Make list of internal cells on the boundary
-  std::vector<std::shared_ptr<Cell>> internal_cells_on_boundary;
+  std::vector<Cell*> internal_cells_on_boundary;
   for (auto& cell : raw_cells_)
   {
     bool cell_on_boundary = false;
-    for (auto& face : cell->faces)
+    for (auto& face : cell.faces)
       if (not face.has_neighbor)
       {
         cell_on_boundary = true;
@@ -308,7 +308,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
       }
 
     if (cell_on_boundary)
-      internal_cells_on_boundary.push_back(cell);
+      internal_cells_on_boundary.push_back(&cell);
   }
 
   // Populate vertex subscriptions to boundary cells
@@ -317,7 +317,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
     uint64_t cur_cell_id = 0;
     for (auto& cell : raw_boundary_cells_)
     {
-      for (auto vid : cell->vertex_ids)
+      for (auto vid : cell.vertex_ids)
         vertex_bndry_cell_subscriptions.at(vid).insert(cur_cell_id);
       ++cur_cell_id;
     }
@@ -340,7 +340,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
       {
         auto& adj_cell = raw_boundary_cells_[adj_cell_id];
 
-        std::set<uint64_t> afvids(adj_cell->vertex_ids.begin(), adj_cell->vertex_ids.end());
+        std::set<uint64_t> afvids(adj_cell.vertex_ids.begin(), adj_cell.vertex_ids.end());
 
         if (cfvids == afvids)
         {
@@ -352,7 +352,7 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
   num_bndry_faces = 0;
   for (const auto& cell : raw_cells_)
-    for (auto& face : cell->faces)
+    for (auto& face : cell.faces)
       if (not face.has_neighbor)
         ++num_bndry_faces;
 
