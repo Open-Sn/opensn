@@ -18,15 +18,15 @@ namespace
 
 std::vector<double>
 ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
-                        const Cell& cell,
+                        const std::uint32_t cell_local_id,
                         const UnknownManager& phi_uk_man,
                         const std::vector<UnitCellMatrices>& unit_cell_matrices,
                         const std::vector<double>& phi_new_local,
                         const unsigned int num_groups)
 {
-  const auto& cell_mapping = sdm.GetLocalCellMapping(cell.local_id);
+  const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
   const size_t num_nodes = cell_mapping.GetNumNodes();
-  const auto& intV_shapeI = unit_cell_matrices[cell.local_id].intV_shapeI;
+  const auto& intV_shapeI = unit_cell_matrices[cell_local_id].intV_shapeI;
 
   double cell_volume = 0.0;
   for (size_t i = 0; i < num_nodes; ++i)
@@ -41,7 +41,7 @@ ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
     double phi_integral = 0.0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imap = sdm.MapDOFLocal(cell.local_id, i, phi_uk_man, 0, g);
+      const auto imap = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, g);
       phi_integral += intV_shapeI(i) * phi_new_local[imap];
     }
     phi_avg[g] = phi_integral / cell_volume;
@@ -290,7 +290,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
     }
 
     const auto phi_cell_avg = ComputeCellAveragePhi0g(
-      sdm, cell, phi_uk_man, unit_cell_matrices, phi_new_local_, num_groups_);
+      sdm, cell_local_id, phi_uk_man, unit_cell_matrices, phi_new_local_, num_groups_);
 
     // The CSDA terminal correction below is fundamentally a cell-averaged quantity: it is
     // built entirely from cell-averaged flux and psi_E moments, so it is constant across a cell.

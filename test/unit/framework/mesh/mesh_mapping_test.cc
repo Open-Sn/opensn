@@ -104,8 +104,8 @@ TestSelfMapping(const std::string& polygon_file_name, const std::size_t num_face
   const auto& fine_mapping = mesh_mapping.GetFineMapping(0);
   const auto& coarse_mapping = mesh_mapping.GetCoarseMapping(0);
   EXPECT_EQ(fine_mapping.coarse_cell_local_id, 0);
-  ASSERT_EQ(coarse_mapping.fine_cells.size(), std::size_t(1));
-  EXPECT_EQ(coarse_mapping.fine_cells[0], &fine_cell);
+  ASSERT_EQ(coarse_mapping.fine_cell_local_ids.size(), std::size_t(1));
+  EXPECT_EQ(coarse_mapping.fine_cell_local_ids[0], 0);
 
   for (std::size_t face_i = 0; face_i < fine_cell.faces.size(); ++face_i)
   {

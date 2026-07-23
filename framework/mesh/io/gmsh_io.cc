@@ -48,7 +48,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
 }
 
 void
-MeshIO::AddGmshPrismOrPyramidFaces(const int element_type, UnpartitionedMesh::LightWeightCell& cell)
+MeshIO::AddGmshPrismOrPyramidFaces(const int element_type, Cell& cell)
 {
   // Gmsh orders the nodes of both elements so that the first face (the triangle 0-1-2 of a prism,
   // the quadrilateral 0-1-2-3 of a pyramid) is counterclockwise seen from the opposite vertices,
@@ -78,7 +78,7 @@ MeshIO::AddGmshPrismOrPyramidFaces(const int element_type, UnpartitionedMesh::Li
                        " is not a prism or pyramid.");
   for (auto& vertex_ids : faces)
   {
-    UnpartitionedMesh::LightWeightFace face;
+    CellFace face;
     face.vertex_ids = std::move(vertex_ids);
     cell.faces.push_back(std::move(face));
   }

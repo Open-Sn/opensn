@@ -73,9 +73,9 @@ SweepChunk::ComputeDestinationsFromAngularFlux(const AngleAggregation& angle_agg
   const auto gs_gi = groupset_.first_group;
   const auto gs_size = groupset_.GetNumGroups();
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto cell_local_id = cell.local_id;
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto& transport_view = cell_transport_views_[cell_local_id];
     const auto& cell_mapping = discretization_.GetLocalCellMapping(cell_local_id);
     const auto& int_s_shape_i = unit_cell_matrices_[cell_local_id].intS_shapeI;

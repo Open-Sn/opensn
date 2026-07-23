@@ -127,9 +127,9 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
   // index of the first triangle of each face.
   std::vector<std::array<std::uint32_t, 3>> cell_triangles;
   std::vector<std::uint32_t> cell_face_starts;
-  for (const auto& cell : cells)
+  for (std::uint32_t c = 0; c < cells.size(); ++c)
   {
-    const auto c = static_cast<std::uint32_t>(cell.local_id);
+    const auto& cell = cells[c];
     Vector3 lo = grid.GlobalVertex(cell.vertex_ids.front());
     Vector3 hi = lo;
     for (const auto vid : cell.vertex_ids)

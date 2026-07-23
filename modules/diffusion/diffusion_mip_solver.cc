@@ -1365,7 +1365,8 @@ DiffusionMIPSolver::ComputeClosureFaceData(const Cell& cell) const
   if (suppress_bcs_)
     return {data, count};
 
-  const auto& cell_mapping = sdm_.GetLocalCellMapping(cell.local_id);
+  const auto cell_local_id = grid_->MapCellGlobalID2LocalID(cell.global_id);
+  const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
   for (size_t f = 0; f < cell.faces.size(); ++f)
   {
     const auto& face = cell.faces[f];
@@ -1387,7 +1388,7 @@ DiffusionMIPSolver::ComputeClosureFaceData(const Cell& cell) const
     cf.c_grad = FaceTraceConstant(cell_mapping,
                                   cell,
                                   f,
-                                  unit_cell_matrices_[cell.local_id].intV_gradshapeI_gradshapeJ,
+                                  unit_cell_matrices_[cell_local_id].intV_gradshapeI_gradshapeJ,
                                   grid_->GetCoordinateSystem());
   }
   return {data, count};

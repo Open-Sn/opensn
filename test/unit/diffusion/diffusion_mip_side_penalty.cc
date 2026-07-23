@@ -110,7 +110,7 @@ TEST(DiffusionMIPSidePenalty, SideLengthIsWidthOnOrthogonalCells)
     auto grid = BuildOrthogonalMesh(node_sets);
     for (const auto& cell : grid->GetLocalCells())
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceSideLength(*grid, cell, f), grid->GetCellVolume(cell.local_id) / cell.faces[f].area, 1.0e-12);
+        EXPECT_NEAR(FaceSideLength(*grid, cell, f), grid->GetCellVolume(grid->MapCellGlobalID2LocalID(cell.global_id)) / cell.faces[f].area, 1.0e-12);
   }
 }
 

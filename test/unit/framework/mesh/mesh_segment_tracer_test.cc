@@ -31,9 +31,9 @@ std::vector<std::uint32_t>
 ContainingCells(const Mesh& grid, const Vector3& point)
 {
   std::vector<std::uint32_t> cells;
-  for (const auto& cell : grid.GetLocalCells())
-    if (grid.CheckPointInsideCell(cell, point))
-      cells.push_back(cell.local_id);
+  for (std::uint32_t c = 0; c < grid.GetLocalCellCount(); ++c)
+    if (grid.CheckPointInsideCell(grid.GetLocalCell(c), point))
+      cells.push_back(c);
   return cells;
 }
 
@@ -342,7 +342,9 @@ TEST(MeshSegmentTracer, GrazingFaces)
   const MeshSegmentTracer tracer(*grid);
   constexpr double grazing_slope = 1.0e-7;
   size_t count = 0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     for (const auto& face : cell.faces)
     {
       if (not face.has_neighbor or face.neighbor_id < cell.global_id)
@@ -366,14 +368,14 @@ TEST(MeshSegmentTracer, GrazingFaces)
         CheckSegment(*grid, tracer, a, b);
 
       std::vector<MeshSegmentTracer::Segment> segments;
-      ASSERT_TRUE(tracer.Trace(cell.local_id, a, b, segments))
+      ASSERT_TRUE(tracer.Trace(cell_local_id, a, b, segments))
         << "segment " << a.PrintStr() << " -> " << b.PrintStr() << " left the mesh";
-      const auto neighbor = grid->GetGlobalCell(face.neighbor_id).local_id;
+      const auto neighbor = grid->MapCellGlobalID2LocalID(face.neighbor_id);
       double in_cell = 0.0;
       double in_neighbor = 0.0;
       for (const auto& segment : segments)
       {
-        if (segment.cell_local_id == cell.local_id)
+        if (segment.cell_local_id == cell_local_id)
           in_cell += segment.length;
         else if (segment.cell_local_id == neighbor)
           in_neighbor += segment.length;
@@ -389,6 +391,7 @@ TEST(MeshSegmentTracer, GrazingFaces)
       EXPECT_NEAR(in_neighbor, step.Norm(), 1.0e-4 * step.Norm());
       ++count;
     }
+  }
   EXPECT_GT(count, 100);
 }
 
@@ -425,8 +428,9 @@ TEST(MeshSegmentTracer, AllRaysToSource)
     size_t wrong_end = 0;
     double worst_length_error = 0.0;
     std::vector<MeshSegmentTracer::Segment> segments;
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       std::vector<Vector3> starts = {cell.centroid};
       for (const auto vid : cell.vertex_ids)
         starts.push_back(0.5 * (cell.centroid + grid->GlobalVertex(vid)));
@@ -440,7 +444,7 @@ TEST(MeshSegmentTracer, AllRaysToSource)
             continue;
           segments.clear();
           ++traced;
-          if (not tracer.Trace(cell.local_id, start, source, segments))
+          if (not tracer.Trace(cell_local_id, start, source, segments))
           {
             ++lost;
             continue;
@@ -677,11 +681,12 @@ TEST(MeshSegmentTracer, NearEdgesAndVerticesAtTolerance)
   Vector3 hi = lo;
   std::vector<std::vector<std::uint32_t>> vertex_cells(grid->GetGlobalVertexCount());
   std::map<std::pair<std::uint64_t, std::uint64_t>, bool> edges;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     for (const auto vid : cell.vertex_ids)
     {
-      vertex_cells[vid].push_back(cell.local_id);
+      vertex_cells[vid].push_back(cell_local_id);
       const auto& v = grid->GlobalVertex(vid);
       lo = Vector3(std::min(lo.x, v.x), std::min(lo.y, v.y), std::min(lo.z, v.z));
       hi = Vector3(std::max(hi.x, v.x), std::max(hi.y, v.y), std::max(hi.z, v.z));

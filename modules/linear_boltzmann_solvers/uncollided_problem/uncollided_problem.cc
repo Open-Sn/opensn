@@ -1891,7 +1891,7 @@ UncollidedProblem::IntegrateCellExactly(std::uint32_t cell_local_id,
 bool
 UncollidedProblem::IsConvex(const Cell& cell) const
 {
-  const double tol = cell_sizes_[cell.local_id] * 1.0e-8;
+  const double tol = cell_sizes_[grid_->MapCellGlobalID2LocalID(cell.global_id)] * 1.0e-8;
   for (const auto& face : cell.faces)
   {
     const auto& v0 = grid_->GlobalVertex(face.vertex_ids.front());

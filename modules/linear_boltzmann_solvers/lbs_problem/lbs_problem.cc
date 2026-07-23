@@ -1484,9 +1484,9 @@ LBSProblem::ReverseMomentDirections(std::vector<double>& phi) const
   for (const auto& groupset : groupsets_)
   {
     const auto& moment_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t c = 0; c < grid_->GetLocalCellCount(); ++c)
     {
-      const auto& transport_view = cell_transport_views_[cell.local_id];
+      const auto& transport_view = cell_transport_views_[c];
       for (int i = 0; i < transport_view.GetNumNodes(); ++i)
         for (unsigned int m = 0; m < num_moments_; ++m)
         {
