@@ -376,10 +376,11 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 
   std::vector<Cell> local_cells;
   std::vector<Cell> ghost_cells;
-  for (const auto& [pidgid, raw_cell] : cells)
+  for (auto& [pidgid, cell] : cells)
   {
     const auto& [cell_pid, cell_global_id] = pidgid;
-    auto cell = SetupCell(raw_cell, cell_global_id, cell_pid);
+    cell.global_id = cell_global_id;
+    cell.partition_id = cell_pid;
     if (cell_pid == opensn::mpi_comm.rank())
       local_cells.push_back(std::move(cell));
     else
