@@ -159,11 +159,12 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   for (std::size_t cell_global_id = 0; cell_global_id < input_umesh->GetCells().size();
        ++cell_global_id)
   {
-    auto& raw_cell = input_umesh->GetCells()[cell_global_id];
-    if (CellHasLocalScope(mpi_comm.rank(), raw_cell, cell_global_id, vertex_subs, cell_pids))
+    auto& cell = input_umesh->GetCells()[cell_global_id];
+    if (CellHasLocalScope(mpi_comm.rank(), cell, cell_global_id, vertex_subs, cell_pids))
     {
       auto partition_id = cell_pids[cell_global_id];
-      auto cell = SetupCell(raw_cell, cell_global_id, partition_id);
+      cell.global_id = cell_global_id;
+      cell.partition_id = partition_id;
       for (const auto vid : cell.vertex_ids)
         grid_ptr->AddGlobalVertex(vid, input_umesh->GetVertices()[vid]);
 
@@ -213,29 +214,6 @@ MeshGenerator::CellHasLocalScope(const int location_id,
         return true;
     }
   return false;
-}
-
-Cell
-MeshGenerator::SetupCell(const Cell& raw_cell, const uint64_t global_id, const int partition_id)
-{
-  Cell cell(raw_cell.GetType(), raw_cell.GetSubType());
-  cell.centroid = raw_cell.centroid;
-  cell.global_id = global_id;
-  cell.partition_id = partition_id;
-  cell.block_id = raw_cell.block_id;
-
-  cell.vertex_ids = raw_cell.vertex_ids;
-
-  size_t face_counter = 0;
-  for (const auto& raw_face : raw_cell.faces)
-  {
-    CellFace newFace;
-    newFace.has_neighbor = raw_face.has_neighbor;
-    newFace.neighbor_id = raw_face.neighbor_id;
-    newFace.vertex_ids = raw_face.vertex_ids;
-    cell.faces.push_back(newFace);
-  }
-  return cell;
 }
 
 OpenSnRegisterObjectInNamespace(mesh, MeshGenerator);

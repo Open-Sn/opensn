@@ -77,9 +77,6 @@ public:
   static std::shared_ptr<MeshGenerator> Create(const ParameterBlock& params);
 
 protected:
-  /// Converts a light-weight cell to a real cell.
-  static Cell SetupCell(const Cell& raw_cell, uint64_t global_id, int partition_id);
-
   static void ComputeAndPrintStats(const std::shared_ptr<Mesh>& grid);
 
   /// Broadcasts PIDs to other locations.
