@@ -94,7 +94,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
                          q_moments_local,
                          phi_new_local,
                          APPLY_FIXED_SOURCES | APPLY_AGS_FISSION_SOURCES |
-                           APPLY_WGS_FISSION_SOURCES);
+                           APPLY_WGS_FISSION_SOURCES | APPLY_PREVIOUS_PRECURSOR_SOURCES);
     LBSVecOps::GSScopedCopyPrimarySTLvectors( // NOLINT(readability-suspicious-call-argument)
       do_problem,
       groupset,

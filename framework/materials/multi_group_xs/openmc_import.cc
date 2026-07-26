@@ -144,6 +144,14 @@ MultiGroupXS::LoadFromOpenMC(const std::string& file_name,
       mgxs.nu_sigma_f_.clear();
     }
 
+    // A material flagged as fissionable but with uniformly-zero fission and production
+    // cross sections has no actual fission capability.
+    if (mgxs.sigma_f_.empty() or mgxs.nu_sigma_f_.empty())
+      mgxs.is_fissionable_ = false;
+  }
+
+  if (mgxs.is_fissionable_)
+  {
     // Chi
     H5ReadDataset1D<double>(file.Id(), path + "chi", mgxs.chi_);
     OpenSnLogicalErrorIf(mgxs.chi_.empty(), "\"chi\" data block not found in " + file_name + ".");

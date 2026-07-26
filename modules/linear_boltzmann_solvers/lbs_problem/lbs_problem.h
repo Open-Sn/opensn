@@ -106,6 +106,7 @@ public:
   void CopyPhiNewToOld();
   void SetPhiOldFrom(const std::vector<double>& phi_old);
   void SetPhiNewFrom(const std::vector<double>& phi_new);
+  void SetPrecursorsOldFrom(const std::vector<double>& precursors_old);
   void ScalePhiOld(double factor);
   void ScalePhiNew(double factor);
   void ZeroQMoments();
@@ -271,6 +272,12 @@ public:
   /// Read access to newest updated precursors vector.
   const std::vector<double>& GetPrecursorsNewLocal() const;
 
+  /// Read/write access to previous time step's precursors vector.
+  std::vector<double>& GetPrecursorsOldLocal();
+
+  /// Read access to previous time step's precursors vector.
+  const std::vector<double>& GetPrecursorsOldLocal() const;
+
   SetSourceFunction GetActiveSetSourceFunction() const;
 
   /**
@@ -383,7 +390,7 @@ protected:
 
   std::vector<double> q_moments_local_, ext_src_moments_local_;
   std::vector<double> phi_new_local_, phi_old_local_;
-  std::vector<double> precursor_new_local_;
+  std::vector<double> precursor_new_local_, precursor_old_local_;
 
   SetSourceFunction active_set_source_function_;
 

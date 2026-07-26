@@ -54,8 +54,9 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
   ofile << "# Date: " << Timer::GetLocalDateTimeString() << "\n";
   ofile << "NUM_GROUPS " << GetNumGroups() << "\n";
   ofile << "NUM_MOMENTS " << GetScatteringOrder() + 1 << "\n";
-  if (GetNumPrecursors() > 0)
-    ofile << "NUM_PRECURSORS " << GetNumPrecursors() << "\n";
+  const auto& precursors = GetPrecursors();
+  if (not precursors.empty())
+    ofile << "NUM_PRECURSORS " << precursors.size() << "\n";
 
   // Basic cross-section data
   Print1DXS(ofile, "SIGMA_T", GetSigmaTotal(), 1.0e-20);
@@ -72,7 +73,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
     }
 
     Print1DXS(ofile, "SIGMA_F", scaled_sigma_f, 1.0e-20);
-    if (GetNumPrecursors() > 0)
+    if (not precursors.empty())
     {
       // Compute prompt/delayed fission neutron yields
       const auto& sigma_f = GetSigmaFission();
@@ -88,7 +89,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
 
       // Get decay constants and fractional yields
       std::vector<double> lambda, gamma;
-      for (const auto& precursor : GetPrecursors())
+      for (const auto& precursor : precursors)
       {
         lambda.emplace_back(precursor.decay_constant);
         gamma.emplace_back(precursor.fractional_yield);
@@ -98,8 +99,7 @@ MultiGroupXS::ExportToOpenSnXSFile(const std::string& file_name, const double fi
       Print1DXS(ofile, "NU_DELAYED", nu_delayed, 1.0e-20);
 
       ofile << "\nCHI_DELAYED_BEGIN\n";
-      const auto& precursors = GetPrecursors();
-      for (unsigned int j = 0; j < GetNumPrecursors(); ++j)
+      for (unsigned int j = 0; j < precursors.size(); ++j)
         for (unsigned int g = 0; g < GetNumGroups(); ++g)
           ofile << "G_PRECURSOR_VAL"
                 << " " << g << " " << j << " " << precursors[j].emission_spectrum[g] << "\n";

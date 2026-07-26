@@ -64,20 +64,24 @@ MultiGroupXS::Combine(
                          "All cross sections being combined must have the same group structure.");
 
     // Increment number of precursors
-    n_precs += xs->GetNumPrecursors();
+    if (xs->IsFissionable())
+      n_precs += xs->GetPrecursors().size();
   } // for cross section
 
   // Check that the fissile and precursor densities are greater than
   // machine precision. If this condition is not met, the material is assumed
   // to be either not fissile, have zero precursors, or both.
   if (Nf_total < 1.0e-12)
+  {
     mgxs.is_fissionable_ = false;
+    n_precs = 0;
+  }
 
   // Check to ensure that all fissionable cross sections contain either
   // prompt/delayed fission data or total fission data
   if (n_precs > 0)
     for (const auto& xs : xsecs)
-      OpenSnLogicalErrorIf(xs->IsFissionable() and xs->GetNumPrecursors() == 0,
+      OpenSnLogicalErrorIf(xs->IsFissionable() and xs->GetPrecursors().empty(),
                            "If precursors are specified, all fissionable cross sections must "
                            "specify precursors.");
 
@@ -185,10 +189,10 @@ MultiGroupXS::Combine(
     // precursor yields must be scaled based on the fraction of the total density of materials
     // with precursors they make up.
 
-    if (xs->GetNumPrecursors() > 0)
+    if (mgxs.is_fissionable_ and xs->IsFissionable() and not xs->GetPrecursors().empty())
     {
       const auto& precursors = xs->GetPrecursors();
-      for (unsigned int j = 0; j < xs->GetNumPrecursors(); ++j)
+      for (unsigned int j = 0; j < precursors.size(); ++j)
       {
         auto count = precursor_count + j;
         const auto& precursor = precursors[j];
@@ -197,7 +201,7 @@ MultiGroupXS::Combine(
         mgxs.precursors_[count].emission_spectrum = precursor.emission_spectrum;
       } // for j
 
-      precursor_count += xs->GetNumPrecursors();
+      precursor_count += precursors.size();
     }
 
     // Set inverse velocity data

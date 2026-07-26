@@ -23,10 +23,8 @@ public:
 
   double DelayedFission(const PrecursorList& precursors,
                         const std::vector<double>& nu_delayed_sigma_f,
-                        const double* phi) const override;
-
-private:
-  const LBSProblem& lbs_problem_;
+                        const double* phi,
+                        std::uint64_t cell_local_id) const override;
 };
 
 } // namespace opensn

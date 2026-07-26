@@ -204,14 +204,14 @@
   },
   {
     "file": "transient_keigen_1d_theta_precursor_scaling.py",
-    "comment": "1D delayed fission source scales with theta (TransientSourceFunction check)",
+    "comment": "1D delayed fission source theta-sensitivity is dominated by pre-existing precursor decay (TransientSourceFunction check)",
     "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
         "key": "DELAYED_THETA_RATIO",
         "wordnum": 1,
-        "gold": 2,
+        "gold": 1,
         "abs_tol": 0.01
       }
     ]
@@ -483,6 +483,20 @@
         "key": "Max phi(0.1s) = ",
         "goldvalue": 51.057722,
         "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transient_keigen_1d_precursor_decay_analytic.py",
+    "comment": "1D delayed precursor decay: exact 0-D eigendecomposition reference for critical-to-subcritical XS swap",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DECAY_ANALYTIC_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
       }
     ]
   },
@@ -922,14 +936,14 @@
   },
   {
     "file": "transient_keigen_1d_theta_precursor_scaling_cbc.py",
-    "comment": "1D delayed fission source scales with theta (TransientSourceFunction check) (CBC)",
+    "comment": "1D delayed fission source theta-sensitivity is dominated by pre-existing precursor decay (TransientSourceFunction check) (CBC)",
     "num_procs": 4,
     "checks": [
       {
         "type": "FloatCompare",
         "key": "DELAYED_THETA_RATIO",
         "wordnum": 1,
-        "gold": 2,
+        "gold": 1,
         "abs_tol": 0.01
       }
     ]
