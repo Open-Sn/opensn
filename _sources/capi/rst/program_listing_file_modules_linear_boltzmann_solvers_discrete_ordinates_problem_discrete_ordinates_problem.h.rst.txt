@@ -217,6 +217,7 @@ Program Listing for File discrete_ordinates_problem.h
      void InitializeSolverSchemes();
      /// Rebuild WGS/AGS solver schemes after runtime configuration changes.
      void ReinitializeSolverSchemes();
+     void ConfigureTransientSourceScopes();
    
      void SetSweepChunkMode(SweepChunkMode mode);
      void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }

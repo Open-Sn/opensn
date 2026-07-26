@@ -17,6 +17,7 @@ Program Listing for File source_function.h
    
    #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
    #include "framework/materials/multi_group_xs/multi_group_xs.h"
+   #include <cstdint>
    #include <memory>
    #include <utility>
    
@@ -60,7 +61,8 @@ Program Listing for File source_function.h
      /// Compute delayed particle precursor sources.
      virtual double DelayedFission(const PrecursorList& precursors,
                                    const std::vector<double>& nu_delayed_sigma_f,
-                                   const double* phi) const;
+                                   const double* phi,
+                                   std::uint64_t cell_local_id) const;
    
      virtual void AddAdditionalSources(const LBSGroupset& groupset,
                                        std::vector<double>& q,
@@ -91,6 +93,7 @@ Program Listing for File source_function.h
      bool apply_ags_scatter_src_ = false;
      bool apply_wgs_fission_src_ = false;
      bool apply_ags_fission_src_ = false;
+     bool apply_previous_precursor_src_ = false;
      bool suppress_wg_scatter_src_ = false;
    
      unsigned int gs_i_ = 0;

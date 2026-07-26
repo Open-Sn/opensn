@@ -193,6 +193,7 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyPhiNewToOld</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetPhiOldFrom</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_old</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetPhiNewFrom</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_new</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetPrecursorsOldFrom</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">precursors_old</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScalePhiOld</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">factor</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScalePhiNew</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">factor</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroQMoments</span><span class="p">();</span>
@@ -358,6 +359,12 @@
 <span class="w">  </span><span class="c1">/// Read access to newest updated precursors vector.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPrecursorsNewLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Read/write access to previous time step&#39;s precursors vector.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPrecursorsOldLocal</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Read access to previous time step&#39;s precursors vector.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPrecursorsOldLocal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="nf">GetActiveSetSourceFunction</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
@@ -470,7 +477,7 @@
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">q_moments_local_</span><span class="p">,</span><span class="w"> </span><span class="n">ext_src_moments_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">phi_new_local_</span><span class="p">,</span><span class="w"> </span><span class="n">phi_old_local_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">precursor_new_local_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">precursor_new_local_</span><span class="p">,</span><span class="w"> </span><span class="n">precursor_old_local_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="n">active_set_source_function_</span><span class="p">;</span>
 

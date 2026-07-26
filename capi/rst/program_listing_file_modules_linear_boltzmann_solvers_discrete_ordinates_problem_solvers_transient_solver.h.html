@@ -129,11 +129,26 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReadInitialConditionData</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteRestartData</span><span class="p">();</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Re-evaluates the current precursor state (use_precursors vs. presence of fissionable</span>
+<span class="cm">   * material and delayed-neutron data in the active cross-section map) and logs a warning</span>
+<span class="cm">   * or informational message only when that status has changed since the last check. This</span>
+<span class="cm">   * keeps the reported status accurate across cross-section swaps (e.g. via</span>
+<span class="cm">   * Problem.SetXSMap), rather than reflecting only a one-time check made at Initialize().</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckPrecursorStatus</span><span class="p">();</span>
+
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Previous time step vectors</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">phi_prev_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">precursor_prev_local_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// State tracked by CheckPrecursorStatus() to detect transitions.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">precursor_status_reported_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">last_use_precursors_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">last_has_fissionable_material_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">last_has_precursor_data_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Time discretization values and methods</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">stop_time_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>

@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``cstdint``
+
 - ``framework/materials/multi_group_xs/multi_group_xs.h`` (:ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`)
 
 - ``memory``
