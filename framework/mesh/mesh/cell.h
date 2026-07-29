@@ -122,7 +122,7 @@ public:
   int GetNeighborAdjacentFaceIndex(const Mesh* grid) const;
 
   /// Computes the geometric info on the face.
-  void ComputeGeometricInfo(const Mesh* grid, const Cell& cell);
+  void ComputeGeometricInfo(const Mesh& grid, const Cell& cell);
 
   /// Serializes a face into a vector of bytes.
   ByteArray Serialize() const;
@@ -130,7 +130,7 @@ public:
   /// Provides string information of the face.
   std::string ToString() const;
 
-  void ComputeGeometricInfo(const Mesh* grid, const Cell& cell, unsigned int f);
+  void ComputeGeometricInfo(const Mesh& grid, const Cell& cell, unsigned int f);
 
   /// Flag indicating whether face has a neighbor
   bool has_neighbor = false;
@@ -169,7 +169,9 @@ public:
   CellType GetSubType() const { return cell_sub_type_; }
 
   /// Computes the geometric info on the cell.
-  void ComputeGeometricInfo(const Mesh* grid);
+  void ComputeGeometricInfo(const Mesh& grid);
+
+  void ComputeVolume(const Mesh& mesh);
 
   /// Serializes a cell into a vector of bytes.
   ByteArray Serialize() const;
@@ -182,6 +184,7 @@ public:
   unsigned int block_id = std::numeric_limits<unsigned int>::max();
 
   Vector3 centroid;
+  double volume = 0.;
 
   std::vector<uint64_t> vertex_ids;
   std::vector<CellFace> faces;
@@ -196,8 +199,6 @@ public:
   /// Deserializes a cell from a vector of bytes.
   static Cell DeSerialize(const ByteArray& raw, size_t& address);
 };
-
-double ComputeVolume(const Mesh& mesh, const Cell& cell);
 
 } // namespace opensn
 

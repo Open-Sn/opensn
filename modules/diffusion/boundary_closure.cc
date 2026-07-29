@@ -39,7 +39,7 @@ QuadratureHalfRangeMoment(const std::vector<Vector3>& omegas,
 double
 FaceOrthogonalLength(const Mesh& grid, const Cell& cell, unsigned int f)
 {
-  const double volume = grid.GetCellVolume(grid.MapCellGlobalID2LocalID(cell.global_id));
+  const double volume = cell.volume;
   const double face_area = cell.faces.at(f).area;
   const size_t num_faces = cell.faces.size();
   double surface_area = 0.0;
@@ -75,7 +75,7 @@ FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
   switch (cell.GetType())
   {
     case CellType::SLAB:
-      return grid.GetCellVolume(grid.MapCellGlobalID2LocalID(cell.global_id));
+      return cell.volume;
     case CellType::POLYGON:
     {
       // Side triangle (v0, v1, xc): height over the edge = 2 |T| / |e|.

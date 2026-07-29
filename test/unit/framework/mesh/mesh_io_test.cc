@@ -107,7 +107,7 @@ TEST(MeshIOTest, ReadGmshPrismsAndPyramids)
     for (const auto& cell : grid->GetLocalCells())
     {
       ++counts[cell.GetSubType()];
-      const double cell_vol = grid->GetCellVolume(grid->MapCellGlobalID2LocalID(cell.global_id));
+      const double cell_vol = cell.volume;
       EXPECT_GT(cell_vol, 0.0);
       volume += cell_vol;
       for (const auto& face : cell.faces)

@@ -110,7 +110,7 @@ TEST(DiffusionMIPSidePenalty, SideLengthIsWidthOnOrthogonalCells)
     auto grid = BuildOrthogonalMesh(node_sets);
     for (const auto& cell : grid->GetLocalCells())
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceSideLength(*grid, cell, f), grid->GetCellVolume(grid->MapCellGlobalID2LocalID(cell.global_id)) / cell.faces[f].area, 1.0e-12);
+        EXPECT_NEAR(FaceSideLength(*grid, cell, f), cell.volume / cell.faces[f].area, 1.0e-12);
   }
 }
 
@@ -152,7 +152,7 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnOrthogonalCells)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), grid->GetCellVolume(cell_local_id) / cell.faces[f].area, 1.0e-12);
+        EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), cell.volume / cell.faces[f].area, 1.0e-12);
     }
     EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   }
