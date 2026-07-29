@@ -1203,7 +1203,7 @@ DiffusionMIPSolver::HPerpendicular(std::uint32_t cell_local_id, unsigned int f)
   const auto num_faces = cell.faces.size();
   const auto num_vertices = cell.vertex_ids.size();
 
-  const auto volume = mesh->GetCellVolume(cell_local_id);
+  const auto volume = cell.volume;
   const auto face_area = cell.faces.at(f).area;
 
   /**Lambda to compute surface area.*/

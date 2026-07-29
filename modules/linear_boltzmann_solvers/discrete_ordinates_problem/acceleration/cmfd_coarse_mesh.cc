@@ -576,7 +576,7 @@ CMFDCoarseMesh::BuildIdentity(const Mesh& grid)
     coarse_cell.partition_id = fine_cell.partition_id;
     coarse_cell.block_id = fine_cell.block_id;
     coarse_cell.centroid = fine_cell.centroid;
-    coarse_cell.volume = grid.GetCellVolume(fine_cell_local_id);
+    coarse_cell.volume = fine_cell.volume;
     coarse_cell.fine_cell_ids = {fine_cell.global_id};
     coarse_cell.faces.reserve(fine_cell.faces.size());
 
@@ -651,7 +651,7 @@ CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
       const auto& fine_cell = grid.GetLocalCell(fine_cell_local_id);
 
       coarse_cell.fine_cell_ids.push_back(fine_cell.global_id);
-      auto fine_cell_volume = grid.GetCellVolume(fine_cell_local_id);
+      auto fine_cell_volume = fine_cell.volume;
       coarse_cell.volume += fine_cell_volume;
       coarse_cell.centroid += fine_cell.centroid * fine_cell_volume;
 

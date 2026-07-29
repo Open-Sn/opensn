@@ -91,8 +91,9 @@ MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr
 
     double total_fine_volume = 0.0;
     for (const auto fine_cell_local_id : coarse_mapping.fine_cell_local_ids)
-      total_fine_volume += fine_grid->GetCellVolume(fine_cell_local_id);
-    if (std::abs(total_fine_volume - coarse_grid->GetCellVolume(coarse_cell_local_id)) > 1.e-6)
+      total_fine_volume += fine_grid->GetLocalCell(fine_cell_local_id).volume;
+    if (std::abs(total_fine_volume - coarse_grid->GetLocalCell(coarse_cell_local_id).volume) >
+        1.e-6)
       throw std::runtime_error("Coarse cell " + std::to_string(coarse_cell.global_id) +
                                " with centroid " + coarse_cell.centroid.PrintStr() +
                                " volumetric mapping failed.");
