@@ -127,22 +127,14 @@ void
 Mesh::ComputeGeometricInfo()
 {
   for (auto& cell : local_cells_)
-    cell.ComputeGeometricInfo(this);
+    cell.ComputeGeometricInfo(*this);
   for (auto& cell : ghost_cells_)
-    cell.ComputeGeometricInfo(this);
+    cell.ComputeGeometricInfo(*this);
 
-  cell_volumes_.resize(local_cells_.size() + ghost_cells_.size(), 0);
-  std::size_t cell_local_id = 0;
   for (auto& cell : local_cells_)
-  {
-    cell_volumes_[cell_local_id] = ComputeVolume(*this, cell);
-    ++cell_local_id;
-  }
+    cell.ComputeVolume(*this);
   for (auto& cell : ghost_cells_)
-  {
-    cell_volumes_[cell_local_id] = ComputeVolume(*this, cell);
-    ++cell_local_id;
-  }
+    cell.ComputeVolume(*this);
 }
 
 void
@@ -984,7 +976,7 @@ Mesh::ComputeVolumePerBlockID() const
   for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
     const auto& cell = this->local_cells_[cell_local_id];
-    block_volumes[cell.block_id] += cell_volumes_[cell_local_id];
+    block_volumes[cell.block_id] += cell.volume;
   }
 
   // Collect all local block IDs
@@ -1036,14 +1028,6 @@ Mesh::ComputeVolumePerBlockID() const
   }
 
   return global_block_volumes;
-}
-
-double
-Mesh::GetCellVolume(uint64_t id) const
-{
-  assert(not cell_volumes_.empty());
-  assert(id < cell_volumes_.size());
-  return cell_volumes_[id];
 }
 
 int

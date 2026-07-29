@@ -152,12 +152,12 @@ CellFace::GetNeighborAdjacentFaceIndex(const Mesh* grid) const
 }
 
 void
-CellFace::ComputeGeometricInfo(const Mesh* grid, const Cell& cell)
+CellFace::ComputeGeometricInfo(const Mesh& grid, const Cell& cell)
 {
   // Compute the centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
-    centroid += grid->GlobalVertex(vid);
+    centroid += grid.GlobalVertex(vid);
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute areas and normals
@@ -167,7 +167,7 @@ CellFace::ComputeGeometricInfo(const Mesh* grid, const Cell& cell)
     // a vector from the cell centroid to the face centroid.
     normal = (centroid - cell.centroid).Normalized();
 
-    switch (grid->GetCoordinateSystem())
+    switch (grid.GetCoordinateSystem())
     {
       case CARTESIAN:
         area = 1.0;
@@ -186,8 +186,8 @@ CellFace::ComputeGeometricInfo(const Mesh* grid, const Cell& cell)
   {
     // A polygon face is just a line. Normals and areas are
     // computed using the vertices.
-    const auto& v0 = grid->GlobalVertex(vertex_ids[0]);
-    const auto& v1 = grid->GlobalVertex(vertex_ids[1]);
+    const auto& v0 = grid.GlobalVertex(vertex_ids[0]);
+    const auto& v1 = grid.GlobalVertex(vertex_ids[1]);
 
     // The outward pointing normal is orthogonal to the vector
     // pointing from the first vertex to the second. This is
@@ -197,7 +197,7 @@ CellFace::ComputeGeometricInfo(const Mesh* grid, const Cell& cell)
     // TODO This keeps the old behavior of always computing the Cartesian
     //      face area. This should be extended to be correct for other
     //      coordinate systems.
-    switch (grid->GetCoordinateSystem())
+    switch (grid.GetCoordinateSystem())
     {
       default:
         area = (v1 - v0).Norm();
@@ -217,8 +217,8 @@ CellFace::ComputeGeometricInfo(const Mesh* grid, const Cell& cell)
     {
       const auto vid0 = vertex_ids[v];
       const auto vid1 = v < num_verts - 1 ? vertex_ids[v + 1] : vertex_ids[0];
-      const auto& v0 = grid->GlobalVertex(vid0);
-      const auto& v1 = grid->GlobalVertex(vid1);
+      const auto& v0 = grid.GlobalVertex(vid0);
+      const auto& v1 = grid.GlobalVertex(vid1);
 
       const auto subnormal = (v0 - centroid).Cross(v1 - centroid);
 
@@ -226,7 +226,7 @@ CellFace::ComputeGeometricInfo(const Mesh* grid, const Cell& cell)
       //      face area. This should be extended to be correct for other
       //      coordinate systems.
       double subarea = 0.0;
-      switch (grid->GetCoordinateSystem())
+      switch (grid.GetCoordinateSystem())
       {
         default:
         {
@@ -329,12 +329,12 @@ Cell::operator=(const Cell& other)
 }
 
 void
-Cell::ComputeGeometricInfo(const Mesh* grid)
+Cell::ComputeGeometricInfo(const Mesh& grid)
 {
   // Compute cell centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
-    centroid += grid->GlobalVertex(vid);
+    centroid += grid.GlobalVertex(vid);
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute face geometric data
@@ -342,18 +342,17 @@ Cell::ComputeGeometricInfo(const Mesh* grid)
     face.ComputeGeometricInfo(grid, *this);
 }
 
-double
-ComputeVolume(const Mesh& mesh, const Cell& cell)
+void
+Cell::ComputeVolume(const Mesh& mesh)
 {
-  // Compute cell volumes
-  double volume = 0.0;
-  switch (cell.GetType())
+  volume = 0.0;
+  switch (cell_type_)
   {
     // The volume of a slab is the distance between the two vertices.
     case CellType::SLAB:
     {
-      const auto& v0 = mesh.GlobalVertex(cell.vertex_ids[0]);
-      const auto& v1 = mesh.GlobalVertex(cell.vertex_ids[1]);
+      const auto& v0 = mesh.GlobalVertex(vertex_ids[0]);
+      const auto& v1 = mesh.GlobalVertex(vertex_ids[1]);
       volume = (v1 - v0).Norm();
       break;
     }
@@ -362,13 +361,13 @@ ComputeVolume(const Mesh& mesh, const Cell& cell)
     // with each edge and the centroid.
     case CellType::POLYGON:
     {
-      for (const auto& face : cell.faces)
+      for (const auto& face : faces)
       {
         const auto& v0 = mesh.GlobalVertex(face.vertex_ids[0]);
         const auto& v1 = mesh.GlobalVertex(face.vertex_ids[1]);
 
         const auto e0 = v1 - v0;
-        const auto e1 = cell.centroid - v0;
+        const auto e1 = centroid - v0;
         volume += 0.5 * std::fabs(e0.x * e1.y - e0.y * e1.x);
       }
       break;
@@ -378,7 +377,7 @@ ComputeVolume(const Mesh& mesh, const Cell& cell)
     // formed with on each face with the cell centroid.
     case CellType::POLYHEDRON:
     {
-      for (const auto& face : cell.faces)
+      for (const auto& face : faces)
       {
         const auto num_verts = face.vertex_ids.size();
         for (unsigned int v = 0; v < num_verts; ++v)
@@ -390,7 +389,7 @@ ComputeVolume(const Mesh& mesh, const Cell& cell)
           Matrix3x3 J;
           J.SetColJVec(0, face.centroid - v0);
           J.SetColJVec(1, v1 - v0);
-          J.SetColJVec(2, cell.centroid - v0);
+          J.SetColJVec(2, centroid - v0);
           volume += J.Det() / 6.0;
         }
       }
@@ -399,8 +398,6 @@ ComputeVolume(const Mesh& mesh, const Cell& cell)
     default:
       throw std::runtime_error("Unknown cell type.");
   }
-
-  return volume;
 }
 
 ByteArray
