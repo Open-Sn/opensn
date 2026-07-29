@@ -28,7 +28,7 @@ TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
     EXPECT_EQ(coarse_cell.local_id, fine_cell_local_id);
     EXPECT_EQ(coarse_cell.partition_id, fine_cell.partition_id);
     EXPECT_EQ(coarse_cell.block_id, fine_cell.block_id);
-    EXPECT_DOUBLE_EQ(coarse_cell.volume, grid->GetCellVolume(fine_cell_local_id));
+    EXPECT_DOUBLE_EQ(coarse_cell.volume, fine_cell.volume);
     EXPECT_EQ(coarse_cell.fine_cell_ids, std::vector<uint64_t>({fine_cell.global_id}));
     ASSERT_EQ(coarse_cell.faces.size(), fine_cell.faces.size());
 
@@ -80,7 +80,8 @@ TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
       {
         EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell_id), coarse_cell.global_id);
         auto fine_cell_local_id = grid->MapCellGlobalID2LocalID(fine_cell_id);
-        expected_volume += grid->GetCellVolume(fine_cell_local_id);
+        const auto& fine_cell = grid->GetLocalCell(fine_cell_local_id);
+        expected_volume += fine_cell.volume;
       }
       EXPECT_DOUBLE_EQ(coarse_cell.volume, expected_volume);
       EXPECT_FALSE(coarse_cell.faces.empty());
@@ -107,11 +108,13 @@ TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
   EXPECT_EQ(coarse_mesh.MapFineCell(3), second.global_id);
 
   auto lid0 = grid->MapCellGlobalID2LocalID(0);
+
   auto lid1 = grid->MapCellGlobalID2LocalID(1);
-  EXPECT_DOUBLE_EQ(first.volume, grid->GetCellVolume(lid0) + grid->GetCellVolume(lid1));
+  EXPECT_DOUBLE_EQ(first.volume, grid->GetLocalCell(lid0).volume + grid->GetLocalCell(lid1).volume);
   auto lid2 = grid->MapCellGlobalID2LocalID(2);
   auto lid3 = grid->MapCellGlobalID2LocalID(3);
-  EXPECT_DOUBLE_EQ(second.volume, grid->GetCellVolume(lid2) + grid->GetCellVolume(lid3));
+  EXPECT_DOUBLE_EQ(second.volume,
+                   grid->GetLocalCell(lid2).volume + grid->GetLocalCell(lid3).volume);
 
   ASSERT_EQ(first.faces.size(), 2);
   ASSERT_EQ(second.faces.size(), 2);

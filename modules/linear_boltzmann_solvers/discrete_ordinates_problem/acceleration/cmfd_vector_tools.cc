@@ -100,7 +100,7 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
     auto& keys = pid_keys[membership.coarse_cell_partition_id];
     auto& values = pid_values[membership.coarse_cell_partition_id];
     keys.push_back(membership.coarse_cell_id);
-    values.push_back(mesh->GetCellVolume(fine_cell_local_id));
+    values.push_back(fine_cell.volume);
     values.insert(values.end(), group_integrals.begin(), group_integrals.end());
   }
 
