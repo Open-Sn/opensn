@@ -187,7 +187,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
          ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
-      if (grid->CheckPointInsideCell(cell, point))
+      if (grid->CheckPointInsideCell(cell_local_id, point))
       {
         const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
         Vector<double> shape_values;
@@ -306,9 +306,10 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
            ++cell_local_id)
       {
         const auto& cell = grid->GetLocalCell(cell_local_id);
+        auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
         const size_t num_nodes = sdm->GetCellNumNodes(cell_local_id);
 
-        if (num_nodes == cell.vertex_ids.size())
+        if (num_nodes == cell_vertex_ids.size())
         {
           for (size_t n = 0; n < num_nodes; ++n)
           {
@@ -330,7 +331,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
             node_average += field_value;
           } // for node
           node_average /= static_cast<double>(num_nodes);
-          for (std::size_t n = 0; n < cell.vertex_ids.size(); ++n)
+          for (std::size_t n = 0; n < cell_vertex_ids.size(); ++n)
           {
             point_array->InsertNextValue(node_average);
           } // for vertex

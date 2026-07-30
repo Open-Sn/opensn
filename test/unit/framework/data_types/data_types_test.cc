@@ -30,8 +30,6 @@ TEST(DataTypesTest, 00)
       poster_child_cell.centroid = Vector3(0.5, 0.5, 0.5);
       poster_child_cell.block_id = 2;
 
-      poster_child_cell.vertex_ids = {0, 1, 2, 3, 4, 5, 6, 7};
-
       // Bottom face
       {
         CellFace face;
@@ -147,12 +145,6 @@ TEST(DataTypesTest, 00)
           break;
         }
         if (rcell.block_id != pcell.block_id)
-        {
-          passed = false;
-          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-          break;
-        }
-        if (rcell.vertex_ids != pcell.vertex_ids)
         {
           passed = false;
           opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";

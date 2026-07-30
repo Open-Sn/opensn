@@ -72,17 +72,18 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
     throw std::logic_error("Input mesh has no cells.");
 
   // Check cells
-  for (const auto& template_cell_ptr : template_cells)
+  for (std::uint32_t cell_id = 0; cell_id < template_cells.size(); ++cell_id)
   {
-    const auto& template_cell = template_cell_ptr;
+    const auto& template_cell = template_cells[cell_id];
     if (template_cell.GetType() != CellType::POLYGON)
       throw std::logic_error("ExtruderMeshGenerator: "
                              "Template cell error. Not of base type POLYGON");
 
+    auto template_cell_vertex_ids = input_umesh->GetCellConnectivity(cell_id);
     // Check cell not inverted
     const auto& v0 = template_cell.centroid;
-    const auto& v1 = template_vertices[template_cell.vertex_ids[0]];
-    const auto& v2 = template_vertices[template_cell.vertex_ids[1]];
+    const auto& v1 = template_vertices[template_cell_vertex_ids[0]];
+    const auto& v2 = template_vertices[template_cell_vertex_ids[1]];
 
     if ((v1 - v0).Cross(v2 - v0).Dot(khat) < 0.0)
       throw std::logic_error("Extruder attempting to extrude a template cell with a normal "
@@ -123,14 +124,19 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
       extruded_vertices.emplace_back(template_vertex.x, template_vertex.y, z_level);
 
   // Build cells
+  std::vector<Cell> cells;
+  std::vector<std::vector<std::uint64_t>> cell_connect;
   size_t k = 0;
   for (const auto& [height, num_sub_layers] : layers_)
   {
     for (uint32_t n = 0; n < num_sub_layers; ++n)
     {
-      size_t tc_counter = 0;
-      for (const auto& template_cell : template_cells)
+
+      for (size_t tc_counter = 0; tc_counter < template_cells.size(); ++tc_counter)
       {
+        const auto& template_cell = template_cells[tc_counter];
+        auto template_cell_vertex_ids = input_umesh->GetCellConnectivity(tc_counter);
+
         // Determine cell subtype
         CellType extruded_subtype = CellType::POLYHEDRON;
         switch (template_cell.GetSubType())
@@ -151,12 +157,13 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
         new_cell.block_id = template_cell.block_id;
 
         // Build vertices
-        const auto tc_num_verts = template_cell.vertex_ids.size();
-        new_cell.vertex_ids.reserve(2 * tc_num_verts);
-        for (const auto tc_vid : template_cell.vertex_ids)
-          new_cell.vertex_ids.push_back(tc_vid + k * num_template_vertices);
-        for (const auto tc_vid : template_cell.vertex_ids)
-          new_cell.vertex_ids.push_back(tc_vid + (k + 1) * num_template_vertices);
+        const auto tc_num_verts = template_cell_vertex_ids.size();
+        std::vector<std::uint64_t> new_cell_vertex_ids;
+        new_cell_vertex_ids.reserve(2 * tc_num_verts);
+        for (const auto tc_vid : template_cell_vertex_ids)
+          new_cell_vertex_ids.push_back(tc_vid + k * num_template_vertices);
+        for (const auto tc_vid : template_cell_vertex_ids)
+          new_cell_vertex_ids.push_back(tc_vid + (k + 1) * num_template_vertices);
 
         // Create side faces
         for (const auto& tc_face : template_cell.faces)
@@ -188,8 +195,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
         {
           CellFace new_face;
 
-          new_face.vertex_ids.reserve(template_cell.vertex_ids.size());
-          for (auto vid : template_cell.vertex_ids)
+          new_face.vertex_ids.reserve(template_cell_vertex_ids.size());
+          for (auto vid : template_cell_vertex_ids)
             new_face.vertex_ids.push_back(vid + (k + 1) * num_template_vertices);
 
           if (k == (z_levels.size() - 2))
@@ -210,8 +217,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
         {
           CellFace new_face;
 
-          new_face.vertex_ids.reserve(template_cell.vertex_ids.size());
-          auto& vs = template_cell.vertex_ids;
+          new_face.vertex_ids.reserve(template_cell_vertex_ids.size());
+          auto& vs = template_cell_vertex_ids;
           for (auto vid = vs.rbegin(); vid != vs.rend(); ++vid)
             new_face.vertex_ids.push_back((*vid) + k * num_template_vertices);
 
@@ -228,9 +235,8 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
 
           new_cell.faces.push_back(std::move(new_face));
         }
-        umesh->GetCells().emplace_back(new_cell);
-
-        ++tc_counter;
+        cells.emplace_back(new_cell);
+        cell_connect.emplace_back(new_cell_vertex_ids);
       } // for template cell
       ++k;
     } // for sub-layer n
@@ -239,7 +245,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   umesh->SetDimension(3);
   umesh->SetCoordinateSystem(input_umesh->GetCoordinateSystem());
   umesh->SetExtruded(true);
-
+  umesh->SetCells(std::move(cells), cell_connect);
   umesh->ComputeCentroids();
   umesh->CheckQuality();
   umesh->BuildMeshConnectivity();

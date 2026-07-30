@@ -82,6 +82,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   {
     std::string name;
     std::vector<Cell> cells;
+    std::vector<std::vector<std::uint64_t>> cell_connect;
     std::vector<std::pair<uint64_t, uint64_t>> edges;
   };
 
@@ -150,23 +151,24 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       cell.block_id = material_id.value_or(std::numeric_limits<unsigned int>::max());
 
       // Populate vertex-ids
+      std::vector<std::uint64_t> cell_vertex_ids;
       for (size_t k = 1; k <= number_of_verts; ++k)
       {
         // Extract the vertex ID
         auto vert_word = ExtractFirstPart(parts[k]);
         auto num_value = ConvertToInt(vert_word, options.file_name, line_no);
-        cell.vertex_ids.push_back(num_value - 1);
+        cell_vertex_ids.push_back(num_value - 1);
       }
 
       // Build faces
-      const size_t num_verts = cell.vertex_ids.size();
+      const size_t num_verts = cell_vertex_ids.size();
       for (size_t v = 0; v < num_verts; ++v)
       {
         CellFace face;
 
         face.vertex_ids.resize(2);
-        face.vertex_ids[0] = cell.vertex_ids[v];
-        face.vertex_ids[1] = (v < (num_verts - 1)) ? cell.vertex_ids[v + 1] : cell.vertex_ids[0];
+        face.vertex_ids[0] = cell_vertex_ids[v];
+        face.vertex_ids[1] = (v < (num_verts - 1)) ? cell_vertex_ids[v + 1] : cell_vertex_ids[0];
 
         cell.faces.push_back(std::move(face));
       }
@@ -177,6 +179,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
                                        "\"o Object Name\" entry.");
 
       block_data.back().cells.emplace_back(cell);
+      block_data.back().cell_connect.emplace_back(cell_vertex_ids);
     } // if (first_word == "f")
     else if (first_word == "l")
     {
@@ -207,8 +210,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
   // Error checks
   for (const auto& block : block_data)
-    for (const auto& cell : block.cells)
-      for (const auto vid : cell.vertex_ids)
+    for (const auto& cell : block.cell_connect)
+      for (const auto vid : cell)
       {
         OpenSnLogicalErrorIf(
           vid >= file_vertices.size(),
@@ -249,8 +252,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
     // Build set of cell vertices
     std::set<uint64_t> cell_vertex_id_set;
-    for (const auto& cell : block_data.at(main_block_id).cells)
-      for (auto vid : cell.vertex_ids)
+    for (const auto& cell : block_data.at(main_block_id).cell_connect)
+      for (auto vid : cell)
         cell_vertex_id_set.insert(vid);
 
     // Make cell_vertices and edit map
@@ -300,11 +303,14 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
     // Change cell and face vertex ids to cell vertex ids
     // using vertex map
+    for (auto& cell : block_data.at(main_block_id).cell_connect)
+    {
+      for (uint64_t& vid : cell)
+        vid = vertex_map[vid];
+    }
+
     for (auto& cell : block_data.at(main_block_id).cells)
     {
-      for (uint64_t& vid : cell.vertex_ids)
-        vid = vertex_map[vid];
-
       for (auto& face : cell.faces)
         for (uint64_t& vid : face.vertex_ids)
           vid = vertex_map[vid];
@@ -320,12 +326,11 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       }
   }
   mesh->GetVertices() = cell_vertices;
-  mesh->GetCells() = std::move(block_data[main_block_id].cells);
-
   // Always do this
   mesh->SetDimension(2);
   mesh->SetType(UNSTRUCTURED);
-
+  mesh->SetCells(std::move(block_data[main_block_id].cells),
+                 block_data[main_block_id].cell_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();

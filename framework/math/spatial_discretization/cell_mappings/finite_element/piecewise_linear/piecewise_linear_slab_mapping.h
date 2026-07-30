@@ -20,7 +20,7 @@ class PieceWiseLinearSlabMapping : public PieceWiseLinearBaseMapping
 {
 public:
   /// Constructor for a slab view.
-  PieceWiseLinearSlabMapping(const Cell& slab_cell,
+  PieceWiseLinearSlabMapping(std::uint32_t cell_local_id,
                              std::shared_ptr<Mesh> ref_grid,
                              const LineQuadrature& volume_quadrature);
 

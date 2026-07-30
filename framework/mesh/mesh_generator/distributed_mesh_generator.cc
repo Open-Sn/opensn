@@ -104,7 +104,8 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
         local_cells_needed.push_back(cell_global_id);
         cells_needed.emplace(cell_global_id);
 
-        for (const auto vid : raw_cell.vertex_ids)
+        auto raw_cell_vertex_ids = umesh.GetCellConnectivity(cell_global_id);
+        for (const auto vid : raw_cell_vertex_ids)
         {
           vertices_needed.emplace(vid);
 
@@ -114,10 +115,10 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
             if (ghost_gid != cell_global_id && cells_needed.find(ghost_gid) == cells_needed.end())
             {
               cells_needed.emplace(ghost_gid);
-              const auto& ghost_raw_cell = raw_cells[ghost_gid];
+              auto ghost_raw_cell_vertex_ids = umesh.GetCellConnectivity(ghost_gid);
 
               // Insert ghost vertex IDs
-              for (const auto gvid : ghost_raw_cell.vertex_ids)
+              for (const auto gvid : ghost_raw_cell_vertex_ids)
                 vertices_needed.emplace(gvid);
             }
           }
@@ -164,8 +165,10 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
       serial_data.Write(cell.centroid.y);
       serial_data.Write(cell.centroid.z);
       serial_data.Write(cell.block_id);
-      serial_data.Write(cell.vertex_ids.size());
-      for (const auto vid : cell.vertex_ids)
+
+      auto cell_vertex_ids = umesh.GetCellConnectivity(cell_global_id);
+      serial_data.Write(cell_vertex_ids.size());
+      for (const auto vid : cell_vertex_ids)
         serial_data.Write(vid);
 
       serial_data.Write(cell.faces.size());
@@ -244,8 +247,11 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     cell.block_id = serial_data.Read<unsigned int>();
 
     const auto num_vids = serial_data.Read<size_t>();
+    std::vector<std::uint64_t> cell_vertex_ids;
+    cell_vertex_ids.reserve(num_vids);
     for (size_t v = 0; v < num_vids; ++v)
-      cell.vertex_ids.push_back(serial_data.Read<uint64_t>());
+      cell_vertex_ids.push_back(serial_data.Read<uint64_t>());
+    info_block.cell_connect.emplace(cell_gid, cell_vertex_ids);
 
     const auto num_faces = serial_data.Read<size_t>();
     for (size_t f = 0; f < num_faces; ++f)
@@ -300,7 +306,7 @@ DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
     else
       ghost_cells.push_back(std::move(cell));
   }
-  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells));
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), mesh_info.cell_connect);
 
   grid_ptr->SetDimension(mesh_info.dimension);
   grid_ptr->SetCoordinateSystem(mesh_info.coord_sys);

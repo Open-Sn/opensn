@@ -210,6 +210,13 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   if (not(iss >> num_elems))
     throw std::logic_error(fname + ": Failed to read number of elements.");
 
+  std::vector<Cell> raw_cells;
+  raw_cells.reserve(num_elems);
+  std::vector<std::vector<std::uint64_t>> cell_connect;
+  cell_connect.reserve(num_elems);
+  std::vector<Cell> raw_boundary_cells;
+  std::vector<std::vector<std::uint64_t>> bnd_cell_connect;
+
   for (int n = 0; n < num_elems; n++)
   {
     std::getline(file, file_line);
@@ -241,9 +248,6 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       num_cell_nodes = 4;
     else if (element_type == 5) // 8-node hexahedron
       num_cell_nodes = 8;
-
-    auto& raw_boundary_cells = mesh->GetBoundaryCells();
-    auto& raw_cells = mesh->GetCells();
 
     // Make the cell on either the volume or the boundary
     std::optional<Cell> raw_cell;
@@ -282,7 +286,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
     auto& cell = raw_cell.value();
     cell.block_id = physical_region;
-    cell.vertex_ids = ReadNodes(num_cell_nodes);
+    auto cell_vertex_ids = ReadNodes(num_cell_nodes);
 
     // Populate faces
     if (element_type == 1) // 2-node edge
@@ -290,28 +294,28 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       CellFace face0;
       CellFace face1;
 
-      face0.vertex_ids = {cell.vertex_ids.at(0)};
-      face1.vertex_ids = {cell.vertex_ids.at(1)};
+      face0.vertex_ids = {cell_vertex_ids.at(0)};
+      face1.vertex_ids = {cell_vertex_ids.at(1)};
 
       cell.faces.push_back(face0);
       cell.faces.push_back(face1);
     }
     else if (element_type == 2 or element_type == 3) // 3-node triangle or 4-node quadrangle
     {
-      size_t num_verts = cell.vertex_ids.size();
+      size_t num_verts = cell_vertex_ids.size();
       for (size_t e = 0; e < num_verts; e++)
       {
         size_t ep1 = (e < (num_verts - 1)) ? e + 1 : 0;
         CellFace face;
 
-        face.vertex_ids = {cell.vertex_ids[e], cell.vertex_ids[ep1]};
+        face.vertex_ids = {cell_vertex_ids[e], cell_vertex_ids[ep1]};
 
         cell.faces.push_back(std::move(face));
       }
     }
     else if (element_type == 4) // 4-node tetrahedron
     {
-      auto& v = cell.vertex_ids;
+      const auto& v = cell_vertex_ids;
       std::vector<CellFace> lw_faces(4);
       lw_faces[0].vertex_ids = {v[0], v[2], v[1]}; // base-face
       lw_faces[1].vertex_ids = {v[0], v[3], v[2]};
@@ -323,7 +327,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     }
     else if (element_type == 5) // 8-node hexahedron
     {
-      auto& v = cell.vertex_ids;
+      const auto& v = cell_vertex_ids;
       std::vector<CellFace> lw_faces(6);
       lw_faces[0].vertex_ids = {v[5], v[1], v[2], v[6]}; // East face
       lw_faces[1].vertex_ids = {v[0], v[4], v[7], v[3]}; // West face
@@ -339,9 +343,15 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       throw std::runtime_error(fname + ": Unsupported cell type");
 
     if (is_boundary_cell)
+    {
       raw_boundary_cells.emplace_back(cell);
+      bnd_cell_connect.emplace_back(cell_vertex_ids);
+    }
     else
+    {
       raw_cells.emplace_back(cell);
+      cell_connect.emplace_back(cell_vertex_ids);
+    }
   } // for elements
 
   file.close();
@@ -359,16 +369,19 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   mesh->SetDimension(dimension);
   mesh->SetType(UNSTRUCTURED);
+  mesh->SetCells(std::move(raw_cells), cell_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
 
   // remap boundary cells onto cell faces
   std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
-  for (auto& bnd_cell : mesh->GetBoundaryCells())
+  for (std::size_t i = 0; i < raw_boundary_cells.size(); ++i)
   {
+    const auto& bnd_cell = raw_boundary_cells[i];
+    const auto& bnd_cell_vertex_ids = bnd_cell_connect[i];
     std::set<uint64_t> key;
-    for (auto& vid : bnd_cell.vertex_ids)
+    for (const auto& vid : bnd_cell_vertex_ids)
       key.insert(vid);
     bnd_cell_to_bnd_id_map[key] = bnd_cell.block_id;
   }

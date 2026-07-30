@@ -10,6 +10,7 @@
 #include <array>
 #include <map>
 #include <cstddef>
+#include <span>
 
 namespace opensn
 {
@@ -155,7 +156,11 @@ public:
   /// Returns the the total number of ghost cells
   size_t GhostCellCount() const { return ghost_cells_.size(); }
 
-  void SetCells(std::vector<Cell>&& local_cells, std::vector<Cell>&& ghost_cells);
+  void SetCellConnectivity(const std::vector<std::vector<std::uint64_t>>& connectivity);
+
+  void SetCells(std::vector<Cell>&& local_cells,
+                std::vector<Cell>&& ghost_cells,
+                const std::map<std::uint64_t, std::vector<uint64_t>>& cell_connectivity);
 
   /// Returns a reference to a cell given its global cell index.
   Cell& GetGlobalCell(uint64_t cell_global_index);
@@ -225,7 +230,7 @@ public:
   size_t CountCellsInLogicalVolume(const LogicalVolume& log_vol) const;
 
   /// Checks whether a point is within a cell.
-  bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
+  bool CheckPointInsideCell(std::uint32_t cell_local_id, const Vector3& point) const;
   /// Checks whether a point is within a cell face.
   bool CheckPointInsideCellFace(const Cell& cell, size_t face_i, const Vector3& point) const;
 
@@ -276,6 +281,8 @@ public:
 
   int GetCellPartition(std::uint32_t cell_local_id) const;
 
+  std::span<const uint64_t> GetCellConnectivity(std::uint32_t cell_local_id) const;
+
 private:
   /// Spatial dimension
   unsigned int dim_;
@@ -296,6 +303,11 @@ private:
   std::vector<Cell> ghost_cells_;
 
   std::map<uint64_t, uint64_t> global_to_local_cell_id_map_;
+
+  /// Offsets into `connect_ids_`
+  std::vector<std::size_t> connect_ofst_;
+  /// Cell connectivity: [`connect_ofst_[i]` .. `connect_ofst_[i+1]`]
+  std::vector<uint64_t> connect_ids_;
 
 public:
   /// Returns a new instance of the spatial discretization.

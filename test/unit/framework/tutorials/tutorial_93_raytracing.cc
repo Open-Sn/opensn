@@ -87,9 +87,10 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
 
   Cell const* source_cell_ptr = nullptr;
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::size_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    if (grid->CheckPointInsideCell(cell, source_pos))
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    if (grid->CheckPointInsideCell(cell_local_id, source_pos))
     {
       source_cell_ptr = &cell;
       break;
@@ -182,14 +183,14 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
     } // for d
   };
 
-  auto GetCellApproximateSize = [&grid](const Cell& cell)
+  auto GetCellApproximateSize = [&grid](std::span<const std::uint64_t> cell_vertex_ids)
   {
-    const auto& v0 = grid->GlobalVertex(cell.vertex_ids[0]);
+    const auto& v0 = grid->GlobalVertex(cell_vertex_ids[0]);
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
     double zmin = v0.z, zmax = v0.z;
 
-    for (uint64_t vid : cell.vertex_ids)
+    for (uint64_t vid : cell_vertex_ids)
     {
       const auto& v = grid->GlobalVertex(vid);
 
@@ -209,7 +210,8 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    cell_sizes[cell_local_id] = GetCellApproximateSize(cell);
+    auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+    cell_sizes[cell_local_id] = GetCellApproximateSize(cell_vertex_ids);
   }
 
   RayTracer ray_tracer(grid, &cell_sizes);

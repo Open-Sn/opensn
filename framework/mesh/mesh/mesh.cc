@@ -237,7 +237,26 @@ Mesh::SetOrthogonalBoundaries()
 }
 
 void
-Mesh::SetCells(std::vector<Cell>&& local_cells, std::vector<Cell>&& ghost_cells)
+Mesh::SetCellConnectivity(const std::vector<std::vector<std::uint64_t>>& connectivity)
+{
+  std::size_t total_len = 0;
+  for (const auto& cell : connectivity)
+    total_len += cell.size();
+  connect_ids_.reserve(total_len);
+
+  connect_ofst_.reserve(connectivity.size() + 1);
+  for (const auto& cell : connectivity)
+  {
+    connect_ofst_.push_back(connect_ids_.size());
+    std::copy(cell.begin(), cell.end(), connect_ids_.end());
+  }
+  connect_ofst_.push_back(total_len);
+}
+
+void
+Mesh::SetCells(std::vector<Cell>&& local_cells,
+               std::vector<Cell>&& ghost_cells,
+               const std::map<std::uint64_t, std::vector<uint64_t>>& cell_connectivity)
 {
   local_cells_ = std::move(local_cells);
   ghost_cells_ = std::move(ghost_cells);
@@ -253,6 +272,28 @@ Mesh::SetCells(std::vector<Cell>&& local_cells, std::vector<Cell>&& ghost_cells)
     global_to_local_cell_id_map_[cell.global_id] = local_id;
     ++local_id;
   }
+
+  std::size_t total_len = 0;
+  for (const auto& [id, cell] : cell_connectivity)
+    total_len += cell.size();
+  connect_ids_.reserve(total_len);
+
+  connect_ofst_.reserve(cell_connectivity.size() + 1);
+  for (auto& cell : local_cells_)
+  {
+    connect_ofst_.push_back(connect_ids_.size());
+    const auto& vertex_ids = cell_connectivity.at(cell.global_id);
+    for (const auto& id : vertex_ids)
+      connect_ids_.push_back(id);
+  }
+  for (auto& cell : ghost_cells_)
+  {
+    connect_ofst_.push_back(connect_ids_.size());
+    const auto& vertex_ids = cell_connectivity.at(cell.global_id);
+    for (const auto& id : vertex_ids)
+      connect_ids_.push_back(id);
+  }
+  connect_ofst_.push_back(total_len);
 }
 
 Cell&
@@ -481,7 +522,8 @@ Mesh::FindAssociatedCellVertices(const CellFace& cur_face, std::vector<short>& d
                        "Mesh::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  const auto& adj_cell = GetGlobalCell(cur_face.neighbor_id);
+  const auto adj_cell_local_id = MapCellGlobalID2LocalID(cur_face.neighbor_id);
+  auto adj_cell_vertex_ids = GetCellConnectivity(adj_cell_local_id);
 
   dof_mapping.reserve(cur_face.vertex_ids.size());
 
@@ -489,7 +531,7 @@ Mesh::FindAssociatedCellVertices(const CellFace& cur_face, std::vector<short>& d
   {
     bool found = false;
     short acv = 0;
-    for (auto acvid : adj_cell.vertex_ids)
+    for (auto acvid : adj_cell_vertex_ids)
     {
       if (cfvid == acvid)
       {
@@ -528,16 +570,17 @@ Mesh::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 }
 
 bool
-Mesh::CheckPointInsideCell(const Cell& cell, const Vector3& point) const
+Mesh::CheckPointInsideCell(std::uint32_t cell_local_id, const Vector3& point) const
 {
   const auto& grid_ref = *this;
-
+  const auto cell = GetLocalCell(cell_local_id);
   // Check each cell edge. A point inside the cell will return a negative value. A point on either
   // edge will return a zero value, and a point outside the cell will return a positive value.
   if (cell.GetType() == CellType::SLAB)
   {
-    const auto& v0 = grid_ref.GlobalVertex(cell.vertex_ids[0]);
-    const auto& v1 = grid_ref.GlobalVertex(cell.vertex_ids[1]);
+    auto cell_vertex_ids = GetCellConnectivity(cell_local_id);
+    const auto& v0 = grid_ref.GlobalVertex(cell_vertex_ids[0]);
+    const auto& v1 = grid_ref.GlobalVertex(cell_vertex_ids[1]);
     return (v0.z - point.z) * (v1.z - point.z) <= 0.0;
   }
 
@@ -678,10 +721,11 @@ Mesh::MakeCellOrthoSizes() const
   for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
     const auto& cell = local_cells_[cell_local_id];
-    Vector3 vmin = GlobalVertex(cell.vertex_ids.front());
+    auto cell_vertex_ids = GetCellConnectivity(cell_local_id);
+    Vector3 vmin = GlobalVertex(cell_vertex_ids.front());
     Vector3 vmax = vmin;
 
-    for (const auto vid : cell.vertex_ids)
+    for (const auto vid : cell_vertex_ids)
     {
       const auto& vertex = GlobalVertex(vid);
       vmin.x = std::min(vertex.x, vmin.x);
@@ -717,9 +761,10 @@ Mesh::GetLocalBoundingBox() const
   };
 
   bool initialized = false;
-  for (const auto& cell : local_cells_)
+  for (std::size_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
-    for (const uint64_t vid : cell.vertex_ids)
+    auto cell_vertex_ids = GetCellConnectivity(cell_local_id);
+    for (const uint64_t vid : cell_vertex_ids)
     {
       const auto& vertex = GlobalVertex(vid);
       if (not initialized)
@@ -1040,6 +1085,19 @@ Mesh::GetCellPartition(std::uint32_t cell_local_id) const
   else if (cell_local_id - local_cells_.size() < ghost_cells_.size())
   {
     return ghost_cells_[cell_local_id - local_cells_.size()].partition_id;
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+std::span<const uint64_t>
+Mesh::GetCellConnectivity(std::uint32_t cell_local_id) const
+{
+  if (cell_local_id < connect_ofst_.size() - 1)
+  {
+    auto first = connect_ofst_[cell_local_id];
+    auto last = connect_ofst_[cell_local_id + 1];
+    return std::span{connect_ids_.data() + first, connect_ids_.data() + last};
   }
   else
     throw std::out_of_range("Cell local id out of range");

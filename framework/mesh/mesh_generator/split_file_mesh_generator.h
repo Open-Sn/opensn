@@ -25,6 +25,7 @@ protected:
     OrthoMeshAttributes ortho_attributes;
 
     std::map<std::pair<int, uint64_t>, Cell> cells;
+    std::map<uint64_t, std::vector<std::uint64_t>> cell_connect;
     std::map<uint64_t, Vector3> vertices;
     std::map<uint64_t, std::string> boundary_id_map;
     size_t num_global_vertices{};

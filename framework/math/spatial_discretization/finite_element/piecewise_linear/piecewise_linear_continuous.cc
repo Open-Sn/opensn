@@ -33,9 +33,12 @@ PieceWiseLinearContinuous::OrderNodes()
   // Build set of local scope nodes
   // ls_node_id = local scope node id
   std::set<uint64_t> ls_node_ids_set;
-  for (const auto& cell : grid_->GetLocalCells())
-    for (uint64_t node_id : cell.vertex_ids)
+  for (std::size_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
+    for (uint64_t node_id : cell_vertex_ids)
       ls_node_ids_set.insert(node_id);
+  }
 
   // Build node partition subscriptions
   // psub = partition subscription
@@ -52,8 +55,10 @@ PieceWiseLinearContinuous::OrderNodes()
   const auto ghost_cell_ids = grid_->GetGhostGlobalIDs();
   for (const uint64_t ghost_id : ghost_cell_ids)
   {
-    const auto& ghost_cell = grid_->GetGlobalCell(ghost_id);
-    for (const uint64_t vid : ghost_cell.vertex_ids)
+    auto cell_local_id = grid_->MapCellGlobalID2LocalID(ghost_id);
+    const auto& ghost_cell = grid_->GetLocalCell(cell_local_id);
+    auto ghost_cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
+    for (const uint64_t vid : ghost_cell_vertex_ids)
       ls_node_ids_psubs[vid].insert(ghost_cell.partition_id);
   } // for ghost_id
 
@@ -422,8 +427,9 @@ PieceWiseLinearContinuous::MapDOF(std::uint32_t cell_global_id,
                                   const unsigned int unknown_id,
                                   const unsigned int component) const
 {
-  const auto& cell = GetMesh()->GetGlobalCell(cell_global_id);
-  const uint64_t vertex_id = cell.vertex_ids[node];
+  auto cell_local_id = GetMesh()->MapCellGlobalID2LocalID(cell_global_id);
+  auto cell_vertex_ids = GetMesh()->GetCellConnectivity(cell_local_id);
+  const uint64_t vertex_id = cell_vertex_ids[node];
 
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0,
                        std::string("Bad trouble mapping vertex ") + std::to_string(vertex_id));
@@ -461,8 +467,8 @@ PieceWiseLinearContinuous::MapDOFLocal(std::uint32_t cell_local_id,
                                        const unsigned int unknown_id,
                                        const unsigned int component) const
 {
-  auto& cell = GetMesh()->GetLocalCell(cell_local_id);
-  const uint64_t vertex_id = cell.vertex_ids[node];
+  auto cell_vertex_ids = GetMesh()->GetCellConnectivity(cell_local_id);
+  const uint64_t vertex_id = cell_vertex_ids[node];
 
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0, "Bad trouble");
   const int64_t node_global_id = node_mapping_.at(vertex_id);

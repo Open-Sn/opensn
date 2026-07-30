@@ -459,11 +459,13 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     }
   }
 
+  std::vector<Cell> raw_cells;
+  std::vector<std::vector<std::uint64_t>> cell_connect;
+  std::vector<Cell> raw_boundary_cells;
+  std::vector<std::vector<std::uint64_t>> bnd_cell_connect;
+
   for (const auto& [element_tag, element_type, physical_reg, node_tags] : element_data)
   {
-    auto& raw_boundary_cells = mesh->GetBoundaryCells();
-    auto& raw_cells = mesh->GetCells();
-
     // Make the cell on either the volume or the boundary
     std::optional<Cell> raw_cell;
     bool is_boundary_cell = false;
@@ -504,7 +506,6 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     std::vector<uint64_t> nodes(node_tags.size());
     for (size_t i = 0; i < node_tags.size(); ++i)
       nodes[i] = node_tags[i] - 1;
-    cell.vertex_ids = nodes;
 
     // Populate faces
     if (element_type == 1) // 2-node edge
@@ -512,28 +513,28 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       CellFace face0;
       CellFace face1;
 
-      face0.vertex_ids = {cell.vertex_ids.at(0)};
-      face1.vertex_ids = {cell.vertex_ids.at(1)};
+      face0.vertex_ids = {nodes.at(0)};
+      face1.vertex_ids = {nodes.at(1)};
 
       cell.faces.push_back(face0);
       cell.faces.push_back(face1);
     }
     else if (element_type == 2 or element_type == 3) // 3-node triangle or 4-node quadrangle
     {
-      size_t num_verts = cell.vertex_ids.size();
+      size_t num_verts = nodes.size();
       for (size_t e = 0; e < num_verts; e++)
       {
         size_t ep1 = (e < (num_verts - 1)) ? e + 1 : 0;
         CellFace face;
 
-        face.vertex_ids = {cell.vertex_ids[e], cell.vertex_ids[ep1]};
+        face.vertex_ids = {nodes[e], nodes[ep1]};
 
         cell.faces.push_back(std::move(face));
       }
     }
     else if (element_type == 4) // 4-node tetrahedron
     {
-      auto& v = cell.vertex_ids;
+      const auto& v = nodes;
       std::vector<CellFace> lw_faces(4);
       lw_faces[0].vertex_ids = {v[0], v[2], v[1]}; // Base face
       lw_faces[1].vertex_ids = {v[0], v[3], v[2]};
@@ -545,7 +546,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     }
     else if (element_type == 5) // 8-node hexahedron
     {
-      auto& v = cell.vertex_ids;
+      const auto& v = nodes;
       std::vector<CellFace> lw_faces(6);
       lw_faces[0].vertex_ids = {v[5], v[1], v[2], v[6]}; // East face
       lw_faces[1].vertex_ids = {v[0], v[4], v[7], v[3]}; // West face
@@ -561,9 +562,15 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       throw std::runtime_error(fname + ": Unsupported cell type.");
 
     if (is_boundary_cell)
+    {
       raw_boundary_cells.emplace_back(cell);
+      bnd_cell_connect.emplace_back(nodes);
+    }
     else
+    {
       raw_cells.emplace_back(cell);
+      cell_connect.emplace_back(nodes);
+    }
   } // for elements
 
   file.close();
@@ -581,16 +588,19 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   }
 
   mesh->SetType(UNSTRUCTURED);
+  mesh->SetCells(std::move(raw_cells), cell_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
 
   // remap boundary cells onto cell faces
   std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
-  for (auto& bnd_cell : mesh->GetBoundaryCells())
+  for (std::size_t i = 0; i < raw_boundary_cells.size(); ++i)
   {
+    const auto& bnd_cell = raw_boundary_cells[i];
+    const auto& bnd_cell_vertex_ids = bnd_cell_connect[i];
     std::set<uint64_t> key;
-    for (auto& vid : bnd_cell.vertex_ids)
+    for (const auto& vid : bnd_cell_vertex_ids)
       key.insert(vid);
     bnd_cell_to_bnd_id_map[key] = bnd_cell.block_id;
   }
@@ -638,6 +648,11 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   std::map<int, int> curve_entities, surface_entities, volume_entities;
   bool have_entities = false;
   bool mesh_is_2D = true;
+
+  std::vector<Cell> raw_cells;
+  std::vector<std::vector<std::uint64_t>> cell_connect;
+  std::vector<Cell> raw_boundary_cells;
+  std::vector<std::vector<std::uint64_t>> bnd_cell_connect;
 
   // Scan sections
   file.clear();
@@ -936,9 +951,6 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           for (int j = 0; j < num_cell_nodes; ++j)
             node_tags[j] = static_cast<size_t>(ReadSize(file));
 
-          auto& raw_boundary_cells = mesh->GetBoundaryCells();
-          auto& raw_cells = mesh->GetCells();
-
           std::optional<Cell> raw_cell;
           bool is_boundary_cell = false;
           if (mesh_is_2D)
@@ -974,35 +986,34 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           std::vector<uint64_t> nodes(node_tags.size());
           for (size_t k = 0; k < node_tags.size(); ++k)
             nodes[k] = node_tags[k] - 1;
-          cell.vertex_ids = nodes;
 
           if (element_type == 1)
           {
             CellFace face0;
             CellFace face1;
 
-            face0.vertex_ids = {cell.vertex_ids.at(0)};
-            face1.vertex_ids = {cell.vertex_ids.at(1)};
+            face0.vertex_ids = {nodes.at(0)};
+            face1.vertex_ids = {nodes.at(1)};
 
             cell.faces.push_back(face0);
             cell.faces.push_back(face1);
           }
           else if (element_type == 2 or element_type == 3)
           {
-            size_t num_verts = cell.vertex_ids.size();
+            size_t num_verts = nodes.size();
             for (size_t e = 0; e < num_verts; e++)
             {
               size_t ep1 = (e < (num_verts - 1)) ? e + 1 : 0;
               CellFace face;
 
-              face.vertex_ids = {cell.vertex_ids[e], cell.vertex_ids[ep1]};
+              face.vertex_ids = {nodes[e], nodes[ep1]};
 
               cell.faces.push_back(std::move(face));
             }
           }
           else if (element_type == 4)
           {
-            auto& v = cell.vertex_ids;
+            const auto& v = nodes;
             std::vector<CellFace> lw_faces(4);
             lw_faces[0].vertex_ids = {v[0], v[2], v[1]}; // Base face
             lw_faces[1].vertex_ids = {v[0], v[3], v[2]};
@@ -1014,7 +1025,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           }
           else if (element_type == 5)
           {
-            auto& v = cell.vertex_ids;
+            const auto& v = nodes;
             std::vector<CellFace> lw_faces(6);
             lw_faces[0].vertex_ids = {v[5], v[1], v[2], v[6]}; // East face
             lw_faces[1].vertex_ids = {v[0], v[4], v[7], v[3]}; // West face
@@ -1032,9 +1043,15 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           }
 
           if (is_boundary_cell)
+          {
             raw_boundary_cells.emplace_back(cell);
+            bnd_cell_connect.emplace_back(nodes);
+          }
           else
+          {
             raw_cells.emplace_back(cell);
+            cell_connect.emplace_back(nodes);
+          }
         }
       }
 
@@ -1055,16 +1072,19 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   }
 
   mesh->SetType(UNSTRUCTURED);
+  mesh->SetCells(std::move(raw_cells), cell_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
 
   // remap boundary cells onto cell faces
   std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
-  for (auto& bnd_cell : mesh->GetBoundaryCells())
+  for (std::size_t i = 0; i < raw_boundary_cells.size(); ++i)
   {
+    const auto& bnd_cell = raw_boundary_cells[i];
+    const auto& bnd_cell_vertex_ids = bnd_cell_connect[i];
     std::set<uint64_t> key;
-    for (auto& vid : bnd_cell.vertex_ids)
+    for (const auto& vid : bnd_cell_vertex_ids)
       key.insert(vid);
     bnd_cell_to_bnd_id_map[key] = bnd_cell.block_id;
   }

@@ -62,11 +62,15 @@ public:
     return vertex_cell_subscriptions_;
   }
 
-  void AddCell(Cell&& cell) { cells_.emplace_back(std::move(cell)); }
   size_t GetNumberOfCells() const { return cells_.size(); }
 
   std::vector<Cell>& GetCells() { return cells_; }
   const std::vector<Cell>& GetCells() const { return cells_; }
+
+  void SetCells(std::vector<Cell>&& cells,
+                const std::vector<std::vector<std::uint64_t>>& cell_connectivity);
+
+  std::span<const uint64_t> GetCellConnectivity(std::uint32_t cell_global_id) const;
 
   std::vector<Cell>& GetBoundaryCells() { return boundary_cells_; }
   const std::vector<Cell>& GetBoundaryCells() const { return boundary_cells_; }
@@ -102,6 +106,11 @@ protected:
 
   std::vector<Vector3> vertices_;
   std::vector<Cell> cells_;
+  /// Offsets into `connect_ids_`
+  std::vector<std::size_t> connect_ofst_;
+  /// Cell connectivity: [`connect_ofst_[i]` .. `connect_ofst_[i+1]`]
+  std::vector<uint64_t> connect_ids_;
+
   std::vector<Cell> boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };

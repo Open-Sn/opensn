@@ -10,16 +10,19 @@ namespace opensn
 {
 
 PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
-  const Cell& polyh_cell,
+  std::uint32_t cell_local_id,
   const std::shared_ptr<Mesh> ref_grid,
   const TetrahedraQuadrature& volume_quadrature,
   const TriangleQuadrature& surface_quadrature)
-  : PieceWiseLinearBaseMapping(
-      ref_grid, polyh_cell, polyh_cell.vertex_ids.size(), MakeFaceNodeMapping(polyh_cell)),
-    alphac_(1.0 / static_cast<double>(polyh_cell.vertex_ids.size())),
+  : PieceWiseLinearBaseMapping(ref_grid,
+                               cell_local_id,
+                               GetNumberOfNodes(ref_grid, cell_local_id),
+                               MakeFaceNodeMapping(ref_grid, cell_local_id)),
+    alphac_(1.0 / static_cast<double>(GetNumberOfNodes(ref_grid, cell_local_id))),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature)
 {
+  auto polyh_cell = ref_grid->GetLocalCell(cell_local_id);
   // Assign cell centre
   const Vector3& vcc = polyh_cell.centroid;
 
@@ -116,6 +119,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
     face_data_.push_back(face_f_data);
   } // for each face
 
+  auto polyh_cell_vertex_ids = ref_grid->GetCellConnectivity(cell_local_id);
   // Compute Node-Face-Side mapping
   // This section determines the scope of dof_i on
   // each side (tet) of the cell. If dof_i is on
@@ -139,12 +143,12 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
         newSideMap.part_of_face = false;
         const uint64_t s0 = face_data_[f].sides[s].v_index[0];
         const uint64_t s1 = face_data_[f].sides[s].v_index[1];
-        if (polyh_cell.vertex_ids[i] == s0)
+        if (polyh_cell_vertex_ids[i] == s0)
         {
           newSideMap.index = 0;
           newSideMap.part_of_face = true;
         }
-        else if (polyh_cell.vertex_ids[i] == s1)
+        else if (polyh_cell_vertex_ids[i] == s1)
         {
           newSideMap.index = 2;
           newSideMap.part_of_face = true;
@@ -154,7 +158,7 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
           newSideMap.index = -1;
           for (size_t v = 0; v < polyh_cell.faces[f].vertex_ids.size(); ++v)
           {
-            if (polyh_cell.vertex_ids[i] == polyh_cell.faces[f].vertex_ids[v])
+            if (polyh_cell_vertex_ids[i] == polyh_cell.faces[f].vertex_ids[v])
             {
               newSideMap.part_of_face = true;
               break;

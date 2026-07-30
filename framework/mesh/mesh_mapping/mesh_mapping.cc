@@ -63,7 +63,7 @@ MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr
          ++coarse_cell_local_id)
     {
       const auto& coarse_cell = coarse_grid->GetLocalCell(coarse_cell_local_id);
-      if (coarse_grid->CheckPointInsideCell(coarse_cell, fine_cell.centroid))
+      if (coarse_grid->CheckPointInsideCell(coarse_cell_local_id, fine_cell.centroid))
       {
         fine_mapping.coarse_cell_local_id = coarse_cell_local_id;
         found_coarse_cell = true;

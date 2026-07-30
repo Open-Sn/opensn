@@ -25,54 +25,51 @@ PieceWiseLinearBase::CreateCellMappings()
 {
   constexpr std::string_view fname = __PRETTY_FUNCTION__;
 
-  auto MakeCellMapping = [this, fname](const Cell& cell)
+  auto MakeCellMapping = [&, this](auto cell_local_id) -> std::unique_ptr<CellMapping>
   {
     using namespace std;
     using namespace opensn;
-    std::unique_ptr<CellMapping> mapping;
 
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     switch (cell.GetType())
     {
       case CellType::SLAB:
       {
         const auto& vol_quad = line_quad_order_arbitrary_;
-
-        mapping = make_unique<PieceWiseLinearSlabMapping>(cell, grid_, vol_quad);
-        break;
+        return make_unique<PieceWiseLinearSlabMapping>(cell_local_id, grid_, vol_quad);
       }
       case CellType::POLYGON:
       {
         const auto& vol_quad = tri_quad_order_arbitrary_;
         const auto& area_quad = line_quad_order_arbitrary_;
-
-        mapping = make_unique<PieceWiseLinearPolygonMapping>(cell, grid_, vol_quad, area_quad);
-        break;
+        return make_unique<PieceWiseLinearPolygonMapping>(
+          cell_local_id, grid_, vol_quad, area_quad);
       }
       case CellType::POLYHEDRON:
       {
         const auto& vol_quad = tet_quad_order_arbitrary_;
         const auto& area_quad = tri_quad_order_arbitrary_;
 
-        mapping = make_unique<PieceWiseLinearPolyhedronMapping>(cell, grid_, vol_quad, area_quad);
-        break;
+        return make_unique<PieceWiseLinearPolyhedronMapping>(
+          cell_local_id, grid_, vol_quad, area_quad);
       }
       default:
         throw std::invalid_argument(std::string(fname) +
                                     ": Unsupported cell type encountered. type_id=" +
                                     std::to_string(static_cast<int>(cell.GetType())));
     }
-    return mapping;
   };
 
   const auto ghost_ids = grid_->GetGhostGlobalIDs();
   cell_mappings_.reserve(grid_->GetLocalCellCount() + grid_->GhostCellCount());
-  for (const auto& cell : grid_->GetLocalCells())
-    cell_mappings_.push_back(MakeCellMapping(cell));
+  for (std::size_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+    cell_mappings_.emplace_back(MakeCellMapping(cell_local_id));
 
   for (uint64_t ghost_id : ghost_ids)
   {
-    auto ghost_mapping = MakeCellMapping(grid_->GetGlobalCell(ghost_id));
-    cell_mappings_.push_back(std::move(ghost_mapping));
+    auto cell_local_id = grid_->MapCellGlobalID2LocalID(ghost_id);
+    auto ghost_mapping = MakeCellMapping(cell_local_id);
+    cell_mappings_.emplace_back(std::move(ghost_mapping));
   }
 }
 } // namespace opensn
