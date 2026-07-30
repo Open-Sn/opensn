@@ -1,0 +1,120 @@
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include <cmath>
+#include <cstddef>
+
+namespace opensn
+{
+
+struct SimdTraits
+{
+  using register_type = double;
+  using index_type = std::size_t;
+  static constexpr std::size_t size = 1;
+  static constexpr std::size_t register_alignment = alignof(register_type);
+  static constexpr std::size_t index_alignment = alignof(index_type);
+};
+
+} // namespace opensn
+
+#include "framework/simd/simd_impl.h"
+
+namespace opensn
+{
+
+inline SimdIndex::SimdIndex(const value_type* src) : value_(static_cast<register_type>(*src))
+{
+}
+
+inline SimdIndex::register_type
+SimdIndex::native() const
+{
+  return value_;
+}
+
+inline Simd::Simd() : value_(0.0)
+{
+}
+
+inline Simd::Simd(double value) : value_(value)
+{
+}
+
+inline Simd::Simd(const double* src) : value_(*src)
+{
+}
+
+inline void
+Simd::LoadUnaligned(const double* src)
+{
+  value_ = *src;
+}
+
+inline void
+Simd::StoreUnaligned(double* dst) const
+{
+  *dst = value_;
+}
+
+inline Simd
+Simd::Gather(const double* src, const SimdIndex& index)
+{
+  return Simd(src[index.value_]);
+}
+
+inline void
+Simd::Scatter(double* dst, const SimdIndex& index) const
+{
+  dst[index.value_] = value_;
+}
+
+inline Simd::register_type
+Simd::native() const
+{
+  return value_;
+}
+
+inline Simd&
+Simd::operator+=(const Simd& other)
+{
+  value_ += other.value_;
+  return *this;
+}
+
+inline Simd&
+Simd::operator-=(const Simd& other)
+{
+  value_ -= other.value_;
+  return *this;
+}
+
+inline Simd&
+Simd::operator*=(const Simd& other)
+{
+  value_ *= other.value_;
+  return *this;
+}
+
+inline Simd&
+Simd::operator/=(const Simd& other)
+{
+  value_ /= other.value_;
+  return *this;
+}
+
+inline Simd
+Simd::Fma(const Simd& a, const Simd& b, const Simd& c)
+{
+  return Simd(std::fma(a.value_, b.value_, c.value_));
+}
+
+inline Simd
+Simd::Fnma(const Simd& a, const Simd& b, const Simd& c)
+{
+  return Simd(std::fma(-a.value_, b.value_, c.value_));
+}
+
+} // namespace opensn
