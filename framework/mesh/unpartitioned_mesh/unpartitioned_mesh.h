@@ -72,9 +72,6 @@ public:
 
   std::span<const uint64_t> GetCellConnectivity(std::uint32_t cell_global_id) const;
 
-  std::vector<Cell>& GetBoundaryCells() { return boundary_cells_; }
-  const std::vector<Cell>& GetBoundaryCells() const { return boundary_cells_; }
-
   const std::vector<Vector3>& GetVertices() const { return vertices_; }
   std::vector<Vector3>& GetVertices() { return vertices_; }
 
@@ -111,7 +108,6 @@ protected:
   /// Cell connectivity: [`connect_ofst_[i]` .. `connect_ofst_[i+1]`]
   std::vector<uint64_t> connect_ids_;
 
-  std::vector<Cell> boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
 

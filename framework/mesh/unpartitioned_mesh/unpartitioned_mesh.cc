@@ -348,47 +348,6 @@ UnpartitionedMesh::BuildMeshConnectivity()
       internal_cells_on_boundary.push_back(&cell);
   }
 
-#if 0
-  // Populate vertex subscriptions to boundary cells
-  std::vector<std::set<uint64_t>> vertex_bndry_cell_subscriptions(vertices_.size());
-  {
-    uint64_t cur_cell_id = 0;
-    for (auto& cell : boundary_cells_)
-    {
-      for (auto vid : cell.vertex_ids)
-        vertex_bndry_cell_subscriptions.at(vid).insert(cur_cell_id);
-      ++cur_cell_id;
-    }
-  }
-
-  // Process boundary cells
-  for (auto& cell : internal_cells_on_boundary)
-    for (auto& face : cell->faces)
-    {
-      if (face.has_neighbor)
-        continue;
-      std::set<uint64_t> cfvids(face.vertex_ids.begin(), face.vertex_ids.end());
-
-      std::set<size_t> cells_to_search;
-      for (uint64_t vid : face.vertex_ids)
-        for (uint64_t cell_id : vertex_bndry_cell_subscriptions[vid])
-          cells_to_search.insert(cell_id);
-
-      for (uint64_t adj_cell_id : cells_to_search)
-      {
-        auto& adj_cell = boundary_cells_[adj_cell_id];
-
-        std::set<uint64_t> afvids(adj_cell.vertex_ids.begin(), adj_cell.vertex_ids.end());
-
-        if (cfvids == afvids)
-        {
-          face.neighbor_id = adj_cell_id;
-          break;
-        }
-      } // for adj_cell_id
-    } // for face
-#endif
-
   num_bndry_faces = 0;
   for (const auto& cell : cells_)
     for (auto& face : cell.faces)
