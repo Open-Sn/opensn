@@ -1020,7 +1020,7 @@ CMFDAcceleration::InitializeLinearSystem()
     (coarse_solver_policy_ == "auto" and GlobalUnknownCount() <= coarse_direct_solve_threshold_);
   if (not petsc_options_policy)
     ConfigureCoarseLinearSolver(using_direct_coarse_solver_);
-  OpenSnPETScCall(KSPSetTolerances(ksp_, l_abs_tol_, PETSC_DEFAULT, PETSC_DEFAULT, max_iters_));
+  OpenSnPETScCall(KSPSetTolerances(ksp_, 1.0e-50, l_abs_tol_, PETSC_DEFAULT, max_iters_));
   if ((petsc_options_policy or petsc_options_ != "ssss") and not petsc_options_.empty())
     OpenSnPETScCall(PetscOptionsInsertString(nullptr, petsc_options_.c_str()));
   OpenSnPETScCall(KSPSetFromOptions(ksp_));
@@ -1537,8 +1537,10 @@ CMFDAcceleration::SolveCoarseSystem(const double k_eff,
   {
     const auto coarse_offset = coarse_cell.local_id * num_coarse_groups_;
     for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
-      OpenSnPETScCall(VecSetValue(
-        x, MapDOF(coarse_cell.global_id, cg), coarse_phi_new_[coarse_offset + cg], INSERT_VALUES));
+      OpenSnPETScCall(VecSetValue(x,
+                                  MapDOF(coarse_cell.global_id, cg),
+                                  coarse_source_phi[coarse_offset + cg],
+                                  INSERT_VALUES));
   }
   OpenSnPETScCall(VecAssemblyBegin(x));
   OpenSnPETScCall(VecAssemblyEnd(x));
