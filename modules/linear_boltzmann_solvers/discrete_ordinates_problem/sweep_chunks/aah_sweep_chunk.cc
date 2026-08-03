@@ -30,6 +30,12 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
     problem_(problem),
     sweep_impl_(&AAHSweepChunk::Sweep_Generic)
 {
+  // Sweep_FixedN<N> specializes the entire mesh sweep at compile time and is strictly faster
+  // than the per-cell dispatch in AAH_Sweep_Unified when it applies -- but it only applies when
+  // every cell in the mesh shares the same node count N, and N is in [2, 8]. AAH_Sweep_Unified's
+  // per-cell solve-strategy switch adds fixed overhead that's negligible for large group counts
+  // but could dominate few-group problems. Per-cell dispatch is only the fallback for genuinely
+  // mixed-topology meshes or a uniform N outside [2, 8].
   if (min_num_cell_dofs_ == max_num_cell_dofs_ and min_num_cell_dofs_ >= 2 and
       min_num_cell_dofs_ <= 8)
   {
@@ -94,7 +100,7 @@ AAHSweepChunk::Sweep_Generic(AngleSet& angle_set)
                     nullptr,
                     group_block_size_};
 
-  AAH_Sweep_Generic<false>(data, angle_set);
+  AAH_Sweep_Unified(data, angle_set);
 }
 
 } // namespace opensn
