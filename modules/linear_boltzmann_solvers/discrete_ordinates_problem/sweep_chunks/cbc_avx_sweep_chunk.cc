@@ -241,15 +241,9 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
       std::size_t k = 0;
 
-#if __AVX512F__
-      for (; k + simd_width <= block_len; k += simd_width)
-        detail::SimdBatchSolve<detail::AVX512Ops, NumNodes>(
+      for (; k + Simd::size <= block_len; k += Simd::size)
+        detail::SimdBatchSolve<NumNodes>(
           Amat.data(), mass_matrix.data(), &sigma_block[k], &b[(g0 + k) * NumNodes]);
-#elif __AVX2__
-      for (; k + simd_width <= block_len; k += simd_width)
-        detail::SimdBatchSolve<detail::AVX2Ops, NumNodes>(
-          Amat.data(), mass_matrix.data(), &sigma_block[k], &b[(g0 + k) * NumNodes]);
-#endif
 
       for (; k < block_len; ++k)
       {
