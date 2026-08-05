@@ -1,7 +1,7 @@
 .. _exhale_function_namespaceopensn_1acf4b378e3097666d393186de01d8ca8a:
 
-Function opensn::operator*
-==========================
+Function opensn::operator\*(double, const Vector3&)
+===================================================
 
 - Defined in :ref:`file_framework_data_types_vector3.h`
 

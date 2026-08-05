@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a448e15b32bb0aa765c436a901a52ac8c:
+
+Function opensn::operator/
+==========================
+
+- Defined in :ref:`file_framework_simd_simd_impl.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::operator/(Simd, const Simd&)
+   :project: opensn

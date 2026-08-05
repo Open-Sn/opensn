@@ -19,6 +19,7 @@ Subdirectories
 - :ref:`dir_framework_mesh`
 - :ref:`dir_framework_mpi`
 - :ref:`dir_framework_parameters`
+- :ref:`dir_framework_simd`
 - :ref:`dir_framework_utils`
 
 

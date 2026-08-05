@@ -215,11 +215,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1detail_1_1_gather_index_builder.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_diffusion_solver_1_1_options.rst
 
 .. toctree::
@@ -556,6 +551,16 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_rule_values.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_simd_index.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_simd_traits.rst
 
 .. toctree::
    :maxdepth: 1
@@ -1625,6 +1630,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_simd.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_s_l_d_f_esq_quadrature.rst
 
 .. toctree::
@@ -2274,6 +2284,11 @@ Directories
    :maxdepth: 1
 
    dir_framework_parameters.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   dir_framework_simd.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3433,6 +3448,41 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_scdsa_acceleration.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_simd_simd.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_simd_simd_avx.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_simd_simd_avx512.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_simd_simd_impl.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_simd_simd_neon.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_simd_simd_scalar.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_simd_simd_sse2.h.rst
 
 .. toctree::
    :maxdepth: 1

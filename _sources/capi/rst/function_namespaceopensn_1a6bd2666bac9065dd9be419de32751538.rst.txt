@@ -1,7 +1,7 @@
 .. _exhale_function_namespaceopensn_1a6bd2666bac9065dd9be419de32751538:
 
-Function opensn::operator+
-==========================
+Function opensn::operator+(const std::vector<double>&, const std::vector<double>&)
+==================================================================================
 
 - Defined in :ref:`file_framework_math_math.h`
 

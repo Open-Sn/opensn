@@ -1,0 +1,27 @@
+.. _dir_framework_simd:
+
+
+Directory simd
+==============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_framework>` (``framework``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``framework/simd``
+
+
+Files
+-----
+
+- :ref:`file_framework_simd_simd.h`
+- :ref:`file_framework_simd_simd_avx.h`
+- :ref:`file_framework_simd_simd_avx512.h`
+- :ref:`file_framework_simd_simd_impl.h`
+- :ref:`file_framework_simd_simd_neon.h`
+- :ref:`file_framework_simd_simd_scalar.h`
+- :ref:`file_framework_simd_simd_sse2.h`
+
+

@@ -1,0 +1,105 @@
+
+.. _program_listing_file_framework_simd_simd_impl.h:
+
+Program Listing for File simd_impl.h
+====================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_simd_simd_impl.h>` (``framework/simd/simd_impl.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <cstddef>
+   #include <cstdint>
+   
+   namespace opensn
+   {
+   
+   /// Wrapper around a target-dependent SIMD integer register used for indexed memory operations.
+   struct SimdIndex
+   {
+     using value_type = std::int64_t;
+     using register_type = SimdTraits::index_type;
+   
+     static constexpr std::size_t size = SimdTraits::size;
+     static constexpr std::size_t alignment = SimdTraits::index_alignment;
+   
+     /// Load lane indices from an unaligned integer buffer.
+     explicit SimdIndex(const value_type* src);
+   
+     register_type native() const;
+   
+   private:
+     friend class Simd;
+   
+     register_type value_;
+   };
+   
+   /// Wrapper around a target-dependent SIMD register or scalar fallback value for ``double``.
+   class Simd
+   {
+   public:
+     using value_type = double;
+     using register_type = SimdTraits::register_type;
+   
+     static constexpr std::size_t size = SimdTraits::size;
+     static constexpr std::size_t alignment = SimdTraits::register_alignment;
+   
+     Simd();
+     explicit Simd(value_type value);
+     explicit Simd(const value_type* src);
+   
+     void LoadUnaligned(const value_type* src);
+     void StoreUnaligned(value_type* dst) const;
+     static Simd Gather(const value_type* src, const SimdIndex& index);
+     void Scatter(value_type* dst, const SimdIndex& index) const;
+   
+     static Simd Fma(const Simd& a, const Simd& b, const Simd& c);
+     static Simd Fnma(const Simd& a, const Simd& b, const Simd& c);
+   
+     register_type native() const;
+   
+     Simd& operator+=(const Simd& other);
+     Simd& operator-=(const Simd& other);
+     Simd& operator*=(const Simd& other);
+     Simd& operator/=(const Simd& other);
+   
+   private:
+     register_type value_;
+   };
+   
+   inline Simd
+   operator+(Simd lhs, const Simd& rhs)
+   {
+     lhs += rhs;
+     return lhs;
+   }
+   
+   inline Simd
+   operator-(Simd lhs, const Simd& rhs)
+   {
+     lhs -= rhs;
+     return lhs;
+   }
+   
+   inline Simd
+   operator*(Simd lhs, const Simd& rhs)
+   {
+     lhs *= rhs;
+     return lhs;
+   }
+   
+   inline Simd
+   operator/(Simd lhs, const Simd& rhs)
+   {
+     lhs /= rhs;
+     return lhs;
+   }
+   
+   } // namespace opensn

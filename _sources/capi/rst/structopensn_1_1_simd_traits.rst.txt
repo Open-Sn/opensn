@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_simd_traits:
+
+Struct SimdTraits
+=================
+
+- Defined in :ref:`file_framework_simd_simd_avx.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SimdTraits
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

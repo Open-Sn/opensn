@@ -1,0 +1,83 @@
+
+.. _file_framework_simd_simd_impl.h:
+
+File simd_impl.h
+================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_simd>` (``framework/simd``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/simd/simd_impl.h``)
+-------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_simd_simd_impl.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstddef``
+
+- ``cstdint``
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_framework_simd_simd_avx.h`
+
+- :ref:`file_framework_simd_simd_avx512.h`
+
+- :ref:`file_framework_simd_simd_neon.h`
+
+- :ref:`file_framework_simd_simd_scalar.h`
+
+- :ref:`file_framework_simd_simd_sse2.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_simd_index`
+
+- :ref:`exhale_class_classopensn_1_1_simd`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a8bb8f334777c882e76f015a2ad58d724`
+
+- :ref:`exhale_function_namespaceopensn_1a247b90c3d1b82fb25cb4b619bee575e7`
+
+- :ref:`exhale_function_namespaceopensn_1a6b00057bd80fc6c712a5109f2a4d60c0`
+
+- :ref:`exhale_function_namespaceopensn_1a448e15b32bb0aa765c436a901a52ac8c`
+

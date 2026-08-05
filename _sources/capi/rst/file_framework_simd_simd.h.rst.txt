@@ -1,0 +1,46 @@
+
+.. _file_framework_simd_simd.h:
+
+File simd.h
+===========
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_simd>` (``framework/simd``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/simd/simd.h``)
+--------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_simd_simd.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``framework/simd/simd_scalar.h`` (:ref:`file_framework_simd_simd_scalar.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h`
+
+
+

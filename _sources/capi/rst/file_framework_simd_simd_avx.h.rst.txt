@@ -1,0 +1,58 @@
+
+.. _file_framework_simd_simd_avx.h:
+
+File simd_avx.h
+===============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_simd>` (``framework/simd``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/simd/simd_avx.h``)
+------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_simd_simd_avx.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstddef``
+
+- ``cstdint``
+
+- ``framework/simd/simd_impl.h`` (:ref:`file_framework_simd_simd_impl.h`)
+
+- ``immintrin.h``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_simd_traits`
+
