@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/convergence.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/runtime.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <numeric>
 
 namespace opensn
@@ -43,14 +43,16 @@ ComputePointwisePhiChange(
   const std::vector<double>& phi_old =
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
 
-  auto grid_ptr = lbs_problem.GetGrid();
+  auto grid_ptr = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto num_moments = lbs_problem.GetNumMoments();
 
   double pw_change = 0.0;
-  for (const auto& cell : grid_ptr->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_ptr->GetLocalCellCount();
+       ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell = grid_ptr->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
     for (auto i = 0; i < cell.vertex_ids.size(); ++i)
     {
       for (auto id : groupset_ids)

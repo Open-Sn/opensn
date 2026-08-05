@@ -5,7 +5,7 @@
 
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 
@@ -26,9 +26,9 @@ FieldFunctionInterpolationPoint::RebuildPointLocationData()
   if (not field_function_)
     throw std::logic_error("Unassigned field function in point field function interpolator.");
 
-  const auto& grid = field_function_->GetSpatialDiscretization().GetGrid();
+  const auto& grid = field_function_->GetSpatialDiscretization().GetMesh();
   std::vector<uint64_t> cells_potentially_owning_point;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
     const auto& vcc = cell.centroid;
     const auto& poi = point_of_interest_;
@@ -73,7 +73,7 @@ FieldFunctionInterpolationPoint::Execute()
 
   const auto& ref_ff = *field_function_;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;
@@ -81,14 +81,15 @@ FieldFunctionInterpolationPoint::Execute()
 
   const auto field_data = ref_ff.GetGhostedFieldVector();
 
-  const auto& cell = grid->cells[owning_cell_gid_];
-  const auto& cell_mapping = sdm.GetCellMapping(cell);
+  const auto& cell = grid->GetGlobalCell(owning_cell_gid_);
+  const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell.global_id);
+  const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
   const size_t num_nodes = cell_mapping.GetNumNodes();
 
   std::vector<double> node_dof_values(num_nodes, 0.0);
   for (size_t i = 0; i < num_nodes; ++i)
   {
-    const auto imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
+    const auto imap = sdm.MapDOFLocal(cell_local_id, i, uk_man, uid, cid);
     node_dof_values[i] = field_data[imap];
   }
 

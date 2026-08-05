@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -27,10 +27,10 @@ int MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
                     size_t ccfi,
                     double epsilon = 1.0e-12);
 
-double HPerpendicular(const CellMapping& cell_mapping, unsigned int f);
+double HPerpendicular(const Mesh& mesh, std::uint32_t cell_local_id, unsigned int f);
 
 void
-math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
+math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
                               std::string sdm_type,
                               bool export_vtk,
                               double gold)
@@ -77,9 +77,10 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto qp_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
@@ -87,7 +88,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
 
     const double D = 1.0;
 
-    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
+    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell_local_id);
 
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
@@ -124,15 +125,16 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
       const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       const auto fqp_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
-      const double hm = HPerpendicular(cell_mapping, f);
+      const double hm = HPerpendicular(*grid, cell_local_id, f);
 
       if (face.has_neighbor)
       {
-        const auto& adj_cell = grid->cells[face.neighbor_id];
-        const auto& adj_cell_mapping = sdm.GetCellMapping(adj_cell);
+        const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
+        const auto adj_cell_local_id = grid->MapCellGlobalID2LocalID(face.neighbor_id);
+        const auto& adj_cell_mapping = sdm.GetLocalCellMapping(adj_cell_local_id);
         const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-        const size_t acf = MeshContinuum::MapCellFace(cell, adj_cell, f);
-        const double hp = HPerpendicular(adj_cell_mapping, acf);
+        const size_t acf = Mesh::MapCellFace(cell, adj_cell, f);
+        const double hp = HPerpendicular(*grid, adj_cell_local_id, acf);
 
         // Compute kappa
         double kappa = 1.0;
@@ -147,7 +149,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
-          const auto imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
+          const auto imap = sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0);
 
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
@@ -159,8 +161,8 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
                                            f,
                                            acf,
                                            fj); // j-plus
-            const auto jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
-            const auto jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
+            const auto jmmap = sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0);
+            const auto jpmap = sdm.MapDOF(adj_cell.global_id, jp, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -179,7 +181,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
         // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
         for (int i = 0; i < num_nodes; ++i)
         {
-          const auto imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
+          const auto imap = sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0);
 
           for (int fj = 0; fj < num_face_nodes; ++fj)
           {
@@ -191,8 +193,8 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
                                            f,
                                            acf,
                                            fj); // j-plus
-            const auto jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
-            const auto jpmap = sdm.MapDOF(adj_cell, jp, OneDofPerNode, 0, 0);
+            const auto jmmap = sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0);
+            const auto jpmap = sdm.MapDOF(adj_cell.global_id, jp, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -215,12 +217,12 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
                                          f,
                                          acf,
                                          fi); // i-plus
-          const auto immap = sdm.MapDOF(cell, im, OneDofPerNode, 0, 0);
-          const auto ipmap = sdm.MapDOF(adj_cell, ip, OneDofPerNode, 0, 0);
+          const auto immap = sdm.MapDOF(cell.global_id, im, OneDofPerNode, 0, 0);
+          const auto ipmap = sdm.MapDOF(adj_cell.global_id, ip, OneDofPerNode, 0, 0);
 
           for (int j = 0; j < num_nodes; ++j)
           {
-            const auto jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
+            const auto jmap = sdm.MapDOF(cell.global_id, j, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -250,12 +252,12 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
-          const auto imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
+          const auto imap = sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0);
 
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
             const int jm = cell_mapping.MapFaceNode(f, fj);
-            const auto jmmap = sdm.MapDOF(cell, jm, OneDofPerNode, 0, 0);
+            const auto jmmap = sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0);
 
             double aij = 0.0;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -275,11 +277,11 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
         // D* n dot (b_j^+ - b_j^-)*nabla b_i^-
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto imap = sdm.MapDOF(cell, i, OneDofPerNode, 0, 0);
+          const auto imap = sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0);
 
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto jmap = sdm.MapDOF(cell, j, OneDofPerNode, 0, 0);
+            const auto jmap = sdm.MapDOF(cell.global_id, j, OneDofPerNode, 0, 0);
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -299,7 +301,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<MeshContinuum> grid,
     // Develop node mapping
     std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = sdm.MapDOF(cell, i);
+      imap[i] = sdm.MapDOF(cell.global_id, i);
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)
@@ -414,15 +416,15 @@ MapFaceNodeDisc(const CellMapping& cur_cell_mapping,
 }
 
 double
-HPerpendicular(const CellMapping& cell_mapping, unsigned int f)
+HPerpendicular(const Mesh& mesh, std::uint32_t cell_local_id, unsigned int f)
 {
-  const auto& cell = cell_mapping.GetCell();
+  const auto& cell = mesh.GetLocalCell(cell_local_id);
   double hp;
 
   const auto num_faces = cell.faces.size();
   const auto num_vertices = cell.vertex_ids.size();
 
-  const auto volume = cell.volume;
+  const auto volume = mesh.GetCellVolume(cell_local_id);
   const auto face_area = cell.faces.at(f).area;
 
   /**Lambda to compute surface area.*/

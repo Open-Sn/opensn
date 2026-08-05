@@ -6,7 +6,7 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <cmath>
@@ -32,13 +32,16 @@ FieldFunctionInterpolationVolume::RebuildVolumeCellList()
   if (logical_volume_ == nullptr)
     throw std::logic_error("Unassigned logical volume in volume field function interpolator.");
 
-  const auto& grid = field_function_->GetSpatialDiscretization().GetGrid();
+  const auto& grid = field_function_->GetSpatialDiscretization().GetMesh();
 
   // Find cells inside volume
   cell_local_ids_inside_logvol_.clear();
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     if (logical_volume_->Inside(cell.centroid))
-      cell_local_ids_inside_logvol_.push_back(cell.local_id);
+      cell_local_ids_inside_logvol_.push_back(cell_local_id);
+  }
 }
 
 void
@@ -48,7 +51,7 @@ FieldFunctionInterpolationVolume::Execute()
 
   const auto& ref_ff = *field_function_;
   const auto& sdm = ref_ff.GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
 
   const auto& uk_man = ref_ff.GetUnknownManager();
   const auto uid = 0;
@@ -62,15 +65,15 @@ FieldFunctionInterpolationVolume::Execute()
   double local_min = std::numeric_limits<double>::infinity();
   for (const uint64_t cell_local_id : cell_local_ids_inside_logvol_)
   {
-    const auto& cell = grid->local_cells[cell_local_id];
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     std::vector<double> node_dof_values(num_nodes, 0.0);
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
+      const auto imap = sdm.MapDOFLocal(cell_local_id, i, uk_man, uid, cid);
       node_dof_values[i] = field_data[imap];
     }
 

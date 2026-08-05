@@ -23,7 +23,7 @@ public:
 
   SweepChunk(std::vector<double>& destination_phi,
              std::vector<double>& destination_psi,
-             const std::shared_ptr<MeshContinuum>& grid,
+             const std::shared_ptr<Mesh>& grid,
              const SpatialDiscretization& discretization,
              const std::vector<UnitCellMatrices>& unit_cell_matrices,
              const std::vector<CellLBSView>& cell_transport_views,
@@ -50,7 +50,7 @@ public:
       groupset_group_stride_(groupset_.GetNumGroups()),
       destination_phi_(destination_phi),
       destination_psi_(destination_psi),
-      cell_(nullptr)
+      cell_local_id_(0)
   {
   }
 
@@ -61,7 +61,7 @@ public:
   virtual void SetAngleSet(AngleSet& angle_set);
 
   /// Sets the active cell for cell-by-cell sweeps.
-  void SetCell(Cell const* cell_ptr);
+  void SetCell(std::uint32_t cell_local_id);
 
   /**
    * Zero the portion of the output flux moments vector corresponding to the groupset for this
@@ -97,7 +97,7 @@ public:
   std::vector<MomentCallbackFunc> moment_callbacks;
 
 protected:
-  const std::shared_ptr<MeshContinuum> grid_;
+  const std::shared_ptr<Mesh> grid_;
   const SpatialDiscretization& discretization_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
   const std::vector<CellLBSView>& cell_transport_views_;
@@ -114,7 +114,7 @@ protected:
   std::vector<double>& destination_psi_;
   bool surface_source_active_ = false;
   bool include_rhs_time_term_ = true;
-  const Cell* cell_;
+  std::uint32_t cell_local_id_;
 };
 
 } // namespace opensn

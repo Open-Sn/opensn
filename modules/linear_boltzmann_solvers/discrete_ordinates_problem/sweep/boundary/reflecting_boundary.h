@@ -4,7 +4,8 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <vector>
 #include <limits>
 namespace opensn
@@ -16,7 +17,7 @@ class ReflectingBoundary : public SweepBoundary
 public:
   ReflectingBoundary(BoundaryBank& bank,
                      std::uint64_t bid,
-                     const std::shared_ptr<MeshContinuum>& grid,
+                     const std::shared_ptr<Mesh>& grid,
                      const std::vector<LBSGroupset>& groupsets,
                      const Vector3& normal,
                      CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN);

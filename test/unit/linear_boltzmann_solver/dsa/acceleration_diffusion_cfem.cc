@@ -9,7 +9,7 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 
@@ -19,7 +19,7 @@ namespace
 {
 
 void
-acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
+acceleration_Diffusion_CFEM(std::shared_ptr<Mesh> grid)
 {
   using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
   opensn::log.Log() << "SimTest92_DSA";
@@ -48,13 +48,11 @@ acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
   matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
   std::vector<UnitCellMatrices> unit_cell_matrices;
-  unit_cell_matrices.resize(grid->local_cells.size());
+  unit_cell_matrices.resize(grid->GetLocalCellCount());
 
   // Build unit integrals
-  for (const auto& cell : grid->local_cells)
-  {
-    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
-  }
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell_local_id);
 
   // Make solver
   DiffusionPWLCSolver solver("SimTest92b_DSA_PWLC",

@@ -4,8 +4,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/math/functions/function.h"
-#include "framework/mesh/cell/cell.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -106,30 +106,43 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
                                   "match the number of groups in the solver the source is "
                                   "attached to.");
 
+  auto grid = lbs_problem.GetMesh();
   // Set cell subscribers based on logical volumes, block IDs, or both
   subscribers_.clear();
   if (logvol_ and block_ids_.empty())
   {
     std::set<unsigned int> blk_ids;
-    for (const auto& cell : lbs_problem.GetGrid()->local_cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       if (logvol_->Inside(cell.centroid))
       {
         blk_ids.insert(cell.block_id);
-        subscribers_.push_back(cell.local_id);
+        subscribers_.push_back(cell_local_id);
       }
+    }
   }
   else if (not logvol_ and not block_ids_.empty())
   {
-    for (const auto& cell : lbs_problem.GetGrid()->local_cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       if (std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
-        subscribers_.push_back(cell.local_id);
+        subscribers_.push_back(cell_local_id);
+    }
   }
   else
   {
-    for (const auto& cell : lbs_problem.GetGrid()->local_cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       if (logvol_->Inside(cell.centroid) and
           std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
-        subscribers_.push_back(cell.local_id);
+        subscribers_.push_back(cell_local_id);
+    }
   }
 
   num_local_subsribers_ = subscribers_.size();
@@ -142,20 +155,20 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
 }
 
 std::vector<double>
-VolumetricSource::operator()(const Cell& cell,
+VolumetricSource::operator()(std::uint32_t cell_local_id,
                              const Vector3& xyz,
                              const unsigned int num_groups) const
 {
-  return Evaluate(cell, xyz, num_groups, 0.0);
+  return Evaluate(cell_local_id, xyz, num_groups, 0.0);
 }
 
 std::vector<double>
-VolumetricSource::Evaluate(const Cell& cell,
+VolumetricSource::Evaluate(std::uint32_t cell_local_id,
                            const Vector3& xyz,
                            const unsigned int num_groups,
                            const double time) const
 {
-  if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id) == 0)
+  if (std::count(subscribers_.begin(), subscribers_.end(), cell_local_id) == 0)
     return std::vector<double>(num_groups, 0.0); // NOLINT
   else if (not function_)
   {

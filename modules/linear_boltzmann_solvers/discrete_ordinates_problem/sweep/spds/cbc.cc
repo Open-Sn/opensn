@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
@@ -13,13 +13,13 @@ namespace opensn
 {
 
 CBC_SPDS::CBC_SPDS(const Vector3& omega,
-                   const std::shared_ptr<MeshContinuum>& grid,
+                   const std::shared_ptr<Mesh>& grid,
                    const SPDSFaceNeighborInfoVec& face_neighbor_info,
                    bool allow_cycles)
   : SPDS(omega, grid)
 {
 
-  const auto num_loc_cells = grid->local_cells.size();
+  const auto num_loc_cells = grid->GetLocalCellCount();
 
   // Populate cell relationships
   std::vector<std::vector<std::pair<std::uint32_t, double>>> cell_successors(num_loc_cells);
@@ -62,9 +62,10 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   constexpr auto OUTGOING = FaceOrientation::OUTGOING;
 
   // For each local cell create a task
-  task_list_.reserve(grid_->local_cells.size());
-  for (const auto& cell : grid_->local_cells)
+  task_list_.reserve(grid_->GetLocalCellCount());
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto num_faces = cell.faces.size();
     unsigned int num_dependencies = 0;
     std::vector<std::uint32_t> successors;
@@ -73,7 +74,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
     for (std::size_t f = 0; f < num_faces; ++f)
     {
       const auto& face = cell.faces[f];
-      const auto& orientation = cell_face_orientations_[cell.local_id][f];
+      const auto& orientation = cell_face_orientations_[cell_local_id][f];
 
       if (orientation == INCOMING)
       {
@@ -83,11 +84,11 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
       else if (orientation == OUTGOING)
       {
         if (face.has_neighbor and grid->IsCellLocal(face.neighbor_id))
-          successors.push_back(grid->cells[face.neighbor_id].local_id);
+          successors.push_back(grid->MapCellGlobalID2LocalID(face.neighbor_id));
       }
     }
 
-    task_list_.push_back({num_dependencies, successors, cell.local_id, &cell, false});
+    task_list_.push_back({num_dependencies, successors, cell_local_id, false});
   }
 }
 

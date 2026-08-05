@@ -16,14 +16,15 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
                               Functor func)
 {
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto num_moments = lbs_problem.GetNumMoments();
 
   int64_t idx = -1;
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
     const auto num_nodes = static_cast<std::size_t>(transport_view.GetNumNodes());
     for (std::size_t i = 0; i < num_nodes; ++i)
     {
@@ -47,21 +48,23 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
 
   auto& phi = (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
                                                  : lbs_problem.GetPhiOldLocal();
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& sdm = lbs_problem.GetSpatialDiscretization();
   const auto& unknown_manager = lbs_problem.GetUnknownManager();
 
   const auto first_grp = 0;
   const long final_grp = static_cast<long>(lbs_problem.GetNumGroups() - 1);
 
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dof_map = static_cast<long>(sdm.MapDOFLocal(cell, i, unknown_manager, 0, 0));
+      const auto dof_map =
+        static_cast<long>(sdm.MapDOFLocal(cell_local_id, i, unknown_manager, 0, 0));
       std::fill(phi.begin() + dof_map + first_grp, phi.begin() + dof_map + final_grp + 1, value);
     }
   }

@@ -6,9 +6,8 @@
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
 #include "framework/math/quadratures/spatial/spatial_quadrature.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/cell/cell.h"
-#include "framework/mesh/mesh.h"
+#include "framework/mesh/mesh/mesh.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/math/math.h"
 #include <petscksp.h>
 #include <cassert>
@@ -28,20 +27,18 @@ public:
    * boundary nodes.
    */
   std::pair<std::set<uint32_t>, std::set<uint32_t>>
-  MakeCellInternalAndBndryNodeIDs(const Cell& cell) const;
+  MakeCellInternalAndBndryNodeIDs(std::uint32_t cell_local_id) const;
 
-  const CellMapping& GetCellMapping(const Cell& cell) const
+  const CellMapping& GetLocalCellMapping(std::uint32_t cell_local_id) const
   {
-    assert(cell.local_id < cell_mappings_.size());
-    if (GetGrid()->IsCellLocal(cell.global_id))
-      return *cell_mappings_[cell.local_id];
-    return *nb_cell_mappings_.at(cell.global_id);
+    assert(cell_local_id < cell_mappings_.size());
+    return *cell_mappings_[cell_local_id];
   }
 
   SpatialDiscretizationType GetType() const;
 
   /// Returns the reference grid on which this discretization is based.
-  std::shared_ptr<MeshContinuum> GetGrid() const;
+  std::shared_ptr<Mesh> GetMesh() const;
 
   /**
    * Builds the sparsity pattern for a local block matrix compatible withthe given unknown manager.
@@ -54,7 +51,7 @@ public:
                                     const UnknownManager& unknown_manager) const = 0;
 
   /// Maps the global address of a degree of freedom.
-  virtual uint64_t MapDOF(const Cell& cell,
+  virtual uint64_t MapDOF(std::uint32_t cell_local_id,
                           unsigned int node,
                           const UnknownManager& unknown_manager,
                           unsigned int unknown_id,
@@ -62,7 +59,7 @@ public:
 
   /// Maps the local address of a degree of freedom. This can include ghost entries if the specific
   /// discretization has any.
-  virtual uint64_t MapDOFLocal(const Cell& cell,
+  virtual uint64_t MapDOFLocal(std::uint32_t cell_local_id,
                                unsigned int node,
                                const UnknownManager& unknown_manager,
                                unsigned int unknown_id,
@@ -72,13 +69,13 @@ public:
    * Maps the local address of a degree of freedom. This can include ghost entries if the specific
    * discretization has any. Default structure here is a single scalar unknown.
    */
-  virtual uint64_t MapDOF(const Cell& cell, unsigned int node) const = 0;
+  virtual uint64_t MapDOF(std::uint32_t cell_global_id, unsigned int node) const = 0;
 
   /**
    * Maps the local address of a degree of freedom. This can include ghost entries if the specific
    * discretization has any. Default structure here is a single scalar unknown.
    */
-  virtual uint64_t MapDOFLocal(const Cell& cell, unsigned int node) const = 0;
+  virtual uint64_t MapDOFLocal(std::uint32_t cell_local_id, unsigned int node) const = 0;
 
   /// Returns the number of local nodes used in this discretization.
   std::uint64_t GetNumLocalNodes() const;
@@ -120,13 +117,13 @@ public:
    * For the given cell, returns the number of relevant nodes. The same can be achieved by
    * retrieving the cell-to-element mapping first.
    */
-  size_t GetCellNumNodes(const Cell& cell) const;
+  size_t GetCellNumNodes(std::uint32_t cell_local_id) const;
 
   /**
    * For the given cell, returns a reference to the relevant node locations. The same can be
    * achieved by retrieving the cell-to-element mapping first.
    */
-  const std::vector<Vector3>& GetCellNodeLocations(const Cell& cell) const;
+  const std::vector<Vector3>& GetCellNodeLocations(std::uint32_t cell_local_id) const;
 
   /**
    * For each cell, for each face of that cell, for each node on that face, maps to which local
@@ -210,11 +207,10 @@ public:
   virtual ~SpatialDiscretization() = default;
 
 protected:
-  SpatialDiscretization(std::shared_ptr<MeshContinuum> grid, SpatialDiscretizationType sdm_type);
+  SpatialDiscretization(std::shared_ptr<Mesh> grid, SpatialDiscretizationType sdm_type);
 
-  const std::shared_ptr<MeshContinuum> grid_;
+  const std::shared_ptr<Mesh> grid_;
   std::vector<std::unique_ptr<CellMapping>> cell_mappings_;
-  std::map<uint64_t, std::shared_ptr<CellMapping>> nb_cell_mappings_;
 
   uint64_t local_block_address_ = 0;
   std::vector<uint64_t> locJ_block_address_;

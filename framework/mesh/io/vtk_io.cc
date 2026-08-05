@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/io/mesh_io.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
+#include "framework/mesh/mesh/grid_vtk_utils.h"
 #include <vtkCell.h>
 #include <vtkPolygon.h>
 #include <vtkLine.h>
@@ -842,7 +842,7 @@ MeshIO::FromEnsightGold(const UnpartitionedMesh::Options& options)
 }
 
 void
-MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name, bool per_material)
+MeshIO::ToOBJ(const std::shared_ptr<Mesh>& grid, const char* file_name, bool per_material)
 {
   if (not per_material)
   {
@@ -854,11 +854,11 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
     // Develop list of faces and nodes
     std::set<uint64_t> nodes_set;
     std::vector<CellFace> faces_to_export;
-    for (auto& cell : grid->local_cells)
+    for (const auto& cell : grid->GetLocalCells())
     {
       if (cell.GetType() == CellType::POLYHEDRON)
       {
-        for (auto& face : cell.faces)
+        for (const auto& face : cell.faces)
         {
           if (not face.has_neighbor)
           {
@@ -887,7 +887,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
       auto node_g_index = node;
       node_mapping[node_g_index] = node_counter;
 
-      Vector3 cur_v = grid->vertices[node_g_index];
+      Vector3 cur_v = grid->GlobalVertex(node_g_index);
 
       // clang-format off
       of << "v "
@@ -933,7 +933,7 @@ MeshIO::ToOBJ(const std::shared_ptr<MeshContinuum>& grid, const char* file_name,
 }
 
 void
-MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
+MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
                    const std::string& file_name,
                    bool write_node_sets,
                    bool write_side_sets)
@@ -946,7 +946,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
 
   // Check block consistency
   std::map<int, CellType> block_id_map;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
     const auto blk_id = static_cast<int>(cell.block_id);
     if (block_id_map.count(blk_id) == 0)
@@ -983,7 +983,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     for (size_t v = 0; v < num_verts; ++v)
     {
       vertex_map[v] = v;
-      const auto& vertex = grid->vertices[v];
+      const auto& vertex = grid->GlobalVertex(v);
       points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
@@ -991,14 +991,14 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     }
 
     // Load cells
-    for (const auto& cell : grid->local_cells)
+    for (const auto& cell : grid->GetLocalCells())
     {
       if (cell.GetSubType() == CellType::POLYGON or cell.GetSubType() == CellType::POLYHEDRON)
         throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell.GetSubType()) +
                                "\" encountered that is not supported by ExodusII.");
       UploadCellGeometryContinuous(cell, vertex_map, ugrid);
       block_id_list->InsertNextValue(static_cast<int>(cell.block_id));
-      max_dimension = std::max(max_dimension, MeshContinuum::GetCellDimension(cell));
+      max_dimension = std::max(max_dimension, Mesh::GetCellDimension(cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
       global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id) +
@@ -1030,7 +1030,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
     int source_face_id;
   };
   std::map<uint64_t, std::vector<FaceInfo>> boundary_id_faces_map;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
     // Here we build a face mapping because OpenSn's face orientation for prisms (wedges) and
     // hexahedrons differ from that of VTK. OpenSn's orientation for prisms and hexes actually
@@ -1095,7 +1095,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       // Load vertices
       for (uint64_t vid : vid_set)
       {
-        const auto& vertex = grid->vertices[vid];
+        const auto& vertex = grid->GlobalVertex(vid);
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
 
         // Exodus node- and cell indices are 1-based therefore we add a 1 here.
@@ -1151,7 +1151,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
       // Load vertices
       for (uint64_t vid : vid_set)
       {
-        const auto& vertex = grid->vertices[vid];
+        const auto& vertex = grid->GlobalVertex(vid);
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
       }
 
@@ -1219,7 +1219,7 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
 }
 
 void
-MeshIO::ToPVTU(const std::shared_ptr<MeshContinuum>& grid, const std::string& file_base_name)
+MeshIO::ToPVTU(const std::shared_ptr<Mesh>& grid, const std::string& file_base_name)
 {
   log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
 

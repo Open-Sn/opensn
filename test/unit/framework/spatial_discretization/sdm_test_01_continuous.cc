@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -20,7 +20,7 @@ namespace
 {
 
 void
-math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
+math_SDM_Test01_Continuous(std::shared_ptr<Mesh> grid,
                            std::string sdm_type,
                            bool export_vtk,
                            double gold)
@@ -66,13 +66,14 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell);
+    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell_local_id);
 
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
@@ -111,7 +112,7 @@ math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
     // Develop node mapping
     std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = sdm.MapDOF(cell, i);
+      imap[i] = sdm.MapDOF(cell.global_id, i);
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)

@@ -5,7 +5,7 @@
 
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
@@ -20,7 +20,7 @@ namespace opensn
 
 struct AAHSweepData
 {
-  const std::shared_ptr<MeshContinuum>& grid;
+  const std::shared_ptr<Mesh>& grid;
   const SpatialDiscretization& discretization;
   const std::vector<UnitCellMatrices>& unit_cell_matrices;
   const std::vector<CellLBSView>& cell_transport_views;
@@ -71,10 +71,10 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     const auto cell_local_id = spls[spls_index];
-    auto& cell = data.grid->local_cells[cell_local_id];
+    auto& cell = data.grid->GetLocalCell(cell_local_id);
     const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
     auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
-    const auto& cell_mapping = data.discretization.GetCellMapping(cell);
+    const auto& cell_mapping = data.discretization.GetLocalCellMapping(cell_local_id);
     const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 
@@ -172,10 +172,10 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         }
       }
 
-      const double* psi_old =
-        (time_dependent and data.psi_old)
-          ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
-          : nullptr;
+      const double* psi_old = (time_dependent and data.psi_old)
+                                ? &(*data.psi_old)[data.discretization.MapDOFLocal(
+                                    cell_local_id, 0, groupset.psi_uk_man_, 0, 0)]
+                                : nullptr;
       const double* m2d_row = m2d_op.data() + direction_num * static_cast<size_t>(data.num_moments);
       const double* d2m_row = d2m_op.data() + direction_num * static_cast<size_t>(data.num_moments);
 
@@ -233,9 +233,8 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
 
       if (data.save_angular_flux)
       {
-        double* psi_new =
-          &data
-             .destination_psi[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+        double* psi_new = &data.destination_psi[data.discretization.MapDOFLocal(
+          cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
         double theta = 1.0;
         double inv_theta = 1.0;
         if constexpr (time_dependent)

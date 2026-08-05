@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -33,7 +33,7 @@ MMS_q(const Vector3& pt)
 }
 
 void
-SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
+SimTest04_PWLC(std::shared_ptr<Mesh> grid)
 {
   // Make SDM
   std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearContinuous::New(grid);
@@ -61,9 +61,10 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   // Assemble the system
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const auto cell_node_xyzs = cell_mapping.GetNodeLocations();
 
@@ -110,7 +111,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
     // Develop node mapping
     std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = sdm.MapDOF(cell, i);
+      imap[i] = sdm.MapDOF(cell.global_id, i);
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)
@@ -174,9 +175,10 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
   const auto field_wg = ff->GetGhostedFieldVector();
 
   double local_error = 0.0;
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -184,7 +186,7 @@ SimTest04_PWLC(std::shared_ptr<MeshContinuum> grid)
     std::vector<double> nodal_phi(num_nodes, 0.0);
     for (size_t j = 0; j < num_nodes; ++j)
     {
-      const auto jmap = sdm.MapDOFLocal(cell, j);
+      const auto jmap = sdm.MapDOFLocal(cell_local_id, j);
       nodal_phi[j] = field_wg[jmap];
     } // for j
 

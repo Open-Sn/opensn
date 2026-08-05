@@ -3,7 +3,7 @@
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polyhedron_mapping.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 
 namespace opensn
@@ -11,7 +11,7 @@ namespace opensn
 
 PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
   const Cell& polyh_cell,
-  const std::shared_ptr<MeshContinuum> ref_grid,
+  const std::shared_ptr<Mesh> ref_grid,
   const TetrahedraQuadrature& volume_quadrature,
   const TriangleQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(
@@ -53,9 +53,9 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
       side_data.v_index[0] = v0index;
       side_data.v_index[1] = v1index;
 
-      const auto& v0 = grid_->vertices[v0index];
+      const auto& v0 = grid_->GlobalVertex(v0index);
       const auto& v1 = vfc;
-      const auto& v2 = grid_->vertices[v1index];
+      const auto& v2 = grid_->GlobalVertex(v1index);
       const auto& v3 = vcc;
 
       side_data.v0 = v0;
@@ -412,7 +412,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValue(size_t i, const Vector3& xyz) const
     for (size_t s = 0; s < face_data_[f].sides.size(); ++s)
     {
       // Map xyz to xi_eta_zeta
-      const auto& p0 = grid_->vertices[face_data_[f].sides[s].v_index[0]];
+      const auto& p0 = grid_->GlobalVertex(face_data_[f].sides[s].v_index[0]);
       Vector3 xyz_ref = xyz - p0;
 
       Vector3 xi_eta_zeta = face_data_[f].sides[s].Jinv * xyz_ref;
@@ -461,7 +461,7 @@ PieceWiseLinearPolyhedronMapping::ShapeValues(const Vector3& xyz,
     {
       const auto& side_fe_info = face_data_[f].sides[s];
       // Map xyz to xi_eta_zeta
-      const auto& p0 = grid_->vertices[side_fe_info.v_index[0]];
+      const auto& p0 = grid_->GlobalVertex(side_fe_info.v_index[0]);
       Vector3 xi_eta_zeta = side_fe_info.Jinv * (xyz - p0);
 
       double xi = xi_eta_zeta.x;
@@ -507,7 +507,7 @@ PieceWiseLinearPolyhedronMapping::GradShapeValue(size_t i, const Vector3& xyz) c
     for (size_t s = 0; s < face_data_[f].sides.size(); ++s)
     {
       // Map xyz to xi_eta_zeta
-      const auto& p0 = grid_->vertices[face_data_[f].sides[s].v_index[0]];
+      const auto& p0 = grid_->GlobalVertex(face_data_[f].sides[s].v_index[0]);
       Vector3 xyz_ref = xyz - p0;
 
       Vector3 xi_eta_zeta = face_data_[f].sides[s].Jinv * xyz_ref;

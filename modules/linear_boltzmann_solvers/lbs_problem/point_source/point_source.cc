@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/functions/function.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
@@ -86,7 +86,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   }
 
   // Get info from solver
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& ghost_unit_cell_matrices = lbs_problem.GetUnitGhostCellMatrices();
@@ -113,12 +113,13 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   // Find local subscribers
   double total_volume = 0.0;
   std::vector<Subscriber> subscribers;
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     if (PointIsInCellOrOnBoundary(cell, location_))
     {
-      const auto& cell_mapping = discretization.GetCellMapping(cell);
-      const auto& fe_values = unit_cell_matrices[cell.local_id];
+      const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+      const auto& fe_values = unit_cell_matrices[cell_local_id];
 
       // Map the point source to the finite element space
       Vector<double> shape_vals;
@@ -126,20 +127,21 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
       const auto M_inv = Inverse(fe_values.intV_shapeI_shapeJ);
       const auto node_wgts = Mult(M_inv, shape_vals);
 
+      auto cell_volume = grid->GetCellVolume(cell_local_id);
       // Increment the total volume
-      total_volume += cell.volume;
+      total_volume += cell_volume;
 
       // Add to subscribers
-      subscribers.push_back(Subscriber{cell.volume, cell.local_id, shape_vals, node_wgts});
+      subscribers.push_back(Subscriber{cell_volume, cell_local_id, shape_vals, node_wgts});
     }
   }
 
   // If the point source lies on a partition boundary, ghost cells must be
   // added to the total volume.
-  auto ghost_global_ids = grid->cells.GetGhostGlobalIDs();
+  auto ghost_global_ids = grid->GetGhostGlobalIDs();
   for (uint64_t global_id : ghost_global_ids)
   {
-    const auto& nbr_cell = grid->cells[global_id];
+    const auto& nbr_cell = grid->GetGlobalCell(global_id);
     if (PointIsInCellOrOnBoundary(nbr_cell, location_))
     {
       const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id);
@@ -157,7 +159,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
 
     std::stringstream ss;
     ss << "Point source at " << location_.PrintStr() << " assigned to cell "
-       << grid->local_cells[sub.cell_local_id].global_id << " with shape values [ ";
+       << grid->GetLocalCell(sub.cell_local_id).global_id << " with shape values [ ";
     for (const auto& value : sub.shape_values)
       ss << value << " ";
     ss << "] and volume weight " << sub.volume_weight / total_volume;

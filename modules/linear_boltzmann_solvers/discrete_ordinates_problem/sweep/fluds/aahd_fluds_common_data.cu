@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "caribou/main.hpp"
 #include <cinttypes>
 
@@ -34,14 +34,15 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
   const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
 {
   std::uint64_t incremental_boundary_index = 0;
-  const MeshContinuum& grid = *(spds_.GetGrid());
-  for (const Cell& cell : grid.local_cells)
+  const Mesh& grid = *(spds_.GetMesh());
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
     {
       const CellFace& face = cell.faces[f];
-      const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell.local_id][f];
-      std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
+      std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
 
       if (face.has_neighbor)
         continue;
@@ -51,7 +52,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
       {
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
-          FaceNode fn(cell.local_id, f, fnode);
+          FaceNode fn(cell_local_id, f, fnode);
           for (auto angleset : associated_anglesets_)
           {
             std::uint64_t offset = boundary.GetOffsetToAngleset(fn, *angleset, false);
@@ -69,7 +70,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
       {
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
-          FaceNode fn(cell.local_id, f, fnode);
+          FaceNode fn(cell_local_id, f, fnode);
           for (auto angleset : associated_anglesets_)
           {
             std::uint64_t offset = boundary.GetOffsetToAngleset(fn, *angleset, true);
@@ -83,7 +84,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
       {
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
-          FaceNode fn(cell.local_id, f, fnode);
+          FaceNode fn(cell_local_id, f, fnode);
           node_tracker_[fn] = AAHD_NodeIndex(0, true, true, false, false);
         }
       }
@@ -98,20 +99,21 @@ AAHD_FLUDSCommonData::CopyFlattenNodeIndexToDevice(const SpatialDiscretization& 
   crb::HostVector<std::uint64_t> cell_offset;
   crb::HostVector<std::uint64_t> data;
   // loop for each cell
-  const MeshContinuum& grid = *(spds_.GetGrid());
-  std::uint64_t offset = 2 * grid.local_cells.size();
-  for (const Cell& cell : grid.local_cells)
+  const Mesh& grid = *(spds_.GetMesh());
+  std::uint64_t offset = 2 * grid.GetLocalCellCount();
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     // record the offset
     cell_offset.push_back(offset);
     // record each face node to the data
     std::uint64_t num_nodes = 0;
     for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
     {
-      std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
       for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
       {
-        FaceNode node(cell.local_id, f, fnode);
+        FaceNode node(cell_local_id, f, fnode);
         AAHD_NodeIndex index = node_tracker_.at(node);
         data.push_back(index.GetCoreValue());
         ++num_nodes;

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_generator/distributed_mesh_generator.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -18,7 +18,7 @@ DistributedMeshGenerator::DistributedMeshGenerator(const InputParameters& params
 {
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 DistributedMeshGenerator::Execute()
 {
   const auto rank = mpi_comm.rank();
@@ -276,24 +276,30 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
   return info_block;
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
 {
-  auto grid_ptr = MeshContinuum::New();
-  grid_ptr->GetBoundaryIDMap() = mesh_info.boundary_id_map;
+  auto grid_ptr = Mesh::New();
   for (auto& [id, name] : mesh_info.boundary_id_map)
-    grid_ptr->GetBoundaryNameMap()[name] = id;
+    grid_ptr->SetBoundaryName(id, name);
 
   auto& vertices = mesh_info.vertices;
   for (const auto& [vid, vertex] : vertices)
-    grid_ptr->vertices.Insert(vid, vertex);
+    grid_ptr->AddGlobalVertex(vid, vertex);
 
+  std::vector<Cell> local_cells;
+  std::vector<Cell> ghost_cells;
   auto& cells = mesh_info.cells;
   for (const auto& [pidgid, raw_cell] : cells)
   {
     const auto& [cell_pid, cell_global_id] = pidgid;
-    grid_ptr->cells.PushBack(SetupCell(raw_cell, cell_global_id, cell_pid));
+    auto cell = SetupCell(raw_cell, cell_global_id, cell_pid);
+    if (cell_pid == opensn::mpi_comm.rank())
+      local_cells.push_back(std::move(cell));
+    else
+      ghost_cells.push_back(std::move(cell));
   }
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells));
 
   grid_ptr->SetDimension(mesh_info.dimension);
   grid_ptr->SetCoordinateSystem(mesh_info.coord_sys);

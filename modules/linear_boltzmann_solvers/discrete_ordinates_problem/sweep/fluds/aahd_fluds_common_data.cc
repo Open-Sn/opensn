@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <algorithm>
 #include <queue>
 #include <set>
@@ -40,7 +40,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
   std::set<std::pair<std::uint32_t, std::uint32_t>> fas_edges(spds_.GetLocalSweepFAS().begin(),
                                                               spds_.GetLocalSweepFAS().end());
   // for each level
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   std::vector<AAHD_DirectedEdgeNode> local_node_stack;
   std::queue<std::uint64_t> idle_slots;
 
@@ -48,7 +48,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
   // cell's incoming slots directly instead of searching the entire stack. A slot remains valid
   // until its downstream cell is processed, because that is the only time the slot is released.
   std::unordered_map<std::uint32_t, std::vector<std::uint64_t>> downwind_index;
-  downwind_index.reserve(grid.local_cells.size());
+  downwind_index.reserve(grid.GetLocalCellCount());
 
   // Place a directed edge node at the stack_index and register it in downwind_index.
   auto RegisterNode = [&](std::uint64_t stack_index, const AAHD_DirectedEdgeNode& new_node)
@@ -79,7 +79,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
         it->second.clear();
       }
       // Build a list of outgoing nodes for the current cell
-      const Cell& cell = grid.local_cells[cell_local_idx];
+      const Cell& cell = grid.GetLocalCell(cell_local_idx);
       std::vector<AAHD_DirectedEdgeNode> new_outgoing_nodes;
       for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
       {
@@ -94,7 +94,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonDelayedLocalFaces(const SpatialDiscr
         if (fas_edges.contains(
               std::pair<std::uint32_t, std::uint32_t>(cell_local_idx, neighbor_local_idx)))
           continue;
-        std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+        std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_idx).GetNumFaceNodes(f);
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
           FaceNode upwind(cell_local_idx, f, fnode);
@@ -147,13 +147,13 @@ void
 AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscretization& sdm)
 {
   // get reference to the grid
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   // record the FAS edges
   std::uint64_t fas_node_index = 0;
   const std::vector<std::pair<std::uint32_t, std::uint32_t>>& fas_edges = spds_.GetLocalSweepFAS();
   for (const auto& edge : fas_edges)
   {
-    const Cell& upwind_cell = grid.local_cells[edge.first];
+    const Cell& upwind_cell = grid.GetLocalCell(edge.first);
     for (std::uint32_t f = 0; f < upwind_cell.faces.size(); ++f)
     {
       const CellFace& face = upwind_cell.faces[f];
@@ -166,7 +166,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
         if (std::cmp_equal(neighbor_local_idx, edge.second))
         {
           // record the address of all the nodes
-          std::uint32_t num_face_nodes = sdm.GetCellMapping(upwind_cell).GetNumFaceNodes(f);
+          std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(edge.first).GetNumFaceNodes(f);
           for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
           {
             FaceNode upwind(edge.first, f, fnode);
@@ -188,7 +188,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForDelayedLocalFaces(const SpatialDiscreti
 void
 AAHD_FLUDSCommonData::ComputeNodeIndexForNonLocalFaces(const SpatialDiscretization& sdm)
 {
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const auto& grid = *(spds_.GetMesh());
   // Sort each bank before assigning node indices so that index ordering is deterministic. Face
   // nodes are unique, so the banks do not require duplicate removal.
   std::vector<std::vector<AAHD_NonLocalFaceNode>> incoming_bank, delayed_incoming_bank,
@@ -196,15 +196,17 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonLocalFaces(const SpatialDiscretizati
   incoming_bank.resize(spds_.GetLocationDependencies().size());
   delayed_incoming_bank.resize(spds_.GetDelayedLocationDependencies().size());
   outgoing_bank.resize(spds_.GetLocationSuccessors().size());
+  std::uint64_t incremental_boundary_index = 0;
   // Loop over cells and isolate the non-local neighbor or boundary faces
-  for (const Cell& cell : grid.local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
     {
       const CellFace& face = cell.faces[f];
-      const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell.local_id][f];
-      const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell.local_id][f];
-      std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
+      const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell_local_id][f];
+      std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
       // Skip for local face and boundary face
       if (face.IsNeighborLocal(&grid) or not face.has_neighbor)
         continue;
@@ -213,7 +215,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForNonLocalFaces(const SpatialDiscretizati
       for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
       {
         nl_en_vec[fnode] = AAHD_NonLocalFaceNode(cell.global_id,
-                                                 cell.local_id,
+                                                 cell_local_id,
                                                  f,
                                                  fnode,
                                                  face.neighbor_id,
@@ -313,24 +315,25 @@ void
 AAHD_FLUDSCommonData::ComputeNodeIndexForParallelFaces(const SpatialDiscretization& sdm)
 {
   // get reference to the mesh
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetMesh());
   // loop for each cell and detect parallel faces
-  for (const Cell& cell : grid.local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
     {
       // get face data
       const CellFace& face = cell.faces[f];
-      const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell.local_id][f];
-      const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell.local_id][f];
-      std::uint32_t num_face_nodes = sdm.GetCellMapping(cell).GetNumFaceNodes(f);
+      const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
+      const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell_local_id][f];
+      std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
       // skip for non-parallel face
       if (orientation != FaceOrientation::PARALLEL)
         continue;
       // construct index for parallel faces
       for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
       {
-        node_tracker_.emplace(FaceNode(cell.local_id, f, fnode), AAHD_NodeIndex());
+        node_tracker_.emplace(FaceNode(cell_local_id, f, fnode), AAHD_NodeIndex());
       }
     }
   }

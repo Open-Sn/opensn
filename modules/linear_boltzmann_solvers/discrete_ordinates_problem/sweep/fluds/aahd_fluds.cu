@@ -269,20 +269,21 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
 
   // loop for each cell in the mesh
   auto* mesh_carrier = problem.GetMeshCarrier();
-  auto grid = problem.GetGrid();
+  auto grid = problem.GetMesh();
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();
   std::size_t groupset_angle_group_stride =
     groupset.psi_uk_man_.GetNumberOfUnknowns() * groupset.GetNumGroups();
-  for (const Cell& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     // get pointer to the cell's angular fluxes
     double* dst_psi =
-      &destination_psi[discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+      &destination_psi[discretization.MapDOFLocal(cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
     double* src_psi = save_angular_flux_.host_storage.data() +
-                      mesh_carrier->saved_psi_offset[cell.local_id] * num_groups_and_angles_;
+                      mesh_carrier->saved_psi_offset[cell_local_id] * num_groups_and_angles_;
     // get number of cell nodes
-    std::uint32_t cell_num_nodes = discretization.GetCellMapping(cell).GetNumNodes();
+    std::uint32_t cell_num_nodes = discretization.GetLocalCellMapping(cell_local_id).GetNumNodes();
     // loop for each cell node
     for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
     {

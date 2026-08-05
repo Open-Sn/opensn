@@ -8,7 +8,7 @@
 #include "framework/materials/multi_group_xs/xsfile.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/data_types/range.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/logging/log.h"
@@ -25,7 +25,7 @@ namespace
 /**PWLD Sweep. */
 
 void
-SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
+SimTest91_PWLD(std::shared_ptr<Mesh> grid)
 {
   const std::string fname = "SimTest91_PWLD";
 
@@ -109,17 +109,18 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   opensn::log.Log() << "End vectors." << std::endl;
 
   // Make material source term
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cc = cell.centroid;
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     if (cc.x < 0.5 and cc.y < 0.5 and cc.z < 0.5 and cc.x > -0.5 and cc.y > -0.5 and cc.z > -0.5)
     {
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+        const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
         q_source[dof_map] = 1.0;
       }
@@ -133,9 +134,10 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   std::vector<DenseMatrix<double>> cell_Mmatrices;
   std::vector<std::vector<DenseMatrix<double>>> cell_faceMmatrices;
 
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -202,9 +204,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
                                         const MultiGroupXS& cell_xs)
   {
     const auto cell_global_id = ijk_mapping.MapNDtoLin(ijk[1], ijk[0], ijk[2]);
-    const auto& cell = grid->cells[cell_global_id];
-    const auto cell_local_id = cell.local_id;
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetGlobalCell(cell_global_id);
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const size_t num_faces = cell.faces.size();
 
@@ -242,9 +244,9 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
             const double* upwind_psi = zero_vector.data();
             if (face.has_neighbor)
             {
-              const auto& adj_cell = grid->cells[face.neighbor_id];
-              const int aj = cell_adj_mapping[cell.local_id][f][fj];
-              const auto ajmap = sdm.MapDOFLocal(adj_cell, aj, psi_uk_man, d, 0);
+              const auto adj_cell_local_id = grid->MapCellGlobalID2LocalID(face.neighbor_id);
+              const int aj = cell_adj_mapping[cell_local_id][f][fj];
+              const auto ajmap = sdm.MapDOFLocal(adj_cell_local_id, aj, psi_uk_man, d, 0);
               upwind_psi = &psi_old[ajmap];
             }
 
@@ -268,7 +270,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
         double temp_src = 0.0;
         for (unsigned int m = 0; m < num_moments; ++m)
         {
-          auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+          auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, g);
           temp_src += m2d(d, m) * source_moments[dof_map];
         } // for m
         source[i] = temp_src;
@@ -298,7 +300,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
       const auto wn_d2m = d2m(d, m);
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
+        const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, 0);
         for (unsigned int g = 0; g < num_groups; ++g)
           phi_new[dof_map + g] += wn_d2m * b[g](i);
       }
@@ -307,7 +309,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
     // Save angular fluxes
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dof_map = sdm.MapDOFLocal(cell, i, psi_uk_man, d, 0);
+      const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, psi_uk_man, d, 0);
       for (unsigned int g = 0; g < num_groups; ++g)
         psi_old[dof_map + g] = b[g](i);
     }
@@ -353,9 +355,11 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
                     num_moments,
                     &phi_uk_man]()
   {
-    for (const auto& cell : grid->local_cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
       const size_t num_nodes = cell_mapping.GetNumNodes();
       const auto& S = xs.GetTransferMatrices();
 
@@ -363,7 +367,7 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
       {
         for (unsigned int m = 0; m < num_moments; ++m)
         {
-          const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
+          const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, 0);
           const auto ell = m_ell_em_map[m].ell;
 
           for (unsigned int g = 0; g < num_groups; ++g)
@@ -393,21 +397,23 @@ SimTest91_PWLD(std::shared_ptr<MeshContinuum> grid)
   {
     double pw_change = 0.0;
 
-    for (const auto& cell : grid->local_cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
       const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
         // Get scalar moments
-        const auto m0_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+        const auto m0_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
         const double* phi_new_m0 = &in_phi_new[m0_map];
         const double* phi_old_m0 = &in_phi_old[m0_map];
         for (unsigned int m = 0; m < num_moments; ++m)
         {
-          const auto m_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
+          const auto m_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, 0);
 
           const double* phi_new_m = &in_phi_new[m_map];
           const double* phi_old_m = &in_phi_old[m_map];

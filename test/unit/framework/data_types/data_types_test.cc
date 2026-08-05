@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -26,7 +26,6 @@ TEST(DataTypesTest, 00)
     Cell poster_child_cell(CellType::POLYHEDRON, CellType::HEXAHEDRON);
     {
       poster_child_cell.global_id = 321;
-      poster_child_cell.local_id = 123;
       poster_child_cell.partition_id = 0;
       poster_child_cell.centroid = Vector3(0.5, 0.5, 0.5);
       poster_child_cell.block_id = 2;
@@ -136,12 +135,6 @@ TEST(DataTypesTest, 00)
           break;
         }
         if (rcell.global_id != pcell.global_id)
-        {
-          passed = false;
-          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-          break;
-        }
-        if (rcell.local_id != pcell.local_id)
         {
           passed = false;
           opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";

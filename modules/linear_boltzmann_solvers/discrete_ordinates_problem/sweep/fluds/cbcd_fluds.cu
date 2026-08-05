@@ -159,10 +159,10 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
     return;
   const auto& angle_indices = angle_set->GetAngleIndices();
   const auto& num_angles = angle_indices.size();
-  const auto& grid = *(GetSPDS().GetGrid());
+  const auto& grid = *(GetSPDS().GetMesh());
   for (const auto& cell_local_id : cell_local_ids)
   {
-    const auto& cell = grid.local_cells[cell_local_id];
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     auto outgoing_boundary_it = cell_to_outgoing_boundary_nodes_.find(cell_local_id);
     if (outgoing_boundary_it != cell_to_outgoing_boundary_nodes_.end())
       for (const auto& node : outgoing_boundary_it->second)
@@ -187,7 +187,7 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
       for (const auto& node : outgoing_nonlocal_it->second)
       {
         const auto& face = cell.faces[node.face_id];
-        const auto& cell_mapping = sdm_.GetCellMapping(cell);
+        const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
         const auto& face_nodal_mapping =
           common_data_.GetFaceNodalMapping(node.cell_local_id, node.face_id);
         const auto& num_face_nodes = cell_mapping.GetNumFaceNodes(node.face_id);
@@ -225,7 +225,7 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
     return;
   DiscreteOrdinatesProblem& problem = sweep_chunk.GetProblem();
   auto* mesh = problem.GetMeshCarrier();
-  auto grid = problem.GetGrid();
+  auto grid = problem.GetMesh();
   auto& groupset = sweep_chunk.GetGroupset();
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();
@@ -233,12 +233,14 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
     groupset.psi_uk_man_.GetNumberOfUnknowns() * groupset.GetNumGroups();
   const auto& angle_indices = angle_set->GetAngleIndices();
   const auto& num_angles = angle_set->GetNumAngles();
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    double* dst_psi = &destination_psi[discretization.MapDOFLocal(cell, 0, psi_uk_man_, 0, 0)];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    double* dst_psi =
+      &destination_psi[discretization.MapDOFLocal(cell_local_id, 0, psi_uk_man_, 0, 0)];
     double* src_psi =
-      host_saved_psi_.data() + mesh->saved_psi_offset[cell.local_id] * GetStrideSize();
-    std::uint32_t cell_num_nodes = discretization.GetCellMapping(cell).GetNumNodes();
+      host_saved_psi_.data() + mesh->saved_psi_offset[cell_local_id] * GetStrideSize();
+    std::uint32_t cell_num_nodes = discretization.GetLocalCellMapping(cell_local_id).GetNumNodes();
     for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
     {
       for (std::uint32_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)

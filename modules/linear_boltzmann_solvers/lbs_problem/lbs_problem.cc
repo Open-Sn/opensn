@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/object_factory.h"
 #include "framework/logging/log.h"
@@ -38,7 +38,7 @@ LBSProblem::GetInputParameters()
 
   params.ChangeExistingParamToOptional("name", "LBSProblem");
 
-  params.AddRequiredParameter<std::shared_ptr<MeshContinuum>>("mesh", "Mesh");
+  params.AddRequiredParameter<std::shared_ptr<Mesh>>("mesh", "Mesh");
 
   params.AddRequiredParameter<unsigned int>("num_groups",
                                             "The total number of groups within the solver");
@@ -69,7 +69,7 @@ LBSProblem::GetInputParameters()
 LBSProblem::LBSProblem(const InputParameters& params)
   : Problem(params),
     num_groups_(params.GetParamValue<unsigned int>("num_groups")),
-    grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
+    grid_(params.GetSharedPtrParam<Mesh>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
   // Check system for GPU acceleration
@@ -300,7 +300,7 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 
   if (options_.use_precursors)
   {
-    const size_t num_cells = grid_->local_cells.size();
+    const size_t num_cells = grid_->GetLocalCellCount();
     const size_t new_max_precursors_per_material = max_precursors_per_material_;
     const size_t num_precursor_dofs = num_cells * new_max_precursors_per_material;
 
@@ -308,8 +308,10 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
     std::vector<double> remapped_precursors_old(num_precursor_dofs, 0.0);
     if (old_precursor_new_state.size() == num_cells * old_max_precursors_per_material)
     {
-      for (const auto& cell : grid_->local_cells)
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+           ++cell_local_id)
       {
+        const auto& cell = grid_->GetLocalCell(cell_local_id);
         unsigned int old_num_precursors = 0;
         if (const auto old_xs_it = old_xs_map.find(cell.block_id); old_xs_it != old_xs_map.end())
         {
@@ -324,8 +326,8 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
         const unsigned int num_precursors_to_copy =
           std::min(old_num_precursors, new_num_precursors);
 
-        const size_t old_base = cell.local_id * old_max_precursors_per_material;
-        const size_t new_base = cell.local_id * new_max_precursors_per_material;
+        const size_t old_base = cell_local_id * old_max_precursors_per_material;
+        const size_t new_base = cell_local_id * new_max_precursors_per_material;
         for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
         {
           remapped_precursors_new[new_base + j] = old_precursor_new_state[old_base + j];
@@ -347,8 +349,8 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
   InitializeGPUExtras();
 }
 
-std::shared_ptr<MeshContinuum>
-LBSProblem::GetGrid() const
+std::shared_ptr<Mesh>
+LBSProblem::GetMesh() const
 {
   return grid_;
 }
@@ -944,17 +946,17 @@ LBSProblem::InitializeMaterials()
   // Create set of material ids locally relevant
   int invalid_mat_cell_count = 0;
   std::set<unsigned int> unique_block_ids;
-  for (auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
     unique_block_ids.insert(cell.block_id);
     if (cell.block_id == std::numeric_limits<unsigned int>::max() or
         (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
       ++invalid_mat_cell_count;
   }
-  const auto& ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
+  const auto& ghost_cell_ids = grid_->GetGhostGlobalIDs();
   for (uint64_t cell_id : ghost_cell_ids)
   {
-    const auto& cell = grid_->cells[cell_id];
+    const auto& cell = grid_->GetGlobalCell(cell_id);
     unique_block_ids.insert(cell.block_id);
     if (cell.block_id == std::numeric_limits<unsigned int>::max() or
         (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
@@ -1035,11 +1037,13 @@ LBSProblem::InitializeMaterials()
   }
 
   // Update transport views if available
-  if (grid_->local_cells.size() == cell_transport_views_.size())
-    for (const auto& cell : grid_->local_cells)
+  if (grid_->GetLocalCellCount() == cell_transport_views_.size())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
       const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
-      auto& transport_view = cell_transport_views_[cell.local_id];
+      auto& transport_view = cell_transport_views_[cell_local_id];
       transport_view.ReassignXS(*xs_ptr);
     }
 
@@ -1067,17 +1071,22 @@ LBSProblem::ComputeUnitIntegrals()
   log.Log() << program_timer.GetTimeString() << " Computing unit integrals.\n";
   const auto& sdm = *discretization_;
 
-  const size_t num_local_cells = grid_->local_cells.size();
+  const size_t num_local_cells = grid_->GetLocalCellCount();
   unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_->local_cells)
-    unit_cell_matrices_[cell.local_id] =
-      ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    unit_cell_matrices_[cell_local_id] =
+      ComputeUnitCellIntegrals(sdm, cell_local_id, grid_->GetCoordinateSystem());
+  }
 
-  const auto ghost_ids = grid_->cells.GetGhostGlobalIDs();
+  const auto ghost_ids = grid_->GetGhostGlobalIDs();
   for (auto ghost_id : ghost_ids)
+  {
+    const auto cell_local_id = grid_->MapCellGlobalID2LocalID(ghost_id);
     unit_ghost_cell_matrices_[ghost_id] =
-      ComputeUnitCellIntegrals(sdm, grid_->cells[ghost_id], grid_->GetCoordinateSystem());
+      ComputeUnitCellIntegrals(sdm, cell_local_id, grid_->GetCoordinateSystem());
+  }
 
   // Assessing global unit cell matrix storage
   std::array<size_t, 2> num_local_ucms = {unit_cell_matrices_.size(),
@@ -1127,7 +1136,7 @@ LBSProblem::InitializeParrays()
   // Setup precursor vector
   if (options_.use_precursors)
   {
-    size_t num_precursor_dofs = grid_->local_cells.size() * max_precursors_per_material_;
+    size_t num_precursor_dofs = grid_->GetLocalCellCount() * max_precursors_per_material_;
     precursor_new_local_.assign(num_precursor_dofs, 0.0);
     precursor_old_local_.assign(num_precursor_dofs, 0.0);
   }
@@ -1137,14 +1146,15 @@ LBSProblem::InitializeParrays()
   min_cell_dof_count_ = std::numeric_limits<unsigned int>::max();
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
-  cell_transport_views_.reserve(grid_->local_cells.size());
-  for (auto& cell : grid_->local_cells)
+  cell_transport_views_.reserve(grid_->GetLocalCellCount());
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    size_t num_nodes = discretization_->GetCellNumNodes(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    size_t num_nodes = discretization_->GetCellNumNodes(cell_local_id);
 
     // compute cell volumes
     double cell_volume = 0.0;
-    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
+    const auto& IntV_shapeI = unit_cell_matrices_[cell_local_id].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
       cell_volume += IntV_shapeI(i);
 
@@ -1153,9 +1163,9 @@ LBSProblem::InitializeParrays()
     const size_t num_faces = cell.faces.size();
     std::vector<bool> face_local_flags(num_faces, true);
     std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
-    std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
+    std::vector<std::uint32_t> neighbor_cell_local_ids(num_faces, 0);
     int f = 0;
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
       if (not face.has_neighbor)
       {
@@ -1167,7 +1177,8 @@ LBSProblem::InitializeParrays()
         const int neighbor_partition = face.GetNeighborPartitionID(grid_.get());
         face_local_flags[f] = (neighbor_partition == opensn::mpi_comm.rank());
         face_locality[f] = neighbor_partition;
-        neighbor_cell_ptrs[f] = &grid_->cells[face.neighbor_id];
+        auto neigh_local_cell_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
+        neighbor_cell_local_ids[f] = neigh_local_cell_id;
       }
 
       ++f;
@@ -1183,7 +1194,7 @@ LBSProblem::InitializeParrays()
                                        cell_volume,
                                        face_local_flags,
                                        face_locality,
-                                       neighbor_cell_ptrs);
+                                       neighbor_cell_local_ids);
     block_MG_counter += num_nodes * num_groups_ * num_moments_;
   } // for local cell
   cell_outflow_views_.clear();
@@ -1193,13 +1204,13 @@ LBSProblem::InitializeParrays()
   // Populate grid nodal mappings
   // This is used in the Flux Data Structure (FLUDS).
   grid_nodal_mappings_.clear();
-  grid_nodal_mappings_.reserve(grid_->local_cells.size());
-  for (auto& cell : grid_->local_cells)
+  grid_nodal_mappings_.reserve(grid_->GetLocalCellCount());
+  for (const auto& cell : grid_->GetLocalCells())
   {
     CellFaceNodalMapping cell_nodal_mapping;
     cell_nodal_mapping.reserve(cell.faces.size());
 
-    for (auto& face : cell.faces)
+    for (const auto& face : cell.faces)
     {
       std::vector<short> face_node_mapping;
       std::vector<short> cell_node_mapping;

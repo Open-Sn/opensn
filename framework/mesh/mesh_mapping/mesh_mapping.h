@@ -9,7 +9,7 @@
 
 namespace opensn
 {
-class MeshContinuum;
+class Mesh;
 class Cell;
 
 /**
@@ -23,8 +23,7 @@ public:
   MeshMapping() = default;
 
   /// Builds the mapping.
-  void Build(const std::shared_ptr<MeshContinuum>& fine_grid,
-             const std::shared_ptr<MeshContinuum>& coarse_grid);
+  void Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr<Mesh>& coarse_grid);
 
   /// Helper struct for storing the mapping to a coarse cell from a fine cell.
   struct CoarseMapping
@@ -33,7 +32,7 @@ public:
     explicit CoarseMapping(const Cell& coarse_cell);
 
     /// The fine cells contained within a coarse cell.
-    std::vector<const Cell*> fine_cells;
+    std::vector<std::uint32_t> fine_cell_local_ids;
     /// The fine cell faces contained within each coarse cell face.
     /// Outer index coarse cell face index (size == # of faces in coarse cell)
     /// Inner index is arbitrary and entries are fine Cell -> fine CellFace index
@@ -47,21 +46,21 @@ public:
     explicit FineMapping(const Cell& fine_cell);
 
     /// The coarse cell that the fine cell is contained within.
-    const Cell* coarse_cell;
+    std::uint32_t coarse_cell_local_id;
     /// The coarse CellFace index each fine CellFace is contained within (if any)
     std::vector<size_t> coarse_faces;
   };
 
   /// Get the mapping from the given coarse mesh cell.
-  const CoarseMapping& GetCoarseMapping(const Cell& coarse_cell) const;
+  const CoarseMapping& GetCoarseMapping(std::uint32_t coarse_cell_local_id) const;
   /// Get the mapping for the given fine mesh cell.
-  const FineMapping& GetFineMapping(const Cell& fine_cell) const;
+  const FineMapping& GetFineMapping(std::uint32_t cell_local_id) const;
 
 private:
   /// Mapping for coarse cells to fine cells.
-  std::unordered_map<const Cell*, CoarseMapping> coarse_to_fine_;
-  /// Mapping for fine cells to a coarse cell.
-  std::unordered_map<const Cell*, FineMapping> fine_to_coarse_;
+  std::unordered_map<std::uint32_t, CoarseMapping> coarse_to_fine_;
+  /// Mapping for fine cells to a coarse cell : local cell id of a fine cell -> cell mapping
+  std::unordered_map<std::uint32_t, FineMapping> fine_to_coarse_;
 
 public:
   /// Identifier for an invalid face index that means a face maps to nothing.

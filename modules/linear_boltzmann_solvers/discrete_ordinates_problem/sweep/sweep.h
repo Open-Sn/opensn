@@ -13,7 +13,7 @@ namespace opensn
 
 class Cell;
 class SPDS;
-class MeshContinuum;
+class Mesh;
 
 inline constexpr double FACE_ORIENTATION_TOLERANCE = 1.0e-12;
 
@@ -40,8 +40,7 @@ struct Task
 {
   unsigned int num_dependencies;
   std::vector<std::uint32_t> successors;
-  uint64_t reference_id;
-  const Cell* cell_ptr;
+  std::uint32_t cell_local_id;
   bool completed = false;
 };
 
@@ -61,6 +60,6 @@ std::vector<std::vector<std::vector<int>>>
 BatchCommunicateLocationDependencies(const std::vector<std::vector<int>>& local_deps);
 
 /// Print a sweep ordering to file.
-void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum);
+void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<Mesh> vol_continuum);
 
 } // namespace opensn

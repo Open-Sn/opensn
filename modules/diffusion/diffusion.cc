@@ -4,7 +4,7 @@
 #include "modules/diffusion/diffusion.h"
 #include "framework/logging/log_format.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -64,7 +64,7 @@ DiffusionSolver::DiffusionSolver(std::string name,
                                  const bool requires_ghosts,
                                  const bool verbose)
   : name_(std::move(name)),
-    grid_(sdm.GetGrid()),
+    grid_(sdm.GetMesh()),
     sdm_(sdm),
     uk_man_(uk_man),
     bcs_(std::move(bcs)),

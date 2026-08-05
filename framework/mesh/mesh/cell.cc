@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh/mesh.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/matrix3x3.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
@@ -57,49 +57,48 @@ CellTypeName(const CellType type)
 }
 
 bool
-CellFace::IsNeighborLocal(const MeshContinuum* grid) const
+CellFace::IsNeighborLocal(const Mesh* grid) const
 {
   if (not has_neighbor)
     return false;
   if (grid->GetNumPartitions() == 1)
     return true;
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   return (adj_cell.partition_id == opensn::mpi_comm.rank());
 }
 
 int
-CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
+CellFace::GetNeighborPartitionID(const Mesh* grid) const
 {
   if (not has_neighbor)
     return -1;
   if (grid->GetNumPartitions() == 1)
     return 0;
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   return adj_cell.partition_id;
 }
 
 std::uint32_t
-CellFace::GetNeighborLocalID(const MeshContinuum* grid) const
+CellFace::GetNeighborLocalID(const Mesh* grid) const
 {
   if (not has_neighbor)
     return -1;
   if (grid->GetNumPartitions() == 1)
     return neighbor_id; // cause global_ids=local_ids
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   if (adj_cell.partition_id != opensn::mpi_comm.rank())
     throw std::logic_error("Cell local ID requested from a non-local cell.");
-
-  return adj_cell.local_id;
+  return grid->MapCellGlobalID2LocalID(neighbor_id);
 }
 
 int
-CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
+CellFace::GetNeighborAdjacentFaceIndex(const Mesh* grid) const
 {
   const auto& cur_face = *this; // just for readability
   // Check index validity
@@ -112,7 +111,7 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
     throw std::logic_error(outstr.str());
   }
 
-  const auto& adj_cell = grid->cells[cur_face.neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(cur_face.neighbor_id);
 
   int adj_face_idx = -1;
   std::set<uint64_t> cfvids(cur_face.vertex_ids.begin(),
@@ -153,12 +152,12 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
 }
 
 void
-CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell)
+CellFace::ComputeGeometricInfo(const Mesh* grid, const Cell& cell)
 {
   // Compute the centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
-    centroid += grid->vertices[vid];
+    centroid += grid->GlobalVertex(vid);
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute areas and normals
@@ -187,8 +186,8 @@ CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell)
   {
     // A polygon face is just a line. Normals and areas are
     // computed using the vertices.
-    const auto& v0 = grid->vertices[vertex_ids[0]];
-    const auto& v1 = grid->vertices[vertex_ids[1]];
+    const auto& v0 = grid->GlobalVertex(vertex_ids[0]);
+    const auto& v1 = grid->GlobalVertex(vertex_ids[1]);
 
     // The outward pointing normal is orthogonal to the vector
     // pointing from the first vertex to the second. This is
@@ -218,8 +217,8 @@ CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell)
     {
       const auto vid0 = vertex_ids[v];
       const auto vid1 = v < num_verts - 1 ? vertex_ids[v + 1] : vertex_ids[0];
-      const auto& v0 = grid->vertices[vid0];
-      const auto& v1 = grid->vertices[vid1];
+      const auto& v0 = grid->GlobalVertex(vid0);
+      const auto& v1 = grid->GlobalVertex(vid1);
 
       const auto subnormal = (v0 - centroid).Cross(v1 - centroid);
 
@@ -320,7 +319,6 @@ Cell::operator=(const Cell& other)
     throw std::runtime_error("Cannot copy from cells of different types.");
 
   global_id = other.global_id;
-  local_id = other.local_id;
   partition_id = other.partition_id;
   centroid = other.centroid;
   block_id = other.block_id;
@@ -331,27 +329,31 @@ Cell::operator=(const Cell& other)
 }
 
 void
-Cell::ComputeGeometricInfo(const MeshContinuum* grid)
+Cell::ComputeGeometricInfo(const Mesh* grid)
 {
   // Compute cell centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
-    centroid += grid->vertices[vid];
+    centroid += grid->GlobalVertex(vid);
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute face geometric data
   for (auto& face : faces)
     face.ComputeGeometricInfo(grid, *this);
+}
 
+double
+ComputeVolume(const Mesh& mesh, const Cell& cell)
+{
   // Compute cell volumes
-  volume = 0.0;
-  switch (cell_type_)
+  double volume = 0.0;
+  switch (cell.GetType())
   {
     // The volume of a slab is the distance between the two vertices.
     case CellType::SLAB:
     {
-      const auto& v0 = grid->vertices[vertex_ids[0]];
-      const auto& v1 = grid->vertices[vertex_ids[1]];
+      const auto& v0 = mesh.GlobalVertex(cell.vertex_ids[0]);
+      const auto& v1 = mesh.GlobalVertex(cell.vertex_ids[1]);
       volume = (v1 - v0).Norm();
       break;
     }
@@ -360,13 +362,13 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
     // with each edge and the centroid.
     case CellType::POLYGON:
     {
-      for (const auto& face : faces)
+      for (const auto& face : cell.faces)
       {
-        const auto& v0 = grid->vertices[face.vertex_ids[0]];
-        const auto& v1 = grid->vertices[face.vertex_ids[1]];
+        const auto& v0 = mesh.GlobalVertex(face.vertex_ids[0]);
+        const auto& v1 = mesh.GlobalVertex(face.vertex_ids[1]);
 
         const auto e0 = v1 - v0;
-        const auto e1 = centroid - v0;
+        const auto e1 = cell.centroid - v0;
         volume += 0.5 * std::fabs(e0.x * e1.y - e0.y * e1.x);
       }
       break;
@@ -376,19 +378,19 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
     // formed with on each face with the cell centroid.
     case CellType::POLYHEDRON:
     {
-      for (const auto& face : faces)
+      for (const auto& face : cell.faces)
       {
         const auto num_verts = face.vertex_ids.size();
         for (unsigned int v = 0; v < num_verts; ++v)
         {
           const auto vid1 = v < num_verts - 1 ? v + 1 : 0;
-          const auto& v0 = grid->vertices[face.vertex_ids[v]];
-          const auto& v1 = grid->vertices[face.vertex_ids[vid1]];
+          const auto& v0 = mesh.GlobalVertex(face.vertex_ids[v]);
+          const auto& v1 = mesh.GlobalVertex(face.vertex_ids[vid1]);
 
           Matrix3x3 J;
           J.SetColJVec(0, face.centroid - v0);
           J.SetColJVec(1, v1 - v0);
-          J.SetColJVec(2, centroid - v0);
+          J.SetColJVec(2, cell.centroid - v0);
           volume += J.Det() / 6.0;
         }
       }
@@ -397,6 +399,8 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
     default:
       throw std::runtime_error("Unknown cell type.");
   }
+
+  return volume;
 }
 
 ByteArray
@@ -405,7 +409,6 @@ Cell::Serialize() const
   ByteArray raw;
 
   raw.Write<uint64_t>(global_id);
-  raw.Write<std::uint32_t>(local_id);
   raw.Write<int>(partition_id);
   raw.Write<double>(centroid.x);
   raw.Write<double>(centroid.y);
@@ -430,7 +433,6 @@ Cell
 Cell::DeSerialize(const ByteArray& raw, size_t& address)
 {
   auto cell_global_id = raw.Read<uint64_t>(address, &address);
-  auto cell_local_id = raw.Read<std::uint32_t>(address, &address);
   auto cell_prttn_id = raw.Read<int>(address, &address);
   auto cell_centroid_x = raw.Read<double>(address, &address);
   auto cell_centroid_y = raw.Read<double>(address, &address);
@@ -442,7 +444,6 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
 
   Cell cell(cell_type, cell_sub_type);
   cell.global_id = cell_global_id;
-  cell.local_id = cell_local_id;
   cell.partition_id = cell_prttn_id;
   cell.centroid.x = cell_centroid_x;
   cell.centroid.y = cell_centroid_y;
@@ -470,7 +471,6 @@ Cell::ToString() const
   outstr << "cell_type: " << CellTypeName(cell_type_) << "\n";
   outstr << "cell_sub_type: " << CellTypeName(cell_sub_type_) << "\n";
   outstr << "global_id: " << global_id << "\n";
-  outstr << "local_id: " << local_id << "\n";
   outstr << "partition_id: " << partition_id << "\n";
   outstr << "centroid: " << centroid.PrintStr() << "\n";
   outstr << "block_id: " << block_id << "\n";

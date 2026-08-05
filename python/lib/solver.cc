@@ -689,7 +689,7 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    mesh : MeshContinuum
+    mesh : Mesh
         Cartesian two- or three-dimensional spatial mesh.
     num_groups : int
         Number of energy groups.
@@ -767,7 +767,7 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    mesh : MeshContinuum
+    mesh : Mesh
         The spatial mesh.
     num_groups : int
         The total number of energy groups.
@@ -1149,7 +1149,7 @@ WrapLBS(py::module& slv)
     "ComputeLeakage",
     [](DiscreteOrdinatesProblem& self, py::list bnd_names)
     {
-      auto grid = self.GetGrid();
+      auto grid = self.GetMesh();
       // get the supported boundaries
       std::map<std::string, std::uint64_t> allowed_bd_names = grid->GetBoundaryNameMap();
       std::map<std::uint64_t, std::string> allowed_bd_ids = grid->GetBoundaryIDMap();
@@ -1183,7 +1183,7 @@ WrapLBS(py::module& slv)
       }
       else
       {
-        bndry_ids = self.GetGrid()->GetUniqueBoundaryIDs();
+        bndry_ids = self.GetMesh()->GetUniqueBoundaryIDs();
       }
       // compute the leakage
       std::map<std::uint64_t, std::vector<double>> leakage = ComputeLeakage(self, bndry_ids);
@@ -1274,7 +1274,7 @@ WrapLBS(py::module& slv)
 
     Parameters
     ----------
-    mesh : MeshContinuum
+    mesh : Mesh
         The spatial mesh.
     coord_system : int
         Coordinate system to use. Must be set to 2 (cylindrical coordinates).

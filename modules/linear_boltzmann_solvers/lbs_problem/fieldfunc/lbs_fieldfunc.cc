@@ -139,15 +139,16 @@ LBSProblem::ComputeScalarFluxFieldFunctionData(const unsigned int g, const unsig
   const auto& phi_uk_man = flux_moments_uk_man_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
-  for (const auto& cell : grid_->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
-      const auto imapB = sdm.MapDOFLocal(cell, i);
+      const auto imapA = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, g);
+      const auto imapB = sdm.MapDOFLocal(cell_local_id, i);
       data_vector_local[imapB] = phi_new_local_[imapA];
     }
   }
@@ -181,9 +182,10 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
   const auto& phi_uk_man = flux_moments_uk_man_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
-  for (const auto& cell : grid_->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& xs = block_id_to_xs_map_.at(cell.block_id);
     const auto* coeffs = xs->GetByName(xs_name);
@@ -197,8 +199,8 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i);
-      const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+      const auto imapA = sdm.MapDOFLocal(cell_local_id, i);
+      const auto imapB = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
       double nodal_value = 0.0;
       for (unsigned int g = 0; g < num_groups_; ++g)
@@ -219,12 +221,13 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
   std::vector<double> data_vector_power_local(local_node_count_, 0.0);
   local_total_power = 0.0;
 
-  for (const auto& cell : grid_->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto& Vi = unit_cell_matrices_[cell.local_id].intV_shapeI;
+    const auto& Vi = unit_cell_matrices_[cell_local_id].intV_shapeI;
     const auto& xs = block_id_to_xs_map_.at(cell.block_id);
 
     if (not xs->IsFissionable())
@@ -232,8 +235,8 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i);
-      const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+      const auto imapA = sdm.MapDOFLocal(cell_local_id, i);
+      const auto imapB = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
       double nodal_power = 0.0;
       for (unsigned int g = 0; g < num_groups_; ++g)

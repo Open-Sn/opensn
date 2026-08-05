@@ -8,7 +8,7 @@
 namespace opensn
 {
 
-SpatialDiscretization::SpatialDiscretization(const std::shared_ptr<MeshContinuum> grid,
+SpatialDiscretization::SpatialDiscretization(const std::shared_ptr<Mesh> grid,
                                              SpatialDiscretizationType sdm_type)
   : UNITARY_UNKNOWN_MANAGER({std::make_pair(UnknownType::SCALAR, 0)}), grid_(grid), type_(sdm_type)
 {
@@ -20,8 +20,8 @@ SpatialDiscretization::GetType() const
   return type_;
 }
 
-std::shared_ptr<MeshContinuum>
-SpatialDiscretization::GetGrid() const
+std::shared_ptr<Mesh>
+SpatialDiscretization::GetMesh() const
 {
   return grid_;
 }
@@ -61,21 +61,22 @@ SpatialDiscretization::GetNumLocalAndGhostDOFs(const UnknownManager& unknown_man
 }
 
 size_t
-SpatialDiscretization::GetCellNumNodes(const Cell& cell) const
+SpatialDiscretization::GetCellNumNodes(std::uint32_t cell_local_id) const
 {
-  return GetCellMapping(cell).GetNumNodes();
+  return GetLocalCellMapping(cell_local_id).GetNumNodes();
 }
 
 const std::vector<Vector3>&
-SpatialDiscretization::GetCellNodeLocations(const Cell& cell) const
+SpatialDiscretization::GetCellNodeLocations(std::uint32_t cell_local_id) const
 {
-  return GetCellMapping(cell).GetNodeLocations();
+  return GetLocalCellMapping(cell_local_id).GetNodeLocations();
 }
 
 std::pair<std::set<uint32_t>, std::set<uint32_t>>
-SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(const Cell& cell) const
+SpatialDiscretization::MakeCellInternalAndBndryNodeIDs(std::uint32_t cell_local_id) const
 {
-  const auto& cell_mapping = GetCellMapping(cell);
+  const auto& cell_mapping = GetLocalCellMapping(cell_local_id);
+  const auto& cell = GetMesh()->GetLocalCell(cell_local_id);
   const size_t num_faces = cell.faces.size();
   const size_t num_nodes = cell_mapping.GetNumNodes();
 
@@ -104,9 +105,10 @@ std::vector<std::vector<std::vector<int>>>
 SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) const
 {
   std::vector<std::vector<std::vector<int>>> cell_adj_mapping;
-  for (const auto& cell : grid_->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = this->GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = this->GetLocalCellMapping(cell_local_id);
     const auto& node_locations = cell_mapping.GetNodeLocations();
     const size_t num_faces = cell.faces.size();
 
@@ -119,8 +121,8 @@ SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) cons
       std::vector<int> face_adj_mapping(num_face_nodes, -1);
       if (face.has_neighbor)
       {
-        const auto& adj_cell = grid_->cells[face.neighbor_id];
-        const auto& adj_cell_mapping = this->GetCellMapping(adj_cell);
+        const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
+        const auto& adj_cell_mapping = this->GetLocalCellMapping(adj_cell_local_id);
         const auto& adj_node_locations = adj_cell_mapping.GetNodeLocations();
         const size_t adj_num_nodes = adj_cell_mapping.GetNumNodes();
 
@@ -177,17 +179,19 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
 
     const size_t num_comps = ukA.num_components;
 
-    for (const auto& cell : grid_->local_cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = this->GetCellMapping(cell);
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = this->GetLocalCellMapping(cell_local_id);
       const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
         for (size_t c = 0; c < num_comps; ++c)
         {
-          const auto fmap = MapDOFLocal(cell, i, ukmanF, ukidF, c);
-          const auto imap = MapDOFLocal(cell, i, ukmanT, ukidT, c);
+          const auto fmap = MapDOFLocal(cell_local_id, i, ukmanF, ukidF, c);
+          const auto imap = MapDOFLocal(cell_local_id, i, ukmanT, ukidT, c);
 
           to_vector[imap] = from_vector[fmap];
         } // for component c

@@ -7,7 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
@@ -289,7 +289,7 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
                              "' in ResponseEvaluator does not support \"function\".");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
-  auto grid = do_problem_->GetGrid();
+  auto grid = do_problem_->GetMesh();
   const auto bnd_name_map = grid->GetBoundaryNameMap();
   OpenSnInvalidArgumentIf(not bnd_name_map.count(bndry_name),
                           "Boundary \"" + bndry_name + "\" does not exist.");
@@ -362,7 +362,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                        "If boundary sources are set, adjoint angular fluxes "
                        "must be available for response evaluation.");
 
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
@@ -373,11 +373,13 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   // Material sources
   if (not material_sources_.empty())
   {
-    for (const auto& cell : grid->local_cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = discretization.GetCellMapping(cell);
-      const auto& transport_view = transport_views[cell.local_id];
-      const auto& fe_values = unit_cell_matrices[cell.local_id];
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+      const auto& transport_view = transport_views[cell_local_id];
+      const auto& fe_values = unit_cell_matrices[cell_local_id];
       const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
       if (material_sources_.count(cell.block_id) > 0)
@@ -405,10 +407,12 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto num_gs_angles = quadrature->GetNumAngles();
       const auto& num_gs_groups = groupset.GetNumGroups();
 
-      for (const auto& cell : grid->local_cells)
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
-        const auto& cell_mapping = discretization.GetCellMapping(cell);
-        const auto& fe_values = unit_cell_matrices[cell.local_id];
+        const auto& cell = grid->GetLocalCell(cell_local_id);
+        const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+        const auto& fe_values = unit_cell_matrices[cell_local_id];
 
         size_t f = 0;
         for (const auto& face : cell.faces)
@@ -420,7 +424,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
-              const auto& node = grid->vertices[cell.vertex_ids[i]];
+              const auto& node = grid->GlobalVertex(cell.vertex_ids[i]);
               const auto& intF_shapeI = fe_values.intS_shapeI[f](i);
 
               const auto psi_bndry = EvaluateBoundaryCondition(bndry_id, node, groupset);
@@ -433,7 +437,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                 {
                   const auto& wt = quadrature->GetWeight(n);
                   const auto weight = -mu * wt * intF_shapeI;
-                  const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
+                  const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, n, 0);
 
                   for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
                     local_response +=
@@ -453,8 +457,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   for (const auto& point_source : point_sources_)
     for (const auto& subscriber : point_source->GetSubscribers())
     {
-      const auto& cell = grid->local_cells[subscriber.cell_local_id];
-      const auto& transport_view = transport_views[cell.local_id];
+      const auto& transport_view = transport_views[subscriber.cell_local_id];
 
       const auto src = point_source->GetStrength(0.0, num_groups);
       const auto& vol_wt = subscriber.volume_weight;
@@ -473,17 +476,16 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   for (const auto& volumetric_source : volumetric_sources_)
     for (const std::uint32_t local_id : volumetric_source->GetSubscribers())
     {
-      const auto& cell = grid->local_cells[local_id];
-      const auto& transport_view = transport_views[cell.local_id];
-      const auto& fe_values = unit_cell_matrices[cell.local_id];
-      const auto& nodes = discretization.GetCellNodeLocations(cell);
+      const auto& transport_view = transport_views[local_id];
+      const auto& fe_values = unit_cell_matrices[local_id];
+      const auto& nodes = discretization.GetCellNodeLocations(local_id);
 
       const auto num_cell_nodes = transport_view.GetNumNodes();
       for (int i = 0; i < num_cell_nodes; ++i)
       {
         const auto& V_i = fe_values.intV_shapeI(i);
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
-        const auto& vals = volumetric_source->Evaluate(cell, nodes[i], num_groups, 0.0);
+        const auto& vals = volumetric_source->Evaluate(local_id, nodes[i], num_groups, 0.0);
         for (unsigned int g = 0; g < num_groups; ++g)
           local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
       }

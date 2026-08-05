@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/error.h"
 #include "framework/utils/hdf_utils.h"
 #include <algorithm>
@@ -28,7 +28,7 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
   const auto problem_name = do_problem.GetName();
   const auto num_groups = do_problem.GetNumGroups();
   const auto scattering_order = do_problem.GetScatteringOrder();
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& transport_views = do_problem.GetCellTransportViews();
 
@@ -156,8 +156,10 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
       .append(".");
     OpenSnInvalidArgumentIf(uncollided_moment.size() != file_node_offset * num_groups, size_error);
 
-    for (const auto& cell : grid->local_cells)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto file_cell_it = cell_id_to_file_layout.find(cell.global_id);
       std::string missing_cell_error = problem_name + ": local cell ";
       missing_cell_error.append(std::to_string(cell.global_id))
@@ -166,16 +168,16 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
         .append("\".");
       OpenSnInvalidArgumentIf(file_cell_it == cell_id_to_file_layout.end(), missing_cell_error);
 
-      const auto num_nodes = discretization.GetCellNumNodes(cell);
+      const auto num_nodes = discretization.GetCellNumNodes(cell_local_id);
       const auto [file_cell_offset, file_num_nodes, file_cell_ordinal] = file_cell_it->second;
       OpenSnInvalidArgumentIf(file_num_nodes != num_nodes,
                               problem_name + ": node count mismatch for cell " +
                                 std::to_string(cell.global_id) + ".");
-      const auto& transport_view = transport_views[cell.local_id];
+      const auto& transport_view = transport_views[cell_local_id];
       const auto& sigma_t = transport_view.GetXS().GetSigmaTotal();
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto& vertex = grid->vertices[cell.vertex_ids[i]];
+        const auto& vertex = grid->GlobalVertex(cell.vertex_ids[i]);
         constexpr double coordinate_tolerance = 1.0e-12;
         OpenSnInvalidArgumentIf(
           std::abs(file_nodes_x[file_cell_offset + i] - vertex.x) > coordinate_tolerance or

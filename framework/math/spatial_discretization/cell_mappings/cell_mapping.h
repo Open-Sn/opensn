@@ -13,7 +13,7 @@
 namespace opensn
 {
 
-class MeshContinuum;
+class Mesh;
 struct Vector3;
 class Cell;
 class VolumetricFiniteElementData;
@@ -31,7 +31,7 @@ public:
   const Cell& GetCell() const { return cell_; }
 
   /// Returns the grid on which the cell for this mapping lives.
-  std::shared_ptr<MeshContinuum> GetGrid() const { return grid_; }
+  std::shared_ptr<Mesh> GetMesh() const { return grid_; }
 
   /// Returns the number of nodes on this element.
   size_t GetNumNodes() const { return num_nodes_; }
@@ -87,13 +87,13 @@ public:
   virtual ~CellMapping() = default;
 
 protected:
-  CellMapping(std::shared_ptr<MeshContinuum> grid,
+  CellMapping(std::shared_ptr<Mesh> grid,
               const Cell& cell,
               size_t num_nodes,
               std::vector<Vector3> node_locations,
               std::vector<std::vector<int>> face_node_mappings);
 
-  const std::shared_ptr<MeshContinuum> grid_;
+  const std::shared_ptr<Mesh> grid_;
   const Cell& cell_;
 
   const size_t num_nodes_;

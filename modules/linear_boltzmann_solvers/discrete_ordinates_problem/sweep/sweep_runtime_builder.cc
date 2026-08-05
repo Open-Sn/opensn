@@ -9,8 +9,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/logging/log.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
-#include "framework/mesh/mesh_continuum/grid_face_histogram.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/grid_face_histogram.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep_parallel_for.h"
 #include "framework/utils/error.h"
@@ -76,7 +76,7 @@ BuildDirectionToSweepOrderingMap(const UniqueSOGroupings& unique_so_groupings)
 
 std::pair<UniqueSOGroupings, DirIDToSOMap>
 AssociateSOsAndDirections(const std::string& problem_name,
-                          const std::shared_ptr<MeshContinuum>& grid,
+                          const std::shared_ptr<Mesh>& grid,
                           const AngularQuadrature& quadrature,
                           AngleAggregationType agg_type,
                           GeometryType geometry_type)
@@ -225,7 +225,7 @@ void
 BuildSweepOrderingGroups(SweepRuntime& runtime,
                          const std::string& problem_name,
                          const std::vector<LBSGroupset>& groupsets,
-                         const std::shared_ptr<MeshContinuum>& grid,
+                         const std::shared_ptr<Mesh>& grid,
                          GeometryType geometry_type,
                          std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map)
 {
@@ -283,7 +283,7 @@ std::vector<std::shared_ptr<AAH_SPDS>> GetAAHSPDSList(const SweepRuntime& runtim
 
 void
 BuildAAHSPDS(SweepRuntime& runtime,
-             const std::shared_ptr<MeshContinuum>& grid,
+             const std::shared_ptr<Mesh>& grid,
              const SPDSFaceNeighborInfoVec& face_neighbor_info,
              const std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map,
              bool use_gpus)
@@ -317,7 +317,7 @@ BuildAAHSPDS(SweepRuntime& runtime,
 
 void
 BuildCBCSPDS(SweepRuntime& runtime,
-             const std::shared_ptr<MeshContinuum>& grid,
+             const std::shared_ptr<Mesh>& grid,
              const SPDSFaceNeighborInfoVec& face_neighbor_info,
              const std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map)
 {
@@ -484,7 +484,7 @@ BuildAAHGlobalSweepGraph(SweepRuntime& runtime)
 
 void
 BuildAAHCPUFludsCommonData(SweepRuntime& runtime,
-                           const std::shared_ptr<MeshContinuum>& grid,
+                           const std::shared_ptr<Mesh>& grid,
                            const std::vector<CellFaceNodalMapping>& grid_nodal_mappings)
 {
   struct WorkItem
@@ -556,7 +556,7 @@ BuildCBCCPUFludsCommonData(SweepRuntime& runtime,
 SweepRuntime
 BuildSweepRuntime(const std::string& problem_name,
                   const std::vector<LBSGroupset>& groupsets,
-                  const std::shared_ptr<MeshContinuum>& grid,
+                  const std::shared_ptr<Mesh>& grid,
                   const std::string& sweep_type,
                   bool use_gpus,
                   const SpatialDiscretization& discretization,

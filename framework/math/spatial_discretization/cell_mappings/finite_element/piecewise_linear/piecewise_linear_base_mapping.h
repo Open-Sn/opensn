@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
 #include <utility>
 
@@ -19,13 +18,13 @@ class PieceWiseLinearBaseMapping : public CellMapping
 {
 public:
   /// Constructor.
-  PieceWiseLinearBaseMapping(std::shared_ptr<MeshContinuum> grid,
+  PieceWiseLinearBaseMapping(std::shared_ptr<Mesh> grid,
                              const Cell& cell,
                              size_t num_nodes,
                              std::vector<std::vector<int>> face_node_mappings);
 
 protected:
-  static std::vector<Vector3> GetVertexLocations(const std::shared_ptr<MeshContinuum>& grid,
+  static std::vector<Vector3> GetVertexLocations(const std::shared_ptr<Mesh>& grid,
                                                  const Cell& cell);
 
   /**

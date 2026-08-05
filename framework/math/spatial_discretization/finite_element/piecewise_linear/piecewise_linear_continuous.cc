@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -12,7 +12,7 @@
 namespace opensn
 {
 
-PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<MeshContinuum> grid,
+PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<Mesh> grid,
                                                      QuadratureOrder q_order)
   : PieceWiseLinearBase(grid, q_order, SpatialDiscretizationType::PIECEWISE_LINEAR_CONTINUOUS)
 {
@@ -22,7 +22,7 @@ PieceWiseLinearContinuous::PieceWiseLinearContinuous(const std::shared_ptr<MeshC
 }
 
 std::shared_ptr<PieceWiseLinearContinuous>
-PieceWiseLinearContinuous::New(const std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order)
+PieceWiseLinearContinuous::New(const std::shared_ptr<Mesh> grid, QuadratureOrder q_order)
 {
   return std::shared_ptr<PieceWiseLinearContinuous>(new PieceWiseLinearContinuous(grid, q_order));
 }
@@ -33,7 +33,7 @@ PieceWiseLinearContinuous::OrderNodes()
   // Build set of local scope nodes
   // ls_node_id = local scope node id
   std::set<uint64_t> ls_node_ids_set;
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
     for (uint64_t node_id : cell.vertex_ids)
       ls_node_ids_set.insert(node_id);
 
@@ -49,10 +49,10 @@ PieceWiseLinearContinuous::OrderNodes()
 
   // Now we add the partitions associated with the
   // ghost cells.
-  const auto ghost_cell_ids = grid_->cells.GetGhostGlobalIDs();
+  const auto ghost_cell_ids = grid_->GetGhostGlobalIDs();
   for (const uint64_t ghost_id : ghost_cell_ids)
   {
-    const auto& ghost_cell = grid_->cells[ghost_id];
+    const auto& ghost_cell = grid_->GetGlobalCell(ghost_id);
     for (const uint64_t vid : ghost_cell.vertex_ids)
       ls_node_ids_psubs[vid].insert(ghost_cell.partition_id);
   } // for ghost_id
@@ -221,12 +221,13 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   nodal_nnz_in_diag.resize(local_base_block_size_, 0);
   nodal_nnz_off_diag.resize(local_base_block_size_, 0);
 
-  for (auto& cell : grid_->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = GetLocalCellMapping(cell_local_id);
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto ir = MapDOF(cell, i);
+      const auto ir = MapDOF(cell.global_id, i);
 
       if (dof_handler.IsMapLocal(ir))
       {
@@ -235,7 +236,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const auto jr = MapDOF(cell, j);
+          const auto jr = MapDOF(cell.global_id, j);
 
           if (IS_VALUE_IN_VECTOR(node_links, jr))
             continue;
@@ -260,13 +261,14 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
   using ROWJLINKS = std::pair<uint64_t, std::vector<uint64_t>>;
   std::vector<ROWJLINKS> ir_links;
 
-  for (auto& cell : grid_->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = GetLocalCellMapping(cell_local_id);
 
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto ir = MapDOF(cell, i);
+      const auto ir = MapDOF(cell.global_id, i);
 
       if (not dof_handler.IsMapLocal(ir))
       {
@@ -287,7 +289,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         auto& node_links = cur_ir_link->second;
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const auto jr = MapDOF(cell, j);
+          const auto jr = MapDOF(cell.global_id, j);
 
           if (IS_VALUE_IN_VECTOR(node_links, jr))
             continue;
@@ -414,12 +416,13 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 }
 
 uint64_t
-PieceWiseLinearContinuous::MapDOF(const Cell& cell,
+PieceWiseLinearContinuous::MapDOF(std::uint32_t cell_global_id,
                                   const unsigned int node,
                                   const UnknownManager& unknown_manager,
                                   const unsigned int unknown_id,
                                   const unsigned int component) const
 {
+  const auto& cell = GetMesh()->GetGlobalCell(cell_global_id);
   const uint64_t vertex_id = cell.vertex_ids[node];
 
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0,
@@ -452,12 +455,13 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
 }
 
 uint64_t
-PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
+PieceWiseLinearContinuous::MapDOFLocal(std::uint32_t cell_local_id,
                                        const unsigned int node,
                                        const UnknownManager& unknown_manager,
                                        const unsigned int unknown_id,
                                        const unsigned int component) const
 {
+  auto& cell = GetMesh()->GetLocalCell(cell_local_id);
   const uint64_t vertex_id = cell.vertex_ids[node];
 
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0, "Bad trouble");

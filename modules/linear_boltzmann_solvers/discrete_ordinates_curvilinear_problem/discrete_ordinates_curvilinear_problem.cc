@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <cmath>
@@ -39,7 +39,7 @@ DiscreteOrdinatesCurvilinearProblem::Create(const ParameterBlock& params)
     << "The curvilinear discrete-ordinates problem type is experimental. USE WITH CAUTION!"
     << std::endl;
 
-  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
+  const auto grid = params.GetParamValue<std::shared_ptr<Mesh>>("mesh");
   const auto geometry_type = grid->GetGeometryType();
 
   const auto primary_quadrature_order = [](GeometryType g) -> QuadratureOrder
@@ -202,7 +202,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
     Vector3(0.0, 1.0, 0.0),
     Vector3(0.0, 0.0, 1.0),
   };
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
     for (const auto& face : cell.faces)
     {
@@ -288,7 +288,9 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   // Define lambda for cell-wise comps
   auto ComputeCellUnitIntegrals = [&sdm, &swf](const Cell& cell)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto mesh = sdm.GetMesh();
+    const auto cell_local_id = mesh->MapCellGlobalID2LocalID(cell.global_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     //    const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
@@ -319,11 +321,14 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
                             {}};
   };
 
-  const size_t num_local_cells = grid_->local_cells.size();
+  const size_t num_local_cells = grid_->GetLocalCellCount();
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_->local_cells)
-    secondary_unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    secondary_unit_cell_matrices_[cell_local_id] = ComputeCellUnitIntegrals(cell);
+  }
 
   opensn::mpi_comm.barrier();
   log.Log() << "Secondary Cell matrices computed.";

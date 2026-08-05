@@ -5,10 +5,10 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/raytrace/raytracer.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
 #include "framework/data_types/vector3.h"
@@ -101,7 +101,7 @@ protected:
   void ProjectReflectedImageSources(unsigned int progress_interval);
 
   std::vector<double> RaytraceLine(RayTracer& ray_tracer,
-                                   const Cell& cell,
+                                   std::uint32_t cell_local_id,
                                    const Vector3& qp_xyz,
                                    const SourcePoint& source_point,
                                    double tolerance = 1.0e-12);
@@ -110,7 +110,7 @@ protected:
   /// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call
   /// (they are reset internally each call, so no manual clearing is needed between calls).
   void RaytraceLineInto(RayTracer& ray_tracer,
-                        const Cell& cell,
+                        std::uint32_t cell_local_id,
                         const Vector3& qp_xyz,
                         const SourcePoint& source_point,
                         std::vector<double>& phi_out,
@@ -121,7 +121,7 @@ protected:
 
   void SweepBulkRegion(const SourcePoint& source_point);
 
-  UncollidedMatrices ComputeUncollidedIntegrals(const Cell& cell, const Vector3& pt_loc);
+  UncollidedMatrices ComputeUncollidedIntegrals(std::uint32_t cell_local_id, const Vector3& pt_loc);
 
   void Execute(const std::string& file_name, unsigned int progress_interval);
 

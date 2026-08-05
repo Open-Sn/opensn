@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_generator/split_file_mesh_generator.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
@@ -24,7 +24,7 @@ SplitFileMeshGenerator::SplitFileMeshGenerator(const InputParameters& params)
 {
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 SplitFileMeshGenerator::Execute()
 {
   const auto num_mpi = mpi_comm.size();
@@ -50,7 +50,7 @@ SplitFileMeshGenerator::Execute()
   // Other locations wait here for files to be written
   mpi_comm.barrier();
 
-  std::shared_ptr<MeshContinuum> grid_ptr;
+  std::shared_ptr<Mesh> grid_ptr;
   if (mpi_comm.size() == num_partitions)
   {
     log.Log() << "Reading split-mesh";
@@ -361,26 +361,31 @@ SplitFileMeshGenerator::Create(const ParameterBlock& params)
   return factory.Create<SplitFileMeshGenerator>("mesh::SplitFileMeshGenerator", params);
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 {
-  auto grid_ptr = MeshContinuum::New();
-  grid_ptr->GetBoundaryIDMap() = mesh_info.boundary_id_map;
+  auto grid_ptr = Mesh::New();
   for (auto& [id, name] : mesh_info.boundary_id_map)
-    grid_ptr->GetBoundaryNameMap()[name] = id;
+    grid_ptr->SetBoundaryName(id, name);
 
   auto& cells = mesh_info.cells;
   auto& vertices = mesh_info.vertices;
 
   for (const auto& [vid, vertex] : vertices)
-    grid_ptr->vertices.Insert(vid, vertex);
+    grid_ptr->AddGlobalVertex(vid, vertex);
 
+  std::vector<Cell> local_cells;
+  std::vector<Cell> ghost_cells;
   for (const auto& [pidgid, raw_cell] : cells)
   {
     const auto& [cell_pid, cell_global_id] = pidgid;
     auto cell = SetupCell(raw_cell, cell_global_id, cell_pid);
-    grid_ptr->cells.PushBack(std::move(cell));
+    if (cell_pid == opensn::mpi_comm.rank())
+      local_cells.push_back(std::move(cell));
+    else
+      ghost_cells.push_back(std::move(cell));
   }
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells));
 
   grid_ptr->SetDimension(mesh_info.dimension);
   grid_ptr->SetCoordinateSystem(mesh_info.coord_sys);

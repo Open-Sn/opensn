@@ -38,7 +38,7 @@ struct SPDSFaceNeighborInfo
 
 using SPDSFaceNeighborInfoVec = std::vector<std::vector<SPDSFaceNeighborInfo>>;
 
-SPDSFaceNeighborInfoVec BuildSPDSFaceNeighborInfo(const MeshContinuum& grid);
+SPDSFaceNeighborInfoVec BuildSPDSFaceNeighborInfo(const Mesh& grid);
 
 class SPDS
 {
@@ -49,13 +49,10 @@ public:
    * \param omega The angular direction vector.
    * \param grid Reference to the grid.
    */
-  SPDS(const Vector3& omega, const std::shared_ptr<MeshContinuum>& grid)
-    : omega_(omega), grid_(grid)
-  {
-  }
+  SPDS(const Vector3& omega, const std::shared_ptr<Mesh>& grid) : omega_(omega), grid_(grid) {}
 
-  /// Return a reference to the MeshContinuum object.
-  std::shared_ptr<MeshContinuum> GetGrid() const { return grid_; }
+  /// Return a reference to the Mesh object.
+  std::shared_ptr<Mesh> GetMesh() const { return grid_; }
 
   /// Return a reference to the direction vector.
   const Vector3& GetOmega() const { return omega_; }
@@ -177,7 +174,7 @@ protected:
   /// Angular direction vector.
   Vector3 omega_;
   /// Reference to the grid.
-  const std::shared_ptr<MeshContinuum> grid_;
+  const std::shared_ptr<Mesh> grid_;
   /// Sweep-plane local subgrid associated with this SPDS.
   std::vector<std::uint32_t> spls_;
   /// Levelized sweep-plane local subgrid associated with this SPDS.

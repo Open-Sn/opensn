@@ -26,11 +26,11 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
   const auto gs_gi = groupset.first_group;
   const auto num_angles_in_as = angle_set.GetNumAngles();
   const auto group_angle_stride = gs_size * num_angles_in_as;
-  const auto& cell = *sweep_chunk.cell_;
-  const auto cell_local_id = cell.local_id;
-  const auto& cell_mapping = sweep_chunk.discretization_.GetCellMapping(cell);
+  const auto cell_local_id = sweep_chunk.cell_local_id_;
+  const auto& cell_mapping = sweep_chunk.discretization_.GetLocalCellMapping(cell_local_id);
   const auto& cell_transport_view = sweep_chunk.cell_transport_views_[cell_local_id];
   auto& cell_outflow_view = sweep_chunk.cell_outflow_views_[cell_local_id];
+  const auto& cell = sweep_chunk.grid_->GetLocalCell(cell_local_id);
   const std::size_t cell_num_faces = cell.faces.size();
   const auto& unit_mats = sweep_chunk.unit_cell_matrices_[cell_local_id];
   auto& fluds = *sweep_chunk.fluds_;
@@ -92,9 +92,8 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
   const double* psi_old = nullptr;
   if constexpr (time_dependent)
-    psi_old =
-      &sweep_chunk
-         .psi_old_[sweep_chunk.discretization_.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+    psi_old = &sweep_chunk.psi_old_[sweep_chunk.discretization_.MapDOFLocal(
+      cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
 
   const auto& as_angle_indices = angle_set.GetAngleIndices();
   PrepareNonlocalOutgoingPsi(sweep_chunk.workspace_,
@@ -152,7 +151,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
         const double* psi = nullptr;
         if (is_local_face)
-          psi = fluds.UpwindPsi(*cell_transport_view.FaceNeighbor(f),
+          psi = fluds.UpwindPsi(cell_transport_view.FaceNeighbor(f),
                                 face_nodal_mapping->cell_node_mapping_[fj],
                                 as_ss_idx);
         else if (not is_boundary_face)
@@ -308,7 +307,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
     if (sweep_chunk.SaveAngularFluxEnabled())
     {
       auto* psi_new = &sweep_chunk.destination_psi_[sweep_chunk.discretization_.MapDOFLocal(
-        cell, 0, groupset.psi_uk_man_, 0, 0)];
+        cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
 
       double theta = 1.0;
       double inv_theta = 1.0;
@@ -367,7 +366,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
         double* psi = nullptr;
         if (is_local_face)
-          psi = fluds.OutgoingPsi(cell, i, as_ss_idx);
+          psi = fluds.OutgoingPsi(cell_local_id, i, as_ss_idx);
         else if (not is_boundary_face)
           psi = fluds.NLOutgoingPsi(psi_nonlocal_outgoing, fi, as_ss_idx);
         else if (is_reflecting_boundary_face)

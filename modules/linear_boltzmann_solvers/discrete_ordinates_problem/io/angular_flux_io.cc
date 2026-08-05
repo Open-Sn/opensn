@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/hdf_utils.h"
 
 namespace opensn
@@ -29,11 +29,11 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   log.Log() << "Writing angular flux to " << file_base;
 
   // Write macro info
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 
-  auto num_local_cells = grid->local_cells.size();
+  auto num_local_cells = grid->GetLocalCellCount();
   auto num_local_nodes = discretization.GetNumLocalNodes();
   auto num_groupsets = groupsets.size();
 
@@ -49,12 +49,13 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   nodes_y.reserve(num_local_nodes);
   nodes_z.reserve(num_local_nodes);
 
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     cell_ids.push_back(cell.global_id);
-    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell_local_id));
 
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     for (const auto& node : nodes)
     {
       nodes_x.push_back(node.x);
@@ -91,14 +92,18 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
 
     // Write the groupset angular flux data
     std::vector<double> values;
-    for (const auto& cell : grid->local_cells)
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
-            const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, n, g);
             values.push_back(src[groupset_id][dof_map]);
           }
+    }
     H5WriteDataset1D(file.Id(), group_name + "/values", values);
   }
 }
@@ -129,7 +134,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   H5ReadAttribute(file.Id(), "mesh/num_local_cells", file_num_local_cells);
   H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes);
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 
@@ -157,13 +162,14 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   for (uint64_t c = 0; c < file_num_local_cells; ++c)
   {
     const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid->cells[cell_global_id];
+    const auto& cell = grid->GetGlobalCell(cell_global_id);
 
     if (not grid->IsCellLocal(cell_global_id))
       continue;
 
     // Check for cell compatibility
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes[c],
                          "Incompatible number of cell nodes encountered on cell " +
                            std::to_string(cell_global_id) + ".");
@@ -229,13 +235,14 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
     for (uint64_t c = 0; c < file_num_local_cells; ++c)
     {
       const auto cell_global_id = file_cell_ids[c];
-      const auto& cell = grid->cells[cell_global_id];
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+      const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
             const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
-            const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell_local_id, imap, uk_man, n, g);
             psi[dof_map] = values[v];
             ++v;
           }

@@ -4,9 +4,9 @@
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/data_types/vector_ghost_communicator/vector_ghost_communicator.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/field_functions/field_function_grid_based.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <cmath>
@@ -45,7 +45,7 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
 
   ref_ff_ = field_function_;
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
 
   // Assign each interpolation point to a single globally-determined owning cell.
   auto estimated_local_size = number_of_points_ / opensn::mpi_comm.size();
@@ -60,15 +60,16 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
   std::vector<uint32_t> local_owner_cell_lids(number_of_points_,
                                               std::numeric_limits<uint32_t>::max());
 
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     for (int p = 0; p < number_of_points_; ++p)
     {
       auto& point = tmp_points[p];
       if (grid->CheckPointInsideCell(cell, point) and cell.global_id < local_owner_cell_gids[p])
       {
         local_owner_cell_gids[p] = cell.global_id;
-        local_owner_cell_lids[p] = cell.local_id;
+        local_owner_cell_lids[p] = cell_local_id;
       }
     }
   }
@@ -103,7 +104,7 @@ FieldFunctionInterpolationLine::Execute()
   log.Log0Verbose1() << "Executing line interpolator.";
 
   const auto& sdm = ref_ff_->GetSpatialDiscretization();
-  const auto& grid = sdm.GetGrid();
+  const auto& grid = sdm.GetMesh();
   const auto& uk_man = ref_ff_->GetUnknownManager();
   const auto uid = 0;
   const auto cid = ref_component_;
@@ -118,8 +119,8 @@ FieldFunctionInterpolationLine::Execute()
   {
     auto& point = local_interpolation_points_[p];
     auto cell_local_index = local_cells_[p];
-    const auto& cell = grid->local_cells[cell_local_index];
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_index);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_index);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     Vector<double> shape_function_vals(num_nodes, 0.0);
@@ -127,7 +128,7 @@ FieldFunctionInterpolationLine::Execute()
     double point_value = 0.0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imap = sdm.MapDOFLocal(cell, i, uk_man, uid, cid);
+      const auto imap = sdm.MapDOFLocal(cell_local_index, i, uk_man, uid, cid);
       point_value += shape_function_vals(i) * field_data[imap];
     }
     local_interpolation_values_[p] = point_value;

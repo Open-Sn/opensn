@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/grid_vtk_utils.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <vtkPoints.h>
@@ -19,7 +19,7 @@ namespace opensn
 {
 
 void
-UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
+UploadCellGeometryDiscontinuous(const std::shared_ptr<Mesh> grid,
                                 const Cell& cell,
                                 int64_t& node_counter,
                                 vtkNew<vtkPoints>& points,
@@ -32,9 +32,9 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
   {
     uint64_t vgi = cell.vertex_ids[v];
     std::vector<double> d_node(3);
-    d_node[0] = grid->vertices[vgi].x;
-    d_node[1] = grid->vertices[vgi].y;
-    d_node[2] = grid->vertices[vgi].z;
+    d_node[0] = grid->GlobalVertex(vgi).x;
+    d_node[1] = grid->GlobalVertex(vgi).y;
+    d_node[2] = grid->GlobalVertex(vgi).z;
 
     points->InsertPoint(node_counter, d_node.data());
     cell_vids[v] = node_counter++;
@@ -526,7 +526,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
 }
 
 vtkNew<vtkUnstructuredGrid>
-PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool discontinuous)
+PrepareVtkUnstructuredGrid(const std::shared_ptr<Mesh> grid, bool discontinuous)
 {
   // Instantiate VTK items
   vtkNew<vtkUnstructuredGrid> ugrid;
@@ -551,7 +551,7 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
 
   // Populate cell information
   int64_t node_count = 0;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
     if (discontinuous)
       UploadCellGeometryDiscontinuous(grid, cell, node_count, points, ugrid);
@@ -559,7 +559,7 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
     {
       for (uint64_t vid : cell.vertex_ids)
       {
-        const auto& vertex = grid->vertices[vid];
+        const auto& vertex = grid->GlobalVertex(vid);
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
         vertex_map[vid] = node_count;
         ++node_count;

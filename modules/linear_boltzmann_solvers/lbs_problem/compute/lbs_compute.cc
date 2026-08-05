@@ -13,7 +13,7 @@ double
 ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& options = lbs_problem.GetOptions();
@@ -25,10 +25,11 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 
   // Loop over local cells
   double local_production = 0.0;
-  for (auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell_local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -73,7 +74,7 @@ double
 ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi)
 {
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   assert(phi.size() == lbs_problem.GetPhiNewLocal().size() && "ComputeFissionRate size mismatch.");
@@ -83,10 +84,11 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
 
   // Loop over local cells
   double local_fission_rate = 0.0;
-  for (auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell_local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -125,16 +127,17 @@ ComputePrecursors(LBSProblem& lbs_problem)
   auto& precursor_new_local = lbs_problem.GetPrecursorsNewLocal();
   precursor_new_local.assign(precursor_new_local.size(), 0.0);
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
 
   // Loop over cells
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& fe_values = unit_cell_matrices[cell.local_id];
-    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& fe_values = unit_cell_matrices[cell_local_id];
+    const auto& transport_view = cell_transport_views[cell_local_id];
     const double cell_volume = transport_view.GetVolume();
     assert(cell_volume > 0.0 && "ComputePrecursors encountered non-positive cell volume.");
 
@@ -146,7 +149,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
     // Loop over precursors
     for (unsigned int j = 0; j < precursors.size(); ++j)
     {
-      size_t dof = cell.local_id * J + j;
+      size_t dof = cell_local_id * J + j;
       const auto& precursor = precursors[j];
       assert(precursor.decay_constant > 0.0 &&
              "ComputePrecursors encountered non-positive precursor decay constant.");

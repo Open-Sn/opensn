@@ -85,7 +85,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                               std::vector<double>& delta_phi_local)
 {
 
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
@@ -99,16 +99,17 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   else
     std::fill(delta_phi_local.begin(), delta_phi_local.end(), 0.0);
 
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& S = block_id_to_xs_map.at(cell.block_id)->GetTransferMatrix(0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
       double& delta_phi_mapped = delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -133,7 +134,7 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                  std::vector<double>& ref_phi_new)
 {
 
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
@@ -142,17 +143,18 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
   const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
 
-  for (const auto& cell : grid->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto& xi_g = map_mat_id_2_tginfo.at(cell.block_id).spectrum;
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       const double delta_phi_mapped = delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];

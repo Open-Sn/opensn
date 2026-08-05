@@ -76,7 +76,7 @@ CBC_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
     ready_tasks_.pop_back();
     const auto& cell_task = (*task_list_)[task_idx];
 
-    sweep_chunk.SetCell(cell_task.cell_ptr);
+    sweep_chunk.SetCell(cell_task.cell_local_id);
     sweep_chunk.Sweep(*this);
 
     for (const auto& local_task_num : cell_task.successors)

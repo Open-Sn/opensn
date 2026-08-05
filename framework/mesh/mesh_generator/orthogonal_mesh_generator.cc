@@ -3,7 +3,7 @@
 
 #include "framework/mesh/mesh_generator/orthogonal_mesh_generator.h"
 #include "framework/graphs/graph_partitioner.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
@@ -170,7 +170,7 @@ RebalanceOrthogonalPartitions(std::vector<int>& cell_pids, const int num_partiti
 }
 
 void
-SetOrthogonalBoundaryMaps(const std::shared_ptr<MeshContinuum>& grid, const unsigned int dimension)
+SetOrthogonalBoundaryMaps(const std::shared_ptr<Mesh>& grid, const unsigned int dimension)
 {
   if (dimension >= 2)
   {
@@ -549,7 +549,7 @@ OrthogonalMeshGenerator::GenerateUnpartitionedMesh(
   throw std::logic_error("");
 }
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 OrthogonalMeshGenerator::Execute()
 {
   if (not distributed_generation_)
@@ -628,18 +628,26 @@ OrthogonalMeshGenerator::Execute()
     local_cell_pids.emplace(cell_gid, cell_pid);
   }
 
-  auto grid_ptr = MeshContinuum::New();
+  auto grid_ptr = Mesh::New();
   SetOrthogonalBoundaryMaps(grid_ptr, info.dimension);
 
   std::vector<uint64_t> vertices_needed;
-  for (const auto cell_gid : cells_needed)
+  std::vector<Cell> local_cells;
+  std::vector<Cell> ghost_cells;
+  for (const auto cell_global_id : cells_needed)
   {
-    const auto raw_cell = MakeLightWeightCell(info, node_sets_, cell_gid);
+    const auto raw_cell = MakeLightWeightCell(info, node_sets_, cell_global_id);
     for (const auto vid : raw_cell->vertex_ids)
       vertices_needed.push_back(vid);
 
-    grid_ptr->cells.PushBack(SetupCell(*raw_cell, cell_gid, local_cell_pids.at(cell_gid)));
+    const auto cell_pid = local_cell_pids.at(cell_global_id);
+    auto cell = SetupCell(*raw_cell, cell_global_id, cell_pid);
+    if (cell_pid == opensn::mpi_comm.rank())
+      local_cells.push_back(std::move(cell));
+    else
+      ghost_cells.push_back(std::move(cell));
   }
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells));
 
   SortUnique(vertices_needed);
   for (const auto vid : vertices_needed)
@@ -657,7 +665,7 @@ OrthogonalMeshGenerator::Execute()
       return std::array<size_t, 3>{xy % nx, xy / nx, static_cast<size_t>(vid % nz)};
     }();
 
-    grid_ptr->vertices.Insert(vid, Vertex(node_sets_, info.dimension, i, j, k));
+    grid_ptr->AddGlobalVertex(vid, Vertex(node_sets_, info.dimension, i, j, k));
   }
 
   grid_ptr->SetDimension(info.dimension);

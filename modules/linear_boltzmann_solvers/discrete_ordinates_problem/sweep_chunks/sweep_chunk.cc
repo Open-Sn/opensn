@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/error.h"
 
 namespace opensn
@@ -20,9 +20,9 @@ SweepChunk::SetAngleSet(AngleSet& angle_set)
 }
 
 void
-SweepChunk::SetCell(Cell const* cell_ptr)
+SweepChunk::SetCell(std::uint32_t cell_local_id)
 {
-  cell_ = cell_ptr;
+  cell_local_id_ = cell_local_id;
 }
 
 void
@@ -31,9 +31,10 @@ SweepChunk::ZeroDestinationPhi()
   const auto gsi = groupset_.first_group;
   const auto gss = groupset_.GetNumGroups();
 
-  for (const auto& cell : grid_->local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views_[cell.local_id];
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views_[cell_local_id];
     const auto num_nodes = static_cast<size_t>(transport_view.GetNumNodes());
     for (size_t i = 0; i < num_nodes; ++i)
     {

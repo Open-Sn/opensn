@@ -8,7 +8,7 @@
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/math/linear_solver/petsc_linear_system_solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
@@ -303,12 +303,12 @@ CMFDAcceleration::Initialize()
   current_closure_blend_ = current_closure_ == "partial" ? 1.0 : 0.0;
 
   if (coarse_mesh_type_ == "identity")
-    coarse_mesh_ = CMFDCoarseMesh::BuildIdentity(*do_problem_.GetGrid());
+    coarse_mesh_ = CMFDCoarseMesh::BuildIdentity(*do_problem_.GetMesh());
   else if (coarse_mesh_type_ == "local_aggregation")
-    coarse_mesh_ = CMFDCoarseMesh::BuildLocalAggregation(*do_problem_.GetGrid(), aggregation_size_);
+    coarse_mesh_ = CMFDCoarseMesh::BuildLocalAggregation(*do_problem_.GetMesh(), aggregation_size_);
   else if (coarse_mesh_type_ == "global_aggregation")
     coarse_mesh_ =
-      CMFDCoarseMesh::BuildGlobalAggregation(*do_problem_.GetGrid(), aggregation_size_);
+      CMFDCoarseMesh::BuildGlobalAggregation(*do_problem_.GetMesh(), aggregation_size_);
 
   ConfigureTransportSolve(update_wgs_max_its_, update_wgs_abs_tol_);
   log.Log() << no_wrap << program_timer.GetTimeString() << " CMFD configured "
@@ -1159,7 +1159,7 @@ CMFDAcceleration::BuildCoarseFluxCache()
 void
 CMFDAcceleration::BuildFaceCurrentCache()
 {
-  const auto& grid = *do_problem_.GetGrid();
+  const auto& grid = *do_problem_.GetMesh();
   const auto& outflow_views = do_problem_.GetCellOutflowViews();
 
   std::map<int, std::set<std::tuple<uint64_t, std::size_t, uint64_t, unsigned int>>>
@@ -1224,13 +1224,14 @@ CMFDAcceleration::BuildFaceCurrentCache()
       const auto requested_face_index = static_cast<std::size_t>(requests[r + 1]);
       const auto neighbor_cell_gid = requests[r + 2];
       const auto cg = static_cast<unsigned int>(requests[r + 3]);
-      const auto& owner_cell = grid.cells[owner_cell_gid];
+      const auto owner_cell_local_id = grid.MapCellGlobalID2LocalID(owner_cell_gid);
+      const auto& owner_cell = grid.GetLocalCell(owner_cell_local_id);
       OpenSnInvalidArgumentIf(owner_cell.partition_id != opensn::mpi_comm.rank(),
                               "CMFD face-current request references a nonlocal owner cell.");
 
       bool found_face = false;
       double outflow = 0.0;
-      const auto& outflow_view = outflow_views[owner_cell.local_id];
+      const auto& outflow_view = outflow_views[owner_cell_local_id];
       const auto wildcard_face_index = std::numeric_limits<std::size_t>::max();
       const std::size_t first_face =
         requested_face_index == wildcard_face_index ? 0 : requested_face_index;
@@ -1451,7 +1452,7 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
                                                 const std::size_t face_index,
                                                 const unsigned int coarse_group) const
 {
-  const auto& grid = *do_problem_.GetGrid();
+  const auto& grid = *do_problem_.GetMesh();
   const auto& coarse_face = coarse_cell.faces.at(face_index);
   const auto& outflow_views = do_problem_.GetCellOutflowViews();
 
@@ -1462,10 +1463,11 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
     double owner_outflow = 0.0;
     if (fine_face.cell_partition_id == opensn::mpi_comm.rank())
     {
-      const auto& fine_cell = grid.cells[fine_face.cell_id];
+      const auto fine_cell_local_id = grid.MapCellGlobalID2LocalID(fine_face.cell_id);
+      const auto& fine_cell = grid.GetLocalCell(fine_cell_local_id);
       for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
         owner_outflow +=
-          outflow_views[fine_cell.local_id].Get(fine_face.face_index, first_group_ + g);
+          outflow_views[fine_cell_local_id].Get(fine_face.face_index, first_group_ + g);
     }
     else
     {
@@ -1489,7 +1491,8 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
 
     if (fine_face.neighbor_partition_id == opensn::mpi_comm.rank())
     {
-      const auto& neighbor_cell = grid.cells[*neighbor_id];
+      const auto neighbor_cell_local_id = grid.MapCellGlobalID2LocalID(*neighbor_id);
+      const auto& neighbor_cell = grid.GetLocalCell(neighbor_cell_local_id);
       bool found_face = false;
       for (std::size_t nf = 0; nf < neighbor_cell.faces.size(); ++nf)
       {
@@ -1498,7 +1501,7 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
         {
           double neighbor_outflow = 0.0;
           for (unsigned int g = FineGroupBegin(coarse_group); g < FineGroupEnd(coarse_group); ++g)
-            neighbor_outflow += outflow_views[neighbor_cell.local_id].Get(nf, first_group_ + g);
+            neighbor_outflow += outflow_views[neighbor_cell_local_id].Get(nf, first_group_ + g);
           neighbor_partial_current += neighbor_outflow;
           found_face = true;
           break;
@@ -1754,12 +1757,12 @@ CMFDAcceleration::FluxUpdateDiagnostics
 CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double k_eff) const
 {
   const auto& transport_views = do_problem_.GetCellTransportViews();
-  const auto& grid = *do_problem_.GetGrid();
+  const auto& grid = *do_problem_.GetMesh();
   double local_min_phi = std::numeric_limits<double>::max();
   bool local_nonfinite = false;
-  for (const auto& cell : grid.local_cells)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = transport_views[cell.local_id];
+    const auto& transport_view = transport_views[cell_local_id];
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
       const auto phi_map = transport_view.MapDOF(i, 0, first_group_);

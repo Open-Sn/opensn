@@ -5,12 +5,12 @@
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_slab_mapping.h"
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polygon_mapping.h"
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polyhedron_mapping.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 
 namespace opensn
 {
 
-PieceWiseLinearBase::PieceWiseLinearBase(const std::shared_ptr<MeshContinuum>& grid,
+PieceWiseLinearBase::PieceWiseLinearBase(const std::shared_ptr<Mesh>& grid,
                                          QuadratureOrder q_order,
                                          SpatialDiscretizationType sdm_type)
   : FiniteElementBase(grid, sdm_type, q_order),
@@ -64,14 +64,15 @@ PieceWiseLinearBase::CreateCellMappings()
     return mapping;
   };
 
-  for (const auto& cell : grid_->local_cells)
+  const auto ghost_ids = grid_->GetGhostGlobalIDs();
+  cell_mappings_.reserve(grid_->GetLocalCellCount() + grid_->GhostCellCount());
+  for (const auto& cell : grid_->GetLocalCells())
     cell_mappings_.push_back(MakeCellMapping(cell));
 
-  const auto ghost_ids = grid_->cells.GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
   {
-    auto ghost_mapping = MakeCellMapping(grid_->cells[ghost_id]);
-    nb_cell_mappings_.insert(std::make_pair(ghost_id, std::move(ghost_mapping)));
+    auto ghost_mapping = MakeCellMapping(grid_->GetGlobalCell(ghost_id));
+    cell_mappings_.push_back(std::move(ghost_mapping));
   }
 }
 } // namespace opensn

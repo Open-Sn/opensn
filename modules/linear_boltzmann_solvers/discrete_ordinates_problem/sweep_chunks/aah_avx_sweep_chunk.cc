@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_kernels.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/error.h"
 #include <algorithm>
 #include <array>
@@ -40,10 +40,10 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     const uint64_t cell_local_id = spls[spls_index];
-    auto& cell = data.grid->local_cells[cell_local_id];
+    auto& cell = data.grid->GetLocalCell(cell_local_id);
     const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
     auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
-    const auto& cell_mapping = data.discretization.GetCellMapping(cell);
+    const auto& cell_mapping = data.discretization.GetLocalCellMapping(cell_local_id);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     constexpr auto expected_nodes = static_cast<size_t>(NumNodes);
     OpenSnInvalidArgumentIf(cell_num_nodes != expected_nodes,
@@ -178,10 +178,10 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
       const double* __restrict m2d_row = m2d_op.data() + dir_moment_offset;
       const double* __restrict d2m_row = d2m_op.data() + dir_moment_offset;
 
-      const double* psi_old =
-        (time_dependent and data.psi_old)
-          ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
-          : nullptr;
+      const double* psi_old = (time_dependent and data.psi_old)
+                                ? &(*data.psi_old)[data.discretization.MapDOFLocal(
+                                    cell_local_id, 0, groupset.psi_uk_man_, 0, 0)]
+                                : nullptr;
 
       for (unsigned int g0 = 0; g0 < gs_size; g0 += data.group_block_size)
       {
@@ -312,9 +312,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
       if (data.save_angular_flux)
       {
-        double* cell_psi_data =
-          &data
-             .destination_psi[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+        double* cell_psi_data = &data.destination_psi[data.discretization.MapDOFLocal(
+          cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
         PRAGMA_UNROLL
         for (int i = 0; i < NumNodes; ++i)
         {
