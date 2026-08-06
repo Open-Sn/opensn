@@ -125,10 +125,10 @@ CrossSectionSensitivityPostprocessor::CreateSpatialRestriction()
   if (logical_volumes_.empty())
   {
     cell_local_ids_.resize(1);
-    for (const auto& cell : grid->local_cells)
+    for (const auto& cell : grid->GetLocalCells())
       if (block_ids_.empty() or
-          std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
-        cell_local_ids_[0].push_back(cell.local_id);
+          std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
+        cell_local_ids_[0].push_back(cell->local_id);
   }
   else
   {
@@ -147,13 +147,13 @@ CrossSectionSensitivityPostprocessor::GetLogicalVolumeCellIDs(
 {
   const auto& grid = do_problem_->GetGrid();
   std::vector<std::uint32_t> cell_ids;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    if (not log_vol->Inside(cell.centroid))
+    if (not log_vol->Inside(cell->centroid))
       continue;
     if (block_ids_.empty() or
-        std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
-      cell_ids.push_back(cell.local_id);
+        std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
+      cell_ids.push_back(cell->local_id);
   }
   return cell_ids;
 }
@@ -330,7 +330,7 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
   std::vector<double> local(groups_.size(), 0.0);
   for (const auto cell_id : cell_local_ids)
   {
-    const auto& cell = grid->local_cells[cell_id];
+    const auto& cell = grid->GetLocalCell(cell_id);
     const auto& fe_values = unit_cell_matrices[cell.local_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
     const auto& sigma_t = xs->GetSigmaTotal();
@@ -403,7 +403,7 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
   std::vector<double> local(scattering_moments_.size(), 0.0);
   for (const auto cell_id : cell_local_ids)
   {
-    const auto& cell = grid->local_cells[cell_id];
+    const auto& cell = grid->GetLocalCell(cell_id);
     const auto& fe_values = unit_cell_matrices[cell.local_id];
     const auto& transport_view = transport_views[cell.local_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
@@ -453,7 +453,7 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
   double local = 0.0;
   for (const auto cell_id : cell_local_ids)
   {
-    const auto& cell = grid->local_cells[cell_id];
+    const auto& cell = grid->GetLocalCell(cell_id);
     const auto& fe_values = unit_cell_matrices[cell.local_id];
     const auto& transport_view = transport_views[cell.local_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
@@ -513,14 +513,14 @@ CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
   const auto& transport_views = do_problem_->GetCellTransportViews();
 
   double local = 0.0;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
+    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell->block_id);
     if (not xs->IsFissionable())
       continue;
 
-    const auto& fe_values = unit_cell_matrices[cell.local_id];
-    const auto& transport_view = transport_views[cell.local_id];
+    const auto& fe_values = unit_cell_matrices[cell->local_id];
+    const auto& transport_view = transport_views[cell->local_id];
     const auto& chi = xs->GetChi();
     const auto& nu_sigma_f = xs->GetNuSigmaF();
 

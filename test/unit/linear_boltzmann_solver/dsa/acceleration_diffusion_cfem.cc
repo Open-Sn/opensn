@@ -48,12 +48,12 @@ acceleration_Diffusion_CFEM(std::shared_ptr<MeshContinuum> grid)
   matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
   std::vector<UnitCellMatrices> unit_cell_matrices;
-  unit_cell_matrices.resize(grid->local_cells.size());
+  unit_cell_matrices.resize(grid->GetLocalCellCount());
 
   // Build unit integrals
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
+    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
   }
 
   // Make solver

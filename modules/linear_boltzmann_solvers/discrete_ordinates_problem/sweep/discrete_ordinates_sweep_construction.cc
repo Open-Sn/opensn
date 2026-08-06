@@ -197,7 +197,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         {
           fluds = CreateCBCD_FLUDS(gs_num_grps,
                                    angle_indices.size(),
-                                   grid_->local_cells.size(),
+                                   grid_->GetLocalCellCount(),
                                    fluds_common_data,
                                    groupset.psi_uk_man_,
                                    *discretization_,

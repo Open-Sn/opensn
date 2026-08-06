@@ -15,9 +15,9 @@ namespace
 const Cell&
 FindCellByCentroid(const std::shared_ptr<MeshContinuum>& grid, const Vector3& centroid)
 {
-  for (const auto& cell : grid->local_cells)
-    if (cell.centroid.AbsoluteEquals(centroid, 1.0e-12))
-      return cell;
+  for (const auto& cell : grid->GetLocalCells())
+    if (cell->centroid.AbsoluteEquals(centroid, 1.0e-12))
+      return *cell;
 
   throw std::logic_error("Failed to find test cell by centroid.");
 }

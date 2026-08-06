@@ -104,17 +104,17 @@ std::vector<std::vector<std::vector<int>>>
 SpatialDiscretization::MakeInternalFaceNodeMappings(const double tolerance) const
 {
   std::vector<std::vector<std::vector<int>>> cell_adj_mapping;
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = this->GetCellMapping(cell);
+    const auto& cell_mapping = this->GetCellMapping(*cell);
     const auto& node_locations = cell_mapping.GetNodeLocations();
-    const size_t num_faces = cell.faces.size();
+    const size_t num_faces = cell->faces.size();
 
     std::vector<std::vector<int>> per_face_adj_mapping;
 
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell->faces[f];
       const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       std::vector<int> face_adj_mapping(num_face_nodes, -1);
       if (face.has_neighbor)
@@ -177,17 +177,17 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
 
     const size_t num_comps = ukA.num_components;
 
-    for (const auto& cell : grid_->local_cells)
+    for (const auto& cell : grid_->GetLocalCells())
     {
-      const auto& cell_mapping = this->GetCellMapping(cell);
+      const auto& cell_mapping = this->GetCellMapping(*cell);
       const size_t num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < num_nodes; ++i)
       {
         for (size_t c = 0; c < num_comps; ++c)
         {
-          const auto fmap = MapDOFLocal(cell, i, ukmanF, ukidF, c);
-          const auto imap = MapDOFLocal(cell, i, ukmanT, ukidT, c);
+          const auto fmap = MapDOFLocal(*cell, i, ukmanF, ukidF, c);
+          const auto imap = MapDOFLocal(*cell, i, ukmanT, ukidT, c);
 
           to_vector[imap] = from_vector[fmap];
         } // for component c

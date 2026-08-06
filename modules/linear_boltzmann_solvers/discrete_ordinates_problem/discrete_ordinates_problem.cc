@@ -477,10 +477,10 @@ DiscreteOrdinatesProblem::InitializeFCS()
   for (size_t m = 0; m < num_moments_; ++m)
   {
     const auto ell = moment_to_harmonics[m].ell;
-    for (const auto& cell : grid_->local_cells)
+    for (const auto& cell : grid_->GetLocalCells())
     {
-      const auto num_nodes = discretization_->GetCellNumNodes(cell);
-      const auto& transport_view = cell_transport_views_[cell.local_id];
+      const auto num_nodes = discretization_->GetCellNumNodes(*cell);
+      const auto& transport_view = cell_transport_views_[cell->local_id];
       const auto& xs = transport_view.GetXS();
       const auto& transfer_matrices = xs.GetTransferMatrices();
       for (size_t i = 0; i < num_nodes; ++i)
@@ -930,9 +930,9 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
     const auto gsg_i = groupset.first_group;
     const auto gsg_f = groupset.last_group;
 
-    for (const auto& cell : grid_->local_cells)
+    for (const auto& cell : grid_->GetLocalCells())
     {
-      const auto& transport_view = cell_transport_views_[cell.local_id];
+      const auto& transport_view = cell_transport_views_[cell->local_id];
       for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         // Reorient flux moments
@@ -961,8 +961,8 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
           for (const auto& [idir, jdir] : reversed_angle_map)
           {
             const auto dof_map =
-              std::make_pair(discretization_->MapDOFLocal(cell, i, uk_man, idir, 0),
-                             discretization_->MapDOFLocal(cell, i, uk_man, jdir, 0));
+              std::make_pair(discretization_->MapDOFLocal(*cell, i, uk_man, idir, 0),
+                             discretization_->MapDOFLocal(*cell, i, uk_man, jdir, 0));
 
             for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
               std::swap(psi[dof_map.first + gsg], psi[dof_map.second + gsg]);
@@ -978,10 +978,10 @@ void
 DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 {
 
-  for (const auto& cell : grid_->local_cells)
-    for (int f = 0; f < cell.faces.size(); ++f)
+  for (const auto& cell : grid_->GetLocalCells())
+    for (int f = 0; f < cell->faces.size(); ++f)
       for (auto group = groupset.first_group; group <= groupset.last_group; ++group)
-        cell_outflow_views_[cell.local_id].Zero(f, group);
+        cell_outflow_views_[cell->local_id].Zero(f, group);
 }
 
 #ifndef __OPENSN_WITH_GPU__
