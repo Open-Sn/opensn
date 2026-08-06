@@ -17,12 +17,12 @@ TEST(FieldFunctionInterpolationVolume, TransformedExtrema)
   auto ff = std::make_shared<FieldFunctionGridBased>("linear", sdm, Unknown(UnknownType::SCALAR));
   const auto& unknowns = ff->GetUnknownManager();
   std::vector<double> values(sdm->GetNumLocalDOFs(unknowns));
-  for (auto& cell : grid->local_cells)
+  for (auto& cell : grid->GetLocalCells())
   {
-    cell.block_id = 3;
-    const auto& nodes = sdm->GetCellNodeLocations(cell);
+    cell->block_id = 3;
+    const auto& nodes = sdm->GetCellNodeLocations(*cell);
     for (size_t i = 0; i < nodes.size(); ++i)
-      values[sdm->MapDOFLocal(cell, i, unknowns, 0, 0)] = nodes[i].z;
+      values[sdm->MapDOFLocal(*cell, i, unknowns, 0, 0)] = nodes[i].z;
   }
   ff->UpdateFieldVector(values);
 

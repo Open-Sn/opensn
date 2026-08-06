@@ -85,16 +85,16 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   else
     std::fill(delta_phi_local.begin(), delta_phi_local.end(), 0.0);
 
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& sigma_s = block_id_to_xs_map.at(cell.block_id)->GetSigmaSGtoG();
+    const auto& sigma_s = block_id_to_xs_map.at(cell->block_id)->GetSigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
 
       double* delta_phi_mapped = &delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -122,15 +122,15 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
 
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
 
       const double* delta_phi_mapped = &delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
@@ -165,15 +165,15 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
 
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
 
       double* output_mapped = &output_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -203,15 +203,15 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
 
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
 
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];

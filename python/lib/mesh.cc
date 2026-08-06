@@ -156,12 +156,12 @@ WrapMesh(py::module& mesh)
     {
       int local_num_cells_modified = 0;
       // change local cells
-      for (Cell& cell : self.local_cells)
+      for (auto& cell : self.GetLocalCells())
       {
-        auto new_block_id = func(cell.centroid, cell.block_id);
-        if (cell.block_id != new_block_id)
+        auto new_block_id = func(cell->centroid, cell->block_id);
+        if (cell->block_id != new_block_id)
         {
-          cell.block_id = new_block_id;
+          cell->block_id = new_block_id;
           ++local_num_cells_modified;
         }
       }

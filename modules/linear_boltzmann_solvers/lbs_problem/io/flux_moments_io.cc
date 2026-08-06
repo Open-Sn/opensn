@@ -33,7 +33,7 @@ LBSSolverIO::WriteFluxMoments(
 
   auto num_moments = lbs_problem.GetNumMoments();
   auto num_groups = lbs_problem.GetNumGroups();
-  auto num_local_cells = grid->local_cells.size();
+  auto num_local_cells = grid->GetLocalCellCount();
   auto num_local_nodes = discretization.GetNumLocalNodes();
   auto num_local_dofs = num_local_nodes * num_moments * num_groups;
   OpenSnLogicalErrorIf(src.size() != num_local_dofs, "Incompatible flux moments vector provided.");
@@ -51,12 +51,12 @@ LBSSolverIO::WriteFluxMoments(
   nodes_y.reserve(num_local_nodes);
   nodes_z.reserve(num_local_nodes);
   // Loop through mesh nodes and store data
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    cell_ids.push_back(cell.global_id);
-    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
+    cell_ids.push_back(cell->global_id);
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(*cell));
 
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
+    const auto& nodes = discretization.GetCellNodeLocations(*cell);
     for (const auto& node : nodes)
     {
       nodes_x.push_back(node.x);
@@ -78,14 +78,16 @@ LBSSolverIO::WriteFluxMoments(
   // Loop through dof and store flux values
   std::vector<double> values;
   values.reserve(num_local_dofs);
-  for (const auto& cell : grid->local_cells)
-    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    for (uint64_t i = 0; i < discretization.GetCellNumNodes(*cell); ++i)
       for (unsigned int m = 0; m < num_moments; ++m)
         for (unsigned int g = 0; g < num_groups; ++g)
         {
-          const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, m, g);
+          const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, m, g);
           values.push_back(src[dof_map]);
         }
+  }
 
   // Write flux values to h5 and close file
   H5WriteDataset1D(file.Id(), "values", values);
@@ -124,7 +126,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto uk_man = lbs_problem.GetUnknownManager();
 
-  const auto num_local_cells = grid->local_cells.size();
+  const auto num_local_cells = grid->GetLocalCellCount();
   const auto num_local_nodes = discretization.GetNumLocalNodes();
   const auto num_moments = lbs_problem.GetNumMoments();
   const auto num_groups = lbs_problem.GetNumGroups();

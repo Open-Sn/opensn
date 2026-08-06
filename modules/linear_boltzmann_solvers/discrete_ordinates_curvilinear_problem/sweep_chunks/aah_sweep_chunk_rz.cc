@@ -88,7 +88,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     auto cell_local_id = spls[spls_index];
-    const auto& cell = grid_->local_cells[cell_local_id];
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto& cell_mapping = discretization_.GetCellMapping(cell);
     const auto& cell_transport_view = cell_transport_views_[cell_local_id];
     auto& cell_outflow_view = cell_outflow_views_[cell_local_id];

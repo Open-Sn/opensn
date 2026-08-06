@@ -147,9 +147,9 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
 
   // Local cells first
   std::set<uint64_t> partition_bndry_vertex_id_set;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
+    const auto& cell_mapping = pwld_sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -159,9 +159,9 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
         const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
-          const auto dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-          const auto dof_cfem_map = pwlc_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-          const auto dof_cfem_map_global = pwlc_sdm.MapDOF(cell, i, uk_man, u, c);
+          const auto dof_dfem_map = pwld_sdm.MapDOFLocal(*cell, i, uk_man, u, c);
+          const auto dof_cfem_map = pwlc_sdm.MapDOFLocal(*cell, i, uk_man, u, c);
+          const auto dof_cfem_map_global = pwlc_sdm.MapDOF(*cell, i, uk_man, u, c);
 
           cfem_dof_global2local_map[dof_cfem_map_global] = dof_cfem_map;
 
@@ -173,7 +173,7 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
       } // for unknown u
     } // for node i
 
-    for (const auto& face : cell.faces)
+    for (const auto& face : cell->faces)
       if (face.has_neighbor)
         if (not grid->IsCellLocal(face.neighbor_id))
           for (const uint64_t vid : face.vertex_ids)
@@ -225,9 +225,9 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
 
   // Project back to dfem
   output = input;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = pwld_sdm.GetCellMapping(cell);
+    const auto& cell_mapping = pwld_sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
@@ -237,8 +237,8 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
         const size_t num_components = uk_man.unknowns[u].num_components;
         for (size_t c = 0; c < num_components; ++c)
         {
-          const auto dof_dfem_map = pwld_sdm.MapDOFLocal(cell, i, uk_man, u, c);
-          const auto dof_cfem_map = pwlc_sdm.MapDOFLocal(cell, i, uk_man, u, c);
+          const auto dof_dfem_map = pwld_sdm.MapDOFLocal(*cell, i, uk_man, u, c);
+          const auto dof_cfem_map = pwlc_sdm.MapDOFLocal(*cell, i, uk_man, u, c);
 
           const double phi_value = cont_input[dof_cfem_map];
 
@@ -269,15 +269,16 @@ DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi
   phi_local.resize(diff_num_local_dofs);
   std::fill(phi_local.begin(), phi_local.end(), 0.0);
 
-  for (const auto& cell : do_problem_.GetGrid()->local_cells)
+  for (const auto& cell : do_problem_.GetGrid()->GetLocalCells())
   {
-    const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
+    const auto& cell_mapping = lbs_sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto diff_phi_map = static_cast<long>(diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0));
-      const auto lbs_phi_map = static_cast<long>(lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi));
+      const auto diff_phi_map =
+        static_cast<long>(diff_sdm.MapDOFLocal(*cell, i, diff_uk_man, 0, 0));
+      const auto lbs_phi_map = static_cast<long>(lbs_sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi));
       const auto input_begin = phi_data->begin() + lbs_phi_map;
       const auto output_begin = phi_local.begin() + diff_phi_map;
       std::copy_n(input_begin, gss, output_begin);
@@ -308,15 +309,16 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
     output.resize(output_size, 0.0);
   OpenSnLogicalErrorIf(output.size() != output_size, "Output vector size mismatch");
 
-  for (const auto& cell : do_problem_.GetGrid()->local_cells)
+  for (const auto& cell : do_problem_.GetGrid()->GetLocalCells())
   {
-    const auto& cell_mapping = lbs_sdm.GetCellMapping(cell);
+    const auto& cell_mapping = lbs_sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto diff_phi_map = static_cast<long>(diff_sdm.MapDOFLocal(cell, i, diff_uk_man, 0, 0));
-      const auto lbs_phi_map = static_cast<long>(lbs_sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi));
+      const auto diff_phi_map =
+        static_cast<long>(diff_sdm.MapDOFLocal(*cell, i, diff_uk_man, 0, 0));
+      const auto lbs_phi_map = static_cast<long>(lbs_sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi));
       const auto input_begin = input.begin() + diff_phi_map;
       const auto output_begin = output.begin() + lbs_phi_map;
       std::copy_n(input_begin, gss, output_begin);

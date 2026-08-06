@@ -37,16 +37,16 @@ PieceWiseLinearDiscontinuous::OrderNodes()
 
   t_stage[0].Reset();
   // Check cell views avail
-  size_t num_loc_cells = grid_->local_cells.size();
+  size_t num_loc_cells = grid_->GetLocalCellCount();
 
   // Get local DOF count and set cell_local_block_address
   cell_local_block_address_.resize(num_loc_cells, 0);
 
   uint64_t local_node_count = 0;
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = GetCellMapping(cell);
-    cell_local_block_address_[cell.local_id] = local_node_count;
+    const auto& cell_mapping = GetCellMapping(*cell);
+    cell_local_block_address_[cell->local_id] = local_node_count;
     local_node_count += cell_mapping.GetNumNodes();
   }
 
@@ -139,9 +139,9 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
   nodal_nnz_off_diag.resize(local_dof_count, 0);
 
   int lc = 0;
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = GetCellMapping(cell);
+    const auto& cell_mapping = GetCellMapping(*cell);
     size_t num_nodes = cell_mapping.GetNumNodes();
 
     // Self connection
@@ -152,7 +152,7 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
     }
 
     // Local adjacent cell connections
-    for (const auto& face : cell.faces)
+    for (const auto& face : cell->faces)
     {
       if (face.has_neighbor and face.IsNeighborLocal(grid_.get()))
       {
@@ -171,12 +171,12 @@ PieceWiseLinearDiscontinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_n
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% NEIGHBORING CONNECTIVITY
   lc = 0;
-  for (auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = GetCellMapping(cell);
+    const auto& cell_mapping = GetCellMapping(*cell);
 
     // Local adjacent cell connections
-    for (auto& face : cell.faces)
+    for (auto& face : cell->faces)
     {
       if (face.has_neighbor and (not face.IsNeighborLocal(grid_.get())))
       {

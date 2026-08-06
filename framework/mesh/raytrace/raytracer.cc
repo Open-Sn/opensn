@@ -60,12 +60,12 @@ CheckIntersectionAtVertex(const std::shared_ptr<MeshContinuum>& grid,
       continue;
 
     const Vector3 nudged_point = vertex + nudge * (line_point1 - vertex).Normalized();
-    for (const auto& cell : grid->local_cells)
-      if (grid->CheckPointInsideCell(cell, nudged_point))
+    for (const auto& cell : grid->GetLocalCells())
+      if (grid->CheckPointInsideCell(*cell, nudged_point))
       {
         intersection_point = vertex;
         distance_to_intersection = point0_to_vertex;
-        neighbor_id = cell.global_id;
+        neighbor_id = cell->global_id;
         return true;
       }
   }
