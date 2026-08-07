@@ -95,23 +95,16 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1gpu__kernel_1_1_arguments`
 
 
-Enums
------
-
-
-- :ref:`exhale_enum_namespaceopensn_1_1gpu__kernel_1abf9680878c4fe5d551baa11d492f7855`
-
-
 Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a568cd7dc2e4381e50d0c40a84abe76aa`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1aebb6419c2f1719eb13be50df3f224ea5`
 
 
 Typedefs
 --------
 
 
-- :ref:`exhale_typedef_namespaceopensn_1_1gpu__kernel_1a030dd19000066224d23b6c62de6e4bea`
+- :ref:`exhale_typedef_namespaceopensn_1_1gpu__kernel_1aa8359577616908405dd4dc00681e5d08`
 

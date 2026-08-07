@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a568cd7dc2e4381e50d0c40a84abe76aa:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1aebb6419c2f1719eb13be50df3f224ea5:
 
 Function opensn::gpu_kernel::to_bool
 ====================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::to_bool(SweepType)
+.. doxygenfunction:: opensn::gpu_kernel::to_bool(SweepKind)
    :project: opensn

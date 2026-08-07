@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a7941b868151f9e1906e9b3811922de31:
+
+Function opensn::ParseSweepKind
+===============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ParseSweepKind(const std::string&, const std::string&)
+   :project: opensn

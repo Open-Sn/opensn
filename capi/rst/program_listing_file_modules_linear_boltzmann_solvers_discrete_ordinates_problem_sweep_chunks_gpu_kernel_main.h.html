@@ -118,7 +118,7 @@
 <span class="w">              </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F</span><span class="o">&gt;</span><span class="p">(</span><span class="n">f</span><span class="p">));</span>
 <span class="p">}</span>
 
-<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">SweepKind</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
 <span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">SweepDispatch</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span>
 <span class="p">{</span>
@@ -129,15 +129,15 @@
 <span class="w">      </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">dof</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="n">dof_c</span><span class="p">)</span><span class="o">::</span><span class="n">value</span><span class="p">;</span>
 <span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">done</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">dof</span><span class="p">)</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="n">gpu_kernel</span><span class="o">::</span><span class="n">Sweep</span><span class="o">&lt;</span><span class="n">dof</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
+<span class="w">        </span><span class="n">gpu_kernel</span><span class="o">::</span><span class="n">Sweep</span><span class="o">&lt;</span><span class="n">dof</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
 <span class="w">        </span><span class="n">done</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">});</span>
 <span class="p">}</span>
 
-<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">SweepType</span><span class="w"> </span><span class="n">t</span><span class="o">&gt;</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">SweepKind</span><span class="w"> </span><span class="n">k</span><span class="o">&gt;</span>
 <span class="n">__CRB_GLOBAL_FUNC__</span><span class="w"> </span><span class="kt">void</span>
-<span class="n">SweepKernel</span><span class="p">(</span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="p">,</span>
+<span class="n">SweepKernel</span><span class="p">(</span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">k</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="p">,</span>
 <span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">*</span><span class="w"> </span><span class="n">cells_to_sweep</span><span class="p">,</span>
 <span class="w">            </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_cells</span><span class="p">,</span>
 <span class="w">            </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">saved_psi</span><span class="p">)</span>
@@ -168,7 +168,7 @@
 <span class="w">    </span><span class="n">num_moments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">quadrature</span><span class="p">.</span><span class="n">num_moments</span><span class="p">;</span>
 <span class="w">    </span><span class="n">quadrature</span><span class="p">.</span><span class="n">GetDirectionView</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span><span class="w"> </span><span class="n">direction_num</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="n">opensn</span><span class="o">::</span><span class="n">gpu_kernel</span><span class="o">::</span><span class="n">SweepDispatch</span><span class="o">&lt;</span><span class="n">t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cell</span><span class="p">.</span><span class="n">num_nodes</span><span class="p">,</span>
+<span class="w">  </span><span class="n">opensn</span><span class="o">::</span><span class="n">gpu_kernel</span><span class="o">::</span><span class="n">SweepDispatch</span><span class="o">&lt;</span><span class="n">k</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cell</span><span class="p">.</span><span class="n">num_nodes</span><span class="p">,</span>
 <span class="w">                                       </span><span class="n">args</span><span class="p">,</span>
 <span class="w">                                       </span><span class="n">cell</span><span class="p">,</span>
 <span class="w">                                       </span><span class="n">direction</span><span class="p">,</span>

@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a5f5e75ed78963288cb7efae9da707a9d:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a896b6d4c91cb1d72eae8016c6af3c24a:
 
 Template Function opensn::gpu_kernel::SweepKernel
 =================================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::SweepKernel(Arguments<t>, const std::uint32_t *, unsigned int, double *)
+.. doxygenfunction:: opensn::gpu_kernel::SweepKernel(Arguments<k>, const std::uint32_t *, unsigned int, double *)
    :project: opensn

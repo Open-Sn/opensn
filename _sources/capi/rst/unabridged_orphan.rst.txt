@@ -1974,11 +1974,6 @@ Enums
 .. toctree::
    :maxdepth: 1
 
-   enum_namespaceopensn_1_1gpu__kernel_1abf9680878c4fe5d551baa11d492f7855.rst
-
-.. toctree::
-   :maxdepth: 1
-
    enum_namespaceopensn_1a594f3c575814d9061da1e7e41c14686b.rst
 
 .. toctree::
@@ -2060,6 +2055,11 @@ Enums
    :maxdepth: 1
 
    enum_namespaceopensn_1a91df367d01cc0205fa03a4a081195f3e.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   enum_namespaceopensn_1a31afc56a2549f6d301262f8f3d877f07.rst
 
 .. toctree::
    :maxdepth: 1

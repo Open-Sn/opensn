@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a8a672050f6cedc76e5450c195487aceb:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a8af6331ac95a0d066f11fdb7a37ef813:
 
 Template Function opensn::gpu_kernel::ComputePhi
 ================================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::ComputePhi(double *, CellView&, DirectionView&, const unsigned int&, const std::uint32_t&, const Arguments<t>&)
+.. doxygenfunction:: opensn::gpu_kernel::ComputePhi(double *, CellView&, DirectionView&, const unsigned int&, const std::uint32_t&, const Arguments<k>&)
    :project: opensn

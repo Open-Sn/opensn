@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1ab1e4a5a4d5d94307f4628c1ece47ae20:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1ac088369b7577297f61fb1ccc253ccce3:
 
 Template Function opensn::gpu_kernel::WritePsiToFludsAndOutflow
 ===============================================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::WritePsiToFludsAndOutflow(double *, CellView&, DirectionView&, const std::uint64_t *, const unsigned int&, const unsigned int&, const Arguments<t>&)
+.. doxygenfunction:: opensn::gpu_kernel::WritePsiToFludsAndOutflow(double *, CellView&, DirectionView&, const std::uint64_t *, const unsigned int&, const unsigned int&, const Arguments<k>&)
    :project: opensn

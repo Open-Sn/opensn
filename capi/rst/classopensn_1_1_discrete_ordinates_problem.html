@@ -396,6 +396,24 @@
 <dd><p>Factory-only constructor. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem25SupportsTimeDependentModeEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a5b4e64e70d8ae24bd77c24380865dc5f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SupportsTimeDependentMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem25SupportsTimeDependentModeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns false if this geometry does not support time-dependent mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem29ValidateBoundaryConfigurationEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ab6d413612eb9749ddd38c5646535dc80"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateBoundaryConfiguration</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem29ValidateBoundaryConfigurationEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Hook for geometry-specific boundary-configuration checks, called from <code class="docutils literal notranslate"><a class="reference internal" href="#classopensn_1_1_discrete_ordinates_problem_1a838087294f60b0ecba481e8033001ac5"><span class="std std-ref"><span class="pre">InitializeBoundaries()</span></span></a></code>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem32ValidateTimeDependentModeAllowedEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ad4ce19b3f4720cc0c182e940177f25dd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateTimeDependentModeAllowed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem32ValidateTimeDependentModeAllowedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Validates that time-dependent mode may be enabled, given the current GPU, adjoint, geometry, and angular-flux-storage configuration. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-solver-and-sweep-state">Solver and sweep state</p>
@@ -433,6 +451,13 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem9ResetModeE14SweepChunkMode">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ab21aa2b4a2e005f8feff99bdb06c0841"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResetMode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem14SweepChunkModeE" title="opensn::DiscreteOrdinatesProblem::SweepChunkMode"><span class="n"><span class="pre">SweepChunkMode</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">target_mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem9ResetModeE14SweepChunkMode" title="Link to this definition"></a><br /></dt>
 <dd><p>Rebuild WGS/AGS solver schemes after runtime configuration changes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem37ReconstructAngularFluxFromSteadyStateEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a722f6ae223170ec494237c57a64cf21e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReconstructAngularFluxFromSteadyState</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem37ReconstructAngularFluxFromSteadyStateEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Reconstructs lagged angular fluxes from the converged steady-state scalar flux via a fixed-point iteration, holding phi/q at the converged steady-state value. </p>
+<p>Used when transitioning into time-dependent mode. </p>
 </dd></dl>
 
 <dl class="cpp function">

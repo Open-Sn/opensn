@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a0faca38050706786558bbcd11243e451:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a89f1d28899c3902e1e5c35acbb61fc76:
 
 Template Function opensn::gpu_kernel::ComputeGMS
 ================================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::ComputeGMS(double *, double *, double *, CellView&, DirectionView&, const unsigned int&, const std::uint32_t&, const Arguments<t>&)
+.. doxygenfunction:: opensn::gpu_kernel::ComputeGMS(double *, double *, double *, CellView&, DirectionView&, const unsigned int&, const std::uint32_t&, const Arguments<k>&)
    :project: opensn

@@ -205,6 +205,17 @@ Program Listing for File discrete_ordinates_problem.h
      void BuildRuntime();
    
      void InitializeBoundaries() override;
+   
+     /// Returns false if this geometry does not support time-dependent mode.
+     virtual bool SupportsTimeDependentMode() const { return true; }
+   
+     /// Hook for geometry-specific boundary-configuration checks, called from
+     /// `InitializeBoundaries()`.
+     virtual void ValidateBoundaryConfiguration() const {}
+   
+     /// Validates that time-dependent mode may be enabled, given the current GPU, adjoint,
+     /// geometry, and angular-flux-storage configuration.
+     void ValidateTimeDependentModeAllowed() const;
      /** @} */
    
      void PrintSimHeader() override;
@@ -222,6 +233,13 @@ Program Listing for File discrete_ordinates_problem.h
      void SetSweepChunkMode(SweepChunkMode mode);
      void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }
      void ResetMode(SweepChunkMode target_mode);
+   
+     /**
+      * Reconstructs lagged angular fluxes from the converged steady-state scalar flux via a
+      * fixed-point iteration, holding phi/q at the converged steady-state value. Used when
+      * transitioning into time-dependent mode.
+      */
+     void ReconstructAngularFluxFromSteadyState();
    
      void InitializeBoundaryCarrier();
    
@@ -333,6 +351,12 @@ Program Listing for File discrete_ordinates_problem.h
      MakeAngularFieldFunctionName(size_t groupset_id, unsigned int group, size_t angle) const;
      std::vector<double>
      ComputeAngularFieldFunctionData(size_t groupset_id, unsigned int group, size_t angle) const;
+   
+     /**
+      * Determines the outward face normal for a reflecting boundary, verifying that it is
+      * consistent (within tolerance) across all local faces and all MPI ranks.
+      */
+     Vector3 ComputeReflectingBoundaryNormal(uint64_t bid) const;
    
      void UpdateAAHD_FLUDSCommonDataWithBoundary();
      std::shared_ptr<FLUDS> CreateAAHD_FLUDS(unsigned int num_groups,

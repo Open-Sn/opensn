@@ -36,6 +36,8 @@ Includes
 
 - ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
 
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
 
 
@@ -83,6 +85,8 @@ Enums
 
 - :ref:`exhale_enum_namespaceopensn_1a7f7469d315aed7045d14e59ab4443ead`
 
+- :ref:`exhale_enum_namespaceopensn_1a31afc56a2549f6d301262f8f3d877f07`
+
 
 Functions
 ---------
@@ -91,6 +95,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1ad1113780d966f0fad569a39c2f989224`
 
 - :ref:`exhale_function_namespaceopensn_1a3fce481e799298c868cf51dad203166b`
+
+- :ref:`exhale_function_namespaceopensn_1a7941b868151f9e1906e9b3811922de31`
 
 - :ref:`exhale_function_namespaceopensn_1a09c0dff065711e5f707227d9aca35e80`
 
