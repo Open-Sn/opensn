@@ -37,7 +37,7 @@ BuildSPDSFaceNeighborInfo(const Mesh& grid)
 
       if (face.has_neighbor)
       {
-        fi.neighbor_adj_face = face.GetNeighborAdjacentFaceIndex(&grid);
+        fi.neighbor_adj_face = grid.GetNeighborAdjacentFaceIndex(cell_local_id, f);
         if (face.IsNeighborLocal(&grid))
         {
           fi.neighbor_local = true;

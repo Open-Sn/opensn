@@ -31,11 +31,12 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const std::shared_ptr<Mesh>& gri
   const size_t num_faces = cell.faces.size();
   std::vector<std::vector<int>> mappings;
   mappings.reserve(num_faces);
-  for (const auto& face : cell.faces)
+  for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
   {
+    auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
     std::vector<int> face_dof_mapping;
-    face_dof_mapping.reserve(face.vertex_ids.size());
-    for (uint64_t fvid : face.vertex_ids)
+    face_dof_mapping.reserve(face_vertex_ids.size());
+    for (uint64_t fvid : face_vertex_ids)
     {
       int mapping = -1;
       for (size_t ci = 0; ci < cell_vertex_ids.size(); ++ci)

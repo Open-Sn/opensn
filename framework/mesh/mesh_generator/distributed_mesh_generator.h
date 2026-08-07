@@ -59,6 +59,8 @@ private:
     std::map<std::pair<int, uint64_t>, Cell> cells;
     /// Cell connectivity
     std::map<std::uint64_t, std::vector<std::uint64_t>> cell_connect;
+    /// Cell face connectivity
+    std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
     /// Map of vertices by global vertex ID.
     std::map<uint64_t, Vector3> vertices;
     /// Map of boundary IDs to boundary names.
