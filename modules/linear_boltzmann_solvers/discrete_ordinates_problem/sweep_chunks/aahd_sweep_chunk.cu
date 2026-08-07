@@ -43,7 +43,7 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
   auto& aahd_angle_set = static_cast<AAHD_AngleSet&>(angle_set);
   auto& fluds = static_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
   auto& stream = aahd_angle_set.GetStream();
-  gpu_kernel::Arguments<gpu_kernel::SweepType::AAH> args(
+  gpu_kernel::Arguments<SweepKind::AAH> args(
     problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
   double* saved_psi = fluds.GetSavedAngularFluxDevicePointer();
   // retrieve SPDS levels
@@ -65,13 +65,13 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
     // perform the sweep on device
     const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
 #if defined(__NVCC__) || defined(__HIPCC__)
-    gpu_kernel::SweepKernel<gpu_kernel::SweepType::AAH><<<grid_size, block_size, 0, stream>>>(
+    gpu_kernel::SweepKernel<SweepKind::AAH><<<grid_size, block_size, 0, stream>>>(
       args, level_data, static_cast<unsigned int>(level_size), saved_psi);
 #elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
     stream.parallel_for(sycl::nd_range<3>(grid_size * block_size, block_size),
                         [=](sycl::nd_item<3> work_index)
                         {
-                          gpu_kernel::SweepKernel<gpu_kernel::SweepType::AAH>(
+                          gpu_kernel::SweepKernel<SweepKind::AAH>(
                             args, level_data, static_cast<unsigned int>(level_size), saved_psi);
                         });
 #endif

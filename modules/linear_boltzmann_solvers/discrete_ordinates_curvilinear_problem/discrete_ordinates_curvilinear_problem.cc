@@ -9,7 +9,6 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <cmath>
-#include <iomanip>
 #include <stdexcept>
 
 namespace opensn
@@ -228,6 +227,27 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
           throw std::runtime_error(oss.str());
         }
       }
+    }
+  }
+}
+
+void
+DiscreteOrdinatesCurvilinearProblem::ValidateBoundaryConfiguration() const
+{
+  const auto& bndry_map = grid_->GetBoundaryNameMap();
+  const auto it = bndry_map.find("xmax");
+  if (it != bndry_map.end())
+  {
+    const uint64_t bid = it->second;
+    const auto bndry_it = boundary_definitions_.find(bid);
+    if (bndry_it != boundary_definitions_.end() &&
+        bndry_it->second.type == LBSBoundaryType::REFLECTING)
+    {
+      std::ostringstream oss;
+      oss << GetName() << ":\n"
+          << "Reflecting boundary on rmax is not supported in RZ.\n"
+          << "Please use vacuum or isotropic on rmax.";
+      throw std::runtime_error(oss.str());
     }
   }
 }

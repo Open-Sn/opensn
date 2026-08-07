@@ -7,6 +7,7 @@
 #include <set>
 #include <memory>
 #include <cstdint>
+#include <string>
 
 namespace opensn
 {
@@ -23,6 +24,15 @@ enum class FaceOrientation : short
   INCOMING = 0,
   OUTGOING = 1
 };
+
+enum class SweepKind
+{
+  AAH,
+  CBC
+};
+
+/// Parses the `sweep_type` input parameter into a SweepKind.
+SweepKind ParseSweepKind(const std::string& sweep_type, const std::string& problem_name);
 
 enum class AngleSetStatus
 {

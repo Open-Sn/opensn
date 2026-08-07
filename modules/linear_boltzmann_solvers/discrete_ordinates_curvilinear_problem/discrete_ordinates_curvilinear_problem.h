@@ -25,6 +25,8 @@ protected:
   void PerformInputChecks();
   void InitializeSpatialDiscretization() override;
   void ComputeSecondaryUnitIntegrals();
+  bool SupportsTimeDependentMode() const override { return false; }
+  void ValidateBoundaryConfiguration() const override;
   std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset) override;
 
 private:
