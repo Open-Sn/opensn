@@ -101,9 +101,10 @@ UnpartitionedMesh::CheckQuality()
     }
     else if (cell.GetType() == CellType::POLYHEDRON)
     {
-      for (auto& face : cell.faces)
+      for (size_t f = 0; f < cell.faces.size(); ++f)
       {
-        if (face.vertex_ids.size() < 2)
+        const auto& face_vertex_ids = cell_face_connectivity_[cell_id][f];
+        if (face_vertex_ids.size() < 2)
           throw std::logic_error(std::string(__PRETTY_FUNCTION__) +
                                  ": cell-center-to-face check encountered face "
                                  "with less than 2 vertices on a face, making "
@@ -111,18 +112,18 @@ UnpartitionedMesh::CheckQuality()
 
         // Compute centroid
         Vector3 face_centroid;
-        for (uint64_t vid : face.vertex_ids)
+        for (uint64_t vid : face_vertex_ids)
           face_centroid += vertices_[vid];
-        face_centroid /= static_cast<double>(face.vertex_ids.size());
+        face_centroid /= static_cast<double>(face_vertex_ids.size());
 
         // Form tets for each face edge
-        size_t num_face_verts = face.vertex_ids.size();
-        for (size_t fv = 0; fv < face.vertex_ids.size(); ++fv)
+        size_t num_face_verts = face_vertex_ids.size();
+        for (size_t fv = 0; fv < face_vertex_ids.size(); ++fv)
         {
           size_t fvp1 = (fv < (num_face_verts - 1)) ? fv + 1 : 0;
 
-          const auto& fv1 = vertices_[face.vertex_ids[fv]];
-          const auto& fv2 = vertices_[face.vertex_ids[fvp1]];
+          const auto& fv1 = vertices_[face_vertex_ids[fv]];
+          const auto& fv2 = vertices_[face_vertex_ids[fvp1]];
 
           auto E0 = fv1 - face_centroid;
           auto E1 = fv2 - face_centroid;
@@ -141,38 +142,35 @@ UnpartitionedMesh::CheckQuality()
   {
     if (cell.GetType() == CellType::POLYGON)
     {
-      size_t f = 0;
-      for (const auto& face : cell.faces)
+      for (size_t f = 0; f < cell.faces.size(); ++f)
       {
-        const auto& v0 = vertices_.at(face.vertex_ids[0]);
-        const auto& v1 = vertices_.at(face.vertex_ids[1]);
+        const auto& face_vertex_ids = cell_face_connectivity_[cell_id][f];
+        const auto& v0 = vertices_.at(face_vertex_ids[0]);
+        const auto& v1 = vertices_.at(face_vertex_ids[1]);
         OpenSnLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
                              "Cell " + std::to_string(cell_id) +
                                " (centroid=" + cell.centroid.PrintStr() + ") face " +
                                std::to_string(f) + ": Face has length < 1.0e-12.");
-        ++f;
       }
     } // if polygon
     if (cell.GetType() == CellType::POLYHEDRON)
     {
-      size_t f = 0;
-      for (const auto& face : cell.faces)
+      for (size_t f = 0; f < cell.faces.size(); ++f)
       {
-        size_t num_face_verts = face.vertex_ids.size();
-        for (size_t s = 0; s < face.vertex_ids.size(); ++s)
+        const auto& face_vertex_ids = cell_face_connectivity_[cell_id][f];
+        size_t num_face_verts = face_vertex_ids.size();
+        for (size_t s = 0; s < face_vertex_ids.size(); ++s)
         {
           size_t fvp1 = (s < (num_face_verts - 1)) ? s + 1 : 0;
 
-          const auto& v0 = vertices_.at(face.vertex_ids[s]);
-          const auto& v1 = vertices_.at(face.vertex_ids[fvp1]);
+          const auto& v0 = vertices_.at(face_vertex_ids[s]);
+          const auto& v1 = vertices_.at(face_vertex_ids[fvp1]);
 
           OpenSnLogicalErrorIf((v1 - v0).Norm() < 1.0e-12,
                                "Cell " + std::to_string(cell_id) + " (centroid=" +
                                  cell.centroid.PrintStr() + ") face " + std::to_string(f) +
                                  " side " + std::to_string(s) + ": Side has length < 1.0e-12.");
         }
-
-        ++f;
       }
     } // if polyhedron
     ++cell_id;
@@ -221,7 +219,7 @@ UnpartitionedMesh::SetOrthoAttributes(size_t nx, size_t ny, size_t nz)
 
 void
 UnpartitionedMesh::SetCells(std::vector<Cell>&& cells,
-                            const std::vector<std::vector<uint64_t>>& cell_connectivity)
+                            const std::vector<std::vector<std::uint64_t>>& cell_connectivity)
 {
   cells_ = std::move(cells);
 
@@ -238,6 +236,13 @@ UnpartitionedMesh::SetCells(std::vector<Cell>&& cells,
       connect_ids_.push_back(id);
   }
   connect_ofst_.push_back(total_len);
+}
+
+void
+UnpartitionedMesh::SetCellFaces(
+  const std::vector<std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity)
+{
+  cell_face_connectivity_ = cell_face_connectivity;
 }
 
 void
@@ -278,12 +283,13 @@ UnpartitionedMesh::BuildMeshConnectivity()
     uint64_t cur_cell_id = 0;
     for (auto& cell : cells_)
     {
-      for (auto& cur_cell_face : cell.faces)
+      for (size_t f = 0; f < cell.faces.size(); ++f)
       {
+        auto& cur_cell_face = cell.faces[f];
         if (cur_cell_face.has_neighbor)
           continue;
-        const std::set<uint64_t> cfvids(cur_cell_face.vertex_ids.begin(),
-                                        cur_cell_face.vertex_ids.end());
+        const auto& cfvids_vec = cell_face_connectivity_[cur_cell_id][f];
+        const std::set<uint64_t> cfvids(cfvids_vec.begin(), cfvids_vec.end());
 
         std::set<size_t> cells_to_search;
         for (uint64_t vid : cfvids)
@@ -295,12 +301,13 @@ UnpartitionedMesh::BuildMeshConnectivity()
         {
           auto& adj_cell = cells_.at(adj_cell_id);
 
-          for (auto& adj_cell_face : adj_cell.faces)
+          for (size_t af = 0; af < adj_cell.faces.size(); ++af)
           {
+            auto& adj_cell_face = adj_cell.faces[af];
             if (adj_cell_face.has_neighbor)
               continue;
-            const std::set<uint64_t> afvids(adj_cell_face.vertex_ids.begin(),
-                                            adj_cell_face.vertex_ids.end());
+            const auto& afvids_vec = cell_face_connectivity_[adj_cell_id][af];
+            const std::set<uint64_t> afvids(afvids_vec.begin(), afvids_vec.end());
 
             if (cfvids == afvids)
             {

@@ -118,11 +118,8 @@ public:
   /// Determines the neighbor's local id.
   std::uint32_t GetNeighborLocalID(const Mesh* grid) const;
 
-  /// Determines the neighbor's associated face.
-  int GetNeighborAdjacentFaceIndex(const Mesh* grid) const;
-
   /// Computes the geometric info on the face.
-  void ComputeGeometricInfo(const Mesh& grid, const Cell& cell);
+  void ComputeGeometricInfo(const Mesh& grid, std::uint64_t cell_local_id, std::uint32_t face_idx);
 
   /// Serializes a face into a vector of bytes.
   ByteArray Serialize() const;
@@ -143,9 +140,6 @@ public:
   Vector3 centroid;
   /// The area of the face
   double area = 0.0;
-
-  /// A list of the vertices
-  std::vector<uint64_t> vertex_ids;
 
 public:
   /// Deserializes a face from a set of raw data

@@ -145,7 +145,7 @@ private:
   void AddFaceViewToDepLocI(int deplocI,
                             uint64_t cell_g_index,
                             uint64_t face_slot,
-                            const CellFace& face);
+                            const std::vector<uint64_t>& face_vertex_ids);
 
   void LocalIncidentMapping(std::uint32_t cell_local_id,
                             const SPDS& spds,

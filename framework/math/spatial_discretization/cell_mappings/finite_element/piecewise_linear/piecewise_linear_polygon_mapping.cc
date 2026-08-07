@@ -31,9 +31,10 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   for (std::size_t side = 0; side < num_of_subtris_; ++side)
   {
     const CellFace& face = poly_cell.faces[side];
+    auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, side);
 
-    const auto& v0 = grid_->GlobalVertex(face.vertex_ids[0]);
-    const auto& v1 = grid_->GlobalVertex(face.vertex_ids[1]);
+    const auto& v0 = grid_->GlobalVertex(face_vertex_ids[0]);
+    const auto& v1 = grid_->GlobalVertex(face_vertex_ids[1]);
     Vector3 v2 = vc_;
 
     Vector3 sidev01 = v1 - v0;
@@ -45,8 +46,8 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
     triangle_data.detJ = sidedetJ;
     triangle_data.detJ_surf = sidev01.Norm();
 
-    triangle_data.v_index[0] = face.vertex_ids[0];
-    triangle_data.v_index[1] = face.vertex_ids[1];
+    triangle_data.v_index[0] = face_vertex_ids[0];
+    triangle_data.v_index[1] = face_vertex_ids[1];
 
     triangle_data.v0 = v0;
 
@@ -88,11 +89,12 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
       side_mapping[side] = -1;
 
       const CellFace& face = poly_cell.faces[side];
-      if (face.vertex_ids[0] == vindex)
+      auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, side);
+      if (face_vertex_ids[0] == vindex)
       {
         side_mapping[side] = 0;
       }
-      if (face.vertex_ids[1] == vindex)
+      if (face_vertex_ids[1] == vindex)
       {
         side_mapping[side] = 1;
       }
