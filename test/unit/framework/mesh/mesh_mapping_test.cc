@@ -63,7 +63,7 @@ TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> c
             found_mapping = true;
           }
           const auto fine_face_within_coarse =
-            coarse_grid->CheckPointInsideCellFace(coarse_cell, coarse_face_i, fine_face.centroid);
+            coarse_grid->CheckPointInsideCellFace(clid, coarse_face_i, fine_face.centroid);
           const auto fine_within_coarse =
             coarse_grid->CheckPointInsideCell(clid, fine_cell.centroid);
           EXPECT_EQ(in_fine_mapping, fine_face_within_coarse && fine_within_coarse);

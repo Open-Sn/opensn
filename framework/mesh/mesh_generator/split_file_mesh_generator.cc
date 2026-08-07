@@ -177,7 +177,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
       const auto& cell = raw_cells[cell_global_id];
       serial_data.Write(cell_pids[cell_global_id]);
       serial_data.Write(cell_global_id);
-      SerializeCell(cell, serial_data);
+      SerializeCell(cell, umesh.GetCellFaceConnectivity()[cell_global_id], serial_data);
       auto cell_vertex_ids = umesh.GetCellConnectivity(cell_global_id);
       serial_data.Write(cell_vertex_ids.size());
       for (const uint64_t vid : cell_vertex_ids)
@@ -288,18 +288,24 @@ SplitFileMeshGenerator::ReadSplitMesh() const
     new_cell.block_id = ReadBinaryValue<unsigned int>(ifile);
 
     const auto num_faces = ReadBinaryValue<size_t>(ifile);
+    std::vector<std::vector<std::uint64_t>> cell_faces_vids;
+    cell_faces_vids.reserve(num_faces);
     for (size_t f = 0; f < num_faces; ++f)
     {
       CellFace new_face;
       const auto num_face_vids = ReadBinaryValue<size_t>(ifile);
+      std::vector<std::uint64_t> face_vids;
+      face_vids.reserve(num_face_vids);
       for (size_t v = 0; v < num_face_vids; ++v)
-        new_face.vertex_ids.push_back(ReadBinaryValue<uint64_t>(ifile));
+        face_vids.push_back(ReadBinaryValue<uint64_t>(ifile));
+      cell_faces_vids.push_back(std::move(face_vids));
 
       new_face.has_neighbor = ReadBinaryValue<bool>(ifile);
       new_face.neighbor_id = ReadBinaryValue<uint64_t>(ifile);
 
       new_cell.faces.push_back(std::move(new_face));
     } // for f
+    info_block.cell_face_connect.emplace(cell_gid, cell_faces_vids);
 
     const auto num_vids = ReadBinaryValue<size_t>(ifile);
     std::vector<std::uint64_t> new_cell_vertex_ids;
@@ -401,6 +407,8 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
   grid_ptr->SetOrthoAttributes(mesh_info.ortho_attributes);
   grid_ptr->SetGlobalVertexCount(mesh_info.num_global_vertices);
   grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), mesh_info.cell_connect);
+  if (!mesh_info.cell_face_connect.empty())
+    grid_ptr->SetCellFaces(mesh_info.cell_face_connect);
   grid_ptr->ComputeGeometricInfo();
 
   ComputeAndPrintStats(grid_ptr);
@@ -409,17 +417,19 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 }
 
 void
-SplitFileMeshGenerator::SerializeCell(const Cell& cell, ByteArray& serial_buffer)
+SplitFileMeshGenerator::SerializeCell(const Cell& cell, const std::vector<std::vector<std::uint64_t>>& cell_face_vids, ByteArray& serial_buffer)
 {
   serial_buffer.Write(cell.GetType());
   serial_buffer.Write(cell.GetSubType());
   serial_buffer.Write(cell.centroid);
   serial_buffer.Write(cell.block_id);
   serial_buffer.Write(cell.faces.size());
-  for (const auto& face : cell.faces)
+  for (size_t f = 0; f < cell.faces.size(); ++f)
   {
-    serial_buffer.Write(face.vertex_ids.size());
-    for (const uint64_t vid : face.vertex_ids)
+    const auto& face = cell.faces[f];
+    const auto& face_vids = cell_face_vids[f];
+    serial_buffer.Write(face_vids.size());
+    for (const uint64_t vid : face_vids)
       serial_buffer.Write(vid);
     serial_buffer.Write(face.has_neighbor);
     serial_buffer.Write(face.neighbor_id);

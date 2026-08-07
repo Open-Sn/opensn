@@ -133,7 +133,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
           const auto& adj_cell_mapping = sdm_.GetLocalCellMapping(adj_cell_local_id);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-          const size_t acf = Mesh::MapCellFace(cell, adj_cell, f);
+          const size_t acf = grid_->MapCellFace(cell_local_id, adj_cell_local_id, f);
           const double hp = HPerpendicular(adj_cell_local_id, acf);
 
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.block_id);
@@ -668,7 +668,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
           const auto& adj_cell_mapping = sdm_.GetLocalCellMapping(adj_cell_local_id);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-          const size_t acf = Mesh::MapCellFace(cell, adj_cell, f);
+          const size_t acf = grid_->MapCellFace(cell_local_id, adj_cell_local_id, f);
           const double hp = HPerpendicular(adj_cell_local_id, acf);
 
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.block_id);

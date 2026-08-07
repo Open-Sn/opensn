@@ -100,7 +100,7 @@ SimTest04_PWLC(std::shared_ptr<Mesh> grid)
       if (face.has_neighbor)
         continue;
 
-      const size_t num_face_nodes = face.vertex_ids.size();
+      const size_t num_face_nodes = grid->GetCellFaceVertexCount(cell_local_id, f);
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
       {
         const uint i = cell_mapping.MapFaceNode(f, fi);

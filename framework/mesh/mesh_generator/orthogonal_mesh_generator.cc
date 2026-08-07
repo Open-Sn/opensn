@@ -250,12 +250,10 @@ MakeCell1D(const OrthoCellInfo& info,
   };
 
   CellFace left_face;
-  left_face.vertex_ids = {cell_vertex_ids[0]};
   left_face.has_neighbor = k != 0;
   left_face.neighbor_id = k == 0 ? ZMIN : CellGlobalID(info, 0, 0, k - 1);
 
   CellFace right_face;
-  right_face.vertex_ids = {cell_vertex_ids[1]};
   right_face.has_neighbor = k + 1 != info.cell_counts[2];
   right_face.neighbor_id = right_face.has_neighbor ? CellGlobalID(info, 0, 0, k + 1) : ZMAX;
 
@@ -286,10 +284,6 @@ MakeCell2D(const OrthoCellInfo& info,
   for (int f = 0; f < 4; ++f)
   {
     CellFace face;
-    if (f < 3)
-      face.vertex_ids = {cell_vertex_ids[f], cell_vertex_ids[f + 1]};
-    else
-      face.vertex_ids = {cell_vertex_ids[f], cell_vertex_ids[0]};
 
     if (f == 1)
     {
@@ -344,10 +338,9 @@ MakeCell3D(const OrthoCellInfo& info,
   const auto max_k = info.cell_counts[2] - 1;
 
   auto add_face =
-    [&cell](std::vector<uint64_t> vertex_ids, const bool has_neighbor, const uint64_t neighbor)
+    [&cell](std::vector<uint64_t> /*vertex_ids*/, const bool has_neighbor, const uint64_t neighbor)
   {
     CellFace face;
-    face.vertex_ids = std::move(vertex_ids);
     face.has_neighbor = has_neighbor;
     face.neighbor_id = neighbor;
     cell.faces.push_back(std::move(face));
@@ -748,6 +741,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   cells.reserve(n_cells);
   std::vector<std::vector<std::uint64_t>> cell_connect;
   cell_connect.reserve(n_cells);
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  cell_face_connect.reserve(n_cells);
   const auto max_cz = zverts.size() - 2;
   for (size_t c = 0; c < n_cells; ++c)
   {
@@ -756,9 +751,6 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
 
     CellFace left_face;
     CellFace right_face;
-
-    left_face.vertex_ids = {c};
-    right_face.vertex_ids = {c + 1};
 
     left_face.neighbor_id = c - 1;
     right_face.neighbor_id = c + 1;
@@ -780,11 +772,15 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
     cell.faces.push_back(left_face);
     cell.faces.push_back(right_face);
 
+    std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids = {{c}, {c + 1}};
+
     cells.emplace_back(std::move(cell));
     cell_connect.emplace_back(cell_vertex_ids);
+    cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
   }
 
   umesh->SetCells(std::move(cells), cell_connect);
+  umesh->SetCellFaces(cell_face_connect);
   umesh->ComputeCentroids();
   umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
@@ -840,6 +836,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   cells.reserve(n_cells);
   std::vector<std::vector<std::uint64_t>> cell_connect;
   cell_connect.reserve(n_cells);
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  cell_face_connect.reserve(n_cells);
   const auto& vmap = vertex_ij_to_i_map;
   const auto& cmap = cells_ij_to_i_map;
   const auto max_j = Nx - 2;
@@ -860,14 +858,18 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
       std::vector<uint64_t> cell_vertex_ids = {
         vmap[i][j], vmap[i][j + 1], vmap[i + 1][j + 1], vmap[i + 1][j]};
 
+      std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+      cell_face_vertex_ids.reserve(4);
+
       for (int v = 0; v < 4; ++v)
       {
         CellFace face;
 
+        std::vector<uint64_t> f_vids(2);
         if (v < 3)
-          face.vertex_ids = std::vector<uint64_t>{cell_vertex_ids[v], cell_vertex_ids[v + 1]};
+          f_vids = std::vector<uint64_t>{cell_vertex_ids[v], cell_vertex_ids[v + 1]};
         else
-          face.vertex_ids = std::vector<uint64_t>{cell_vertex_ids[v], cell_vertex_ids[0]};
+          f_vids = std::vector<uint64_t>{cell_vertex_ids[v], cell_vertex_ids[0]};
 
         face.neighbor_id = true;
         if (v == 1 and j != max_j)
@@ -902,14 +904,17 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
         }
 
         cell.faces.push_back(face);
+        cell_face_vertex_ids.push_back(std::move(f_vids));
       }
 
       cells.emplace_back(cell);
       cell_connect.emplace_back(cell_vertex_ids);
+      cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
     }
   }
 
   umesh->SetCells(std::move(cells), cell_connect);
+  umesh->SetCellFaces(cell_face_connect);
   umesh->ComputeCentroids();
   umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
@@ -984,6 +989,8 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
   cells.reserve(n_cells);
   std::vector<std::vector<std::uint64_t>> cell_connect;
   cell_connect.reserve(n_cells);
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  cell_face_connect.reserve(n_cells);
   const auto& vmap = vertex_ijk_to_i_map;
   const auto& cmap = cells_ijk_to_i_map;
   const auto max_j = Nx - 2;
@@ -1007,80 +1014,91 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
                                                  vmap[i + 1][j + 1][k + 1],
                                                  vmap[i + 1][j][k + 1]};
 
+        std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+        cell_face_vertex_ids.reserve(6);
+
         // East face
         {
           CellFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{vmap[i][j + 1][k],
-                                                  vmap[i + 1][j + 1][k],
-                                                  vmap[i + 1][j + 1][k + 1],
-                                                  vmap[i][j + 1][k + 1]};
+          std::vector<uint64_t> f_vids = {vmap[i][j + 1][k],
+                                          vmap[i + 1][j + 1][k],
+                                          vmap[i + 1][j + 1][k + 1],
+                                          vmap[i][j + 1][k + 1]};
           face.neighbor_id = j == max_j ? XMAX : cmap[i][j + 1][k];
           face.has_neighbor = j != max_j;
           cell.faces.push_back(face);
+          cell_face_vertex_ids.push_back(std::move(f_vids));
         }
         // West face
         {
           CellFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{
+          std::vector<uint64_t> f_vids = {
             vmap[i][j][k], vmap[i][j][k + 1], vmap[i + 1][j][k + 1], vmap[i + 1][j][k]};
           face.neighbor_id = j == 0 ? XMIN : cmap[i][j - 1][k];
           face.has_neighbor = j != 0;
           cell.faces.push_back(face);
+          cell_face_vertex_ids.push_back(std::move(f_vids));
         }
         // North face
         {
           CellFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{vmap[i + 1][j][k],
-                                                  vmap[i + 1][j][k + 1],
-                                                  vmap[i + 1][j + 1][k + 1],
-                                                  vmap[i + 1][j + 1][k]};
+          std::vector<uint64_t> f_vids = {vmap[i + 1][j][k],
+                                          vmap[i + 1][j][k + 1],
+                                          vmap[i + 1][j + 1][k + 1],
+                                          vmap[i + 1][j + 1][k]};
           face.neighbor_id = i == max_i ? YMAX : cmap[i + 1][j][k];
           face.has_neighbor = i != max_i;
           cell.faces.push_back(face);
+          cell_face_vertex_ids.push_back(std::move(f_vids));
         }
         // South face
         {
           CellFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{
+          std::vector<uint64_t> f_vids = {
             vmap[i][j][k], vmap[i][j + 1][k], vmap[i][j + 1][k + 1], vmap[i][j][k + 1]};
           face.neighbor_id = i == 0 ? YMIN : cmap[i - 1][j][k];
           face.has_neighbor = i != 0;
           cell.faces.push_back(face);
+          cell_face_vertex_ids.push_back(std::move(f_vids));
         }
         // Top face
         {
           CellFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{vmap[i][j][k + 1],
-                                                  vmap[i][j + 1][k + 1],
-                                                  vmap[i + 1][j + 1][k + 1],
-                                                  vmap[i + 1][j][k + 1]};
+          std::vector<uint64_t> f_vids = {vmap[i][j][k + 1],
+                                          vmap[i][j + 1][k + 1],
+                                          vmap[i + 1][j + 1][k + 1],
+                                          vmap[i + 1][j][k + 1]};
           face.neighbor_id = k == max_k ? ZMAX : cmap[i][j][k + 1];
           face.has_neighbor = k != max_k;
           cell.faces.push_back(face);
+          cell_face_vertex_ids.push_back(std::move(f_vids));
         }
         // Bottom face
         {
           CellFace face;
 
-          face.vertex_ids = std::vector<uint64_t>{
+          std::vector<uint64_t> f_vids = {
             vmap[i][j][k], vmap[i + 1][j][k], vmap[i + 1][j + 1][k], vmap[i][j + 1][k]};
           face.neighbor_id = k == 0 ? ZMIN : cmap[i][j][k - 1];
           face.has_neighbor = k != 0;
           cell.faces.push_back(face);
+          cell_face_vertex_ids.push_back(std::move(f_vids));
         }
 
         cells.emplace_back(cell);
         cell_connect.emplace_back(cell_vertex_ids);
+        cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
       }
     }
   }
 
   umesh->SetCells(std::move(cells), cell_connect);
+  umesh->SetCellFaces(cell_face_connect);
   umesh->ComputeCentroids();
   umesh->CheckQuality();
   umesh->BuildMeshConnectivity();

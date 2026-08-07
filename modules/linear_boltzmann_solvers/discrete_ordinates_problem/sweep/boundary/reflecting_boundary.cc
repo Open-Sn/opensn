@@ -94,7 +94,7 @@ ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
       const auto& face = cell.faces[f];
       if (not face.has_neighbor and face.neighbor_id == bid)
       {
-        const auto num_face_nodes = face.vertex_ids.size();
+        const auto num_face_nodes = grid->GetCellFaceVertexCount(cell_local_id, f);
         for (unsigned int fnode = 0; fnode < num_face_nodes; ++fnode)
         {
           FaceNode fn(cell_local_id, f, fnode);

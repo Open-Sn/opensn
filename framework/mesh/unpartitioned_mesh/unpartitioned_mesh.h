@@ -70,6 +70,14 @@ public:
   void SetCells(std::vector<Cell>&& cells,
                 const std::vector<std::vector<std::uint64_t>>& cell_connectivity);
 
+  void
+  SetCellFaces(const std::vector<std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity);
+
+  const std::vector<std::vector<std::vector<std::uint64_t>>>& GetCellFaceConnectivity() const
+  {
+    return cell_face_connectivity_;
+  }
+
   std::span<const uint64_t> GetCellConnectivity(std::uint32_t cell_global_id) const;
 
   const std::vector<Vector3>& GetVertices() const { return vertices_; }
@@ -107,6 +115,8 @@ protected:
   std::vector<std::size_t> connect_ofst_;
   /// Cell connectivity: [`connect_ofst_[i]` .. `connect_ofst_[i+1]`]
   std::vector<uint64_t> connect_ids_;
+  ///
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connectivity_;
 
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
