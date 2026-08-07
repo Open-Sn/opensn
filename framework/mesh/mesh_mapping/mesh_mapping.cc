@@ -110,7 +110,7 @@ MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr
       const auto& fine_face = fine_cell.faces[fine_face_i];
       for (size_t coarse_face_i = 0; coarse_face_i < coarse_cell.faces.size(); ++coarse_face_i)
       {
-        if (coarse_grid->CheckPointInsideCellFace(coarse_cell, coarse_face_i, fine_face.centroid))
+        if (coarse_grid->CheckPointInsideCellFace(fine_mapping.coarse_cell_local_id, coarse_face_i, fine_face.centroid))
         {
           coarse_mapping.fine_faces[coarse_face_i].emplace_back(&fine_cell, fine_face_i);
           fine_mapping.coarse_faces[fine_face_i] = coarse_face_i;

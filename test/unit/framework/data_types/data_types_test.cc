@@ -33,62 +33,56 @@ TEST(DataTypesTest, 00)
       // Bottom face
       {
         CellFace face;
-        face.vertex_ids = {0, 3, 2, 1};
         face.normal = {0, 0, -1};
         face.centroid = {0.5, 0.5, 0.0};
         face.has_neighbor = false;
         face.neighbor_id = 0;
-        poster_child_cell.faces.push_back(std::move(face));
+        poster_child_cell.faces.emplace_back(face);
       }
       // Top face
       {
         CellFace face;
-        face.vertex_ids = {4, 5, 6, 7};
         face.normal = {0, 0, 1};
         face.centroid = {0.5, 0.5, 1.0};
         face.has_neighbor = false;
         face.neighbor_id = 1;
-        poster_child_cell.faces.push_back(std::move(face));
+        poster_child_cell.faces.emplace_back(face);
       }
       // Left face
       {
         CellFace face;
-        face.vertex_ids = {0, 4, 7, 3};
         face.normal = {-1, 0, 0};
         face.centroid = {0.0, 0.5, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 2;
-        poster_child_cell.faces.push_back(std::move(face));
+        poster_child_cell.faces.emplace_back(face);
       }
       // Right face
       {
         CellFace face;
-        face.vertex_ids = {1, 2, 6, 5};
         face.normal = {1, 0, 0};
         face.centroid = {1.0, 0.5, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 3;
-        poster_child_cell.faces.push_back(std::move(face));
+        poster_child_cell.faces.emplace_back(face);
       }
       // Front face
       {
         CellFace face;
-        face.vertex_ids = {0, 1, 5, 4};
         face.normal = {0, -1, 0};
         face.centroid = {0.5, 0.0, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 4;
-        poster_child_cell.faces.push_back(std::move(face));
+        poster_child_cell.faces.emplace_back(face);
       }
       // Back face
       {
         CellFace face;
-        face.vertex_ids = {3, 7, 6, 2};
         face.normal = {0, 1, 0};
         face.centroid = {0.5, 1.0, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 5;
-        poster_child_cell.faces.push_back(std::move(face));
+        poster_child_cell.faces.emplace_back(face);
       }
     }
 
@@ -163,12 +157,6 @@ TEST(DataTypesTest, 00)
         {
           const auto& pface = pcell.faces[f];
 
-          if (rface.vertex_ids != pface.vertex_ids)
-          {
-            passed = false;
-            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-            break;
-          }
           if (rface.has_neighbor != pface.has_neighbor)
           {
             passed = false;

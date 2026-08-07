@@ -73,15 +73,16 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<Mesh> grid,
     std::vector<vtkIdType> faces_vids;
 
     size_t num_faces = cell.faces.size();
-    for (const auto& face : cell.faces)
+    for (std::uint32_t face_idx = 0; face_idx < num_faces; ++face_idx)
     {
-      size_t num_fverts = face.vertex_ids.size();
+      auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
+      size_t num_fverts = face_vertex_ids.size();
       std::vector<vtkIdType> face_info(num_fverts);
       for (size_t fv = 0; fv < num_fverts; ++fv)
       {
         size_t v = 0;
         for (size_t cv = 0; cv < num_verts; ++cv)
-          if (cell_vertex_ids[cv] == face.vertex_ids[fv])
+          if (cell_vertex_ids[cv] == face_vertex_ids[fv])
           {
             v = cv;
             break;
@@ -198,15 +199,16 @@ UploadCellGeometryContinuous(std::shared_ptr<Mesh> grid,
       case CellType::POLYHEDRON:
       {
         size_t num_faces = cell.faces.size();
-        for (const auto& face : cell.faces)
+        for (std::uint32_t face_idx = 0; face_idx < num_faces; ++face_idx)
         {
-          size_t num_fverts = face.vertex_ids.size();
+          auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
+          size_t num_fverts = face_vertex_ids.size();
           std::vector<vtkIdType> face_info(num_fverts);
           for (size_t fv = 0; fv < num_fverts; ++fv)
           {
             size_t v = 0;
             for (size_t cv = 0; cv < num_verts; ++cv)
-              if (cell_vertex_ids[cv] == face.vertex_ids[fv])
+              if (cell_vertex_ids[cv] == face_vertex_ids[fv])
               {
                 v = cv;
                 break;
@@ -234,15 +236,18 @@ UploadCellGeometryContinuous(std::shared_ptr<Mesh> grid,
 }
 
 void
-UploadFaceGeometry(const CellFace& cell_face,
+UploadFaceGeometry(std::shared_ptr<Mesh> grid,
+                   std::uint32_t cell_local_id,
+                   std::uint32_t face_idx,
                    const std::vector<uint64_t>& vertex_map,
                    vtkNew<vtkUnstructuredGrid>& ugrid)
 {
-  const size_t num_verts = cell_face.vertex_ids.size();
+  auto cell_face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
+  const size_t num_verts = cell_face_vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids;
-  cell_vids.reserve(cell_face.vertex_ids.size());
-  for (uint64_t vid : cell_face.vertex_ids)
+  cell_vids.reserve(cell_face_vertex_ids.size());
+  for (uint64_t vid : cell_face_vertex_ids)
     cell_vids.push_back(static_cast<vtkIdType>(vertex_map[vid]));
 
   if (num_verts == 1)

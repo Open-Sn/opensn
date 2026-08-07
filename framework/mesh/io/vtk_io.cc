@@ -31,7 +31,7 @@ namespace opensn
 namespace
 {
 
-std::tuple<Cell, std::vector<std::uint64_t>>
+std::tuple<Cell, std::vector<std::uint64_t>, std::vector<std::vector<std::uint64_t>>>
 CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolyhedron";
@@ -74,6 +74,8 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
     polyh_cell_vertex_ids.push_back(point_id);
   }
 
+  std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+
   switch (sub_type)
   {
     // The cell vertex ids in VTK is the same as in OpenSn, so we don't
@@ -85,12 +87,13 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
       for (int f = 0; f < 6; ++f)
       {
         CellFace face;
-
-        face.vertex_ids.reserve(4);
+        std::vector<uint64_t> f_vids;
+        f_vids.reserve(4);
         for (int p = 0; p < 4; ++p)
-          face.vertex_ids.push_back(polyh_cell_vertex_ids[face_vids[f][p]]);
+          f_vids.push_back(polyh_cell_vertex_ids[face_vids[f][p]]);
 
         polyh_cell.faces.push_back(face);
+        cell_face_vertex_ids.push_back(std::move(f_vids));
       }
       break;
     }
@@ -102,12 +105,13 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
       for (int f = 0; f < 5; ++f)
       {
         CellFace face;
-
-        face.vertex_ids.reserve(4);
+        std::vector<uint64_t> f_vids;
+        f_vids.reserve(4);
         for (int p = 0; p < face_vids[f].size(); ++p)
-          face.vertex_ids.push_back(polyh_cell_vertex_ids[face_vids[f][p]]);
+          f_vids.push_back(polyh_cell_vertex_ids[face_vids[f][p]]);
 
         polyh_cell.faces.push_back(face);
+        cell_face_vertex_ids.push_back(std::move(f_vids));
       }
       break;
     }
@@ -118,12 +122,13 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
       for (int f = 0; f < 4; ++f)
       {
         CellFace face;
-
-        face.vertex_ids.reserve(3);
+        std::vector<uint64_t> f_vids;
+        f_vids.reserve(3);
         for (int p = 0; p < 3; ++p)
-          face.vertex_ids.push_back(polyh_cell_vertex_ids[face_vids[f][p]]);
+          f_vids.push_back(polyh_cell_vertex_ids[face_vids[f][p]]);
 
         polyh_cell.faces.push_back(face);
+        cell_face_vertex_ids.push_back(std::move(f_vids));
       }
       break;
     }
@@ -136,24 +141,26 @@ CreateCellFromVTKPolyhedron(vtkCell* vtk_cell)
         auto* vtk_face = vtk_cell->GetFace(f);
         auto num_face_points = vtk_face->GetNumberOfPoints();
 
-        face.vertex_ids.reserve(num_face_points);
+        std::vector<uint64_t> f_vids;
+        f_vids.reserve(num_face_points);
         auto* face_point_ids = vtk_face->GetPointIds();
         for (int p = 0; p < num_face_points; ++p)
         {
           uint64_t point_id = face_point_ids->GetId(p);
-          face.vertex_ids.push_back(point_id);
+          f_vids.push_back(point_id);
         }
 
         polyh_cell.faces.push_back(face);
+        cell_face_vertex_ids.push_back(std::move(f_vids));
       }
       break;
     }
   }
 
-  return {polyh_cell, polyh_cell_vertex_ids};
+  return {polyh_cell, polyh_cell_vertex_ids, cell_face_vertex_ids};
 }
 
-std::tuple<Cell, std::vector<std::uint64_t>>
+std::tuple<Cell, std::vector<std::uint64_t>, std::vector<std::vector<std::uint64_t>>>
 CreateCellFromVTKPolygon(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
@@ -189,6 +196,7 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
     polyh_cell_vertex_ids.push_back(point_id);
   }
 
+  std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
   poly_cell.faces.reserve(num_cfaces);
   for (int f = 0; f < num_cfaces; ++f)
   {
@@ -197,17 +205,18 @@ CreateCellFromVTKPolygon(vtkCell* vtk_cell)
     auto v0_id = polyh_cell_vertex_ids[f];
     auto v1_id = (f < (num_cfaces - 1)) ? polyh_cell_vertex_ids[f + 1] : polyh_cell_vertex_ids[0];
 
-    face.vertex_ids.reserve(2);
-    face.vertex_ids.push_back(v0_id);
-    face.vertex_ids.push_back(v1_id);
+    std::vector<std::uint64_t> f_vids(2);
+    f_vids[0] = v0_id;
+    f_vids[1] = v1_id;
 
     poly_cell.faces.push_back(face);
+    cell_face_vertex_ids.push_back(std::move(f_vids));
   }
 
-  return {poly_cell, polyh_cell_vertex_ids};
+  return {poly_cell, polyh_cell_vertex_ids, cell_face_vertex_ids};
 }
 
-std::tuple<Cell, std::vector<std::uint64_t>>
+std::tuple<Cell, std::vector<std::uint64_t>, std::vector<std::vector<std::uint64_t>>>
 CreateCellFromVTKLine(vtkCell* vtk_cell)
 {
   const std::string fname = "CreateCellFromVTKPolygon";
@@ -237,6 +246,7 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
     slab_cell_vertex_ids.push_back(point_id);
   }
 
+  std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
   slab_cell.faces.reserve(num_cfaces);
   for (int f = 0; f < num_cfaces; ++f)
   {
@@ -244,16 +254,17 @@ CreateCellFromVTKLine(vtkCell* vtk_cell)
 
     auto v_id = slab_cell_vertex_ids[f];
 
-    face.vertex_ids.reserve(1);
-    face.vertex_ids.push_back(v_id);
+    std::vector<std::uint64_t> f_vids(1);
+    f_vids[0] = v_id;
 
     slab_cell.faces.push_back(face);
+    cell_face_vertex_ids.push_back(std::move(f_vids));
   }
 
-  return {slab_cell, slab_cell_vertex_ids};
+  return {slab_cell, slab_cell_vertex_ids, cell_face_vertex_ids};
 }
 
-std::tuple<Cell, std::vector<std::uint64_t>>
+std::tuple<Cell, std::vector<std::uint64_t>, std::vector<std::vector<std::uint64_t>>>
 CreateCellFromVTKVertex(vtkCell* vtk_cell)
 {
   Cell point_cell(CellType::GHOST, CellType::POINT);
@@ -270,7 +281,7 @@ CreateCellFromVTKVertex(vtkCell* vtk_cell)
     point_cell_vertex_ids.push_back(point_id);
   }
 
-  return {point_cell, point_cell_vertex_ids};
+  return {point_cell, point_cell_vertex_ids, {}};
 }
 
 void
@@ -301,6 +312,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
   {
     std::vector<std::optional<Cell>> cells(total_cell_count);
     std::vector<std::vector<std::uint64_t>> cell_connect(total_cell_count);
+    std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect(total_cell_count);
     std::vector<std::shared_ptr<Vector3>> vertices(total_point_count);
 
     auto* cell_gids_ptr = ugrid.GetCellData()->GetGlobalIds();
@@ -344,14 +356,15 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
       std::optional<Cell> raw_cell;
       std::vector<std::uint64_t> raw_cell_vertex_ids;
+      std::vector<std::vector<std::uint64_t>> raw_cell_face_vertex_ids;
       if (vtk_celldim == 3)
-        std::tie(raw_cell, raw_cell_vertex_ids) = CreateCellFromVTKPolyhedron(vtk_cell);
+        std::tie(raw_cell, raw_cell_vertex_ids, raw_cell_face_vertex_ids) = CreateCellFromVTKPolyhedron(vtk_cell);
       else if (vtk_celldim == 2)
-        std::tie(raw_cell, raw_cell_vertex_ids) = CreateCellFromVTKPolygon(vtk_cell);
+        std::tie(raw_cell, raw_cell_vertex_ids, raw_cell_face_vertex_ids) = CreateCellFromVTKPolygon(vtk_cell);
       else if (vtk_celldim == 1)
-        std::tie(raw_cell, raw_cell_vertex_ids) = CreateCellFromVTKLine(vtk_cell);
+        std::tie(raw_cell, raw_cell_vertex_ids, raw_cell_face_vertex_ids) = CreateCellFromVTKLine(vtk_cell);
       else if (vtk_celldim == 0)
-        std::tie(raw_cell, raw_cell_vertex_ids) = CreateCellFromVTKVertex(vtk_cell);
+        std::tie(raw_cell, raw_cell_vertex_ids, raw_cell_face_vertex_ids) = CreateCellFromVTKVertex(vtk_cell);
       else
         throw std::logic_error(fname + ": Unsupported cell dimension ." +
                                std::to_string(vtk_celldim));
@@ -361,14 +374,15 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
         vid = node_map[vid];
 
       // Map face vertex-ids
-      for (auto& face : raw_cell->faces)
-        for (uint64_t& vid : face.vertex_ids)
+      for (auto& face_vertex_ids : raw_cell_face_vertex_ids)
+        for (uint64_t& vid : face_vertex_ids)
           vid = node_map[vid];
 
       raw_cell->block_id = block_id_array->GetValue(c);
 
       cells[cell_gid] = std::move(raw_cell);
       cell_connect[cell_gid] = std::move(raw_cell_vertex_ids);
+      cell_face_connect[cell_gid] = std::move(raw_cell_face_vertex_ids);
     } // for cell c
 
     // Load points
@@ -403,12 +417,14 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     for (auto& cell : cells)
       new_cells.emplace_back(cell.value());
     mesh->SetCells(std::move(new_cells), cell_connect);
+    mesh->SetCellFaces(cell_face_connect);
   } // If global-ids available
   else
   {
     std::vector<Cell> raw_cells;
     raw_cells.reserve(total_cell_count);
     std::vector<std::vector<std::uint64_t>> cell_connect;
+    std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
 
     // Push cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
@@ -421,20 +437,22 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 
       std::optional<Cell> cell;
       std::vector<std::uint64_t> cell_vertex_ids;
+      std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
       if (vtk_celldim == 3)
-        std::tie(cell, cell_vertex_ids) = CreateCellFromVTKPolyhedron(vtk_cell);
+        std::tie(cell, cell_vertex_ids, cell_face_vertex_ids) = CreateCellFromVTKPolyhedron(vtk_cell);
       else if (vtk_celldim == 2)
-        std::tie(cell, cell_vertex_ids) = CreateCellFromVTKPolygon(vtk_cell);
+        std::tie(cell, cell_vertex_ids, cell_face_vertex_ids) = CreateCellFromVTKPolygon(vtk_cell);
       else if (vtk_celldim == 1)
-        std::tie(cell, cell_vertex_ids) = CreateCellFromVTKLine(vtk_cell);
+        std::tie(cell, cell_vertex_ids, cell_face_vertex_ids) = CreateCellFromVTKLine(vtk_cell);
       else if (vtk_celldim == 0)
-        std::tie(cell, cell_vertex_ids) = CreateCellFromVTKVertex(vtk_cell);
+        std::tie(cell, cell_vertex_ids, cell_face_vertex_ids) = CreateCellFromVTKVertex(vtk_cell);
       else
         throw std::logic_error(fname + ": Unsupported cell dimension.");
 
       cell->block_id = block_id_array->GetValue(c);
       raw_cells.emplace_back(*cell);
       cell_connect.emplace_back(cell_vertex_ids);
+      cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
     }
 
     // Push points
@@ -450,6 +468,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     }
 
     mesh->SetCells(std::move(raw_cells), cell_connect);
+    mesh->SetCellFaces(cell_face_connect);
   } // if no global-ids
 
   mesh->ComputeBoundingBox();
@@ -474,18 +493,34 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
   auto& raw_cells = mesh->GetCells();
   // Build boundary faces
   std::vector<CellFace*> bndry_faces;
+  std::vector<std::pair<size_t, size_t>> bndry_face_indices; // cell_idx, face_idx
+  size_t cell_idx = 0;
   for (auto& cell : raw_cells)
-    for (auto& face : cell.faces)
+  {
+    for (size_t f = 0; f < cell.faces.size(); ++f)
+    {
+      auto& face = cell.faces[f];
       if (not face.has_neighbor)
+      {
         bndry_faces.push_back(&face);
+        bndry_face_indices.emplace_back(cell_idx, f);
+      }
+    }
+    ++cell_idx;
+  }
 
   log.Log() << "Number of boundary faces: " << bndry_faces.size();
 
   // Build boundary vertex ids
+  const auto& cell_face_connect = mesh->GetCellFaceConnectivity();
   std::set<uint64_t> bndry_vids_set;
-  for (const auto& face_ptr : bndry_faces)
-    for (const auto vid : face_ptr->vertex_ids)
+  for (size_t i = 0; i < bndry_faces.size(); ++i)
+  {
+    const auto [c_idx, f_idx] = bndry_face_indices[i];
+    const auto& vert_ids = cell_face_connect[c_idx][f_idx];
+    for (const auto vid : vert_ids)
       bndry_vids_set.insert(vid);
+  }
 
   // Process each boundary block
   uint64_t bndry_id = 0;
@@ -529,8 +564,12 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
     // Build vertex subscriptions
     std::map<uint64_t, std::set<size_t>> vertex_face_subs;
     for (size_t f = 0; f < bndry_faces.size(); ++f)
-      for (const auto vid : bndry_faces[f]->vertex_ids)
+    {
+      const auto [c_idx, f_idx] = bndry_face_indices[f];
+      const auto& vert_ids = cell_face_connect[c_idx][f_idx];
+      for (const auto vid : vert_ids)
         vertex_face_subs[vid].insert(f);
+    }
 
     // Process each cell in bndry block
     size_t num_faces_boundarified = 0;
@@ -555,7 +594,8 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
       for (size_t face_id : face_ids_short_list)
       {
         auto& face = bndry_faces[face_id];
-        const auto& face_vids = face->vertex_ids;
+        const auto [c_idx, f_idx] = bndry_face_indices[face_id];
+        const auto& face_vids = cell_face_connect[c_idx][f_idx];
         std::set<uint64_t> face_id_set(face_vids.begin(), face_vids.end());
 
         if (face_id_set == bndry_cell_id_set)
@@ -869,19 +909,27 @@ MeshIO::ToOBJ(const std::shared_ptr<Mesh>& grid, const char* file_name, bool per
       throw std::logic_error("Could not open file '" + std::string(file_name) + "' for writing.");
 
     // Develop list of faces and nodes
+    struct ExportFaceInfo
+    {
+      CellFace face;
+      uint32_t cell_local_id;
+      uint32_t face_idx;
+    };
     std::set<uint64_t> nodes_set;
-    std::vector<CellFace> faces_to_export;
+    std::vector<ExportFaceInfo> faces_to_export;
     for (const auto& cell : grid->GetLocalCells())
     {
       if (cell.GetType() == CellType::POLYHEDRON)
       {
-        for (auto& face : cell.faces)
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell.global_id);
+        for (size_t f = 0; f < cell.faces.size(); ++f)
         {
+          const auto& face = cell.faces[f];
           if (not face.has_neighbor)
           {
-            faces_to_export.push_back(face);
-
-            for (auto vid : face.vertex_ids)
+            faces_to_export.push_back({face, static_cast<uint32_t>(cell_local_id), static_cast<uint32_t>(f)});
+            auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, f);
+            for (auto vid : face_vertex_ids)
               nodes_set.insert(vid);
           } // if boundary
         } // for face
@@ -915,8 +963,9 @@ MeshIO::ToOBJ(const std::shared_ptr<Mesh>& grid, const char* file_name, bool per
     }
 
     // Write face normals
-    for (const auto& face : faces_to_export)
+    for (const auto& face_info : faces_to_export)
     {
+      const auto& face = face_info.face;
       // clang-format off
       of << "vn "
         << std::fixed << std::setprecision(4)
@@ -928,12 +977,13 @@ MeshIO::ToOBJ(const std::shared_ptr<Mesh>& grid, const char* file_name, bool per
 
     // Write faces
     int normal_counter = 0;
-    for (const auto& face : faces_to_export)
+    for (const auto& face_info : faces_to_export)
     {
       normal_counter++;
       of << "f";
 
-      for (auto v_g_index : face.vertex_ids)
+      auto face_vertex_ids = grid->GetCellFaceConnectivity(face_info.cell_local_id, face_info.face_idx);
+      for (auto v_g_index : face_vertex_ids)
         of << " " << node_mapping[v_g_index] << "//" << normal_counter;
 
       of << "\n";
@@ -1099,8 +1149,12 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
       // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
-        for (uint64_t vid : face_info.face_ptr->vertex_ids)
+      {
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(face_info.source_cell_id);
+        const auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_info.source_face_id);
+        for (uint64_t vid : face_vertex_ids)
           vid_set.insert(vid);
+      }
 
       // Build vertex map
       std::vector<uint64_t> vertex_map(grid->GetGlobalVertexCount(), 0);
@@ -1155,8 +1209,12 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
       // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
-        for (uint64_t vid : face_info.face_ptr->vertex_ids)
+      {
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(face_info.source_cell_id);
+        const auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_info.source_face_id);
+        for (uint64_t vid : face_vertex_ids)
           vid_set.insert(vid);
+      }
 
       // Build vertex map
       std::vector<uint64_t> vertex_map(grid->GetGlobalVertexCount(), 0);
@@ -1176,7 +1234,8 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
       // Load faces
       for (const auto& face_info : face_list)
       {
-        UploadFaceGeometry(*face_info.face_ptr, vertex_map, ugrid);
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(face_info.source_cell_id);
+        UploadFaceGeometry(grid, cell_local_id, face_info.source_face_id, vertex_map, ugrid);
         src_cell_global_ids->InsertNextValue(static_cast<vtkIdType>(face_info.source_cell_id));
         src_cell_face_id->InsertNextValue(face_info.source_face_id);
       }

@@ -41,7 +41,9 @@ void UploadCellGeometryContinuous(std::shared_ptr<Mesh> grid,
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadFaceGeometry(const CellFace& cell_face,
+void UploadFaceGeometry(std::shared_ptr<Mesh> grid,
+                        std::uint32_t cell_local_id,
+                        std::uint32_t face,
                         const std::vector<uint64_t>& vertex_map,
                         vtkNew<vtkUnstructuredGrid>& ugrid);
 

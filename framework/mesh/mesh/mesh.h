@@ -162,6 +162,8 @@ public:
                 std::vector<Cell>&& ghost_cells,
                 const std::map<std::uint64_t, std::vector<uint64_t>>& cell_connectivity);
 
+  void SetCellFaces(const std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity);
+
   /// Returns a reference to a cell given its global cell index.
   Cell& GetGlobalCell(uint64_t cell_global_index);
 
@@ -222,9 +224,17 @@ public:
   size_t MapCellGlobalID2LocalID(uint64_t global_id) const;
 
   /// Creates a mapping of the current face local ids to the adjacent face's local ids.
-  void FindAssociatedVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
+  void FindAssociatedVertices(std::uint32_t cell_local_id,
+                              std::uint32_t face_idx,
+                              std::vector<short>& dof_mapping) const;
   /// Creates a mapping of the current face local ids to the adjacent cell's local ids.
-  void FindAssociatedCellVertices(const CellFace& cur_face, std::vector<short>& dof_mapping) const;
+  void FindAssociatedCellVertices(std::uint32_t cell_local_id,
+                                  std::uint32_t face_idx,
+                                  std::vector<short>& dof_mapping) const;
+
+  /// Determines the neighbor's associated face.
+  std::uint32_t GetNeighborAdjacentFaceIndex(std::uint32_t cell_local_id,
+                                             std::uint32_t face_idx) const;
 
   /// Counts the number of cells within a logical volume across all partitions.
   size_t CountCellsInLogicalVolume(const LogicalVolume& log_vol) const;
@@ -232,7 +242,9 @@ public:
   /// Checks whether a point is within a cell.
   bool CheckPointInsideCell(std::uint32_t cell_local_id, const Vector3& point) const;
   /// Checks whether a point is within a cell face.
-  bool CheckPointInsideCellFace(const Cell& cell, size_t face_i, const Vector3& point) const;
+  bool CheckPointInsideCellFace(std::uint32_t cell_local_id,
+                                std::uint32_t face_idx,
+                                const Vector3& point) const;
 
   /// Provides a mapping from cell ijk indices to global ids.
   NDArray<uint64_t, 3> MakeIJKToGlobalIDMapping() const;
@@ -267,8 +279,9 @@ public:
    * Get the face vertices of a tetrahedron contained within the given face and
    * side of a polyhedron.
    */
-  std::array<std::array<Vector3, 3>, 4>
-  GetTetrahedralFaceVertices(const Cell& cell, const CellFace& face, size_t side) const;
+  std::array<std::array<Vector3, 3>, 4> GetTetrahedralFaceVertices(std::uint32_t cell_local_id,
+                                                                   std::uint32_t face_idx,
+                                                                   size_t side) const;
 
   /**
    * Gets the communicator-set for interprocess communication, associated with this mesh.
@@ -282,6 +295,19 @@ public:
   int GetCellPartition(std::uint32_t cell_local_id) const;
 
   std::span<const uint64_t> GetCellConnectivity(std::uint32_t cell_local_id) const;
+
+  std::uint64_t GetCellFaceVertexCount(std::uint32_t cell_local_id, std::uint32_t face_idx) const;
+
+  std::span<const uint64_t> GetCellFaceConnectivity(std::uint32_t cell_local_id,
+                                                    std::uint32_t face_idx) const;
+
+  /**
+   * Given the current cell, cell A, and its adjacent cell, cell B, with cell B adjacent to
+   * A at the `f`-th face of cell A. Will determine the `af`-th index of the face on cell B
+   * that interface with the `f`-th face of cell A.
+   */
+  size_t
+  MapCellFace(std::uint32_t cur_cell_local_id, std::uint32_t adj_cell_local_id, unsigned int f);
 
 private:
   /// Spatial dimension
@@ -309,19 +335,19 @@ private:
   /// Cell connectivity: [`connect_ofst_[i]` .. `connect_ofst_[i+1]`]
   std::vector<uint64_t> connect_ids_;
 
+  /// Offset into `face_vertex_ofst_`
+  std::vector<std::size_t> face_connect_ofst_;
+  /// Offset into `face_vertex_ids_`
+  std::vector<std::size_t> face_vertex_ofst_;
+  /// Face vertices
+  std::vector<std::uint64_t> face_vertex_ids_;
+
 public:
   /// Returns a new instance of the spatial discretization.
   static std::shared_ptr<Mesh> New() { return std::make_shared<Mesh>(); }
 
   /// Returns the spatial dimensionality of the cell.
   static int GetCellDimension(const Cell& cell);
-
-  /**
-   * Given the current cell, cell A, and its adjacent cell, cell B, with cell B adjacent to
-   * A at the `f`-th face of cell A. Will determine the `af`-th index of the face on cell B
-   * that interface with the `f`-th face of cell A.
-   */
-  static size_t MapCellFace(const Cell& cur_cell, const Cell& adj_cell, unsigned int f);
 };
 
 } // namespace opensn

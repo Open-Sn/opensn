@@ -1170,22 +1170,23 @@ LBSProblem::InitializeParrays()
   // This is used in the Flux Data Structure (FLUDS).
   grid_nodal_mappings_.clear();
   grid_nodal_mappings_.reserve(grid_->GetLocalCellCount());
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
     CellFaceNodalMapping cell_nodal_mapping;
     cell_nodal_mapping.reserve(cell.faces.size());
 
-    for (auto& face : cell.faces)
+    for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
     {
       std::vector<short> face_node_mapping;
       std::vector<short> cell_node_mapping;
       int adj_face_idx = -1;
 
-      if (face.has_neighbor)
+      if (cell.faces[f].has_neighbor)
       {
-        grid_->FindAssociatedVertices(face, face_node_mapping);
-        grid_->FindAssociatedCellVertices(face, cell_node_mapping);
-        adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_.get());
+        grid_->FindAssociatedVertices(cell_local_id, f, face_node_mapping);
+        grid_->FindAssociatedCellVertices(cell_local_id, f, cell_node_mapping);
+        adj_face_idx = static_cast<int>(grid_->GetNeighborAdjacentFaceIndex(cell_local_id, f));
       }
 
       cell_nodal_mapping.emplace_back(adj_face_idx, face_node_mapping, cell_node_mapping);

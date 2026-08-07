@@ -156,6 +156,7 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   std::vector<Cell> ghost_cells;
   ghost_cells.reserve(n_ghost_cells);
   std::map<std::uint64_t, std::vector<std::uint64_t>> cell_connect;
+  std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
   for (std::size_t cell_global_id = 0; cell_global_id < input_umesh->GetCells().size();
        ++cell_global_id)
   {
@@ -175,6 +176,11 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
         ghost_cells.emplace_back(cell);
       cell_connect.emplace(
         cell_global_id, std::vector<std::uint64_t>{cell_vertex_ids.begin(), cell_vertex_ids.end()});
+      if (not input_umesh->GetCellFaceConnectivity().empty())
+      {
+        cell_face_connect.emplace(cell_global_id,
+                                  input_umesh->GetCellFaceConnectivity()[cell_global_id]);
+      }
     }
   } // for raw_cell
 
@@ -185,6 +191,8 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   grid_ptr->SetOrthoAttributes(input_umesh->GetOrthoAttributes());
   grid_ptr->SetGlobalVertexCount(input_umesh->GetVertices().size());
   grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), cell_connect);
+  if (not cell_face_connect.empty())
+    grid_ptr->SetCellFaces(cell_face_connect);
   grid_ptr->ComputeGeometricInfo();
 
   ComputeAndPrintStats(grid_ptr);

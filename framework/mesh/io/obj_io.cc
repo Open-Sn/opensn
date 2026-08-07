@@ -83,6 +83,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     std::string name;
     std::vector<Cell> cells;
     std::vector<std::vector<std::uint64_t>> cell_connect;
+    std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
     std::vector<std::pair<uint64_t, uint64_t>> edges;
   };
 
@@ -162,15 +163,17 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
       // Build faces
       const size_t num_verts = cell_vertex_ids.size();
+      std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
       for (size_t v = 0; v < num_verts; ++v)
       {
         CellFace face;
 
-        face.vertex_ids.resize(2);
-        face.vertex_ids[0] = cell_vertex_ids[v];
-        face.vertex_ids[1] = (v < (num_verts - 1)) ? cell_vertex_ids[v + 1] : cell_vertex_ids[0];
+        std::vector<std::uint64_t> lwf_vertex_ids(2);
+        lwf_vertex_ids[0] = cell_vertex_ids[v];
+        lwf_vertex_ids[1] = (v < (num_verts - 1)) ? cell_vertex_ids[v + 1] : cell_vertex_ids[0];
 
-        cell.faces.push_back(std::move(face));
+        cell.faces.emplace_back(face);
+        cell_face_vertex_ids.push_back(std::move(lwf_vertex_ids));
       }
 
       if (block_data.empty())
@@ -180,6 +183,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
       block_data.back().cells.emplace_back(cell);
       block_data.back().cell_connect.emplace_back(cell_vertex_ids);
+      block_data.back().cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
     } // if (first_word == "f")
     else if (first_word == "l")
     {
@@ -309,10 +313,10 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
         vid = vertex_map[vid];
     }
 
-    for (auto& cell : block_data.at(main_block_id).cells)
+    for (auto& cell_face_vertex_ids : block_data.at(main_block_id).cell_face_connect)
     {
-      for (auto& face : cell.faces)
-        for (uint64_t& vid : face.vertex_ids)
+      for (auto& face_vertex_ids : cell_face_vertex_ids)
+        for (uint64_t& vid : face_vertex_ids)
           vid = vertex_map[vid];
     }
 
@@ -331,6 +335,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(block_data[main_block_id].cells),
                  block_data[main_block_id].cell_connect);
+  mesh->SetCellFaces(block_data[main_block_id].cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
@@ -339,10 +344,21 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   if (not bndry_block_ids.empty())
   {
     std::vector<CellFace*> bndry_faces;
+    std::vector<std::pair<size_t, size_t>> bndry_face_indices; // cell_idx, face_idx
+    size_t cell_idx = 0;
     for (auto& cell : mesh->GetCells())
-      for (auto& face : cell.faces)
+    {
+      for (size_t f = 0; f < cell.faces.size(); ++f)
+      {
+        auto& face = cell.faces[f];
         if (not face.has_neighbor)
+        {
           bndry_faces.push_back(&face);
+          bndry_face_indices.emplace_back(cell_idx, f);
+        }
+      }
+      ++cell_idx;
+    }
 
     size_t bndry_id = 0;
     for (size_t bid : bndry_block_ids)
@@ -354,9 +370,11 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       {
         std::set<uint64_t> edge_vert_id_set({edge.first, edge.second});
 
-        for (auto& face_ptr : bndry_faces)
+        for (size_t i = 0; i < bndry_faces.size(); ++i)
         {
-          const auto& vert_ids = face_ptr->vertex_ids;
+          auto* face_ptr = bndry_faces[i];
+          const auto [c_idx, f_idx] = bndry_face_indices[i];
+          const auto& vert_ids = block_data[main_block_id].cell_face_connect[c_idx][f_idx];
           std::set<uint64_t> face_vert_id_set(vert_ids.begin(), vert_ids.end());
 
           if (face_vert_id_set == edge_vert_id_set)

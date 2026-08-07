@@ -97,63 +97,12 @@ CellFace::GetNeighborLocalID(const Mesh* grid) const
   return grid->MapCellGlobalID2LocalID(neighbor_id);
 }
 
-int
-CellFace::GetNeighborAdjacentFaceIndex(const Mesh* grid) const
-{
-  const auto& cur_face = *this; // just for readability
-  // Check index validity
-  if (not cur_face.has_neighbor)
-  {
-    std::stringstream outstr;
-    outstr << "Invalid cell index encountered in call to "
-           << "CellFace::GetNeighborAssociatedFace. Index points "
-           << "to a boundary";
-    throw std::logic_error(outstr.str());
-  }
-
-  const auto& adj_cell = grid->GetGlobalCell(cur_face.neighbor_id);
-
-  int adj_face_idx = -1;
-  std::set<uint64_t> cfvids(cur_face.vertex_ids.begin(),
-                            cur_face.vertex_ids.end()); // cur_face vertex ids
-
-  // Loop over adj cell faces
-  int af = -1;
-  for (const auto& adj_face : adj_cell.faces)
-  {
-    ++af;
-    std::set<uint64_t> afvids(adj_face.vertex_ids.begin(),
-                              adj_face.vertex_ids.end()); // adj_face vertex ids
-
-    if (afvids == cfvids)
-    {
-      adj_face_idx = af;
-      break;
-    }
-  }
-
-  // Check associated face validity
-  if (adj_face_idx < 0)
-  {
-    std::stringstream outstr;
-    outstr << "Could not find associated face in call to "
-           << "CellFace::GetNeighborAssociatedFace.\n"
-           << "Reference face with centroid at: " << cur_face.centroid.PrintStr() << "\n"
-           << "Adjacent cell: " << adj_cell.global_id << "\n";
-    for (size_t afi = 0; afi < adj_cell.faces.size(); ++afi)
-    {
-      outstr << "Adjacent cell face " << afi << " centroid "
-             << adj_cell.faces[afi].centroid.PrintStr();
-    }
-    throw std::runtime_error(outstr.str());
-  }
-
-  return adj_face_idx;
-}
-
 void
-CellFace::ComputeGeometricInfo(const Mesh& grid, const Cell& cell)
+CellFace::ComputeGeometricInfo(const Mesh& grid,
+                               std::uint64_t cell_local_id,
+                               std::uint32_t face_idx)
 {
+  auto vertex_ids = grid.GetCellFaceConnectivity(cell_local_id, face_idx);
   // Compute the centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
@@ -163,6 +112,7 @@ CellFace::ComputeGeometricInfo(const Mesh& grid, const Cell& cell)
   // Compute areas and normals
   if (vertex_ids.size() == 1)
   {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     // For a 1D cell, the normal always points in the direction of
     // a vector from the cell centroid to the face centroid.
     normal = (centroid - cell.centroid).Normalized();
@@ -248,10 +198,6 @@ CellFace::Serialize() const
 {
   ByteArray raw;
 
-  raw.Write<size_t>(vertex_ids.size());
-  for (uint64_t vid : vertex_ids)
-    raw.Write<uint64_t>(vid);
-
   raw.Write<double>(normal.x);
   raw.Write<double>(normal.y);
   raw.Write<double>(normal.z);
@@ -270,11 +216,6 @@ CellFace::DeSerialize(const ByteArray& raw, size_t& address)
 
   CellFace face;
 
-  const auto num_face_verts = raw.Read<size_t>(address, &address);
-  face.vertex_ids.reserve(num_face_verts);
-  for (size_t fv = 0; fv < num_face_verts; ++fv)
-    face.vertex_ids.push_back(raw.Read<uint64_t>(address, &address));
-
   face.normal.x = raw.Read<double>(address, &address);
   face.normal.y = raw.Read<double>(address, &address);
   face.normal.z = raw.Read<double>(address, &address);
@@ -291,13 +232,6 @@ std::string
 CellFace::ToString() const
 {
   std::stringstream outstr;
-
-  outstr << "num_vertex_ids: " << vertex_ids.size() << "\n";
-  {
-    size_t counter = 0;
-    for (uint64_t vid : vertex_ids)
-      outstr << "vid" << counter++ << ": " << vid << "\n";
-  }
 
   outstr << "normal: " << normal.PrintStr() << "\n";
   outstr << "centroid: " << centroid.PrintStr() << "\n";
@@ -339,8 +273,8 @@ Cell::ComputeGeometricInfo(const Mesh& grid)
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute face geometric data
-  for (auto& face : faces)
-    face.ComputeGeometricInfo(grid, *this);
+  for (std::uint32_t f = 0; f < faces.size(); ++f)
+    faces[f].ComputeGeometricInfo(grid, cell_local_id, f);
 }
 
 void
@@ -365,10 +299,11 @@ Cell::ComputeVolume(const Mesh& mesh)
     // with each edge and the centroid.
     case CellType::POLYGON:
     {
-      for (const auto& face : faces)
+      for (std::uint32_t f = 0; f < faces.size(); ++f)
       {
-        const auto& v0 = mesh.GlobalVertex(face.vertex_ids[0]);
-        const auto& v1 = mesh.GlobalVertex(face.vertex_ids[1]);
+        auto face_vertex_ids = mesh.GetCellFaceConnectivity(cell_local_id, f);
+        const auto& v0 = mesh.GlobalVertex(face_vertex_ids[0]);
+        const auto& v1 = mesh.GlobalVertex(face_vertex_ids[1]);
 
         const auto e0 = v1 - v0;
         const auto e1 = centroid - v0;
@@ -381,17 +316,18 @@ Cell::ComputeVolume(const Mesh& mesh)
     // formed with on each face with the cell centroid.
     case CellType::POLYHEDRON:
     {
-      for (const auto& face : faces)
+      for (std::uint32_t f = 0; f < faces.size(); ++f)
       {
-        const auto num_verts = face.vertex_ids.size();
+        auto face_vertex_ids = mesh.GetCellFaceConnectivity(cell_local_id, f);
+        const auto num_verts = face_vertex_ids.size();
         for (unsigned int v = 0; v < num_verts; ++v)
         {
           const auto vid1 = v < num_verts - 1 ? v + 1 : 0;
-          const auto& v0 = mesh.GlobalVertex(face.vertex_ids[v]);
-          const auto& v1 = mesh.GlobalVertex(face.vertex_ids[vid1]);
+          const auto& v0 = mesh.GlobalVertex(face_vertex_ids[v]);
+          const auto& v1 = mesh.GlobalVertex(face_vertex_ids[vid1]);
 
           Matrix3x3 J;
-          J.SetColJVec(0, face.centroid - v0);
+          J.SetColJVec(0, faces[f].centroid - v0);
           J.SetColJVec(1, v1 - v0);
           J.SetColJVec(2, centroid - v0);
           volume += J.Det() / 6.0;
