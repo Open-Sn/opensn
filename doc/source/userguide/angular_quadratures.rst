@@ -555,8 +555,10 @@ quadrature together with the requested aggregation mode.
 ``polar``
 ---------
 
-``polar`` aggregation is only supported for product quadratures on Cartesian
-orthogonal meshes.
+``polar`` aggregation is only supported for product quadratures. On the mesh
+side, it is supported on Cartesian orthogonal meshes, on any 2D mesh
+(including 2D unstructured meshes), and on extruded meshes. It is not
+supported on a fully unstructured 3D (non-extruded) mesh.
 
 It is therefore appropriate for:
 
@@ -569,9 +571,9 @@ It is not appropriate for:
 - Lebedev quadratures
 - triangular quadratures
 - SLDFE quadratures
-- unstructured meshes
+- fully unstructured 3D (non-extruded) meshes
 
-For those quadratures, and for unstructured meshes in general, set
+For those quadratures, and for fully unstructured 3D meshes, set
 ``angle_aggregation_type='single'`` explicitly.
 
 ``single``
@@ -579,8 +581,8 @@ For those quadratures, and for unstructured meshes in general, set
 
 ``single`` aggregation treats each direction independently. It is the most
 generally compatible option and is the safe choice for non-product quadratures.
-Regardless of quadrature type, single angle aggregation is required on
-unstructured meshes.
+Regardless of quadrature type, single angle aggregation is required on fully
+unstructured 3D (non-extruded) meshes.
 
 Use it with:
 
@@ -612,9 +614,8 @@ Example:
 ``azimuthal``
 -------------
 
-For Cartesian problems, ``azimuthal`` aggregation is only valid for product
-quadratures on orthogonal meshes. The curvilinear implementation also uses
-``azimuthal`` where supported. It should not be used on unstructured meshes.
+``azimuthal`` aggregation is only valid for product quadratures on curvilinear
+(1D spherical or 2D RZ) geometry; it is not available for Cartesian problems.
 
 For 2D RZ problems, the curvilinear solver accepts:
 

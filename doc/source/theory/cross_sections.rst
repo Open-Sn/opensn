@@ -96,7 +96,10 @@ Fission production:
 
      .. math:: S_f^g = \frac{1}{4\pi} \sum_{g'} \nu\sigma_f^{g' \to g} \phi_{0,0}^{g'}
 
-     However, this is not yet employed in the current version of OpenSn
+     OpenSn supports this option: a full fission production matrix
+     :math:`\nu\sigma_f^{g' \to g}` may be supplied directly in the
+     multigroup cross-section data in lieu of a separable fission
+     spectrum and production cross section.
 
 Other cross sections:
    Other multigroup cross sections can be supplied in order to compute
@@ -116,4 +119,13 @@ In summary, the mandatory cross-section inputs are:
    #. fission spectrum :math:`\chi^g`, and
 
    #. production by fission cross section :math:`\nu\sigma_f^{g}`.
+
+.. note::
+
+   OpenSn does not distribute cross-section data of its own; users must
+   supply their own multigroup libraries. Third-party, open-source tools such
+   as `OpenMC <https://openmc.org>`_ and
+   `Generate_MGXS <https://github.com/ragusa/Generate_MGXS>`_ can generate
+   multigroup cross-section data suitable for use with OpenSn. See
+   :doc:`../userguide/materials_xs` for how to load that data into OpenSn.
 

@@ -296,7 +296,8 @@ to write per-partition mesh files from an input mesh.
 
 Important constructor parameters:
 
-* ``file_base``
+* ``split_mesh_dir_path``
+* ``file_prefix``
 * ``inputs``
 * ``partitioner``
 * ``replicated_mesh``
@@ -354,9 +355,11 @@ Several mesh generators accept ``coord_sys``:
 
 * ``"cartesian"``
 * ``"cylindrical"``
+* ``"spherical"``
 
 Cartesian is the default for ordinary ``x``, ``y``, ``z`` geometry. Use
-``"cylindrical"`` for axisymmetric ``r-z`` style meshes and problems.
+``"cylindrical"`` for axisymmetric ``r-z`` style meshes and problems, and
+``"spherical"`` for 1D radial spherical meshes and problems.
 
 Examples:
 

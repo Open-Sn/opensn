@@ -149,7 +149,7 @@ Boundary Conditions
 
    -  :math:`\vec{\Omega}'\cdot \vec{n}(\vec{r}) >0` (outgoing
       direction) and the incoming direction is
-      :math:`\vec{\Omega}=\vec{\Omega}'-2\left(\vec{\Omega}\cdot\vec{n}(\vec{r})\right) \vec{n}(\vec{r})`.
+      :math:`\vec{\Omega}=\vec{\Omega}'-2\left(\vec{\Omega}'\cdot\vec{n}(\vec{r})\right) \vec{n}(\vec{r})`.
 
 For :math:`k`-eigenvalue problems, the boundary conditions usually
 devolve to a zero-incoming flux (:math:`\psi_{\text{inc}}=0`) or a unity
@@ -204,13 +204,13 @@ where
 
    .. math::
 
-      Y_{\ell,m}(\vec{\Omega}) = 
+      Y_{\ell,m}(\vec{\Omega}) =
           \begin{cases}
-              (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
+              (-1)^m \sqrt{2}\sqrt{ \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
           & \text{if } m < 0 \\
           \\
-              \sqrt{ \frac{(2\ell + 1)}{4\pi}} P_{\ell}^{m}(\cos\theta) & \text{if } m = 0 \\ \\
-          (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
+              P_{\ell}^{0}(\cos\theta) & \text{if } m = 0 \\ \\
+          (-1)^m \sqrt{2}\sqrt{ \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
           & \text{if } m > 0 \\
           \end{cases}
 

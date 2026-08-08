@@ -83,7 +83,7 @@ pointwise relative error. To avoid false convergence, a factor of
 with ``tol`` the user-supplied tolerance and where the spectral radius
 is estimated as
 
-.. math:: \varrho = \frac{\| \Phi^{(i+1)} - \Phi^{(i)} \|}{\| \Phi^{(i)} - \Phi^{(i-1)} \|} \,.
+.. math:: \varrho = \sqrt{\frac{\| \Phi^{(i+1)} - \Phi^{(i)} \|}{\| \Phi^{(i)} - \Phi^{(i-1)} \|}} \,.
 
 Krylov Subspace Method:
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -250,7 +250,7 @@ Acceleration of Power Iterations
   :cite:t:`morel_smm_2024`, the scheme implemented in OpenSn
   is obtained:
 
-  .. math:: (A - \Sigma_0) \vartheta + \frac{1}{\lambda}F\vartheta + R(\Psi^{\text{(o+1/2)}}) \,,
+  .. math:: (A - \Sigma_0) \vartheta = \frac{1}{\lambda}F\vartheta + R(\Psi^{\text{(o+1/2)}}) \,,
 
   with :math:`A` a diffusion operator, :math:`\Sigma_0` a scattering
   operator, :math:`F` the fission operator, and :math:`R` the residual
@@ -323,9 +323,13 @@ remove much of the slowly converging scalar-flux error.
 The implementation is intentionally tied to the discrete-ordinates
 transport data structures. The coarse mesh is built directly from the
 transport mesh. A CMFD coarse cell :math:`I` is either a single
-transport cell or a rank-local aggregate of fine transport cells with
-the same material block id. Aggregation does not cross MPI rank
-boundaries. A coarse face :math:`f` is formed by merging all fine faces
+transport cell (the ``identity`` coarse-mesh option) or an aggregate of
+fine transport cells with the same material block id. By default
+(``local_aggregation``), aggregates are built independently on each MPI
+rank and do not cross rank boundaries; the ``global_aggregation`` option
+instead builds connected same-block aggregates that may span MPI ranks,
+merging undersized rank-local aggregates across ranks as needed. A
+coarse face :math:`f` is formed by merging all fine faces
 between the same pair of coarse cells, or between a coarse cell and the
 same boundary id. The coarse-face area, centroid, normal, neighbor id,
 and neighbor material data are computed from the underlying fine faces.
@@ -888,10 +892,14 @@ Notes:
 #. OpenSn projects the ray-traced scalar flux onto the local PWLD basis.
    A constrained lumped-mass correction keeps every nodal scalar-flux
    coefficient nonnegative while preserving the projected cell integral.
-   Cell removal is computed from this projected analytic field. The total
-   outgoing current is then obtained from cell balance and distributed among
-   outgoing faces in proportion to their ray-traced currents. This avoids
-   balancing independently integrated volume and face approximations.
+   Cell removal is computed from this projected analytic field, while
+   outgoing face currents are taken directly from the independently
+   ray-traced face quadratures rather than rescaled to match the cell
+   balance implied by the volume-projected removal. The mismatch between
+   these independently computed quantities is tracked only as a
+   diagnostic (with a warning issued if it becomes large), since rescaling
+   either quantity to enforce cell balance would recursively inject that
+   mismatch into downstream cells and produce strong mesh dependence.
 
 #. Finite-volume sources can be approximated externally by weighted point
    sources, for example at volume-quadrature points. The uncollided generation

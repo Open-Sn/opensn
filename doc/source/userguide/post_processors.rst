@@ -277,10 +277,11 @@ Example:
 .. code-block:: python
 
    from pyopensn.fieldfunc import FieldFunctionInterpolationPoint
+   from pyopensn.math import Vector3
 
    ffi = FieldFunctionInterpolationPoint()
+   ffi.SetPointOfInterest(Vector3(0.0, 0.0, 0.0))
    ffi.AddFieldFunction(phys.GetScalarFluxFieldFunction()[0])
-   ffi.Initialize()
    ffi.Execute()
    value = ffi.GetPointValue()
 
@@ -305,7 +306,6 @@ Example:
    ffi.SetInitialPoint(Vector3(0.0, 0.0, 0.0))
    ffi.SetFinalPoint(Vector3(10.0, 0.0, 0.0))
    ffi.SetNumberOfPoints(101)
-   ffi.Initialize()
    ffi.Execute()
    ffi.ExportToCSV("centerline")
 
@@ -328,7 +328,6 @@ Example:
    ffi.AddFieldFunction(phys.GetScalarFluxFieldFunction()[0])
    ffi.SetLogicalVolume(my_lv)
    ffi.SetOperationType("avg")
-   ffi.Initialize()
    ffi.Execute()
    avg_value = ffi.GetValue()
 
@@ -337,9 +336,11 @@ Available operation types are:
 * ``"sum"``
 * ``"avg"``
 * ``"max"``
+* ``"min"``
 * ``"sum_func"``
 * ``"avg_func"``
 * ``"max_func"``
+* ``"min_func"``
 
 The ``*_func`` variants use a scalar material function supplied with
 ``SetOperationFunction``.
@@ -567,7 +568,7 @@ For example:
 
    scalar_ff = phys.GetScalarFluxFieldFunction()[0]
 
-   while not solver.Finished():
+   for _ in range(num_steps):
        solver.Advance()
        scalar_ff.Update()
        ...
