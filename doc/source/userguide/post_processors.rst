@@ -277,10 +277,11 @@ Example:
 .. code-block:: python
 
    from pyopensn.fieldfunc import FieldFunctionInterpolationPoint
+   from pyopensn.math import Vector3
 
    ffi = FieldFunctionInterpolationPoint()
+   ffi.SetPointOfInterest(Vector3(0.0, 0.0, 0.0))
    ffi.AddFieldFunction(phys.GetScalarFluxFieldFunction()[0])
-   ffi.Initialize()
    ffi.Execute()
    value = ffi.GetPointValue()
 
@@ -305,7 +306,6 @@ Example:
    ffi.SetInitialPoint(Vector3(0.0, 0.0, 0.0))
    ffi.SetFinalPoint(Vector3(10.0, 0.0, 0.0))
    ffi.SetNumberOfPoints(101)
-   ffi.Initialize()
    ffi.Execute()
    ffi.ExportToCSV("centerline")
 
@@ -328,7 +328,6 @@ Example:
    ffi.AddFieldFunction(phys.GetScalarFluxFieldFunction()[0])
    ffi.SetLogicalVolume(my_lv)
    ffi.SetOperationType("avg")
-   ffi.Initialize()
    ffi.Execute()
    avg_value = ffi.GetValue()
 
@@ -337,9 +336,11 @@ Available operation types are:
 * ``"sum"``
 * ``"avg"``
 * ``"max"``
+* ``"min"``
 * ``"sum_func"``
 * ``"avg_func"``
 * ``"max_func"``
+* ``"min_func"``
 
 The ``*_func`` variants use a scalar material function supplied with
 ``SetOperationFunction``.
@@ -739,15 +740,24 @@ For example:
 
 .. code-block:: python
 
+   # Match the stop_time configured on the initialized transient solver.
+   stop_time = 1.0e-1
+   dt = phys.GetTimeStep()
    scalar_ff = phys.GetScalarFluxFieldFunction()[0]
 
-   while not solver.Finished():
+   while phys.GetTime() < stop_time:
+       solver.SetTimeStep(min(dt, stop_time - phys.GetTime()))
        solver.Advance()
        scalar_ff.Update()
        ...
 
-This keeps one field-function object and refreshes it from each completed
-timestep. Creating a new field function after each ``Advance()`` is also valid,
+   solver.SetTimeStep(dt)
+
+This example keeps the normal timestep until the final step, which is shortened
+to the remaining time when necessary. A manual ``Advance()`` loop must enforce
+``stop_time`` itself; ``Execute()`` handles this automatically. The example
+restores the normal timestep after the loop and refreshes the same field-function
+object after each completed timestep. Creating a new field function after each ``Advance()`` is also valid,
 but is usually unnecessary when the existing object supports ``Update()``.
 
 Practical Guidance

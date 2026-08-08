@@ -110,15 +110,17 @@ For steady-state and eigenvalue problems, a typical driver looks like:
 
 .. code-block:: python
 
+   # This groupset covers all energy groups, numbered from zero.
+   num_groups = groupset["groups_from_to"][1] + 1
    phys = opensn.DiscreteOrdinatesProblem(
-       mesh,
+       mesh=mesh,
+       num_groups=num_groups,
        groupsets=[groupset],
        xs_map=xs_map,
-       angular_quadrature=quadrature,
-       boundary_options=boundary_options,
+       boundary_conditions=boundary_conditions,
    )
 
-   solver = opensn.SteadyStateSourceSolver(phys)
+   solver = opensn.SteadyStateSourceSolver(problem=phys)
    solver.Initialize()
    solver.Execute()
 
@@ -128,21 +130,27 @@ advance the state manually:
 .. important::
 
    Transient problems require ``save_angular_flux=True`` in the problem
-   options. Set that on the problem before constructing the
+   options when constructing ``phys``. After creating ``phys``, call
+   ``phys.SetTimeDependentMode()`` before constructing the
    :py:class:`pyopensn.solver.TransientSolver`.
 
 .. code-block:: python
 
+   phys.SetTimeDependentMode()
+   dt = 1.0e-3
+   stop_time = 1.0e-1
+   num_steps = round(stop_time / dt)  # Fixed steps starting at time zero.
+
    solver = opensn.TransientSolver(
-       phys,
-       dt=1.0e-3,
-       time_end=1.0e-1,
+       problem=phys,
+       dt=dt,
+       stop_time=stop_time,
        initial_state="zero",
    )
 
    solver.Initialize()
 
-   while not solver.Finished():
+   for _ in range(num_steps):
        solver.Advance()
 
 Using ``Advance()`` is useful when the input needs to update sources,

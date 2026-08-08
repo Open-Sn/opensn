@@ -332,11 +332,10 @@ Problem
 .. note::
 
    **Forward/adjoint mode transitions are destructive by design.**
-   In Python there are three valid ways to set mode:
+   In Python there are two valid ways to set mode:
 
    1. Set ``options={'adjoint': ...}`` in the problem constructor.
-   2. Call ``problem.SetOptions(adjoint=...)``.
-   3. Call ``problem.SetAdjoint(...)`` (low-level equivalent).
+   2. Call ``problem.SetAdjoint(...)`` after construction.
 
    A mode transition triggers:
 
@@ -347,9 +346,6 @@ Problem
 
    The block-id to cross-section map is preserved. After switching mode, reapply
    the desired driving terms (sources and boundaries) before solving.
-
-   ``SetOptions`` is additive: only explicitly supplied options are updated.
-   If ``adjoint`` is omitted in a ``SetOptions`` call, the current mode is unchanged.
 
    Adjoint mode is applied to the mapped ``MultiGroupXS`` objects themselves.
    If the same cross-section object is shared across multiple problems, toggling

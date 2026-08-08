@@ -106,7 +106,7 @@ ClassicRichardson::Solve()
 
     double pw_phi_change = ComputePointwisePhiChange(do_problem, groupset.id);
     last_pw_phi_change = pw_phi_change;
-    double rho = (k == 0) ? 0.0 : sqrt(pw_phi_change / pw_phi_change_prev);
+    double rho = (k == 0) ? 0.0 : (pw_phi_change / pw_phi_change_prev);
     pw_phi_change_prev = pw_phi_change;
 
     psi_new_ = groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();

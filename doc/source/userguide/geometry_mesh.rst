@@ -296,7 +296,8 @@ to write per-partition mesh files from an input mesh.
 
 Important constructor parameters:
 
-* ``file_base``
+* ``split_mesh_dir_path``
+* ``file_prefix``
 * ``inputs``
 * ``partitioner``
 * ``replicated_mesh``
