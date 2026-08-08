@@ -33,6 +33,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   std::vector<double> b(static_cast<std::size_t>(gs_size) * NumNodes, 0.0);
   std::vector<double> sigma_block;
   sigma_block.reserve(data.group_block_size);
+  std::vector<double> face_mu_values;
 
   const auto& spds = angle_set.GetSPDS();
   const auto& spls = spds.GetLocalSubgrid();
@@ -51,12 +52,12 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
     const size_t cell_num_faces = cell.faces.size();
-    std::vector<double> face_mu_values(cell_num_faces, 0.0);
+    face_mu_values.resize(cell_num_faces);
 
     const int ni_deploc_face_counter = deploc_face_counter;
     const int ni_preloc_face_counter = preloc_face_counter;
 
-    const auto& sigma_t = data.xs.at(cell.block_id)->GetSigmaTotal();
+    const auto& sigma_t = cell_transport_view.GetXS().GetSigmaTotal();
 
     const auto& unit_mats = data.unit_cell_matrices[cell_local_id];
     const auto& G = unit_mats.intV_shapeI_gradshapeJ;
@@ -88,7 +89,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     std::vector<double> tau_gsg;
     if constexpr (time_dependent)
     {
-      const auto& inv_velg = data.xs.at(cell.block_id)->GetInverseVelocity();
+      const auto& inv_velg = cell_transport_view.GetXS().GetInverseVelocity();
       const double theta = data.problem.GetTheta();
       const double inv_theta = 1.0 / theta;
       const double dt = data.problem.GetTimeStep();
