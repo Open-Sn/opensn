@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1detail_1a84f8922c469fa1f7df19e98baf4af45e:
+
+Function opensn::detail::MakeGatherIndexDynamic
+===============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::detail::MakeGatherIndexDynamic(int, int)
+   :project: opensn

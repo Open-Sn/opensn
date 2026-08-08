@@ -64,9 +64,17 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ad137c5d303e39cb4af7e7e2bebd821a1`
 
+- :ref:`exhale_function_namespaceopensn_1_1detail_1a51d6897779ea60483371087930ac42ac`
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1a6c2c95dd8ec39c93da342ec76cb6fbbb`
+
 - :ref:`exhale_function_namespaceopensn_1_1detail_1adeeefa49f22d534285d5425830108f07`
 
+- :ref:`exhale_function_namespaceopensn_1_1detail_1a84f8922c469fa1f7df19e98baf4af45e`
+
 - :ref:`exhale_function_namespaceopensn_1_1detail_1a4f4d97a7ce3df7d4d8f8380d8a2a4b12`
+
+- :ref:`exhale_function_namespaceopensn_1_1detail_1ae975d3a1c2c822035805e32d408055e6`
 
 
 Defines

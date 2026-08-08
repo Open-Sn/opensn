@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1detail_1ae975d3a1c2c822035805e32d408055e6:
+
+Function opensn::detail::SimdBatchSolveDynamic
+==============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::detail::SimdBatchSolveDynamic(int, const double *, const double *, const double *, double *__restrict, double *__restrict, double *__restrict)
+   :project: opensn

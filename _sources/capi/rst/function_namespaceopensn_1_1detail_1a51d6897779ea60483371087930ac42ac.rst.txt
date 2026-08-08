@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1_1detail_1a51d6897779ea60483371087930ac42ac:
+
+Function opensn::detail::DispatchSimdGroupBlock
+===============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_avx_sweep_chunk_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::detail::DispatchSimdGroupBlock(size_t, size_t, size_t&, const double *, const double *, const double *, double *__restrict, double *__restrict, double *__restrict)
+   :project: opensn
