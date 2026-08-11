@@ -55,9 +55,10 @@ struct AAHD_DelayedLocalBank : public AAHD_Bank
 {
   AAHD_DelayedLocalBank() = default;
   /// Member constructor.
-  AAHD_DelayedLocalBank(std::size_t size, std::size_t stride_size) : AAHD_Bank(size * stride_size)
-  {
-  }
+  AAHD_DelayedLocalBank(std::size_t size, std::size_t stride_size);
+
+  /// Update view.
+  void UpdateView(std::span<double>& view);
 };
 
 /// Non-local bank storage structure.
@@ -99,6 +100,8 @@ struct AAHD_NonLocalDelayedBank : public AAHD_NonLocalBank
 
   /// Host storage for current delayed bank.
   crb::HostVector<double> host_current_storage;
+  /// Device storage for current delayed bank.
+  crb::DeviceMemory<double> device_current_storage;
 };
 
 /// AAH FLUDS for device.
