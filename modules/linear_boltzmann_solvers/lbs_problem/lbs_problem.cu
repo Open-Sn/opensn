@@ -8,8 +8,38 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_carrier.h"
 #include "framework/utils/error.h"
 
+#include "caribou/main.hpp"
+namespace crb = caribou;
+
 namespace opensn
 {
+
+namespace
+{
+
+bool
+CheckIntegratedMemory()
+{
+#ifdef __NVCC__
+  int device_id;
+  crb::impl::check_error(::cudaGetDevice(&device_id));
+  int val = 0;
+  crb::impl::check_error(::cudaDeviceGetAttribute(&val, cudaDevAttrIntegrated, device_id));
+  return val != 0;
+#elif defined(__HIPCC__)
+  int device_id;
+  crb::impl::check_error(::hipGetDevice(&device_id));
+  int val = 0;
+  crb::impl::check_error(::hipDeviceGetAttribute(&val, hipDeviceAttributeIntegrated, device_id));
+  return val != 0;
+#else
+  return false;
+#endif
+}
+
+} // namespace
+
+const bool LBSProblem::has_integrated_memory = CheckIntegratedMemory();
 
 void
 LBSProblem::InitializeGPUExtras()
