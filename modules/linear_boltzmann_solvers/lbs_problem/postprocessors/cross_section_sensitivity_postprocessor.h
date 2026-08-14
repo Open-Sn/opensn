@@ -1,0 +1,89 @@
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "framework/data_types/ndarray.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
+#include "framework/parameters/input_parameters.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include <memory>
+#include <optional>
+
+namespace opensn
+{
+
+class CrossSectionSensitivityPostprocessor
+{
+public:
+  enum class SensitivityType
+  {
+    SIGMA_T,
+    SCATTER,
+    PRODUCTION
+  };
+
+  explicit CrossSectionSensitivityPostprocessor(const InputParameters& params);
+
+  void Execute();
+  void ApplyKEigenvalueScaling(double k_eff);
+
+  const NDArray<double, 2>& GetValue() const;
+
+private:
+  void CreateSpatialRestriction();
+  void CreateEnergyRestriction();
+  std::vector<std::uint32_t> GetLogicalVolumeCellIDs(std::shared_ptr<LogicalVolume> log_vol) const;
+  void CreateScatteringMomentRestriction();
+
+  void LoadAngularFluxes(std::vector<std::vector<double>>& forward_psi,
+                         std::vector<std::vector<double>>& adjoint_psi);
+  void LoadFluxMoments(std::vector<double>& forward_phi, std::vector<double>& adjoint_phi);
+
+  std::vector<double>
+  ComputeTotalSensitivity(const std::vector<std::uint32_t>& cell_local_ids,
+                          const std::vector<std::vector<double>>& forward_psi,
+                          const std::vector<std::vector<double>>& adjoint_psi) const;
+
+  std::vector<double> ComputeScatterSensitivity(const std::vector<std::uint32_t>& cell_local_ids,
+                                                const std::vector<double>& forward_phi,
+                                                const std::vector<double>& adjoint_phi) const;
+
+  std::vector<double> ComputeProductionSensitivity(const std::vector<std::uint32_t>& cell_local_ids,
+                                                   const std::vector<double>& forward_phi,
+                                                   const std::vector<double>& adjoint_phi) const;
+
+  double ComputeFissionDenominator(const std::vector<double>& forward_phi,
+                                   const std::vector<double>& adjoint_phi) const;
+  void ScaleForKEigenvalueSensitivity(double k_eff, double denominator);
+
+  void ValidateSelectedCoefficient() const;
+
+  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
+  std::vector<int> block_ids_;
+  std::vector<std::shared_ptr<LogicalVolume>> logical_volumes_;
+  std::vector<std::vector<std::uint32_t>> cell_local_ids_;
+  std::vector<unsigned int> groups_;
+
+  SensitivityType sensitivity_type_ = SensitivityType::SIGMA_T;
+  NDArray<double, 2> values_;
+
+  std::optional<unsigned int> selected_group_;
+  std::optional<unsigned int> ell_;
+  std::optional<unsigned int> from_group_;
+  std::optional<unsigned int> to_group_;
+  std::vector<unsigned int> scattering_moments_;
+
+  std::string forward_flux_moments_prefix_;
+  std::string adjoint_flux_moments_prefix_;
+  std::string forward_angular_fluxes_prefix_;
+  std::string adjoint_angular_fluxes_prefix_;
+  bool flux_moments_single_file_ = false;
+  bool relative_ = false;
+
+public:
+  static InputParameters GetInputParameters();
+  static std::shared_ptr<CrossSectionSensitivityPostprocessor> Create(const ParameterBlock& params);
+};
+
+} // namespace opensn

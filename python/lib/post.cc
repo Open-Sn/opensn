@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/postprocessors/cross_section_sensitivity_postprocessor.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/postprocessors/volume_postprocessor.h"
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
@@ -71,6 +72,73 @@ WrapPostprocessors(py::module& post)
 
     Rows correspond to the spatial restriction (i.e. logical volumes, if specified)
     Columns correspond to the energy restrictions (i.e. groups, or groups within a groupset if specified)
+    )"
+  );
+
+  auto xs_sens =
+    py::class_<CrossSectionSensitivityPostprocessor,
+               std::shared_ptr<CrossSectionSensitivityPostprocessor>>(
+      post,
+      "CrossSectionSensitivityPostprocessor",
+      R"(
+    Cross-section sensitivity postprocessor.
+    )"
+    );
+  xs_sens.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return CrossSectionSensitivityPostprocessor::Create(kwargs_to_param_block(params));
+      }
+    ),
+    R"(
+    Construct a cross-section sensitivity postprocessor.
+
+    sigma_t sensitivities use angular fluxes. Scattering and production
+    sensitivities use flux moments.
+    )"
+  );
+  xs_sens.def(
+    "Execute",
+    [](CrossSectionSensitivityPostprocessor& self)
+    {
+      self.Execute();
+    },
+    R"(
+    Execute the postprocessor.
+    )"
+  );
+  xs_sens.def(
+    "ApplyKEigenvalueScaling",
+    [](CrossSectionSensitivityPostprocessor& self, const double k_eff)
+    {
+      self.ApplyKEigenvalueScaling(k_eff);
+    },
+    R"(
+    Scale the previously computed sensitivities to k-eigenvalue sensitivities.
+
+    Parameters
+    ----------
+    k_eff : float
+        Forward k-eigenvalue used in the first-order k-sensitivity normalization.
+    )"
+  );
+  xs_sens.def(
+    "GetValue",
+    [](CrossSectionSensitivityPostprocessor& self)
+    {
+      const auto& arr = self.GetValue();
+      auto dims = arr.dimension();
+
+      return py::array_t<double>(
+        {dims[0], dims[1]},
+        {dims[1] * sizeof(double), sizeof(double)},
+        arr.data(),
+        py::cast(self)
+      );
+    },
+    R"(
+    Returns the sensitivity values.
     )"
   );
   // clang-format on
