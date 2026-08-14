@@ -1,0 +1,62 @@
+
+.. _file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_cross_section_sensitivity_postprocessor.h:
+
+File cross_section_sensitivity_postprocessor.h
+==============================================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_lbs_problem_postprocessors>` (``modules/linear_boltzmann_solvers/lbs_problem/postprocessors``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/lbs_problem/postprocessors/cross_section_sensitivity_postprocessor.h``)
+----------------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_cross_section_sensitivity_postprocessor.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/ndarray.h`` (:ref:`file_framework_data_types_ndarray.h`)
+
+- ``framework/mesh/logical_volume/logical_volume.h`` (:ref:`file_framework_mesh_logical_volume_logical_volume.h`)
+
+- ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
+
+- ``memory``
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`)
+
+- ``optional``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_cross_section_sensitivity_postprocessor`
+

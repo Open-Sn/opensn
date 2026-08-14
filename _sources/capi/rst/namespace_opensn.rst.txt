@@ -447,6 +447,8 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_c_m_f_d_coarse_mesh`
 
+- :ref:`exhale_class_classopensn_1_1_cross_section_sensitivity_postprocessor`
+
 - :ref:`exhale_class_classopensn_1_1_curvilinear_product_quadrature`
 
 - :ref:`exhale_class_classopensn_1_1_dense_matrix`

@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_cross_section_sensitivity_postprocessor:
+
+Class CrossSectionSensitivityPostprocessor
+==========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_cross_section_sensitivity_postprocessor.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::CrossSectionSensitivityPostprocessor
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

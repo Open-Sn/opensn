@@ -74,6 +74,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_cross_section_sensitivity_postprocessor.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
 
 

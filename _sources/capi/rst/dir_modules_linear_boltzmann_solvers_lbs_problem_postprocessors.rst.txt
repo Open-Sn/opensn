@@ -16,6 +16,7 @@ Directory postprocessors
 Files
 -----
 
+- :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_cross_section_sensitivity_postprocessor.h`
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_volume_postprocessor.h`
 
 
