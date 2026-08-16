@@ -4,6 +4,7 @@
 #include "framework/mesh/logical_volume/boolean_logical_volume.h"
 #include "framework/mesh/mesh.h"
 #include "framework/object_factory.h"
+#include "framework/utils/error.h"
 
 namespace opensn
 {
@@ -55,6 +56,8 @@ BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : Logi
 {
   const auto& input_parts = params.GetParam("parts");
   input_parts.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+  OpenSnInvalidArgumentIf(input_parts.GetNumParameters() == 0,
+                          "At least one entry is required in \"parts\".");
 
   for (size_t p = 0; p < input_parts.GetNumParameters(); ++p)
   {

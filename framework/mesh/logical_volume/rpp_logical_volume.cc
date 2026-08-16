@@ -3,6 +3,7 @@
 
 #include "framework/mesh/logical_volume/rpp_logical_volume.h"
 #include "framework/object_factory.h"
+#include "framework/utils/error.h"
 
 namespace opensn
 {
@@ -47,6 +48,11 @@ RPPLogicalVolume::RPPLogicalVolume(const InputParameters& params)
     infy_(params.GetParamValue<bool>("infy")),
     infz_(params.GetParamValue<bool>("infz"))
 {
+  // An inverted range (e.g. xmin > xmax) silently defines an empty volume rather than the
+  // swapped range a typo would suggest -- reject it.
+  OpenSnInvalidArgumentIf(not infx_ and xmin_ > xmax_, "xmin must not be greater than xmax.");
+  OpenSnInvalidArgumentIf(not infy_ and ymin_ > ymax_, "ymin must not be greater than ymax.");
+  OpenSnInvalidArgumentIf(not infz_ and zmin_ > zmax_, "zmin must not be greater than zmax.");
 }
 
 bool

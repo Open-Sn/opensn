@@ -5,6 +5,7 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/utils/error.h"
 #include <cmath>
 #include <algorithm>
 
@@ -72,6 +73,14 @@ GaussLegendreQuadrature::Initialize(unsigned int N,
 std::vector<double>
 GaussLegendreQuadrature::FindRoots(unsigned int N, unsigned int max_iters, double tol)
 {
+  // The search below costs O(num_search_intvls * N) Legendre polynomial evaluations, and
+  // num_search_intvls itself grows by 10x for every threshold N crosses (see below). Past a
+  // few thousand this is already minutes of work for a single quadrature. Reject implausibly
+  // large orders that could appear as a hang.
+  OpenSnInvalidArgumentIf(N > 10000,
+                          "GaussLegendreQuadrature: requested order (" + std::to_string(N) +
+                            ") is implausibly large. Values greater than 10000 are rejected.");
+
   // Populate initial guess
   // This initial guess proved to be quite important at higher N since the roots start to get
   // squeezed to -1 and 1.

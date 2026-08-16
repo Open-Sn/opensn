@@ -171,7 +171,10 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
   if (success)
     log.Log() << "Successfully read restart data." << std::endl;
   else
-    log.Log() << "Failed to read restart data." << std::endl;
+    log.Log0Warning() << "Failed to read restart data from \"" << fname
+                      << "\". Proceeding with the solver's default initial state instead of "
+                         "the requested restart."
+                      << std::endl;
 
   return success;
 }

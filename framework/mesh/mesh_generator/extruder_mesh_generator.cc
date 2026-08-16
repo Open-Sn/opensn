@@ -5,6 +5,8 @@
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/utils/error.h"
+#include <cmath>
 
 namespace opensn
 {
@@ -15,6 +17,9 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
     bottom_boundary_name_(params.GetParamValue<std::string>("bottom_boundary_name"))
 {
   const auto& layers_param = params.GetParam("layers");
+
+  OpenSnInvalidArgumentIf(layers_param.GetNumParameters() == 0,
+                          "At least one entry is required in \"layers\".");
 
   double current_z_level = 0.0;
   for (const auto& layer_block : layers_param)
@@ -33,10 +38,15 @@ ExtruderMeshGenerator::ExtruderMeshGenerator(const InputParameters& params)
     double h = 0.0;
     const auto n = valid_params.GetParamValue<uint32_t>("n");
     if (layer_block.Has("h"))
+    {
       h = valid_params.GetParamValue<double>("h");
+      OpenSnInvalidArgumentIf(not std::isfinite(h) or h <= 0.0,
+                              "Extrusion layer \"h\" must be finite and positive.");
+    }
     else
     {
       const auto z = valid_params.GetParamValue<double>("z");
+      OpenSnInvalidArgumentIf(not std::isfinite(z), "Extrusion layer \"z\" must be finite.");
       if (z <= current_z_level)
         throw std::invalid_argument("For extrusion layers, the \"z\" coordinates must "
                                     "be monotonically increasing.");
@@ -56,6 +66,10 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
 {
   log.Log0Verbose1() << "ExtruderMeshGenerator::GenerateUnpartitionedMesh";
   const Vector3 khat(0.0, 0.0, 1.0);
+
+  OpenSnInvalidArgumentIf(not input_umesh,
+                          "ExtruderMeshGenerator requires a 2D input mesh; supply one via "
+                          "\"inputs\".");
 
   if (input_umesh->GetDimension() != 2)
     throw std::invalid_argument("Input mesh is not 2D. A 2D mesh is required for extrusion");

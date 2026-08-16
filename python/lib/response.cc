@@ -41,7 +41,7 @@ WrapResEval(py::module& response)
 
     Parameters
     ----------
-    lbs_problem: pyopensn.solver.Solver
+    problem: pyopensn.solver.DiscreteOrdinatesProblem
         A handle to an existing LBS problem.
     options: Dict
         The specification of adjoint buffers and forward sources to use. Supported keys:

@@ -49,7 +49,7 @@ MakeGatherIndex(int row)
 {
   alignas(SimdIndex::alignment) std::int64_t indices[Simd::size];
   for (std::size_t lane = 0; lane < Simd::size; ++lane)
-    indices[lane] = static_cast<std::int64_t>(lane * N + row);
+    indices[lane] = static_cast<std::int64_t>(lane) * N + row;
   return SimdIndex(indices);
 }
 
@@ -62,7 +62,7 @@ MakeGatherIndexDynamic(int row, int N)
 {
   alignas(SimdIndex::alignment) std::int64_t indices[Simd::size];
   for (std::size_t lane = 0; lane < Simd::size; ++lane)
-    indices[lane] = static_cast<std::int64_t>(lane * N + row);
+    indices[lane] = static_cast<std::int64_t>(lane) * N + row;
   return SimdIndex(indices);
 }
 

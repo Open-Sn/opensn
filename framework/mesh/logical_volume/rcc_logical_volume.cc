@@ -22,6 +22,8 @@ RCCLogicalVolume::GetInputParameters()
   params.AddOptionalParameter("vy", 0.0, "Y-component of the volume extrusion vector");
   params.AddOptionalParameter("vz", 1.0, "Z-component of the volume extrusion vector");
 
+  params.ConstrainParameterRange("r", AllowableRangeLowLimit::New(0.0, false));
+
   return params;
 }
 

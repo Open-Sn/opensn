@@ -175,6 +175,14 @@ TransientSolver::Initialize()
                           GetName() + ": Problem is in steady-state mode. Call problem."
                                       "SetTimeDependentMode() before initializing this solver.");
 
+  for (const auto& [block_id, xs] : do_problem_->GetBlockID2XSMap())
+    OpenSnInvalidArgumentIf(
+      xs->GetInverseVelocity().size() != do_problem_->GetNumGroups(),
+      GetName() + ": Cross section assigned to block ID " + std::to_string(block_id) +
+        " has no group velocity data. Transient solves require VELOCITY or INV_VELOCITY data "
+        "for every group in every assigned cross section (for MultiGroupXS::"
+        "CreateSimpleOneGroup, pass a positive `velocity`).");
+
   if (not restart_successful and not initial_condition_successful)
     do_problem_->SetTime(current_time_);
 

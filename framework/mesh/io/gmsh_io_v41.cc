@@ -281,6 +281,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   size_t num_entity_blocks = 0, num_nodes = 0, min_node_tag = 0, max_node_tag = 0;
   if (not(iss >> num_entity_blocks >> num_nodes >> min_node_tag >> max_node_tag))
     throw std::logic_error(fname + ": Failed to read the number of node entity blocks.");
+  if (num_nodes == 0)
+    throw std::logic_error(fname + ": The $Nodes section reports 0 nodes; at least one node is "
+                                   "required.");
 
   auto& vertices = mesh->GetVertices();
   vertices.clear();
@@ -509,6 +512,12 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     std::vector<uint64_t> nodes(node_tags.size());
     for (size_t i = 0; i < node_tags.size(); ++i)
       nodes[i] = node_tags[i] - 1;
+    for (const auto vid : nodes)
+      if (vid >= vertices.size())
+        throw std::logic_error(fname + ": An element references vertex index " +
+                               std::to_string(vid + 1) + ", but only " +
+                               std::to_string(vertices.size()) +
+                               " vertices were read from the $Nodes section.");
     cell.vertex_ids = nodes;
 
     // Populate faces
@@ -776,6 +785,9 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
       const uint64_t num_nodes = ReadSize(file);
       ReadSize(file); // min_node_tag
       ReadSize(file); // max_node_tag
+      if (num_nodes == 0)
+        throw std::logic_error(fname + ": The $Nodes section reports 0 nodes; at least one node "
+                                       "is required.");
 
       auto& vertices = mesh->GetVertices();
       vertices.clear();
@@ -981,6 +993,12 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           std::vector<uint64_t> nodes(node_tags.size());
           for (size_t k = 0; k < node_tags.size(); ++k)
             nodes[k] = node_tags[k] - 1;
+          for (const auto vid : nodes)
+            if (vid >= mesh->GetVertices().size())
+              throw std::logic_error(fname + ": An element references vertex index " +
+                                     std::to_string(vid + 1) + ", but only " +
+                                     std::to_string(mesh->GetVertices().size()) +
+                                     " vertices were read from the $Nodes section.");
           cell.vertex_ids = nodes;
 
           if (element_type == 1)

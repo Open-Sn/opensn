@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <limits>
 #include <stdexcept>
+#include <string>
 
 namespace opensn
 {
@@ -23,6 +24,13 @@ SLDFEsqQuadrature::SLDFEsqQuadrature(int level,
 {
   if (level < 0)
     throw std::invalid_argument("SLDFEsqQuadrature: level must be non-negative");
+  // The reference-face vertex grid is (level+2) x (level+2), so memory use grows quadratically
+  // with level. Reject level values that are not pratical.
+  if (level > 100)
+    throw std::invalid_argument("SLDFEsqQuadrature: level (" + std::to_string(level) +
+                                ") is implausibly large. Values greater than 100 are rejected "
+                                "(the number of quadrature points grows quadratically with "
+                                "level, and a larger value would exhaust available memory).");
 }
 
 std::array<std::array<Vector3, 4>, 4>
@@ -683,6 +691,9 @@ SLDFEsqQuadrature::PrintQuadratureToFile(const std::string& file_base)
 
   // Vertex file generation for plotting - is written to the path above
   vert_file.open(file_base + "_verts.csv");
+  if (not vert_file.is_open())
+    throw std::runtime_error("SLDFEsqQuadrature::PrintQuadratureToFile: Failed to open \"" +
+                             file_base + "_verts.csv\" for writing.");
   {
     vert_file << "x,y,z\n";
     for (const auto& sq : deployed_SQs)
@@ -706,6 +717,9 @@ SLDFEsqQuadrature::PrintQuadratureToFile(const std::string& file_base)
 
   // Indexing file for polygons for plotting
   cell_file.open(file_base + "_cells.csv");
+  if (not cell_file.is_open())
+    throw std::runtime_error("SLDFEsqQuadrature::PrintQuadratureToFile: Failed to open \"" +
+                             file_base + "_cells.csv\" for writing.");
   {
     cell_file << "Cell Index\n";
 
@@ -722,6 +736,9 @@ SLDFEsqQuadrature::PrintQuadratureToFile(const std::string& file_base)
 
   // Formatted cell index file for each polygon
   points_file.open(file_base + "_points.csv");
+  if (not points_file.is_open())
+    throw std::runtime_error("SLDFEsqQuadrature::PrintQuadratureToFile: Failed to open \"" +
+                             file_base + "_points.csv\" for writing.");
   {
     points_file << "x,y,z,weights\n";
 

@@ -94,6 +94,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   int num_nodes = 0;
   if (not(iss >> num_nodes))
     throw std::logic_error(fname + ": Failed to read the number of nodes.");
+  if (num_nodes <= 0)
+    throw std::logic_error(fname + ": The $Nodes section reports " + std::to_string(num_nodes) +
+                           " nodes; at least one node is required.");
 
   auto& vertices = mesh->GetVertices();
   vertices.clear();
@@ -288,6 +291,12 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     auto& cell = *raw_cell;
     cell.block_id = physical_region;
     cell.vertex_ids = ReadNodes(num_cell_nodes);
+    for (const auto vid : cell.vertex_ids)
+      if (vid >= vertices.size())
+        throw std::logic_error(fname + ": Element " + std::to_string(element_index) +
+                               " references vertex index " + std::to_string(vid + 1) +
+                               ", but only " + std::to_string(vertices.size()) +
+                               " vertices were read from the $Nodes section.");
 
     // Populate faces
     if (element_type == 1) // 2-node edge
