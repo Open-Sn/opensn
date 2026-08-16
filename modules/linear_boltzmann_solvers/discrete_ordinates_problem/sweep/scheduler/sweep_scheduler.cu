@@ -9,6 +9,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "caribou/main.hpp"
+#include <algorithm>
 #include <thread>
 #include <vector>
 
@@ -75,6 +76,84 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
 
   // reset all anglesets
+  for (auto& angle_set : angle_agg_)
+    angle_set->ResetSweepBuffers();
+}
+
+void
+SweepScheduler::ScheduleAlgoAAOFused(SweepChunk& sweep_chunk)
+{
+  auto& aah_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
+  int groupset_id = angle_agg_.GetGroupsetID();
+  aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
+  aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, true);
+
+  std::size_t num_anglesets = angle_agg_.GetNumAngleSets();
+  std::vector<AAHD_AngleSet*> all_anglesets(num_anglesets);
+  for (std::size_t i = 0; i < num_anglesets; ++i)
+  {
+    auto* aahd_angle_set = dynamic_cast<AAHD_AngleSet*>(angle_agg_[i].get());
+    aahd_angle_set->ResetDependencyCounter();
+    aahd_angle_set->PrepostReceives();
+    all_anglesets[i] = aahd_angle_set;
+  }
+
+  // Maximum angle sets per fused run. Each member is one grid-z slice, so this bounds the launch
+  // well below the CUDA/HIP grid-z limit (65535) and bounds the per-run slot array at
+  // max_batch_width * levels entries.
+  constexpr std::size_t max_batch_width = 256;
+  std::vector<bool> started(num_anglesets, false);
+  std::size_t num_finished = 0;
+
+  while (num_finished < num_anglesets)
+  {
+    // Compose a batch from whichever angle sets are currently ready. Composition is fixed for
+    // the batch's whole run (see SweepBatchRun), no per-level backfill, so the run needs only
+    // one host-blocking synchronize instead of one per level.
+    std::vector<AAHD_AngleSet*> batch;
+    batch.reserve(std::min(num_anglesets, max_batch_width));
+    for (std::size_t i = 0; i < num_anglesets && batch.size() < max_batch_width; ++i)
+    {
+      if (started[i])
+        continue;
+      if (all_anglesets[i]->IsReady())
+      {
+        all_anglesets[i]->PrepareForBatch(sweep_chunk);
+        batch.push_back(all_anglesets[i]);
+        started[i] = true;
+      }
+    }
+
+    if (batch.empty())
+      continue; // still waiting on MPI dependencies; nothing submittable yet
+
+    // Run every level of this batch back-to-back; one host-blocking wait for the whole run.
+    aah_sweep_chunk.SweepBatchRun(batch);
+
+    // Every member of `batch` is now fully complete. Enqueue all their D2H copies, synchronize
+    // once for the whole group, then do host-side completion bookkeeping.
+    for (auto* as : batch)
+      as->SubmitCompletionCopies();
+    aah_sweep_chunk.GetBatchStream().synchronize();
+    for (auto* as : batch)
+    {
+      as->FinishCompletion(sweep_chunk);
+      ++num_finished;
+    }
+  }
+
+  // Wait for sends and receive of delayed data
+  for (auto& angle_set : angle_agg_)
+  {
+    auto* aahd_angle_set = dynamic_cast<AAHD_AngleSet*>(angle_set.get());
+    aahd_angle_set->WaitForDownstreamAndDelayed();
+  }
+
+  // Copy boundary, phi and outflow data back to host
+  aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, false);
+  aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
+
+  // Reset all angle sets
   for (auto& angle_set : angle_agg_)
     angle_set->ResetSweepBuffers();
 }

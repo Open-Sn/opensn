@@ -108,6 +108,7 @@ if __name__ == "__main__":
             "max_ags_iterations": 50,
         },
         use_gpus=True,
+        fused_aao_sweep=bool(globals().get("fused_aao_sweep", False)),
     )
 
     # Initialize and Execute Solver

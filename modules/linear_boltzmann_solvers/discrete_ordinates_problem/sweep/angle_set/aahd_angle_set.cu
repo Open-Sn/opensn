@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aahd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
 #include <algorithm>
 
 namespace opensn
@@ -115,6 +116,89 @@ AAHD_AngleSet::CopyBoundaryOffsetToDevice()
   device_boundary_offsets_ = crb::DeviceMemory<std::uint64_t>(host_boundary_offsets_.size());
   crb::copy(device_boundary_offsets_, host_boundary_offsets_, host_boundary_offsets_.size());
   host_boundary_offsets_.clear();
+}
+
+void
+AAHD_AngleSet::PrepareForBatch(SweepChunk& sweep_chunk)
+{
+  auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
+  auto& aahd_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
+  // Redirect this angle set's FluDS operations onto the sweep chunk's shared batch stream, so
+  // its H2D/D2H copies stay correctly ordered relative to the fused kernel launches.
+  aahd_fluds->GetStream() = aahd_sweep_chunk.GetBatchStream();
+  aahd_fluds->CopyNonLocalIncomingPsiToDevice();
+  aahd_fluds->AllocateSaveAngularFlux(aahd_sweep_chunk.GetProblem(),
+                                      aahd_sweep_chunk.GetGroupset());
+}
+
+std::size_t
+AAHD_AngleSet::NumLevels() const
+{
+  const auto& spds = dynamic_cast<const AAH_SPDS&>(spds_);
+  return spds.GetLevelizedLocalSubgrid().size();
+}
+
+void
+AAHD_AngleSet::FillBatchSlots(std::size_t num_levels,
+                              std::size_t slot_stride,
+                              gpu_kernel::AAHD_BatchSlot* slots) const
+{
+  auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
+  const auto& spds = dynamic_cast<const AAH_SPDS&>(spds_);
+  const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
+
+  gpu_kernel::AAHD_BatchSlot slot;
+  slot.directions = device_angle_indices_.get();
+  slot.boundary_offset = device_boundary_offsets_.get();
+  slot.angleset_size = static_cast<std::uint32_t>(angles_.size());
+  slot.flud_index = aahd_fluds->GetCommonData().GetDeviceIndex();
+  slot.flud_data = aahd_fluds->GetDevicePointerSet();
+  slot.saved_psi = aahd_fluds->GetSavedAngularFluxDevicePointer();
+  for (std::size_t level = 0; level < num_levels; ++level)
+  {
+    if (level < levelized_spls.size())
+    {
+      slot.cells_to_sweep = spds.GetDeviceLevelVector(level);
+      slot.num_cells = static_cast<unsigned int>(levelized_spls[level].size());
+    }
+    else
+    {
+      slot.cells_to_sweep = nullptr;
+      slot.num_cells = 0;
+    }
+    slots[level * slot_stride] = slot;
+  }
+}
+
+void
+AAHD_AngleSet::SubmitCompletionCopies()
+{
+  auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
+  aahd_fluds->CopyPsiFromDevice();
+  aahd_fluds->CopySaveAngularFluxFromDevice();
+}
+
+void
+AAHD_AngleSet::FinishCompletion(SweepChunk& sweep_chunk)
+{
+  auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
+  auto& aahd_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
+
+  // The caller synchronized the batch stream after SubmitCompletionCopies, so the host buffer
+  // read by CopySaveAngularFluxToDestinationPsi below is complete.
+
+  if (not following_angle_sets_.empty())
+  {
+    std::scoped_lock lk(m);
+    for (auto& following_as : following_angle_sets_)
+      following_as->DecrementCounter();
+  }
+  async_comm_.SendDownstreamPsi();
+
+  aahd_fluds->CopySaveAngularFluxToDestinationPsi(
+    aahd_sweep_chunk.GetProblem(), aahd_sweep_chunk.GetGroupset(), *this);
+
+  executed_ = true;
 }
 
 } // namespace opensn
