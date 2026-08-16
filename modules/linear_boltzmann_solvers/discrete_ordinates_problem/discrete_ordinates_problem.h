@@ -76,6 +76,10 @@ public:
    */
   const std::string& GetSweepType() const { return sweep_type_; }
 
+  /// True if the opt-in fused (multi-angle-set) AAO GPU sweep scheduler should be used instead
+  /// of the default all-at-once scheduler. Only meaningful for sweep_type == "AAH" on GPU.
+  bool UseFusedAAO() const { return fused_aao_sweep_; }
+
   std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
   std::shared_ptr<AGSLinearSolver> GetAGSSolver();
@@ -337,6 +341,7 @@ protected:
     quadrature_fluds_commondata_map_;
 
   const std::string sweep_type_;
+  const bool fused_aao_sweep_;
   /** @} */
 
   /**

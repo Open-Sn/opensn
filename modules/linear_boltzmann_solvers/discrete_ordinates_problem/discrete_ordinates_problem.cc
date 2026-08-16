@@ -50,6 +50,12 @@ DiscreteOrdinatesProblem::GetInputParameters()
   params.AddOptionalParameter(
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
   params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
+  params.AddOptionalParameter(
+    "fused_aao_sweep",
+    false,
+    "If true and sweep_type is \"AAH\" on GPU, uses an opt-in scheduler that fuses multiple "
+    "angle sets' current level into each kernel launch instead of one launch per angle set. "
+    "Falls back to the default all-at-once scheduler when false.");
   params.AddOptionalParameter("time_dependent",
                               false,
                               "If true, initializes the problem in time-dependent mode. "
@@ -106,7 +112,9 @@ DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 }
 
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
-  : LBSProblem(params), sweep_type_(params.GetParamValue<std::string>("sweep_type"))
+  : LBSProblem(params),
+    sweep_type_(params.GetParamValue<std::string>("sweep_type")),
+    fused_aao_sweep_(params.GetParamValue<bool>("fused_aao_sweep"))
 {
   // The configuration (time-dependent mode, adjoint, uncollided flux, ...) is validated by
   // ValidateConfiguration() in BuildRuntime(), once the object is fully constructed. The rules are
@@ -466,6 +474,10 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
                           " does not match dimensionality of mesh (" + std::to_string(grid_dim) +
                           ").");
   }
+
+  // The fused scheduler exists only for GPU AAH sweeps; anywhere else it would be ignored.
+  if (fused_aao_sweep_ and (not use_gpus_ or sweep_type_ != "AAH"))
+    errors.emplace_back("fused_aao_sweep requires sweep_type=\"AAH\" and use_gpus=True.");
 
   CheckCSDA(errors);
 

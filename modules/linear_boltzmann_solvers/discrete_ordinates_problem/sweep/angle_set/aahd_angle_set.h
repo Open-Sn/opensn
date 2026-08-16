@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aahd_async_comm.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/aahd_batch_slot.h"
 #include "caribou/main.hpp"
 #include <memory>
 #include <mutex>
@@ -61,6 +62,37 @@ public:
   void CopyBoundaryOffsetToDevice();
 
   std::uint64_t* GetDeviceBoudnaryOffset() { return device_boundary_offsets_.get(); }
+
+  /**
+   * \name Fused all-at-once batch interface
+   * Used only by SweepScheduler::ScheduleAlgoAAOFused. A batch run sweeps every level of every
+   * member angle set in one uninterrupted sequence of launches (see
+   * AAHDSweepChunk::SweepBatchRun), so no per-level progress is kept between calls.
+   * \{
+   */
+  /// Prepares this angle set's device buffers before it joins a batch run. Mirrors the first
+  /// part of AngleSetAdvance. Call once per sweep, before the run starts.
+  void PrepareForBatch(SweepChunk& sweep_chunk);
+
+  /// Number of levels in this angle set's levelized local subgrid.
+  std::size_t NumLevels() const;
+
+  /// Writes this angle set's batch slot for each level in [0, num_levels) to
+  /// `slots[level * slot_stride]`. Levels at or beyond NumLevels() get an empty slot, because the
+  /// caller runs every batch member through the same level range.
+  void FillBatchSlots(std::size_t num_levels,
+                      std::size_t slot_stride,
+                      gpu_kernel::AAHD_BatchSlot* slots) const;
+
+  /// Enqueues this angle set's post-sweep device-to-host copies on the batch stream without
+  /// synchronizing. The caller synchronizes once for the whole batch before FinishCompletion.
+  void SubmitCompletionCopies();
+
+  /// Finalizes this angle set after its SubmitCompletionCopies copies have completed: decrements
+  /// the followers' dependency counters, sends downstream psi, and copies the saved angular flux
+  /// to its destination. Mirrors the second part of AngleSetAdvance.
+  void FinishCompletion(SweepChunk& sweep_chunk);
+  /** \} */
 
   static std::mutex m;
 

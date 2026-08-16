@@ -251,6 +251,13 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
                            "available for builds with GPU support.");
 }
 
+void
+SweepScheduler::ScheduleAlgoAAOFused(SweepChunk& sweep_chunk)
+{
+  throw std::runtime_error("SweepScheduler::ScheduleAlgoAAOFused: ALL_AT_ONCE_FUSED scheduling "
+                           "is only available for builds with GPU support.");
+}
+
 #endif // __OPENSN_WITH_GPU__
 
 void
@@ -262,6 +269,8 @@ SweepScheduler::Sweep()
     ScheduleAlgoFIFO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE)
     ScheduleAlgoAAO(sweep_chunk_);
+  else if (scheduler_type_ == SchedulingAlgorithm::ALL_AT_ONCE_FUSED)
+    ScheduleAlgoAAOFused(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
 }

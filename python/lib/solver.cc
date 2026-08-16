@@ -1225,6 +1225,13 @@ WrapLBS(py::module& slv)
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
         Both sweep types support time-dependent (transient) mode.
+    fused_aao_sweep : bool, default=False
+        Use the fused all-at-once GPU scheduler for ``AAH`` sweeps. Each kernel launch
+        sweeps the current level of up to 256 ready angle sets instead of one, which
+        reduces launch count when individual levels are too small to fill the GPU. The
+        solution matches the default scheduler to floating-point rounding. Requires
+        ``sweep_type="AAH"`` and ``use_gpus=True``; otherwise construction raises an
+        error.
     time_dependent : bool, default=False
         If true, the problem starts in time-dependent mode. Otherwise it starts in
         steady-state mode. Requires ``options.save_angular_flux=True`` and
