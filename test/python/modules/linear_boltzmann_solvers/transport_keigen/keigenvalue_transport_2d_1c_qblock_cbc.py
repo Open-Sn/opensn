@@ -37,7 +37,7 @@ if __name__ == "__main__":
                 "groups_from_to": (0, num_groups - 1),
                 "angular_quadrature": pquad,
                 "inner_linear_method": "petsc_richardson",
-                "l_max_its": 1,
+                "l_max_its": 2,
                 "gmres_restart_interval": 50,
                 "l_abs_tol": 1.0e-10,
             },
