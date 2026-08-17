@@ -17,7 +17,9 @@ source, and one of three boundary configurations selected by ``bc_case``:
   cyclic boundary dependencies between angle sets.
 
 The inner solve is capped at two GMRES iterations, so the flux is not
-converged. The same capped iteration sequence is run on the CPU and on the GPU
+converged. Cycle breaking is disabled for CBC so CPU and GPU use the same
+algebraic iteration.
+The same capped iteration sequence is run on the CPU and on the GPU
 and the scalar-flux vectors are compared. With identical algebra the two agree
 to round-off. This is a CPU/GPU equivalence check of the GPU sweep, not an
 accuracy check; accuracy of the converged solution is covered by the other
@@ -91,6 +93,7 @@ def solve(boundary_conditions, sweep_type, use_gpus):
                 # Unreachable on purpose: the solve always stops at l_max_its.
                 "l_abs_tol": 1.0e-14,
                 "l_max_its": 2,
+                "allow_cycles": sweep_type != "CBC",
             }
         ],
         xs_map=[{"block_ids": [0], "xs": xs}],

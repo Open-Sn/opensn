@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+# SPDX-License-Identifier: MIT
+# Two polygons partition a square. Their two shared edges produce opposing
+# dependencies for an oblique direction; assigning one polygon per rank makes
+# a genuine global cell cycle while each owned graph has a single vertex.
+# Coordinates are dimensionless; vertex 3 defines the shared inward notch.
+# Hand constructed test geometry under the repository MIT license.
+o CBCDistributedCycle
+v 0.5 0.5 0
+v 0.75 0.5 0
+v 0.625 0.6 0
+v 0.75 0.75 0
+v 0.5 0.75 0
+f 2 3 1
+f 1 3 2 4 5
