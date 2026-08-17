@@ -395,6 +395,11 @@ Reasonable values:
   problems, but routinely hitting the cap usually means the method, groupset
   structure, or acceleration setup needs attention
 
+SMM and SCDSA k-eigenvalue acceleration reject ``l_max_its=1`` for ``AAH`` and
+for ``CBC`` when delayed angular degrees of freedom are present. These cases
+require more than one sweep per iteration because of lagged angular fluxes;
+the number of sweeps required is problem dependent.
+
 What tolerance to choose
 ------------------------
 
@@ -445,6 +450,10 @@ Reasonable values:
 For most users, this is not the first iterative-method parameter to tune, but it
 is part of the groupset solve setup and can matter on meshes whose sweep
 dependencies contain cycles.
+
+With SMM or SCDSA k-eigenvalue acceleration, ``CBC`` groupsets with delayed
+angular degrees of freedom cannot use ``l_max_its=1``. See the ``l_max_its``
+guidance above.
 
 Across-Groupset Iteration
 =========================
