@@ -25,9 +25,13 @@ configuration that satisfies it:
 11. CMFD in RZ geometry (accepted).
 12. SCDSA with sdm="pwlc" in 1D spherical geometry (rejected: the correction diverges), and
 13. SCDSA with sdm="pwld" in 1D spherical geometry (accepted).
+14-19. For each of SCDSA and SMM with CBC, opposing reflecting boundaries
+    introduce delayed angular DOFs: one sweep is rejected on every rank and
+    two sweeps are accepted. With vacuum boundaries and no delayed DOFs,
+    one sweep is accepted.
 
 Checks:
-  KEIGEN_ACCELERATION_REQUIREMENTS_PASSED: number of cases (of 13) that behave as described.
+  KEIGEN_ACCELERATION_REQUIREMENTS_PASSED: number of cases (of 19) that behave as described.
 """
 
 import os
@@ -50,7 +54,7 @@ if "opensn_console" not in globals():
         GLCProductQuadrature2DXY,
         GLProductQuadrature1DSpherical,
     )
-    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.mesh import KBAGraphPartitioner, OrthogonalMeshGenerator
     from pyopensn.solver import (
         CMFDAcceleration,
         DiscreteOrdinatesCurvilinearProblem,
@@ -75,13 +79,15 @@ def groupset(groups, quadrature, **extra):
     return block
 
 
-def xy_problem(grid, xs, num_groups, groupsets, boundary_conditions=None, options=None):
+def xy_problem(grid, xs, num_groups, groupsets, boundary_conditions=None, options=None,
+               sweep_type="AAH"):
     return DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
         groupsets=groupsets,
         xs_map=[{"block_ids": [0], "xs": xs}],
         boundary_conditions=boundary_conditions or [],
+        sweep_type=sweep_type,
         options={"verbose_inner_iterations": False, "verbose_outer_iterations": False,
                  **(options or {})},
     )
@@ -233,6 +239,27 @@ if __name__ == "__main__":
     passed += on_all_ranks(
         outcome(pi(problem, SCDSAAcceleration(problem=problem, sdm="pwld"))) == "accepted"
     )
+
+    # Opposing reflecting x faces give only one rank delayed flux. Both ranks
+    # must reject a single sweep with reflection and accept it with vacuum.
+    cbc_grid = OrthogonalMeshGenerator(
+        node_sets=[[0.0, 0.5, 1.0], [0.0, 0.5, 1.0]],
+        partitioner=KBAGraphPartitioner(nx=size, xcuts=[i / size for i in range(1, size)]),
+    ).Execute()
+    cbc_grid.SetUniformBlockID(0)
+    reflecting = [{"name": name, "type": "reflecting"} for name in ("xmin", "xmax")]
+    for accelerator in (SCDSAAcceleration, SMMAcceleration):
+        for boundaries, sweeps, expected in ((reflecting, 1, "rejected"),
+                                             (reflecting, 2, "accepted"),
+                                             ([], 1, "accepted")):
+            problem = xy_problem(
+                cbc_grid, fissile, 1, [groupset((0, 0), xy_quad(), l_max_its=sweeps)],
+                boundaries, save_psi, sweep_type="CBC",
+            )
+            passed += on_all_ranks(
+                outcome(pi(problem, accelerator(problem=problem)),
+                        "one sweep per iteration") == expected
+            )
 
     MPIAllReduce(0)
     if rank == 0:
