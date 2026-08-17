@@ -54,7 +54,7 @@ void
 SMMAcceleration::CheckRequirements(std::vector<std::string>& errors) const
 {
   RequireSingleGroupset(errors);
-  RequireMultipleAAHSweeps(errors);
+  RequireMultipleSweeps(errors);
   if (do_problem_.GetScatteringOrder() != 0)
     errors.emplace_back(GetName() + " is only supported with P0 scattering.");
   if (not do_problem_.SaveAngularFluxEnabled())

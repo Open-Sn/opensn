@@ -46,7 +46,7 @@ void
 SCDSAAcceleration::CheckRequirements(std::vector<std::string>& errors) const
 {
   RequireSingleGroupset(errors);
-  RequireMultipleAAHSweeps(errors);
+  RequireMultipleSweeps(errors);
   // The PWLC correction diverges in 1D spherical geometry; the PWLD (MIP) correction converges.
   if (sdm_ == "pwlc" and do_problem_.GetGeometryType() == GeometryType::ONED_SPHERICAL)
     errors.emplace_back(GetName() + ": sdm=\"pwlc\" is not supported in 1D spherical geometry; "

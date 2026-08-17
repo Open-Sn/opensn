@@ -1242,7 +1242,9 @@ WrapLBS(py::module& slv)
           - gmres_restart_interval: int, default=30
               GMRES restart interval, if GMRES is used.
           - allow_cycles: bool, default=True
-              Whether cyclic dependencies are allowed in sweeps.
+              Allow cycle breaking in host AAH and CBC sweeps. With False, CBC collectively
+              rejects genuine global cell cycles during setup; cyclic partition dependencies
+              alone are supported when the cell graph is acyclic. GPU CBC has no cycle breaking.
           - apply_wgdsa: bool, default=False
               Enable within-group DSA for this groupset. After each groupset iteration, one
               diffusion solve corrects the scalar flux of every group of the groupset. The
@@ -2869,11 +2871,13 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 
     Wrapper of :cpp:class:`opensn::SCDSAAcceleration`.
 
-    Requires a single groupset and, with the AAH sweep, ``l_max_its`` greater than one.
-    ``sdm='pwlc'`` is not supported in 1D spherical geometry. The owning solver checks these
-    requirements in ``Initialize()``. With ``l_max_its`` greater than one, each power iteration
-    performs one sweep after the groupset solve to form the scalar-flux change, i.e. one sweep more
-    than ``l_max_its``.
+    Requires a single groupset. With AAH, or with CBC when delayed angular DOFs exist on any
+    rank, ``l_max_its`` must be greater than one. CBC without delayed angular DOFs permits
+    ``l_max_its=1``. ``sdm='pwlc'`` is not supported in 1D spherical geometry. The owning
+    solver checks these requirements collectively in ``Initialize()`` and raises a
+    ``ValueError`` on every rank for invalid configurations. With ``l_max_its`` greater than one,
+    each power iteration performs one sweep after the groupset solve to form the scalar-flux change,
+    i.e. one sweep more than ``l_max_its``.
     )"
   );
   scdsa_acceleration.def(
@@ -2922,8 +2926,10 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 
     Requires a single groupset, isotropic (P0) scattering, ``options.save_angular_flux=True``,
     only vacuum and reflecting boundaries (an isotropic boundary is rejected even with zero
-    strength), and, with the AAH sweep, ``l_max_its`` greater than one. The owning solver checks
-    these requirements in ``Initialize()``.
+    strength). With AAH, or with CBC when delayed angular DOFs exist on any rank, ``l_max_its``
+    must be greater than one. CBC without delayed angular DOFs permits ``l_max_its=1``. The
+    owning solver checks these requirements collectively in ``Initialize()`` and raises a
+    ``ValueError`` on every rank for invalid configurations.
     )"
   );
   smm_acceleration.def(

@@ -6,6 +6,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc_setup_validation.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc_graph_validation.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/logging/log.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
@@ -18,10 +20,13 @@
 #include "framework/utils/timer.h"
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 #include <optional>
+#include <set>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -61,6 +66,66 @@ BuildCBCGPUFludsCommonData(SweepRuntime& runtime,
 
 namespace detail
 {
+
+void
+CheckCBCOrderingAgreement(std::span<const std::uint64_t> descriptor)
+{
+  const auto n = descriptor.size(), max = std::numeric_limits<std::size_t>::max();
+  const std::array<std::size_t, 2> local{n, max - n};
+  std::array<std::size_t, 2> bounds{};
+  mpi_comm.all_reduce(
+    local.data(), static_cast<int>(local.size()), bounds.data(), mpi::op::max<std::size_t>());
+  if (bounds[0] != max - bounds[1])
+    throw std::logic_error("CBC SPDS count/configuration differs across MPI ranks");
+  // Compare descriptors directly to detect configuration differences without hash collisions.
+  std::vector<std::uint64_t> reference(descriptor.begin(), descriptor.end());
+  std::size_t offset = 0;
+  while (offset < n)
+  {
+    const auto count = static_cast<int>(
+      std::min(n - offset, static_cast<std::size_t>(std::numeric_limits<int>::max())));
+    mpi_comm.broadcast(reference.data() + offset, count, 0);
+    offset += static_cast<std::size_t>(count);
+  }
+  int differs = not std::equal(descriptor.begin(), descriptor.end(), reference.begin());
+  int any_differs = 0;
+  mpi_comm.all_reduce(differs, any_differs, mpi::op::max<int>());
+  if (any_differs)
+    throw std::logic_error("CBC SPDS ordering/configuration differs across MPI ranks");
+}
+
+std::vector<std::vector<int>>
+ParseCBCSweepFAS(std::span<const int> payload, std::size_t num_orderings, int comm_size)
+{
+  std::vector<std::vector<int>> result(num_orderings);
+  std::vector<bool> received(num_orderings, false);
+  std::size_t offset = 0;
+  while (offset < payload.size())
+  {
+    if (payload.size() - offset < 2)
+      throw std::logic_error("Truncated CBC sweep FAS header");
+    const int ordinal = payload[offset++], count = payload[offset++];
+    if (ordinal < 0 or std::cmp_greater_equal(ordinal, num_orderings) or count < 0 or
+        count % 2 != 0 or static_cast<std::size_t>(count) > payload.size() - offset)
+      throw std::logic_error("Invalid CBC sweep FAS ordinal/count");
+    if (received[ordinal])
+      throw std::logic_error("Duplicate CBC sweep FAS ordinal");
+    received[ordinal] = true;
+    std::set<std::pair<int, int>> pairs;
+    for (int i = 0; i < count; i += 2)
+    {
+      const int source = payload[offset + i], target = payload[offset + i + 1];
+      if (source < 0 or target < 0 or source >= comm_size or target >= comm_size or
+          source == target or not pairs.emplace(source, target).second)
+        throw std::logic_error("Invalid/duplicate CBC sweep FAS rank pair");
+    }
+    result[ordinal].assign(payload.data() + offset, payload.data() + offset + count);
+    offset += static_cast<std::size_t>(count);
+  }
+  if (std::find(received.begin(), received.end(), false) != received.end())
+    throw std::logic_error("Missing CBC sweep FAS ordinal");
+  return result;
+}
 
 UniqueSOGroupings
 GroupDirectionsByOrthant(const std::string& problem_name,
@@ -459,6 +524,7 @@ BuildSPDSForSweepOrderings(
 }
 
 std::vector<std::shared_ptr<AAH_SPDS>> GetAAHSPDSList(const SweepRuntime& runtime);
+std::vector<std::shared_ptr<CBC_SPDS>> GetCBCSPDSList(const SweepRuntime& runtime);
 
 void
 BuildAAHSPDS(
@@ -497,18 +563,35 @@ BuildCBCSPDS(
   const std::shared_ptr<Mesh>& grid,
   const SPDSFaceNeighborInfoVec& face_neighbor_info,
   const std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map,
-  const std::map<std::shared_ptr<AngularQuadrature>, AngleAggregationType>& aggregation_map)
+  const std::map<std::shared_ptr<AngularQuadrature>, AngleAggregationType>& aggregation_map,
+  bool use_gpus)
 {
-  BuildSPDSForSweepOrderings(runtime,
-                             aggregation_map,
-                             [&grid, &face_neighbor_info, &allow_cycles_map](
-                               const std::shared_ptr<AngularQuadrature>& quadrature,
-                               size_t,
-                               const Vector3& omega) -> std::shared_ptr<SPDS>
-                             {
-                               return std::make_shared<CBC_SPDS>(
-                                 omega, grid, face_neighbor_info, allow_cycles_map.at(quadrature));
-                             });
+  // Use one process-independent SPDS ordinal across all quadratures to order CBC collectives.
+  std::map<std::shared_ptr<AngularQuadrature>, size_t> ordinal_offsets;
+  size_t num_sweep_orderings = 0;
+  for (const auto& quadrature : runtime.quadrature_order)
+  {
+    ordinal_offsets[quadrature] = num_sweep_orderings;
+    num_sweep_orderings += runtime.quadrature_unq_so_grouping_map.at(quadrature).first.size();
+  }
+  OpenSnLogicalErrorIf(num_sweep_orderings > static_cast<size_t>(std::numeric_limits<int>::max()),
+                       "Too many CBC sweep orderings for an integer SPDS ordinal.");
+
+  BuildSPDSForSweepOrderings(
+    runtime,
+    aggregation_map,
+    [&grid, &face_neighbor_info, &allow_cycles_map, &ordinal_offsets, use_gpus](
+      const std::shared_ptr<AngularQuadrature>& quadrature,
+      size_t sweep_ordering_id,
+      const Vector3& omega) -> std::shared_ptr<SPDS>
+    {
+      return std::make_shared<CBC_SPDS>(
+        static_cast<int>(ordinal_offsets.at(quadrature) + sweep_ordering_id),
+        omega,
+        grid,
+        face_neighbor_info,
+        allow_cycles_map.at(quadrature) and not use_gpus);
+    });
 }
 
 std::vector<std::shared_ptr<AAH_SPDS>>
@@ -523,6 +606,19 @@ GetAAHSPDSList(const SweepRuntime& runtime)
   }
 
   return aah_spds_list;
+}
+
+std::vector<std::shared_ptr<CBC_SPDS>>
+GetCBCSPDSList(const SweepRuntime& runtime)
+{
+  std::vector<std::shared_ptr<CBC_SPDS>> cbc_spds_list;
+  for (const auto& [quadrature, spds_list] : runtime.quadrature_spds_map)
+    for (const auto& spds : spds_list)
+      cbc_spds_list.push_back(std::static_pointer_cast<CBC_SPDS>(spds));
+
+  std::ranges::sort(cbc_spds_list, {}, &CBC_SPDS::GetId);
+
+  return cbc_spds_list;
 }
 
 int
@@ -830,6 +926,226 @@ BuildAAHGlobalSweepGraph(SweepRuntime& runtime)
   PrintRequestedSweepGraphs(spds_list);
 }
 
+std::vector<std::uint64_t>
+PackCBCSPDSLocationEdgeWeights(const std::vector<CBC_SPDS::GlobalSweepEdge>& location_edge_weights)
+{
+  constexpr std::size_t packed_values_per_edge = 3;
+  std::vector<std::uint64_t> packed_values;
+  OpenSnLogicalErrorIf(location_edge_weights.size() >
+                         packed_values.max_size() / packed_values_per_edge,
+                       "CBC edge packing size overflow.");
+  packed_values.reserve(location_edge_weights.size() * packed_values_per_edge);
+  for (const auto& edge_weight : location_edge_weights)
+  {
+    packed_values.push_back(static_cast<std::uint64_t>(edge_weight.dependency));
+    packed_values.push_back(static_cast<std::uint64_t>(edge_weight.location));
+    packed_values.push_back(std::bit_cast<std::uint64_t>(edge_weight.weight));
+  }
+  return packed_values;
+}
+
+std::vector<CBC_SPDS::GlobalSweepEdge>
+UnpackCBCSPDSLocationEdgeWeights(std::span<const std::uint64_t> packed_values)
+{
+  constexpr std::size_t packed_values_per_edge = 3;
+  OpenSnLogicalErrorIf(packed_values.size() % packed_values_per_edge != 0,
+                       "Malformed CBC location-edge-weight payload.");
+
+  std::vector<CBC_SPDS::GlobalSweepEdge> edge_weights;
+  edge_weights.reserve(packed_values.size() / packed_values_per_edge);
+  for (std::size_t i = 0; i < packed_values.size(); i += packed_values_per_edge)
+  {
+    OpenSnLogicalErrorIf(std::cmp_greater(packed_values[i], mpi_comm.size() - 1) or
+                           std::cmp_greater(packed_values[i + 1], mpi_comm.size() - 1),
+                         "Malformed CBC location-edge-weight rank.");
+    edge_weights.push_back({static_cast<int>(packed_values[i]),
+                            static_cast<int>(packed_values[i + 1]),
+                            std::bit_cast<double>(packed_values[i + 2])});
+  }
+  return edge_weights;
+}
+
+void
+AccumulateCBCGlobalEdgeWeights(const std::vector<std::shared_ptr<CBC_SPDS>>& spds_list)
+{
+  const int comm_size = opensn::mpi_comm.size();
+  for (size_t spds_ordinal = 0; spds_ordinal < spds_list.size(); ++spds_ordinal)
+  {
+    const int owner = GetSweepGraphOwner(spds_ordinal, spds_list.size());
+    auto local_values =
+      PackCBCSPDSLocationEdgeWeights(spds_list[spds_ordinal]->ComputeLocalLocationEdgeWeights());
+    const auto& dependencies = spds_list[spds_ordinal]->GetLocationDependencies();
+    local_values.insert(local_values.end(), dependencies.begin(), dependencies.end());
+    local_values.push_back(dependencies.size());
+    OpenSnLogicalErrorIf(local_values.size() > static_cast<size_t>(std::numeric_limits<int>::max()),
+                         "CBC location-edge-weight payload exceeds the MPI count limit.");
+
+    // MPI_Gatherv uses receive counts and displacements only on the root.
+    const auto local_size = static_cast<int>(local_values.size());
+    std::vector<int> receive_counts(comm_size, 0);
+    mpi_comm.gather(local_size, receive_counts, owner);
+
+    std::vector<int> displacements(comm_size, 0);
+    int total_size = 0;
+    for (int rank = 0; rank < comm_size; ++rank)
+    {
+      displacements[rank] = total_size;
+      OpenSnLogicalErrorIf(receive_counts[rank] < 0 or
+                             receive_counts[rank] > std::numeric_limits<int>::max() - total_size,
+                           "CBC location-edge-weight gather exceeds the MPI count limit.");
+      total_size += receive_counts[rank];
+    }
+
+    std::vector<std::uint64_t> global_values;
+    mpi_comm.gather(local_values, global_values, receive_counts, displacements, owner);
+    if (opensn::mpi_comm.rank() == owner)
+    {
+      OpenSnLogicalErrorIf(global_values.size() != static_cast<std::size_t>(total_size),
+                           "Truncated CBC rank graph gather.");
+      std::vector<std::vector<int>> global_dependencies(comm_size);
+      std::vector<CBC_SPDS::GlobalSweepEdge> global_weights;
+      for (int rank = 0; rank < comm_size; ++rank)
+      {
+        const auto values = std::span<const std::uint64_t>(global_values)
+                              .subspan(displacements[rank], receive_counts[rank]);
+        OpenSnLogicalErrorIf(values.empty() or values.back() >= values.size(),
+                             "Malformed CBC location-dependency payload.");
+        const auto num_dependencies = static_cast<size_t>(values.back());
+        const auto num_weight_values = values.size() - num_dependencies - 1;
+        for (const auto dependency : values.subspan(num_weight_values, num_dependencies))
+        {
+          OpenSnLogicalErrorIf(std::cmp_greater_equal(dependency, comm_size),
+                               "Malformed CBC location-dependency rank.");
+          global_dependencies[rank].push_back(static_cast<int>(dependency));
+        }
+        const auto weights = UnpackCBCSPDSLocationEdgeWeights(values.first(num_weight_values));
+        for (const auto& weight : weights)
+          OpenSnLogicalErrorIf(weight.dependency != rank,
+                               "CBC rank graph weight has the wrong source rank.");
+        global_weights.insert(global_weights.end(), weights.begin(), weights.end());
+      }
+      spds_list[spds_ordinal]->SetGlobalDependencies(std::move(global_dependencies));
+      spds_list[spds_ordinal]->SetGlobalEdgeWeights(global_weights);
+    }
+  }
+}
+
+void
+BuildOwnedCBCSweepFAS(const std::vector<std::shared_ptr<CBC_SPDS>>& spds_list)
+{
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Build global sweep FAS for CBC SPDS.";
+  for (size_t spds_ordinal = 0; spds_ordinal < spds_list.size(); ++spds_ordinal)
+    if (opensn::mpi_comm.rank() == GetSweepGraphOwner(spds_ordinal, spds_list.size()))
+      spds_list[spds_ordinal]->BuildGlobalSweepFAS();
+}
+
+std::vector<std::vector<int>>
+GatherCBCSweepFAS(const std::vector<std::shared_ptr<CBC_SPDS>>& spds_list)
+{
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Gather FAS for CBC SPDS.";
+  std::vector<int> local_edges_to_remove;
+  for (size_t spds_ordinal = 0; spds_ordinal < spds_list.size(); ++spds_ordinal)
+  {
+    if (opensn::mpi_comm.rank() != GetSweepGraphOwner(spds_ordinal, spds_list.size()))
+      continue;
+
+    const auto& edges = spds_list[spds_ordinal]->GetGlobalSweepFAS();
+    OpenSnLogicalErrorIf(spds_ordinal > static_cast<size_t>(std::numeric_limits<int>::max()) or
+                           edges.size() > static_cast<size_t>(std::numeric_limits<int>::max()),
+                         "CBC sweep FAS payload exceeds its integer serialization range.");
+    local_edges_to_remove.push_back(static_cast<int>(spds_ordinal));
+    local_edges_to_remove.push_back(static_cast<int>(edges.size()));
+    local_edges_to_remove.insert(local_edges_to_remove.end(), edges.begin(), edges.end());
+  }
+
+  OpenSnLogicalErrorIf(local_edges_to_remove.size() >
+                         static_cast<std::size_t>(std::numeric_limits<int>::max()),
+                       "CBC FAS payload exceeds MPI count limit.");
+  std::vector<int> receive_counts(opensn::mpi_comm.size(), 0);
+  mpi_comm.all_gather(static_cast<int>(local_edges_to_remove.size()), receive_counts);
+
+  std::vector<int> displacements(opensn::mpi_comm.size(), 0);
+  int total_size = 0;
+  for (size_t rank = 0; rank < receive_counts.size(); ++rank)
+  {
+    displacements[rank] = total_size;
+    OpenSnLogicalErrorIf(receive_counts[rank] < 0 or
+                           receive_counts[rank] > std::numeric_limits<int>::max() - total_size,
+                         "CBC sweep FAS gather exceeds the MPI count limit.");
+    total_size += receive_counts[rank];
+  }
+
+  std::vector<int> global_edges_to_remove(total_size);
+  mpi_comm.all_gather(local_edges_to_remove, global_edges_to_remove, receive_counts, displacements);
+  auto records =
+    detail::ParseCBCSweepFAS(global_edges_to_remove, spds_list.size(), mpi_comm.size());
+  for (std::size_t rank = 0; rank < receive_counts.size(); ++rank)
+  {
+    auto offset = static_cast<std::size_t>(displacements[rank]);
+    const auto end = offset + static_cast<std::size_t>(receive_counts[rank]);
+    while (offset < end)
+    {
+      OpenSnLogicalErrorIf(end - offset < 2, "Truncated CBC FAS source header.");
+      const auto ordinal = static_cast<std::size_t>(global_edges_to_remove[offset++]);
+      const auto count = static_cast<std::size_t>(global_edges_to_remove[offset++]);
+      OpenSnLogicalErrorIf(count > end - offset or GetSweepGraphOwner(ordinal, spds_list.size()) !=
+                                                     static_cast<int>(rank),
+                           "CBC FAS record has invalid source ownership/bounds.");
+      offset += count;
+    }
+  }
+  return records;
+}
+
+void
+ApplyCBCSweepFAS(const std::vector<std::shared_ptr<CBC_SPDS>>& spds_list,
+                 std::vector<std::vector<int>> records)
+{
+  for (std::size_t i = 0; i < records.size(); ++i)
+    spds_list[i]->SetGlobalSweepFAS(std::move(records[i]));
+
+  log.Log0Verbose1() << program_timer.GetTimeString() << " Apply global sweep FAS for CBC SPDS.";
+  for (const auto& spds : spds_list)
+    spds->ApplyGlobalSweepFAS();
+}
+
+void
+CheckCBCNoLagCellGraphs(const SweepRuntime& runtime, bool use_gpus)
+{
+  const auto spds_list = GetCBCSPDSList(runtime);
+  // Filter only after validating collective participation over the full ordering.
+  for (const auto& spds : spds_list)
+    if (not spds->AllowCycles())
+    {
+      std::string witness;
+      RunSweepCollectiveSequence([&] { witness = spds->CheckGlobalCellCycles(); }, "CBC");
+      RunSweepSetupCollectively(
+        [&]
+        {
+          if (not witness.empty())
+            throw std::logic_error(
+              "CBC ordering " + std::to_string(spds->GetId()) + ": " + witness +
+              (use_gpus ? ". GPU CBC cannot break cycles." : ". Set allow_cycles=True."));
+        },
+        "CBC");
+    }
+}
+
+void
+BuildCBCGlobalSweepGraph(SweepRuntime& runtime)
+{
+  auto spds_list = GetCBCSPDSList(runtime);
+  std::erase_if(spds_list, [](const auto& spds) { return not spds->AllowCycles(); });
+  if (spds_list.empty())
+    return;
+
+  RunSweepCollectiveSequence([&] { AccumulateCBCGlobalEdgeWeights(spds_list); }, "CBC");
+  RunSweepSetupCollectively([&] { BuildOwnedCBCSweepFAS(spds_list); }, "CBC");
+  std::vector<std::vector<int>> records;
+  RunSweepCollectiveSequence([&] { records = GatherCBCSweepFAS(spds_list); }, "CBC");
+  RunSweepSetupCollectively([&] { ApplyCBCSweepFAS(spds_list, std::move(records)); }, "CBC");
+}
+
 void
 BuildAAHCPUFludsCommonData(SweepRuntime& runtime,
                            const std::shared_ptr<Mesh>& grid,
@@ -878,31 +1194,86 @@ BuildCBCCPUFludsCommonData(SweepRuntime& runtime,
   struct WorkItem
   {
     std::shared_ptr<AngularQuadrature> quadrature;
-    std::shared_ptr<SPDS> spds;
+    std::shared_ptr<CBC_SPDS> spds;
   };
   std::vector<WorkItem> work;
   for (const auto& quadrature : runtime.quadrature_order)
   {
     const auto& spds_list = runtime.quadrature_spds_map.at(quadrature);
     for (const auto& spds : spds_list)
-      work.push_back({quadrature, spds});
+      work.push_back({quadrature, std::static_pointer_cast<CBC_SPDS>(spds)});
   }
   if (work.empty())
     return;
 
+  std::ranges::sort(work, {}, [](const WorkItem& item) { return item.spds->GetId(); });
+
   const size_t nthreads = std::min<size_t>(std::max(1U, opensn_num_threads), work.size());
   log.Log() << program_timer.GetTimeString() << " FLUDS construction: " << work.size()
-            << " angles (" << nthreads << " threads(s)).";
+            << " angles (" << nthreads << " thread(s)).";
   std::vector<std::unique_ptr<CBC_FLUDSCommonData>> result(work.size());
-  ParallelFor(work.size(),
-              nthreads,
-              [&](size_t i)
-              { result[i] = CBC_FLUDSCommonData::MakeAlpha(*work[i].spds, grid_nodal_mappings); });
-  for (auto& fluds : result)
-    fluds->FinalizeBeta();
+  RunSweepSetupCollectively(
+    [&]
+    {
+      ParallelFor(
+        work.size(),
+        nthreads,
+        [&](size_t i)
+        { result[i] = CBC_FLUDSCommonData::MakeAlpha(*work[i].spds, grid_nodal_mappings); });
+    },
+    "CBC");
+  RunSweepCollectiveSequence(
+    [&]
+    {
+      for (auto& fluds : result)
+        fluds->FinalizeBeta();
+    },
+    "CBC");
   for (size_t i = 0; i < work.size(); ++i)
     runtime.quadrature_fluds_commondata_map[work[i].quadrature].push_back(std::move(result[i]));
   log.Log() << program_timer.GetTimeString() << " FLUDS construction done.";
+}
+
+std::vector<std::uint64_t>
+BuildCBCOrderingDescriptor(const SweepRuntime& runtime,
+                           const std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles,
+                           bool use_gpus)
+{
+  std::vector<std::uint64_t> descriptor;
+  const auto orderings = GetCBCSPDSList(runtime);
+  descriptor.push_back(orderings.size());
+  for (std::size_t i = 0; i < orderings.size(); ++i)
+  {
+    OpenSnLogicalErrorIf(orderings[i]->GetId() < 0 or std::cmp_not_equal(orderings[i]->GetId(), i),
+                         "CBC SPDS ordinals must form a contiguous ordering sequence.");
+    descriptor.push_back(static_cast<std::uint64_t>(orderings[i]->GetId()));
+    descriptor.push_back(orderings[i]->AllowCycles());
+    const auto& omega = orderings[i]->GetOmega();
+    descriptor.push_back(std::bit_cast<std::uint64_t>(omega.x));
+    descriptor.push_back(std::bit_cast<std::uint64_t>(omega.y));
+    descriptor.push_back(std::bit_cast<std::uint64_t>(omega.z));
+  }
+  descriptor.push_back(runtime.quadrature_order.size());
+  for (const auto& quadrature : runtime.quadrature_order)
+  {
+    descriptor.push_back(allow_cycles.at(quadrature));
+    descriptor.push_back(use_gpus);
+    const auto& groupings = runtime.quadrature_unq_so_grouping_map.at(quadrature).first;
+    descriptor.push_back(groupings.size());
+    for (const auto& grouping : groupings)
+    {
+      descriptor.push_back(grouping.size());
+      for (const auto direction : grouping)
+      {
+        descriptor.push_back(direction);
+        const auto& omega = quadrature->GetOmega(direction);
+        descriptor.push_back(std::bit_cast<std::uint64_t>(omega.x));
+        descriptor.push_back(std::bit_cast<std::uint64_t>(omega.y));
+        descriptor.push_back(std::bit_cast<std::uint64_t>(omega.z));
+      }
+    }
+  }
+  return descriptor;
 }
 
 } // namespace
@@ -946,8 +1317,28 @@ BuildSweepRuntime(const std::string& problem_name,
     BuildAAHGlobalSweepGraph(runtime);
   }
   else if (sweep_type == "CBC")
-    BuildCBCSPDS(
-      runtime, grid, face_neighbor_info, quadrature_allow_cycles_map, quadrature_aggregation_map);
+  {
+    RunSweepSetupCollectively(
+      [&]
+      {
+        BuildCBCSPDS(runtime,
+                     grid,
+                     face_neighbor_info,
+                     quadrature_allow_cycles_map,
+                     quadrature_aggregation_map,
+                     use_gpus);
+      },
+      "CBC");
+    std::vector<std::uint64_t> descriptor;
+    RunSweepSetupCollectively(
+      [&]
+      { descriptor = BuildCBCOrderingDescriptor(runtime, quadrature_allow_cycles_map, use_gpus); },
+      "CBC");
+    detail::CheckCBCOrderingAgreement(descriptor);
+    CheckCBCNoLagCellGraphs(runtime, use_gpus);
+    if (not use_gpus)
+      BuildCBCGlobalSweepGraph(runtime);
+  }
   else
     OpenSnInvalidArgument("Unsupported sweep type \"" + sweep_type + "\"");
 
