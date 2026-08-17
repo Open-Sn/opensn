@@ -232,6 +232,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                      fluds,
                                                      angle_indices,
                                                      sweep_boundaries_,
+                                                     options_.max_mpi_message_size,
                                                      *grid_local_comm_set_);
         }
 
