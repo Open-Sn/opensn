@@ -99,13 +99,14 @@ structure. If a problem behaves strangely in parallel:
 
 - test it on one rank first
 - confirm the mesh partitions are what you expect
-- use ``AAH`` sweep type unless there is a specific reason to use ``CBC``
+- compare ``AAH`` and ``CBC`` results to isolate sweep-specific behavior
 - use only ``single`` angle aggregation on unstructured meshes
 
 .. note::
 
-   ``CBC`` does not support cyclic sweep dependencies the way ``AAH`` does. If
-   the mesh or partitioning can create sweep-graph cycles, stay with ``AAH``.
+   Host ``AAH`` and ``CBC`` both support local and inter-partition faces and can
+   lag cycle-breaking dependencies. Device ``CBC`` supports inter-partition
+   faces but does not currently break cyclic dependencies.
 
 If imported cross sections behave unexpectedly
 ==============================================

@@ -65,17 +65,29 @@ DiscreteOrdinatesKEigenAcceleration::Initialize(PowerIterationKEigenSolver& solv
 }
 
 void
-DiscreteOrdinatesKEigenAcceleration::CheckAAHSingleSweepStability() const
+DiscreteOrdinatesKEigenAcceleration::CheckSingleSweepStability() const
 {
-  // If using the AAH solver with one sweep, a few iterations need to be done
-  // to get rid of the junk in the unconverged lagged angular fluxes.  Five
-  // sweeps is a guess at how many initial sweeps are necessary.
+  const auto& sweep_type = do_problem_.GetSweepType();
   for (const auto& groupset : groupsets_)
-    if (do_problem_.GetSweepType() == "AAH" and groupset.max_iterations == 1)
+  {
+    if (groupset.max_iterations != 1)
+      continue;
+
+    // If using the AAH solver with one sweep, a few iterations need to be done
+    // to get rid of the junk in the unconverged lagged angular fluxes.  Five
+    // sweeps is a guess at how many initial sweeps are necessary.
+    if (sweep_type == "AAH")
       throw std::logic_error("The AAH solver is not stable for single-sweep methods due to "
                              "the presence of lagged angular fluxes.  Multiple sweeps are "
                              "allowed, however, the number of sweeps required to get sensible "
                              "results is not well studied and problem dependent.");
+
+    if (sweep_type == "CBC" and groupset.angle_agg->GetNumDelayedAngularDOFs().second != 0)
+      throw std::logic_error("The CBC solver is not stable for single-sweep methods due to "
+                             "the presence of lagged angular fluxes. Multiple sweeps are "
+                             "allowed, however, the number of sweeps required to get sensible "
+                             "results is not well studied and problem dependent.");
+  }
 }
 
 std::vector<uint64_t>
