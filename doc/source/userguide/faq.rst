@@ -90,6 +90,10 @@ Both ``AAH`` and ``CBC`` support time-dependent (transient) mode. Choose ``CBC``
 only if the sweep graph is known to be acyclic or has been verified to meet
 ``CBC``'s acyclicity requirements for your specific problem.
 
+For CPU curvilinear problems, both ``AAH`` and ``CBC`` are available. The same
+acyclicity requirement applies when using ``CBC``. Curvilinear GPU sweeps are
+not yet supported.
+
 Do I need to export field functions during every run?
 =====================================================
 

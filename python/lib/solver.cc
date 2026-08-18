@@ -1778,7 +1778,7 @@ WrapLBS(py::module& slv)
     :class:`pyopensn.aquad.GLProductQuadrature1DSpherical`; boundaries ``zmin`` (inner) and
     ``zmax`` (outer), and a mesh starting at r = 0 is a solid sphere whose center needs no
     boundary condition). Groupsets must use ``angle_aggregation_type`` ``'azimuthal'`` or
-    ``'single'``, ``sweep_type`` must be ``'AAH'``, and time-dependent problems and GPU
+    ``'single'``, ``sweep_type`` must be ``'AAH'`` or ``'CBC'``, and time-dependent problems and GPU
     acceleration are not supported. Integrated quantities are reported for the full revolution
     (``r-z``) or the full sphere.
 
@@ -2004,8 +2004,9 @@ WrapLBS(py::module& slv)
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
     sweep_type : str, optional
-        The sweep type to use. Curvilinear problems support only `AAH`, the default.
-        Time-dependent mode is not supported for curvilinear problems.
+        The sweep type to use: `AAH` (the default) or `CBC` in RZ geometry. 1D spherical
+        geometry supports only `AAH`. Time-dependent mode is not supported for curvilinear
+        problems.
     )"
   );
 }

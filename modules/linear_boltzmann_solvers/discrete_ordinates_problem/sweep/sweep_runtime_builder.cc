@@ -507,8 +507,13 @@ BuildCBCSPDS(
                                size_t,
                                const Vector3& omega) -> std::shared_ptr<SPDS>
                              {
-                               return std::make_shared<CBC_SPDS>(
+                               auto spds = std::make_shared<CBC_SPDS>(
                                  omega, grid, face_neighbor_info, allow_cycles_map.at(quadrature));
+                               // Task dependencies retain the original faces, including cycle
+                               // edges, so a local cycle would leave tasks unresolved.
+                               if (not spds->GetLocalSweepFAS().empty())
+                                 throw std::logic_error("CBC does not support local sweep cycles.");
+                               return spds;
                              });
 }
 
@@ -947,8 +952,16 @@ BuildSweepRuntime(const std::string& problem_name,
     BuildAAHGlobalSweepGraph(runtime);
   }
   else if (sweep_type == "CBC")
-    BuildCBCSPDS(
-      runtime, grid, face_neighbor_info, quadrature_allow_cycles_map, quadrature_aggregation_map);
+    RunSweepSetupCollectively(
+      [&]
+      {
+        BuildCBCSPDS(runtime,
+                     grid,
+                     face_neighbor_info,
+                     quadrature_allow_cycles_map,
+                     quadrature_aggregation_map);
+      },
+      "CBC");
   else
     OpenSnInvalidArgument("Unsupported sweep type \"" + sweep_type + "\"");
 
