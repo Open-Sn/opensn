@@ -98,8 +98,10 @@ def rejected(action, *expected):
 
 
 def rz_problem(grid, xs):
+    """Select the RZ sweep through rz_sweep_type (AAH by default)."""
     return DiscreteOrdinatesCurvilinearProblem(
         mesh=grid,
+        sweep_type=globals().get("rz_sweep_type", "AAH"),
         num_groups=1,
         groupsets=[
             {
@@ -236,6 +238,7 @@ if __name__ == "__main__":
     passed += rejected(
         lambda: DiscreteOrdinatesCurvilinearProblem(
             mesh=unstructured_rz_grid,
+            sweep_type=globals().get("rz_sweep_type", "AAH"),
             num_groups=1,
             groupsets=[
                 {
