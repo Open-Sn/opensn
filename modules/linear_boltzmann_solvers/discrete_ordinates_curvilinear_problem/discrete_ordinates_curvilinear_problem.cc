@@ -4,6 +4,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_spherical.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/cbc_sweep_chunk_rz.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh/mesh.h"
@@ -74,8 +76,8 @@ DiscreteOrdinatesCurvilinearProblem::CheckConfigurationErrors(
       geometry_type_ != GeometryType::ONED_SPHERICAL)
     errors.emplace_back("Invalid geometry type " + std::string(ToString(geometry_type_)) +
                         ". Only TWOD_CYLINDRICAL and ONED_SPHERICAL geometry types are supported.");
-  if (sweep_type_ != "AAH")
-    errors.emplace_back("Curvilinear geometries support only sweep_type=\"AAH\".");
+  if (geometry_type_ == GeometryType::ONED_SPHERICAL and sweep_type_ != "AAH")
+    errors.emplace_back("Spherical geometry supports only sweep_type=\"AAH\".");
   if (use_gpus_)
     errors.emplace_back("GPU acceleration is not supported for curvilinear geometries yet.");
 
@@ -195,8 +197,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   auto ComputeCellUnitIntegrals = [&sdm, &swf](const Cell& cell)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    //    const size_t cell_num_faces = cell.faces.size();
-    const size_t cell_num_nodes = cell_mapping.GetNumNodes();
+    const std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     DenseMatrix<double> IntV_shapeI_shapeJ(cell_num_nodes, cell_num_nodes, 0.0);
@@ -225,7 +226,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
                             {}};
   };
 
-  const size_t num_local_cells = grid_->GetLocalCellCount();
+  const std::size_t num_local_cells = grid_->GetLocalCellCount();
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
   for (const auto& cell : grid_->GetLocalCells())
@@ -246,7 +247,15 @@ DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
   if (geometry_type_ == GeometryType::ONED_SPHERICAL)
     return std::make_shared<AAHSweepChunkSpherical>(*this, groupset);
-  return std::make_shared<AAHSweepChunkRZ>(*this, groupset);
+  switch (ParseSweepKind(sweep_type_, GetName()))
+  {
+    case SweepKind::AAH:
+      return std::make_shared<AAHSweepChunkRZ>(*this, groupset);
+    case SweepKind::CBC:
+      return std::make_shared<CBCSweepChunkRZ>(*this, groupset);
+  }
+
+  OpenSnLogicalError("Unreachable: unknown SweepKind.");
 }
 
 } // namespace opensn
