@@ -72,18 +72,63 @@ AAHD_NonLocalBank::AAHD_NonLocalBank(const std::vector<std::size_t>& loc_sizes,
 
 AAHD_DelayedLocalBank::AAHD_DelayedLocalBank(std::size_t size, std::size_t stride_size)
 {
-  if (not LBSProblem::has_integrated_memory)
-    host_storage = crb::HostVector<double>(size * stride_size);
-  device_storage = crb::DeviceMemory<double>(size * stride_size);
+  std::size_t num_unknowns = size * stride_size;
+  device_storage = crb::DeviceMemory<double>(num_unknowns);
+  if (LBSProblem::has_integrated_memory)
+  {
+    device_old_storage = crb::DeviceMemory<double>(num_unknowns);
+  }
+  else
+  {
+    host_storage = crb::HostVector<double>(num_unknowns);
+    host_old_storage = crb::HostVector<double>(num_unknowns);
+  }
 }
 
 void
-AAHD_DelayedLocalBank::UpdateView(std::span<double>& view)
+AAHD_DelayedLocalBank::UpdateViews(std::span<double>& view, std::span<double>& old_view)
 {
   if (LBSProblem::has_integrated_memory)
+  {
     view = std::span<double>(device_storage.get(), device_storage.size());
+    old_view = std::span<double>(device_old_storage.get(), device_old_storage.size());
+  }
   else
+  {
     view = std::span<double>(host_storage);
+    old_view = std::span<double>(host_old_storage);
+  }
+}
+
+void
+AAHD_DelayedLocalBank::SetOldToNew()
+{
+  if (LBSProblem::has_integrated_memory)
+    crb::copy(device_storage, device_old_storage, device_storage.size());
+  else
+    std::memcpy(host_storage.data(), host_old_storage.data(), host_storage.size() * sizeof(double));
+}
+
+void
+AAHD_DelayedLocalBank::SetNewToOld()
+{
+  if (LBSProblem::has_integrated_memory)
+    crb::copy(device_old_storage, device_storage, device_old_storage.size());
+  else
+    std::memcpy(
+      host_old_storage.data(), host_storage.data(), host_old_storage.size() * sizeof(double));
+}
+
+void
+AAHD_DelayedLocalBank::UploadOldToDevice(crb::Stream& stream)
+{
+  crb::copy(device_storage, host_old_storage, host_old_storage.size(), 0, 0, stream);
+}
+
+double*
+AAHD_DelayedLocalBank::GetOldDeviceStorage()
+{
+  return LBSProblem::has_integrated_memory ? device_old_storage.get() : device_storage.get();
 }
 
 void
@@ -195,10 +240,7 @@ AAHD_FLUDS::AllocateDelayedLocalPsi()
 {
   delayed_local_psi_bank_ =
     AAHD_DelayedLocalBank(common_data_.GetNumDelayedLocalNodes(), num_groups_and_angles_);
-  delayed_local_psi_bank_.UpdateView(delayed_local_psi_view_);
-  delayed_local_psi_old_bank_ =
-    AAHD_DelayedLocalBank(common_data_.GetNumDelayedLocalNodes(), num_groups_and_angles_);
-  delayed_local_psi_old_bank_.UpdateView(delayed_local_psi_old_view_);
+  delayed_local_psi_bank_.UpdateViews(delayed_local_psi_view_, delayed_local_psi_old_view_);
 }
 
 void
@@ -237,22 +279,20 @@ AAHD_FLUDS::SetDelayedOutgoingPsiNewToOld()
 void
 AAHD_FLUDS::SetDelayedLocalPsiOldToNew()
 {
-  delayed_local_psi_bank_ = delayed_local_psi_old_bank_;
-  delayed_local_psi_bank_.UpdateView(delayed_local_psi_view_);
+  delayed_local_psi_bank_.SetOldToNew();
 }
 
 void
 AAHD_FLUDS::SetDelayedLocalPsiNewToOld()
 {
-  delayed_local_psi_old_bank_ = delayed_local_psi_bank_;
-  delayed_local_psi_old_bank_.UpdateView(delayed_local_psi_old_view_);
+  delayed_local_psi_bank_.SetNewToOld();
 }
 
 void
 AAHD_FLUDS::CopyDelayedPsiToDevice()
 {
   if (not LBSProblem::has_integrated_memory)
-    delayed_local_psi_old_bank_.UploadToDevice(stream_);
+    delayed_local_psi_bank_.UploadOldToDevice(stream_);
   if (not(LBSProblem::use_gpu_aware_mpi and LBSProblem::has_integrated_memory))
     nonlocal_delayed_incoming_psi_bank_.UploadToDevice(stream_);
 }
@@ -274,7 +314,7 @@ AAHD_FLUDS::GetDevicePointerSet()
     assert(pointer_set.local_psi != nullptr);
   // delayed local psi
   pointer_set.delayed_local_psi = delayed_local_psi_bank_.device_storage.get();
-  pointer_set.delayed_local_psi_old = delayed_local_psi_old_bank_.device_storage.get();
+  pointer_set.delayed_local_psi_old = delayed_local_psi_bank_.GetOldDeviceStorage();
   if (common_data_.GetNumDelayedLocalNodes() > 0)
   {
     assert(pointer_set.delayed_local_psi != nullptr);
