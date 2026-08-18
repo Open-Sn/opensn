@@ -96,33 +96,21 @@ AngleAggregation::SetupAngleSetDependencies()
   // Build angleset dependencies for RZ
   const auto* curvi_quad = dynamic_cast<const CurvilinearProductQuadrature*>(quadrature_.get());
   const auto* product_quad = dynamic_cast<const ProductQuadrature*>(quadrature_.get());
-  if (curvi_quad && product_quad && quadrature_->GetDimension() == 2 &&
+  if (curvi_quad && product_quad && quadrature_->GetDimension() == 2 and
       GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL)
   {
-    bool single_angle_sets = true;
-    for (const auto& angle_set : angle_set_groups_)
+    for (const auto& dir_set : product_quad->GetDirectionMap())
     {
-      if (angle_set->GetAngleIndices().size() != 1)
+      AngleSet* prev = nullptr;
+      for (const auto dir_id : dir_set.second)
       {
-        single_angle_sets = false;
-        break;
-      }
-    }
-    if (single_angle_sets)
-    {
-      for (const auto& dir_set : product_quad->GetDirectionMap())
-      {
-        AngleSet* prev = nullptr;
-        for (const auto dir_id : dir_set.second)
-        {
-          auto it = dir_to_angleset_.find(dir_id);
-          if (it == dir_to_angleset_.end())
-            continue;
-          AngleSet* current = it->second;
-          if (prev && prev != current)
-            following_angle_sets_map_[prev].insert(current);
-          prev = current;
-        }
+        auto it = dir_to_angleset_.find(dir_id);
+        if (it == dir_to_angleset_.end())
+          continue;
+        AngleSet* current = it->second;
+        if (prev and prev != current)
+          following_angle_sets_map_[prev].insert(current);
+        prev = current;
       }
     }
   }
