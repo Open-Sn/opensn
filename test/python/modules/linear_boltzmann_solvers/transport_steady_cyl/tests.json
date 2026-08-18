@@ -13,6 +13,19 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_1g_cbc.py",
+    "comment": "2D LinearBSolver Cylindrical Test mono-energetic - PWLD (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_2g.py",
     "comment": "2D LinearBSolver Cylindrical Test multi-group - PWLD",
     "num_procs": 4,
@@ -32,8 +45,40 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_2g_cbc.py",
+    "comment": "2D LinearBSolver Cylindrical Test multi-group - PWLD (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-valueG1=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-valueG2=",
+        "goldvalue": 0.25,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_reflective_uniform_1g.py",
     "comment": "RZ gmsh case 01: reflective 1g uniform",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "MAX",
+        "goldvalue": 0.8437473489223,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_reflective_uniform_1g_cbc.py",
+    "comment": "RZ gmsh case 01: reflective 1g uniform (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -64,6 +109,25 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_reflective_uniform_2g_cbc.py",
+    "comment": "RZ gmsh case 02: reflective 2g uniform (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "G0_MAX",
+        "goldvalue": 0.8437473489224,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "G1_MAX",
+        "goldvalue": 0.3658623519312,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_annulus_zero_solution.py",
     "comment": "RZ gmsh case 04: annulus zero-solution",
     "num_procs": 4,
@@ -77,8 +141,34 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_annulus_zero_solution_cbc.py",
+    "comment": "RZ gmsh case 04: annulus zero-solution (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "MAX",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_unstructured_reflective_uniform_1g.py",
     "comment": "RZ gmsh case 05: unstructured reflective",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "MAX",
+        "goldvalue": 0.9065113759285,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_unstructured_reflective_uniform_1g_cbc.py",
+    "comment": "RZ gmsh case 05: unstructured reflective (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -109,6 +199,25 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_cbc.py",
+    "comment": "RZ gmsh case 07: 2g scatter with vacuum boundaries (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "G0_MAX",
+        "goldvalue": 0.8429208738494,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "G1_MAX",
+        "goldvalue": 0.3655486193072,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_zero_source_vacuum_1g_struct.py",
     "comment": "RZ analytic: zero source with vacuum boundaries (structured)",
     "num_procs": 4,
@@ -122,8 +231,58 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_zero_source_vacuum_1g_struct_cbc.py",
+    "comment": "RZ analytic: zero source with vacuum boundaries (structured) (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_disk_leakage_vacuum_bcs.py",
     "comment": "RZ disk leakage: vacuum bcs compared to 3D reference",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Top leakage=",
+        "goldvalue": 36.173790857624596,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Bottom leakage=",
+        "goldvalue": 36.17379086382096,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Side leakage=",
+        "goldvalue": 39.74878117223803,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total leakage=",
+        "goldvalue": 112.0963628936836,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Leakage/Source=",
+        "goldvalue": 0.9144851226179025,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_disk_leakage_vacuum_bcs_cbc.py",
+    "comment": "RZ disk leakage: vacuum bcs compared to 3D reference (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -197,6 +356,44 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_disk_leakage_reflecting_bcs_cbc.py",
+    "weight_class": "intermediate",
+    "comment": "RZ disk leakage: reflecting z, vacuum side compared to 3D reference (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Top leakage=",
+        "goldvalue": -6.190966583965322e-15,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Bottom leakage=",
+        "goldvalue": -5.231802747012948e-16,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Side leakage=",
+        "goldvalue": 97.24863206086,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total leakage=",
+        "goldvalue": 97.24863206086,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Leakage/Source=",
+        "goldvalue": 0.7933569378956,
+        "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_disk_source_vacuum_hdpe_struct.py",
     "comment": "RZ disk fixed-source vacuum boundaries (HDPE OpenMC XS, PHI_MAX reference)",
     "num_procs": 4,
@@ -207,6 +404,46 @@
         "key": "PHI_MAX",
         "goldvalue": 0.1224546944901,
         "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_disk_source_vacuum_hdpe_struct_cbc.py",
+    "weight_class": "intermediate",
+    "comment": "RZ disk fixed-source vacuum boundaries (HDPE OpenMC XS, PHI_MAX reference) (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX",
+        "goldvalue": 0.1224546944901,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_gmsh.py",
+    "comment": "RZ gmsh 2g scatter vacuum compared to an orthogonal reference",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_gmsh_cbc.py",
+    "comment": "RZ gmsh 2g scatter vacuum compared to an orthogonal reference (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
       }
     ]
   },
@@ -224,10 +461,37 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_ucoarse_cbc.py",
+    "comment": "RZ gmsh unstructured 2g scatter vacuum (coarse) (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_2g_scatter_vacuum_umed.py",
     "comment": "RZ gmsh unstructured 2g scatter vacuum (medium)",
     "num_procs": 4,
     "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_umed_cbc.py",
+    "weight_class": "intermediate",
+    "comment": "RZ gmsh unstructured 2g scatter vacuum (medium) (CBC)",
+    "num_procs": 4,
     "checks": [
       {
         "type": "KeyValuePair",
@@ -271,6 +535,25 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_isotropic_void_cbc.py",
+    "comment": "RZ void with isotropic boundaries: phi equals the boundary angular flux (unit-sum quadrature weights) (CBC)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MIN=",
+        "goldvalue": 2.5,
+        "rel_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX=",
+        "goldvalue": 2.5,
+        "rel_tol": 1e-06
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_isotropic_scatterer.py",
     "comment": "Heterogeneous RZ pure scatterer with P1 moments and isotropic boundaries: phi equals the boundary angular flux (unit-sum quadrature weights)",
     "num_procs": 2,
@@ -286,6 +569,25 @@
         "key": "PHI_MAX=",
         "goldvalue": 1.75,
         "rel_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_isotropic_scatterer_cbc.py",
+    "comment": "Heterogeneous RZ pure scatterer with P1 moments and isotropic boundaries: phi equals the boundary angular flux (unit-sum quadrature weights) (CBC)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MIN=",
+        "goldvalue": 1.75,
+        "rel_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX=",
+        "goldvalue": 1.75,
+        "rel_tol": 1e-08
       }
     ]
   },
@@ -381,6 +683,97 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_integrated_quantities_cbc.py",
+    "comment": "RZ balance, leakage, response, power-style integrals, and point sources in physical (full-revolution) units (CBC)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_PRODUCTION_OVER_QV=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ABSORPTION_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FF_SUM_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FF_AVG_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_VOLUME_PP_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_EVALUATOR_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_POWER_NORMALIZATION_OVER_TARGET=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FISSION_RATE_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FISSION_PRODUCTION_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_SURFACE_FE_AREA_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_SURFACE_MASS_AREA_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_POINT_SOURCE_PRODUCTION_OVER_S=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_LEAKAGE_OVER_OUTFLOW=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_INVALID_BOUNDARY_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_annulus_groupsets.py",
     "comment": "RZ annulus: inner radial boundary inflow and azimuthal sweep ordering without a reflecting axis (AZIMUTHAL and SINGLE), and one vs multiple groupsets",
     "num_procs": 2,
@@ -388,6 +781,31 @@
       {"type": "KeyValuePair", "key": "RZ_ANNULUS_DEV_AZIMUTHAL", "goldvalue": 0, "abs_tol": 3e-8},
       {"type": "KeyValuePair", "key": "RZ_ANNULUS_DEV_SINGLE", "goldvalue": 0, "abs_tol": 3e-8},
       {"type": "KeyValuePair", "key": "RZ_GROUPSET_DIFF", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_annulus_groupsets_cbc.py",
+    "comment": "RZ annulus: inner radial boundary inflow and azimuthal sweep ordering without a reflecting axis (AZIMUTHAL and SINGLE), and one vs multiple groupsets (CBC)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ANNULUS_DEV_AZIMUTHAL",
+        "goldvalue": 0,
+        "abs_tol": 3e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ANNULUS_DEV_SINGLE",
+        "goldvalue": 0,
+        "abs_tol": 3e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_GROUPSET_DIFF",
+        "goldvalue": 0,
+        "abs_tol": 1e-10
+      }
     ]
   },
   {
@@ -428,8 +846,84 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_infinite_cylinder_escape_cbc.py",
+    "comment": "RZ infinite cylinder, pure absorber with a uniform source: escape fraction and radial flux profile against the independently integrated first-flight solution, and angular convergence (CBC)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ESCAPE_TAU1_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ESCAPE_TAU2_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FLUX_TAU1_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.004
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FLUX_TAU2_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.004
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ESCAPE_ANGULAR_CONVERGENCE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_2g_scatter_vacuum_ufine_cbc.py",
+    "weight_class": "intermediate",
+    "comment": "RZ gmsh unstructured 2g scatter vacuum (fine) (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PASS",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_dsa_closures.py",
     "comment": "RZ WGDSA with the default boundary closure (Marshak) and penalty length (face_side): c = 0.99 cylinder, source iteration capped at 60, which converges only with working DSA; values checked against the unaccelerated source-iteration solution (transport_2d_cyl_dsa_closures_no_dsa)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 23,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 46.64963588,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Avg-value=",
+        "goldvalue": 21.83873977,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_dsa_closures_cbc.py",
+    "comment": "RZ WGDSA with the default boundary closure (Marshak) and penalty length (face_side): c = 0.99 cylinder, source iteration capped at 60, which converges only with working DSA; values checked against the unaccelerated source-iteration solution (transport_2d_cyl_dsa_closures_no_dsa) (CBC)",
     "num_procs": 4,
     "checks": [
       {
@@ -456,6 +950,36 @@
     "file": "transport_2d_cyl_dsa_closures.py",
     "comment": "Same as transport_2d_cyl_dsa_closures with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length",
     "outfileprefix": "transport_2d_cyl_dsa_closures_dirichlet_cell",
+    "num_procs": 4,
+    "args": [
+      "boundary_closure=\"dirichlet\"",
+      "h_perp_convention=\"cell\""
+    ],
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 23,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 46.64963588,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Avg-value=",
+        "goldvalue": 21.83873977,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_dsa_closures_cbc.py",
+    "comment": "Same as transport_2d_cyl_dsa_closures with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length (CBC)",
+    "outfileprefix": "transport_2d_cyl_dsa_closures_dirichlet_cell_cbc",
     "num_procs": 4,
     "args": [
       "boundary_closure=\"dirichlet\"",
@@ -512,9 +1036,67 @@
     ]
   },
   {
+    "file": "transport_2d_cyl_dsa_closures_cbc.py",
+    "comment": "Same as transport_2d_cyl_dsa_closures with the closure R DSA boundary closure (blended on these 2.5 mfp cells; trace constant with the r weight) (CBC)",
+    "outfileprefix": "transport_2d_cyl_dsa_closures_closure_r_cbc",
+    "num_procs": 4,
+    "args": [
+      "boundary_closure=\"closure_r\""
+    ],
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 23,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 46.64963588,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Avg-value=",
+        "goldvalue": 21.83873977,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_dsa_closures.py",
     "comment": "Reference for transport_2d_cyl_dsa_closures: the same problem without WGDSA, unaccelerated source iteration run to convergence (559 iterations), independent of the DSA code",
     "outfileprefix": "transport_2d_cyl_dsa_closures_no_dsa",
+    "num_procs": 4,
+    "args": [
+      "wgdsa=\"off\""
+    ],
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 23,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 46.64963588,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Avg-value=",
+        "goldvalue": 21.83873977,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_dsa_closures_cbc.py",
+    "comment": "Reference for transport_2d_cyl_dsa_closures: the same problem without WGDSA, unaccelerated source iteration run to convergence (559 iterations), independent of the DSA code (CBC)",
+    "outfileprefix": "transport_2d_cyl_dsa_closures_no_dsa_cbc",
     "num_procs": 4,
     "args": [
       "wgdsa=\"off\""

@@ -51,7 +51,7 @@ if __name__ == "__main__":
                 "angular_quadrature": quad,
                 "angle_aggregation_type": "azimuthal",
                 "inner_linear_method": "classic_richardson",
-                "l_abs_tol": 1.0e-7,
+                "l_abs_tol": 1.0e-11,
                 "l_max_its": 5000,
             }
         ],
