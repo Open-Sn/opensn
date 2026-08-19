@@ -17,6 +17,7 @@ Program Listing for File angular_quadrature.h
    
    #include "framework/data_types/vector3.h"
    #include "framework/data_types/ndarray.h"
+   #include "framework/utils/error.h"
    #include <memory>
    #include <string>
    #include <vector>
@@ -93,6 +94,21 @@ Program Listing for File angular_quadrature.h
          scattering_order_(scattering_order),
          construction_method_(method)
      {
+       // Harmonic evaluation cost grows with the number of moments, not scattering_order itself:
+       // the moment count is (order+1) in 1D, ~(order+1)(order+2)/2 in 2D, and (order+1)^2 in 3D.
+       // Cap scattering_order per dimension so the resulting moment count stays consistent with
+       // the NUM_MOMENTS limit enforced on cross-section files (XSFile::Read), rather than
+       // applying a single dimension-independent bound.
+       unsigned int max_scattering_order = 30; // 3D: (30+1)^2 = 961 moments
+       if (dimension == 1)
+         max_scattering_order = 1000; // 1D: 1000+1 = 1001 moments
+       else if (dimension == 2)
+         max_scattering_order = 43; // 2D: (43+1)(43+2)/2 = 990 moments
+       OpenSnInvalidArgumentIf(scattering_order > max_scattering_order,
+                               "AngularQuadrature: scattering_order (" +
+                                 std::to_string(scattering_order) + ") is implausibly large for a " +
+                                 std::to_string(dimension) + "D quadrature. Values greater than " +
+                                 std::to_string(max_scattering_order) + " are rejected.");
      }
    
      /// Sets the operator construction method.

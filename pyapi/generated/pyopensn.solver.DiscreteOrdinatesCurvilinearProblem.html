@@ -696,8 +696,10 @@ problem also changes the transport mode seen by the others.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mesh</strong> (<a class="reference internal" href="pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><em>MeshContinuum</em></a>) – The spatial mesh.</p></li>
-<li><p><strong>coord_system</strong> (<em>int</em>) – Coordinate system to use. Must be set to 2 (cylindrical coordinates).</p></li>
+<li><p><strong>mesh</strong> (<a class="reference internal" href="pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><em>MeshContinuum</em></a>) – The spatial mesh. Its geometry type (cylindrical or spherical) is taken directly from
+the mesh – e.g. from the <code class="docutils literal notranslate"><span class="pre">coord_sys</span></code> argument used to build it with a mesh
+generator. There is no separate <code class="docutils literal notranslate"><span class="pre">coord_system</span></code> parameter on this class; supplying
+one is rejected as an unknown parameter.</p></li>
 <li><p><strong>num_groups</strong> (<em>int</em>) – The total number of energy groups.</p></li>
 <li><p><strong>groupsets</strong> (<em>list</em><em> of </em><em>dict</em>) – <p>A list of input parameter blocks, each block provides the iterative properties for a
 groupset. Each dictionary supports:</p>

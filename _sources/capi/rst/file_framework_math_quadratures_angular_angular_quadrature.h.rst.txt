@@ -34,6 +34,8 @@ Includes
 
 - ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
 
+- ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
+
 - ``memory``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)

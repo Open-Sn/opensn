@@ -125,21 +125,6 @@
 <span class="cp">#define OpenSnLogicalError(message)                                                                \</span>
 <span class="cp">  throw std::logic_error(std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + (message))</span>
 
-<span class="cp">#define OpenSnRecoverableInvalidArgument(condition, message)                                       \</span>
-<span class="cp">  {                                                                                                \</span>
-<span class="cp">    if (condition)                                                                                 \</span>
-<span class="cp">      throw std::RecoverableException(std::string(&quot;Recoverable Invalid Argument: &quot;),               \</span>
-<span class="cp">                                      std::string(__PRETTY_FUNCTION__) + &quot;: &quot; + #message);         \</span>
-<span class="cp">  }</span>
-
-<span class="cp">#define OpenSnRecoverableLogicalError(condition, message)                                          \</span>
-<span class="cp">  {                                                                                                \</span>
-<span class="cp">    if (condition)                                                                                 \</span>
-<span class="cp">      throw std::RecoverableException(std::string(&quot;Recoverable Logic Error: &quot;)                     \</span>
-<span class="cp">                                        std::string(__PRETTY_FUNCTION__) +                         \</span>
-<span class="cp">                                      &quot;: &quot; + #message);                                            \</span>
-<span class="cp">  }</span>
-
 <span class="cp">#define OpenSnPETScCall(expr) ::opensn::CheckPETScCall((expr), #expr, __FILE__, __LINE__)</span>
 </pre></div>
 </div>

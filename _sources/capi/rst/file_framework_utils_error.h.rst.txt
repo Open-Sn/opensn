@@ -46,6 +46,8 @@ Included By
 
 - :ref:`file_framework_math_petsc_utils_petsc_utils.h`
 
+- :ref:`file_framework_math_quadratures_angular_angular_quadrature.h`
+
 - :ref:`file_framework_object_factory.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_message_struct.h`
@@ -82,8 +84,4 @@ Defines
 - :ref:`exhale_define_error_8h_1af97c0d342fc224ac186140be55f04865`
 
 - :ref:`exhale_define_error_8h_1ab91785918e91cc6304e725a2a1bf9974`
-
-- :ref:`exhale_define_error_8h_1a17168085d44dba33be8c4a04bebd1473`
-
-- :ref:`exhale_define_error_8h_1a3e4d5719a9afedbadff14d98810593af`
 
