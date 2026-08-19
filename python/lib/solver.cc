@@ -1276,9 +1276,10 @@ WrapLBS(py::module& slv)
     Parameters
     ----------
     mesh : MeshContinuum
-        The spatial mesh.
-    coord_system : int
-        Coordinate system to use. Must be set to 2 (cylindrical coordinates).
+        The spatial mesh. Its geometry type (cylindrical or spherical) is taken directly from
+        the mesh -- e.g. from the ``coord_sys`` argument used to build it with a mesh
+        generator. There is no separate ``coord_system`` parameter on this class; supplying
+        one is rejected as an unknown parameter.
     num_groups : int
         The total number of energy groups.
     groupsets : list of dict

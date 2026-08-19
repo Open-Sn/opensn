@@ -76,6 +76,10 @@ XSFile::Read()
       OpenSnLogicalErrorIf(not(static_cast<bool>(line_stream >> n_groups)),
                            "Failed parsing NUM_GROUPS value.");
       OpenSnLogicalErrorIf(n_groups <= 0, "The number of energy groups must be positive.");
+      // Reject implausibly large groups counts before they can exhaust available memory
+      OpenSnLogicalErrorIf(n_groups > 5000,
+                           "The number of energy groups (" + std::to_string(n_groups) +
+                             ") is implausibly large. Values greater than 5000 are rejected.");
       num_groups_ = n_groups;
       continue;
     }
@@ -88,6 +92,11 @@ XSFile::Read()
       OpenSnLogicalErrorIf(not(static_cast<bool>(line_stream >> n_moments)),
                            "Failed parsing NUM_MOMENTS value.");
       OpenSnLogicalErrorIf(n_moments < 0, "The number of scattering moments must be non-negative.");
+      // ReadTransferMatrices allocates one SparseMatrix(num_groups, num_groups) per moment. Reject
+      // implausibly large counts before they can exhaust available memory.
+      OpenSnLogicalErrorIf(n_moments > 1000,
+                           "The number of scattering moments (" + std::to_string(n_moments) +
+                             ") is implausibly large. Values greater than 1000 are rejected.");
       scattering_order_ = std::max(0, n_moments - 1);
       continue;
     }
@@ -101,6 +110,9 @@ XSFile::Read()
                            "Failed parsing NUM_PRECURSORS value.");
       OpenSnLogicalErrorIf(n_prec < 0,
                            "The number of delayed neutron precursors must be non-negative.");
+      OpenSnLogicalErrorIf(n_prec > 100,
+                           "The number of delayed neutron precursors (" + std::to_string(n_prec) +
+                             ") is implausibly large. Values greater than 100 are rejected.");
       num_precursors_ = n_prec;
       precursors_.resize(num_precursors_);
       continue;

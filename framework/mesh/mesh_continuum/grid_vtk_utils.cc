@@ -13,7 +13,9 @@
 #include <vtkAppendFilter.h>
 #include <vtkXMLUnstructuredGridWriter.h>
 #include <vtkXMLPUnstructuredGridWriter.h>
+#include <filesystem>
 #include <sstream>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -600,7 +602,12 @@ WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_
     pgrid_writer->SetEndPiece(opensn::mpi_comm.size() - 1);
     pgrid_writer->SetInputData(ugrid);
 
-    pgrid_writer->Write();
+    // vtkXMLWriter::Write() is not a reliable success indicator: for some failures (e.g. an
+    // unwritable output path) VTK logs an internal pipeline error but still returns 1. Checking
+    // that the file actually landed on disk is the only way to reliably detect that case.
+    const bool write_ok = pgrid_writer->Write() and std::filesystem::exists(pvtu_file_name);
+    if (not write_ok)
+      throw std::runtime_error("WritePVTUFiles: Failed to write \"" + pvtu_file_name + "\".");
   }
   opensn::mpi_comm.barrier();
 
@@ -610,7 +617,9 @@ WritePVTUFiles(vtkNew<vtkUnstructuredGrid>& ugrid, const std::string& file_base_
   grid_writer->SetInputData(ugrid);
   grid_writer->SetFileName(location_filename.c_str());
 
-  grid_writer->Write();
+  const bool write_ok = grid_writer->Write() and std::filesystem::exists(location_filename);
+  if (not write_ok)
+    throw std::runtime_error("WritePVTUFiles: Failed to write \"" + location_filename + "\".");
 }
 
 } // namespace opensn

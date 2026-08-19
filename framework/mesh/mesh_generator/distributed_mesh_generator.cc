@@ -7,6 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
+#include "framework/utils/error.h"
 #include "framework/object_factory.h"
 #include "framework/runtime.h"
 
@@ -34,6 +35,11 @@ DistributedMeshGenerator::Execute()
     for (const auto& mesh_generator_ptr : inputs_)
       current_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(current_umesh);
     current_umesh = GenerateUnpartitionedMesh(current_umesh);
+
+    OpenSnInvalidArgumentIf(
+      not current_umesh,
+      "No mesh was generated. DistributedMeshGenerator does not build a mesh of its own; "
+      "supply a mesh-generating step via \"inputs\".");
 
     const auto cell_pids = PartitionMesh(*current_umesh, num_partitions);
     auto serial_data = DistributeSerializedMeshData(cell_pids, *current_umesh, num_partitions);

@@ -9,6 +9,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mesh/cell/cell.h"
+#include "framework/utils/error.h"
 #include <memory>
 
 namespace opensn
@@ -51,6 +52,11 @@ MeshGenerator::Execute()
 
   // Generate final umesh and convert it
   current_umesh = GenerateUnpartitionedMesh(current_umesh);
+
+  OpenSnInvalidArgumentIf(
+    not current_umesh,
+    "No mesh was generated. This mesh generator does not build a mesh of its own and no "
+    "prior mesh-generating step was supplied via \"inputs\".");
 
   std::vector<int> cell_pids;
   const auto num_partitions = mpi_comm.size();
