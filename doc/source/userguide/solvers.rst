@@ -344,8 +344,8 @@ This solver can run with GPU acceleration when the associated
 :py:class:`pyopensn.solver.DiscreteOrdinatesProblem` is configured for GPU
 sweeps. In practice, that means:
 
-* ``use_gpus=True`` on the problem,
-* ``sweep_type="AAH"``, and
+* ``use_gpus=True`` on the problem (both ``sweep_type="AAH"`` and
+  ``sweep_type="CBC"`` support GPU acceleration), and
 * a non-curvilinear, non-time-dependent problem.
 
 Example:
@@ -699,8 +699,9 @@ GPU support
 This solver can run with GPU acceleration when the associated
 :py:class:`pyopensn.solver.DiscreteOrdinatesProblem` is configured for GPU
 sweeps. The same problem-side restrictions apply as for steady-state source
-solves: GPU use requires ``use_gpus=True`` with ``sweep_type="AAH"`` on a
-supported non-curvilinear problem.
+solves: GPU use requires ``use_gpus=True`` on a supported non-curvilinear
+problem. Both ``sweep_type="AAH"`` and ``sweep_type="CBC"`` support GPU
+acceleration.
 
 Example:
 

@@ -14,7 +14,7 @@ The multigroup, adjoint transport equation is given by
    + \sigma_t^g(\vec{r},t)\psi^{\dagger,g}(\vec{r},\vec{\Omega},t) \\= 
    \sum_{g'=1}^{g'=G} 
    %\sum_{\ell=0}^{L_{\text{max}}} \sum_{m=-\ell}^{m=\ell} 
-   \sum_{\ell,m} \, \frac{2\ell+1}{4\pi}\sigma^{g\to g'}_{s,\ell}(\vec{r}) Y_{\ell,m}(\vec{\Omega},t) \phi^{\dagger,g}_{\ell,m}(\vec{r},t)
+   \sum_{\ell,m} \, \frac{2\ell+1}{4\pi}\sigma^{g\to g'}_{s,\ell}(\vec{r}) Y_{\ell,m}(\vec{\Omega},t) \phi^{\dagger,g'}_{\ell,m}(\vec{r},t)
    +
    Q^{\dagger,g}_{\text{ext}}(\vec{r},\vec{\Omega},t) \\ \qquad 1\le g \le G \,.
    \end{gathered}

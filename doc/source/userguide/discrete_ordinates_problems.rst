@@ -207,8 +207,11 @@ methods such as:
 Problem Options
 ===============
 
-The Python API exposes problem options through the constructor and
-:py:meth:`SetOptions`.
+The Python API exposes problem options through the ``options`` constructor
+argument. There is currently no general-purpose setter for changing arbitrary
+problem options after construction; individual aspects of the problem (sources,
+boundary conditions, adjoint mode, and time-dependent mode) have their own
+dedicated update methods instead.
 
 The most important options for everyday use are:
 
@@ -261,18 +264,13 @@ Restart-related options include:
 Setting options after construction
 ----------------------------------
 
-Problem options can also be changed after construction:
-
-.. code-block:: python
-
-   phys.SetOptions(
-       verbose_inner_iterations=False,
-       max_ags_iterations=200,
-       ags_tolerance=1.0e-8,
-   )
-
-This is useful for parameter studies or staged workflows where the problem
-definition is reused.
+Problem-wide ``options`` values are fixed at construction time. For parameter
+studies or staged workflows, rebuild the problem object with a new ``options``
+dictionary rather than mutating an existing one. Aspects of the problem that do
+have dedicated post-construction setters are covered elsewhere in this guide:
+:py:meth:`SetPointSources`, :py:meth:`SetVolumetricSources`,
+:py:meth:`SetBoundaryOptions`, :py:meth:`SetAdjoint`, and
+:py:meth:`SetTimeDependentMode` / :py:meth:`SetSteadyStateMode`.
 
 ``sweep_type``
 ==============
@@ -356,10 +354,9 @@ later.
 
 Current restrictions:
 
-* only ``"AAH"`` is supported for GPU use,
+* both ``"AAH"`` and ``"CBC"`` sweep types support GPU acceleration,
 * curvilinear problems do not support GPU acceleration,
-* time-dependent problems do not support GPU acceleration,
-* adjoint problems do not support GPU acceleration.
+* time-dependent problems do not support GPU acceleration.
 
 Most users should treat this as a deployment choice after the base problem is
 already running correctly on the CPU.
@@ -698,16 +695,28 @@ This is a specialized interface and is mainly useful when:
 Balance and Leakage
 ===================
 
-The Cartesian discrete-ordinates problem exposes two important diagnostics:
+The Cartesian discrete-ordinates problem and its solvers expose two important
+diagnostics:
 
-* :py:meth:`ComputeBalance`
+* :py:meth:`ComputeBalanceTable`
 * :py:meth:`ComputeLeakage`
 
-``ComputeBalance()``
---------------------
+``ComputeBalanceTable()``
+-------------------------
 
-This computes the particle balance for the problem and returns a dictionary of
-balance terms.
+This is a solver-level method, exposed on
+:py:class:`pyopensn.solver.SteadyStateSourceSolver`,
+:py:class:`pyopensn.solver.TransientSolver`,
+:py:class:`pyopensn.solver.PowerIterationKEigenSolver`, and
+:py:class:`pyopensn.solver.NonLinearKEigenSolver`. It computes the particle
+balance for the problem and returns a dictionary of balance terms.
+
+Example:
+
+.. code-block:: python
+
+   balance = solver.ComputeBalanceTable()
+   print(balance["balance"])
 
 It is useful for:
 
@@ -765,7 +774,6 @@ Several parts of the problem can be updated after construction.
 
 The most important methods are:
 
-* :py:meth:`SetOptions`
 * :py:meth:`SetPointSources`
 * :py:meth:`SetVolumetricSources`
 * :py:meth:`SetBoundaryOptions`

@@ -14,10 +14,20 @@ mapping works in transport inputs, how OpenMC and native OpenSn cross-section
 files are used, and how cross sections can be combined and inspected from
 Python.
 
+.. note::
+
+   OpenSn does not distribute cross-section data. Users must supply their own
+   multigroup cross-section libraries, either hand-written (see
+   :ref:`loading-opensn-cross-section-files` below) or generated with a
+   third-party tool such as `OpenMC <https://openmc.org>`_ or
+   `Generate_MGXS <https://github.com/ragusa/Generate_MGXS>`_, a small
+   OpenMC-based utility for quickly generating multigroup cross sections for
+   use with OpenSn. See :doc:`../tutorials/xs/introduction` for more detail.
+
 Overview
 ========
 
-The Python ``MuliGroupXS`` API has the following methods:
+The Python ``MultiGroupXS`` API has the following methods:
 
 * :py:class:`pyopensn.xs.MultiGroupXS`
 * :py:meth:`pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup`
@@ -31,7 +41,7 @@ The most common workflow is:
 1. Create or load one or more :py:class:`pyopensn.xs.MultiGroupXS` objects.
 2. Assign them to mesh block ids with ``xs_map``.
 3. Pass that mapping directly to a transport problem, or update the problem
-4. later using :py:meth:`pyopensn.solver.LBSProblem.SetXSMap`.
+   later using :py:meth:`pyopensn.solver.LBSProblem.SetXSMap`.
 
 .. note::
 
@@ -167,6 +177,8 @@ Example:
    makes them useful both for debugging file imports and for checking the
    results of operations such as :py:meth:`pyopensn.xs.MultiGroupXS.Combine` and
    :py:meth:`pyopensn.xs.MultiGroupXS.Scale`.
+
+.. _loading-opensn-cross-section-files:
 
 Loading OpenSn Cross-Section Files
 ==================================

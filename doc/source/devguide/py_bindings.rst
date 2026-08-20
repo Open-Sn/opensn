@@ -18,12 +18,14 @@ In addition to the global namespace, **OpenSn** defines several internal
 namespaces to organize related functionality:
 
 - ``aquad`` — for angular quadrature
+- ``context`` — for program context and settings, such as verbosity, color
+  output, and Caliper profiling (accessible only through the module)
 - ``fieldfunc`` — for field functions
 - ``logvol`` — for logical volumes
-- ``mesh`` — for mesh-related functionality
 - ``math`` — for math-related functionality
+- ``mesh`` — for mesh-related functionality
+- ``post`` — for post-processors
 - ``response`` — for response evaluator
-- ``settings`` — for changing program parameters (accessible only through the module)
 - ``solver`` — for solvers
 - ``source`` — for neutron point source and volumetric source
 - ``xs`` — for cross sections

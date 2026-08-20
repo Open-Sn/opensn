@@ -111,14 +111,13 @@ For steady-state and eigenvalue problems, a typical driver looks like:
 .. code-block:: python
 
    phys = opensn.DiscreteOrdinatesProblem(
-       mesh,
+       mesh=mesh,
        groupsets=[groupset],
        xs_map=xs_map,
-       angular_quadrature=quadrature,
-       boundary_options=boundary_options,
+       boundary_conditions=boundary_conditions,
    )
 
-   solver = opensn.SteadyStateSourceSolver(phys)
+   solver = opensn.SteadyStateSourceSolver(problem=phys)
    solver.Initialize()
    solver.Execute()
 
@@ -134,15 +133,15 @@ advance the state manually:
 .. code-block:: python
 
    solver = opensn.TransientSolver(
-       phys,
+       problem=phys,
        dt=1.0e-3,
-       time_end=1.0e-1,
+       stop_time=1.0e-1,
        initial_state="zero",
    )
 
    solver.Initialize()
 
-   while not solver.Finished():
+   for _ in range(num_steps):
        solver.Advance()
 
 Using ``Advance()`` is useful when the input needs to update sources,
