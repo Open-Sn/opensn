@@ -461,6 +461,119 @@ WrapLBS(py::module& slv)
     py::arg("file_base")
   );
   lbs_problem.def(
+    "WriteSurfaceAngularFluxes",
+    [](DiscreteOrdinatesProblem& self, const std::string& file_base, py::list surfaces)
+    {
+      std::vector<std::string> boundary_surfaces;
+      std::vector<std::pair<std::string, std::pair<std::string, double>>> internal_surfaces;
+      for (py::handle surface : surfaces)
+      {
+        // Group boundary and internal surfaces
+        if (py::isinstance<py::str>(surface))
+        {
+          boundary_surfaces.push_back(surface.cast<std::string>());
+        }
+        else if (py::isinstance<py::tuple>(surface))
+        {
+          const auto surface_tuple = surface.cast<py::tuple>();
+          if (surface_tuple.size() != 2)
+            throw std::invalid_argument("Surface tuple must have 2 elements (name, {axis: value})");
+
+          const auto surface_name = surface_tuple[0].cast<std::string>();
+          const auto surface_dict = surface_tuple[1].cast<py::dict>();
+          if (surface_dict.size() != 1)
+            throw std::invalid_argument("Surface dict must have exactly one key-value pair");
+
+          const auto& surface_slice = *surface_dict.begin();
+          const auto axis = surface_slice.first.cast<std::string>();
+          const auto value = surface_slice.second.cast<double>();
+          internal_surfaces.push_back({surface_name, {axis, value}});
+        }
+        else
+        {
+          throw std::invalid_argument(
+            "Each element in 'surfaces' must be either a string corresponding to a boundary ID "
+            "or a tuple defining an internal surface ('name', {'axis': value})");
+        }
+      }
+      DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
+        self, file_base, boundary_surfaces, internal_surfaces);
+    },
+    R"(
+    Write surface angular flux data to file.
+
+    Parameters
+    ----------
+    file_base: str
+        File basename.
+    surfaces: List[str, Tuple], default=[]
+        List of strings corresponding to boundary IDs or tuples prescribing an internal surface.
+        Internal surfaces are along a fixed axis and defined by a tuple ('name', {'axis': value}).
+    )",
+    py::arg("file_base"),
+    py::arg("surfaces") = py::list{}
+  );
+  lbs_problem.def(
+    "ReadSurfaceAngularFluxes",
+    [](DiscreteOrdinatesProblem& self, const std::string& file_base, py::list surfaces)
+    {
+      std::vector<std::string> surface_ids;
+      for (py::handle surface : surfaces)
+        surface_ids.push_back(surface.cast<std::string>());
+
+      const auto surface_fluxes =
+        DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(self, file_base, surface_ids);
+      py::list result;
+      for (const auto& surface_flux : surface_fluxes)
+      {
+        py::dict mapping;
+        mapping["cell_ids"] = surface_flux.mapping.cell_ids;
+        mapping["num_face_nodes"] = surface_flux.mapping.num_face_nodes;
+        mapping["cell_map"] = surface_flux.mapping.cell_map;
+        mapping["cell_stride"] = surface_flux.mapping.cell_stride;
+        mapping["faces"] = surface_flux.mapping.faces;
+        mapping["nodes_x"] = surface_flux.mapping.nodes_x;
+        mapping["nodes_y"] = surface_flux.mapping.nodes_y;
+        mapping["nodes_z"] = surface_flux.mapping.nodes_z;
+
+        py::dict data;
+        data["omega"] = surface_flux.data.omega;
+        data["mu"] = surface_flux.data.mu;
+        data["wt_d"] = surface_flux.data.wt_d;
+        data["M_ij"] = surface_flux.data.mass_matrix;
+        data["fe_shape"] = surface_flux.data.fe_shape;
+        data["psi"] = surface_flux.data.psi;
+        data["node_index"] = surface_flux.data.node_index;
+        data["dir_index"] = surface_flux.data.dir_index;
+
+        py::dict entry;
+        entry["groupset_id"] = surface_flux.groupset_id;
+        entry["surface_name"] = surface_flux.surface_name;
+        entry["mapping"] = std::move(mapping);
+        entry["data"] = std::move(data);
+        result.append(std::move(entry));
+      }
+      return result;
+    },
+    R"(
+    Read surface angular fluxes from file.
+
+    Parameters
+    ----------
+    file_base: str
+        File basename.
+    surfaces: List[str]
+        Surface names to read.
+
+    Returns
+    -------
+    List[dict]
+        Surface mapping and angular-flux data for each groupset and requested surface.
+    )",
+    py::arg("file_base"),
+    py::arg("surfaces")
+  );
+  lbs_problem.def(
     "SetPointSources",
     [](LBSProblem& self, py::kwargs& params)
     {
