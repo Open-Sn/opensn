@@ -20,8 +20,10 @@ public:
 
   void Initialize() override;
   void Execute() override;
-  /// Return the current k-eigenvalue
+  /// Return the current k-eigenvalue.
   double GetEigenvalue() const { return k_eff_; }
+  /// Return the k-eigenvalue convergence tolerance.
+  double GetKTolerance() const { return k_tolerance_; }
   /// Return the number of completed power iterations.
   unsigned int GetNumPowerIterations() const { return num_power_iterations_; }
   /// Return the total number of transport sweeps applied by all WGS solvers.

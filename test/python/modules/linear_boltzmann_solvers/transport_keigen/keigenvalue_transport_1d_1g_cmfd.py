@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     def run_cmfd():
         phys = make_problem()
-        cmfd = CMFDAcceleration(
+        cmfd_kwargs = dict(
             problem=phys,
             current_closure=get_option("cmfd_current_closure", "auto"),
             coarse_mesh=get_option("cmfd_coarse_mesh", "local_aggregation"),
@@ -113,15 +113,20 @@ if __name__ == "__main__":
             inactive_iterations=0,
             update_wgs_max_its=get_option("cmfd_update_wgs_max_its", 1),
             update_wgs_abs_tol=get_option("cmfd_update_wgs_abs_tol", 1.0e-12),
-            balance_residual_tolerance=get_option(
-                "cmfd_balance_residual_tolerance", 10.0 * k_tolerance
-            ),
             correction_max_attempts=get_option("cmfd_correction_max_attempts", 10),
             correction_min_damping=get_option("cmfd_correction_min_damping", 1.0e-4),
             negative_flux_tolerance=get_option("cmfd_negative_flux_tolerance", 1.0e-6),
             verbose=get_option("cmfd_verbose", False),
             petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi",
         )
+        # balance_residual_tolerance is left unset by default so CMFD uses its self-calibrating
+        # false-convergence check instead of a fixed threshold (this problem's fixed default,
+        # 10*k_tolerance, was tight enough that CMFD never satisfied it and always ran to
+        # cmfd_solver_max_iters -- see cmfd_balance_residual_tolerance below to force the old
+        # fixed-tolerance behavior explicitly).
+        if "cmfd_balance_residual_tolerance" in globals():
+            cmfd_kwargs["balance_residual_tolerance"] = cmfd_balance_residual_tolerance
+        cmfd = CMFDAcceleration(**cmfd_kwargs)
         solver = PowerIterationKEigenSolver(
             problem=phys,
             acceleration=cmfd,
