@@ -104,7 +104,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
       return true;
 
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    for (size_t f = 0; f < grid->GetCellFaceCount(cell_local_id); ++f)
       if (grid->CheckPointInsideCellFace(cell_local_id, f, point))
         return true;
 

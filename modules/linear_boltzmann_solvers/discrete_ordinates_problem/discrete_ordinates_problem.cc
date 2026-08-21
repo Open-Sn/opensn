@@ -984,8 +984,7 @@ DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell = grid_->GetLocalCell(cell_local_id);
-    for (int f = 0; f < cell.faces.size(); ++f)
+    for (int f = 0; f < grid_->GetCellFaceCount(cell_local_id); ++f)
       for (auto group = groupset.first_group; group <= groupset.last_group; ++group)
         cell_outflow_views_[cell_local_id].Zero(f, group);
   }

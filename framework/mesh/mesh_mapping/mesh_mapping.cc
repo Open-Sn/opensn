@@ -14,13 +14,13 @@ namespace opensn
 
 const size_t MeshMapping::invalid_face_index = std::numeric_limits<size_t>::max();
 
-MeshMapping::CoarseMapping::CoarseMapping(const Cell& coarse_cell)
-  : fine_faces{coarse_cell.faces.size()}
+MeshMapping::CoarseMapping::CoarseMapping(size_t num_faces)
+  : fine_faces{num_faces}
 {
 }
 
-MeshMapping::FineMapping::FineMapping(const Cell& fine_cell)
-  : coarse_cell_local_id(0), coarse_faces(fine_cell.faces.size(), MeshMapping::invalid_face_index)
+MeshMapping::FineMapping::FineMapping(size_t num_faces)
+  : coarse_cell_local_id(0), coarse_faces(num_faces, MeshMapping::invalid_face_index)
 {
 }
 
@@ -44,13 +44,13 @@ MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr
        ++coarse_cell_local_id)
   {
     const auto& coarse_cell = coarse_grid->GetLocalCell(coarse_cell_local_id);
-    coarse_to_fine_.emplace(coarse_cell_local_id, coarse_cell);
+    coarse_to_fine_.emplace(coarse_cell_local_id, CoarseMapping(coarse_grid->GetCellFaceCount(coarse_cell_local_id)));
   }
   for (std::uint32_t fine_cell_local_id = 0; fine_cell_local_id < fine_grid->GetLocalCellCount();
        ++fine_cell_local_id)
   {
     const auto& fine_cell = fine_grid->GetLocalCell(fine_cell_local_id);
-    fine_to_coarse_.emplace(fine_cell_local_id, fine_cell);
+    fine_to_coarse_.emplace(fine_cell_local_id, FineMapping(fine_grid->GetCellFaceCount(fine_cell_local_id)));
   }
 
   // Volumetric mapping; find the coarse cell that contains a fine cell centroid
@@ -105,10 +105,12 @@ MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr
     const auto& fine_cell = fine_grid->GetLocalCell(fine_cell_local_id);
     const auto& coarse_cell = coarse_grid->GetLocalCell(fine_mapping.coarse_cell_local_id);
     auto& coarse_mapping = coarse_to_fine_.at(fine_mapping.coarse_cell_local_id);
-    for (size_t fine_face_i = 0; fine_face_i < fine_cell.faces.size(); ++fine_face_i)
+    const size_t num_fine_faces = fine_grid->GetCellFaceCount(fine_cell_local_id);
+    for (size_t fine_face_i = 0; fine_face_i < num_fine_faces; ++fine_face_i)
     {
-      const auto& fine_face = fine_cell.faces[fine_face_i];
-      for (size_t coarse_face_i = 0; coarse_face_i < coarse_cell.faces.size(); ++coarse_face_i)
+      const auto& fine_face = fine_grid->GetCellFace(fine_cell_local_id, fine_face_i);
+      const size_t num_coarse_faces = coarse_grid->GetCellFaceCount(fine_mapping.coarse_cell_local_id);
+      for (size_t coarse_face_i = 0; coarse_face_i < num_coarse_faces; ++coarse_face_i)
       {
         if (coarse_grid->CheckPointInsideCellFace(fine_mapping.coarse_cell_local_id, coarse_face_i, fine_face.centroid))
         {
@@ -124,16 +126,17 @@ MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr
   for (const auto& [coarse_cell_local_id, coarse_mapping] : coarse_to_fine_)
   {
     const auto& coarse_cell = coarse_grid->GetLocalCell(coarse_cell_local_id);
-    for (size_t coarse_face_i = 0; coarse_face_i < coarse_cell.faces.size(); ++coarse_face_i)
+    for (size_t coarse_face_i = 0; coarse_face_i < coarse_grid->GetCellFaceCount(coarse_cell_local_id); ++coarse_face_i)
     {
       double total_fine_face_area = 0;
       const auto& fine_faces = coarse_mapping.fine_faces[coarse_face_i];
       for (const auto& [fine_cell_ptr, fine_face_i] : fine_faces)
       {
-        const auto& fine_face = fine_cell_ptr->faces[fine_face_i];
+        const auto fine_cell_local_id = fine_grid->MapCellGlobalID2LocalID(fine_cell_ptr->global_id);
+        const auto& fine_face = fine_grid->GetCellFace(fine_cell_local_id, fine_face_i);
         total_fine_face_area += fine_face.area;
       }
-      const auto& coarse_face = coarse_cell.faces[coarse_face_i];
+      const auto& coarse_face = coarse_grid->GetCellFace(coarse_cell_local_id, coarse_face_i);
       if (std::abs(total_fine_face_area - coarse_face.area) > 1.e-6)
         throw std::runtime_error("Coarse cell " + std::to_string(coarse_cell.global_id) + " face " +
                                  std::to_string(coarse_face_i) + " with centroid " +

@@ -30,12 +30,12 @@ TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
     EXPECT_EQ(coarse_cell.block_id, fine_cell.block_id);
     EXPECT_DOUBLE_EQ(coarse_cell.volume, fine_cell.volume);
     EXPECT_EQ(coarse_cell.fine_cell_ids, std::vector<uint64_t>({fine_cell.global_id}));
-    ASSERT_EQ(coarse_cell.faces.size(), fine_cell.faces.size());
+    ASSERT_EQ(coarse_cell.faces.size(), grid->GetCellFaceCount(grid->MapCellGlobalID2LocalID(fine_cell.global_id)));
 
-    for (size_t f = 0; f < fine_cell.faces.size(); ++f)
+    for (size_t f = 0; f < grid->GetCellFaceCount(grid->MapCellGlobalID2LocalID(fine_cell.global_id)); ++f)
     {
       const auto& coarse_face = coarse_cell.faces[f];
-      const auto& fine_face = fine_cell.faces[f];
+      const auto& fine_face = grid->GetCellFace(grid->MapCellGlobalID2LocalID(fine_cell.global_id), f);
       EXPECT_EQ(coarse_face.has_neighbor, fine_face.has_neighbor);
       EXPECT_EQ(coarse_face.neighbor_id, fine_face.neighbor_id);
       EXPECT_DOUBLE_EQ(coarse_face.area, fine_face.area);
@@ -172,7 +172,7 @@ TEST(CMFDCoarseMesh, LocalAggregationMergesFineFacesOnSameCoarseInterface)
 
       double expected_area = 0.0;
       for (const auto& fine_face : coarse_face.fine_faces)
-        expected_area += grid->GetGlobalCell(fine_face.cell_id).faces[fine_face.face_index].area;
+        expected_area += grid->GetCellFace(grid->MapCellGlobalID2LocalID(fine_face.cell_id), fine_face.face_index).area;
 
       EXPECT_DOUBLE_EQ(coarse_face.area, expected_area);
       found_merged_face = true;

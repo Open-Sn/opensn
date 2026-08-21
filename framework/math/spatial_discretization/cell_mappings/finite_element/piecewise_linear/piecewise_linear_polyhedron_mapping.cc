@@ -23,16 +23,17 @@ PieceWiseLinearPolyhedronMapping::PieceWiseLinearPolyhedronMapping(
     surface_quadrature_(surface_quadrature)
 {
   auto polyh_cell = ref_grid->GetLocalCell(cell_local_id);
+  const auto polyh_cell_faces = ref_grid->GetCellFaces(cell_local_id);
   // Assign cell centre
   const Vector3& vcc = polyh_cell.centroid;
 
   // For each face
-  size_t num_faces = polyh_cell.faces.size();
+  size_t num_faces = polyh_cell_faces.size();
   face_data_.reserve(num_faces);
   face_betaf_.reserve(num_faces);
   for (size_t f = 0; f < num_faces; ++f)
   {
-    const CellFace& face = polyh_cell.faces[f];
+    const auto& face = polyh_cell_faces[f];
     auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, f);
     FEface_data face_f_data;
 

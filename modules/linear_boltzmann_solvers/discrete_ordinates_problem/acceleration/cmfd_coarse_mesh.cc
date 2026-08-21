@@ -52,7 +52,8 @@ BuildGhostFineToCoarseMap(const Mesh& grid, const CMFDCoarseMesh& coarse_mesh)
   std::map<int, std::set<uint64_t>> pid_request_sets;
   for (const auto& cell : grid.GetLocalCells())
   {
-    for (const auto& face : cell.faces)
+    const auto faces = grid.GetCellFaces(grid.MapCellGlobalID2LocalID(cell.global_id));
+    for (const auto& face : faces)
       if (face.has_neighbor and not grid.IsCellLocal(face.neighbor_id))
       {
         const auto& neighbor_cell = grid.GetGlobalCell(face.neighbor_id);
@@ -498,9 +499,11 @@ CMFDCoarseMesh::BuildExteriorFaces(const Mesh& grid)
     for (const auto fine_cell_id : coarse_cell.fine_cell_ids)
     {
       const auto& fine_cell = grid.GetGlobalCell(fine_cell_id);
-      for (std::size_t f = 0; f < fine_cell.faces.size(); ++f)
+      const auto fine_cell_local_id = grid.MapCellGlobalID2LocalID(fine_cell.global_id);
+      const auto fine_cell_faces = grid.GetCellFaces(fine_cell_local_id);
+      for (std::size_t f = 0; f < fine_cell_faces.size(); ++f)
       {
-        const auto& fine_face = fine_cell.faces[f];
+        const auto& fine_face = fine_cell_faces[f];
         if (fine_face.has_neighbor and fine_cell_set.count(fine_face.neighbor_id) > 0)
           continue;
 
@@ -578,9 +581,10 @@ CMFDCoarseMesh::BuildIdentity(const Mesh& grid)
     coarse_cell.centroid = fine_cell.centroid;
     coarse_cell.volume = fine_cell.volume;
     coarse_cell.fine_cell_ids = {fine_cell.global_id};
-    coarse_cell.faces.reserve(fine_cell.faces.size());
+    coarse_cell.faces.reserve(grid.GetCellFaceCount(fine_cell_local_id));
 
-    for (const auto& fine_face : fine_cell.faces)
+    const auto faces = grid.GetCellFaces(fine_cell_local_id);
+    for (const auto& fine_face : faces)
     {
       CMFDCoarseFace coarse_face;
       coarse_face.has_neighbor = fine_face.has_neighbor;
@@ -655,7 +659,8 @@ CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
       coarse_cell.volume += fine_cell_volume;
       coarse_cell.centroid += fine_cell.centroid * fine_cell_volume;
 
-      for (const auto& face : fine_cell.faces)
+      const auto faces = grid.GetCellFaces(fine_cell_local_id);
+      for (const auto& face : faces)
       {
         if (not face.has_neighbor or not grid.IsCellLocal(face.neighbor_id))
           continue;

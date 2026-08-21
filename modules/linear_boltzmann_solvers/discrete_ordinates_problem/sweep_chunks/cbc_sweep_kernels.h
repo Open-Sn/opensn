@@ -46,6 +46,7 @@ inline void
 PrepareNonlocalOutgoingPsi(CBCSweepWorkspace& workspace,
                            CBC_FLUDS& fluds,
                            const Cell& cell,
+                           std::span<CellFace> cell_faces,
                            std::uint32_t cell_local_id,
                            const CellMapping& cell_mapping,
                            const CellLBSView& cell_transport_view,
@@ -55,16 +56,16 @@ PrepareNonlocalOutgoingPsi(CBCSweepWorkspace& workspace,
   auto& nonlocal_outgoing_psi = workspace.nonlocal_outgoing_psi;
   auto& outgoing_psi_by_face = workspace.outgoing_psi_by_face;
   const auto& common_data = fluds.GetCommonData();
-  nonlocal_outgoing_psi.reserve(cell.faces.size());
-  outgoing_psi_by_face.assign(cell.faces.size(), nullptr);
+  nonlocal_outgoing_psi.reserve(cell_faces.size());
+  outgoing_psi_by_face.assign(cell_faces.size(), nullptr);
   workspace.num_nonlocal_outgoing_psi = 0;
 
-  for (std::size_t f = 0; f < cell.faces.size(); ++f)
+  for (std::size_t f = 0; f < cell_faces.size(); ++f)
   {
     if (face_orientations[f] != FaceOrientation::OUTGOING)
       continue;
 
-    const auto& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     if ((not face.has_neighbor) or cell_transport_view.IsFaceLocal(f))
       continue;
 
@@ -113,10 +114,11 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
   const auto group_angle_stride = gs_size * num_angles_in_as;
   const auto cell_local_id = sweep_chunk.cell_local_id_;
   const auto& cell = sweep_chunk.grid_->GetLocalCell(cell_local_id);
+  const auto cell_faces = sweep_chunk.grid_->GetCellFaces(cell_local_id);
   const auto& cell_mapping = sweep_chunk.discretization_.GetLocalCellMapping(cell_local_id);
   const auto& cell_transport_view = sweep_chunk.cell_transport_views_[cell_local_id];
   auto& cell_outflow_view = sweep_chunk.cell_outflow_views_[cell_local_id];
-  const std::size_t cell_num_faces = cell.faces.size();
+  const std::size_t cell_num_faces = cell_faces.size();
   const std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
   const auto& unit_mats = sweep_chunk.unit_cell_matrices_[cell_local_id];
   auto& fluds = *sweep_chunk.fluds_;
@@ -160,6 +162,7 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
   PrepareNonlocalOutgoingPsi(sweep_chunk.workspace_,
                              fluds,
                              cell,
+                             cell_faces,
                              cell_local_id,
                              cell_mapping,
                              cell_transport_view,
@@ -181,14 +184,14 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         Amat(i, j) = omega.Dot(G(i, j));
 
     for (std::size_t f = 0; f < cell_num_faces; ++f)
-      face_mu_values[f] = omega.Dot(cell.faces[f].normal);
+      face_mu_values[f] = omega.Dot(cell_faces[f].normal);
 
     for (std::size_t f = 0; f < cell_num_faces; ++f)
     {
       if (face_orientations[f] != FaceOrientation::INCOMING)
         continue;
 
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       const bool is_local_face = cell_transport_view.IsFaceLocal(f);
       const bool is_boundary_face = not face.has_neighbor;
       const auto* face_nodal_mapping =
@@ -330,7 +333,7 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
       if (face_orientations[f] != FaceOrientation::OUTGOING)
         continue;
 
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       const bool is_local_face = cell_transport_view.IsFaceLocal(f);
       const bool is_boundary_face = not face.has_neighbor;
       const bool is_reflecting_boundary_face =

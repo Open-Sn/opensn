@@ -27,6 +27,7 @@ protected:
     std::map<std::pair<int, uint64_t>, Cell> cells;
     std::map<uint64_t, std::vector<std::uint64_t>> cell_connect;
     std::map<uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+    std::map<uint64_t, std::vector<CellFace>> cell_faces;
     std::map<uint64_t, Vector3> vertices;
     std::map<uint64_t, std::string> boundary_id_map;
     size_t num_global_vertices{};
@@ -57,7 +58,10 @@ public:
 protected:
   static std::shared_ptr<Mesh> SetupLocalMesh(SplitMeshInfo& mesh_info);
 
-  static void SerializeCell(const Cell& cell, const std::vector<std::vector<std::uint64_t>>& cell_face_vids, ByteArray& serial_buffer);
+  static void SerializeCell(const Cell& cell,
+                            uint64_t cell_global_id,
+                            const UnpartitionedMesh& umesh,
+                            ByteArray& serial_buffer);
 };
 
 } // namespace opensn

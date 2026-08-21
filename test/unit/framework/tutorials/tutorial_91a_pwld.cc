@@ -158,7 +158,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
     cell_Gmatrices.push_back(std::move(IntV_shapeI_gradshapeJ));
     cell_Mmatrices.push_back(std::move(IntV_shapeI_shapeJ));
 
-    const size_t num_faces = cell.faces.size();
+    const size_t num_faces = grid->GetCellFaceCount(cell_local_id);
     std::vector<DenseMatrix<double>> faces_Mmatrices;
     for (size_t f = 0; f < num_faces; ++f)
     {
@@ -208,7 +208,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
     const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
     const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const size_t num_faces = cell.faces.size();
+    const size_t num_faces = grid->GetCellFaceCount(cell_local_id);
 
     const std::vector<double> zero_vector(num_groups, 0.0);
 
@@ -226,7 +226,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
     // Surface integrals
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = grid->GetCellFace(cell_local_id, f);
       const double mu = omega.Dot(face.normal);
 
       if (mu < 0.0)

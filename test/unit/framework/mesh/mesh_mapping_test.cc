@@ -37,15 +37,15 @@ TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> c
   {
     const auto& fine_cell = fine_grid->GetLocalCell(flid);
     const auto& fine_mapping = mesh_mapping.GetFineMapping(flid);
-    for (std::size_t fine_face_i = 0; fine_face_i < fine_cell.faces.size(); ++fine_face_i)
+    for (std::size_t fine_face_i = 0; fine_face_i < fine_grid->GetCellFaceCount(flid); ++fine_face_i)
     {
-      const auto& fine_face = fine_cell.faces[fine_face_i];
+      const auto& fine_face = fine_grid->GetCellFace(flid, fine_face_i);
       bool found_mapping = false;
       for (std::size_t clid = 0; clid < coarse_grid->GetLocalCellCount(); ++clid)
       {
         const auto& coarse_cell = coarse_grid->GetLocalCell(clid);
         const auto& coarse_mapping = mesh_mapping.GetCoarseMapping(clid);
-        for (std::size_t coarse_face_i = 0; coarse_face_i < coarse_cell.faces.size();
+        for (std::size_t coarse_face_i = 0; coarse_face_i < coarse_grid->GetCellFaceCount(clid);
              ++coarse_face_i)
         {
           const auto in_fine_mapping = (fine_mapping.coarse_cell_local_id == clid) &&

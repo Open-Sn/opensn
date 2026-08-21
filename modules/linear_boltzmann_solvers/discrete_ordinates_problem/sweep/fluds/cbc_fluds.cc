@@ -36,7 +36,7 @@ CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
                                       num_angles_in_gs_quadrature / num_groups_) *
                                      num_groups_and_angles_;
 
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    for (std::size_t f = 0; f < grid.GetCellFaceCount(cell_local_id); ++f)
     {
       const auto slot = common_data_.IncomingFaceSlot(cell_local_id, static_cast<unsigned int>(f));
       if (slot == CBC_FLUDSCommonData::INVALID_FACE_SLOT)
