@@ -73,7 +73,8 @@ BuildGhostFineToCoarseMap(const Mesh& grid, const CMFDCoarseMesh& coarse_mesh)
   std::map<int, std::set<uint64_t>> pid_request_sets;
   for (const auto& cell : grid.GetLocalCells())
   {
-    for (const auto& face : cell.faces)
+    const auto faces = grid.GetCellFaces(grid.MapCellGlobalID2LocalID(cell.global_id));
+    for (const auto& face : faces)
       if (face.has_neighbor and not grid.IsCellLocal(face.neighbor_id))
       {
         const auto& neighbor_cell = grid.GetGlobalCell(face.neighbor_id);
@@ -195,16 +196,17 @@ BuildGlobalFineCellInfoMap(const Mesh& grid)
     local_keys.push_back(cell.global_id);
     local_keys.push_back(static_cast<uint64_t>(cell.partition_id));
     local_keys.push_back(static_cast<uint64_t>(cell.block_id));
-    local_keys.push_back(static_cast<uint64_t>(cell.faces.size()));
+    local_keys.push_back(static_cast<uint64_t>(grid.GetCellFaceCount(cell_local_id)));
 
     local_values.push_back(cell.centroid.x);
     local_values.push_back(cell.centroid.y);
     local_values.push_back(cell.centroid.z);
     local_values.push_back(cell.volume);
 
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
+    for (std::size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       local_keys.push_back(static_cast<uint64_t>(f));
       local_keys.push_back(face.has_neighbor ? 1 : 0);
       local_keys.push_back(face.neighbor_id);
@@ -322,9 +324,11 @@ CMFDCoarseMesh::BuildExteriorFaces(const Mesh& grid)
     for (const auto fine_cell_id : coarse_cell.fine_cell_ids)
     {
       const auto& fine_cell = grid.GetGlobalCell(fine_cell_id);
-      for (std::size_t f = 0; f < fine_cell.faces.size(); ++f)
+      const auto fine_cell_local_id = grid.MapCellGlobalID2LocalID(fine_cell.global_id);
+      const auto fine_cell_faces = grid.GetCellFaces(fine_cell_local_id);
+      for (std::size_t f = 0; f < fine_cell_faces.size(); ++f)
       {
-        const auto& fine_face = fine_cell.faces[f];
+        const auto& fine_face = fine_cell_faces[f];
         if (fine_face.has_neighbor and fine_cell_set.count(fine_face.neighbor_id) > 0)
           continue;
 
@@ -402,9 +406,10 @@ CMFDCoarseMesh::BuildIdentity(const Mesh& grid)
     coarse_cell.centroid = fine_cell.centroid;
     coarse_cell.volume = fine_cell.volume;
     coarse_cell.fine_cell_ids = {fine_cell.global_id};
-    coarse_cell.faces.reserve(fine_cell.faces.size());
+    coarse_cell.faces.reserve(grid.GetCellFaceCount(fine_cell_local_id));
 
-    for (const auto& fine_face : fine_cell.faces)
+    const auto faces = grid.GetCellFaces(fine_cell_local_id);
+    for (const auto& fine_face : faces)
     {
       CMFDCoarseFace coarse_face;
       coarse_face.has_neighbor = fine_face.has_neighbor;
@@ -479,7 +484,8 @@ CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
       coarse_cell.volume += fine_cell_volume;
       coarse_cell.centroid += fine_cell.centroid * fine_cell_volume;
 
-      for (const auto& face : fine_cell.faces)
+      const auto faces = grid.GetCellFaces(fine_cell_local_id);
+      for (const auto& face : faces)
       {
         if (not face.has_neighbor or not grid.IsCellLocal(face.neighbor_id))
           continue;
@@ -535,7 +541,8 @@ CMFDCoarseMesh::BuildGlobalAggregation(const Mesh& grid,
   {
     block_cells[cell.block_id].push_back(cell_id);
     auto& neighbors = graph[cell_id];
-    for (const auto& face : cell.faces)
+    const auto faces = grid.GetCellFaces(grid.MapCellGlobalID2LocalID(cell.global_id));
+    for (const auto& face : faces)
     {
       if (not face.has_neighbor)
         continue;
@@ -660,8 +667,11 @@ CMFDCoarseMesh::BuildGlobalAggregation(const Mesh& grid,
     for (const auto fine_cell_id : aggregate.fine_cell_ids)
     {
       const auto& fine_cell = fine_cell_info.at(fine_cell_id);
-      for (const auto& fine_face : fine_cell.faces)
+      const auto cell_local_id = grid.MapCellGlobalID2LocalID(fine_cell.global_id);
+      const auto fine_cell_faces = grid.GetCellFaces(cell_local_id);
+      for (size_t f_idx = 0; f_idx < fine_cell_faces.size(); ++f_idx)
       {
+        const auto& fine_face = fine_cell_faces[f_idx];
         const uint64_t neighbor_coarse_id =
           fine_face.has_neighbor ? fine_to_coarse.at(fine_face.neighbor_id) : fine_face.neighbor_id;
         if (fine_face.has_neighbor and neighbor_coarse_id == aggregate.global_id)
@@ -682,9 +692,10 @@ CMFDCoarseMesh::BuildGlobalAggregation(const Mesh& grid,
         coarse_face.fine_faces.push_back(
           {fine_cell.global_id,
            fine_cell.partition_id,
-           fine_face.face_index,
+           f_idx,
            fine_face.has_neighbor ? std::optional<uint64_t>(fine_face.neighbor_id) : std::nullopt,
-           fine_face.neighbor_partition_id});
+           fine_face.has_neighbor ? grid.GetGlobalCell(fine_face.neighbor_id).partition_id
+                                  : fine_cell.partition_id});
 
         if (fine_face.has_neighbor)
         {

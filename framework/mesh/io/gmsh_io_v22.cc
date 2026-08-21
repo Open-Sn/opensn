@@ -218,6 +218,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   std::vector<std::vector<std::uint64_t>> bnd_cell_connect;
   std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
   cell_face_connect.reserve(num_elems);
+  std::vector<CellFace> mesh_faces;
 
   for (int n = 0; n < num_elems; n++)
   {
@@ -291,6 +292,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     auto cell_vertex_ids = ReadNodes(num_cell_nodes);
 
     std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+    std::vector<CellFace> cell_faces;
 
     // Populate faces
     if (element_type == 1) // 2-node edge
@@ -301,8 +303,8 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       std::vector<std::uint64_t> f0_vids = {cell_vertex_ids.at(0)};
       std::vector<std::uint64_t> f1_vids = {cell_vertex_ids.at(1)};
 
-      cell.faces.push_back(face0);
-      cell.faces.push_back(face1);
+      cell_faces.push_back(face0);
+      cell_faces.push_back(face1);
       cell_face_vertex_ids.push_back(std::move(f0_vids));
       cell_face_vertex_ids.push_back(std::move(f1_vids));
     }
@@ -316,7 +318,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
         std::vector<std::uint64_t> f_vids = {cell_vertex_ids[e], cell_vertex_ids[ep1]};
 
-        cell.faces.push_back(std::move(face));
+        cell_faces.emplace_back(face);
         cell_face_vertex_ids.push_back(std::move(f_vids));
       }
     }
@@ -332,7 +334,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       };
 
       for (auto& lw_face : lw_faces)
-        cell.faces.push_back(lw_face);
+        cell_faces.push_back(lw_face);
     }
     else if (element_type == 5) // 8-node hexahedron
     {
@@ -348,7 +350,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       };
 
       for (auto& lw_face : lw_faces)
-        cell.faces.push_back(lw_face);
+        cell_faces.push_back(lw_face);
     }
     else
       throw std::runtime_error(fname + ": Unsupported cell type");
@@ -360,6 +362,8 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     }
     else
     {
+      for (auto& f : cell_faces)
+        mesh_faces.push_back(f);
       raw_cells.emplace_back(cell);
       cell_connect.emplace_back(cell_vertex_ids);
       cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
@@ -382,7 +386,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   mesh->SetDimension(dimension);
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(raw_cells), cell_connect);
-  mesh->SetCellFaces(cell_face_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
@@ -401,9 +405,10 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   size_t cell_idx = 0;
   for (auto& cell : mesh->GetCells())
   {
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = mesh->GetCellFaces(cell_idx);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      auto& face = cell.faces[f];
+      auto& face = cell_faces[f];
       if (not face.has_neighbor)
       {
         const auto& face_vids = cell_face_connect[cell_idx][f];

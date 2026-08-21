@@ -162,7 +162,13 @@ public:
                 std::vector<Cell>&& ghost_cells,
                 const std::map<std::uint64_t, std::vector<uint64_t>>& cell_connectivity);
 
-  void SetCellFaces(const std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity);
+  // void SetCellFaces(
+  //   std::vector<CellFace>&& faces,
+  //   const std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity);
+
+  void SetCellFaces(
+    const std::map<std::uint64_t, std::vector<CellFace>>& cell_faces,
+    const std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity);
 
   /// Returns a reference to a cell given its global cell index.
   Cell& GetGlobalCell(uint64_t cell_global_index);
@@ -296,6 +302,16 @@ public:
 
   std::span<const uint64_t> GetCellConnectivity(std::uint32_t cell_local_id) const;
 
+  /// Return number of faces for a given cell
+  std::uint64_t GetCellFaceCount(std::uint32_t cell_local_id) const;
+
+  const CellFace& GetCellFace(std::uint32_t cell_local_id, std::uint32_t face_idx) const;
+  CellFace& GetCellFace(std::uint32_t cell_local_id, std::uint32_t face_idx);
+
+  /// Get cell faces for a given cell
+  std::span<const CellFace> GetCellFaces(std::uint32_t cell_local_id) const;
+  std::span<CellFace> GetCellFaces(std::uint32_t cell_local_id);
+
   std::uint64_t GetCellFaceVertexCount(std::uint32_t cell_local_id, std::uint32_t face_idx) const;
 
   std::span<const uint64_t> GetCellFaceConnectivity(std::uint32_t cell_local_id,
@@ -335,8 +351,10 @@ private:
   /// Cell connectivity: [`connect_ofst_[i]` .. `connect_ofst_[i+1]`]
   std::vector<uint64_t> connect_ids_;
 
-  /// Offset into `face_vertex_ofst_`
+  /// Offset into `face_vertex_ofst_` and `faces_`
   std::vector<std::size_t> face_connect_ofst_;
+  /// Cell faces
+  std::vector<CellFace> faces_;
   /// Offset into `face_vertex_ids_`
   std::vector<std::size_t> face_vertex_ofst_;
   /// Face vertices

@@ -72,7 +72,7 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<Mesh> grid,
     // Build polyhedron faces
     std::vector<vtkIdType> faces_vids;
 
-    size_t num_faces = cell.faces.size();
+    size_t num_faces = grid->GetCellFaceCount(cell_local_id);
     for (std::uint32_t face_idx = 0; face_idx < num_faces; ++face_idx)
     {
       auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
@@ -198,7 +198,7 @@ UploadCellGeometryContinuous(std::shared_ptr<Mesh> grid,
     {
       case CellType::POLYHEDRON:
       {
-        size_t num_faces = cell.faces.size();
+        size_t num_faces = grid->GetCellFaceCount(cell_local_id);
         for (std::uint32_t face_idx = 0; face_idx < num_faces; ++face_idx)
         {
           auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);

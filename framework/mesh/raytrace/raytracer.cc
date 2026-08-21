@@ -145,9 +145,10 @@ RayTracer::TraceRay(std::uint32_t cell_local_id,
     for (auto vi : cell_vertex_ids)
       outstr << grid->GlobalVertex(vi).PrintStr() << "\n";
 
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       outstr << "Face with centroid: " << face.centroid.PrintStr() << " ";
       outstr << "n=" << face.normal.PrintStr() << "\n";
       auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, f);
@@ -162,15 +163,15 @@ RayTracer::TraceRay(std::uint32_t cell_local_id,
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
     }
 
-    for (const auto& face : cell.faces)
+    for (const auto& face : cell_faces)
     {
       const auto& v = face.centroid;
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
     }
 
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       outstr << "f ";
       auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, f);
       for (auto vid : face_vertex_ids)
@@ -206,7 +207,8 @@ RayTracer::TraceIncidentRay(std::uint32_t cell_local_id,
   Vector3 I;
 
   size_t f = 0;
-  for (const auto& face : cell.faces)
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
+  for (const auto& face : cell_faces)
   {
     if (face.normal.Dot(omega_i) > 0.0)
     {
@@ -288,10 +290,11 @@ RayTracer::TraceSlab(std::uint32_t cell_local_id,
 {
   const auto& grid = Grid();
   const auto& cell = grid->GetLocalCell(cell_local_id);
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
   Vector3 intersection_point;
   std::pair<double, double> weights;
 
-  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces[0].normal));
+  const double fabs_mu = std::fabs(omega_i.Dot(cell_faces[0].normal));
 
   double d_extend = (fabs_mu < 1.0e-15) ? 1.0e15 : extension_distance_ / fabs_mu;
 
@@ -305,7 +308,7 @@ RayTracer::TraceSlab(std::uint32_t cell_local_id,
     Vector3 face_point = grid->GlobalVertex(fpi);
 
     bool intersects = CheckPlaneLineIntersect(
-      cell.faces[f].normal, face_point, pos_i, pos_f_line, intersection_point, &weights);
+      cell_faces[f].normal, face_point, pos_i, pos_f_line, intersection_point, &weights);
 
     double D = weights.first * d_extend;
 
@@ -315,7 +318,7 @@ RayTracer::TraceSlab(std::uint32_t cell_local_id,
       oi.pos_f = intersection_point;
 
       oi.destination_face_index = f;
-      oi.destination_face_neighbor = cell.faces[f].neighbor_id;
+      oi.destination_face_neighbor = cell_faces[f].neighbor_id;
       intersection_found = true;
       break;
     }
@@ -334,9 +337,10 @@ RayTracer::TracePolygon(std::uint32_t cell_local_id,
 {
   const auto& grid = Grid();
   const auto& cell = grid->GetLocalCell(cell_local_id);
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
   Vector3 ip; // intersection point
 
-  const double fabs_mu = std::fabs(omega_i.Dot(cell.faces[0].normal));
+  const double fabs_mu = std::fabs(omega_i.Dot(cell_faces[0].normal));
 
   double d_extend = (fabs_mu < 1.0e-15) ? 1.0e15 : extension_distance_ / fabs_mu;
 
@@ -344,11 +348,11 @@ RayTracer::TracePolygon(std::uint32_t cell_local_id,
 
   std::vector<RayTracerOutputInformation> face_intersections;
 
-  size_t num_faces = cell.faces.size();
+  size_t num_faces = cell_faces.size();
   face_intersections.reserve(num_faces);
   for (size_t f = 0; f < num_faces; ++f)
   {
-    if (cell.faces[f].normal.Dot(omega_i) < 0.0)
+    if (cell_faces[f].normal.Dot(omega_i) < 0.0)
       continue;
 
     RayTracerOutputInformation face_oi;
@@ -360,7 +364,7 @@ RayTracer::TracePolygon(std::uint32_t cell_local_id,
     const Vector3& face_point_f = grid->GlobalVertex(fpf);
 
     bool intersects = CheckLineIntersectStrip(
-      face_point_i, face_point_f, cell.faces[f].normal, pos_i, pos_f_line, ip);
+      face_point_i, face_point_f, cell_faces[f].normal, pos_i, pos_f_line, ip);
 
     double D = (ip - pos_i).Norm();
 
@@ -370,7 +374,7 @@ RayTracer::TracePolygon(std::uint32_t cell_local_id,
       face_oi.pos_f = ip;
 
       face_oi.destination_face_index = f;
-      face_oi.destination_face_neighbor = cell.faces[f].neighbor_id;
+      face_oi.destination_face_neighbor = cell_faces[f].neighbor_id;
       intersection_found = true;
       face_intersections.emplace_back(std::move(face_oi));
       if (not perform_concavity_checks_)
@@ -425,7 +429,8 @@ RayTracer::TracePolyhedron(std::uint32_t cell_local_id,
 {
   const auto& grid = Grid();
   const auto& cell = grid->GetLocalCell(cell_local_id);
-  const size_t num_faces = cell.faces.size();
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
+  const size_t num_faces = cell_faces.size();
 
   if (not perform_concavity_checks_)
   {
@@ -433,7 +438,7 @@ RayTracer::TracePolyhedron(std::uint32_t cell_local_id,
     Vector3 ip = pos_i;
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, f);
       const size_t num_sides = face_vertex_ids.size();
       const auto& v2 = face.centroid;
@@ -465,7 +470,7 @@ RayTracer::TracePolyhedron(std::uint32_t cell_local_id,
   triangle_intersections.reserve(num_faces * 4);
   for (size_t f = 0; f < num_faces; ++f)
   {
-    const auto& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     if (face.normal.Dot(omega_i) < 0.0)
       continue;
     auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, f);
@@ -739,11 +744,12 @@ PopulateRaySegmentLengths(const std::shared_ptr<Mesh> grid,
   // Since the triangles all share an edge we only determine
   // segment lengths from the strip defined by v0 to vc.
   const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell.global_id);
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
   if (cell.GetType() == CellType::POLYGON)
   {
-    for (size_t f = 0; f < cell.faces.size(); ++f) // edges
+    for (size_t f = 0; f < cell_faces.size(); ++f) // edges
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, f);
       const auto& v0 = grid->GlobalVertex(face_vertex_ids[0]);
       const auto& vc = cell.centroid;
@@ -767,9 +773,9 @@ PopulateRaySegmentLengths(const std::shared_ptr<Mesh> grid,
   {
     const auto& vcc = cell.centroid;
 
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       const auto& vfc = face.centroid;
       auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, f);
 

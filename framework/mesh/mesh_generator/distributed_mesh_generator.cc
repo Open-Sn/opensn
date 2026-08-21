@@ -171,10 +171,11 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
       for (const auto vid : cell_vertex_ids)
         serial_data.Write(vid);
 
-      serial_data.Write(cell.faces.size());
-      for (size_t f = 0; f < cell.faces.size(); ++f)
+      const auto num_faces = umesh.GetCellFaceCount(cell_global_id);
+      serial_data.Write(num_faces);
+      for (std::size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = umesh.GetCellFace(cell_global_id, f);
         const auto& face_vids = umesh.GetCellFaceConnectivity()[cell_global_id][f];
         serial_data.Write(face_vids.size());
         for (const auto vid : face_vids)
@@ -258,6 +259,8 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     const auto num_faces = serial_data.Read<size_t>();
     std::vector<std::vector<std::uint64_t>> cell_faces_vids;
     cell_faces_vids.reserve(num_faces);
+    std::vector<CellFace> cell_faces;
+    cell_faces.reserve(num_faces);
     for (size_t f = 0; f < num_faces; ++f)
     {
       CellFace face;
@@ -271,9 +274,10 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
       face.has_neighbor = serial_data.Read<bool>();
       face.neighbor_id = serial_data.Read<uint64_t>();
 
-      cell.faces.push_back(std::move(face));
+      cell_faces.emplace_back(face);
     }
     info_block.cell_face_connect.emplace(cell_gid, cell_faces_vids);
+    info_block.cell_faces.emplace(cell_gid, std::move(cell_faces));
     info_block.cells.insert(std::make_pair(std::make_pair(cell_pid, cell_gid), cell));
   }
 
@@ -316,7 +320,7 @@ DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
   }
   grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), mesh_info.cell_connect);
   if (!mesh_info.cell_face_connect.empty())
-    grid_ptr->SetCellFaces(mesh_info.cell_face_connect);
+    grid_ptr->SetCellFaces(mesh_info.cell_faces, mesh_info.cell_face_connect);
 
   grid_ptr->SetDimension(mesh_info.dimension);
   grid_ptr->SetCoordinateSystem(mesh_info.coord_sys);

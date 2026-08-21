@@ -479,7 +479,7 @@ AssignBoundaryIDsFromOpenFOAMPatches(std::shared_ptr<UnpartitionedMesh> mesh,
         throw std::logic_error(fname + ": Missing owner face location for boundary face " +
                                std::to_string(f) + " in patch '" + patch.name + "'.");
 
-      auto& face = raw_cells.at(loc.cell_id).faces.at(loc.local_face_id);
+      auto& face = mesh->GetCellFace(loc.cell_id, loc.local_face_id);
 
       // Adjust this to your final field name
       face.neighbor_id = bid;
@@ -820,6 +820,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
 
   std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
   cell_face_connect.reserve(ncells);
+  std::vector<CellFace> mesh_faces;
 
   std::vector<FaceLocation> owner_face_location(n_faces);
 
@@ -829,6 +830,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     cell.block_id = block_map[c];
 
     std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+    size_t local_face_id = 0;
     for (auto code : cell_faces[c])
     {
       const int64_t f = (code >= 0) ? code : (-code - 1);
@@ -850,14 +852,15 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
           lwf_vertex_ids.push_back(static_cast<uint64_t>(*it));
       }
 
-      const auto local_face_id = cell.faces.size();
-      cell.faces.emplace_back(lwf);
+      mesh_faces.emplace_back(lwf);
       cell_face_vertex_ids.emplace_back(std::move(lwf_vertex_ids));
 
       // Keep the owner-oriented location for each global face.
       // Boundary patch assignment will use this directly.
       if (code >= 0)
         owner_face_location.at(static_cast<size_t>(f)) = {c, local_face_id, true};
+        
+      ++local_face_id;
     }
 
     std::vector<uint64_t> v_set;
@@ -875,7 +878,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   mesh->SetDimension(3);
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(cells), cell_connect);
-  mesh->SetCellFaces(cell_face_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();

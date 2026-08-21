@@ -202,9 +202,10 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
     Vector3(0.0, 1.0, 0.0),
     Vector3(0.0, 0.0, 1.0),
   };
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    for (const auto& face : cell.faces)
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
     {
       if (not face.has_neighbor)
       {

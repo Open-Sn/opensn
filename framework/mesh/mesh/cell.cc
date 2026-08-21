@@ -256,13 +256,12 @@ Cell::operator=(const Cell& other)
   partition_id = other.partition_id;
   centroid = other.centroid;
   block_id = other.block_id;
-  faces = other.faces;
 
   return *this;
 }
 
 void
-Cell::ComputeGeometricInfo(const Mesh& grid)
+Cell::ComputeGeometricInfo(Mesh& grid)
 {
   const auto cell_local_id = grid.MapCellGlobalID2LocalID(global_id);
   auto vertex_ids = grid.GetCellConnectivity(cell_local_id);
@@ -273,8 +272,11 @@ Cell::ComputeGeometricInfo(const Mesh& grid)
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute face geometric data
-  for (std::uint32_t f = 0; f < faces.size(); ++f)
-    faces[f].ComputeGeometricInfo(grid, cell_local_id, f);
+  auto cell_faces = grid.GetCellFaces(cell_local_id);
+  for (std::uint32_t f = 0; f < cell_faces.size(); ++f)
+  {
+    cell_faces[f].ComputeGeometricInfo(grid, cell_local_id, f);
+  }
 }
 
 void
@@ -299,7 +301,7 @@ Cell::ComputeVolume(const Mesh& mesh)
     // with each edge and the centroid.
     case CellType::POLYGON:
     {
-      for (std::uint32_t f = 0; f < faces.size(); ++f)
+      for (std::uint32_t f = 0; f < mesh.GetCellFaceCount(cell_local_id); ++f)
       {
         auto face_vertex_ids = mesh.GetCellFaceConnectivity(cell_local_id, f);
         const auto& v0 = mesh.GlobalVertex(face_vertex_ids[0]);
@@ -316,7 +318,8 @@ Cell::ComputeVolume(const Mesh& mesh)
     // formed with on each face with the cell centroid.
     case CellType::POLYHEDRON:
     {
-      for (std::uint32_t f = 0; f < faces.size(); ++f)
+      const auto cell_faces = mesh.GetCellFaces(cell_local_id);
+      for (std::uint32_t f = 0; f < cell_faces.size(); ++f)
       {
         auto face_vertex_ids = mesh.GetCellFaceConnectivity(cell_local_id, f);
         const auto num_verts = face_vertex_ids.size();
@@ -327,7 +330,7 @@ Cell::ComputeVolume(const Mesh& mesh)
           const auto& v1 = mesh.GlobalVertex(face_vertex_ids[vid1]);
 
           Matrix3x3 J;
-          J.SetColJVec(0, faces[f].centroid - v0);
+          J.SetColJVec(0, cell_faces[f].centroid - v0);
           J.SetColJVec(1, v1 - v0);
           J.SetColJVec(2, centroid - v0);
           volume += J.Det() / 6.0;
@@ -355,10 +358,6 @@ Cell::Serialize() const
   raw.Write<CellType>(cell_type_);
   raw.Write<CellType>(cell_sub_type_);
 
-  raw.Write<size_t>(faces.size());
-  for (const auto& face : faces)
-    raw.Append(face.Serialize());
-
   return raw;
 }
 
@@ -383,11 +382,6 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
   cell.centroid.z = cell_centroid_z;
   cell.block_id = cell_block_id;
 
-  auto num_faces = raw.Read<size_t>(address, &address);
-  cell.faces.reserve(num_faces);
-  for (size_t f = 0; f < num_faces; ++f)
-    cell.faces.push_back(CellFace::DeSerialize(raw, address));
-
   return cell;
 }
 
@@ -402,13 +396,6 @@ Cell::ToString() const
   outstr << "partition_id: " << partition_id << "\n";
   outstr << "centroid: " << centroid.PrintStr() << "\n";
   outstr << "block_id: " << block_id << "\n";
-
-  {
-    outstr << "num_faces: " << faces.size() << "\n";
-    size_t f = 0;
-    for (const auto& face : faces)
-      outstr << "Face " << f++ << ":\n" << face.ToString();
-  }
 
   return outstr.str();
 }

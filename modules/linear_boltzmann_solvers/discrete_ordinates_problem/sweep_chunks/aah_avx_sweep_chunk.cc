@@ -41,6 +41,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   {
     const uint64_t cell_local_id = spls[spls_index];
     auto& cell = data.grid->GetLocalCell(cell_local_id);
+    const auto cell_faces = data.grid->GetCellFaces(cell_local_id);
     const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
     auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
     const auto& cell_mapping = data.discretization.GetLocalCellMapping(cell_local_id);
@@ -50,7 +51,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
                             "AAH_Sweep_FixedN invoked for an incompatible cell topology.");
 
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
-    const size_t cell_num_faces = cell.faces.size();
+    const size_t cell_num_faces = cell_faces.size();
     std::vector<double> face_mu_values(cell_num_faces, 0.0);
 
     const int ni_deploc_face_counter = deploc_face_counter;
@@ -119,7 +120,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
       }
 
       for (size_t f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
+        face_mu_values[f] = omega.Dot(cell_faces[f].normal);
 
       int in_face_counter = -1;
       for (size_t f = 0; f < cell_num_faces; ++f)
@@ -127,7 +128,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        auto& cell_face = cell.faces[f];
+        auto& cell_face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor;
 
@@ -341,7 +342,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::OUTGOING)
           continue;
 
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const auto& IntF_shapeI = unit_mats.intS_shapeI[f];
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);

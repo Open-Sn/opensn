@@ -117,10 +117,10 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
       } // for i
     } // continuous kernels
 
-    const size_t num_faces = cell.faces.size();
+    const size_t num_faces = grid->GetCellFaceCount(cell_local_id);
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = grid->GetCellFace(cell_local_id, f);
       const auto& n_f = face.normal;
       const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
       const auto fqp_data = cell_mapping.MakeSurfaceFiniteElementData(f);
@@ -422,18 +422,18 @@ HPerpendicular(const Mesh& mesh, std::uint32_t cell_local_id, unsigned int f)
   auto cell_vertex_ids = mesh.GetCellConnectivity(cell_local_id);
   double hp;
 
-  const auto num_faces = cell.faces.size();
+  const auto num_faces = mesh.GetCellFaceCount(cell_local_id);
   const auto num_vertices = cell_vertex_ids.size();
 
   const auto volume = cell.volume;
-  const auto face_area = cell.faces.at(f).area;
+  const auto face_area = mesh.GetCellFace(cell_local_id, f).area;
 
   /**Lambda to compute surface area.*/
-  auto ComputeSurfaceArea = [&cell, &num_faces]()
+  auto ComputeSurfaceArea = [&mesh, cell_local_id, &num_faces]()
   {
     double surface_area = 0.0;
     for (size_t fr = 0; fr < num_faces; ++fr)
-      surface_area += cell.faces[fr].area;
+      surface_area += mesh.GetCellFace(cell_local_id, fr).area;
 
     return surface_area;
   };

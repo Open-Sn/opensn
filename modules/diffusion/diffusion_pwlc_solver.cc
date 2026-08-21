@@ -60,7 +60,8 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    const size_t num_faces = cell.faces.size();
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    const size_t num_faces = cell_faces.size();
     const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
@@ -75,7 +76,7 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
     std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if (not face.has_neighbor and not suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -136,9 +137,10 @@ DiffusionPWLCSolver::AssembleAand_b(const std::vector<double>& q_vector)
       } // for i
 
       // Assemble face terms
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI_shapeJ = unit_cell_matrices.intS_shapeI_shapeJ[f];
@@ -266,7 +268,8 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    const size_t num_faces = cell.faces.size();
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    const size_t num_faces = grid_->GetCellFaceCount(cell_local_id);
     const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
@@ -282,7 +285,7 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
     std::vector<std::pair<bool, double>> node_is_dirichlet(num_nodes, {false, 0.0});
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if (not face.has_neighbor and suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -339,9 +342,10 @@ DiffusionPWLCSolver::Assemble_b(const std::vector<double>& q_vector)
       } // for i
 
       // Assemble face terms
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
@@ -420,7 +424,8 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    const size_t num_faces = cell.faces.size();
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    const size_t num_faces = cell_faces.size();
     const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
@@ -433,7 +438,7 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
     std::vector<bool> node_is_dirichlet(num_nodes, false);
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if (not face.has_neighbor and not suppress_bcs_)
       {
         BoundaryCondition bc;
@@ -476,9 +481,10 @@ DiffusionPWLCSolver::Assemble_b(Vec petsc_q_vector)
       } // for i
 
       // Assemble face terms
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];

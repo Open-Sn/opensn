@@ -1125,12 +1125,13 @@ LBSProblem::InitializeParrays()
 
     size_t cell_phi_address = block_MG_counter;
 
-    const size_t num_faces = cell.faces.size();
+    const size_t num_faces = grid_->GetCellFaceCount(cell_local_id);
     std::vector<bool> face_local_flags(num_faces, true);
     std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
     std::vector<std::uint32_t> neighbor_cell_local_ids(num_faces, 0);
     int f = 0;
-    for (auto& face : cell.faces)
+    auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (auto& face : cell_faces)
     {
       if (not face.has_neighbor)
       {
@@ -1173,16 +1174,17 @@ LBSProblem::InitializeParrays()
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
     CellFaceNodalMapping cell_nodal_mapping;
-    cell_nodal_mapping.reserve(cell.faces.size());
+    cell_nodal_mapping.reserve(cell_faces.size());
 
-    for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
+    for (std::uint32_t f = 0; f < cell_faces.size(); ++f)
     {
       std::vector<short> face_node_mapping;
       std::vector<short> cell_node_mapping;
       int adj_face_idx = -1;
 
-      if (cell.faces[f].has_neighbor)
+      if (cell_faces[f].has_neighbor)
       {
         grid_->FindAssociatedVertices(cell_local_id, f, face_node_mapping);
         grid_->FindAssociatedCellVertices(cell_local_id, f, cell_node_mapping);

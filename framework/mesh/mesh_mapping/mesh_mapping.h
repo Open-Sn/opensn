@@ -29,7 +29,7 @@ public:
   struct CoarseMapping
   {
     /// Constructor. Sizes fine_faces based on the number of faces within the coarse cell.
-    explicit CoarseMapping(const Cell& coarse_cell);
+    explicit CoarseMapping(size_t num_faces);
 
     /// The fine cells contained within a coarse cell.
     std::vector<std::uint32_t> fine_cell_local_ids;
@@ -43,7 +43,7 @@ public:
   struct FineMapping
   {
     /// Constructor. Sizes coarse_faces based on the number of faces within the fine cell.
-    explicit FineMapping(const Cell& fine_cell);
+    explicit FineMapping(size_t num_faces);
 
     /// The coarse cell that the fine cell is contained within.
     std::uint32_t coarse_cell_local_id;

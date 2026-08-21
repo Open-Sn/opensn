@@ -1220,11 +1220,11 @@ CMFDAcceleration::BuildFaceCurrentCache()
       const std::size_t first_face =
         requested_face_index == wildcard_face_index ? 0 : requested_face_index;
       const std::size_t end_face = requested_face_index == wildcard_face_index
-                                     ? owner_cell.faces.size()
+                                     ? grid.GetCellFaceCount(owner_cell_local_id)
                                      : requested_face_index + 1;
       for (std::size_t f = first_face; f < end_face; ++f)
       {
-        const auto& face = owner_cell.faces[f];
+        const auto& face = grid.GetCellFace(owner_cell_local_id, f);
         if ((face.has_neighbor and face.neighbor_id == neighbor_cell_gid) or
             (not face.has_neighbor and neighbor_cell_gid == std::numeric_limits<uint64_t>::max()))
         {
@@ -1478,9 +1478,10 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
       const auto neighbor_cell_local_id = grid.MapCellGlobalID2LocalID(*neighbor_id);
       const auto& neighbor_cell = grid.GetLocalCell(neighbor_cell_local_id);
       bool found_face = false;
-      for (std::size_t nf = 0; nf < neighbor_cell.faces.size(); ++nf)
+      const auto neighbor_cell_faces = grid.GetCellFaces(neighbor_cell_local_id);
+      for (std::size_t nf = 0; nf < neighbor_cell_faces.size(); ++nf)
       {
-        const auto& neighbor_face = neighbor_cell.faces[nf];
+        const auto& neighbor_face = neighbor_cell_faces[nf];
         if (neighbor_face.has_neighbor and neighbor_face.neighbor_id == fine_face.cell_id)
         {
           double neighbor_outflow = 0.0;

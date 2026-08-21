@@ -161,11 +161,12 @@ AAH_FLUDSCommonData::SlotDynamics(
 
   // Incoming faces
   std::vector<short> inco_face_face_category;
-  inco_face_face_category.reserve(cell.faces.size());
+  const auto cell_faces = grid_ptr->GetCellFaces(cell_local_id);
+  inco_face_face_category.reserve(cell_faces.size());
 
-  for (auto f = 0; f < cell.faces.size(); ++f)
+  for (auto f = 0; f < cell_faces.size(); ++f)
   {
-    const CellFace& face = cell.faces[f];
+    const CellFace& face = cell_faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell_local_id][f];
 
     if (orientation != FaceOrientation::INCOMING or not face.IsNeighborLocal(grid_ptr.get()))
@@ -221,12 +222,12 @@ AAH_FLUDSCommonData::SlotDynamics(
   // Outgoing faces
   std::vector<uint64_t> outb_face_slot_indices;
   std::vector<short> outb_face_face_category;
-  outb_face_slot_indices.reserve(cell.faces.size());
-  outb_face_face_category.reserve(cell.faces.size());
+  outb_face_slot_indices.reserve(cell_faces.size());
+  outb_face_face_category.reserve(cell_faces.size());
 
-  for (auto f = 0; f < cell.faces.size(); ++f)
+  for (auto f = 0; f < cell_faces.size(); ++f)
   {
-    const CellFace& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell_local_id][f];
 
     if (orientation != FaceOrientation::OUTGOING)
@@ -330,9 +331,10 @@ AAH_FLUDSCommonData::LocalIncidentMapping(std::uint32_t cell_local_id,
   std::vector<std::pair<uint64_t, std::vector<short>>> inco_face_dof_mapping;
 
   // Loop over faces but process only incident faces
-  for (auto f = 0; f < cell.faces.size(); ++f)
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
+  for (auto f = 0; f < cell_faces.size(); ++f)
   {
-    const CellFace& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     const auto& orienation = spds.GetCellFaceOrientations()[cell_local_id][f];
 
     // Incident face
@@ -354,7 +356,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(std::uint32_t cell_local_id,
         int adj_f_counter = -1;
 
         int out_f = -1;
-        for (auto af = 0; af < adj_cell.faces.size(); ++af)
+        for (auto af = 0; af < grid->GetCellFaceCount(adj_cell_local_id); ++af)
         {
           if (face_oris[af] == FaceOrientation::OUTGOING)
           {
@@ -639,9 +641,10 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(
   const auto& cell = grid->GetLocalCell(cell_local_id);
 
   // Loop over faces but process only incident faces
-  for (auto f = 0; f < cell.faces.size(); ++f)
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
+  for (auto f = 0; f < cell_faces.size(); ++f)
   {
-    const CellFace& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell_local_id][f];
 
     // Incident face

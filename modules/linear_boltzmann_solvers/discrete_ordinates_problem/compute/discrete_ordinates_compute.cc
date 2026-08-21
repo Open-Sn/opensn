@@ -124,9 +124,10 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     // non-reflective boundaries, only the cosines that are negative are added to the inflow
     // integral. For reflective boundaries, it is expected that, upon convergence, inflow = outflow
     // (within numerical tolerances set by the user).
-    for (int f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (int f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
 
       if (not face.has_neighbor) // Boundary face
       {
@@ -169,8 +170,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     } // for f
 
     // Outflow: Only physical boundary leakage contributes to the global particle balance.
-    for (size_t f = 0; f < cell.faces.size(); ++f)
-      if (not cell.faces[f].has_neighbor)
+    for (std::size_t f = 0; f < cell_faces.size(); ++f)
+      if (not cell_faces[f].has_neighbor)
         for (unsigned int g = 0; g < num_groups; ++g)
           local_out_flow += outflow_view.Get(f, g);
 
@@ -392,9 +393,10 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
     const auto& outflow_view = cell_outflow_views[cell_local_id];
     const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
 
-    for (unsigned int f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
 
       if (not face.has_neighbor && face.neighbor_id == boundary_id)
       {
@@ -464,9 +466,10 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
       const auto& outflow_view = cell_outflow_views[cell_local_id];
       const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
 
-      for (unsigned int f = 0; f < cell.faces.size(); ++f)
+      const auto cell_faces = grid->GetCellFaces(cell_local_id);
+      for (unsigned int f = 0; f < cell_faces.size(); ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
 
         if (not face.has_neighbor && requested_ids.count(face.neighbor_id))
         {

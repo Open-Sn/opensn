@@ -37,7 +37,6 @@ TEST(DataTypesTest, 00)
         face.centroid = {0.5, 0.5, 0.0};
         face.has_neighbor = false;
         face.neighbor_id = 0;
-        poster_child_cell.faces.emplace_back(face);
       }
       // Top face
       {
@@ -46,7 +45,6 @@ TEST(DataTypesTest, 00)
         face.centroid = {0.5, 0.5, 1.0};
         face.has_neighbor = false;
         face.neighbor_id = 1;
-        poster_child_cell.faces.emplace_back(face);
       }
       // Left face
       {
@@ -55,7 +53,6 @@ TEST(DataTypesTest, 00)
         face.centroid = {0.0, 0.5, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 2;
-        poster_child_cell.faces.emplace_back(face);
       }
       // Right face
       {
@@ -64,7 +61,6 @@ TEST(DataTypesTest, 00)
         face.centroid = {1.0, 0.5, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 3;
-        poster_child_cell.faces.emplace_back(face);
       }
       // Front face
       {
@@ -73,7 +69,6 @@ TEST(DataTypesTest, 00)
         face.centroid = {0.5, 0.0, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 4;
-        poster_child_cell.faces.emplace_back(face);
       }
       // Back face
       {
@@ -82,7 +77,6 @@ TEST(DataTypesTest, 00)
         face.centroid = {0.5, 1.0, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 5;
-        poster_child_cell.faces.emplace_back(face);
       }
     }
 
@@ -143,33 +137,6 @@ TEST(DataTypesTest, 00)
           passed = false;
           opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
-        }
-
-        if (rcell.faces.size() != pcell.faces.size())
-        {
-          passed = false;
-          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-          break;
-        }
-
-        size_t f = 0;
-        for (const auto& rface : rcell.faces)
-        {
-          const auto& pface = pcell.faces[f];
-
-          if (rface.has_neighbor != pface.has_neighbor)
-          {
-            passed = false;
-            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-            break;
-          }
-          if (rface.neighbor_id != pface.neighbor_id)
-          {
-            passed = false;
-            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-            break;
-          }
-          ++f;
         }
       }
     }
