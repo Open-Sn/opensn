@@ -9,6 +9,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "caribou/main.hpp"
+#include <condition_variable>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -35,15 +37,39 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
     execution_order_[i] = i;
   }
 
-  // assign sweep task to thread pool (but not execution yet)
+  // Work queue: main thread streams ready angle sets in, workers drain it.
+  // This preserves pipeline overlap - workers stay live and pick up the next
+  // angle set immediately rather than sleeping between batches.
+  std::mutex work_mutex;
+  std::condition_variable work_cv;
+  std::vector<std::size_t> work_queue;
+  work_queue.reserve(num_anglesets);
+  bool all_dispatched = false;
+
   pool_.AssignTask(
-    [this, &sweep_chunk](std::size_t i)
+    [this, &sweep_chunk, &work_mutex, &work_cv, &work_queue, &all_dispatched](std::size_t)
     {
-      auto* aahd = static_cast<AAHD_AngleSet*>(angle_agg_[i].get());
-      aahd->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+      while (true)
+      {
+        std::size_t as_idx;
+        {
+          std::unique_lock<std::mutex> lk(work_mutex);
+          work_cv.wait(lk, [&] { return !work_queue.empty() || all_dispatched; });
+          if (work_queue.empty())
+            return;
+          as_idx = work_queue.back();
+          work_queue.pop_back();
+        }
+        auto* aahd = static_cast<AAHD_AngleSet*>(angle_agg_[as_idx].get());
+        aahd->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
+      }
     });
 
-  // poll for readiness and launch threads
+  const std::size_t pool_size = pool_.GetSize();
+  for (std::size_t i = 0; i < pool_size; ++i)
+    pool_.Run(i);
+
+  // Poll for readiness and stream work to the queue as angle sets become ready.
   while (!execution_order_.empty())
   {
     for (auto it = execution_order_.begin(); it != execution_order_.end();)
@@ -51,7 +77,11 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
       auto* angle_set = static_cast<AAHD_AngleSet*>(angle_agg_[*it].get());
       if (angle_set->IsReady())
       {
-        pool_.Run(*it);
+        {
+          std::scoped_lock<std::mutex> lk(work_mutex);
+          work_queue.push_back(*it);
+        }
+        work_cv.notify_one();
         std::swap(*it, execution_order_.back());
         execution_order_.pop_back();
       }
@@ -61,6 +91,12 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
       }
     }
   }
+
+  {
+    std::scoped_lock<std::mutex> lk(work_mutex);
+    all_dispatched = true;
+  }
+  work_cv.notify_all();
   pool_.WaitAll();
 
   // wait for sends and receive of delayed data
