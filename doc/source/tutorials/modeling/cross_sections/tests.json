@@ -1,0 +1,50 @@
+[
+  {
+    "file": "xs_read_ascii.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "num_groups       =",
+        "goldvalue": 2,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "mg_xs_read_openmc.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "num_groups       =",
+        "goldvalue": 172,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "1g_xs_simple.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "num_groups       =",
+        "goldvalue": 1,
+        "abs_tol": 1e-8
+      }
+    ]
+  }
+]

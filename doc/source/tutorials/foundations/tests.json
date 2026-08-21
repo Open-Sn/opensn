@@ -1,0 +1,36 @@
+[
+  {
+    "file": "first_1d_fixed_source.py",
+    "comment": "Minimal one-dimensional fixed-source calculation",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FOUNDATION_1D_MAX_FLUX=",
+        "goldvalue": 9.62393909e-01,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "first_2d_fixed_source.py",
+    "comment": "Minimal two-dimensional fixed-source calculation",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FOUNDATION_2D_MAX_FLUX=",
+        "goldvalue": 9.30041429e-01,
+        "abs_tol": 1e-8
+      }
+    ]
+  }
+]

@@ -31,6 +31,7 @@ release = pyopensn.__version__
 master_doc = "index"
 templates_path = ["_templates"]
 source_suffix = [".rst"]
+exclude_patterns = ["tutorials/_templates/*"]
 
 extensions = [
     "sphinx.ext.napoleon",

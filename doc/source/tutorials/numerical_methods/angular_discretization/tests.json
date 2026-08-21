@@ -1,0 +1,44 @@
+[
+  {
+    "file": "operator_methods.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "forward_peaked_g099.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "number of scattering orders tested =",
+        "goldvalue": 5,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "delta_forward.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "number of operator methods tested =",
+        "goldvalue": 3,
+        "abs_tol": 1e-8
+      }
+    ]
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "file": "pincell_example.py",
+    "num_procs": 8,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Eigenvalue =",
+        "goldvalue": 1.171551,
+        "abs_tol": 1e-6
+      }
+    ]
+  },
+  {
+    "file": "cmfd.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD k-eigenvalue =",
+        "goldvalue": 1.15663057,
+        "abs_tol": 1e-6
+      }
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "file": "forward_example.py",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "value (edit zone: whole domain)   =",
+        "goldvalue": 1.0276937,
+        "abs_tol": 1e-6
+      }
+    ]
+  }
+]

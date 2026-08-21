@@ -1,0 +1,31 @@
+[
+  {
+    "file": "uncollided.py",
+    "comment": "3D uncollided-plus-collided fixed-source calculation",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total scalar flux at (0.024, 0.016, 0.008):",
+        "goldvalue": 2.735814472835e+02,
+        "rel_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Total scalar-flux integral:",
+        "goldvalue": 1.798893012550e-02,
+        "rel_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Balance residual:",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      }
+    ]
+  }
+]
