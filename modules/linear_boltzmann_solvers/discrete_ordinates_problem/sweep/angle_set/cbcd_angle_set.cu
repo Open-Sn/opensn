@@ -27,7 +27,7 @@ CBCD_AngleSet::CBCD_AngleSet(std::size_t id,
     stream_(),
     device_angle_indices_(angles_.size())
 {
-  SyncDeviceAngleIndices();
+  CBCD_AngleSet::SyncDeviceAngleIndices();
   // Set CBCD_FLUDS stream and asynchronously allocate storage for local psi
   auto* cbcd_fluds = std::static_pointer_cast<CBCD_FLUDS>(fluds_).get();
   cbcd_fluds->GetStream() = stream_;

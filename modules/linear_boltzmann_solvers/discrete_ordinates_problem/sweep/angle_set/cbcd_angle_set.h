@@ -27,7 +27,7 @@ public:
                 std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                 const MPICommunicatorSet& comm_set);
 
-  ~CBCD_AngleSet();
+  ~CBCD_AngleSet() override;
 
   AsynchronousCommunicator* GetCommunicator() override;
 

@@ -7,6 +7,8 @@
 namespace opensn
 {
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast, modernize-use-auto)
+
 TotalXSCarrier::TotalXSCarrier(LBSProblem& lbs_problem)
 {
   std::uint64_t size = ComputeSize(lbs_problem);
@@ -35,7 +37,7 @@ TotalXSCarrier::ComputeSize(LBSProblem& lbs_problem)
     }
   }
   // compute size
-  num_block_ids = xs_map.size();
+  num_block_ids = static_cast<std::uint32_t>(xs_map.size());
   alloc_size += num_block_ids * num_groups * sizeof(double);
   return alloc_size;
 }
@@ -48,7 +50,7 @@ TotalXSCarrier::Assemble(LBSProblem& lbs_problem)
   // copy total cross section data
   for (std::uint64_t index = 0; const auto& [block_id, xs] : xs_map)
   {
-    block_id_to_index[block_id] = index++;
+    block_id_to_index[static_cast<int>(block_id)] = static_cast<std::uint32_t>(index++);
     double* total_xs_data = reinterpret_cast<double*>(data);
     const std::vector<double>& sigma_total = xs->GetSigmaTotal();
     std::copy(sigma_total.begin(), sigma_total.end(), total_xs_data);
@@ -60,7 +62,10 @@ double*
 TotalXSCarrier::GetXSGPUData(int block_id)
 {
   char* gpu_data = device_memory_.get();
-  return reinterpret_cast<double*>(gpu_data) + block_id_to_index[block_id] * num_groups;
+  return reinterpret_cast<double*>(gpu_data) +
+         static_cast<std::size_t>(block_id_to_index[block_id]) * num_groups;
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast, modernize-use-auto)
 
 } // namespace opensn

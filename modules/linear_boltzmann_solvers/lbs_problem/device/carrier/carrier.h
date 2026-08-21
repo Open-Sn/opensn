@@ -24,7 +24,7 @@ public:
   Carrier(Carrier&& src) noexcept = default;
   Carrier& operator=(Carrier&& src) noexcept = default;
 
-  inline char* GetDevicePtr() { return device_memory_.get(); }
+  char* GetDevicePtr() { return device_memory_.get(); }
   ~Carrier() = default;
 
 protected:

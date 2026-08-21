@@ -291,8 +291,8 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
       {
         auto direction_num = angle_set.GetAngleIndices()[as_ss_idx];
         // compute dst and src corresponding to the direction
-        double* dst = dst_psi + direction_num * num_groups_;
-        double* src = src_psi + as_ss_idx * num_groups_;
+        double* dst = dst_psi + static_cast<std::size_t>(direction_num) * num_groups_;
+        double* src = src_psi + static_cast<std::size_t>(as_ss_idx) * num_groups_;
         // copy the flux for each group
         std::memcpy(dst, src, num_groups_ * sizeof(double));
       }

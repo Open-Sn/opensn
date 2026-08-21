@@ -19,7 +19,7 @@ void
 SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
 {
   // copy phi and src moments to device
-  auto aah_sweep_chunk = static_cast<AAHDSweepChunk&>(sweep_chunk);
+  auto& aah_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
   int groupset_id = angle_agg_.GetGroupsetID();
   aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
   aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, true);
@@ -29,7 +29,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   execution_order_.resize(num_anglesets);
   for (std::size_t i = 0; i < num_anglesets; ++i)
   {
-    auto aahd_angle_set = static_cast<AAHD_AngleSet*>(angle_agg_[i].get());
+    auto* aahd_angle_set = dynamic_cast<AAHD_AngleSet*>(angle_agg_[i].get());
     aahd_angle_set->ResetDependencyCounter();
     aahd_angle_set->PrepostReceives();
     execution_order_[i] = i;
@@ -39,7 +39,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   pool_.AssignTask(
     [this, &sweep_chunk](std::size_t i)
     {
-      auto* aahd = static_cast<AAHD_AngleSet*>(angle_agg_[i].get());
+      auto* aahd = dynamic_cast<AAHD_AngleSet*>(angle_agg_[i].get());
       aahd->AngleSetAdvance(sweep_chunk, AngleSetStatus::EXECUTE);
     });
 
@@ -48,7 +48,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   {
     for (auto it = execution_order_.begin(); it != execution_order_.end();)
     {
-      auto* angle_set = static_cast<AAHD_AngleSet*>(angle_agg_[*it].get());
+      auto* angle_set = dynamic_cast<AAHD_AngleSet*>(angle_agg_[*it].get());
       if (angle_set->IsReady())
       {
         pool_.Run(*it);
@@ -66,7 +66,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   // wait for sends and receive of delayed data
   for (auto& angle_set : angle_agg_)
   {
-    auto aahd_angle_set = static_cast<AAHD_AngleSet*>(angle_set.get());
+    auto* aahd_angle_set = dynamic_cast<AAHD_AngleSet*>(angle_set.get());
     aahd_angle_set->WaitForDownstreamAndDelayed();
   }
 
@@ -86,18 +86,18 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
   for (auto& angle_set : angle_agg_)
     angle_set->ResetDependencyCounter();
 
-  auto& cbcd_sweep_chunk = static_cast<CBCDSweepChunk&>(sweep_chunk);
+  auto& cbcd_sweep_chunk = dynamic_cast<CBCDSweepChunk&>(sweep_chunk);
   // Copy phi and source moments to device
   cbcd_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
 
-  auto& angle_sets = cbcd_sweep_chunk.GetAngleSets();
-  auto& fluds_list = cbcd_sweep_chunk.GetFLUDS();
+  const auto& angle_sets = cbcd_sweep_chunk.GetAngleSets();
+  const auto& fluds_list = cbcd_sweep_chunk.GetFLUDS();
   auto& streams_list = cbcd_sweep_chunk.GetStreams();
 
   const size_t num_angle_sets = angle_sets.size();
-  std::vector<bool> executed(num_angle_sets, 0);
-  std::vector<bool> boundary_data_set(num_angle_sets, 0);
-  std::vector<bool> kernel_in_flight(num_angle_sets, 0);
+  std::vector<bool> executed(num_angle_sets, false);
+  std::vector<bool> boundary_data_set(num_angle_sets, false);
+  std::vector<bool> kernel_in_flight(num_angle_sets, false);
   std::vector<std::vector<Task*>> ready_queues(num_angle_sets);
   std::vector<size_t> num_completed_tasks(num_angle_sets, 0);
   std::vector<std::vector<Task*>> ready_tasks(num_angle_sets);
@@ -109,7 +109,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
   {
     auto& current_task_list = angle_set->GetCurrentTaskList();
     if (current_task_list.empty())
-      current_task_list = static_cast<const CBC_SPDS&>(angle_set->GetSPDS()).GetTaskList();
+      current_task_list = dynamic_cast<const CBC_SPDS&>(angle_set->GetSPDS()).GetTaskList();
   }
 
   size_t executed_anglesets = 0;
@@ -142,7 +142,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
         }
         num_completed_tasks[i] += in_flight_tasks[i].size();
         // Send MPI data
-        auto* comm = static_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
+        auto* comm = dynamic_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
         comm->SendData();
         in_flight_tasks[i].clear();
         in_flight_cell_ids[i].clear();
@@ -156,7 +156,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
     {
       if (executed[i])
         continue;
-      auto* comm = static_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
+      auto* comm = dynamic_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
       auto& current_task_list = angle_sets[i]->GetCurrentTaskList();
       auto received = comm->ReceiveData();
       if (not received.empty())
@@ -224,7 +224,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
       if (executed[i] or (not boundary_data_set[i]) or kernel_in_flight[i])
         continue;
       auto& current_task_list = angle_sets[i]->GetCurrentTaskList();
-      auto* comm = static_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
+      auto* comm = dynamic_cast<CBCD_AsynchronousCommunicator*>(angle_sets[i]->GetCommunicator());
       bool all_done = (num_completed_tasks[i] == current_task_list.size());
       if (all_done and comm->SendData())
       {
@@ -252,7 +252,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
   {
     received_delayed_data = true;
 
-    for (auto& angle_set : angle_sets)
+    for (const auto& angle_set : angle_sets)
     {
       if (angle_set->FlushSendBuffers() == AngleSetStatus::MESSAGES_PENDING)
         received_delayed_data = false;
@@ -263,7 +263,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
   }
 
   // Reset all
-  for (auto& angle_set : angle_sets)
+  for (const auto& angle_set : angle_sets)
     angle_set->ResetSweepBuffers();
 }
 

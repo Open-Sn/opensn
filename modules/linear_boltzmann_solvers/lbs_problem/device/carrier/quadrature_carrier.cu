@@ -6,6 +6,10 @@
 namespace opensn
 {
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast,
+//             modernize-use-auto,
+//             bugprone-implicit-widening-of-multiplication-result)
+
 QuadratureCarrier::QuadratureCarrier(const LBSGroupset& groupset)
 {
   std::uint64_t size = ComputeSize(groupset);
@@ -69,5 +73,9 @@ QuadratureCarrier::Assemble(const LBSGroupset& groupset)
     data = reinterpret_cast<char*>(d2m_data);
   }
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast,
+//           modernize-use-auto,
+//           bugprone-implicit-widening-of-multiplication-result)
 
 } // namespace opensn

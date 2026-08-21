@@ -10,7 +10,7 @@ namespace crb = caribou;
 namespace opensn::gpu_kernel
 {
 
-#if defined(__NVCC__)
+#ifdef __NVCC__
 constexpr unsigned int threshold = 128;
 #elif defined(__HIPCC__)
 constexpr unsigned int threshold = 64;

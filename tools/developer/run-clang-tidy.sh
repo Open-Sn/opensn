@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 use_color=0
-user_extra_before=""
-user_extra_arg=""
 positional=()
 before_opt=()
 arg_opt=()
+removed_opt=()
 clang_tidy_args=()
 had_issues=0
 tmp_log="$(mktemp -t clang_tidy.XXXXXX)"
@@ -16,7 +15,7 @@ set -Eeuo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: run-clang-tidy.sh [-h] [-use-color] [-extra-arg-before=ARG] [-extra-arg=ARG] [FILENAME]
+Usage: run-clang-tidy.sh [-h] [-use-color] [-extra-arg-before=ARG] [-extra-arg=ARG] [-removed-arg=ARG] [FILENAME]
 
 OpenSn-specific clang-tidy script.
 
@@ -35,6 +34,7 @@ Options:
   -use-color, --use-color  Enable colored output when supported.
   -extra-arg-before=ARG    Forward ARG before the file list (passed verbatim to llvm's run-clang-tidy).
   -extra-arg=ARG           Forward ARG after the file list.
+  -removed-arg=ARG         Remove ARG from the compile command (passed verbatim to llvm's run-clang-tidy).
 EOF
 }
 
@@ -43,13 +43,17 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     -h|--help) usage; exit 0 ;;
     -extra-arg-before=*)
-      user_extra_before="${1#*=}"; shift; continue ;;
+      before_opt+=( -extra-arg-before="${1#*=}" ); shift; continue ;;
     -extra-arg-before)
-      shift; user_extra_before="${1:-}"; [[ -n "${1:-}" ]] && shift; continue ;;
+      shift; before_opt+=( -extra-arg-before="${1:-}" ); [[ -n "${1:-}" ]] && shift; continue ;;
     -extra-arg=*)
-      user_extra_arg="${1#*=}"; shift; continue ;;
+      arg_opt+=( -extra-arg="${1#*=}" ); shift; continue ;;
     -extra-arg)
-      shift; user_extra_arg="${1:-}"; [[ -n "${1:-}" ]] && shift; continue ;;
+      shift; arg_opt+=( -extra-arg="${1:-}" ); [[ -n "${1:-}" ]] && shift; continue ;;
+    -removed-arg=*)
+      removed_opt+=( -removed-arg="${1#*=}" ); shift; continue ;;
+    -removed-arg)
+      shift; removed_opt+=( -removed-arg="${1:-}" ); [[ -n "${1:-}" ]] && shift; continue ;;
     -use-color|--use-color)
       use_color=1; shift; continue ;;
     --) shift; break ;;
@@ -82,13 +86,6 @@ repo=$(git rev-parse --show-toplevel)
 header_filter="^${repo}/(framework|modules|python)/"
 
 
-if [[ -n "${user_extra_before:-}" ]]; then
-  before_opt=( -extra-arg-before="$user_extra_before" )
-fi
-if [[ -n "${user_extra_arg:-}" ]]; then
-  arg_opt=( -extra-arg="$user_extra_arg" )
-fi
-
 if (( ${#positional[@]} == 1 )); then
   file="${positional[0]}"
   if [[ -f build/compile_commands.json ]]; then
@@ -99,11 +96,12 @@ if (( ${#positional[@]} == 1 )); then
     fi
   fi
   run-clang-tidy ${clang_tidy_args[@]:-} -p build -header-filter="$header_filter" ${before_opt[@]+"${before_opt[@]}"} \
-                 ${arg_opt[@]+"${arg_opt[@]}"} "$file" -warnings-as-errors='*' | tee -a "$tmp_log"
+                 ${arg_opt[@]+"${arg_opt[@]}"} ${removed_opt[@]+"${removed_opt[@]}"} "$file" \
+                 -warnings-as-errors='*' | tee -a "$tmp_log"
 else
   run-clang-tidy ${clang_tidy_args[@]:-} -p build -header-filter="$header_filter" ${before_opt[@]+"${before_opt[@]}"} \
-                 ${arg_opt[@]+"${arg_opt[@]}"} "${repo}/framework" "${repo}/modules" "${repo}/python" \
-                 -warnings-as-errors='*' | tee -a "$tmp_log"
+                 ${arg_opt[@]+"${arg_opt[@]}"} ${removed_opt[@]+"${removed_opt[@]}"} "${repo}/framework" \
+                 "${repo}/modules" "${repo}/python" -warnings-as-errors='*' | tee -a "$tmp_log"
 fi
 
 # run-clang-tidy does not generate an exit status based on errors or warnings

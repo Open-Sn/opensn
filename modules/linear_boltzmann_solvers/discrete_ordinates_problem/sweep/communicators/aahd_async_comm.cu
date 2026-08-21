@@ -10,7 +10,10 @@
 namespace opensn
 {
 
-static inline void
+namespace
+{
+
+void
 ResizeRequestVector(std::vector<mpi::Request>& request_vector,
                     const std::vector<std::vector<AAH_MessageDetails>>& message_data)
 {
@@ -21,6 +24,8 @@ ResizeRequestVector(std::vector<mpi::Request>& request_vector,
                                                      [](const auto& v) { return v.size(); });
   request_vector.resize(total_messages);
 }
+
+} // namespace
 
 AAHD_ASynchronousCommunicator::AAHD_ASynchronousCommunicator(FLUDS& fluds,
                                                              unsigned int num_groups,

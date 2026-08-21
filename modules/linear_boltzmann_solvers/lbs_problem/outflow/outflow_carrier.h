@@ -40,7 +40,7 @@ public:
    * Return the base pointer to device outflow storage.
    * \return Device pointer to the first outflow value, or null when no device storage exists.
    */
-  inline double* GetDevicePtr() { return device_outflows_.get(); }
+  double* GetDevicePtr() { return device_outflows_.get(); }
 
   /**
    * Return the first group offset for a face.

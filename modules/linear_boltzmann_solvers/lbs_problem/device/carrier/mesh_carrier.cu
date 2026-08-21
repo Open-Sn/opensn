@@ -7,6 +7,8 @@
 namespace opensn
 {
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast, modernize-use-auto)
+
 MeshCarrier::MeshCarrier(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrier& outflow)
 {
   std::uint64_t size = ComputeSize(lbs_problem);
@@ -50,7 +52,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
     // data of each face
     const std::vector<std::vector<int>>& face_node_mappings =
       discretization.GetCellMapping(cell).GetFaceNodeMappings();
-    for (int f = 0; f < cell_num_faces; ++f)
+    for (std::size_t f = 0; f < cell_num_faces; ++f)
     {
       // num_face_nodes
       alloc_size += sizeof(std::uint64_t);
@@ -108,12 +110,12 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     *(offset_cell_data++) = cell_data - data;
     // number of faces and nodes (num_node = num_dof!)
     std::uint32_t* num_node_and_face_data = reinterpret_cast<std::uint32_t*>(cell_data);
-    *(num_node_and_face_data++) = cell_num_nodes;
-    *(num_node_and_face_data++) = cell_num_faces;
+    *(num_node_and_face_data++) = static_cast<std::uint32_t>(cell_num_nodes);
+    *(num_node_and_face_data++) = static_cast<std::uint32_t>(cell_num_faces);
     cell_data = reinterpret_cast<char*>(num_node_and_face_data);
     // pointer to total cross section
     double** total_xs_data = reinterpret_cast<double**>(cell_data);
-    *(total_xs_data++) = xs.GetXSGPUData(cell.block_id);
+    *(total_xs_data++) = xs.GetXSGPUData(static_cast<int>(cell.block_id));
     cell_data = reinterpret_cast<char*>(total_xs_data);
     // phi address
     std::uint64_t* phi_address_data = reinterpret_cast<std::uint64_t*>(cell_data);
@@ -132,9 +134,9 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     const DenseMatrix<Vector3>& G = unit_matrices.intV_shapeI_gradshapeJ;
     const DenseMatrix<double>& M = unit_matrices.intV_shapeI_shapeJ;
     double* GM_data = reinterpret_cast<double*>(cell_data);
-    for (unsigned int i_row = 0; i_row < cell_num_nodes; ++i_row)
+    for (std::size_t i_row = 0; i_row < cell_num_nodes; ++i_row)
     {
-      for (unsigned int i_col = 0; i_col < cell_num_nodes; ++i_col)
+      for (std::size_t i_col = 0; i_col < cell_num_nodes; ++i_col)
       {
         Vector3 element = G(i_row, i_col);
         *(GM_data++) = element.x;
@@ -151,7 +153,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     const std::vector<Vector<double>>& IntS_shapeI_vectors = unit_matrices.intS_shapeI;
     const std::vector<std::vector<int>>& face_node_mappings = cell_mapping.GetFaceNodeMappings();
     char* face_data = cell_data;
-    for (int f = 0; f < cell_num_faces; ++f)
+    for (std::size_t f = 0; f < cell_num_faces; ++f)
     {
       const CellFace& face = cell.faces[f];
       *(offset_face_data++) = face_data - cell_data;
@@ -176,12 +178,12 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       // M_surf matrix (matrices are in row major)
       double* M_surf_data = reinterpret_cast<double*>(face_data);
       const DenseMatrix<double>& M_surf = M_surf_matrices[f];
-      for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
+      for (std::size_t fi = 0; fi < num_face_nodes; ++fi)
       {
-        unsigned int i = cell_mapping.MapFaceNode(f, fi);
-        for (unsigned int fj = 0; fj < num_face_nodes; ++fj)
+        const int i = cell_mapping.MapFaceNode(f, fi);
+        for (std::size_t fj = 0; fj < num_face_nodes; ++fj)
         {
-          unsigned int j = cell_mapping.MapFaceNode(f, fj);
+          const int j = cell_mapping.MapFaceNode(f, fj);
           *(M_surf_data++) = M_surf(i, j);
         }
       }
@@ -189,17 +191,17 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
       // IntS_shapeI
       double* IntS_shapeI_data = reinterpret_cast<double*>(face_data);
       const Vector<double>& IntS_shapeI = IntS_shapeI_vectors[f];
-      for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
+      for (std::size_t fi = 0; fi < num_face_nodes; ++fi)
       {
-        unsigned int i = cell_mapping.MapFaceNode(f, fi);
+        const int i = cell_mapping.MapFaceNode(f, fi);
         *(IntS_shapeI_data++) = IntS_shapeI(i);
       }
       face_data = reinterpret_cast<char*>(IntS_shapeI_data);
       // cell mapping data
       std::uint32_t* cell_mapping_data = reinterpret_cast<std::uint32_t*>(face_data);
-      for (int i = 0; i < num_face_nodes; ++i)
+      for (std::size_t i = 0; i < num_face_nodes; ++i)
       {
-        cell_mapping_data[i] = face_node_mappings[f][i];
+        cell_mapping_data[i] = static_cast<std::uint32_t>(face_node_mappings[f][i]);
       }
       cell_mapping_data += ((num_face_nodes + 1) & ~static_cast<std::size_t>(1));
       face_data = reinterpret_cast<char*>(cell_mapping_data);
@@ -210,5 +212,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
   // store total number of cell nodes
   num_nodes_total = saved_psi_index;
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast, modernize-use-auto)
 
 } // namespace opensn

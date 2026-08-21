@@ -29,7 +29,7 @@ public:
   /// Number of groups.
   std::size_t num_groups = std::numeric_limits<std::size_t>::max();
   /// Number of block IDs.
-  std::uint32_t num_block_ids;
+  std::uint32_t num_block_ids = 0;
   /// Map from block ID to flatten index.
   std::map<int, std::uint32_t> block_id_to_index;
 

@@ -30,7 +30,7 @@ public:
   void CopyFromDevice() { crb::copy(host_, device_, host_.size()); }
 
   /// Get pointer to device memory.
-  inline T* GetDevicePtr() { return device_.get(); }
+  T* GetDevicePtr() { return device_.get(); }
 
 protected:
   std::vector<T>& host_;

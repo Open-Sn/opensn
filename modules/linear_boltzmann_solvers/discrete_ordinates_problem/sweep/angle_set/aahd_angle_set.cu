@@ -27,13 +27,13 @@ AAHD_AngleSet::AAHD_AngleSet(size_t id,
   auto aahd_fluds = std::dynamic_pointer_cast<AAHD_FLUDS>(fluds_);
   aahd_fluds->GetStream() = stream_;
   aahd_fluds->GetCommonData().AddAssociatedAngleSet(this);
-  SyncDeviceAngleIndices();
+  AAHD_AngleSet::SyncDeviceAngleIndices();
 }
 
 void
 AAHD_AngleSet::InitializeDelayedUpstreamData()
 {
-  auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
+  auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
   aahd_fluds->AllocateDelayedPrelocIOutgoingPsi();
   aahd_fluds->AllocateDelayedLocalPsi();
 }
@@ -43,7 +43,7 @@ AAHD_AngleSet::PrepostReceives()
 {
   async_comm_.PrepostReceiveUpstreamPsi(static_cast<int>(this->GetID()));
   async_comm_.PrepostReceiveDelayedData(static_cast<int>(this->GetID()));
-  auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
+  auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
   aahd_fluds->CopyDelayedPsiToDevice();
 }
 
@@ -66,8 +66,8 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
   if (executed_)
     return AngleSetStatus::FINISHED;
 
-  auto* aahd_fluds = static_cast<AAHD_FLUDS*>(fluds_.get());
-  auto& aahd_sweep_chunk = static_cast<AAHDSweepChunk&>(sweep_chunk);
+  auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
+  auto& aahd_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
 
   aahd_fluds->CopyNonLocalIncomingPsiToDevice();
   aahd_fluds->AllocateSaveAngularFlux(aahd_sweep_chunk.GetProblem(),

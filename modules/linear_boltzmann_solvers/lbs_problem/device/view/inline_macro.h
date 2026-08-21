@@ -4,7 +4,7 @@
 #pragma once
 
 #if defined(__NVCC__) || defined(__HIPCC__)
-#define __inline_host_dev__ inline __host__ __device__
+#define OPENSN_INLINE_HOST_DEV inline __host__ __device__
 #else
-#define __inline_host_dev__ inline
+#define OPENSN_INLINE_HOST_DEV inline
 #endif
