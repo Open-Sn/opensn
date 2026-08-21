@@ -6,6 +6,7 @@
 #include "python/lib/py_wrappers.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
+#include "framework/utils/memory.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "cxxopts/cxxopts.h"
@@ -89,9 +90,22 @@ PyApp::Run(int argc, char** argv)
     console.ExecuteFile(opensn::input_path.string());
     opensn::Finalize();
 
+    cali_mgr.flush();
+    if (opensn::use_caliper and opensn::mpi_comm.rank() == 0)
+      std::cout << std::endl;
+
+    const auto total_peak_bytes = GetTotalPeakMemoryUsageBytes();
     if (opensn::mpi_comm.rank() == 0)
     {
-      std::cout << "\nElapsed execution time: " << program_timer.GetTimeString() << "\n"
+      std::cout << "\n";
+      if (total_peak_bytes)
+        std::cout << "Total peak host memory usage: "
+                  << static_cast<double>(*total_peak_bytes) / 1.0e9 << " GB" << std::endl;
+    }
+
+    if (opensn::mpi_comm.rank() == 0)
+    {
+      std::cout << "Elapsed execution time: " << program_timer.GetTimeString() << "\n"
                 << Timer::GetLocalDateTimeString() << " " << opensn::program
                 << " finished execution." << std::endl;
     }
@@ -99,10 +113,6 @@ PyApp::Run(int argc, char** argv)
   else
     return EXIT_FAILURE;
 
-  if (opensn::use_caliper and opensn::mpi_comm.rank() == 0)
-    std::cout << std::endl;
-
-  cali_mgr.flush();
   return EXIT_SUCCESS;
 }
 

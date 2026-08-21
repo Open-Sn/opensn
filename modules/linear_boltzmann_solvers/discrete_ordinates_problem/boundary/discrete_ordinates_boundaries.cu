@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_carrier.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aahd_fluds.h"
+#include "framework/utils/caliper_scopes.h"
 
 namespace opensn
 {
@@ -13,6 +14,7 @@ DiscreteOrdinatesProblem::InitializeBoundaryCarrier()
 {
   if (not use_gpus_)
     return;
+  CaliperRegionScope cali_gpu_setup_scope("GPUSetup", CaliperGPUSetupScopeDepth());
   boundary_carrier_ = std::make_shared<BoundaryCarrier>(boundary_bank_, groupsets_);
   for (const auto& groupset : groupsets_)
     boundary_carrier_->UploadToDevice(groupset.id);
@@ -25,6 +27,7 @@ DiscreteOrdinatesProblem::TransferDeviceBoundaryData(int groupset_id,
 {
   if (not has_reflecting_boundaries_ and not force)
     return;
+  CaliperRegionScope cali_gpu_transfer_scope("GPUTransfer", CaliperGPUTransferScopeDepth());
   if (host_to_device)
     boundary_carrier_->UploadToDevice(groupset_id);
   else

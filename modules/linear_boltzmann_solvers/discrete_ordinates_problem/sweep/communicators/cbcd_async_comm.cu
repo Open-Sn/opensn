@@ -40,7 +40,7 @@ CBCD_AsynchronousCommunicator::InitGetDownwindMessageData(int location_id,
 bool
 CBCD_AsynchronousCommunicator::SendData()
 {
-  CALI_CXX_MARK_SCOPE("CBCD_AsynchronousCommunicator::SendData");
+  CALI_CXX_MARK_SCOPE("SendData");
 
   // Batch queued face psi by destination location.
   if (not outgoing_message_queue_.empty())
@@ -105,7 +105,7 @@ CBCD_AsynchronousCommunicator::SendData()
 std::vector<std::uint64_t>
 CBCD_AsynchronousCommunicator::ReceiveData()
 {
-  CALI_CXX_MARK_SCOPE("CBCD_AsynchronousCommunicator::ReceiveData");
+  CALI_CXX_MARK_SCOPE("ReceiveData");
 
   std::vector<std::uint64_t> cells_who_received_data;
   const auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();

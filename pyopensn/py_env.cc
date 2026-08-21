@@ -4,6 +4,7 @@
 #include "python/lib/py_env.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/utils/memory.h"
 #include "framework/utils/timer.h"
 #include "mpi4py/mpi4py.h"
 #include "petscsys.h"
@@ -47,18 +48,26 @@ PyEnv::PyEnv()
 
 PyEnv::~PyEnv()
 {
-  // finalize the run
+  // Finalize the run
   Finalize();
   ::PetscFinalize();
-  // Print execution time
+  // Flush Caliper report
+  cali_mgr.flush();
+  // Print memory usage
+  const auto total_peak_bytes = GetTotalPeakMemoryUsageBytes();
   if (mpi_comm.rank() == 0)
   {
     std::cout << "\n";
+    if (total_peak_bytes)
+      std::cout << "Total peak host memory usage: "
+                << static_cast<double>(*total_peak_bytes) / 1.0e9 << " GB\n";
+  }
+  // Print execution time
+  if (mpi_comm.rank() == 0)
+  {
     std::cout << "Elapsed execution time: " << program_timer.GetTimeString() << "\n";
     std::cout << Timer::GetLocalDateTimeString() << " " << program << " finished execution.\n";
   }
-  // flush caliper
-  cali_mgr.flush();
 }
 
 std::unique_ptr<PyEnv> PyEnv::p_default_env{};

@@ -6,6 +6,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
 #include <vtkCell.h>
 #include <vtkPolygon.h>
@@ -1221,6 +1222,8 @@ MeshIO::ToExodusII(const std::shared_ptr<MeshContinuum>& grid,
 void
 MeshIO::ToPVTU(const std::shared_ptr<MeshContinuum>& grid, const std::string& file_base_name)
 {
+  CaliperRegionScope cali_output_scope("Output", CaliperOutputScopeDepth());
+
   log.Log() << "Exporting mesh to VTK files with base " << file_base_name;
 
   auto ugrid = PrepareVtkUnstructuredGrid(grid, false);

@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
 #include "framework/utils/timer.h"
+#include "framework/utils/caliper_scopes.h"
 #include "caliper/cali.h"
 
 namespace opensn
@@ -53,7 +54,9 @@ UncollidedSolver::UncollidedSolver(const InputParameters& params)
 void
 UncollidedSolver::Initialize()
 {
-  CALI_CXX_MARK_SCOPE("UncollidedSolver::Initialize");
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_uncollided("Uncollided", CaliperUncollidedScopeDepth());
+  CALI_CXX_MARK_SCOPE("Initialize");
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
 
   OpenSnInvalidArgumentIf(opensn::mpi_comm.size() != 1,
@@ -68,7 +71,9 @@ UncollidedSolver::Initialize()
 void
 UncollidedSolver::Execute()
 {
-  CALI_CXX_MARK_SCOPE("UncollidedSolver::Execute");
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_uncollided("Uncollided", CaliperUncollidedScopeDepth());
+  CALI_CXX_MARK_SCOPE("Execute");
   OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";

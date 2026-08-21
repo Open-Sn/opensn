@@ -383,7 +383,7 @@ template <unsigned int NumNodes>
 void
 CBCSweepChunk::Sweep_FixedN(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("CBCSweepChunk::Sweep_FixedN");
+  CALI_CXX_MARK_SCOPE("Sweep_FixedN");
 
   CBC_Sweep_FixedN<NumNodes, false>(*this, angle_set);
 }
