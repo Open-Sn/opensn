@@ -69,6 +69,9 @@ private:
                               double coarse_k_eff,
                               double applied_damping,
                               bool skipped_correction);
+  bool EvaluateBalanceConvergence(const BalanceResidual& transport_current_balance_residual,
+                                  bool skipped_correction,
+                                  double accelerated_k_change);
   void ProbeAutomaticClosure(double k_eff,
                              const std::vector<double>& coarse_phi,
                              const std::vector<double>& coarse_source_phi);
@@ -142,6 +145,9 @@ private:
   const unsigned int update_wgs_max_its_;
   const double update_wgs_abs_tol_;
   const double balance_residual_tolerance_;
+  const bool balance_residual_tolerance_explicit_;
+  const unsigned int balance_residual_confirmation_iterations_;
+  const double balance_residual_plateau_fraction_;
   const std::string coarse_solver_policy_;
   const std::size_t coarse_direct_solve_threshold_;
   const unsigned int first_group_ = 0;
@@ -162,6 +168,8 @@ private:
   double old_fission_production_ = 0.0;
   unsigned int consecutive_skipped_corrections_ = 0;
   bool using_direct_coarse_solver_ = false;
+  double auto_previous_residual_ = -1.0;
+  unsigned int auto_confirmation_streak_ = 0;
   CMFDCoarseMesh coarse_mesh_;
   std::vector<double> coarse_phi_old_fine_;
   std::vector<double> coarse_phi_new_fine_;

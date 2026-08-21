@@ -192,7 +192,29 @@ CMFDAcceleration::GetInputParameters()
     "CMFD allows power-iteration convergence. This is a second convergence "
     "guard in addition to the outer k_eff tolerance, not an estimate of the "
     "k-eigenvalue error. Large 3D problems may need a looser value than the "
-    "outer k_eff tolerance.");
+    "outer k_eff tolerance. If this parameter is left unset, CMFD instead uses a "
+    "self-calibrating false-convergence check (see balance_residual_confirmation_iterations "
+    "and balance_residual_plateau_fraction) that requires no hand-picked tolerance: it "
+    "declares the balance residual acceptable once it has both plateaued and stopped "
+    "affecting the accelerated k-eigenvalue for several consecutive iterations, rather than "
+    "comparing against a fixed number. Supplying this parameter explicitly always selects the "
+    "fixed-tolerance behavior, even if the supplied value equals the default.");
+  params.AddOptionalParameter(
+    "balance_residual_confirmation_iterations",
+    3,
+    "Number of consecutive power iterations, once the accelerated k-eigenvalue has stopped "
+    "changing (within the outer solver's own k-eigenvalue tolerance) and the CMFD correction "
+    "is being applied (not skipped), required for the transport-current balance residual to be "
+    "considered a stable plateau rather than still meaningfully converging. Only used by the "
+    "self-calibrating balance-residual check, i.e. when balance_residual_tolerance is left "
+    "unset.");
+  params.AddOptionalParameter(
+    "balance_residual_plateau_fraction",
+    0.1,
+    "Relative iteration-to-iteration change below which the transport-current balance "
+    "residual is considered to have stopped decreasing (a plateau) rather than still "
+    "converging. Only used by the self-calibrating balance-residual check, i.e. when "
+    "balance_residual_tolerance is left unset.");
   params.AddOptionalParameter(
     "coarse_solver_policy",
     "auto",
@@ -225,6 +247,10 @@ CMFDAcceleration::GetInputParameters()
   params.ConstrainParameterRange("update_wgs_max_its", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("update_wgs_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("balance_residual_tolerance", AllowableRangeLowLimit::New(0.0));
+  params.ConstrainParameterRange("balance_residual_confirmation_iterations",
+                                 AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange("balance_residual_plateau_fraction",
+                                 AllowableRangeLowLimit::New(0.0));
   params.ConstrainParameterRange("coarse_direct_solve_threshold", AllowableRangeLowLimit::New(1));
   params.ChangeExistingParamToOptional("name", "CMFDAcceleration");
   params.ChangeExistingParamToOptional(
@@ -275,6 +301,12 @@ CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
     update_wgs_max_its_(params.GetParamValue<unsigned int>("update_wgs_max_its")),
     update_wgs_abs_tol_(params.GetParamValue<double>("update_wgs_abs_tol")),
     balance_residual_tolerance_(params.GetParamValue<double>("balance_residual_tolerance")),
+    balance_residual_tolerance_explicit_(
+      params.GetParametersAtAssignment().Has("balance_residual_tolerance")),
+    balance_residual_confirmation_iterations_(
+      params.GetParamValue<unsigned int>("balance_residual_confirmation_iterations")),
+    balance_residual_plateau_fraction_(
+      params.GetParamValue<double>("balance_residual_plateau_fraction")),
     coarse_solver_policy_(params.GetParamValue<std::string>("coarse_solver_policy")),
     coarse_direct_solve_threshold_(
       static_cast<std::size_t>(params.GetParamValue<int>("coarse_direct_solve_threshold"))),
@@ -501,12 +533,54 @@ CMFDAcceleration::UpdateAutomaticClosure(const BalanceResidual operator_residual
   {
     active_current_closure_ = "partial";
 
+    // The coarse operator has changed significantly, so we need to reset the auto
+    // false-convergence check for the balance residual
+    auto_previous_residual_ = -1.0;
+    auto_confirmation_streak_ = 0;
+
     log.Log0() << no_wrap << program_timer.GetTimeString()
                << " CMFD auto closure switched from net to partial"
                << ": operator/current residual ratio = " << residual_ratio
                << ", coarse_k_change = " << coarse_k_change
                << ", applied_damping = " << applied_damping << ".";
   }
+}
+
+bool
+CMFDAcceleration::EvaluateBalanceConvergence(
+  const BalanceResidual& transport_current_balance_residual,
+  const bool skipped_correction,
+  const double accelerated_k_change)
+{
+  if (balance_residual_tolerance_explicit_)
+    return transport_current_balance_residual.relative_l2 <= balance_residual_tolerance_ and
+           not skipped_correction;
+
+  // Auto false-convergence check used when balance_residual_tolerance is not provided. Rather
+  // than comparing the balance residual (that depends on partitioning, CMFD aggregation, and
+  // the current-closure choice) against a hard value, the auto option requires a specified
+  // number of k iterations where: (a) the CMFD correction was applied, (b) the value for k
+  // has stopped moving relative to its tolerance, and (c) the balance residual has stopped
+  // decreasing meaningfully iteration to iteration. (a)+(b) mean that the balance residual
+  // is no longer affecting the value of k, and (c) means the balance residual iteself has
+  // plateaued (not just merely stagnated for a single iteration).
+  const double r = transport_current_balance_residual.relative_l2;
+  const bool k_tight = accelerated_k_change < solver_->GetKTolerance();
+
+  bool residual_flat = false;
+  if (not skipped_correction and auto_previous_residual_ >= 0.0)
+  {
+    const double rel_change =
+      std::fabs(r - auto_previous_residual_) / std::max(auto_previous_residual_, 1.0e-300);
+    residual_flat = rel_change <= balance_residual_plateau_fraction_;
+  }
+  if (not skipped_correction)
+    auto_previous_residual_ = r;
+
+  const bool qualifies = not skipped_correction and k_tight and residual_flat;
+  auto_confirmation_streak_ = qualifies ? auto_confirmation_streak_ + 1 : 0;
+
+  return auto_confirmation_streak_ >= balance_residual_confirmation_iterations_;
 }
 
 void
@@ -528,6 +602,8 @@ CMFDAcceleration::PreExecute()
   transport_start_time_ = 0.0;
   old_fission_production_ = 0.0;
   consecutive_skipped_corrections_ = 0;
+  auto_previous_residual_ = -1.0;
+  auto_confirmation_streak_ = 0;
 }
 
 void
@@ -615,8 +691,6 @@ CMFDAcceleration::PostPowerIteration()
     ComputeBalanceResidual(transport_k_eff, coarse_phi_new_, coarse_phi_old_);
   const auto transport_current_balance_residual =
     ComputeTransportCurrentBalanceResidual(transport_k_eff, coarse_phi_new_, coarse_phi_old_);
-  const bool transport_balance_allows_convergence =
-    transport_current_balance_residual.relative_l2 <= balance_residual_tolerance_;
   last_balance_residual_known_ = true;
   last_transport_current_balance_relative_l2_ = transport_current_balance_residual.relative_l2;
   const double residual_time = NowSeconds() - t0;
@@ -713,8 +787,9 @@ CMFDAcceleration::PostPowerIteration()
     consecutive_skipped_corrections_ = 0;
   last_correction_skipped_ = skipped_correction;
   last_correction_skip_reason_ = skipped_correction ? correction_skip_reason : std::string();
-  last_update_allows_convergence_ = transport_balance_allows_convergence and not skipped_correction;
   const double accelerated_k_change = std::fabs(k_eff - solver_->GetEigenvalue()) / k_eff;
+  last_update_allows_convergence_ = EvaluateBalanceConvergence(
+    transport_current_balance_residual, skipped_correction, accelerated_k_change);
   UpdateAutomaticClosure(transport_balance_residual,
                          transport_current_balance_residual,
                          transport_k_eff,
@@ -772,8 +847,15 @@ CMFDAcceleration::PostPowerIteration()
     LogMetric("coarse_linear_solves_converged", coarse_linear_solves_converged ? 1 : 0);
     LogMetric("operator_balance_residual", transport_balance_residual.relative_l2);
     LogMetric("transport_current_balance_residual", transport_current_balance_residual.relative_l2);
-    LogMetric("balance_residual_tolerance", balance_residual_tolerance_);
-    LogMetric("balance_allows_convergence", transport_balance_allows_convergence ? 1 : 0);
+    LogMetric("balance_residual_mode", balance_residual_tolerance_explicit_ ? "fixed" : "auto");
+    if (balance_residual_tolerance_explicit_)
+      LogMetric("balance_residual_tolerance", balance_residual_tolerance_);
+    else
+    {
+      LogMetric("auto_confirmation_streak", auto_confirmation_streak_);
+      LogMetric("auto_confirmation_target", balance_residual_confirmation_iterations_);
+    }
+    LogMetric("balance_allows_convergence", last_update_allows_convergence_ ? 1 : 0);
     LogMetric("accelerated_k_change", accelerated_k_change);
   }
 
@@ -791,9 +873,14 @@ CMFDAcceleration::GetPowerIterationConvergenceInfo() const
   out << "CMFD convergence check = "
       << (last_update_allows_convergence_ ? "satisfied" : "not_satisfied")
       << ", transport-current balance residual = " << std::scientific << std::setprecision(6)
-      << last_transport_current_balance_relative_l2_
-      << " (balance_residual_tolerance = " << balance_residual_tolerance_ << ")";
+      << last_transport_current_balance_relative_l2_;
   out << std::defaultfloat;
+  if (balance_residual_tolerance_explicit_)
+    out << " (balance_residual_tolerance = " << std::scientific << std::setprecision(6)
+        << balance_residual_tolerance_ << std::defaultfloat << ")";
+  else
+    out << " (auto false-convergence streak = " << auto_confirmation_streak_ << "/"
+        << balance_residual_confirmation_iterations_ << ")";
   if (last_correction_skipped_)
   {
     out << ", correction = skipped";
