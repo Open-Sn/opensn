@@ -107,8 +107,10 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Return the current k-eigenvalue</span>
+<span class="w">  </span><span class="c1">/// Return the current k-eigenvalue.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetEigenvalue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">k_eff_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Return the k-eigenvalue convergence tolerance.</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetKTolerance</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">k_tolerance_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Return the number of completed power iterations.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumPowerIterations</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_power_iterations_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Return the total number of transport sweeps applied by all WGS solvers.</span>

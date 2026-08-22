@@ -397,7 +397,8 @@
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code></dt><dd><p>Number of high-order WGS update iterations before each CMFD correction. The production CMFD workflow normally starts with 1. Increasing this can stabilize hard cases, but each power iteration becomes more expensive.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code></dt><dd><p>Additional CMFD convergence check based on restricted transport-current balance. This prevents convergence based only on a small k change when the low-order balance is still inconsistent with transport. The notebook uses a loose value so it runs quickly. Production comparisons should tighten it deliberately, often starting near <code class="docutils literal notranslate"><span class="pre">10*k_tol</span></code> for 2D problems and loosening only after verification.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code></dt><dd><p>Additional CMFD convergence check based on restricted transport-current balance. This prevents convergence based only on a small k change when the low-order balance is still inconsistent with transport. If this parameter is left unset, CMFD instead uses a self-calibrating check that requires no hand-picked number: it waits for the residual to stop decreasing meaningfully <em>and</em> the accelerated k-eigenvalue to stop moving, for a few consecutive iterations, before declaring convergence. This
+notebook sets it explicitly to a loose fixed value so the tutorial runs quickly and predictably; production inputs can often leave it unset and let CMFD self-calibrate instead of guessing a tolerance for a floor that depends on the mesh, aggregation, and closure and is not known in advance.</p>
 </dd>
 </dl>
 </section>
@@ -509,9 +510,9 @@ CMFD convergence check = ..., transport-current balance residual = ...
 <p>What to do:</p>
 <ol class="arabic simple">
 <li><p>First check that the balance residual is decreasing. If it is, CMFD is doing the right thing.</p></li>
-<li><p>For a tutorial or exploratory run, a looser <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> is acceptable.</p></li>
-<li><p>For production k comparisons, tighten it and verify against PI or a trusted reference.</p></li>
-<li><p>In large 3D cases, <code class="docutils literal notranslate"><span class="pre">10*k_tol</span></code> may be too strict; choose a value that is verified for the application rather than blindly forcing the residual to a tiny number.</p></li>
+<li><p>Consider leaving <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> unset entirely instead of loosening it by hand. CMFD then uses a self-calibrating false-convergence check: it declares the residual acceptable once it has both plateaued and stopped affecting the accelerated k-eigenvalue for a few consecutive iterations, rather than waiting on a fixed number that may be unreachable for this mesh, aggregation, and closure combination. This is usually the better first move than guessing a looser tolerance.</p></li>
+<li><p>If you do want a fixed target (for reproducibility or a benchmark comparison), tighten or loosen it deliberately and verify against PI or a trusted reference rather than guessing.</p></li>
+<li><p>In large 3D cases, <code class="docutils literal notranslate"><span class="pre">10*k_tol</span></code> may be too strict for a fixed tolerance; this is exactly the situation the self-calibrating check in point 2 is meant to avoid having to hand-tune.</p></li>
 </ol>
 </section>
 <section id="CMFD-is-slower-than-PI">
@@ -528,7 +529,8 @@ CMFD convergence check = ..., transport-current balance residual = ...
 </section>
 <section id="Applying-the-same-CMFD-setup-to-production-problems">
 <h2><span class="section-number">5.2.2.12. </span>Applying the same CMFD setup to production problems<a class="headerlink" href="#Applying-the-same-CMFD-setup-to-production-problems" title="Link to this heading"></a></h2>
-<p>For large production problems, the CMFD construction is the same. The main changes are the mesh, material list, and production quadrature. Treat <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>, target coarse groups, <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>, and <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> as the first production tuning knobs. Leave developer/debug controls alone unless the log gives a concrete reason to change them.</p>
+<p>For large production problems, the CMFD construction is the same. The main changes are the mesh, material list, and production quadrature. Treat <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>, target coarse groups, and <code class="docutils literal notranslate"><span class="pre">relaxation</span></code> as the first production tuning knobs. For <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>, the usual production starting point is to leave it unset and let CMFD’s self-calibrating check decide when the balance residual has stopped mattering; set it explicitly only when a fixed, reproducible target is
+actually needed (for example, a benchmark comparison). Leave developer/debug controls alone unless the log gives a concrete reason to change them.</p>
 </section>
 <section id="Finalize-Jupyter-runs">
 <h2><span class="section-number">5.2.2.13. </span>Finalize Jupyter runs<a class="headerlink" href="#Finalize-Jupyter-runs" title="Link to this heading"></a></h2>
