@@ -705,6 +705,22 @@ BuildCBCGlobalSweepGraph(SweepRuntime& runtime)
 }
 
 void
+BuildCBCLocalFaceSlotPlan(SweepRuntime& runtime)
+{
+  const auto spds_list = GetCBCSPDSList(runtime);
+  if (spds_list.empty())
+    return;
+
+  const auto nthreads = std::min<std::size_t>(std::max(1U, opensn_num_threads), spds_list.size());
+  log.Log0Verbose1() << program_timer.GetTimeString()
+                     << " Compute local-face slot plans for CBC SPDS (" << nthreads
+                     << " thread(s)).";
+  ParallelFor(spds_list.size(),
+              nthreads,
+              [&spds_list](const std::size_t i) { spds_list[i]->BuildLocalFaceSlotPlan(); });
+}
+
+void
 BuildAAHCPUFludsCommonData(SweepRuntime& runtime,
                            const std::shared_ptr<MeshContinuum>& grid,
                            const std::vector<CellFaceNodalMapping>& grid_nodal_mappings)
@@ -805,6 +821,7 @@ BuildSweepRuntime(const std::string& problem_name,
       runtime, groupsets, grid, face_neighbor_info, quadrature_allow_cycles_map, use_gpus);
     if (not use_gpus)
       BuildCBCGlobalSweepGraph(runtime);
+    BuildCBCLocalFaceSlotPlan(runtime);
   }
   else
     OpenSnInvalidArgument("Unsupported sweep type \"" + sweep_type + "\"");
