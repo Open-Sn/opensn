@@ -170,8 +170,9 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
           psi = fluds.DelayedNLUpwindPsi(
             delayed_nonlocal_face_info, face_nodal_mapping->face_node_mapping_[fj], as_ss_idx);
         else if (is_local_face)
-          psi = fluds.UpwindPsi(*cell_transport_view.FaceNeighbor(f),
-                                face_nodal_mapping->cell_node_mapping_[fj],
+          psi = fluds.UpwindPsi(cell_local_id,
+                                static_cast<unsigned int>(f),
+                                face_nodal_mapping->face_node_mapping_[fj],
                                 as_ss_idx);
         else if (not is_boundary_face)
           psi = fluds.NLUpwindPsi(
@@ -396,7 +397,8 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
                                               static_cast<unsigned int>(fi),
                                               as_ss_idx);
         else if (is_local_face)
-          psi = fluds.OutgoingPsi(cell, i, as_ss_idx);
+          psi = fluds.OutgoingPsi(
+            cell_local_id, static_cast<unsigned int>(f), static_cast<unsigned int>(fi), as_ss_idx);
         else if (not is_boundary_face)
           psi = fluds.NLOutgoingPsi(psi_nonlocal_outgoing, fi, as_ss_idx);
         else if (is_reflecting_boundary_face)
