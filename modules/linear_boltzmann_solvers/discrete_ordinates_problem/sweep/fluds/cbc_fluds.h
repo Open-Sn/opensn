@@ -13,10 +13,6 @@
 namespace opensn
 {
 
-class UnknownManager;
-class SpatialDiscretization;
-class Cell;
-
 /// Host CBC FLUDS.
 class CBC_FLUDS : public FLUDS
 {
@@ -32,21 +28,15 @@ public:
 
   CBC_FLUDS(unsigned int num_groups,
             std::size_t num_angles,
-            const CBC_FLUDSCommonData& common_data,
-            const UnknownManager& psi_uk_man,
-            const SpatialDiscretization& sdm);
+            const CBC_FLUDSCommonData& common_data);
 
   const CBC_FLUDSCommonData& GetCommonData() const;
 
-  /**
-   * Return local upwind cell psi for a mapped face node.
-   *
-   * \param face_neighbor Local upwind neighbor cell.
-   * \param adj_cell_node Mapped node in the upwind cell.
-   * \param as_ss_idx Angle-set subset index.
-   * \return Local upwind cell psi for the specified node and angle subset.
-   */
-  double* UpwindPsi(const Cell& face_neighbor, unsigned int adj_cell_node, std::size_t as_ss_idx);
+  /// Return local upwind psi from the compact face-slot bank.
+  double* UpwindPsi(std::uint32_t cell_local_id,
+                    unsigned int face_id,
+                    unsigned int face_node_mapped,
+                    std::size_t as_ss_idx) noexcept;
 
   /**
    * Return lagged local upwind face psi for a delayed local dependency.
@@ -62,15 +52,11 @@ public:
                            unsigned int face_node_mapped,
                            std::size_t as_ss_idx);
 
-  /**
-   * Return writable outgoing cell psi for a cell node.
-   *
-   * \param cell Local cell.
-   * \param cell_node Local cell node.
-   * \param as_ss_idx Angle-set subset index.
-   * \return Local outgoing cell psi for the specified node and angle subset.
-   */
-  double* OutgoingPsi(const Cell& cell, unsigned int cell_node, std::size_t as_ss_idx);
+  /// Return writable local outgoing psi in the compact face-slot bank.
+  double* OutgoingPsi(std::uint32_t cell_local_id,
+                      unsigned int face_id,
+                      unsigned int face_node,
+                      std::size_t as_ss_idx) noexcept;
 
   /**
    * Return writable delayed local outgoing face psi.
@@ -170,9 +156,7 @@ public:
 
 protected:
   const CBC_FLUDSCommonData& common_data_;
-  const UnknownManager& psi_uk_man_;
-  const SpatialDiscretization& sdm_;
-  /// Spatial DOF -> angleset subset -> group major layout.
+  /// Compact normal-local face-slot storage.
   std::vector<double> local_psi_data_;
   /// Contiguous storage for received nonlocal face psi.
   std::vector<double> incoming_nonlocal_psi_;
@@ -182,8 +166,6 @@ protected:
   std::vector<std::uint32_t> incoming_psi_epoch_;
   /// Current receive epoch.
   std::uint32_t current_psi_epoch_ = 1;
-  /// Local angular-flux storage offset by local cell.
-  std::vector<std::size_t> cell_psi_start_;
   /// New lagged local face-psi storage.
   std::vector<double> delayed_local_psi_;
   /// Old lagged local face-psi storage.
