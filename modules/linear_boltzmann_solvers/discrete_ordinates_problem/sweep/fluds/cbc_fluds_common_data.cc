@@ -43,21 +43,22 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
   : FLUDSCommonData(spds, grid_nodal_mappings),
     num_incoming_faces_(0),
     num_outgoing_faces_(0),
-    num_delayed_local_face_nodes_(0)
+    num_delayed_local_face_nodes_(0),
+    face_offsets_(dynamic_cast<const CBC_SPDS&>(spds).GetCellFaceOffsets()),
+    local_face_slot_node_offsets_by_face_(
+      dynamic_cast<const CBC_SPDS&>(spds).GetLocalFaceSlotNodeOffsets())
 {
   const auto& grid = *spds.GetGrid();
   const auto& cbc_spds = dynamic_cast<const CBC_SPDS&>(spds);
   const bool allow_cycles = cbc_spds.AllowCycles();
   const auto& face_orientations = spds.GetCellFaceOrientations();
   const auto& delayed_location_dependencies = spds.GetDelayedLocationDependencies();
-  face_offsets_.resize(grid.GetLocalCellCount(), 0);
 
   std::size_t num_local_faces = 0;
   std::size_t num_incoming_faces = 0;
   for (const auto& cell_ptr : grid.GetLocalCells())
   {
     const auto& cell = *cell_ptr;
-    face_offsets_[cell.local_id] = num_local_faces;
     num_local_faces += cell.faces.size();
 
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
@@ -83,9 +84,12 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
   outgoing_peer_indices_.assign(num_local_faces, INVALID_PEER_INDEX);
   if (allow_cycles)
   {
-    outgoing_face_locations_.assign(num_local_faces, -1);
-    delayed_local_face_info_by_face_.assign(num_local_faces, {});
-    delayed_nonlocal_face_info_by_face_.assign(num_local_faces, {});
+    if (not spds.GetDelayedLocationSuccessors().empty())
+      outgoing_face_locations_.assign(num_local_faces, -1);
+    if (not cbc_spds.GetLocalSweepFAS().empty())
+      delayed_local_face_info_by_face_.assign(num_local_faces, {});
+    if (not delayed_location_dependencies.empty())
+      delayed_nonlocal_face_info_by_face_.assign(num_local_faces, {});
     delayed_face_flags_.assign(num_local_faces, 0);
   }
   delayed_prelocI_face_node_counts_.assign(delayed_location_dependencies.size(), 0);
@@ -179,6 +183,8 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
       }
     }
   }
+
+  total_local_face_slot_nodes_ = cbc_spds.GetTotalLocalFaceSlotNodes();
 }
 
 void

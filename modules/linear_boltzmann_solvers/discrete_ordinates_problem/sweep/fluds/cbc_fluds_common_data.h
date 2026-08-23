@@ -62,6 +62,21 @@ public:
   /// Return the total number of delayed local face nodes.
   std::size_t NumDelayedLocalFaceNodes() const { return num_delayed_local_face_nodes_; }
 
+  /// Return the total number of nodes of the local-face slot bank (CBC_SPDS).
+  std::size_t TotalLocalFaceSlotNodes() const noexcept { return total_local_face_slot_nodes_; }
+
+  /**
+   * Return the node offset of a non-delayed local face's slot in the local-face slot bank, for
+   * either of its cell faces (CBC_SPDS::GetLocalFaceSlotNodeOffset).
+   */
+  std::size_t LocalFaceSlotNodeOffset(std::uint32_t cell_local_id,
+                                      unsigned int face_id) const noexcept
+  {
+    const auto offset =
+      local_face_slot_node_offsets_by_face_[face_offsets_[cell_local_id] + face_id];
+    return offset == std::numeric_limits<std::uint32_t>::max() ? INVALID_FACE_SLOT : offset;
+  }
+
   /// Return the delayed nonlocal face-node count for a delayed upstream location.
   std::size_t DelayedPrelocIFaceNodeCount(std::size_t prelocI) const;
 
@@ -155,8 +170,8 @@ private:
   bool finalized_ = false;
   /// Total number of delayed local face nodes.
   std::size_t num_delayed_local_face_nodes_;
-  /// Prefix offsets into local-face-indexed slot arrays.
-  std::vector<std::size_t> face_offsets_;
+  /// SPDS-owned prefix offsets into local-face-indexed arrays. The SPDS outlives this common data.
+  const std::vector<std::uint32_t>& face_offsets_;
   /// Local-face-indexed incoming slots.
   std::vector<std::size_t> incoming_face_slots_;
   /// Slot-indexed local cells associated with received face psi.
@@ -180,6 +195,13 @@ private:
   std::vector<std::size_t> delayed_prelocI_face_node_counts_;
   /// Bit-packed delayed-face classifications indexed by local face.
   std::vector<std::uint8_t> delayed_face_flags_;
+  /// Total number of nodes of the local-face slot bank.
+  std::size_t total_local_face_slot_nodes_ = 0;
+  /**
+   * Slot node offsets of the non-delayed local faces in the local-face slot bank, indexed by local
+   * cell face (INVALID_FACE_SLOT for other cell faces).
+   */
+  const std::vector<std::uint32_t>& local_face_slot_node_offsets_by_face_;
 };
 
 } // namespace opensn

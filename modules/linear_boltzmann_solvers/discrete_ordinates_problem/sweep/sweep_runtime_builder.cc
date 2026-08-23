@@ -526,7 +526,8 @@ BuildCBCSPDS(
         omega,
         grid,
         face_neighbor_info,
-        allow_cycles_map.at(quadrature) and not use_gpus);
+        allow_cycles_map.at(quadrature) and not use_gpus,
+        use_gpus ? CBC_SPDS::TaskStorage::DEVICE_TASKS : CBC_SPDS::TaskStorage::HOST_CSR);
     });
 }
 

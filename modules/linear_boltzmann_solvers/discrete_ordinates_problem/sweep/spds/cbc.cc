@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc_slot_planner.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc_graph_validation.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
-#include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include "framework/graphs/feedback_arc_set.h"
 #include "caliper/cali.h"
@@ -14,7 +14,9 @@
 #include <cassert>
 #include <cstdint>
 #include <cmath>
+#include <limits>
 #include <set>
+#include <stdexcept>
 #include <unordered_map>
 #include <utility>
 
@@ -37,76 +39,84 @@ CBC_SPDS::CBC_SPDS(int id,
                    const Vector3& omega,
                    const std::shared_ptr<Mesh>& grid,
                    const SPDSFaceNeighborInfoVec& face_neighbor_info,
-                   bool allow_cycles)
-  : SPDS(omega, grid), id_(id), allow_cycles_(allow_cycles)
+                   bool allow_cycles,
+                   TaskStorage task_storage)
+  : SPDS(omega, grid), id_(id), allow_cycles_(allow_cycles), task_storage_(task_storage)
 {
+  CALI_CXX_MARK_SCOPE("CBC_SPDS::CBC_SPDS");
 
   const auto num_loc_cells = grid->GetLocalCellCount();
+  if (task_storage_ == TaskStorage::HOST_CSR)
+    detail::CheckedCBCTaskCount(0, num_loc_cells);
 
-  // Populate cell relationships
-  std::vector<std::vector<std::pair<std::uint32_t, double>>> cell_successors(num_loc_cells);
-  std::vector<int> location_successors;
-  std::vector<int> location_dependencies;
-
-  PopulateCellRelationships(
-    omega, face_neighbor_info, location_dependencies, location_successors, cell_successors);
-
-  location_successors_ = std::move(location_successors);
-  location_dependencies_ = std::move(location_dependencies);
-
-  // Build local cell graph
-  Graph local_cell_graph(num_loc_cells);
-
-  // With cycles allowed, each outgoing local face is weighted by its node count, so the
-  // weighted FAS favors smaller lagged storage and copy work (exact only for small SCCs).
-  if (allow_cycles) // NOLINT
+  // The cell graph is freed before the slot plan is built.
   {
-    std::vector<LocalFaceEdge> face_edges;
-    for (const auto& cell_ptr : grid->GetLocalCells())
+    // Populate cell relationships
+    std::vector<std::vector<std::pair<std::uint32_t, double>>> cell_successors(num_loc_cells);
+    std::vector<int> location_successors;
+    std::vector<int> location_dependencies;
+
+    PopulateCellRelationships(
+      omega, face_neighbor_info, location_dependencies, location_successors, cell_successors);
+
+    location_successors_ = std::move(location_successors);
+    location_dependencies_ = std::move(location_dependencies);
+
+    // Build local cell graph
+    Graph local_cell_graph(num_loc_cells);
+
+    // With cycles allowed, each outgoing local face is weighted by its node count, so the
+    // weighted FAS favors smaller lagged storage and copy work (exact only for small SCCs).
+    if (allow_cycles) // NOLINT
     {
-      const auto& cell = *cell_ptr;
-      for (std::size_t f = 0; f < cell.faces.size(); ++f)
+      std::vector<LocalFaceEdge> face_edges;
+      for (const auto& cell_ptr : grid->GetLocalCells())
       {
-        const auto& face = cell.faces[f];
-        if (cell_face_orientations_[cell.local_id][f] == FaceOrientation::OUTGOING and
-            face.has_neighbor and face.IsNeighborLocal(grid.get()))
-          face_edges.push_back({static_cast<std::uint32_t>(cell.local_id),
-                                static_cast<std::uint32_t>(face.GetNeighborLocalID(grid.get())),
-                                static_cast<double>(face.vertex_ids.size())});
+        const auto& cell = *cell_ptr;
+        for (std::size_t f = 0; f < cell.faces.size(); ++f)
+        {
+          const auto& face = cell.faces[f];
+          if (cell_face_orientations_[cell.local_id][f] == FaceOrientation::OUTGOING and
+              face.has_neighbor and face.IsNeighborLocal(grid.get()))
+            face_edges.push_back({static_cast<std::uint32_t>(cell.local_id),
+                                  static_cast<std::uint32_t>(face.GetNeighborLocalID(grid.get())),
+                                  static_cast<double>(face.vertex_ids.size())});
+        }
       }
+
+      local_sweep_fas_ = RemoveLocalCellCycles(local_cell_graph, face_edges);
+      for (const auto& [upwind, downwind] : local_sweep_fas_)
+        delayed_local_dependency_set_.insert(PackDirectedEdge(upwind, downwind));
     }
+    else
+      for (std::size_t cell_id = 0; cell_id < cell_successors.size(); ++cell_id)
+        for (const auto& [successor_id, weight] : cell_successors[cell_id])
+          boost::add_edge(cell_id, successor_id, weight, local_cell_graph);
 
-    local_sweep_fas_ = RemoveLocalCellCycles(local_cell_graph, face_edges);
-    for (const auto& [upwind, downwind] : local_sweep_fas_)
-      delayed_local_dependency_set_.insert(PackDirectedEdge(upwind, downwind));
+    // Generate topological sorting
+    spls_.clear();
+    try
+    {
+      // An explicit color map avoids analyzer false positives in Boost's shared_array map.
+      std::vector<boost::default_color_type> colors(num_loc_cells, boost::white_color);
+      boost::topological_sort(
+        local_cell_graph,
+        std::back_inserter(spls_),
+        boost::color_map(boost::make_iterator_property_map(
+          colors.begin(), boost::get(boost::vertex_index, local_cell_graph)))); // NOLINT
+    }
+    catch (const boost::not_a_dag&)
+    {
+      throw std::logic_error("CBC_SPDS: Cyclic dependencies found in the local cell graph.\n"
+                             "Cycles need to be allowed by the calling application.");
+    }
+    std::reverse(spls_.begin(), spls_.end());
   }
-  else
-    for (std::size_t cell_id = 0; cell_id < cell_successors.size(); ++cell_id)
-      for (const auto& [successor_id, weight] : cell_successors[cell_id])
-        boost::add_edge(cell_id, successor_id, weight, local_cell_graph);
-
-  // Generate topological sorting
-  spls_.clear();
-  try
-  {
-    // An explicit color map avoids analyzer false positives in Boost's shared_array map.
-    std::vector<boost::default_color_type> colors(num_loc_cells, boost::white_color);
-    boost::topological_sort(
-      local_cell_graph,
-      std::back_inserter(spls_),
-      boost::color_map(boost::make_iterator_property_map(
-        colors.begin(), boost::get(boost::vertex_index, local_cell_graph)))); // NOLINT
-  }
-  catch (const boost::not_a_dag&)
-  {
-    throw std::logic_error("CBC_SPDS: Cyclic dependencies found in the local cell graph.\n"
-                           "Cycles need to be allowed by the calling application.");
-  }
-  std::reverse(spls_.begin(), spls_.end());
 
   if (allow_cycles_)
     delayed_location_dependency_flags_.assign(static_cast<std::size_t>(opensn::mpi_comm.size()), 0);
   BuildTaskList();
+  BuildLocalFaceSlotPlan(face_neighbor_info);
 }
 
 std::vector<std::pair<std::uint32_t, std::uint32_t>>
@@ -149,6 +159,12 @@ void
 CBC_SPDS::BuildTaskList()
 {
   CALI_CXX_MARK_SCOPE("CBC_SPDS::BuildTaskList");
+
+  if (task_storage_ == TaskStorage::HOST_CSR)
+  {
+    BuildHostTaskGraph();
+    return;
+  }
 
   const auto& grid = *grid_;
   constexpr auto INCOMING = FaceOrientation::INCOMING;
@@ -212,12 +228,249 @@ CBC_SPDS::BuildTaskList()
   for (std::uint32_t task = 0; task < initial_task_dependency_counts_.size(); ++task)
     if (initial_task_dependency_counts_[task] == 0)
       initial_ready_tasks_.push_back(task);
+
+  if (not host_task_graph_.successor_offsets.empty())
+    BuildLegacyHostTaskGraph();
+}
+
+void
+CBC_SPDS::BuildHostTaskGraph()
+{
+  const auto& grid = *grid_;
+  const std::size_t num_cells = detail::CheckedCBCTaskCount(0, grid.GetLocalCellCount());
+  if (num_cells == std::numeric_limits<std::size_t>::max())
+    throw std::length_error("CBC host task offsets require a final sentinel entry.");
+  detail::CBCHostTaskGraph graph;
+  graph.cells.resize(num_cells);
+  graph.successor_offsets.resize(static_cast<std::size_t>(num_cells) + 1, 0);
+  std::vector<unsigned int> dependency_counts(num_cells, 0);
+  std::vector<std::uint32_t> ready_tasks;
+
+  // Count rows first so the flat successor array has exactly E entries and no per-cell
+  // allocation. Mesh::AddGlobalCell assigns local IDs in GetLocalCells() order.
+  std::uint32_t num_edges = 0;
+  for (const auto& cell_ptr : grid.GetLocalCells())
+  {
+    const auto& cell = *cell_ptr;
+    detail::CheckedCBCTaskCount(0, cell.faces.size());
+    graph.cells[cell.local_id] = &cell;
+    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    {
+      const auto& face = cell.faces[f];
+      if (cell_face_orientations_[cell.local_id][f] == FaceOrientation::OUTGOING and
+          face.has_neighbor and face.IsNeighborLocal(&grid))
+      {
+        const auto successor = grid.GetGlobalCell(face.neighbor_id).local_id;
+        if (not(allow_cycles_ and IsDelayedLocalDependency(cell.local_id, successor)))
+          num_edges = detail::CheckedCBCTaskCount(num_edges, 1);
+      }
+    }
+    graph.successor_offsets[cell.local_id + 1] = num_edges;
+  }
+  graph.successors.resize(num_edges);
+
+  for (const auto& cell_ptr : grid.GetLocalCells())
+  {
+    const auto& cell = *cell_ptr;
+    auto edge = graph.successor_offsets[cell.local_id];
+    auto& dependencies = dependency_counts[cell.local_id];
+    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    {
+      const auto& face = cell.faces[f];
+      const auto orientation = cell_face_orientations_[cell.local_id][f];
+      if (orientation == FaceOrientation::INCOMING and face.has_neighbor)
+      {
+        if (face.IsNeighborLocal(&grid))
+        {
+          const auto upwind = grid.GetGlobalCell(face.neighbor_id).local_id;
+          if (allow_cycles_ and IsDelayedLocalDependency(upwind, cell.local_id))
+            continue;
+        }
+        else
+        {
+          const auto location = face.GetNeighborPartitionID(&grid);
+          if (allow_cycles_ and location >= 0 and
+              delayed_location_dependency_flags_[static_cast<std::size_t>(location)])
+            continue;
+        }
+        ++dependencies; // Bounded by the checked number of faces of this cell.
+      }
+      else if (orientation == FaceOrientation::OUTGOING and face.has_neighbor and
+               face.IsNeighborLocal(&grid))
+      {
+        const auto successor = grid.GetGlobalCell(face.neighbor_id).local_id;
+        if (not(allow_cycles_ and IsDelayedLocalDependency(cell.local_id, successor)))
+          graph.successors[edge++] = successor;
+      }
+    }
+    assert(edge == graph.successor_offsets[cell.local_id + 1]);
+  }
+
+  for (std::uint32_t task = 0; task < num_cells; ++task)
+    if (dependency_counts[task] == 0)
+      ready_tasks.push_back(task);
+
+  // Publish only after the complete graph has been built and checked. No array is
+  // retained by an angle set across a rebuild: resets refresh the borrowed graph.
+  host_task_graph_ = std::move(graph);
+  initial_task_dependency_counts_ = std::move(dependency_counts);
+  initial_ready_tasks_ = std::move(ready_tasks);
+}
+
+void
+CBC_SPDS::BuildLocalFaceReuseData(const SPDSFaceNeighborInfoVec& face_neighbor_info,
+                                  std::vector<std::uint32_t>& producer_face_offsets,
+                                  std::vector<std::uint32_t>& consumer_ranks,
+                                  std::vector<std::uint16_t>& node_counts)
+{
+  CALI_CXX_MARK_SCOPE("CBC_SPDS::BuildLocalFaceReuseData");
+
+  const auto num_loc_cells = grid_->GetLocalCellCount();
+  std::vector<std::uint32_t> task_rank_by_cell_local_id(num_loc_cells, 0);
+  for (std::size_t rank = 0; rank < spls_.size(); ++rank)
+    task_rank_by_cell_local_id[spls_[rank]] = static_cast<std::uint32_t>(rank);
+
+  cell_face_offsets_.assign(num_loc_cells + 1, 0);
+  std::size_t total_num_faces = 0;
+  for (const auto& cell_ptr : grid_->GetLocalCells())
+  {
+    const auto& cell = *cell_ptr;
+    if (cell.faces.size() > std::numeric_limits<std::uint32_t>::max() - total_num_faces)
+      throw std::length_error("CBC local cell-face data exceeds its 32-bit offset range.");
+    cell_face_offsets_[cell.local_id] = static_cast<std::uint32_t>(total_num_faces);
+    total_num_faces += cell.faces.size();
+  }
+  cell_face_offsets_.back() = static_cast<std::uint32_t>(total_num_faces);
+  local_face_slot_node_offsets_.assign(total_num_faces, INVALID_SLOT_NODE_OFFSET);
+
+  producer_face_offsets.assign(num_loc_cells + 1, 0);
+  consumer_ranks.clear();
+  node_counts.clear();
+
+  for (std::size_t producer_rank = 0; producer_rank < spls_.size(); ++producer_rank)
+  {
+    producer_face_offsets[producer_rank] = static_cast<std::uint32_t>(consumer_ranks.size());
+
+    const auto producer_cell_local_id = spls_[producer_rank];
+    const auto& cell = grid_->GetLocalCell(producer_cell_local_id);
+    const auto& face_orientations = cell_face_orientations_[producer_cell_local_id];
+    const auto& cell_face_info = face_neighbor_info[producer_cell_local_id];
+
+    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    {
+      const auto& face_info = cell_face_info[f];
+      if ((face_orientations[f] != FaceOrientation::OUTGOING) or (not face_info.neighbor_local))
+        continue;
+
+      const auto consumer_cell_local_id = face_info.neighbor_local_id;
+      if (IsDelayedLocalDependency(static_cast<std::uint32_t>(producer_cell_local_id),
+                                   consumer_cell_local_id))
+        continue;
+
+      const auto num_face_nodes = cell.faces[f].vertex_ids.size();
+      if (num_face_nodes > std::numeric_limits<std::uint16_t>::max())
+        throw std::length_error("CBC local face node count exceeds its 16-bit storage range.");
+      const auto local_face_id = static_cast<std::uint32_t>(consumer_ranks.size());
+      consumer_ranks.push_back(task_rank_by_cell_local_id[consumer_cell_local_id]);
+      node_counts.push_back(static_cast<std::uint16_t>(num_face_nodes));
+      local_face_slot_node_offsets_[cell_face_offsets_[producer_cell_local_id] + f] = local_face_id;
+      local_face_slot_node_offsets_[cell_face_offsets_[consumer_cell_local_id] +
+                                    face_info.neighbor_adj_face] = local_face_id;
+    }
+  }
+
+  producer_face_offsets.back() = static_cast<std::uint32_t>(consumer_ranks.size());
+}
+
+void
+CBC_SPDS::BuildLocalFaceSlotPlan(const SPDSFaceNeighborInfoVec& face_neighbor_info)
+{
+  CALI_CXX_MARK_SCOPE("CBC_SPDS::BuildLocalFaceSlotPlan");
+
+  // The faces are the entries of the task-DAG CSR: producer_face_offsets and consumer_ranks.
+  std::vector<std::uint32_t> producer_face_offsets;
+  std::vector<std::uint32_t> consumer_ranks;
+  std::vector<std::uint16_t> node_counts;
+  BuildLocalFaceReuseData(face_neighbor_info, producer_face_offsets, consumer_ranks, node_counts);
+
+  std::vector<std::uint32_t> face_slot_ids;
+  const auto result =
+    detail::BuildMinimumLocalFaceSlotPlan(producer_face_offsets, consumer_ranks, face_slot_ids);
+  if (result.used_identity_fallback)
+    opensn::log.LogAllWarning()
+      << "CBC_SPDS::BuildLocalFaceSlotPlan: the local-face slot flow network exceeds 32-bit "
+      << "indices; using one slot per local directed face (no reuse).";
+
+  // Slot node offsets: each slot holds its largest face.
+  std::vector<std::uint32_t> slot_node_offsets(result.num_slots + 1, 0);
+  for (std::size_t face = 0; face < face_slot_ids.size(); ++face)
+  {
+    auto& slot_nodes = slot_node_offsets[face_slot_ids[face] + 1];
+    slot_nodes = std::max<std::uint32_t>(slot_nodes, node_counts[face]);
+  }
+  std::uint64_t total_nodes = 0;
+  for (std::size_t slot = 1; slot < slot_node_offsets.size(); ++slot)
+  {
+    total_nodes += slot_node_offsets[slot];
+    if (total_nodes > std::numeric_limits<std::uint32_t>::max())
+      throw std::length_error("CBC local face slot nodes exceed their 32-bit offset range.");
+    slot_node_offsets[slot] = static_cast<std::uint32_t>(total_nodes);
+  }
+  total_local_face_slot_nodes_ = total_nodes;
+
+  // Every slot node offset is below the total, so it differs from INVALID_SLOT_NODE_OFFSET.
+  for (auto& entry : local_face_slot_node_offsets_)
+    if (entry != INVALID_SLOT_NODE_OFFSET)
+      entry = slot_node_offsets[face_slot_ids[entry]];
 }
 
 const std::vector<Task>&
 CBC_SPDS::GetTaskList() const
 {
+  if (task_storage_ != TaskStorage::DEVICE_TASKS)
+    throw std::logic_error("CBC_SPDS::GetTaskList requires DEVICE_TASKS storage.");
   return task_list_;
+}
+
+void
+CBC_SPDS::BuildLegacyHostTaskGraph() const
+{
+  const std::size_t num_cells = detail::CheckedCBCTaskCount(0, task_list_.size());
+  if (num_cells == std::numeric_limits<std::size_t>::max())
+    throw std::length_error("CBC host task offsets require a final sentinel entry.");
+  detail::CBCHostTaskGraph graph;
+  graph.cells.resize(num_cells);
+  graph.successor_offsets.resize(num_cells + 1, 0);
+  std::uint32_t num_edges = 0;
+  for (std::size_t cell = 0; cell < num_cells; ++cell)
+  {
+    graph.cells[cell] = task_list_[cell].cell_ptr;
+    num_edges = detail::CheckedCBCTaskCount(num_edges, task_list_[cell].successors.size());
+    graph.successor_offsets[cell + 1] = num_edges;
+  }
+  graph.successors.resize(num_edges);
+  for (std::size_t cell = 0; cell < num_cells; ++cell)
+    if (not task_list_[cell].successors.empty())
+      std::copy(task_list_[cell].successors.begin(),
+                task_list_[cell].successors.end(),
+                graph.successors.begin() + graph.successor_offsets[cell]);
+  host_task_graph_ = std::move(graph);
+}
+
+const detail::CBCHostTaskGraph&
+CBC_SPDS::PrepareHostTaskGraph() const
+{
+  if (host_task_graph_.successor_offsets.empty())
+    BuildLegacyHostTaskGraph();
+  return host_task_graph_;
+}
+
+const detail::CBCHostTaskGraph&
+CBC_SPDS::GetHostTaskGraph() const
+{
+  if (host_task_graph_.successor_offsets.empty())
+    throw std::logic_error("CBC_SPDS::GetHostTaskGraph requires host setup first.");
+  return host_task_graph_;
 }
 
 bool
@@ -241,14 +494,23 @@ CBC_SPDS::CheckGlobalCellCycles() const
   // still participate in elimination, the verdict and the witness broadcasts.
   if (components[mpi_comm.rank()] < 0)
     return detail::CheckCBCGlobalCellGraph({}, {}, {}, {}, components);
-  std::vector<std::uint64_t> ids(task_list_.size());
-  std::vector<std::vector<std::uint32_t>> successors(task_list_.size());
+  const auto num_cells = grid_->GetLocalCellCount();
+  std::vector<std::uint64_t> ids(num_cells);
+  std::vector<std::vector<std::uint32_t>> successors(num_cells);
   std::vector<detail::CBCBoundaryEdge> incoming, outgoing;
-  for (const auto& task : task_list_)
+  for (const auto& cell_ptr : grid_->GetLocalCells())
   {
-    const auto& cell = *task.cell_ptr;
+    const auto& cell = *cell_ptr;
     ids[cell.local_id] = cell.global_id;
-    successors[cell.local_id] = task.successors;
+    if (task_storage_ == TaskStorage::HOST_CSR)
+    {
+      const auto begin = host_task_graph_.successor_offsets[cell.local_id];
+      const auto end = host_task_graph_.successor_offsets[cell.local_id + 1];
+      for (auto edge = begin; edge < end; ++edge)
+        successors[cell.local_id].push_back(host_task_graph_.successors[edge]);
+    }
+    else
+      successors[cell.local_id] = task_list_[cell.local_id].successors;
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {
       const auto& face = cell.faces[f];

@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_chunk_td.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_sweep_kernels.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/avx_sweep_chunk_utils.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbc_avx_sweep_chunk_utils.h"
 #include "caliper/cali.h"
 #include <algorithm>
 #include <array>
@@ -170,8 +170,9 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
           psi = fluds.DelayedNLUpwindPsi(
             delayed_nonlocal_face_info, face_nodal_mapping->face_node_mapping_[fj], as_ss_idx);
         else if (is_local_face)
-          psi = fluds.UpwindPsi(*cell_transport_view.FaceNeighbor(f),
-                                face_nodal_mapping->cell_node_mapping_[fj],
+          psi = fluds.UpwindPsi(cell_local_id,
+                                static_cast<unsigned int>(f),
+                                face_nodal_mapping->face_node_mapping_[fj],
                                 as_ss_idx);
         else if (not is_boundary_face)
           psi = fluds.NLUpwindPsi(
@@ -195,7 +196,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
             continue;
 
           for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
-            b[gsg * NumNodes + i] += psi[gsg] * mu_Nij;
+            b[i * gs_size + gsg] += psi[gsg] * mu_Nij;
         }
       }
     }
@@ -219,7 +220,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
           sigma_tg += tau_gsg[gsg];
         sigma_block[rel] = sigma_tg;
 
-        auto* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
+        auto* __restrict bg = &b[gsg];
         std::array<double, NumNodes> nodal_source{};
         for (unsigned int m = 0; m < sweep_chunk.num_moments_; ++m)
         {
@@ -253,15 +254,15 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
           PRAGMA_UNROLL
           for (std::size_t j = 0; j < NumNodes; ++j)
             value += row[j] * nodal_source[j];
-          bg[i] += value;
+          bg[i * gs_size] += value;
         }
       }
 
       std::size_t k = 0;
 
       for (; k + Simd::size <= block_len; k += Simd::size)
-        detail::SimdBatchSolve<NumNodes>(
-          Amat.data(), mass_matrix.data(), &sigma_block[k], &b[(g0 + k) * NumNodes]);
+        detail::CBCSimdBatchSolve<NumNodes>(
+          Amat.data(), mass_matrix.data(), &sigma_block[k], &b[g0 + k], gs_size);
 
       for (; k < block_len; ++k)
       {
@@ -277,7 +278,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
             A[Idx(i, j)] = Amat[Idx(i, j)] + sigma_tg * mass_matrix[Idx(i, j)];
         }
 
-        auto* __restrict bg = &b[gsg * NumNodes];
+        auto* __restrict bg = &b[gsg];
 
         for (std::size_t pivot = 0; pivot < NumNodes; ++pivot)
         {
@@ -285,7 +286,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
           for (std::size_t row = pivot + 1; row < NumNodes; ++row)
           {
             const double factor = A[Idx(row, pivot)] * inv;
-            bg[row] -= factor * bg[pivot];
+            bg[row * gs_size] -= factor * bg[pivot * gs_size];
             PRAGMA_UNROLL
             for (std::size_t col = pivot + 1; col < NumNodes; ++col)
               A[Idx(row, col)] -= factor * A[Idx(pivot, col)];
@@ -296,25 +297,19 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         {
           PRAGMA_UNROLL
           for (std::size_t col = pivot + 1; col < NumNodes; ++col)
-            bg[pivot] -= A[Idx(pivot, col)] * bg[col];
-          bg[pivot] /= A[Idx(pivot, pivot)];
+            bg[pivot * gs_size] -= A[Idx(pivot, col)] * bg[col * gs_size];
+          bg[pivot * gs_size] /= A[Idx(pivot, pivot)];
         }
       }
 
-      for (std::size_t gsg = g0; gsg < g1; ++gsg)
-      {
-        const auto* __restrict bg = &b[gsg * NumNodes];
-        for (unsigned int m = 0; m < sweep_chunk.num_moments_; ++m)
-        {
-          const double w = d2m_row[m];
-          PRAGMA_UNROLL
-          for (std::size_t i = 0; i < NumNodes; ++i)
-          {
-            const std::size_t dof = moment_dof_map[static_cast<std::size_t>(m) * NumNodes + i];
-            sweep_chunk.destination_phi_[dof + gsg] += w * bg[i];
-          }
-        }
-      }
+      detail::AccumulateNodeMajorMoments<NumNodes>(gs_size,
+                                                   g0,
+                                                   g1,
+                                                   sweep_chunk.num_moments_,
+                                                   moment_dof_map.data(),
+                                                   d2m_row,
+                                                   b.data(),
+                                                   sweep_chunk.destination_phi_.data());
     }
 
     if (sweep_chunk.SaveAngularFluxEnabled())
@@ -338,7 +333,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
         for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
         {
-          const double psi_sol = b[gsg * NumNodes + i];
+          const double psi_sol = b[i * gs_size + gsg];
           if constexpr (time_dependent)
           {
             const double psi_old_val = psi_old ? psi_old[imap + gsg] : 0.0;
@@ -387,7 +382,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
         const double flux_i = mu_wt_f * IntF_shapeI(i);
         for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
-          cell_outflow_view.Add(f, gs_gi + gsg, flux_i * b[gsg * NumNodes + i]);
+          cell_outflow_view.Add(f, gs_gi + gsg, flux_i * b[i * gs_size + gsg]);
 
         double* psi = nullptr;
         if (is_delayed_local_outgoing)
@@ -396,7 +391,8 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
                                               static_cast<unsigned int>(fi),
                                               as_ss_idx);
         else if (is_local_face)
-          psi = fluds.OutgoingPsi(cell, i, as_ss_idx);
+          psi = fluds.OutgoingPsi(
+            cell_local_id, static_cast<unsigned int>(f), static_cast<unsigned int>(fi), as_ss_idx);
         else if (not is_boundary_face)
           psi = fluds.NLOutgoingPsi(psi_nonlocal_outgoing, fi, as_ss_idx);
         else if (is_reflecting_boundary_face)
@@ -405,7 +401,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         if (psi != nullptr)
         {
           for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
-            psi[gsg] = b[gsg * NumNodes + i];
+            psi[gsg] = b[i * gs_size + gsg];
         }
       }
     }
